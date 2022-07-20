@@ -37,7 +37,7 @@ def process_file(modules: list[ELFFile], idx: int, filename: Path):
     module_relocations: dict[int, list[Relocation]] = {}
 
     for section in elffile.iter_sections():
-        if section['sh_type'] != "SHT_PROGBITS":
+        if section['sh_type'] != 'SHT_PROGBITS' or section.name == '.comment':
             # Non-text/data sections are added to the REL as empty sections
             rel_file.add_section(Section())
             continue
@@ -156,11 +156,11 @@ if __name__ == '__main__':
     if args.elf_file.is_file():
         if not any([not plf.is_file() for plf in args.plf_files]):
 
-			# Open files and parse them
+            # Open files and parse them
             files = [open(args.elf_file, 'rb')] + [open(plf, 'rb') for plf in args.plf_files]
             modules = [ELFFile(f) for f in files]
 
-			# Process them
+            # Process them
             for idx in range(1, len(modules)):
                 process_file(modules, idx, args.plf_files[idx-1])
                 if unresolved_symbol_count > 0:
@@ -168,7 +168,7 @@ if __name__ == '__main__':
                 else:
                     print_success(f'Processed {args.plf_files[idx-1]}.')
 
-			# Close them
+            # Close them
             for file in files:
                 file.close()
         else:
