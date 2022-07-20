@@ -39,13 +39,26 @@ def process_file(modules: list[ELFFile], idx: int, filename: Path):
     for section in elffile.iter_sections():
         if section['sh_type'] != 'SHT_PROGBITS' or section.name == '.comment':
             # Non-text/data sections are added to the REL as empty sections
-            rel_file.add_section(Section())
+            empty_sec = Section()
+            
+            # Special case: .bss section does get length field set
+            if section.name == '.bss':
+                empty_sec.is_bss = True
+                empty_sec._sec_len = section.data_size
+                rel_file.bss_size = section.data_size
+                rel_file.bss_align = section['sh_addralign']
+
+            rel_file.add_section(empty_sec)
             continue
 
         rel_sec = Section()
         rel_sec.set_data(bytearray(section.data()))
         rel_sec.executable = section.name == '.text'
         rel_sec.alignment = section['sh_addralign']
+
+        # Intended behaviour; the align value is the one of the section processed last
+        rel_file.align = section['sh_addralign']
+        
         rel_file.add_section(rel_sec)
 
         rela_sec = elffile.get_section_by_name('.rela' + section.name)
@@ -111,15 +124,6 @@ def process_file(modules: list[ELFFile], idx: int, filename: Path):
         stop_reloc.addend = 0
         module_relocations[mod].append(stop_reloc)
         rel_file.relocations[mod] = module_relocations[mod]
-
-    # Create BSS section
-    section = elffile.get_section_by_name('.bss')
-    if section:
-        rel_file.bss_size = section.data_size
-        bss_sec = Section()
-        bss_sec.is_bss = True
-        bss_sec._sec_len = section.data_size
-        rel_file.add_section(bss_sec)
 
     # Generate prolog, epilog and unresolved
     symtab = elffile.get_section_by_name('.symtab')
