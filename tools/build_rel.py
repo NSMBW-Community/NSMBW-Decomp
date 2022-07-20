@@ -17,16 +17,10 @@ def print_success(msg: str):
 
 str_file = ""
 id = 1
-section_names = [
-    '.text',
-    '.ctors',
-    '.dtors',
-    '.rodata',
-    '.data'
-]
+unresolved_symbol_count = 0
 
 def process_file(modules: list[ELFFile], idx: int, filename: Path):
-    global id, str_file
+    global id, str_file, unresolved_symbol_count
     
     # Generate .str file and output filename
     str_file_offset = len(str_file)
@@ -39,25 +33,22 @@ def process_file(modules: list[ELFFile], idx: int, filename: Path):
     rel_file = REL(id, path_offset=str_file_offset, path_size=len(path_str))
     id += 1
 
-    # Add dummy section
-    rel_file.add_section(Section())
     elffile = modules[idx]
     module_relocations: dict[int, list[Relocation]] = {}
 
-    # Generate relocations
-    for (idx, sec_name) in enumerate(section_names):
-        section = elffile.get_section_by_name(sec_name)
-        if not section:
-            print_warn(f'Warning: section "{sec_name}" not found, skipping...')
+    for section in elffile.iter_sections():
+        if section['sh_type'] != "SHT_PROGBITS":
+            # Non-text/data sections are added to the REL as empty sections
+            rel_file.add_section(Section())
             continue
 
         rel_sec = Section()
         rel_sec.set_data(bytearray(section.data()))
-        rel_sec.executable = sec_name == '.text'
+        rel_sec.executable = section.name == '.text'
         rel_sec.alignment = section['sh_addralign']
         rel_file.add_section(rel_sec)
 
-        rela_sec = elffile.get_section_by_name('.rela' + sec_name)
+        rela_sec = elffile.get_section_by_name('.rela' + section.name)
         if not rela_sec:
             continue
 
@@ -87,6 +78,7 @@ def process_file(modules: list[ELFFile], idx: int, filename: Path):
                     break
             if not found_sym:
                 print_err(f'Error: Symbol {symbol.name} not found!')
+                unresolved_symbol_count += 1
 
         for mod in module_classify:
             if mod not in module_relocations:
@@ -129,10 +121,6 @@ def process_file(modules: list[ELFFile], idx: int, filename: Path):
         bss_sec._sec_len = section.data_size
         rel_file.add_section(bss_sec)
 
-    # Create dummy sections
-    for _ in range(9): # TODO: unhardcode
-        rel_file.add_section(Section())
-
     # Generate prolog, epilog and unresolved
     symtab = elffile.get_section_by_name('.symtab')
     prolog = symtab.get_symbol_by_name('_prolog')
@@ -168,24 +156,27 @@ if __name__ == '__main__':
     if args.elf_file.is_file():
         if not any([not plf.is_file() for plf in args.plf_files]):
 
-            # Open files and parse them
+			# Open files and parse them
             files = [open(args.elf_file, 'rb')] + [open(plf, 'rb') for plf in args.plf_files]
             modules = [ELFFile(f) for f in files]
 
-            # Process them
+			# Process them
             for idx in range(1, len(modules)):
-                print('Processing', args.plf_files[idx-1], end='...\n')
                 process_file(modules, idx, args.plf_files[idx-1])
+                if unresolved_symbol_count > 0:
+                    print_warn(f'Processed {args.plf_files[idx-1]} with {unresolved_symbol_count} unresolved symbol(s).')
+                else:
+                    print_success(f'Processed {args.plf_files[idx-1]}.')
 
-            # Close them
+			# Close them
             for file in files:
                 file.close()
         else:
             print_err('Some PLF files are missing!')
         
         with open(args.elf_file.with_suffix('.str'), 'w') as f:
-            print(f'Writing {f.name}', end='...\n')
             f.write(str_file)
+        print_success(f'Wrote {f.name}.')
     else:
         print_err('File', args.elf_file, 'not found!')
     
