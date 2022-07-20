@@ -1,0 +1,22 @@
+# Compiled object files
+*.o
+
+# Intermediate objects
+*.elf
+*.plf
+
+# Debug information
+*.str
+
+# Compiled files
+*.dol
+*.rel
+
+# Executables
+*.exe
+
+# Python cache/compiled modules
+*.pyc
+__pycache__/
+/env/
+.venv
