@@ -1,24 +1,43 @@
 #!/usr/bin/env python3
 # Reimplementation of makerel by RootCubed
 
+import os
 from pathlib import Path
 from elftools.elf.elffile import ELFFile
 from relfile import REL, RelocType, Relocation, Section
+from colorama import Fore, Style
 
+def print_warn(msg: str):
+    print(f'{Fore.YELLOW}{msg}{Style.RESET_ALL}')
+
+def print_err(msg: str):
+    print(f'{Fore.RED}{msg}{Style.RESET_ALL}')
+
+def print_success(msg: str):
+    print(f'{Fore.GREEN}{msg}{Style.RESET_ALL}')
+
+str_file = ""
 id = 1
 section_names = [
-    ".text",
-    ".ctors",
-    ".dtors",
-    ".rodata",
-    ".data"
+    '.text',
+    '.ctors',
+    '.dtors',
+    '.rodata',
+    '.data'
 ]
 
-def process_file(modules: list[ELFFile], idx: int, outfile: Path):
-    global id
+def process_file(modules: list[ELFFile], idx: int, filename: Path):
+    global id, str_file
+    
+    # Generate .str file and output filename
+    str_file_offset = len(str_file)
+    path_str = f'{os.path.abspath(filename)}\0'
+    str_file += path_str
+
+    outfile = filename.with_suffix('.rel')
 
     # Create REL
-    rel_file = REL(id, path_size=49)
+    rel_file = REL(id, path_offset=str_file_offset, path_size=len(path_str))
     id += 1
 
     # Add dummy section
@@ -30,19 +49,19 @@ def process_file(modules: list[ELFFile], idx: int, outfile: Path):
     for (idx, sec_name) in enumerate(section_names):
         section = elffile.get_section_by_name(sec_name)
         if not section:
-            print(f'Warning: section "{sec_name}" not found, skipping...')
+            print_warn(f'Warning: section "{sec_name}" not found, skipping...')
             continue
 
         rel_sec = Section()
         rel_sec.set_data(bytearray(section.data()))
         rel_sec.executable = sec_name == '.text'
+        rel_sec.alignment = section['sh_addralign']
         rel_file.add_section(rel_sec)
 
         rela_sec = elffile.get_section_by_name('.rela' + sec_name)
         if not rela_sec:
             continue
 
-        print(f'Found relocation section: {rela_sec.name}')
         symbol_table = elffile.get_section(rela_sec['sh_link'])
 
         module_classify: dict[int, list] = {}
@@ -56,15 +75,19 @@ def process_file(modules: list[ELFFile], idx: int, outfile: Path):
             symbol = symbol_table.get_symbol(reloc['r_info_sym'])
 
             # Find module which contains the symbol
+            found_sym = False
             for (i, mod) in enumerate(modules):
                 symtab = mod.get_section_by_name('.symtab')
                 try_found = symtab.get_symbol_by_name(symbol.name)
-                if try_found and try_found[0]['st_shndx'] != "SHN_UNDEF":
-                    print(f'Found {symbol.name} in module {i} (at {try_found[0]["st_value"]} section {try_found[0]["st_shndx"]})')
+                if try_found and try_found[0]['st_shndx'] != 'SHN_UNDEF':
                     if i not in module_classify:
                         module_classify[i] = [(reloc, try_found[0])]
                     else:
                         module_classify[i].append((reloc, try_found[0]))
+                    found_sym = True
+                    break
+            if not found_sym:
+                print_err(f'Error: Symbol {symbol.name} not found!')
 
         for mod in module_classify:
             if mod not in module_relocations:
@@ -79,7 +102,6 @@ def process_file(modules: list[ELFFile], idx: int, outfile: Path):
             pos = 0
 
             for (rel, sym) in module_classify[mod]:
-                print(rel, sym)
                 assert rel['r_offset'] >= pos
                 out_reloc = Relocation()
                 out_reloc.offset = rel['r_offset'] - pos
@@ -101,14 +123,15 @@ def process_file(modules: list[ELFFile], idx: int, outfile: Path):
 
     # Create BSS section
     section = elffile.get_section_by_name('.bss')
-    rel_file.bss_size = section.data_size
-    bss_sec = Section()
-    bss_sec.is_bss = True
-    bss_sec._sec_len = section.data_size
-    rel_file.add_section(bss_sec)
+    if section:
+        rel_file.bss_size = section.data_size
+        bss_sec = Section()
+        bss_sec.is_bss = True
+        bss_sec._sec_len = section.data_size
+        rel_file.add_section(bss_sec)
 
     # Create dummy sections
-    for _ in range(9):
+    for _ in range(9): # TODO: unhardcode
         rel_file.add_section(Section())
 
     # Generate prolog, epilog and unresolved
@@ -133,13 +156,12 @@ def process_file(modules: list[ELFFile], idx: int, outfile: Path):
         rel_file.write(f)
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
 
     # Parse arguments separately so this file can be imported from other ones
     import argparse
-    parser = argparse.ArgumentParser(description='Compiles a REL file')
+    parser = argparse.ArgumentParser(description='Compiles REL files')
     parser.add_argument('elf_file', type=Path)
-    parser.add_argument('outfile', type=Path)
     parser.add_argument('plf_files', type=Path, nargs='+')
     args = parser.parse_args()
 
@@ -154,12 +176,17 @@ if __name__ == "__main__":
 			# Process them
             for idx in range(1, len(modules)):
                 print('Processing', args.plf_files[idx-1], end='...\n')
-                process_file(modules, idx, args.outfile)
+                process_file(modules, idx, args.plf_files[idx-1])
 
 			# Close them
             for file in files:
                 file.close()
         else:
-            print('Some PLF files are missing!')
+            print_err('Some PLF files are missing!')
+        
+        with open(args.elf_file.with_suffix('.str'), 'w') as f:
+            print(f'Writing {f.name}', end='...\n')
+            f.write(str_file)
     else:
-        print('File', args.elf_file, 'not found!')
+        print_err('File', args.elf_file, 'not found!')
+    

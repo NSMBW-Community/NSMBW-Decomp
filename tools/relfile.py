@@ -6,10 +6,6 @@ from math import ceil
 import struct
 import typing
 
-relocationStruct = struct.Struct('>HBBI')
-sectionStruct = impStruct = relHeader2Struct = struct.Struct('>II')
-relHeaderStruct = struct.Struct('>12I4B3I')
-
 # See https://wiki.tockdom.com/wiki/REL_(File_Format)
 class RelocType(Enum):
     R_PPC_NONE = 0
@@ -36,6 +32,8 @@ class Relocation:
     reloc_type: RelocType
     section: int
     addend: int
+    
+    struct = struct.Struct('>HBBI')
 
     def __init__(self, file: bytearray = None, offset: int = 0):
         if file:
@@ -48,11 +46,11 @@ class Relocation:
         return 8
 
     def _read(self, file: bytearray, offset: int):
-        self.offset, _reloc_type, self.section, self.addend = relocationStruct.unpack(file[offset:offset+8])
+        self.offset, _reloc_type, self.section, self.addend = self.struct.unpack(file[offset:offset+8])
         self.reloc_type = RelocType(_reloc_type)
 
     def write(self, file: typing.BinaryIO):
-        file.write(relocationStruct.pack(self.offset, self.reloc_type.value, self.section, self.addend))
+        file.write(self.struct.pack(self.offset, self.reloc_type.value, self.section, self.addend))
 
 
 class Section:
@@ -60,6 +58,9 @@ class Section:
     is_bss: bool = False
     _sec_len: int = 0
     _data: bytearray = bytearray()
+    alignment: int = 4 # Used for alignment of the section within the file, but not directly written to the file
+    
+    struct = struct.Struct('>II')
 
     def __init__(self, file: typing.BinaryIO = None, info_offset: int = 0):
         if file:
@@ -83,7 +84,7 @@ class Section:
 
     def write_info(self, file: typing.BinaryIO, data_offs: int):
         assert data_offs % 4 == 0, 'Sections must be 4-byte aligned!'
-        i_data = sectionStruct.pack(data_offs | self.executable if not self.is_bss else 0, self._sec_len)
+        i_data = self.struct.pack(data_offs | self.executable if not self.is_bss else 0, self._sec_len)
         file.write(i_data)
 
     def write_data(self, file: typing.BinaryIO):
@@ -91,10 +92,10 @@ class Section:
             file.write(self._data)
 
     def _read(self, file: bytearray, info_offset: int):
-        data_offs_flags, self._sec_len = sectionStruct.unpack(file[info_offset:info_offset+8])
+        data_offs_flags, self._sec_len = self.struct.unpack(file[info_offset:info_offset+8])
         self.executable = bool(data_offs_flags & 1)
-        data_offs = data_offs_flags & ~0b1111
-        if data_offs:
+        data_offs = data_offs_flags & ~0b11
+        if data_offs != 0:
             self._data = file[data_offs:data_offs+self._sec_len]
         else:
             self.is_bss = True
@@ -123,6 +124,9 @@ class REL:
 
     sections: list[Section] = []
     relocations: dict[int, list[Relocation]] = {}
+    
+    imp_struct = header2_struct = struct.Struct('>II')
+    header_struct = struct.Struct('>12I4B3I')
     
     def __init__(self, id: int, version: int = 3, align: int = 4, bss_align: int = 8, path_offset: int = 0, path_size: int = 0, file: typing.BinaryIO = None):
         self.index = id
@@ -162,10 +166,10 @@ class REL:
             self.prolog,
             self.epilog,
             self.unresolved
-        ) = relHeaderStruct.unpack(bytes[0:0x40])
+        ) = self.header_struct.unpack(bytes[0:0x40])
 
         if self.version >= 2:
-            self.align, self.bss_align = relHeader2Struct.unpack(bytes[0x40:0x48])
+            self.align, self.bss_align = self.header2_struct.unpack(bytes[0x40:0x48])
 
         if self.version >= 3:
             self.fix_size = int.from_bytes(bytes[0x48:0x4c], 'big')
@@ -173,12 +177,12 @@ class REL:
         # Sections
         for i in range(section_count):
             self.sections.append(Section(bytes, self.section_info_offset + i*8))
-            offs, l = sectionStruct.unpack(bytes[self.section_info_offset+i*8:self.section_info_offset+i*8+8])
+            offs, l = Section.struct.unpack(bytes[self.section_info_offset+i*8:self.section_info_offset+i*8+8])
             print(f'Section {i}: {offs & ~0b11:0x} length {l:0x}')
 
         # Relocations
         for i in range(0, self.imp_size, 8):
-            module_num, table_offs = impStruct.unpack(bytes[self.imp_offset+i:self.imp_offset+i+8])
+            module_num, table_offs = self.imp_struct.unpack(bytes[self.imp_offset+i:self.imp_offset+i+8])
             assert module_num not in self.relocations, 'Module numbers must be unique!'
 
             self.relocations[module_num] = []
@@ -194,7 +198,7 @@ class REL:
         self.sections.append(section)
 
     def _write_header(self, file: typing.BinaryIO):
-        header = relHeaderStruct.pack(
+        header = self.header_struct.pack(
             self.index,
             0,
             0,
@@ -217,7 +221,7 @@ class REL:
         file.write(header)
 
         if self.version >= 2:
-            header = relHeader2Struct.pack(self.align, self.bss_align)
+            header = self.header2_struct.pack(self.align, self.bss_align)
             file.write(header)
 
         if self.version >= 3:
@@ -278,7 +282,7 @@ class REL:
             if sec.data_length() == 0 or sec.is_bss:
                 section_data_locs.append(0)
             else:
-                pos = ceil(pos / 4) * 4
+                pos = ceil(pos / sec.alignment) * sec.alignment
                 section_data_locs.append(pos)
                 pos += sec.data_length()
         
@@ -291,7 +295,7 @@ class REL:
         pos += self.imp_size
         self.rel_offset = pos
 
-        # Relation data is not needed after linking
+        # Relocation data is not needed after linking
         if self.version >= 3:
             self.fix_size = pos
         reloc_locs = {}
@@ -309,13 +313,12 @@ class REL:
         for (i, sec) in enumerate(self.sections):
             if sec.data_length() == 0 or sec.is_bss:
                 continue
-            print(f'Writing section {i} to {section_data_locs[i]:0x}', end='...\n')
             file.seek(section_data_locs[i])
             sec.write_data(file)
 
         file.seek(self.imp_offset)
         for module_num in self.relocations:
-            file.write(impStruct.pack(module_num, reloc_locs[module_num]))
+            file.write(self.imp_struct.pack(module_num, reloc_locs[module_num]))
 
         for module_num in self.relocations:
             file.seek(reloc_locs[module_num])
