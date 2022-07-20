@@ -5,16 +5,15 @@ import os
 from pathlib import Path
 from elftools.elf.elffile import ELFFile
 from relfile import REL, RelocType, Relocation, Section
-from colorama import Fore, Style
 
 def print_warn(msg: str):
-    print(f'{Fore.YELLOW}{msg}{Style.RESET_ALL}')
+    print(f'\033[33m{msg}\033[39m')
 
 def print_err(msg: str):
-    print(f'{Fore.RED}{msg}{Style.RESET_ALL}')
+    print(f'\033[31m{msg}\033[39m')
 
 def print_success(msg: str):
-    print(f'{Fore.GREEN}{msg}{Style.RESET_ALL}')
+    print(f'\033[32m{msg}\033[39m')
 
 str_file = ""
 id = 1
@@ -169,16 +168,16 @@ if __name__ == '__main__':
     if args.elf_file.is_file():
         if not any([not plf.is_file() for plf in args.plf_files]):
 
-			# Open files and parse them
+            # Open files and parse them
             files = [open(args.elf_file, 'rb')] + [open(plf, 'rb') for plf in args.plf_files]
             modules = [ELFFile(f) for f in files]
 
-			# Process them
+            # Process them
             for idx in range(1, len(modules)):
                 print('Processing', args.plf_files[idx-1], end='...\n')
                 process_file(modules, idx, args.plf_files[idx-1])
 
-			# Close them
+            # Close them
             for file in files:
                 file.close()
         else:
