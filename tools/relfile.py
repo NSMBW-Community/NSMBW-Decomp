@@ -1,31 +1,12 @@
 #!/usr/bin/env python3
 # REL definitions and helper functions, by RootCubed
 
-from enum import Enum
 from math import ceil
 import struct
 import typing
+from elfconsts import PPC_RELOC_TYPE
 
 # See https://wiki.tockdom.com/wiki/REL_(File_Format)
-class RelocType(Enum):
-    R_PPC_NONE = 0
-    R_PPC_ADDR32 = 1
-    R_PPC_ADDR24 = 2
-    R_PPC_ADDR16 = 3
-    R_PPC_ADDR16_LO = 4
-    R_PPC_ADDR16_HI = 5
-    R_PPC_ADDR16_HA = 6
-    R_PPC_ADDR14 = 7
-    R_PPC_ADDR14_BRTAKEN = 8
-    R_PPC_ADDR14_BRNTAKEN = 9
-    R_PPC_REL24 = 10
-    R_PPC_REL14 = 11
-    R_PPC_REL14_BRTAKEN = 12
-    R_PPC_REL14_BRNTAKEN = 13
-    R_RVL_NONE = 201
-    R_RVL_SECT = 202
-    R_RVL_STOP = 203
-
 
 class Relocation:    
     struct = struct.Struct('>HBBI')
@@ -35,7 +16,7 @@ class Relocation:
             self._read(file, offset)
         else:
             self.offset: int = 0
-            self.reloc_type: RelocType = RelocType.R_RVL_NONE
+            self.reloc_type: PPC_RELOC_TYPE = PPC_RELOC_TYPE.R_RVL_NONE
             self.section: int = 0
             self.addend: int = 0
 
@@ -47,7 +28,7 @@ class Relocation:
 
     def _read(self, file: bytearray, offset: int):
         self.offset, _reloc_type, self.section, self.addend = self.struct.unpack(file[offset:offset+8])
-        self.reloc_type = RelocType(_reloc_type)
+        self.reloc_type = PPC_RELOC_TYPE(_reloc_type)
 
     def write(self, file: typing.BinaryIO):
         file.write(self.struct.pack(self.offset, self.reloc_type.value, self.section, self.addend))
@@ -57,11 +38,11 @@ class Section:
     struct = struct.Struct('>II')
 
     def __init__(self, file: typing.BinaryIO = None, info_offset: int = 0):
+        self.is_bss: bool = False
         if file:
             self._read(file, info_offset)
         else:
             self.executable: bool = False
-            self.is_bss: bool = False
             self._sec_len: int = 0
             self._data: bytearray = bytearray()
             self.alignment: int = 4 # Used for alignment of the section within the file, but not directly written to the file
@@ -188,7 +169,7 @@ class REL:
                 reloc = Relocation(bytes, pos)
                 self.relocations[module_num].append(reloc)
                 pos += 8
-                if reloc.reloc_type == RelocType.R_RVL_STOP:
+                if reloc.reloc_type == PPC_RELOC_TYPE.R_RVL_STOP:
                     break
     
     def add_section(self, section: Section):
@@ -237,12 +218,12 @@ class REL:
             while idx < len(self.relocations[module]):
                 reloc = self.relocations[module][idx]
 
-                if reloc.reloc_type == RelocType.R_RVL_SECT:
+                if reloc.reloc_type == PPC_RELOC_TYPE.R_RVL_SECT:
                     curr_pos = 0
                     curr_section = reloc.section
                 curr_pos += reloc.offset
 
-                if reloc.reloc_type == RelocType.R_PPC_REL24:
+                if reloc.reloc_type == PPC_RELOC_TYPE.R_PPC_REL24:
 
                     # In own module, directly relocate and remove the relocation entry
                     # Otherwise, jump to _unresolved

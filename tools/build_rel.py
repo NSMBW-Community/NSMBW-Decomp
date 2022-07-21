@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
 # Reimplementation of makerel by RootCubed
 
+import re
 from pathlib import Path
 from elftools.elf.elffile import ELFFile
-from relfile import REL, RelocType, Relocation, Section
+from relfile import REL, Relocation, Section
+from elfconsts import PPC_RELOC_TYPE
 
 def print_warn(msg: str):
     print(f'\033[33m{msg}\033[39m')
@@ -53,7 +55,7 @@ def process_file(modules: list[ELFFile], idx: int, filename: Path):
         rel_sec = Section()
         rel_sec.set_data(bytearray(section.data()))
         rel_sec.executable = section.name == '.text'
-        rel_sec.alignment = section['sh_addralign']
+        rel_sec.alignment = section['sh_addralign'] if section['sh_addralign'] > 0 else 4
 
         # Intended behaviour; the align value is the one of the section processed last
         rel_file.align = section['sh_addralign']
@@ -89,15 +91,28 @@ def process_file(modules: list[ELFFile], idx: int, filename: Path):
                     found_sym = True
                     break
             if not found_sym:
-                print_err(f'Error: Symbol {symbol.name} not found!')
-                unresolved_symbol_count += 1
+                m = re.search('R_([0-9a-fA-F]+)_([0-9a-fA-F]+)_([0-9a-fA-F]+)', symbol.name)
+                if m:
+                    print_warn(f'Relocation symbol {symbol.name} found...')
+                    mod_num = int(m.group(1), 16)
+                    out_reloc = Relocation()
+                    out_reloc.section = int(m.group(2), 16)
+                    out_reloc.addend = int(m.group(3), 16)
+                    out_reloc.reloc_type = PPC_RELOC_TYPE(reloc['r_info_type'])
+                    if mod_num not in module_classify:
+                        module_classify[mod_num] = [(out_reloc, None)]
+                    else:
+                        module_classify[mod_num].append((out_reloc, None))
+                else:
+                    print_err(f'Error: Symbol {symbol.name} not found!')
+                    unresolved_symbol_count += 1
 
         for mod in module_classify:
             if mod not in module_relocations:
                 module_relocations[mod] = []
 
             change_section_reloc = Relocation()
-            change_section_reloc.reloc_type = RelocType.R_RVL_SECT
+            change_section_reloc.reloc_type = PPC_RELOC_TYPE.R_RVL_SECT
             change_section_reloc.offset = 0
             change_section_reloc.section = idx + 1
             change_section_reloc.addend = 0
@@ -105,19 +120,22 @@ def process_file(modules: list[ELFFile], idx: int, filename: Path):
             pos = 0
 
             for (rel, sym) in module_classify[mod]:
-                assert rel['r_offset'] >= pos
-                out_reloc = Relocation()
-                out_reloc.offset = rel['r_offset'] - pos
-                pos = rel['r_offset']
-                out_reloc.reloc_type = RelocType(rel['r_info_type'])
-                out_reloc.section = sym['st_shndx']
-                out_reloc.addend = sym['st_value']
-                module_relocations[mod].append(out_reloc)
+                if type(rel) is Relocation:
+                    module_relocations[mod].append(rel)
+                else:
+                    assert rel['r_offset'] >= pos
+                    out_reloc = Relocation()
+                    out_reloc.offset = rel['r_offset'] - pos
+                    pos = rel['r_offset']
+                    out_reloc.reloc_type = PPC_RELOC_TYPE(rel['r_info_type'])
+                    out_reloc.section = sym['st_shndx']
+                    out_reloc.addend = sym['st_value']
+                    module_relocations[mod].append(out_reloc)
 
     # Append final relocation
     for mod in module_relocations:
         stop_reloc = Relocation()
-        stop_reloc.reloc_type = RelocType.R_RVL_STOP
+        stop_reloc.reloc_type = PPC_RELOC_TYPE.R_RVL_STOP
         stop_reloc.offset = 0
         stop_reloc.section = 0
         stop_reloc.addend = 0
