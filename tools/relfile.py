@@ -32,7 +32,7 @@ class Relocation:
     reloc_type: RelocType
     section: int
     addend: int
-    
+
     struct = struct.Struct('>HBBI')
 
     def __init__(self, file: bytearray = None, offset: int = 0):
@@ -59,7 +59,7 @@ class Section:
     _sec_len: int = 0
     _data: bytearray = bytearray()
     alignment: int = 4 # Used for alignment of the section within the file, but not directly written to the file
-    
+
     struct = struct.Struct('>II')
 
     def __init__(self, file: typing.BinaryIO = None, info_offset: int = 0):
@@ -124,10 +124,10 @@ class REL:
 
     sections: list[Section] = []
     relocations: dict[int, list[Relocation]] = {}
-    
+
     imp_struct = header2_struct = struct.Struct('>II')
     header_struct = struct.Struct('>12I4B3I')
-    
+
     def __init__(self, id: int, version: int = 3, align: int = 4, bss_align: int = 8, path_offset: int = 0, path_size: int = 0, file: typing.BinaryIO = None):
         self.index = id
         self.path_offset = path_offset
@@ -193,7 +193,7 @@ class REL:
                 pos += 8
                 if reloc.reloc_type == RelocType.R_RVL_STOP:
                     break
-    
+
     def add_section(self, section: Section):
         self.sections.append(section)
 
@@ -285,7 +285,7 @@ class REL:
                 pos = ceil(pos / sec.alignment) * sec.alignment
                 section_data_locs.append(pos)
                 pos += sec.data_length()
-        
+
         # We have to apply REL24 to point to the symbol if found, and to _unresolved if in other module
         # This is done after we know the location of all sections, but before the size of the relocation table is calculated
         self._try_relocate_rel24(section_data_locs)

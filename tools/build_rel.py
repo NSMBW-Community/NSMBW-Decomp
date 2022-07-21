@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 # Reimplementation of makerel by RootCubed
 
-import os
 from pathlib import Path
 from elftools.elf.elffile import ELFFile
 from relfile import REL, RelocType, Relocation, Section
@@ -21,10 +20,10 @@ unresolved_symbol_count = 0
 
 def process_file(modules: list[ELFFile], idx: int, filename: Path):
     global id, str_file, unresolved_symbol_count
-    
+
     # Generate .str file and output filename
     str_file_offset = len(str_file)
-    path_str = f'{os.path.abspath(filename)}\0'
+    path_str = f'{filename.resolve()}\0'
     str_file += path_str
 
     outfile = filename.with_suffix('.rel')
@@ -40,7 +39,7 @@ def process_file(modules: list[ELFFile], idx: int, filename: Path):
         if section['sh_type'] != 'SHT_PROGBITS' or section.name == '.comment':
             # Non-text/data sections are added to the REL as empty sections
             empty_sec = Section()
-            
+
             # Special case: .bss section does get length field set
             if section.name == '.bss':
                 empty_sec.is_bss = True
@@ -58,7 +57,7 @@ def process_file(modules: list[ELFFile], idx: int, filename: Path):
 
         # Intended behaviour; the align value is the one of the section processed last
         rel_file.align = section['sh_addralign']
-        
+
         rel_file.add_section(rel_sec)
 
         rela_sec = elffile.get_section_by_name('.rela' + section.name)
@@ -177,10 +176,9 @@ if __name__ == '__main__':
                 file.close()
         else:
             print_err('Some PLF files are missing!')
-        
+
         with open(args.elf_file.with_suffix('.str'), 'w') as f:
             f.write(str_file)
         print_success(f'Wrote {f.name}.')
     else:
         print_err('File', args.elf_file, 'not found!')
-    
