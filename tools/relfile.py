@@ -27,17 +27,17 @@ class RelocType(Enum):
     R_RVL_STOP = 203
 
 
-class Relocation:
-    offset: int
-    reloc_type: RelocType
-    section: int
-    addend: int
-
+class Relocation:    
     struct = struct.Struct('>HBBI')
 
     def __init__(self, file: bytearray = None, offset: int = 0):
         if file:
             self._read(file, offset)
+        else:
+            self.offset: int = 0
+            self.reloc_type: RelocType = RelocType.R_RVL_NONE
+            self.section: int = 0
+            self.addend: int = 0
 
     def __repr__(self):
         return f'<Relocation: offset={self.offset} reloc_type={self.reloc_type} section={self.section} addend={self.addend}>'
@@ -54,17 +54,18 @@ class Relocation:
 
 
 class Section:
-    executable: bool = False
-    is_bss: bool = False
-    _sec_len: int = 0
-    _data: bytearray = bytearray()
-    alignment: int = 4 # Used for alignment of the section within the file, but not directly written to the file
-
     struct = struct.Struct('>II')
 
     def __init__(self, file: typing.BinaryIO = None, info_offset: int = 0):
         if file:
             self._read(file, info_offset)
+        else:
+            self.executable: bool = False
+            self.is_bss: bool = False
+            self._sec_len: int = 0
+            self._data: bytearray = bytearray()
+            self.alignment: int = 4 # Used for alignment of the section within the file, but not directly written to the file
+            
 
     def __repr__(self):
         return f'<Section: {"non-" * self.executable}executable, length {self._sec_len}>'
@@ -102,37 +103,34 @@ class Section:
             self.bss_size = self._sec_len
 
 
-class REL:
-    index: int = id
-    section_info_offset: int = 0
-    path_offset: int = 0
-    path_size: int = 0
-    version: int = 0
-    bss_size: int = 0
-    rel_offset: int = 0
-    imp_offset: int = 0
-    imp_size: int = 0
-    prolog_section: int = 0
-    epilog_section: int = 0
-    unresolved_section: int = 0
-    prolog: int = 0
-    epilog: int = 0
-    unresolved: int = 0
-    align: int = 0
-    bss_align: int = 0
-    fix_size: int = 0
-
-    sections: list[Section] = []
-    relocations: dict[int, list[Relocation]] = {}
-
+class REL:    
     imp_struct = header2_struct = struct.Struct('>II')
     header_struct = struct.Struct('>12I4B3I')
-
+    
     def __init__(self, id: int, version: int = 3, align: int = 4, bss_align: int = 8, path_offset: int = 0, path_size: int = 0, file: typing.BinaryIO = None):
         self.index = id
         self.path_offset = path_offset
         self.path_size = path_size
         self.version = version if version in range(0, 4) else 3
+        self.align: int = align
+        self.bss_align: int = bss_align
+        
+        self.sections: list[Section] = []
+        self.relocations: dict[int, list[Relocation]] = {}
+
+        # To be filled out later
+        self.section_info_offset: int = 0
+        self.bss_size: int = 0
+        self.rel_offset: int = 0
+        self.imp_offset: int = 0
+        self.imp_size: int = 0
+        self.prolog_section: int = 0
+        self.epilog_section: int = 0
+        self.unresolved_section: int = 0
+        self.prolog: int = 0
+        self.epilog: int = 0
+        self.unresolved: int = 0
+        self.fix_size: int = 0
 
         if version >= 2:
             self.align = align
@@ -178,7 +176,6 @@ class REL:
         for i in range(section_count):
             self.sections.append(Section(bytes, self.section_info_offset + i*8))
             offs, l = Section.struct.unpack(bytes[self.section_info_offset+i*8:self.section_info_offset+i*8+8])
-            print(f'Section {i}: {offs & ~0b11:0x} length {l:0x}')
 
         # Relocations
         for i in range(0, self.imp_size, 8):
@@ -193,7 +190,7 @@ class REL:
                 pos += 8
                 if reloc.reloc_type == RelocType.R_RVL_STOP:
                     break
-
+    
     def add_section(self, section: Section):
         self.sections.append(section)
 
@@ -285,7 +282,7 @@ class REL:
                 pos = ceil(pos / sec.alignment) * sec.alignment
                 section_data_locs.append(pos)
                 pos += sec.data_length()
-
+        
         # We have to apply REL24 to point to the symbol if found, and to _unresolved if in other module
         # This is done after we know the location of all sections, but before the size of the relocation table is calculated
         self._try_relocate_rel24(section_data_locs)
