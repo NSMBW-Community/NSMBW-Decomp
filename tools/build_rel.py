@@ -80,32 +80,36 @@ def process_file(modules: list[ELFFile], idx: int, filename: Path):
 
             # Find module which contains the symbol
             found_sym = False
-            for (i, mod) in enumerate(modules):
-                symtab = mod.get_section_by_name('.symtab')
-                try_found = symtab.get_symbol_by_name(symbol.name)
-                if try_found and try_found[0]['st_shndx'] != 'SHN_UNDEF':
-                    if i not in module_classify:
-                        module_classify[i] = [(reloc, try_found[0])]
-                    else:
-                        module_classify[i].append((reloc, try_found[0]))
-                    found_sym = True
-                    break
-            if not found_sym:
-                m = re.search('R_([0-9a-fA-F]+)_([0-9a-fA-F]+)_([0-9a-fA-F]+)', symbol.name)
-                if m:
-                    print_warn(f'Relocation symbol {symbol.name} found...')
-                    mod_num = int(m.group(1), 16)
-                    out_reloc = Relocation()
-                    out_reloc.section = int(m.group(2), 16)
-                    out_reloc.addend = int(m.group(3), 16)
-                    out_reloc.reloc_type = PPC_RELOC_TYPE(reloc['r_info_type'])
-                    if mod_num not in module_classify:
-                        module_classify[mod_num] = [(out_reloc, None)]
-                    else:
-                        module_classify[mod_num].append((out_reloc, None))
+
+            # First check if hardcoded
+            m = re.search('R_([0-9a-fA-F]+)_([0-9a-fA-F]+)_([0-9a-fA-F]+)', symbol.name)
+            if m:
+                print_warn(f'Relocation symbol {symbol.name} found...')
+                mod_num = int(m.group(1), 16)
+                out_reloc = Relocation()
+                out_reloc.section = int(m.group(2), 16)
+                out_reloc.addend = int(m.group(3), 16)
+                out_reloc.reloc_type = PPC_RELOC_TYPE(reloc['r_info_type'])
+                if mod_num not in module_classify:
+                    module_classify[mod_num] = [(out_reloc, None)]
                 else:
-                    print_err(f'Error: Symbol {symbol.name} not found!')
-                    unresolved_symbol_count += 1
+                    module_classify[mod_num].append((out_reloc, None))
+                found_sym = True
+
+            if not found_sym:
+                for (i, mod) in enumerate(modules):
+                    symtab = mod.get_section_by_name('.symtab')
+                    try_found = symtab.get_symbol_by_name(symbol.name)
+                    if try_found and try_found[0]['st_shndx'] != 'SHN_UNDEF':
+                        if i not in module_classify:
+                            module_classify[i] = [(reloc, try_found[0])]
+                        else:
+                            module_classify[i].append((reloc, try_found[0]))
+                        found_sym = True
+                        break
+            if not found_sym:
+                print_err(f'Error: Symbol {symbol.name} not found!')
+                unresolved_symbol_count += 1
 
         for mod in module_classify:
             if mod not in module_relocations:
