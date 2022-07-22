@@ -37,7 +37,7 @@ def process_file(modules: list[ELFFile], idx: int, filename: Path):
     elffile = modules[idx]
     module_relocations: dict[int, list[Relocation]] = {}
 
-    for section in elffile.iter_sections():
+    for (sec_idx, section) in enumerate(elffile.iter_sections()):
         if section['sh_type'] != 'SHT_PROGBITS' or section.name == '.comment':
             # Non-text/data sections are added to the REL as empty sections
             empty_sec = Section()
@@ -84,16 +84,16 @@ def process_file(modules: list[ELFFile], idx: int, filename: Path):
             # First check if hardcoded
             m = re.search('R_([0-9a-fA-F]+)_([0-9a-fA-F]+)_([0-9a-fA-F]+)', symbol.name)
             if m:
-                print_warn(f'Relocation symbol {symbol.name} found...')
+                #print_warn(f'Relocation symbol {symbol.name} found...')
                 mod_num = int(m.group(1), 16)
                 out_reloc = Relocation()
                 out_reloc.section = int(m.group(2), 16)
                 out_reloc.addend = int(m.group(3), 16)
                 out_reloc.reloc_type = PPC_RELOC_TYPE(reloc['r_info_type'])
                 if mod_num not in module_classify:
-                    module_classify[mod_num] = [(out_reloc, None)]
+                    module_classify[mod_num] = [(reloc, out_reloc)]
                 else:
-                    module_classify[mod_num].append((out_reloc, None))
+                    module_classify[mod_num].append((reloc, out_reloc))
                 found_sym = True
 
             if not found_sym:
@@ -118,23 +118,27 @@ def process_file(modules: list[ELFFile], idx: int, filename: Path):
             change_section_reloc = Relocation()
             change_section_reloc.reloc_type = PPC_RELOC_TYPE.R_RVL_SECT
             change_section_reloc.offset = 0
-            change_section_reloc.section = idx + 1
+            change_section_reloc.section = sec_idx
             change_section_reloc.addend = 0
             module_relocations[mod].append(change_section_reloc)
             pos = 0
 
             for (rel, sym) in module_classify[mod]:
-                if type(rel) is Relocation:
-                    module_relocations[mod].append(rel)
+                if type(sym) is Relocation:
+                    st_shndx = sym.section
+                    st_value = sym.addend
                 else:
-                    assert rel['r_offset'] >= pos
-                    out_reloc = Relocation()
-                    out_reloc.offset = rel['r_offset'] - pos
-                    pos = rel['r_offset']
-                    out_reloc.reloc_type = PPC_RELOC_TYPE(rel['r_info_type'])
-                    out_reloc.section = sym['st_shndx']
-                    out_reloc.addend = sym['st_value']
-                    module_relocations[mod].append(out_reloc)
+                    st_shndx = sym['st_shndx']
+                    st_value = sym['st_value']
+
+                assert rel['r_offset'] >= pos
+                out_reloc = Relocation()
+                out_reloc.offset = rel['r_offset'] - pos
+                pos = rel['r_offset']
+                out_reloc.reloc_type = PPC_RELOC_TYPE(rel['r_info_type'])
+                out_reloc.section = st_shndx
+                out_reloc.addend = st_value
+                module_relocations[mod].append(out_reloc)
 
     # Append final relocation
     for mod in module_relocations:

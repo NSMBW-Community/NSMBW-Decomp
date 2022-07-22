@@ -57,16 +57,27 @@ def read_reloc_refs(rel_file: REL, idx: int):
         curr_pos = 0
         curr_section = 0
         for reloc in rel_file.relocations[mod_num]:
+            curr_pos += reloc.offset
             if reloc.reloc_type == PPC_RELOC_TYPE.R_RVL_SECT:
                 curr_pos = 0
                 curr_section = reloc.section
                 continue
-            curr_pos += reloc.offset
             if reloc.reloc_type.value < 201:
                 this_loc = RelocSym(idx, curr_section, curr_pos)
                 dest_sym = RelocSym(mod_num, reloc.section, reloc.addend)
                 reloc_syms.add(dest_sym)
                 module_relocs[idx][this_loc] = (dest_sym, reloc.reloc_type)
+
+# TODO: store this information elsewhere
+section_aligns = {
+    '.init': 1,
+    '.text': 0x10,
+    '.ctors': 0x4,
+    '.dtors': 0x4,
+    '.data': 0x8,
+    '.rodata': 0x8,
+    '.bss': 0x4
+}
 
 def extract_slice(rel_file: REL, slice: Slice):
     elf_file = ElfFile(ET.ET_REL, EM.EM_PPC)
@@ -86,7 +97,10 @@ def extract_slice(rel_file: REL, slice: Slice):
             sec_data = rel_file.sections[sec.sec_idx].get_data()[sec.start_offs:sec.end_offs]
             elf_sec = ElfSection(sec.sec_name, bytes(sec_data))
             elf_sec.header.sh_type = SHT.SHT_PROGBITS
-        elf_sec.header.sh_addralign = 0x10
+        if sec.sec_name in section_aligns:
+            elf_sec.header.sh_addralign = section_aligns[sec.sec_name]
+        else:
+            elf_sec.header.sh_addralign = 0x10
         elf_file.add_section(elf_sec)
 
     for sec in slice.slice_secs:
