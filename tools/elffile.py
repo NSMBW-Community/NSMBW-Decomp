@@ -109,18 +109,6 @@ class ElfSectionHeader:
         assert self.sh_size is not None
         assert self.sh_entsize is not None
 
-        print((
-            self.sh_name,
-            self.sh_type.value,
-            reduce(lambda a, b: a | b.value, self.sh_flags, 0),
-            self.sh_addr,
-            self.sh_offset,
-            self.sh_size,
-            self.sh_link,
-            self.sh_info,
-            self.sh_addralign,
-            self.sh_entsize
-        ))
         return bytes(ElfSectionHeader._struct.pack(
             self.sh_name,
             self.sh_type.value,
@@ -200,7 +188,6 @@ class ElfStrtab(ElfSection):
         return strtab
         
     def _prepare_for_write(self) -> None:
-        print(f'strs: {self.strs}')
         self.data = b'\0' + b'\0'.join([str.encode('utf-8') for str in self.strs]) + b'\0'
         return super()._prepare_for_write()
 
@@ -300,8 +287,10 @@ class ElfRela:
         ))
 
 class ElfRelaSec(ElfSection):
-    def __init__(self, name='.rela', relocs: list[ElfRela]=[]) -> None:
+    def __init__(self, name='.rela', relocs: list[ElfRela]=None) -> None:
         super().__init__(name)
+        if not relocs:
+            relocs = []
         self.relocs = relocs
 
     def add_reloc(self, reloc: ElfRela) -> None:
@@ -322,7 +311,6 @@ class ElfFile:
         return len(self.sections) - 1
 
     def has_section(self, name: str) -> bool:
-        print(self.sections)
         return [x for x in self.sections if x.name == name]
         
     def get_section(self, name: str) -> ElfSection:
@@ -355,18 +343,14 @@ class ElfFile:
 
         data = bytearray(b'\0'*ElfHeader._struct.size) # Filled out at the end
         for sec in self.sections:
-            print(f'section {sec.name}:')
             sec_data = bytes(sec)
-            print(f'length {len(sec_data)}')
             sec.header.sh_offset = len(data)
             data.extend(sec_data)
         
         self.e_header.e_shnum = len(self.sections)
         self.e_header.e_shoff = len(data)
-        print(hex(self.e_header.e_shoff))
         
         for sec in self.sections:
-            print(f'(header) section {sec.name}: {bytes(sec.header).hex()}')
             sec_hdr_data = bytes(sec.header)
             data.extend(sec_hdr_data)
 
