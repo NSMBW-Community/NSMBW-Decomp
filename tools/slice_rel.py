@@ -8,11 +8,6 @@ from relfile import REL
 from elffile import *
 from elfconsts import *
 
-file = ElfFile(ET.ET_REL, EM.EM_PPC)
-with open("rel_init.o", "wb") as f:
-    f.write(bytes(file))
-    f.close()
-
 parser = argparse.ArgumentParser(description='Slices REL files')
 parser.add_argument('rel_files', type=Path, nargs='+')
 args = parser.parse_args()
@@ -37,6 +32,9 @@ class SliceSection:
         self.start_offs = start_offs
         self.end_offs = end_offs
 
+    def __repr__(self) -> str:
+        return f'<SliceSection {self.sec_name} (#{self.sec_idx}) {self.start_offs:0x}-{self.end_offs:0x}>'
+
     def contains(self, reloc_sym: RelocSym):
         return reloc_sym.section == self.sec_idx and self.start_offs <= reloc_sym.addend <= self.end_offs
 
@@ -44,6 +42,9 @@ class Slice:
     def __init__(self, slice_name: str, slice_secs: list[SliceSection]):
         self.slice_name = slice_name
         self.slice_secs = slice_secs
+
+    def __repr__(self) -> str:
+        return f'<Slice {self.slice_name}, {self.slice_secs}>'
         
 
 reloc_syms: set[RelocSym] = set()
@@ -70,6 +71,8 @@ def read_reloc_refs(rel_file: REL, idx: int):
 def extract_slice(rel_file: REL, slice: Slice):
     elf_file = ElfFile(ET.ET_REL, EM.EM_PPC)
 
+    gds_hardcode = slice.slice_name == 'global_destructor_chain.o'
+
     reloc_secs: list[ElfRelaSec] = []
 
     symtab_sec = ElfSymtab('.symtab')
@@ -77,11 +80,25 @@ def extract_slice(rel_file: REL, slice: Slice):
     strtab_sec = ElfStrtab('.strtab')
 
     for sec in slice.slice_secs:
-        sec_data = rel_file.sections[sec.sec_idx].get_data()[sec.start_offs:sec.end_offs]
-        elf_sec = ElfSection(sec.sec_name, bytes(sec_data))
-        elf_sec.header.sh_type = SHT.SHT_PROGBITS
+        if sec.sec_name == '.bss':
+            elf_sec = ElfSection(sec.sec_name)
+            elf_sec.header.sh_type = SHT.SHT_NOBITS
+            elf_sec.header.sh_size = sec.end_offs - sec.start_offs
+        else:
+            sec_data = rel_file.sections[sec.sec_idx].get_data()[sec.start_offs:sec.end_offs]
+            elf_sec = ElfSection(sec.sec_name, bytes(sec_data))
+            elf_sec.header.sh_type = SHT.SHT_PROGBITS
+        elf_sec.header.sh_addralign = 0x10
         elf_file.add_section(elf_sec)
-        
+
+    if gds_hardcode:
+        mwcats = ElfSection('.mwcats.text')
+        elf_file.e_header.e_flags = 0x80000000
+        mwcats.header.sh_type = SHT.SHT_MW_CATS
+        mwcats.header.sh_link = 1 # .text section
+        mwcats.header.sh_entsize = 1
+        mwcats.header.sh_addralign = 4
+        mwcats_idx = elf_file.add_section(mwcats)
 
     for sec in slice.slice_secs:
         relocs_in_section = [x for x in module_relocs[rel_file.index] if sec.contains(x)]
@@ -97,8 +114,14 @@ def extract_slice(rel_file: REL, slice: Slice):
                 elf_reloc = ElfRela(r_offset, sym_idx, reloc_dest[1], 0)
                 reloc_sec.add_reloc(elf_reloc)
 
-            reloc_sec.header.sh_info = sec.sec_idx
+            reloc_sec.header.sh_info = elf_file.get_section_index(sec.sec_name)
             elf_file.add_section(reloc_sec)
+            
+    if gds_hardcode:
+        mwcatsrela = ElfRelaSec('.rela.mwcats.text')
+        mwcatsrela.header.sh_info = mwcats_idx
+        reloc_secs.append(mwcatsrela)
+        elf_file.add_section(mwcatsrela)
     
     symtab_sec_idx = elf_file.add_section(symtab_sec)
     _shstrtab_sec_idx = elf_file.add_section(shstrtab_sec)
@@ -113,6 +136,19 @@ def extract_slice(rel_file: REL, slice: Slice):
     return elf_file
 
 idx = 1
+
+# TODO: store this information elsewhere
+section_idx = {
+    '.init': -1,
+    '.text': 1,
+    '.ctors': 2,
+    '.dtors': 3,
+    '.data': 4,
+    '.rodata': 5,
+    '.bss': 6
+}
+
+rel: Path
 for rel in args.rel_files:
     if not rel.is_file():
         print(f'Invalid file {rel}')
@@ -121,16 +157,28 @@ for rel in args.rel_files:
         print(f'Processing module {idx} ({f.name})...')
         rel_file = REL(idx, file=f)
         read_reloc_refs(rel_file, idx)
-        # TODO: iterate over slices
-        demo_slice = Slice("rel_init.o", [
-            SliceSection(".text", 1, 0x0, 0x64)
-        ])
-        elf = extract_slice(rel_file, demo_slice)
-        print(elf)
-        with open(demo_slice.slice_name, "wb") as ef:
-            ef.write(bytes(elf))
-        idx += 1
+
+        # Read slices
+        with open(f'slices/{rel.with_suffix(".csv").name}', "r") as slice_file:
+            csv_header = slice_file.readline().rstrip().split(',')
+            section_names = [x.split('$start')[0] for x in csv_header if '$start' in x]
+            for line in slice_file:
+                splitted = line.rstrip().split(',')
+                slice_name = splitted[0]
+                slice_sections = []
+                for i in range(1, len(splitted), 2):
+                    if splitted[i] != '':
+                        name = section_names[i // 2]
+                        begin = int(splitted[i], 16)
+                        end = int(splitted[i + 1], 16)
+                        slice_sections.append(SliceSection(name, section_idx[name], begin, end))
+                slice = Slice(slice_name, slice_sections)
+            
+                elf = extract_slice(rel_file, slice)
+                with open(f'build/{slice.slice_name}', "wb") as ef:
+                    ef.write(bytes(elf))
+                idx += 1
 
 sorted_uniques = sorted(reloc_syms, key=lambda tup: (tup.mod_num, tup.section, tup.addend))
 with open('reloc_names.csv', "w") as rf:
-    rf.write('\n'.join(list(map(lambda x: str(x), sorted_uniques))))
+    rf.write('\n'.join([str(x) for x in sorted_uniques]))

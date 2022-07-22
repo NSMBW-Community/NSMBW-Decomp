@@ -126,6 +126,7 @@ class SHT(Enum):
     SHT_LOPROC = 0x70000000
     SHT_HIPROC = 0x7fffffff
     SHT_LOUSER = 0x80000000
+    SHT_MW_CATS = 0x804a2a82
     SHT_HIUSER = 0xffffffff
 
 class SHF(Enum):
