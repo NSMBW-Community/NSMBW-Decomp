@@ -7,6 +7,13 @@ from elftools.elf.elffile import ELFFile
 from relfile import REL, Relocation, Section
 from elfconsts import PPC_RELOC_TYPE
 
+with open("alias_db.txt", "r") as f:
+    alias_db: dict[str, str] = dict()
+    for line in f.readlines():
+        from_sym, to_sym = line.split('=')
+        assert from_sym not in alias_db
+        alias_db[from_sym] = to_sym
+
 def print_warn(msg: str):
     print(f'\033[33m{msg}\033[39m')
 
@@ -80,6 +87,10 @@ def process_file(modules: list[ELFFile], idx: int, filename: Path):
 
             # Find module which contains the symbol
             found_sym = False
+
+            # Try to look up symbol in alias database
+            if symbol.name in alias_db:
+                symbol.name = alias_db[symbol.name]
 
             # First check if hardcoded
             m = re.search('R_([0-9a-fA-F]+)_([0-9a-fA-F]+)_([0-9a-fA-F]+)', symbol.name)
