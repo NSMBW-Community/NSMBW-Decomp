@@ -277,7 +277,17 @@ class REL:
         if self.version >= 3:
             self.fix_size = pos
         reloc_locs = {}
-        for module_num in self.relocations:
+
+        # sort relocation tables
+        relocs_module_nums: list[int] = sorted(
+            [key for key in self.relocations if key != self.index and key != 0]
+        )
+        if self.index in self.relocations:
+            relocs_module_nums.append(self.index)
+        if 0 in self.relocations:
+            relocs_module_nums.append(0)
+
+        for module_num in relocs_module_nums:
             pos = ceil(pos / 4) * 4
             reloc_locs[module_num] = pos
             pos += len(self.relocations[module_num]) * Relocation.entry_size()
@@ -295,10 +305,10 @@ class REL:
             sec.write_data(file)
 
         file.seek(self.imp_offset)
-        for module_num in self.relocations:
+        for module_num in relocs_module_nums:
             file.write(self.imp_struct.pack(module_num, reloc_locs[module_num]))
 
-        for module_num in self.relocations:
+        for module_num in relocs_module_nums:
             file.seek(reloc_locs[module_num])
             for reloc in self.relocations[module_num]:
                 reloc.write(file)
