@@ -113,7 +113,7 @@ def extract_slice(rel_file: REL, slice: Slice):
                 reloc_dest = module_relocs[rel_file.index][reloc_origin]
                 sym = ElfSymbol(str(reloc_dest[0]), st_info_bind=STB.STB_GLOBAL)
                 sym_idx = symtab_sec.add_symbol(sym)
-                r_offset = reloc_origin.addend
+                r_offset = reloc_origin.addend - sec.start_offs
                 elf_reloc = ElfRela(r_offset, sym_idx, reloc_dest[1], 0)
                 reloc_sec.add_reloc(elf_reloc)
 
