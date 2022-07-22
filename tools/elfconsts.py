@@ -126,7 +126,7 @@ class SHT(Enum):
     SHT_LOPROC = 0x70000000
     SHT_HIPROC = 0x7fffffff
     SHT_LOUSER = 0x80000000
-    SHT_MW_CATS = 0x804a2a82
+    SHT_MW_CATS = 0xca2a82c2
     SHT_HIUSER = 0xffffffff
 
 class SHF(Enum):
@@ -196,7 +196,9 @@ class SpecialSections:
     _lookup: dict[str, tuple[SHT, set[SHF]]] = {
         '.bss': (SHT.SHT_NOBITS, set([SHF.SHF_ALLOC, SHF.SHF_WRITE])),
         '.comment': (SHT.SHT_PROGBITS, set([])),
+        '.ctors': (SHT.SHT_PROGBITS, set([SHF.SHF_ALLOC])),
         '.data': (SHT.SHT_PROGBITS, set([SHF.SHF_ALLOC, SHF.SHF_WRITE])),
+        '.dtors': (SHT.SHT_PROGBITS, set([SHF.SHF_ALLOC])),
         '.rodata': (SHT.SHT_PROGBITS, set([SHF.SHF_ALLOC])),
         '.shstrtab': (SHT.SHT_STRTAB, set([])),
         '.strtab': (SHT.SHT_STRTAB, set([])),

@@ -71,8 +71,6 @@ def read_reloc_refs(rel_file: REL, idx: int):
 def extract_slice(rel_file: REL, slice: Slice):
     elf_file = ElfFile(ET.ET_REL, EM.EM_PPC)
 
-    gds_hardcode = slice.slice_name == 'global_destructor_chain.o'
-
     reloc_secs: list[ElfRelaSec] = []
 
     symtab_sec = ElfSymtab('.symtab')
@@ -91,15 +89,6 @@ def extract_slice(rel_file: REL, slice: Slice):
         elf_sec.header.sh_addralign = 0x10
         elf_file.add_section(elf_sec)
 
-    if gds_hardcode:
-        mwcats = ElfSection('.mwcats.text')
-        elf_file.e_header.e_flags = 0x80000000
-        mwcats.header.sh_type = SHT.SHT_MW_CATS
-        mwcats.header.sh_link = 1 # .text section
-        mwcats.header.sh_entsize = 1
-        mwcats.header.sh_addralign = 4
-        mwcats_idx = elf_file.add_section(mwcats)
-
     for sec in slice.slice_secs:
         relocs_in_section = [x for x in module_relocs[rel_file.index] if sec.contains(x)]
         print(f'{slice.slice_name}: Section {sec.sec_name} contains {len(relocs_in_section)} relocs')
@@ -108,7 +97,7 @@ def extract_slice(rel_file: REL, slice: Slice):
             reloc_secs.append(reloc_sec)
             for reloc_origin in relocs_in_section:
                 reloc_dest = module_relocs[rel_file.index][reloc_origin]
-                sym = ElfSymbol(str(reloc_dest[0]))
+                sym = ElfSymbol(str(reloc_dest[0]), st_info_bind=STB.STB_GLOBAL)
                 sym_idx = symtab_sec.add_symbol(sym)
                 r_offset = reloc_origin.addend
                 elf_reloc = ElfRela(r_offset, sym_idx, reloc_dest[1], 0)
@@ -116,12 +105,6 @@ def extract_slice(rel_file: REL, slice: Slice):
 
             reloc_sec.header.sh_info = elf_file.get_section_index(sec.sec_name)
             elf_file.add_section(reloc_sec)
-            
-    if gds_hardcode:
-        mwcatsrela = ElfRelaSec('.rela.mwcats.text')
-        mwcatsrela.header.sh_info = mwcats_idx
-        reloc_secs.append(mwcatsrela)
-        elf_file.add_section(mwcatsrela)
     
     symtab_sec_idx = elf_file.add_section(symtab_sec)
     _shstrtab_sec_idx = elf_file.add_section(shstrtab_sec)
@@ -132,7 +115,6 @@ def extract_slice(rel_file: REL, slice: Slice):
     for rs in reloc_secs:
         rs.header.sh_link = symtab_sec_idx
 
-    
     return elf_file
 
 idx = 1

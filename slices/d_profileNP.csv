@@ -1,5 +1,6 @@
 name,.init$start,.init$end,.text$start,.text$end,.ctors$start,.ctors$end,.dtors$start,.dtors$end,.data$start,.data$end,.rodata$start,.rodata$end,.bss$start,.bss$end,.sbss$start,.sbss$end,.sbss2$start,.sbss2$end
 rel_init.o,,,0,70,,,,,,,,,0,4,,,,
+global_destructor_chain.o,,,70,f0,,,0,8,,,,,,,,,,
 profiles.o,,,f0,130,,,,,,,0,bb8,,,,,,
-d_controller_information.o,,,130,4d8,,,,,0,18,bb8,d28,,,,,,
+d_controller_information.o,,,130,4e0,,,,,0,18,bb8,d28,,,,,,
 d_yes_no_window.o,,,4e0,1fb8,0,4,,,18,1d8,d28,15c6,8,208,,,,
