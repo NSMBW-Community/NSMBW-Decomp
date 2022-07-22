@@ -28,8 +28,8 @@ class ElfHeader:
         eh_res = ElfHeader()
         (
             eh_res.e_ident,
-            eh_res.e_type.value,
-            eh_res.e_machine.value,
+            eh_res.e_type,
+            eh_res.e_machine,
             eh_res.e_version,
             eh_res.e_entry,
             eh_res.e_phoff,
@@ -87,6 +87,7 @@ class ElfSectionHeader:
         self.sh_entsize: int = None
 
     def read(data: bytes, offset: int=0) -> 'ElfSectionHeader':
+        print(offset, len(data))
         esh_res = ElfSectionHeader()
         (
             esh_res.sh_name,
@@ -100,7 +101,8 @@ class ElfSectionHeader:
             esh_res.sh_addralign,
             esh_res.sh_entsize
         ) = ElfSectionHeader._struct.unpack(data[offset:offset+ElfSectionHeader._struct.size])
-        esh_res.sh_flags = set([x for x in SHF if x & _sh_flags])
+        esh_res.sh_flags = set([x for x in SHF if x.value & _sh_flags])
+        esh_res.sh_type = SHT(esh_res.sh_type)
         return esh_res
 
     def __bytes__(self) -> bytes:
@@ -141,17 +143,12 @@ class ElfSection:
         # Set later
         self.header.sh_name: int = None
 
-    def read(data: bytes, offset: int=0) -> 'ElfSection':
-        es = ElfSection()
-        es.header = ElfSectionHeader.read(data, offset)
+    def read(self, data: bytes, header: ElfSectionHeader) -> None:
+        self.header = header
 
-        if es.header.has_data():
-            data_offs = es.header.sh_offset
-            data_size = es.header.sh_size
-            es.data = data[data_offs:data_offs+data_size]
-
-        # self.name must be set from calling function
-        return es
+        if self.header.has_data():
+            assert len(data) == self.header.sh_size
+            self.data = data
 
     def _prepare_for_write(self) -> None:
         if self.data:
@@ -182,10 +179,9 @@ class ElfStrtab(ElfSection):
         self.strs = strs
         self.offs = 1 # first index is null byte
 
-    def read(data: bytes, offset: int=0) -> 'ElfStrtab':
-        strtab = super().read(offset)
-        strtab.strs = strtab.data.decode('utf-8').split('\0')
-        return strtab
+    def read(self, data: bytes, header: ElfSectionHeader) -> None:
+        super().read(data, header)
+        self.strs = self.data.decode('utf-8').split('\0')
         
     def _prepare_for_write(self) -> None:
         self.data = b'\0' + b'\0'.join([str.encode('utf-8') for str in self.strs]) + b'\0'
@@ -247,12 +243,12 @@ class ElfSymtab(ElfSection):
             syms = [ElfSymbol('')] # index 0 is STN_UNDEF
         self.syms = syms
 
-    def read(data: bytes, offset: int=0) -> 'ElfSymtab':
-        symtab = super().read(offset)
+    def read(self, data: bytes, header: ElfSectionHeader) -> None:
+        super().read(data, header)
         syms = []
-        for i in range(0, symtab.size(), ElfSymbol._struct.size):
-            syms.append(ElfSymbol.read(symtab.data, i))
-        symtab.syms = syms
+        for i in range(0, self.size(), ElfSymbol._struct.size):
+            syms.append(ElfSymbol.read(self.data, i))
+        self.syms = syms
 
     def _prepare_for_write(self) -> None:
         self.data = b''.join([bytes(sym) for sym in self.syms])
@@ -278,6 +274,18 @@ class ElfRela:
         self.r_info_sym: int = r_info_sym
         self.r_info_type: PPC_RELOC_TYPE = r_info_type
         self.r_addend: int = r_addend
+
+    def read(data: bytes, offset: int=0) -> 'ElfRela':
+        rela = ElfRela()
+        (
+            rela.r_offset,
+            _r_info,
+            rela.r_addend
+        ) = ElfRela._struct.unpack(data[offset:offset+ElfRela._struct.size])
+        rela.r_info_sym = _r_info >> 8
+        rela.r_info_type = PPC_RELOC_TYPE(_r_info & 0xF)
+
+        return rela
     
     def __bytes__(self) -> bytes:
         return bytes(ElfRela._struct.pack(
@@ -292,6 +300,13 @@ class ElfRelaSec(ElfSection):
         if not relocs:
             relocs = []
         self.relocs = relocs
+        
+    def read(self, data: bytes, header: ElfSectionHeader) -> None:
+        super().read(data, header)
+        relocs = []
+        for i in range(0, self.size(), ElfRela._struct.size):
+            relocs.append(ElfRela.read(self.data, i))
+        self.syms = relocs
 
     def add_reloc(self, reloc: ElfRela) -> None:
         self.relocs.append(reloc)
@@ -305,6 +320,33 @@ class ElfFile:
     def __init__(self, e_type: ET=ET.ET_NONE, e_machine=EM.EM_NONE) -> None:
         self.e_header = ElfHeader(e_type, e_machine)
         self.sections: list[ElfSection] = [ElfSection()] # NULL section
+
+    def read(data: bytes) -> 'ElfFile':
+        elf_file = ElfFile()
+        elf_file.e_header = ElfHeader.read(data, 0)
+        elf_file.sections = []
+        sec_hdr_offs = elf_file.e_header.e_shoff
+        sec_hdr_size = elf_file.e_header.e_shentsize
+        # TODO: load shstrtab first, the strtab and then the rest
+        # TODO: add helper functions to read from strtab
+        for i in range(elf_file.e_header.e_shnum):
+            print(sec_hdr_offs, i*sec_hdr_size)
+            sec_hdr = ElfSectionHeader.read(data, sec_hdr_offs + i*sec_hdr_size)
+            if sec_hdr.has_data():
+                sec_data = data[sec_hdr.sh_offset:sec_hdr.sh_offset+sec_hdr.sh_size]
+
+            if sec_hdr.sh_type == SHT.SHT_PROGBITS:
+                elf_sec = ElfSection().read(sec_data, sec_hdr)
+            elif sec_hdr.sh_type == SHT.SHT_RELA:
+                elf_sec = ElfRelaSec().read(sec_data, sec_hdr)
+            elif sec_hdr.sh_type == SHT.SHT_STRTAB:
+                elf_sec = ElfStrtab().read(sec_data, sec_hdr)
+            elif sec_hdr.sh_type == SHT.SHT_SYMTAB:
+                elf_sec = ElfSymtab().read(sec_data, sec_hdr)
+            else:
+                elf_sec = ElfSection('', bytes(), sec_hdr)
+            elf_file.sections.append(elf_sec)
+
 
     def add_section(self, sect: ElfSection) -> int:
         self.sections.append(sect)
@@ -344,7 +386,10 @@ class ElfFile:
         data = bytearray(b'\0'*ElfHeader._struct.size) # Filled out at the end
         for sec in self.sections:
             sec_data = bytes(sec)
-            sec.header.sh_offset = len(data)
+            if sec.header.sh_type != SHT.SHT_NULL:
+                sec.header.sh_offset = len(data)
+            else:
+                sec.header.sh_offset = 0
             data.extend(sec_data)
         
         self.e_header.e_shnum = len(self.sections)
