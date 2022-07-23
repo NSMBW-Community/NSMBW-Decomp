@@ -81,6 +81,10 @@ def process_file(modules: list[ELFFile], idx: int, filename: Path, alias_db: dic
             if symbol.name in alias_db:
                 symbol.name = alias_db[symbol.name]
 
+            # TODO: nice hardcode lol
+            if symbol.name == '__destroy_global_chain':
+                symbol.name = f'R_{rel_file.index}_1_90'
+
             # First check if hardcoded
             m = re.search('R_([0-9a-fA-F]+)_([0-9a-fA-F]+)_([0-9a-fA-F]+)', symbol.name)
             if m:
@@ -132,8 +136,19 @@ def process_file(modules: list[ELFFile], idx: int, filename: Path, alias_db: dic
                     st_value = sym['st_value']
 
                 assert rel['r_offset'] >= pos
+                offset = rel['r_offset'] - pos
+                while offset > 0xFFFF:
+                    # create R_RVL_NONE relocations until we get close enough to the addres we want
+                    reloc_none = Relocation()
+                    reloc_none.offset = 0xFFFF
+                    reloc_none.reloc_type = PPC_RELOC_TYPE.R_RVL_NONE
+                    pos += 0xFFFF
+                    module_relocations[mod].append(reloc_none)
+                    offset = rel['r_offset'] - pos
+                
+                # make the actual relocation entry
                 out_reloc = Relocation()
-                out_reloc.offset = rel['r_offset'] - pos
+                out_reloc.offset = offset
                 pos = rel['r_offset']
                 out_reloc.reloc_type = PPC_RELOC_TYPE(rel['r_info_type'])
                 out_reloc.section = st_shndx
@@ -212,26 +227,25 @@ if __name__ == '__main__':
     # Call actual function
     if args.elf_file.is_file():
         for plf in args.plf_files:
-
             if not plf.is_file():
                 print_err(f'Fatal error: File {plf} not found!')
                 sys.exit(1)
 
-            # Open files and parse them
-            files = [open(args.elf_file, 'rb')] + [open(plf, 'rb') for plf in args.plf_files]
-            modules = [ELFFile(f) for f in files]
+        # Open files and parse them
+        files = [open(args.elf_file, 'rb')] + [open(plf, 'rb') for plf in args.plf_files]
+        modules = [ELFFile(f) for f in files]
 
-            # Process them
-            for idx in range(1, len(modules)):
-                process_file(modules, idx, args.plf_files[idx-1], alias_db, fake_path)
-                if unresolved_symbol_count > 0:
-                    print_warn(f'Processed {args.plf_files[idx-1]} with {unresolved_symbol_count} unresolved symbol(s).')
-                else:
-                    print_success(f'Processed {args.plf_files[idx-1]}.')
+        # Process them
+        for idx in range(1, len(modules)):
+            process_file(modules, idx, args.plf_files[idx-1], alias_db, fake_path)
+            if unresolved_symbol_count > 0:
+                print_warn(f'Processed {args.plf_files[idx-1]} with {unresolved_symbol_count} unresolved symbol(s).')
+            else:
+                print_success(f'Processed {args.plf_files[idx-1]}.')
 
-            # Close them
-            for file in files:
-                file.close()
+        # Close them
+        for file in files:
+            file.close()
 
         with open(args.elf_file.with_suffix('.str'), 'w') as f:
             f.write(str_file)

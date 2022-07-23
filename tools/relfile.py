@@ -31,6 +31,7 @@ class Relocation:
         self.reloc_type = PPC_RELOC_TYPE(_reloc_type)
 
     def write(self, file: typing.BinaryIO):
+        assert self.offset < 0x10000
         file.write(self.struct.pack(self.offset, self.reloc_type.value, self.section, self.addend))
 
 
