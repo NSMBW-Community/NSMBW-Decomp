@@ -19,7 +19,7 @@ class SliceSection:
         return f'<SliceSection {self.sec_name} (#{self.sec_idx}) {self.start_offs:0x}-{self.end_offs:0x}, align={self.alignment}>'
 
     def contains(self, section: int, addend: int):
-        return section == self.sec_idx and self.start_offs <= addend <= self.end_offs
+        return section == self.sec_idx and self.start_offs <= addend < self.end_offs
 
 class Slice:
     def __init__(self, slice_name: str, slice_secs: list[SliceSection]):

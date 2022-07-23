@@ -68,7 +68,6 @@ def extract_slice(rel_file: REL, slice: Slice):
 
     for sec in slice.slice_secs:
         relocs_in_section = [x for x in module_relocs[rel_file.index] if sec.contains(x.section, x.addend)]
-        print(f'{slice.slice_name}: Section {sec.sec_name} contains {len(relocs_in_section)} relocs')
         if len(relocs_in_section) > 0:
             reloc_sec = ElfRelaSec(f'.rela{sec.sec_name}')
             reloc_secs.append(reloc_sec)
