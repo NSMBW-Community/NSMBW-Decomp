@@ -166,6 +166,21 @@ def process_file(modules: list[ELFFile], idx: int, filename: Path, alias_db: dic
     if unresolved:
         rel_file.unresolved_section = unresolved[0]['st_shndx']
         rel_file.unresolved = unresolved[0]['st_value']
+        
+    # hardcoded, only needed if this part hasn't been decompiled
+    if not prolog or not epilog or not unresolved:
+        print_warn('Warning: _prolog, _epilog and/or _unresolved were not found. Hardcoding to common address.')
+        rel_file.prolog_section = 1
+        rel_file.epilog_section = 1
+        rel_file.unresolved_section = 1
+        rel_file.prolog = 0x0
+        rel_file.epilog = 0x30
+        rel_file.unresolved = 0x60
+
+    if not elffile.get_section_by_name('.mwcats.text'):
+        # the plfs usually contain this section and also .rela.mwcats.text, so add those as dummy sections
+        rel_file.add_section(Section())
+        rel_file.add_section(Section())
 
     # Write file
     with open(outfile, 'wb') as f:
