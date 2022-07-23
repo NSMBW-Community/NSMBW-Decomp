@@ -108,7 +108,7 @@ if __name__ == '__main__':
             with open(f'slices/{rel.with_suffix(".json").name}', 'r') as sf:
                 slice_file: SliceFile = load_slice_file(sf)
                 mod_num = slice_file.meta.mod_num
-                print(f'Processing module {mod_num} ({f.name})...')
+                print(f'Slicing module {mod_num} ({f.name})...')
                 rel_file = REL(mod_num, file=f)
                 read_reloc_refs(rel_file, mod_num)
                 

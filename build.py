@@ -8,7 +8,7 @@ from tools.slices import SliceFile, SliceType, load_slice_file
 
 # TODO: compile, outfiles go to bin/compiled/
 
-rel_names: list[str] = ['d_profileNP.plf', 'd_basesNP.plf']
+rel_names: list[str] = ['d_profileNP.plf', 'd_basesNP.plf', 'd_enemiesNP.plf', 'd_en_bossNP.plf']
 
 count_compiled_used = 0
 count_sliced_used = 0
@@ -36,7 +36,7 @@ for file in Path('slices').glob('*'):
         ldflags_rel = '-proc gekko -fp hard -sdata 0 -sdata2 0 -m _prolog -opt_partial'
 
         # TODO: build lcf
-        lcf_file = slice_name_stem + '.lcf'
+        lcf_file = 'rel.lcf' #slice_name_stem + '.lcf'
         out_file = slice_name_stem + '.plf' if slice_file.meta.type == SliceType.REL else '.elf'
 
         # Select files
@@ -63,7 +63,6 @@ for file in Path('slices').glob('*'):
 fake_path = 'd:\\home\\Project\\WIIMJ2D\\EU\\PRD\\RVL\\bin\\'
 
 out_rel_names = [f'bin/{x}' for x in rel_names]
-print(' '.join(['python', 'tools/build_rel.py', 'bin/wiimj2d.elf', *out_rel_names, '--alias_file', 'alias_db.txt', '-p', fake_path]))
 subprocess.call(['python', 'tools/build_rel.py', 'bin/wiimj2d.elf', *out_rel_names, '--alias_file', 'alias_db.txt', '-p', fake_path])
 
 print_success('Successfully built binaries!')

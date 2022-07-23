@@ -1,8 +1,8 @@
 {
     "meta": {
-        "fileName": "d_basesNP.rel",
+        "fileName": "d_en_bossNP.rel",
         "type": "REL",
-        "moduleNum": 2,
+        "moduleNum": 4,
         "sections": {
             "":                     { "index": 0,  "align": 0 },
             ".text":                { "index": 1,  "align": 16 },
@@ -27,15 +27,15 @@
     },
     "slices": [
         {
-            "name": "d_basesNP.o",
+            "name": "d_en_bossNP.o",
             "compilerFlags": "",
             "memoryRanges": {
-                ".text": "0x0-0x1c6004",
-                ".ctors": "0x0-0x4f8",
+                ".text": "0x0-0x5702c",
+                ".ctors": "0x0-0x68",
                 ".dtors": "0x0-0x4",
-                ".data": "0x0-0xa5fc",
-                ".rodata": "0x0-0x51c98",
-                ".bss": "0x0-0x12484"
+                ".data": "0x0-0x21f0",
+                ".rodata": "0x0-0x13520",
+                ".bss": "0x0-0x487c"
             }
         }
     ]

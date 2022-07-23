@@ -1,6 +1,5 @@
 thunk_setupProfiles__Fv=R_1_1_110
 removeProfiles__Fv=R_1_1_120
-__destroy_global_chain=R_1_1_90
 ModuleConstructorsX=R_0_4_80160b60
 ModuleDestructorsX=R_0_4_80160bb0
 ModuleUnresolved=R_0_4_80160b50

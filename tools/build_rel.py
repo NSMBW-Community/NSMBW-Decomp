@@ -83,6 +83,7 @@ def process_file(modules: list[ELFFile], idx: int, filename: Path, alias_db: dic
 
             # TODO: nice hardcode lol
             if symbol.name == '__destroy_global_chain':
+                print_warn('Warning: __destroy_global_chain not found, using hardcoded address.')
                 symbol.name = f'R_{rel_file.index}_1_90'
 
             # First check if hardcoded
@@ -184,7 +185,7 @@ def process_file(modules: list[ELFFile], idx: int, filename: Path, alias_db: dic
         
     # hardcoded, only needed if this part hasn't been decompiled
     if not prolog or not epilog or not unresolved:
-        print_warn('Warning: _prolog, _epilog and/or _unresolved were not found. Hardcoding to common address.')
+        print_warn('Warning: _prolog, _epilog and/or _unresolved were not found, using hardcoded addresses.')
         rel_file.prolog_section = 1
         rel_file.epilog_section = 1
         rel_file.unresolved_section = 1
@@ -237,6 +238,7 @@ if __name__ == '__main__':
 
         # Process them
         for idx in range(1, len(modules)):
+            print(f'Building {args.plf_files[idx-1].with_suffix(".rel")}...')
             process_file(modules, idx, args.plf_files[idx-1], alias_db, fake_path)
             if unresolved_symbol_count > 0:
                 print_warn(f'Processed {args.plf_files[idx-1]} with {unresolved_symbol_count} unresolved symbol(s).')

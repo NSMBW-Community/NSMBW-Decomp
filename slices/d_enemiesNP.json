@@ -1,8 +1,8 @@
 {
     "meta": {
-        "fileName": "d_basesNP.rel",
+        "fileName": "d_enemiesNP.rel",
         "type": "REL",
-        "moduleNum": 2,
+        "moduleNum": 3,
         "sections": {
             "":                     { "index": 0,  "align": 0 },
             ".text":                { "index": 1,  "align": 16 },
@@ -27,15 +27,15 @@
     },
     "slices": [
         {
-            "name": "d_basesNP.o",
+            "name": "d_enemiesNP.o",
             "compilerFlags": "",
             "memoryRanges": {
-                ".text": "0x0-0x1c6004",
-                ".ctors": "0x0-0x4f8",
+                ".text": "0x0-0x12a428",
+                ".ctors": "0x0-0x288",
                 ".dtors": "0x0-0x4",
-                ".data": "0x0-0xa5fc",
-                ".rodata": "0x0-0x51c98",
-                ".bss": "0x0-0x12484"
+                ".data": "0x0-0x8610",
+                ".rodata": "0x0-0x3b678",
+                ".bss": "0x0-0xb4e0"
             }
         }
     ]
