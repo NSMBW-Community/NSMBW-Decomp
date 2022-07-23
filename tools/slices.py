@@ -39,17 +39,18 @@ class SliceType(Enum):
     DOL = 1
 
 class SliceMeta:
-    def __init__(self, secs: dict[str, SliceSectionInfo], type: SliceType, name: str):
+    def __init__(self, secs: dict[str, SliceSectionInfo], type: SliceType, name: str, mod_num: int):
         self.secs = secs
         self.type = type
         self.name = name
+        self.mod_num = mod_num
     
     def from_meta(meta: dict) -> 'SliceMeta':
         secs: dict[str, SliceSectionInfo] = dict()
         for sec in meta['sections']:
             secs[sec] = SliceSectionInfo(meta['sections'][sec]['index'], meta['sections'][sec]['align'])
         st = SliceType.REL if meta['type'] == 'REL' else SliceType.DOL
-        return SliceMeta(secs, st, meta['fileName'])
+        return SliceMeta(secs, st, meta['fileName'], meta['moduleNum'])
 
 class SliceFile:
     def __init__(self, slices: list[Slice], meta: SliceMeta):
