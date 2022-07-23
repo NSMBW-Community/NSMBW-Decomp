@@ -199,7 +199,7 @@ if __name__ == '__main__':
         for plf in args.plf_files:
 
             if not plf.is_file():
-                print_err(f'Fatal error: Could not file {plf}.')
+                print_err(f'Fatal error: File {plf} not found!')
                 sys.exit(1)
 
             # Open files and parse them
@@ -222,4 +222,4 @@ if __name__ == '__main__':
             f.write(str_file)
         print_success(f'Wrote {f.name}.')
     else:
-        print_err('File', args.elf_file, 'not found!')
+        print_err(f'Fatal error: File {args.elf_file} not found!')

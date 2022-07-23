@@ -9,10 +9,6 @@ from elffile import *
 from elfconsts import *
 from slices import *
 
-parser = argparse.ArgumentParser(description='Slices REL files')
-parser.add_argument('rel_files', type=Path, nargs='+')
-args = parser.parse_args()
-
 class RelocSym:
     # Models a symbol referenced by a relocation entry
     def __init__(self, mod_num, section, addend):
@@ -100,26 +96,33 @@ def extract_slice(rel_file: REL, slice: Slice):
 
 idx = 1
 
-rel: Path
-for rel in args.rel_files:
-    if not rel.is_file():
-        print(f'Invalid file {rel}')
-        continue
-    with open(rel, 'rb') as f:
-        print(f'Processing module {idx} ({f.name})...')
-        rel_file = REL(idx, file=f)
-        read_reloc_refs(rel_file, idx)
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description='Slices REL files')
+    parser.add_argument('rel_files', type=Path, nargs='+')
+    parser.add_argument('--out_path', '-o', default=Path('bin/sliced'), type=Path)
+    args = parser.parse_args()
 
-        # Read slices
-        with open(f'slices/{rel.with_suffix(".json").name}', 'r') as slice_file:
-            slice_file = load_slice_file(slice_file)
-            
-            for slice in slice_file.slices:
-                elf = extract_slice(rel_file, slice)
-                with open(f'build/{slice.slice_name}', 'wb') as ef:
-                    ef.write(bytes(elf))
-                idx += 1
+    rel: Path
+    for rel in args.rel_files:
+        if not rel.is_file():
+            print(f'Invalid file {rel}')
+            continue
+        with open(rel, 'rb') as f:
+            print(f'Processing module {idx} ({f.name})...')
+            rel_file = REL(idx, file=f)
+            read_reloc_refs(rel_file, idx)
 
-sorted_uniques = sorted(reloc_syms, key=lambda tup: (tup.mod_num, tup.section, tup.addend))
-with open('reloc_names.csv', 'w') as rf:
-    rf.write('\n'.join([str(x) for x in sorted_uniques]))
+            # Read slices
+            with open(f'slices/{rel.with_suffix(".json").name}', 'r') as slice_file:
+                slice_file = load_slice_file(slice_file)
+                
+                for slice in slice_file.slices:
+                    elf = extract_slice(rel_file, slice)
+                    args.out_path.mkdir(parents=True, exist_ok=True)
+                    with open(args.out_path.joinpath(slice.slice_name), 'wb') as ef:
+                        ef.write(bytes(elf))
+                    idx += 1
+
+    sorted_uniques = sorted(reloc_syms, key=lambda tup: (tup.mod_num, tup.section, tup.addend))
+    with open('reloc_names.csv', 'w') as rf:
+        rf.write('\n'.join([str(x) for x in sorted_uniques]))
