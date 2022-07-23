@@ -44,7 +44,7 @@ class SliceMeta:
         self.type = type
         self.name = name
     
-    def from_meta(meta: dict) -> "SliceMeta":
+    def from_meta(meta: dict) -> 'SliceMeta':
         secs: dict[str, SliceSectionInfo] = dict()
         for sec in meta['sections']:
             secs[sec] = SliceSectionInfo(meta['sections'][sec]['index'], meta['sections'][sec]['align'])

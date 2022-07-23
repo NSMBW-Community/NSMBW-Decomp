@@ -154,7 +154,7 @@ class ElfSection:
         if self.data:
             self.header.sh_size = len(self.data)
 
-    def link_strtab(self, shstrtab: "ElfStrtab", strtab: "ElfStrtab") -> None:
+    def link_strtab(self, shstrtab: 'ElfStrtab', strtab: 'ElfStrtab') -> None:
         self.header.sh_name = shstrtab.add_string(self.name)
 
     # Note: returns only data bytes, not header bytes
@@ -210,7 +210,7 @@ class ElfSymbol:
         # Set later
         self.st_name: int = None
 
-    def read(data: bytes, offset: int=0) -> "ElfSymbol":
+    def read(data: bytes, offset: int=0) -> 'ElfSymbol':
         sym = ElfSymbol()
         (
             sym.st_name,
@@ -257,7 +257,7 @@ class ElfSymtab(ElfSection):
         self.header.sh_info = last_local + 1
         super()._prepare_for_write()
 
-    def link_strtab(self, shstrtab: "ElfStrtab", strtab: "ElfStrtab") -> None:
+    def link_strtab(self, shstrtab: 'ElfStrtab', strtab: 'ElfStrtab') -> None:
         for sym in self.syms:
             sym.st_name = strtab.add_string(sym.name)
         super().link_strtab(shstrtab, strtab)

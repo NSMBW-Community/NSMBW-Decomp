@@ -9,7 +9,7 @@ from relfile import REL, Relocation, Section
 from elfconsts import PPC_RELOC_TYPE
 from color_term import *
 
-str_file = ""
+str_file = ''
 id = 1
 unresolved_symbol_count = 0
 

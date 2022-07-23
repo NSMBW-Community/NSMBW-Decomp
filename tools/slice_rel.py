@@ -2,9 +2,7 @@
 # Slices a REL file into .o files
 
 import argparse
-import json
 from pathlib import Path
-from typing import TypedDict
 from relfile import REL
 
 from elffile import *
@@ -118,10 +116,10 @@ for rel in args.rel_files:
             
             for slice in slice_file.slices:
                 elf = extract_slice(rel_file, slice)
-                with open(f'build/{slice.slice_name}', "wb") as ef:
+                with open(f'build/{slice.slice_name}', 'wb') as ef:
                     ef.write(bytes(elf))
                 idx += 1
 
 sorted_uniques = sorted(reloc_syms, key=lambda tup: (tup.mod_num, tup.section, tup.addend))
-with open('reloc_names.csv', "w") as rf:
+with open('reloc_names.csv', 'w') as rf:
     rf.write('\n'.join([str(x) for x in sorted_uniques]))
