@@ -273,9 +273,6 @@ class REL:
         pos += self.imp_size
         self.rel_offset = pos
 
-        # Relocation data is not needed after linking
-        if self.version >= 3:
-            self.fix_size = pos
         reloc_locs = {}
 
         # sort relocation tables
@@ -291,6 +288,10 @@ class REL:
             pos = ceil(pos / 4) * 4
             reloc_locs[module_num] = pos
             pos += len(self.relocations[module_num]) * Relocation.entry_size()
+            
+        # Not sure why this location is chosen by makerel
+        if self.version >= 3:
+            self.fix_size = reloc_locs[self.index]
 
         # Write data
         self._write_header(file)

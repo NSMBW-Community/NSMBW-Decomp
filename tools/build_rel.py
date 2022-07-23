@@ -63,9 +63,9 @@ def process_file(modules: list[ELFFile], idx: int, filename: Path):
         rel_sec.set_data(bytearray(section.data()))
         rel_sec.executable = section.name == '.text'
         rel_sec.alignment = section['sh_addralign'] if section['sh_addralign'] > 0 else 4
-
-        # Intended behaviour; the align value is the one of the section processed last
-        rel_file.align = section['sh_addralign']
+        
+        if section.name == '.text':
+            rel_file.align = section['sh_addralign']
 
         rel_file.add_section(rel_sec)
 
