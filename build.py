@@ -2,7 +2,7 @@ from pathlib import Path
 import subprocess
 
 from tools.color_term import *
-from tools.slices import SliceFile, SliceType, load_slice_file
+from tools.slicelib import SliceFile, SliceType, load_slice_file
 
 # Step 1: compile sources
 

@@ -3,11 +3,11 @@
 
 import argparse
 from pathlib import Path
-from relfile import REL
+from relfile import Rel
 
 from elffile import *
 from elfconsts import *
-from slices import *
+from slicelib import *
 
 class RelocSym:
     # Models a symbol referenced by a relocation entry
@@ -26,7 +26,7 @@ class RelocSym:
 reloc_syms: set[RelocSym] = set()
 module_relocs: dict[int, dict[RelocSym, tuple[RelocSym, PPC_RELOC_TYPE]]] = dict()
 
-def read_reloc_refs(rel_file: REL, idx: int):
+def read_reloc_refs(rel_file: Rel, idx: int):
     assert idx not in module_relocs
     module_relocs[idx] = dict()
     for mod_num in rel_file.relocations:
@@ -44,7 +44,7 @@ def read_reloc_refs(rel_file: REL, idx: int):
                 reloc_syms.add(dest_sym)
                 module_relocs[idx][this_loc] = (dest_sym, reloc.reloc_type)
 
-def extract_slice(rel_file: REL, slice: Slice):
+def extract_slice(rel_file: Rel, slice: Slice):
     elf_file = ElfFile(ET.ET_REL, EM.EM_PPC)
 
     reloc_secs: list[ElfRelaSec] = []
@@ -109,7 +109,7 @@ if __name__ == '__main__':
                 slice_file: SliceFile = load_slice_file(sf)
                 mod_num = slice_file.meta.mod_num
                 print(f'Slicing module {mod_num} ({f.name})...')
-                rel_file = REL(mod_num, file=f)
+                rel_file = Rel(mod_num, file=f)
                 read_reloc_refs(rel_file, mod_num)
                 
                 for slice in slice_file.slices:

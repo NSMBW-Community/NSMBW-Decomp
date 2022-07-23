@@ -8,7 +8,7 @@ from elfconsts import PPC_RELOC_TYPE
 
 # See https://wiki.tockdom.com/wiki/REL_(File_Format)
 
-class Relocation:    
+class RelRelocation:    
     struct = struct.Struct('>HBBI')
 
     def __init__(self, file: bytearray = None, offset: int = 0):
@@ -35,7 +35,7 @@ class Relocation:
         file.write(self.struct.pack(self.offset, self.reloc_type.value, self.section, self.addend))
 
 
-class Section:
+class RelSection:
     struct = struct.Struct('>II')
 
     def __init__(self, file: typing.BinaryIO = None, info_offset: int = 0):
@@ -85,7 +85,7 @@ class Section:
             self.bss_size = self._sec_len
 
 
-class REL:    
+class Rel:    
     imp_struct = header2_struct = struct.Struct('>II')
     header_struct = struct.Struct('>12I4B3I')
     
@@ -97,8 +97,8 @@ class REL:
         self.align: int = align
         self.bss_align: int = bss_align
         
-        self.sections: list[Section] = []
-        self.relocations: dict[int, list[Relocation]] = {}
+        self.sections: list[RelSection] = []
+        self.relocations: dict[int, list[RelRelocation]] = {}
 
         # To be filled out later
         self.section_info_offset: int = 0
@@ -156,8 +156,8 @@ class REL:
 
         # Sections
         for i in range(section_count):
-            self.sections.append(Section(bytes, self.section_info_offset + i*8))
-            offs, l = Section.struct.unpack(bytes[self.section_info_offset+i*8:self.section_info_offset+i*8+8])
+            self.sections.append(RelSection(bytes, self.section_info_offset + i*8))
+            offs, l = RelSection.struct.unpack(bytes[self.section_info_offset+i*8:self.section_info_offset+i*8+8])
 
         # Relocations
         for i in range(0, self.imp_size, 8):
@@ -167,13 +167,13 @@ class REL:
             self.relocations[module_num] = []
             pos = table_offs
             while pos < len(bytes):
-                reloc = Relocation(bytes, pos)
+                reloc = RelRelocation(bytes, pos)
                 self.relocations[module_num].append(reloc)
                 pos += 8
                 if reloc.reloc_type == PPC_RELOC_TYPE.R_RVL_STOP:
                     break
     
-    def add_section(self, section: Section):
+    def add_section(self, section: RelSection):
         self.sections.append(section)
 
     def _write_header(self, file: typing.BinaryIO):
@@ -256,7 +256,7 @@ class REL:
         self.section_info_offset = self.header_size()
 
         section_data_locs = []
-        pos = self.section_info_offset + len(self.sections) * Section.header_size()
+        pos = self.section_info_offset + len(self.sections) * RelSection.header_size()
         for sec in self.sections:
             if sec.data_length() == 0 or sec.is_bss:
                 section_data_locs.append(0)
@@ -288,7 +288,7 @@ class REL:
         for module_num in relocs_module_nums:
             pos = ceil(pos / 4) * 4
             reloc_locs[module_num] = pos
-            pos += len(self.relocations[module_num]) * Relocation.entry_size()
+            pos += len(self.relocations[module_num]) * RelRelocation.entry_size()
             
         # Not sure why this location is chosen by makerel
         if self.version >= 3:

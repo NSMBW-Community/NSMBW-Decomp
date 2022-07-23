@@ -5,7 +5,7 @@ import re
 from pathlib import Path
 from elftools.elf.elffile import ELFFile
 
-from relfile import REL, Relocation, Section
+from relfile import Rel, RelRelocation, RelSection
 from elfconsts import PPC_RELOC_TYPE
 from color_term import *
 
@@ -27,16 +27,16 @@ def process_file(modules: list[ELFFile], idx: int, filename: Path, alias_db: dic
     outfile = filename.with_suffix('.rel')
 
     # Create REL
-    rel_file = REL(id, path_offset=str_file_offset, path_size=len(path_str))
+    rel_file = Rel(id, path_offset=str_file_offset, path_size=len(path_str))
     id += 1
 
     elffile = modules[idx]
-    module_relocations: dict[int, list[Relocation]] = {}
+    module_relocations: dict[int, list[RelRelocation]] = {}
 
     for (sec_idx, section) in enumerate(elffile.iter_sections()):
         if section['sh_type'] != 'SHT_PROGBITS' or section.name == '.comment':
             # Non-text/data sections are added to the REL as empty sections
-            empty_sec = Section()
+            empty_sec = RelSection()
 
             # Special case: .bss section does get length field set
             if section.name == '.bss':
@@ -48,7 +48,7 @@ def process_file(modules: list[ELFFile], idx: int, filename: Path, alias_db: dic
             rel_file.add_section(empty_sec)
             continue
 
-        rel_sec = Section()
+        rel_sec = RelSection()
         rel_sec.set_data(bytearray(section.data()))
         rel_sec.executable = section.name == '.text'
         rel_sec.alignment = section['sh_addralign'] if section['sh_addralign'] > 0 else 4
@@ -91,7 +91,7 @@ def process_file(modules: list[ELFFile], idx: int, filename: Path, alias_db: dic
             if m:
                 #print_warn(f'Relocation symbol {symbol.name} found...')
                 mod_num = int(m.group(1), 16)
-                out_reloc = Relocation()
+                out_reloc = RelRelocation()
                 out_reloc.section = int(m.group(2), 16)
                 out_reloc.addend = int(m.group(3), 16)
                 out_reloc.reloc_type = PPC_RELOC_TYPE(reloc['r_info_type'])
@@ -120,7 +120,7 @@ def process_file(modules: list[ELFFile], idx: int, filename: Path, alias_db: dic
             if mod not in module_relocations:
                 module_relocations[mod] = []
 
-            change_section_reloc = Relocation()
+            change_section_reloc = RelRelocation()
             change_section_reloc.reloc_type = PPC_RELOC_TYPE.R_RVL_SECT
             change_section_reloc.offset = 0
             change_section_reloc.section = sec_idx
@@ -129,7 +129,7 @@ def process_file(modules: list[ELFFile], idx: int, filename: Path, alias_db: dic
             pos = 0
 
             for (rel, sym) in module_classify[mod]:
-                if type(sym) is Relocation:
+                if type(sym) is RelRelocation:
                     st_shndx = sym.section
                     st_value = sym.addend
                 else:
@@ -140,7 +140,7 @@ def process_file(modules: list[ELFFile], idx: int, filename: Path, alias_db: dic
                 offset = rel['r_offset'] - pos
                 while offset > 0xFFFF:
                     # create R_RVL_NONE relocations until we get close enough to the addres we want
-                    reloc_none = Relocation()
+                    reloc_none = RelRelocation()
                     reloc_none.offset = 0xFFFF
                     reloc_none.reloc_type = PPC_RELOC_TYPE.R_RVL_NONE
                     pos += 0xFFFF
@@ -148,7 +148,7 @@ def process_file(modules: list[ELFFile], idx: int, filename: Path, alias_db: dic
                     offset = rel['r_offset'] - pos
                 
                 # make the actual relocation entry
-                out_reloc = Relocation()
+                out_reloc = RelRelocation()
                 out_reloc.offset = offset
                 pos = rel['r_offset']
                 out_reloc.reloc_type = PPC_RELOC_TYPE(rel['r_info_type'])
@@ -158,7 +158,7 @@ def process_file(modules: list[ELFFile], idx: int, filename: Path, alias_db: dic
 
     # Append final relocation
     for mod in module_relocations:
-        stop_reloc = Relocation()
+        stop_reloc = RelRelocation()
         stop_reloc.reloc_type = PPC_RELOC_TYPE.R_RVL_STOP
         stop_reloc.offset = 0
         stop_reloc.section = 0
@@ -195,8 +195,8 @@ def process_file(modules: list[ELFFile], idx: int, filename: Path, alias_db: dic
 
     if not elffile.get_section_by_name('.mwcats.text'):
         # the plfs usually contain this section and also .rela.mwcats.text, so add those as dummy sections
-        rel_file.add_section(Section())
-        rel_file.add_section(Section())
+        rel_file.add_section(RelSection())
+        rel_file.add_section(RelSection())
 
     # Write file
     with open(outfile, 'wb') as f:
