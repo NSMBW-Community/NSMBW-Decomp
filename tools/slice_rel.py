@@ -9,15 +9,11 @@ from relfile import REL
 
 from elffile import *
 from elfconsts import *
+from slices import *
 
 parser = argparse.ArgumentParser(description='Slices REL files')
 parser.add_argument('rel_files', type=Path, nargs='+')
 args = parser.parse_args()
-
-class JSONSliceData(TypedDict):
-    name: str
-    compilerFlags: str
-    memoryRanges: dict[str, str]
 
 class RelocSym:
     # Models a symbol referenced by a relocation entry
@@ -31,28 +27,6 @@ class RelocSym:
 
     def __str__(self):
         return self.__repr__()
-
-class SliceSection:
-    def __init__(self, sec_name: str, sec_idx: int, start_offs: int, end_offs: int, alignment):
-        self.sec_name = sec_name
-        self.sec_idx = sec_idx
-        self.start_offs = start_offs
-        self.end_offs = end_offs
-        self.alignment = alignment
-
-    def __repr__(self) -> str:
-        return f'<SliceSection {self.sec_name} (#{self.sec_idx}) {self.start_offs:0x}-{self.end_offs:0x}, align={self.alignment}>'
-
-    def contains(self, reloc_sym: RelocSym):
-        return reloc_sym.section == self.sec_idx and self.start_offs <= reloc_sym.addend <= self.end_offs
-
-class Slice:
-    def __init__(self, slice_name: str, slice_secs: list[SliceSection]):
-        self.slice_name = slice_name
-        self.slice_secs = slice_secs
-
-    def __repr__(self) -> str:
-        return f'<Slice {self.slice_name}, {self.slice_secs}>'
         
 
 reloc_syms: set[RelocSym] = set()
@@ -99,7 +73,7 @@ def extract_slice(rel_file: REL, slice: Slice):
         elf_file.add_section(elf_sec)
 
     for sec in slice.slice_secs:
-        relocs_in_section = [x for x in module_relocs[rel_file.index] if sec.contains(x)]
+        relocs_in_section = [x for x in module_relocs[rel_file.index] if sec.contains(x.section, x.addend)]
         print(f'{slice.slice_name}: Section {sec.sec_name} contains {len(relocs_in_section)} relocs')
         if len(relocs_in_section) > 0:
             reloc_sec = ElfRelaSec(f'.rela{sec.sec_name}')
@@ -140,21 +114,9 @@ for rel in args.rel_files:
 
         # Read slices
         with open(f'slices/{rel.with_suffix(".json").name}', 'r') as slice_file:
-            slice_json = json.load(slice_file)
-            slice_meta = slice_json['meta']
-            slice_section_info: dict[str, dict] = slice_meta['sections']
-
-            slice: JSONSliceData
-            for slice in slice_json['slices']:
-                slice_name = slice['name']
-                slice_sections: list[SliceSection] = []
-                for sec_name in slice['memoryRanges']:
-                    range_str = slice['memoryRanges'][sec_name]
-                    begin, end = [int(x, 16) for x in range_str.split('-')]
-                    sec_info = slice_section_info[sec_name]
-                    slice_sections.append(SliceSection(sec_name, sec_info['index'], begin, end, sec_info['align']))
-                slice = Slice(slice_name, slice_sections)
+            slice_file = load_slice_file(slice_file)
             
+            for slice in slice_file.slices:
                 elf = extract_slice(rel_file, slice)
                 with open(f'build/{slice.slice_name}', "wb") as ef:
                     ef.write(bytes(elf))

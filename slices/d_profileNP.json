@@ -1,7 +1,7 @@
 {
     "meta": {
-        "sliceName": "d_profileNP",
-        "forcePath": "d:\\home\\Project\\WIIMJ2D\\EU\\PRD\\RVL\\bin\\d_profileNP.plf",
+        "fileName": "d_profileNP.rel",
+        "type": "REL",
         "sections": {
             "":                     { "index": 0,  "align": 0 },
             ".text":                { "index": 1,  "align": 16 },

@@ -4,35 +4,24 @@
 import re
 from pathlib import Path
 from elftools.elf.elffile import ELFFile
+
 from relfile import REL, Relocation, Section
 from elfconsts import PPC_RELOC_TYPE
-
-with open("alias_db.txt", "r") as f:
-    alias_db: dict[str, str] = dict()
-    for line in f.readlines():
-        from_sym, to_sym = line.split('=')
-        assert from_sym not in alias_db
-        alias_db[from_sym] = to_sym
-
-def print_warn(msg: str):
-    print(f'\033[33m{msg}\033[39m')
-
-def print_err(msg: str):
-    print(f'\033[31m{msg}\033[39m')
-
-def print_success(msg: str):
-    print(f'\033[32m{msg}\033[39m')
+from color_term import *
 
 str_file = ""
 id = 1
 unresolved_symbol_count = 0
 
-def process_file(modules: list[ELFFile], idx: int, filename: Path):
+def process_file(modules: list[ELFFile], idx: int, filename: Path, alias_db: dict[str, str], fakedir: str):
     global id, str_file, unresolved_symbol_count
 
     # Generate .str file and output filename
     str_file_offset = len(str_file)
-    path_str = f'{filename.resolve()}\0'
+    if fakedir:
+        path_str = f'{fakedir}{filename.name}\0'
+    else:
+        path_str = f'{filename.resolve()}\0'
     str_file += path_str
 
     outfile = filename.with_suffix('.rel')
@@ -184,17 +173,34 @@ def process_file(modules: list[ELFFile], idx: int, filename: Path):
 
 
 if __name__ == '__main__':
+    import sys
 
     # Parse arguments separately so this file can be imported from other ones
     import argparse
     parser = argparse.ArgumentParser(description='Compiles REL files')
     parser.add_argument('elf_file', type=Path)
     parser.add_argument('plf_files', type=Path, nargs='+')
+    parser.add_argument('--alias_file', type=Path, help='file that stores aliases for relocation symbols')
+    parser.add_argument('--fake_path', '-p', type=str, help='the fake directory name to be used for the .str file')
     args = parser.parse_args()
+
+    alias_db: dict[str, str] = dict()
+    if args.alias_file:   
+        with open(args.alias_file, 'r') as f:
+            for line in f.readlines():
+                from_sym, to_sym = line.split('=')
+                assert from_sym not in alias_db
+                alias_db[from_sym] = to_sym
+
+    fake_path = args.fake_path
 
     # Call actual function
     if args.elf_file.is_file():
-        if not any([not plf.is_file() for plf in args.plf_files]):
+        for plf in args.plf_files:
+
+            if not plf.is_file():
+                print_err(f'Fatal error: Could not file {plf}.')
+                sys.exit(1)
 
             # Open files and parse them
             files = [open(args.elf_file, 'rb')] + [open(plf, 'rb') for plf in args.plf_files]
@@ -202,7 +208,7 @@ if __name__ == '__main__':
 
             # Process them
             for idx in range(1, len(modules)):
-                process_file(modules, idx, args.plf_files[idx-1])
+                process_file(modules, idx, args.plf_files[idx-1], alias_db, fake_path)
                 if unresolved_symbol_count > 0:
                     print_warn(f'Processed {args.plf_files[idx-1]} with {unresolved_symbol_count} unresolved symbol(s).')
                 else:
@@ -211,8 +217,6 @@ if __name__ == '__main__':
             # Close them
             for file in files:
                 file.close()
-        else:
-            print_err('Some PLF files are missing!')
 
         with open(args.elf_file.with_suffix('.str'), 'w') as f:
             f.write(str_file)
