@@ -15,6 +15,9 @@
 # Executables
 *.exe
 
+# Compilers
+compilers/
+
 # Python cache/compiled modules
 *.pyc
 __pycache__/
