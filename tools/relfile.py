@@ -49,7 +49,7 @@ class Section:
             
 
     def __repr__(self):
-        return f'<Section: {"non-" * self.executable}executable, length {self._sec_len}>'
+        return f'<Section: {"" if self.executable else "non-"}executable, length {self._sec_len}>'
 
     def set_data(self, data: bytearray):
         self._data = data
