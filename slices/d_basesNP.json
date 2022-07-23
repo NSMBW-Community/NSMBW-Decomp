@@ -1,0 +1,42 @@
+{
+    "meta": {
+        "fileName": "d_basesNP.rel",
+        "type": "REL",
+        "moduleNum": 2,
+        "sections": {
+            "":                     { "index": 0,  "align": 0 },
+            ".text":                { "index": 1,  "align": 16 },
+            ".ctors":               { "index": 2,  "align": 4 },
+            ".dtors":               { "index": 3,  "align": 4 },
+            ".data":                { "index": 4,  "align": 8 },
+            ".rodata":              { "index": 5,  "align": 8 },
+            ".bss":                 { "index": 6,  "align": 8 },
+            ".rela.text":           { "index": 7,  "align": 4 },
+            ".rela.ctors":          { "index": 8,  "align": 4 },
+            ".rela.dtors":          { "index": 9,  "align": 4 },
+            ".rela.data":           { "index": 10, "align": 4 },
+            ".rela.rodata":         { "index": 11, "align": 4 },
+            ".mwcats.text":         { "index": 12, "align": 4 },
+            ".rela.mwcats.text":    { "index": 13, "align": 4 },
+            ".symtab":              { "index": 14, "align": 4 },
+            ".shstrtab":            { "index": 15, "align": 1 },
+            ".strtab":              { "index": 16, "align": 1 },
+            ".comment":             { "index": 17, "align": 4 },
+            ".PPC.EMB.apuinfo":     { "index": 18, "align": 16 }
+        }
+    },
+    "slices": [
+        {
+            "name": "d_basesNP.o",
+            "compilerFlags": "",
+            "memoryRanges": {
+                ".text": "0x0-0x1c6004",
+                ".ctors": "0x0-0x4fc",
+                ".dtors": "0x0-0xc",
+                ".data": "0x0-0xa5fc",
+                ".rodata": "0x0-0x51c98",
+                ".bss": "0x0-0x12484"
+            }
+        }
+    ]
+}

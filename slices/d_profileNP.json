@@ -2,6 +2,7 @@
     "meta": {
         "fileName": "d_profileNP.rel",
         "type": "REL",
+        "moduleNum": 1,
         "sections": {
             "":                     { "index": 0,  "align": 0 },
             ".text":                { "index": 1,  "align": 16 },
@@ -12,13 +13,15 @@
             ".bss":                 { "index": 6,  "align": 8 },
             ".rela.text":           { "index": 7,  "align": 4 },
             ".rela.ctors":          { "index": 8,  "align": 4 },
-            ".mwcats.text":         { "index": 9,  "align": 4 },
-            ".rela.mwcats.text":    { "index": 10, "align": 4 },
-            ".symtab":              { "index": 11, "align": 4 },
-            ".shstrtab":            { "index": 12, "align": 1 },
-            ".strtab":              { "index": 13, "align": 1 },
-            ".comment":             { "index": 14, "align": 4 },
-            ".PPC.EMB.apuinfo":     { "index": 15, "align": 16 }
+            ".rela.dtors":          { "index": 9,  "align": 4 },
+            ".rela.rodata":         { "index": 10, "align": 4 },
+            ".mwcats.text":         { "index": 11, "align": 4 },
+            ".rela.mwcats.text":    { "index": 12, "align": 4 },
+            ".symtab":              { "index": 13, "align": 4 },
+            ".shstrtab":            { "index": 14, "align": 1 },
+            ".strtab":              { "index": 15, "align": 1 },
+            ".comment":             { "index": 16, "align": 4 },
+            ".PPC.EMB.apuinfo":     { "index": 17, "align": 16 }
         }
     },
     "slices": [
