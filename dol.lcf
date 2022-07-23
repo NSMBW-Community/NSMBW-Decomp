@@ -1,0 +1,29 @@
+FORCEACTIVE {
+    __register_global_object
+    __global_destructor_chain
+    __destroy_global_chain
+}
+
+MEMORY {
+    text : origin = 0x80004000
+}
+
+SECTIONS {
+
+    GROUP: {
+        .init ALIGN(0x20):{}      // Initialization executable code from the runtime library
+        extab_ ALIGN(0x20):{}      // C++ exception tables
+        extabindex_ ALIGN(0x20):{} // C++ exception tables
+        .text ALIGN(0x20):{}      // Application code
+        .ctors ALIGN(0x20):{}     // C++ constructors and Altivec vector constructors
+        .dtors ALIGN(0x20):{}     // C++ destructors
+        .data ALIGN(0x20):{}      // Initialized global data
+        .rodata ALIGN(0x20):{}    // Literal values and initialization values
+        .bss ALIGN(0x20):{}       // Uninitialized global data
+        .sdata ALIGN(0x20):{}     // Initialized small global data
+        .sbss ALIGN(0x20):{}      // Uninitialized global small data
+        .sdata2 ALIGN(0x20):{}    // Initialized global small data defined with the const keyword
+        .sbss2 ALIGN(0x20):{}     // Uninitialized global constant small data defined with the const keyword
+    } > text
+
+}

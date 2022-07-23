@@ -194,12 +194,19 @@ class PPC_RELOC_TYPE(Enum):
 class SpecialSections:
 
     _lookup: dict[str, tuple[SHT, set[SHF]]] = {
+        'extab_': (SHT.SHT_PROGBITS, set([SHF.SHF_ALLOC])),
+        'extabindex_': (SHT.SHT_PROGBITS, set([SHF.SHF_ALLOC])),
         '.bss': (SHT.SHT_NOBITS, set([SHF.SHF_ALLOC, SHF.SHF_WRITE])),
         '.comment': (SHT.SHT_PROGBITS, set([])),
         '.ctors': (SHT.SHT_PROGBITS, set([SHF.SHF_ALLOC])),
         '.data': (SHT.SHT_PROGBITS, set([SHF.SHF_ALLOC, SHF.SHF_WRITE])),
         '.dtors': (SHT.SHT_PROGBITS, set([SHF.SHF_ALLOC])),
+        '.init': (SHT.SHT_PROGBITS, set([SHF.SHF_ALLOC, SHF.SHF_EXECINSTR])),
         '.rodata': (SHT.SHT_PROGBITS, set([SHF.SHF_ALLOC])),
+        '.sbss': (SHT.SHT_NOBITS, set([SHF.SHF_ALLOC, SHF.SHF_WRITE])),
+        '.sbss2': (SHT.SHT_NOBITS, set([SHF.SHF_ALLOC, SHF.SHF_WRITE])),
+        '.sdata': (SHT.SHT_PROGBITS, set([SHF.SHF_ALLOC, SHF.SHF_WRITE])),
+        '.sdata2': (SHT.SHT_PROGBITS, set([SHF.SHF_ALLOC, SHF.SHF_WRITE])),
         '.shstrtab': (SHT.SHT_STRTAB, set([])),
         '.strtab': (SHT.SHT_STRTAB, set([])),
         '.symtab': (SHT.SHT_SYMTAB, set([])),
