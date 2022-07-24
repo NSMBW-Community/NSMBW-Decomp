@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 # REL definitions and helper functions, by RootCubed
 
+import math
 import struct
 import typing
 
@@ -66,6 +67,8 @@ class Dol:
             else:
                 section_data_locs.append(0)
             pos += sec.sec_len
+            # align to 0x10
+            pos = math.ceil(pos / 0x10) * 0x10
         
         # Section offsets
         for i in range(18):

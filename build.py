@@ -9,6 +9,9 @@ def print_cmd(cmd):
 
 slices: list[SliceFile] = []
 
+ldpath = 'compilers/Wii/1.1/mwldeppc.exe'
+ccpath = 'compilers/Wii/1.1/mwcceppc.exe'
+
 for file in Path('slices').glob('*'):
     with open(file, 'r') as sf:
         slices.append(load_slice_file(sf))
@@ -19,7 +22,13 @@ slices = sorted(slices, key=lambda x: x.meta.mod_num)
 # Step 1: compile sources
 for slice_file in slices:
     # TODO: compile, outfiles go to bin/compiled/
-    pass
+    for slice in slice_file.slices:
+        if slice.slice_src:
+            ccflags = slice_file.meta.default_compiler_flags
+
+            cmd = [ccpath, '-c', *ccflags, f'source/{slice.slice_src}', '-o', f'bin/compiled/wiimj2d/{slice.slice_name}']
+            print_cmd(cmd)
+            subprocess.call(cmd)
 
 count_compiled_used = 0
 count_sliced_used = 0
@@ -39,7 +48,6 @@ for slice_file in slices:
     print_success(f'Sliced {slice_file.meta.name}.')
 
     # Step 3: link object files
-    ldpath = 'compilers/Wii/1.1/mwldeppc.exe'
 
     ldflags_dol = '-proc gekko -fp hard'
     ldflags_rel = '-proc gekko -fp hard -sdata 0 -sdata2 0 -m _prolog -opt_partial'

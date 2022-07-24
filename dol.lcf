@@ -1,7 +1,9 @@
 FORCEACTIVE {
     __register_global_object
-    __global_destructor_chain
     __destroy_global_chain
+    __init_cpp_exceptions
+    __fini_cpp_exceptions
+    __fini_cpp_exceptions_reference
 }
 
 MEMORY {
@@ -24,6 +26,8 @@ SECTIONS {
         .sbss ALIGN(0x20):{}      // Uninitialized global small data
         .sdata2 ALIGN(0x20):{}    // Initialized global small data defined with the const keyword
         .sbss2 ALIGN(0x20):{}     // Uninitialized global constant small data defined with the const keyword
+        extab ALIGN(0x1):{}      // C++ exception tables
+        extabindex ALIGN(0x1):{} // C++ exception tables
     } > text
 
 }
