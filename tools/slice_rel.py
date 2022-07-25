@@ -114,8 +114,9 @@ if __name__ == '__main__':
                 
                 for slice in slice_file.slices:
                     elf = extract_slice(rel_file, slice)
-                    args.out_path.mkdir(parents=True, exist_ok=True)
-                    with open(args.out_path.joinpath(slice.slice_name), 'wb') as ef:
+                    out_filepath = args.out_path.joinpath(slice.slice_name)
+                    out_filepath.parents[0].mkdir(parents=True, exist_ok=True)
+                    with open(out_filepath, 'wb') as ef:
                         ef.write(bytes(elf))
 
     sorted_uniques = sorted(reloc_syms, key=lambda tup: (tup.mod_num, tup.section, tup.addend))

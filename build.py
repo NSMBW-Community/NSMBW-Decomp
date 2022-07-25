@@ -25,6 +25,10 @@ for slice_file in slices:
     for slice in slice_file.slices:
         if slice.slice_src:
             ccflags = slice_file.meta.default_compiler_flags
+            if slice.cc_flags:
+                ccflags = slice.cc_flags
+
+            Path(f'bin/compiled/wiimj2d/{slice.slice_src}').parents[0].mkdir(parents=True, exist_ok=True)
 
             cmd = [ccpath, '-c', *ccflags, f'source/{slice.slice_src}', '-o', f'bin/compiled/wiimj2d/{slice.slice_name}']
             print_cmd(cmd)
