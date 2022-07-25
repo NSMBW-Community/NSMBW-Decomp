@@ -59,31 +59,35 @@ class Dol:
         self.sections.append(section)
 
     def write(self, file: typing.BinaryIO):
+        assert len(self.sections) == 18
+
         section_data_locs: list[int] = []
         pos = 0x100
         for sec in self.sections:
+            # Align to 0x20
+            pos = math.ceil(pos / 0x20) * 0x20
             if not sec.unused:
                 section_data_locs.append(pos)
             else:
                 section_data_locs.append(0)
             pos += sec.sec_len
-            # align to 0x10
-            pos = math.ceil(pos / 0x10) * 0x10
         
         # Section offsets
-        for i in range(18):
-            file.write(section_data_locs[i].to_bytes(4, 'big'))
+        for sec_offs in section_data_locs:
+            file.write(sec_offs.to_bytes(4, 'big'))
 
         # Section addresses
-        for i in range(18):
-            file.write(self.sections[i].virt_addr.to_bytes(4, 'big'))
+        for sec_virt_addr in [x.virt_addr for x in self.sections]:
+            file.write(sec_virt_addr.to_bytes(4, 'big'))
 
         # Section lengths
-        for i in range(18):
-            file.write(self.sections[i].sec_len.to_bytes(4, 'big'))
+        for sec_len in [x.sec_len for x in self.sections]:
+            rounded_len = math.ceil(sec_len / 0x20) * 0x20
+            file.write(rounded_len.to_bytes(4, 'big'))
 
         file.write(struct.pack('>III28x', self.bss_addr, self.bss_len, self.entry))
 
-        for sec in self.sections:
+        for (i, sec) in enumerate(self.sections):
             if not sec.unused:
+                file.seek(section_data_locs[i])
                 file.write(sec.data)
