@@ -2,6 +2,7 @@
     "meta": {
         "fileName": "d_enemiesNP.rel",
         "type": "REL",
+        "defaultCompilerFlags": "-proc gekko -fp hard -O4,p -char signed -rtti off -enum int -Cpp_exceptions off",
         "moduleNum": 3,
         "sections": {
             "":                     { "index": 0,  "align": 0 },
@@ -27,10 +28,18 @@
     },
     "slices": [
         {
+            "name": "rel_init.o",
+            "source": "support/rel_init.cpp",
+            "compilerFlags": "",
+            "memoryRanges": {
+                ".text": "0x0-0x70"
+            }
+        },
+        {
             "name": "d_enemiesNP.o",
             "compilerFlags": "",
             "memoryRanges": {
-                ".text": "0x0-0x12a428",
+                ".text": "0x70-0x12a428",
                 ".ctors": "0x0-0x288",
                 ".dtors": "0x0-0x4",
                 ".data": "0x0-0x8610",

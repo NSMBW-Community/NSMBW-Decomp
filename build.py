@@ -21,16 +21,18 @@ slices = sorted(slices, key=lambda x: x.meta.mod_num)
 
 # Step 1: compile sources
 for slice_file in slices:
-    # TODO: compile, outfiles go to bin/compiled/
     for slice in slice_file.slices:
+        unit_name = Path(slice_file.meta.name).stem
         if slice.slice_src:
             ccflags = slice_file.meta.default_compiler_flags
             if slice.cc_flags:
                 ccflags = slice.cc_flags
 
-            Path(f'bin/compiled/wiimj2d/{slice.slice_src}').parents[0].mkdir(parents=True, exist_ok=True)
+            Path(f'bin/compiled/{unit_name}/{slice.slice_src}').parents[0].mkdir(parents=True, exist_ok=True)
 
-            cmd = [ccpath, '-c', *ccflags, f'source/{slice.slice_src}', '-o', f'bin/compiled/wiimj2d/{slice.slice_name}']
+            cmd = [ccpath, '-c', *ccflags, f'source/{slice.slice_src}']
+            cmd.extend(['-o', f'bin/compiled/{unit_name}/{slice.slice_name}'])
+            cmd.extend(['-I-', '-i', 'include'])
             print_cmd(cmd)
             subprocess.call(cmd)
 

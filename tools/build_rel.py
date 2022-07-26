@@ -10,11 +10,11 @@ from elfconsts import PPC_RELOC_TYPE
 from color_term import *
 
 str_file = ''
-id = 1
+
 unresolved_symbol_count = 0
 
 def process_file(modules: list[ELFFile], idx: int, filename: Path, alias_db: dict[str, str], fakedir: str):
-    global id, str_file, unresolved_symbol_count
+    global str_file, unresolved_symbol_count
 
     # Generate .str file and output filename
     str_file_offset = len(str_file)
@@ -25,10 +25,10 @@ def process_file(modules: list[ELFFile], idx: int, filename: Path, alias_db: dic
     str_file += path_str
 
     outfile = filename.with_suffix('.rel')
+    unit_name = filename.stem
 
     # Create REL
-    rel_file = Rel(id, path_offset=str_file_offset, path_size=len(path_str))
-    id += 1
+    rel_file = Rel(idx, path_offset=str_file_offset, path_size=len(path_str))
 
     elffile = modules[idx]
     module_relocations: dict[int, list[RelRelocation]] = {}
@@ -78,7 +78,9 @@ def process_file(modules: list[ELFFile], idx: int, filename: Path, alias_db: dic
             found_sym = False
 
             # Try to look up symbol in alias database
-            if symbol.name in alias_db:
+            if f'{unit_name}: {symbol.name}' in alias_db:
+                symbol.name = alias_db[f'{unit_name}: {symbol.name}']
+            elif symbol.name in alias_db:
                 symbol.name = alias_db[symbol.name]
 
             # TODO: nice hardcode lol
@@ -101,6 +103,17 @@ def process_file(modules: list[ELFFile], idx: int, filename: Path, alias_db: dic
                     module_classify[mod_num].append((reloc, out_reloc))
                 found_sym = True
 
+            if not found_sym:
+                # 1st priority: own module
+                mod = modules[idx]
+                symtab = mod.get_section_by_name('.symtab')
+                try_found = symtab.get_symbol_by_name(symbol.name)
+                if try_found and try_found[0]['st_shndx'] != 'SHN_UNDEF':
+                    if idx not in module_classify:
+                        module_classify[idx] = [(reloc, try_found[0])]
+                    else:
+                        module_classify[idx].append((reloc, try_found[0]))
+                    found_sym = True
             if not found_sym:
                 for (i, mod) in enumerate(modules):
                     symtab = mod.get_section_by_name('.symtab')

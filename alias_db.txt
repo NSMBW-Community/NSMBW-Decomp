@@ -1,5 +1,11 @@
-thunk_setupProfiles__Fv=R_1_1_110
-removeProfiles__Fv=R_1_1_120
+d_profileNP: finalizeProlog__Fv=R_1_1_110
+d_profileNP: finalizeEpilog__Fv=R_1_1_120
+d_basesNP: finalizeProlog__Fv=R_2_1_F0
+d_basesNP: finalizeEpilog__Fv=R_2_1_100
+d_enemiesNP: finalizeProlog__Fv=R_3_1_F0
+d_enemiesNP: finalizeEpilog__Fv=R_3_1_100
+d_en_bossNP: finalizeProlog__Fv=R_4_1_F0
+d_en_bossNP: finalizeEpilog__Fv=R_4_1_100
 ModuleConstructorsX=R_0_4_80160b60
 ModuleDestructorsX=R_0_4_80160bb0
 ModuleUnresolved=R_0_4_80160b50

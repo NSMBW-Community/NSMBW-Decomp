@@ -2,6 +2,7 @@
     "meta": {
         "fileName": "d_profileNP.rel",
         "type": "REL",
+        "defaultCompilerFlags": "-proc gekko -fp hard -O4,p -char signed -rtti off -enum int -Cpp_exceptions off",
         "moduleNum": 1,
         "sections": {
             "":                     { "index": 0,  "align": 0 },
@@ -27,6 +28,7 @@
     "slices": [
         {
             "name": "rel_init.o",
+            "source": "support/rel_init.cpp",
             "compilerFlags": "",
             "memoryRanges": {
                 ".text": "0x0-0x70"
@@ -34,7 +36,6 @@
         },
         {
             "name": "global_destructor_chain.o",
-            "compilerFlags": "",
             "memoryRanges": {
                 ".text": "0x70-0xf0",
                 ".dtors": "0x0-0x4",
@@ -43,7 +44,6 @@
         },
         {
             "name": "profiles.o",
-            "compilerFlags": "",
             "memoryRanges": {
                 ".text": "0xf0-0x130",
                 ".rodata": "0x0-0xbb8"
@@ -51,7 +51,6 @@
         },
         {
             "name": "d_controller_information.o",
-            "compilerFlags": "",
             "memoryRanges": {
                 ".text": "0x130-0x4e0",
                 ".data": "0x0-0x18",
@@ -60,7 +59,6 @@
         },
         {
             "name": "d_yes_no_window.o",
-            "compilerFlags": "",
             "memoryRanges": {
                 ".text": "0x4e0-0x1fb8",
                 ".ctors": "0x0-0x4",
