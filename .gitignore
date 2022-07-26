@@ -12,6 +12,9 @@
 *.dol
 *.rel
 
+# Generated linker command files
+bin/*.lcf
+
 # Executables
 *.exe
 

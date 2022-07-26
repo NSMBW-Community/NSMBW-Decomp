@@ -1,6 +1,7 @@
 MEMORY {
 	text: origin = 0x80004000
 }
+
 SECTIONS {
 	GROUP:{
 		.init ALIGN(0x10):{}

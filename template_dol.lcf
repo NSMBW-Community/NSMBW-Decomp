@@ -1,17 +1,3 @@
-FORCEACTIVE {
-    __register_global_object
-    __destroy_global_chain
-    __init_cpp_exceptions
-    __init_cpp_exceptions_reference
-    __fini_cpp_exceptions
-    __fini_cpp_exceptions_reference
-    __construct_new_array
-    __dt__26__partial_array_destructorFv
-    __construct_array
-    __destroy_arr
-    __destroy_new_array
-}
-
 MEMORY {
     text : origin = 0x80004000
 }

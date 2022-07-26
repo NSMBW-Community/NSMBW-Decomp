@@ -58,8 +58,6 @@ for slice_file in slices:
     ldflags_dol = '-proc gekko -fp hard'
     ldflags_rel = '-proc gekko -fp hard -sdata 0 -sdata2 0 -m _prolog -opt_partial'
 
-    # TODO: build lcf
-    lcf_file: str = 'rel.lcf' if slice_is_rel else 'dol.lcf'
     out_file = slice_name_stem + ('.plf' if slice_is_rel else '.elf')
 
     # Select files
@@ -73,9 +71,19 @@ for slice_file in slices:
         elif try_paths[1].exists():
             file_names.append(try_paths[1])
             count_sliced_used += 1
+    
+    base_lcf_file: str = 'template_rel.lcf' if slice_is_rel else 'template_dol.lcf'
+    out_lcf_file = f'bin/{slice_name_stem}.lcf'
+    with open(base_lcf_file, 'r') as f:
+        base_lcf_contents = f.read()
+    with open(out_lcf_file, 'w') as f:
+        f.write('FORCEFILES {\n\t')
+        f.write('\n\t'.join([str(path) for path in file_names]))
+        f.write('\n}\n\n')
+        f.write(base_lcf_contents)
 
     ldflags = ldflags_rel if slice_file.meta.type == SliceType.REL else ldflags_dol
-    cmd = [ldpath, *ldflags.split(' '), *file_names, '-lcf', lcf_file, '-o', f'bin/{out_file}']
+    cmd = [ldpath, *ldflags.split(' '), *file_names, '-lcf', out_lcf_file, '-o', f'bin/{out_file}']
     print_cmd(cmd)
     subprocess.call(cmd)
 
