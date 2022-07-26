@@ -41,13 +41,12 @@ class SliceType(Enum):
     DOL = 1
 
 class SliceMeta:
-    def __init__(self, secs: dict[str, SliceSectionInfo], type: SliceType, name: str, mod_num: int, dcf: str, unit_name: str):
+    def __init__(self, secs: dict[str, SliceSectionInfo], type: SliceType, name: str, mod_num: int, dcf: str):
         self.secs = secs
         self.type = type
         self.name = name
         self.mod_num = mod_num
         self.default_compiler_flags = dcf.split(' ')
-        self.unit_name = unit_name
     
     def from_meta(meta: dict) -> 'SliceMeta':
         secs: dict[str, SliceSectionInfo] = dict()
@@ -55,8 +54,7 @@ class SliceMeta:
             secs[sec] = SliceSectionInfo(meta['sections'][sec]['index'], meta['sections'][sec]['align'])
         st = SliceType.REL if meta['type'] == 'REL' else SliceType.DOL
         dcf = meta['defaultCompilerFlags'] if 'defaultCompilerFlags' in meta else ''
-        unit_name = meta['unitName'] if 'unitName' in meta else meta['fileName'].split('.')[0]
-        return SliceMeta(secs, st, meta['fileName'], meta['moduleNum'], dcf, unit_name)
+        return SliceMeta(secs, st, meta['fileName'], meta['moduleNum'], dcf)
 
 class SliceFile:
     def __init__(self, slices: list[Slice], meta: SliceMeta):

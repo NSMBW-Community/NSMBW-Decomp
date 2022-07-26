@@ -1,7 +1,6 @@
 {
     "meta": {
         "fileName": "wiimj2d.dol",
-        "unitName": "dol",
         "type": "DOL",
         "moduleNum": 0,
         "defaultCompilerFlags": "-proc gekko -fp hard -O4,p -char signed -rtti off -enum int -func_align 4 -Cpp_exceptions off",
