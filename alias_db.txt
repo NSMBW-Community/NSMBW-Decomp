@@ -6,6 +6,3 @@ d_enemiesNP: finalizeProlog__Fv=R_3_1_F0
 d_enemiesNP: finalizeEpilog__Fv=R_3_1_100
 d_en_bossNP: finalizeProlog__Fv=R_4_1_F0
 d_en_bossNP: finalizeEpilog__Fv=R_4_1_100
-ModuleConstructorsX=R_0_4_80160b60
-ModuleDestructorsX=R_0_4_80160bb0
-ModuleUnresolved=R_0_4_80160b50
