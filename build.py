@@ -21,16 +21,18 @@ slices = sorted(slices, key=lambda x: x.meta.mod_num)
 
 # Step 1: compile sources
 for slice_file in slices:
-    # TODO: compile, outfiles go to bin/compiled/
     for slice in slice_file.slices:
+        unit_name = slice_file.meta.unit_name
         if slice.slice_src:
             ccflags = slice_file.meta.default_compiler_flags
             if slice.cc_flags:
                 ccflags = slice.cc_flags
 
-            Path(f'bin/compiled/wiimj2d/{slice.slice_src}').parents[0].mkdir(parents=True, exist_ok=True)
+            Path(f'bin/compiled/{unit_name}/{slice.slice_src}').parents[0].mkdir(parents=True, exist_ok=True)
 
-            cmd = [ccpath, '-c', *ccflags, f'source/{slice.slice_src}', '-o', f'bin/compiled/wiimj2d/{slice.slice_name}']
+            cmd = [ccpath, '-c', *ccflags, f'source/{slice.slice_src}']
+            cmd.extend(['-o', f'bin/compiled/{unit_name}/{slice.slice_name}'])
+            cmd.extend(['-I-', '-i', 'include'])
             print_cmd(cmd)
             subprocess.call(cmd)
 
@@ -46,7 +48,7 @@ for slice_file in slices:
 
     prog_to_use: str = 'tools/slice_rel.py' if slice_is_rel else 'tools/slice_dol.py'
 
-    cmd = ['python', prog_to_use, f'original/{slice_file.meta.name}', '-o', f'bin/sliced/{slice_name_stem}']
+    cmd = ['python', prog_to_use, f'original/{slice_file.meta.name}', '-o', f'bin/sliced/{slice_file.meta.unit_name}']
     print_cmd(cmd)
     subprocess.call(cmd)
     print_success(f'Sliced {slice_file.meta.name}.')
@@ -63,7 +65,7 @@ for slice_file in slices:
     # Select files
     file_names: list[str] = []
     for slice in slice_file.slices:
-        try_paths = [Path(f'bin/{x}/{slice_name_stem}/{slice.slice_name}') for x in ['compiled', 'sliced']]
+        try_paths = [Path(f'bin/{x}/{slice_file.meta.unit_name}/{slice.slice_name}') for x in ['compiled', 'sliced']]
 
         if try_paths[0].exists():
             file_names.append(try_paths[0])
