@@ -1,3 +1,6 @@
+#!/usr/bin/env python3
+# ELF constants
+
 from enum import Enum
 
 class ET(Enum):
@@ -6,6 +9,7 @@ class ET(Enum):
     ET_EXEC = 2
     ET_DYN = 3
     ET_CORE = 4
+
 
 class EM(Enum):
     EM_NONE = 0
@@ -91,6 +95,7 @@ class EM(Enum):
     EM_SNP1K = 99
     EM_ST200 = 100
 
+
 class SHN(Enum):
     SHN_UNDEF = 0
     SHN_LORESERVE = 0xff00
@@ -129,6 +134,7 @@ class SHT(Enum):
     SHT_MW_CATS = 0xca2a82c2
     SHT_HIUSER = 0xffffffff
 
+
 class SHF(Enum):
     SHF_WRITE = 0x1
     SHF_ALLOC = 0x2
@@ -141,6 +147,7 @@ class SHF(Enum):
     SHF_GROUP = 0x200
     SHF_TLS = 0x400
 
+
 class STB(Enum):
     STB_LOCAL = 0
     STB_GLOBAL = 1
@@ -149,6 +156,7 @@ class STB(Enum):
     STB_HIOS = 12
     STB_LOPROC = 13
     STB_HIPROC = 15
+
 
 class STT(Enum):
     STT_NOTYPE = 0
@@ -163,14 +171,17 @@ class STT(Enum):
     STT_LOPROC = 13
     STT_HIPROC = 15
 
+
 class STV(Enum):
     STV_DEFAULT = 0
     STV_INTERNAL = 1
     STV_HIDDEN = 2
     STV_PROTECTED = 3
 
+
 class STN(Enum):
     STN_UNDEF = 0
+
 
 class PPC_RELOC_TYPE(Enum):
     R_PPC_NONE = 0
@@ -191,13 +202,14 @@ class PPC_RELOC_TYPE(Enum):
     R_RVL_SECT = 202
     R_RVL_STOP = 203
 
+
 class SpecialSections:
 
     _lookup: dict[str, tuple[SHT, set[SHF]]] = {
         'extab_': (SHT.SHT_PROGBITS, set([SHF.SHF_ALLOC])),
         'extabindex_': (SHT.SHT_PROGBITS, set([SHF.SHF_ALLOC])),
         '.bss': (SHT.SHT_NOBITS, set([SHF.SHF_ALLOC, SHF.SHF_WRITE])),
-        '.comment': (SHT.SHT_PROGBITS, set([])),
+        '.comment': (SHT.SHT_PROGBITS, set()),
         '.ctors': (SHT.SHT_PROGBITS, set([SHF.SHF_ALLOC])),
         '.data': (SHT.SHT_PROGBITS, set([SHF.SHF_ALLOC, SHF.SHF_WRITE])),
         '.dtors': (SHT.SHT_PROGBITS, set([SHF.SHF_ALLOC])),
@@ -207,17 +219,18 @@ class SpecialSections:
         '.sbss2': (SHT.SHT_NOBITS, set([SHF.SHF_ALLOC, SHF.SHF_WRITE])),
         '.sdata': (SHT.SHT_PROGBITS, set([SHF.SHF_ALLOC, SHF.SHF_WRITE])),
         '.sdata2': (SHT.SHT_PROGBITS, set([SHF.SHF_ALLOC, SHF.SHF_WRITE])),
-        '.shstrtab': (SHT.SHT_STRTAB, set([])),
-        '.strtab': (SHT.SHT_STRTAB, set([])),
-        '.symtab': (SHT.SHT_SYMTAB, set([])),
+        '.shstrtab': (SHT.SHT_STRTAB, set()),
+        '.strtab': (SHT.SHT_STRTAB, set()),
+        '.symtab': (SHT.SHT_SYMTAB, set()),
         '.text': (SHT.SHT_PROGBITS, set([SHF.SHF_ALLOC, SHF.SHF_EXECINSTR]))
     }
 
+    @staticmethod
     def get(sec_name: str) -> tuple[SHT, set[SHF]]:
         if sec_name in SpecialSections._lookup:
             return SpecialSections._lookup[sec_name]
         if sec_name.startswith('.rel.'):
-            return (SHT.SHT_REL, set([]))
+            return (SHT.SHT_REL, set())
         if sec_name.startswith('.rela.'):
-            return (SHT.SHT_RELA, set([]))
+            return (SHT.SHT_RELA, set())
         return (SHT.SHT_NULL, set())

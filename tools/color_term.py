@@ -1,8 +1,14 @@
-def print_warn(msg: str):
-    print(f'\033[33m{msg}\033[39m')
+#!/usr/bin/env python3
+# Colored print utility
 
-def print_err(msg: str):
-    print(f'\033[31m{msg}\033[39m')
+def print_warn(*args, end='\n', **kwargs) -> None:
+    print('\033[33m', end='', **kwargs)
+    print(*args, end=end+'\033[39m', **kwargs)
 
-def print_success(msg: str):
-    print(f'\033[32m{msg}\033[39m')
+def print_err(*args, end='\n', **kwargs) -> None:
+    print('\033[31m', end='', **kwargs)
+    print(*args, end=end+'\033[39m', **kwargs)
+
+def print_success(*args, end='\n', **kwargs) -> None:
+    print('\033[32m', end='', **kwargs)
+    print(*args, end=end+'\033[39m', **kwargs)

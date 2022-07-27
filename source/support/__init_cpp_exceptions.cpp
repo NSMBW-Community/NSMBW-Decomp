@@ -22,7 +22,7 @@ void __init_cpp_exceptions(void) {
             mr temp,r2
         }
         void *r2 = temp;
-        
+
         __eti_init_info *info = _eti_init_info;
 
         fragmentID = __register_fragment(info, r2);

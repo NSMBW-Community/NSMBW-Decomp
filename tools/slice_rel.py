@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 # Slices a REL file into .o files
 
-import argparse
 from pathlib import Path
-from relfile import Rel
 
+from color_term import print_err
 from elffile import *
 from elfconsts import *
+from relfile import Rel
 from slicelib import *
 
 class RelocSym:
@@ -15,20 +15,18 @@ class RelocSym:
         self.mod_num = mod_num
         self.section = section
         self.addend = addend
-    
+
     def __repr__(self):
         return f'R_{self.mod_num:0x}_{self.section:0x}_{self.addend:0x}'
 
     def __str__(self):
         return self.__repr__()
-        
 
-reloc_syms: set[RelocSym] = set()
-module_relocs: dict[int, dict[RelocSym, tuple[RelocSym, PPC_RELOC_TYPE]]] = dict()
 
-def read_reloc_refs(rel_file: Rel, idx: int):
+def read_reloc_refs(rel_file: Rel, idx: int, reloc_syms: set[RelocSym], module_relocs: dict[int, dict[RelocSym, tuple[RelocSym, PPC_RELOC_TYPE]]]) -> None:
     assert idx not in module_relocs
-    module_relocs[idx] = dict()
+    module_relocs[idx] = {}
+
     for mod_num in rel_file.relocations:
         curr_pos = 0
         curr_section = 0
@@ -44,7 +42,8 @@ def read_reloc_refs(rel_file: Rel, idx: int):
                 reloc_syms.add(dest_sym)
                 module_relocs[idx][this_loc] = (dest_sym, reloc.reloc_type)
 
-def extract_slice(rel_file: Rel, slice: Slice):
+
+def extract_slice(rel_file: Rel, slice: Slice, module_relocs: dict[int, dict[RelocSym, tuple[RelocSym, PPC_RELOC_TYPE]]]) -> ElfFile:
     elf_file = ElfFile(ET.ET_REL, EM.EM_PPC)
 
     reloc_secs: list[ElfRelaSec] = []
@@ -81,9 +80,9 @@ def extract_slice(rel_file: Rel, slice: Slice):
 
             reloc_sec.header.sh_info = elf_file.get_section_index(sec.sec_name)
             elf_file.add_section(reloc_sec)
-    
+
     symtab_sec_idx = elf_file.add_section(symtab_sec)
-    _shstrtab_sec_idx = elf_file.add_section(shstrtab_sec)
+    elf_file.add_section(shstrtab_sec)
     strtab_sec_idx = elf_file.add_section(strtab_sec)
 
     symtab_sec.header.sh_link = strtab_sec_idx
@@ -93,32 +92,40 @@ def extract_slice(rel_file: Rel, slice: Slice):
 
     return elf_file
 
-if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description='Slices REL files')
-    parser.add_argument('rel_file', type=Path)
-    parser.add_argument('--out_path', '-o', default=Path('bin/sliced'), type=Path)
-    args = parser.parse_args()
 
-    rel: Path = args.rel_file
-    if not rel.is_file():
-        print(f'Invalid file {rel}')
-    else:
-        with open(rel, 'rb') as f:
-            # Read slices
-            with open(f'slices/{rel.with_suffix(".json").name}', 'r') as sf:
-                slice_file: SliceFile = load_slice_file(sf)
-                mod_num = slice_file.meta.mod_num
-                print(f'Slicing module {mod_num} ({f.name})...')
-                rel_file = Rel(mod_num, file=f)
-                read_reloc_refs(rel_file, mod_num)
-                
-                for slice in slice_file.slices:
-                    elf = extract_slice(rel_file, slice)
-                    out_filepath = args.out_path.joinpath(slice.slice_name)
-                    out_filepath.parents[0].mkdir(parents=True, exist_ok=True)
-                    with open(out_filepath, 'wb') as ef:
-                        ef.write(bytes(elf))
+def slice_rel(rel_file: Path, out_path: Path) -> None:
+    if not rel_file.is_file():
+        print_err('Fatal error: File', str(rel_file), 'not found!')
+        return
+
+    reloc_syms: set[RelocSym] = set()
+    module_relocs: dict[int, dict[RelocSym, tuple[RelocSym, PPC_RELOC_TYPE]]] = {}
+
+    # Read slices
+    with open(rel_file, 'rb') as f:
+        with open(f'slices/{rel_file.with_suffix(".json").name}') as sf:
+            slice_file: SliceFile = load_slice_file(sf)
+            mod_num = slice_file.meta.mod_num
+            print(f'Slicing module {mod_num} ({f.name})...')
+            rel_file = Rel(mod_num, file=f)
+            read_reloc_refs(rel_file, mod_num, reloc_syms, module_relocs)
+
+            for slice in slice_file.slices:
+                elf = extract_slice(rel_file, slice, module_relocs)
+                out_filepath = out_path.joinpath(slice.slice_name)
+                out_filepath.parents[0].mkdir(parents=True, exist_ok=True)
+                with open(out_filepath, 'wb') as ef:
+                    ef.write(bytes(elf))
 
     sorted_uniques = sorted(reloc_syms, key=lambda tup: (tup.mod_num, tup.section, tup.addend))
     with open('reloc_names.csv', 'w') as rf:
         rf.write('\n'.join([str(x) for x in sorted_uniques]))
+
+
+if __name__ == '__main__':
+    import argparse
+    parser = argparse.ArgumentParser(description='Slices REL files.')
+    parser.add_argument('rel_file', type=Path, help='REL file to be sliced.')
+    parser.add_argument('--out_path', '-o', default=Path('bin/sliced'), type=Path, help='Path the slices will be stored to.')
+    args = parser.parse_args()
+    slice_rel(args.rel_file, args.out_path)

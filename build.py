@@ -1,11 +1,29 @@
-from pathlib import Path
+#!/usr/bin/env python3
+# Build script
+
+import argparse
 import subprocess
+import sys
+from pathlib import Path
 
-from tools.color_term import *
-from tools.slicelib import SliceFile, SliceType, load_slice_file
+sys.path.append('tools')
 
-def print_cmd(cmd):
-    print(' '.join([str(x) for x in cmd]))
+from build_dol import build_dol
+from build_rel import build_rel
+from color_term import *
+from slice_dol import slice_dol
+from slice_rel import slice_rel
+from slicelib import SliceFile, SliceType, load_slice_file
+
+def print_cmd(*nargs, **kwargs):
+    global args
+    if args.v:
+        print(*nargs, **kwargs)
+
+
+parser = argparse.ArgumentParser(description='Builds the game executables.')
+parser.add_argument('-v', help='Prints commands for debugging', action='store_true')
+args = parser.parse_args()
 
 slices: list[SliceFile] = []
 
@@ -13,7 +31,7 @@ ldpath = 'compilers/Wii/1.1/mwldeppc.exe'
 ccpath = 'compilers/Wii/1.1/mwcceppc.exe'
 
 for file in Path('slices').glob('*'):
-    with open(file, 'r') as sf:
+    with open(file) as sf:
         slices.append(load_slice_file(sf))
 
 # Ensure correct order of slices
@@ -30,34 +48,31 @@ for slice_file in slices:
 
             Path(f'bin/compiled/{unit_name}/{slice.slice_src}').parents[0].mkdir(parents=True, exist_ok=True)
 
-            cmd = [ccpath, '-c', *ccflags, f'source/{slice.slice_src}']
+            cmd = [] if sys.platform == 'win32' else ['wine']
+            cmd.extend([ccpath, '-c', *ccflags, f'source/{slice.slice_src}'])
             cmd.extend(['-o', f'bin/compiled/{unit_name}/{slice.slice_name}'])
             cmd.extend(['-I-', '-i', 'include'])
-            print_cmd(cmd)
+            print_cmd(*cmd)
             subprocess.call(cmd)
 
 count_compiled_used = 0
 count_sliced_used = 0
 
 for slice_file in slices:
+
     # Step 2: slice main.dol and RELs
-
     slice_name_stem = Path(slice_file.meta.name).stem
-
     slice_is_rel = slice_file.meta.type == SliceType.REL
 
-    prog_to_use: str = 'tools/slice_rel.py' if slice_is_rel else 'tools/slice_dol.py'
-
-    cmd = ['python', prog_to_use, f'original/{slice_file.meta.name}', '-o', f'bin/sliced/{slice_name_stem}']
-    print_cmd(cmd)
-    subprocess.call(cmd)
-    print_success(f'Sliced {slice_file.meta.name}.')
+    if slice_is_rel:
+        slice_rel(Path(f'original/{slice_file.meta.name}'), Path(f'bin/sliced/{slice_name_stem}'))
+    else:
+        slice_dol(Path(f'original/{slice_file.meta.name}'), Path(f'bin/sliced/{slice_name_stem}'))
+    print_success('Sliced', slice_file.meta.name, end='.\n')
 
     # Step 3: link object files
-
     ldflags_dol = '-proc gekko -fp hard'
     ldflags_rel = '-proc gekko -fp hard -sdata 0 -sdata2 0 -m _prolog -opt_partial'
-
     out_file = slice_name_stem + ('.plf' if slice_is_rel else '.elf')
 
     # Select files
@@ -71,36 +86,35 @@ for slice_file in slices:
         elif try_paths[1].exists():
             file_names.append(try_paths[1])
             count_sliced_used += 1
-    
+
     base_lcf_file: str = 'template_rel.lcf' if slice_is_rel else 'template_dol.lcf'
     out_lcf_file = f'bin/{slice_name_stem}.lcf'
-    with open(base_lcf_file, 'r') as f:
+
+    with open(base_lcf_file) as f:
         base_lcf_contents = f.read()
+
     with open(out_lcf_file, 'w') as f:
         f.write('FORCEFILES {\n\t')
-        f.write('\n\t'.join([str(path) for path in file_names]))
+        f.write('\n\t'.join(['\\'.join(path.parts) for path in file_names])) # The linker requires backslashes
         f.write('\n}\n\n')
         f.write(base_lcf_contents)
 
     ldflags = ldflags_rel if slice_file.meta.type == SliceType.REL else ldflags_dol
-    cmd = [ldpath, *ldflags.split(' '), *file_names, '-lcf', out_lcf_file, '-o', f'bin/{out_file}']
-    print_cmd(cmd)
+    cmd = [] if sys.platform == 'win32' else ['wine']
+    cmd.extend([ldpath, *ldflags.split(' '), *file_names, '-lcf', out_lcf_file, '-o', f'bin/{out_file}'])
+    print_cmd(*cmd)
     subprocess.call(cmd)
 
-
 # Step 4: build main.dol
-subprocess.call(['python', 'tools/build_dol.py', 'bin/wiimj2d.elf'])
+build_dol(Path('bin/wiimj2d.elf'))
 
 # Step 5: build RELs
-
 fake_path = 'd:\\home\\Project\\WIIMJ2D\\EU\\PRD\\RVL\\bin\\'
+out_rel_names = [Path(f'bin/{x.meta.name.replace(".rel", ".plf").replace(".dol", ".elf")}') for x in slices]
+build_rel(out_rel_names[0], out_rel_names[1:], Path('alias_db.txt'), fake_path)
 
-out_rel_names = [f'bin/{x.meta.name.replace(".rel", ".plf").replace(".dol", ".elf")}' for x in slices]
-cmd = ['python', 'tools/build_rel.py', *out_rel_names, '--alias_file', 'alias_db.txt', '-p', fake_path]
-print_cmd(cmd)
-subprocess.call(cmd)
-
+# Done!
 print_success('Successfully built binaries!')
-print('Statistics:')
-perc = count_compiled_used / (count_compiled_used + count_sliced_used) * 100
-print(f'Compiled vs sliced files: {count_compiled_used}/{count_compiled_used + count_sliced_used} ({perc}%)')
+total_used = count_compiled_used + count_sliced_used
+perc = count_compiled_used / total_used
+print(total_used, 'object files used, of which', count_compiled_used, 'were compiled files.', f'({round(perc*100, 1)}% compiled files)')
