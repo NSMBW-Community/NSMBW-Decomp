@@ -117,10 +117,6 @@ def slice_rel(rel_file: Path, out_path: Path) -> None:
                 with open(out_filepath, 'wb') as ef:
                     ef.write(bytes(elf))
 
-    sorted_uniques = sorted(reloc_syms, key=lambda tup: (tup.mod_num, tup.section, tup.addend))
-    with open('reloc_names.csv', 'w') as rf:
-        rf.write('\n'.join([str(x) for x in sorted_uniques]))
-
 
 if __name__ == '__main__':
     import argparse

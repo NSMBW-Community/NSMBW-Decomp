@@ -1,22 +1,10 @@
-# Compiled object files
-*.o
-
-# Intermediate objects
-*.elf
-*.plf
-
-# Debug information
-*.str
-
-# Compiled files
+# Original files
 *.dol
 *.rel
+*.rel.LZ
 
-# Generated linker command files
-bin/*.lcf
-
-# Executables
-*.exe
+# Generated files
+bin/
 
 # Compilers
 compilers/
