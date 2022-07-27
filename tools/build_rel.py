@@ -25,22 +25,22 @@ def find_symbol(mod: ELFFile, i: int, symbol: Symbol, module_classify: dict[int,
     return False
 
 
-def process_file(modules: list[ELFFile], idx: int, filename: Path, alias_db: dict[str, str], fakedir: str, str_file: str) -> int:
+def process_file(modules: list[ELFFile], idx: int, filename: Path, alias_db: dict[str, str], fakedir: str, str_file: list) -> int:
     unresolved_symbol_count: int = 0
 
     # Generate .str file and output filename
-    str_file_offset = len(str_file)
+    str_file_offset = sum(len(s) + 1 for s in str_file)
     if fakedir:
-        path_str = f'{fakedir}{filename.name}\0'
+        path_str = f'{fakedir}{filename.name}'
     else:
-        path_str = f'{filename.resolve()}\0'
-    str_file += path_str
+        path_str = filename.resolve()
+    str_file.append(path_str)
 
     outfile = filename.with_suffix('.rel')
     unit_name = filename.stem
 
     # Create REL
-    rel_file = Rel(idx, path_offset=str_file_offset, path_size=len(path_str))
+    rel_file = Rel(idx, path_offset=str_file_offset, path_size=len(path_str) + 1)
     elffile = modules[idx]
     module_relocations: dict[int, list[RelRelocation]] = {}
 
@@ -239,7 +239,7 @@ def build_rel(elf_file: Path, plf_files: list[Path], alias_file: Path, fake_path
                     alias_db[from_sym] = to_sym
 
     # Initialize str file
-    str_file = ''
+    str_file = []
 
     # Open files and parse them
     files = [open(elf_file, 'rb')] + [open(plf, 'rb') for plf in plf_files]
@@ -260,7 +260,7 @@ def build_rel(elf_file: Path, plf_files: list[Path], alias_file: Path, fake_path
 
     # Write str file
     with open(elf_file.with_suffix('.str'), 'w') as f:
-        f.write(str_file)
+        f.write('\0'.join(str_file))
     print_success('Wrote', f.name, end='.\n')
 
 

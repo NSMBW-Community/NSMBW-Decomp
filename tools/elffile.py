@@ -76,9 +76,9 @@ class ElfHeader:
 class ElfSectionHeader:
     _struct = struct.Struct('>10I')
 
-    def __init__(self, sh_type=SHT.SHT_NULL, sh_flags: set[SHF]=set(), sh_addr=0, sh_link=0, sh_info=0, sh_addralign=0) -> None:
+    def __init__(self, sh_type=SHT.SHT_NULL, sh_flags: set[SHF]=None, sh_addr=0, sh_link=0, sh_info=0, sh_addralign=0) -> None:
         self.sh_type: SHT = sh_type
-        self.sh_flags: set[SHF] = sh_flags
+        self.sh_flags: set[SHF] = sh_flags if sh_flags else set()
         self.sh_addr: int = sh_addr
         self.sh_link: int = sh_link
         self.sh_info: int = sh_info
@@ -176,9 +176,9 @@ class ElfSection:
 
 
 class ElfStrtab(ElfSection):
-    def __init__(self, name='.strtab', strs: list[str]=[]) -> None:
+    def __init__(self, name='.strtab', strs: list[str]=None) -> None:
         super().__init__(name)
-        self.strs = strs
+        self.strs = strs if strs else []
         self.offs = 1 # first index is null byte
 
     def read(self, data: bytes, header: ElfSectionHeader) -> None:
@@ -241,10 +241,9 @@ class ElfSymbol:
 
 
 class ElfSymtab(ElfSection):
-    def __init__(self, name='.symtab', syms: list[ElfSymbol]=[ElfSymbol('')]) -> None:
+    def __init__(self, name='.symtab', syms: list[ElfSymbol]=None) -> None:
         super().__init__(name)
-
-        self.syms = syms
+        self.syms = syms if syms else [ElfSymbol('')]
 
     def read(self, data: bytes, header: ElfSectionHeader) -> None:
         super().read(data, header)
@@ -295,9 +294,9 @@ class ElfRela:
 
 
 class ElfRelaSec(ElfSection):
-    def __init__(self, name='.rela', relocs: list[ElfRela]=[]) -> None:
+    def __init__(self, name='.rela', relocs: list[ElfRela]=None) -> None:
         super().__init__(name)
-        self.relocs = relocs
+        self.relocs = relocs if relocs else []
 
     def read(self, data: bytes, header: ElfSectionHeader) -> None:
         super().read(data, header)

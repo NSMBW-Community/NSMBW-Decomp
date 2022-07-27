@@ -12,7 +12,7 @@ class JSONSliceData(typing.TypedDict):
 
 
 class SliceSection:
-    def __init__(self, sec_name: str, sec_idx: int, start_offs: int, end_offs: int, alignment) -> None:
+    def __init__(self, sec_name: str, sec_idx: int, start_offs: int, end_offs: int, alignment: int) -> None:
         self.sec_name = sec_name
         self.sec_idx = sec_idx
         self.start_offs = start_offs

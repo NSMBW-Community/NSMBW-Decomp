@@ -95,7 +95,7 @@ for slice_file in slices:
 
     with open(out_lcf_file, 'w') as f:
         f.write('FORCEFILES {\n\t')
-        f.write('\n\t'.join([str(path) for path in file_names]))
+        f.write('\n\t'.join(['\\'.join(path.parts) for path in file_names])) # The linker requires backslashes
         f.write('\n}\n\n')
         f.write(base_lcf_contents)
 
@@ -111,7 +111,7 @@ build_dol(Path('bin/wiimj2d.elf'))
 # Step 5: build RELs
 fake_path = 'd:\\home\\Project\\WIIMJ2D\\EU\\PRD\\RVL\\bin\\'
 out_rel_names = [Path(f'bin/{x.meta.name.replace(".rel", ".plf").replace(".dol", ".elf")}') for x in slices]
-build_rel(out_rel_names[0], out_rel_names[1:], 'alias_db.txt', fake_path)
+build_rel(out_rel_names[0], out_rel_names[1:], Path('alias_db.txt'), fake_path)
 
 # Done!
 print_success('Successfully built binaries!')
