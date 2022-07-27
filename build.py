@@ -115,6 +115,6 @@ build_rel(out_rel_names[0], out_rel_names[1:], Path('alias_db.txt'), fake_path)
 
 # Done!
 print_success('Successfully built binaries!')
-print('Statistics:')
-perc = count_compiled_used // count_compiled_used + count_sliced_used
-print('Compiled vs sliced files:', perc, f'({perc/100}%)')
+total_used = count_compiled_used + count_sliced_used
+perc = count_compiled_used / total_used
+print(total_used, 'object files used, of which', count_compiled_used, 'were compiled files.', f'({round(perc*100, 1)}% compiled files)')
