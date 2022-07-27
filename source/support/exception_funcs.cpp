@@ -9,15 +9,15 @@ public:
     uint n;
     dtorPtr	dtor;
     uint i;
-    
+
     __partial_array_destructor(void *array, uint elSize, uint elCount, dtorPtr dtor) {
         arrP = array;
         size = elSize;
-        n = elCount; 
+        n = elCount;
         this->dtor = dtor;
         i = n;
     }
-        
+
     ~__partial_array_destructor() {
         if(i < n && dtor) {
             for(char *ptr = (char *)arrP + size * i; i > 0; i--) {
@@ -40,7 +40,7 @@ void *__construct_new_array(void *block, ctorPtr ctor, dtorPtr dtor, uint size, 
 
         if (ctor) {
             __partial_array_destructor pad(ptr, size, n, dtor);
-            
+
             char *p = (char *)ptr;
             for (pad.i = 0; pad.i < n; p += size) {
                 ctor(p, 1);
@@ -53,7 +53,7 @@ void *__construct_new_array(void *block, ctorPtr ctor, dtorPtr dtor, uint size, 
 
 void __construct_array(void *ptr, ctorPtr ctor, dtorPtr dtor, uint size, uint n) {
     __partial_array_destructor pad(ptr, size, n, dtor);
-    
+
     char *p = (char *)ptr;
     for (pad.i = 0; pad.i < n; p += size) {
         ctor(p, 1);

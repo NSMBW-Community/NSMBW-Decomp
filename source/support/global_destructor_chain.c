@@ -7,7 +7,7 @@ typedef struct objectRef {
 } objectRef;
 
 objectRef *__global_destructor_chain;
-    
+
 void __register_global_object(void *obj, dtorPtr dtor, objectRef *lastRef) {
     lastRef->lastObject = __global_destructor_chain;
     lastRef->dtor = dtor;
