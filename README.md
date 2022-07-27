@@ -26,6 +26,7 @@ All compiled object files and the remaining sliced object files are linked toget
 ## Other relevant files
 
 `alias_db.txt`: Contains relocation helpers for rebuilding the `.rel` files.
+
 `syms.txt`: Contains known symbol names for `main.dol`. Will eventually be replaced by a proper symbol map.
 
 ## Setup
