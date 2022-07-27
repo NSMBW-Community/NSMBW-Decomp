@@ -7,7 +7,7 @@ public:
     void *arrP;
     uint size;
     uint n;
-    dtorPtr	dtor;
+    dtorPtr dtor;
     uint i;
 
     __partial_array_destructor(void *array, uint elSize, uint elCount, dtorPtr dtor) {
