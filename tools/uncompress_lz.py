@@ -1,8 +1,7 @@
 #!/usr/bin/env python3
-# Ported from https://github.com/RootCubed/RELocator/blob/master/uncompLZ.c by RootCubed
+# Ported from https://github.com/RootCubed/RELocator/blob/master/uncompLZ.c
 
 from pathlib import Path
-
 
 def uncompressLZ(infile: Path, outfile: Path) -> None:
     print('Opening', infile, end='...\n')
@@ -83,8 +82,8 @@ if __name__ == '__main__':
     # Parse arguments separately so this file can be imported from other ones
     import argparse
     parser = argparse.ArgumentParser(description='Uncompresses an LZ-compressed file.')
-    parser.add_argument('infile', type=Path)
-    parser.add_argument('outfile', type=Path)
+    parser.add_argument('infile', type=Path, help='Path to compressed file.')
+    parser.add_argument('outfile', type=Path, help='Path the uncompressed file is written to.')
     args = parser.parse_args()
 
     # Call actual function
