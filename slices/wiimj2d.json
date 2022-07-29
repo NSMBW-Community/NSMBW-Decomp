@@ -36,6 +36,7 @@
         {
             "name": "support/global_destructor_chain.o",
             "source": "support/global_destructor_chain.c",
+            "forceActive": ["__register_global_object", "__destroy_global_chain"],
             "memoryRanges": {
                 ".text": "0x2d62f0-0x2d6350",
                 ".sbss": "0x1418-0x141c"
