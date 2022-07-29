@@ -7,7 +7,7 @@
 - Lines should not exceed `100` characters, these can be split into multiple lines.
 - Use `nullptr` instead of `0` when assigning / comparing a pointer.
 - Use the `.cpp`/`.hpp` extension for C++ files, the `.c`/`.h` extension for C files and the `.s` extension for ASM files
-- The preferred indentation style is K&R.
+- The preferred indentation style is 1TBS/OTBS.
 
 ### Headers
 
@@ -20,32 +20,19 @@
 
 ### Includes
 
-- For system library includes use:
+- For includes use:
 
     ```c++
     #include <...>
     ```
-  
-- For game header includes use:
 
-    ```c++
-    #include "..."
-    ```
-  
-    (These includes are relative to the `include` folder.)
+    (These are relative to the `include` folder.)
 
 ### Names
 
 - Names for known symbols should match **exactly**, even including typos in the symbol.
 - Member variables must be prefixed with `m`.
-- Arguments for functions must be prefixed with:
-  - `p` for pointers
-  - `r` for passed-by-reference
-
-- Static variables with:
-  - No known symbol must be prefixed with `s`
-  - Global scope must be prefixed with `g`
-  
+- Arguments for functions must be prefixed with `p` for pointers.
 - Functions with no symbols must use **camelCase**.
 
 ### Classes

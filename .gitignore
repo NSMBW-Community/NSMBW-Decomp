@@ -1,3 +1,6 @@
+# Output folder
+bin/
+
 # Original files
 *.dol
 *.rel
