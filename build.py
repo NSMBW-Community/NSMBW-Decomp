@@ -31,7 +31,7 @@ ldpath = 'compilers/Wii/1.1/mwldeppc.exe'
 ccpath = 'compilers/Wii/1.1/mwcceppc.exe'
 
 for file in Path('slices').glob('*'):
-    with open(file) as sf:
+    with open(file, 'r') as sf:
         slices.append(load_slice_file(sf))
 
 # Ensure correct order of slices
@@ -77,25 +77,36 @@ for slice_file in slices:
 
     # Select files
     file_names: list[str] = []
+    lcf_force_files: list[str] = []
     for slice in slice_file.slices:
         try_paths = [Path(f'bin/{x}/{slice_name_stem}/{slice.slice_name}') for x in ['compiled', 'sliced']]
 
+        use_file: Path = None
         if try_paths[0].exists():
-            file_names.append(try_paths[0])
+            use_file = try_paths[0]
             count_compiled_used += 1
         elif try_paths[1].exists():
-            file_names.append(try_paths[1])
+            use_file = try_paths[1]
             count_sliced_used += 1
-
+        
+        if use_file:
+            file_names.append(use_file)
+            if not slice.force_active:
+                lcf_force_files.append(use_file)
+    
     base_lcf_file: str = 'template_rel.lcf' if slice_is_rel else 'template_dol.lcf'
     out_lcf_file = f'bin/{slice_name_stem}.lcf'
-
-    with open(base_lcf_file) as f:
+    with open(base_lcf_file, 'r') as f:
         base_lcf_contents = f.read()
-
     with open(out_lcf_file, 'w') as f:
         f.write('FORCEFILES {\n\t')
-        f.write('\n\t'.join(['\\'.join(path.parts) for path in file_names])) # The linker requires backslashes
+        f.write('\n\t'.join(['\\'.join(path.parts) for path in lcf_force_files])) # The linker requires backslashes
+        f.write('\n}\n')
+        force_actives = []
+        for slice in [x.force_active for x in slice_file.slices if x.force_active]:
+            force_actives.extend(slice)
+        f.write('FORCEACTIVE {\n\t')
+        f.write('\n\t'.join(force_actives))
         f.write('\n}\n\n')
         f.write(base_lcf_contents)
 
