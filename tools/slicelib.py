@@ -59,7 +59,7 @@ class SliceMeta:
         self.force_active: list[str]
 
     def from_meta(meta: dict) -> 'SliceMeta':
-        secs: dict[str, SliceSectionInfo] = dict()
+        secs: dict[str, SliceSectionInfo] = {}
         for sec in meta['sections']:
             secs[sec] = SliceSectionInfo(meta['sections'][sec]['index'], meta['sections'][sec]['align'])
         sm = SliceMeta(secs)

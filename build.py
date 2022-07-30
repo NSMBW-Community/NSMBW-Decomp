@@ -31,7 +31,7 @@ ldpath = 'compilers/Wii/1.1/mwldeppc.exe'
 ccpath = 'compilers/Wii/1.1/mwcceppc.exe'
 
 for file in Path('slices').glob('*'):
-    with open(file, 'r') as sf:
+    with open(file) as sf:
         slices.append(load_slice_file(sf))
 
 # Ensure correct order of slices
@@ -96,7 +96,7 @@ for slice_file in slices:
     
     base_lcf_file: str = 'template_rel.lcf' if slice_is_rel else 'template_dol.lcf'
     out_lcf_file = f'bin/{slice_name_stem}.lcf'
-    with open(base_lcf_file, 'r') as f:
+    with open(base_lcf_file) as f:
         base_lcf_contents = f.read()
     with open(out_lcf_file, 'w') as f:
         f.write('FORCEFILES {\n\t')
