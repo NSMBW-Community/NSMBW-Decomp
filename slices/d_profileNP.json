@@ -29,14 +29,14 @@
     "slices": [
         {
             "name": "rel_init.o",
-            "source": "support/rel_init.cpp",
+            "source": "dol/rel/rel_init.cpp",
             "memoryRanges": {
                 ".text": "0x0-0x70"
             }
         },
         {
             "name": "global_destructor_chain.o",
-            "source": "support/global_destructor_chain.c",
+            "source": "runtime/global_destructor_chain.c",
             "compilerFlags": "-c -Cpp_exceptions off -O4 -fp hard -sdata 0 -sdata2 0",
             "memoryRanges": {
                 ".text": "0x70-0xf0",

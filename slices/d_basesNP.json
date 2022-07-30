@@ -30,7 +30,7 @@
     "slices": [
         {
             "name": "rel_init.o",
-            "source": "support/rel_init.cpp",
+            "source": "dol/rel/rel_init.cpp",
             "memoryRanges": {
                 ".text": "0x0-0x70"
             }

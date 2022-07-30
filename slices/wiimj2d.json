@@ -34,8 +34,8 @@
             }
         },
         {
-            "name": "support/global_destructor_chain.o",
-            "source": "support/global_destructor_chain.c",
+            "name": "runtime/global_destructor_chain.o",
+            "source": "runtime/global_destructor_chain.c",
             "forceActive": ["__register_global_object", "__destroy_global_chain"],
             "memoryRanges": {
                 ".text": "0x2d62f0-0x2d6350",
@@ -43,8 +43,8 @@
             }
         },
         {
-            "name": "support/exception_funcs.o",
-            "source": "support/exception_funcs.cpp",
+            "name": "runtime/exception_funcs.o",
+            "source": "runtime/exception_funcs.cpp",
             "compilerFlags": "-proc gekko -fp hard -O4 -char signed -rtti off -enum int -func_align 4 -use_lmw_stmw on -Cpp_exceptions on",
             "memoryRanges": {
                 ".text": "0x2d6350-0x2d6700"
@@ -57,8 +57,8 @@
             }
         },
         {
-            "name": "support/__init_cpp_exceptions.o",
-            "source": "support/__init_cpp_exceptions.cpp",
+            "name": "runtime/__init_cpp_exceptions.o",
+            "source": "runtime/__init_cpp_exceptions.cpp",
             "memoryRanges": {
                 ".text": "0x2d6e50-0x2d6ec0",
                 ".ctors": "0x0-0x4",
