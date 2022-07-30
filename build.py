@@ -103,7 +103,7 @@ for slice_file in slices:
 
     with open(out_lcf_file, 'w') as f:
         f.write('FORCEFILES {\n\t')
-        f.write('\n\t'.join(['\\'.join(path.relative_to(PROJECTDIR).parts) for path in file_names])) # The linker requires backslashes
+        f.write('\n\t'.join(['\\'.join(path.relative_to(PROJECTDIR).parts) for path in lcf_force_files])) # The linker requires backslashes
         f.write('\n}\n')
         force_actives = []
         for slice in [x.force_active for x in slice_file.slices if x.force_active]:
