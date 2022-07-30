@@ -51,7 +51,9 @@ for slice_file in slices:
             cmd.extend(['-o', f'{BUILDDIR}/compiled/{unit_name}/{slice.slice_name}'])
             cmd.extend(['-I-', '-i', f'{INCDIR}'])
             print_cmd(*cmd)
-            subprocess.call(cmd)
+            out = subprocess.run(cmd)
+            if out.returncode != 0:
+                sys.exit()
 
 count_compiled_used = 0
 count_sliced_used = 0
@@ -115,7 +117,9 @@ for slice_file in slices:
     cmd = [] if sys.platform == 'win32' else ['wine']
     cmd.extend([LD, *ldflags.split(' '), *file_names, '-lcf', out_lcf_file, '-o', f'{BUILDDIR}/{out_file}'])
     print_cmd(*cmd)
-    subprocess.call(cmd)
+    out = subprocess.run(cmd)
+    if out.returncode != 0:
+        sys.exit()
 
 # Step 4: build main.dol
 build_dol(Path(f'{BUILDDIR}/wiimj2d.elf'))

@@ -1,4 +1,4 @@
-#include "support/rel_init.h"
+#include "dol/rel/rel_init.h"
 #include "dol/rel/rel.h"
 
 extern "C" {
