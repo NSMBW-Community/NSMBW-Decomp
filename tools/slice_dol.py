@@ -7,6 +7,7 @@ from color_term import *
 from dolfile import Dol
 from elffile import *
 from elfconsts import *
+from project_settings import *
 from slicelib import *
 
 def extract_slice(dol_file: Dol, slice: Slice, syms: dict[int, str]) -> ElfFile:
@@ -58,17 +59,17 @@ def slice_dol(dol_file: Path, out_path: Path) -> None:
 
     # TODO: use an actual symbol map file
     syms: dict[int, str] = {}
-    with open('syms.txt') as sym_file:
+    with open(SYMBOL_FILE) as sym_file:
         for line in sym_file:
             if line != '\n':
                 sym, addr = line.split('=')
                 if sym in syms:
-                    print_warn('Warning: symbol', sym, 'defined multiple times in syms.txt!')
+                    print_warn('Warning: symbol', sym, 'defined multiple times in', SYMBOL_FILE.name, end='!\n')
                 syms[sym] = int(addr, 16)
 
     # Read slices
     with open(dol_file, 'rb') as f:
-        with open(f'slices/{dol_file.with_suffix(".json").name}') as sf:
+        with open(f'{SLICEDIR}/{dol_file.with_suffix(".json").name}') as sf:
             slice_file: SliceFile = load_slice_file(sf)
             print(f'Slicing module 0 ({f.name})...')
             dol_file = Dol(file=f)

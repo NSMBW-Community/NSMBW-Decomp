@@ -7,17 +7,14 @@ import sys
 from typing import Union
 import urllib.parse, urllib.request
 
-toolsfolder = 'tools'
-codesections = ['.init', '.text']
-slicefolder: Path = Path('slices')
-originalfolder: Path = Path('original')
-includefolder: Path = Path('include')
-sys.path.append(toolsfolder)
+sys.path.append('tools')
 
 from color_term import *
 from dolfile import Dol, DolSection
+from project_settings import *
 from relfile import Rel, RelSection
 
+codesections = ['.init', '.text']
 
 def get_code(rawdata: Union[Dol, Rel], idx: int, startaddr: int, endaddr: int, base_rel_addr: int) -> bytes:
     section: Union[DolSection, RelSection] = rawdata.sections[idx]
@@ -35,7 +32,7 @@ def get_code(rawdata: Union[Dol, Rel], idx: int, startaddr: int, endaddr: int, b
 
 def process_header(include: Path, contextfiles: set[Path]):
     # Make path relative
-    include = includefolder.joinpath(include)
+    include = INCDIR.joinpath(include)
 
     # Check if already read
     if include in contextfiles:
@@ -61,7 +58,7 @@ def process_header(include: Path, contextfiles: set[Path]):
 def main(source_file: str, startaddr: int, endaddr: int, includes: list[str]) -> None:
 
     # Check if the slice file for source exists
-    slicefile: Path = slicefolder.joinpath(source_file + '.json')
+    slicefile: Path = SLICEDIR.joinpath(source_file + '.json')
     if not slicefile.is_file():
         print_err('Fatal error: File', str(slicefile), 'not found!')
         return
@@ -74,7 +71,7 @@ def main(source_file: str, startaddr: int, endaddr: int, includes: list[str]) ->
     type: str = slicejson['meta']['type'].lower()
 
     # Check if the original file for source exists
-    originalfile: Path = originalfolder.joinpath(source_file + f'.{type}')
+    originalfile: Path = ORIGDIR.joinpath(source_file + f'.{type}')
     if not originalfile.is_file():
         print_err('Fatal error: File', str(originalfile), 'not found!')
         return

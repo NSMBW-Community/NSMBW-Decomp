@@ -66,7 +66,7 @@ class SliceMeta:
         sm.type = SliceType.REL if meta['type'] == 'REL' else SliceType.DOL
         sm.name = meta['fileName']
         sm.mod_num = meta['moduleNum']
-        dcf = meta['defaultCompilerFlags'] if 'defaultCompilerFlags' in meta else None
+        dcf = meta.get('defaultCompilerFlags', None)
         sm.default_compiler_flags = dcf.split(' ')
         return sm
 
@@ -93,9 +93,9 @@ def load_slice_file(file: typing.TextIO) -> SliceFile:
             sec_info = slice_meta.secs[sec_name]
             slice_sections.append(SliceSection(sec_name, sec_info.index, begin, end, sec_info.align))
 
-        src = slice['source'] if 'source' in slice else None
-        flags = slice['compilerFlags'] if 'compilerFlags' in slice else None
-        fa = slice['forceActive'] if 'forceActive' in slice else None
+        src = slice.get('source', None)
+        flags = slice.get('compilerFlags', None)
+        fa = slice.get('forceActive', None)
         slices.append(Slice(slice_name, src, slice_sections, flags, fa))
 
     return SliceFile(slices, slice_meta)

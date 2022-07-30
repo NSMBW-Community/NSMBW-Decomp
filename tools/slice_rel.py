@@ -6,6 +6,7 @@ from pathlib import Path
 from color_term import print_err
 from elffile import *
 from elfconsts import *
+from project_settings import *
 from relfile import Rel
 from slicelib import *
 
@@ -103,7 +104,7 @@ def slice_rel(rel_file: Path, out_path: Path) -> None:
 
     # Read slices
     with open(rel_file, 'rb') as f:
-        with open(f'slices/{rel_file.with_suffix(".json").name}') as sf:
+        with open(f'{SLICEDIR}/{rel_file.with_suffix(".json").name}') as sf:
             slice_file: SliceFile = load_slice_file(sf)
             mod_num = slice_file.meta.mod_num
             print(f'Slicing module {mod_num} ({f.name})...')

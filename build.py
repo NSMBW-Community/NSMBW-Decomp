@@ -11,6 +11,7 @@ sys.path.append('tools')
 from build_dol import build_dol
 from build_rel import build_rel
 from color_term import *
+from project_settings import *
 from slice_dol import slice_dol
 from slice_rel import slice_rel
 from slicelib import SliceFile, SliceType, load_slice_file
@@ -27,10 +28,7 @@ args = parser.parse_args()
 
 slices: list[SliceFile] = []
 
-ldpath = 'compilers/Wii/1.1/mwldeppc.exe'
-ccpath = 'compilers/Wii/1.1/mwcceppc.exe'
-
-for file in Path('slices').glob('*'):
+for file in SLICEDIR.glob('*.json'):
     with open(file) as sf:
         slices.append(load_slice_file(sf))
 
@@ -46,12 +44,12 @@ for slice_file in slices:
             if slice.cc_flags:
                 ccflags = slice.cc_flags
 
-            Path(f'bin/compiled/{unit_name}/{slice.slice_src}').parents[0].mkdir(parents=True, exist_ok=True)
+            Path(f'{BUILDDIR}/compiled/{unit_name}/{slice.slice_src}').parents[0].mkdir(parents=True, exist_ok=True)
 
             cmd = [] if sys.platform == 'win32' else ['wine']
-            cmd.extend([ccpath, '-c', *ccflags, f'source/{slice.slice_src}'])
-            cmd.extend(['-o', f'bin/compiled/{unit_name}/{slice.slice_name}'])
-            cmd.extend(['-I-', '-i', 'include'])
+            cmd.extend([CC, '-c', *ccflags, f'{SRCDIR}/{slice.slice_src}'])
+            cmd.extend(['-o', f'{BUILDDIR}/compiled/{unit_name}/{slice.slice_name}'])
+            cmd.extend(['-I-', '-i', f'{INCDIR}'])
             print_cmd(*cmd)
             subprocess.call(cmd)
 
@@ -65,9 +63,9 @@ for slice_file in slices:
     slice_is_rel = slice_file.meta.type == SliceType.REL
 
     if slice_is_rel:
-        slice_rel(Path(f'original/{slice_file.meta.name}'), Path(f'bin/sliced/{slice_name_stem}'))
+        slice_rel(Path(f'{ORIGDIR}/{slice_file.meta.name}'), Path(f'{BUILDDIR}/sliced/{slice_name_stem}'))
     else:
-        slice_dol(Path(f'original/{slice_file.meta.name}'), Path(f'bin/sliced/{slice_name_stem}'))
+        slice_dol(Path(f'{ORIGDIR}/{slice_file.meta.name}'), Path(f'{BUILDDIR}/sliced/{slice_name_stem}'))
     print_success('Sliced', slice_file.meta.name, end='.\n')
 
     # Step 3: link object files
@@ -79,7 +77,7 @@ for slice_file in slices:
     file_names: list[str] = []
     lcf_force_files: list[str] = []
     for slice in slice_file.slices:
-        try_paths = [Path(f'bin/{x}/{slice_name_stem}/{slice.slice_name}') for x in ['compiled', 'sliced']]
+        try_paths = [Path(f'{BUILDDIR}/{x}/{slice_name_stem}/{slice.slice_name}') for x in ['compiled', 'sliced']]
 
         use_file: Path = None
         if try_paths[0].exists():
@@ -88,19 +86,22 @@ for slice_file in slices:
         elif try_paths[1].exists():
             use_file = try_paths[1]
             count_sliced_used += 1
-        
+
         if use_file:
             file_names.append(use_file)
             if not slice.force_active:
                 lcf_force_files.append(use_file)
-    
-    base_lcf_file: str = 'template_rel.lcf' if slice_is_rel else 'template_dol.lcf'
-    out_lcf_file = f'bin/{slice_name_stem}.lcf'
+
+
+    base_lcf_file: Path = LCF_TEMPLATE_REL if slice_is_rel else LCF_TEMPLATE_DOL
+    out_lcf_file = f'{BUILDDIR}/{slice_name_stem}.lcf'
+
     with open(base_lcf_file) as f:
         base_lcf_contents = f.read()
+
     with open(out_lcf_file, 'w') as f:
         f.write('FORCEFILES {\n\t')
-        f.write('\n\t'.join(['\\'.join(path.parts) for path in lcf_force_files])) # The linker requires backslashes
+        f.write('\n\t'.join(['\\'.join(path.relative_to(PROJECTDIR).parts) for path in file_names])) # The linker requires backslashes
         f.write('\n}\n')
         force_actives = []
         for slice in [x.force_active for x in slice_file.slices if x.force_active]:
@@ -112,17 +113,17 @@ for slice_file in slices:
 
     ldflags = ldflags_rel if slice_file.meta.type == SliceType.REL else ldflags_dol
     cmd = [] if sys.platform == 'win32' else ['wine']
-    cmd.extend([ldpath, *ldflags.split(' '), *file_names, '-lcf', out_lcf_file, '-o', f'bin/{out_file}'])
+    cmd.extend([LD, *ldflags.split(' '), *file_names, '-lcf', out_lcf_file, '-o', f'{BUILDDIR}/{out_file}'])
     print_cmd(*cmd)
     subprocess.call(cmd)
 
 # Step 4: build main.dol
-build_dol(Path('bin/wiimj2d.elf'))
+build_dol(Path(f'{BUILDDIR}/wiimj2d.elf'))
 
 # Step 5: build RELs
 fake_path = 'd:\\home\\Project\\WIIMJ2D\\EU\\PRD\\RVL\\bin\\'
-out_rel_names = [Path(f'bin/{x.meta.name.replace(".rel", ".plf").replace(".dol", ".elf")}') for x in slices]
-build_rel(out_rel_names[0], out_rel_names[1:], Path('alias_db.txt'), fake_path)
+out_rel_names = [Path(f'{BUILDDIR}/{x.meta.name.replace(".rel", ".plf").replace(".dol", ".elf")}') for x in slices]
+build_rel(out_rel_names[0], out_rel_names[1:], ALIAS_FILE, fake_path)
 
 # Done!
 print_success('Successfully built binaries!')
