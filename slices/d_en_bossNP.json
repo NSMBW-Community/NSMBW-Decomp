@@ -6,25 +6,25 @@
         "moduleNum": 4,
         "baseAddr": "80B1CA10",
         "sections": {
-            "":                     { "index": 0,  "align": 0 },
-            ".text":                { "index": 1,  "align": 16 },
-            ".ctors":               { "index": 2,  "align": 4 },
-            ".dtors":               { "index": 3,  "align": 4 },
-            ".data":                { "index": 4,  "align": 8 },
-            ".rodata":              { "index": 5,  "align": 8 },
-            ".bss":                 { "index": 6,  "align": 8 },
-            ".rela.text":           { "index": 7,  "align": 4 },
-            ".rela.ctors":          { "index": 8,  "align": 4 },
-            ".rela.dtors":          { "index": 9,  "align": 4 },
-            ".rela.data":           { "index": 10, "align": 4 },
-            ".rela.rodata":         { "index": 11, "align": 4 },
-            ".mwcats.text":         { "index": 12, "align": 4 },
-            ".rela.mwcats.text":    { "index": 13, "align": 4 },
-            ".symtab":              { "index": 14, "align": 4 },
-            ".shstrtab":            { "index": 15, "align": 1 },
-            ".strtab":              { "index": 16, "align": 1 },
-            ".comment":             { "index": 17, "align": 4 },
-            ".PPC.EMB.apuinfo":     { "index": 18, "align": 16 }
+            "":                     { "index": 0,  "align": 0, "size": "0x0" },
+            ".text":                { "index": 1,  "align": 16, "size": "0x5702c" },
+            ".ctors":               { "index": 2,  "align": 4, "size": "0x68" },
+            ".dtors":               { "index": 3,  "align": 4, "size": "0x4" },
+            ".data":                { "index": 4,  "align": 8, "size": "0x21f0" },
+            ".rodata":              { "index": 5,  "align": 8, "size": "0x13520" },
+            ".bss":                 { "index": 6,  "align": 8, "size": "0x487c" },
+            ".rela.text":           { "index": 7,  "align": 4, "size": "0x0" },
+            ".rela.ctors":          { "index": 8,  "align": 4, "size": "0x0" },
+            ".rela.dtors":          { "index": 9,  "align": 4, "size": "0x0" },
+            ".rela.data":           { "index": 10, "align": 4, "size": "0x0" },
+            ".rela.rodata":         { "index": 11, "align": 4, "size": "0x0" },
+            ".mwcats.text":         { "index": 12, "align": 4, "size": "0x0" },
+            ".rela.mwcats.text":    { "index": 13, "align": 4, "size": "0x0" },
+            ".symtab":              { "index": 14, "align": 4, "size": "0x0" },
+            ".shstrtab":            { "index": 15, "align": 1, "size": "0x0" },
+            ".strtab":              { "index": 16, "align": 1, "size": "0x0" },
+            ".comment":             { "index": 17, "align": 4, "size": "0x0" },
+            ".PPC.EMB.apuinfo":     { "index": 18, "align": 16, "size": "0x0" }
         }
     },
     "slices": [
@@ -34,17 +34,6 @@
             "compilerFlags": "",
             "memoryRanges": {
                 ".text": "0x0-0x70"
-            }
-        },
-        {
-            "name": "d_en_bossNP.o",
-            "memoryRanges": {
-                ".text": "0x70-0x5702c",
-                ".ctors": "0x0-0x68",
-                ".dtors": "0x0-0x4",
-                ".data": "0x0-0x21f0",
-                ".rodata": "0x0-0x13520",
-                ".bss": "0x0-0x487c"
             }
         }
     ]

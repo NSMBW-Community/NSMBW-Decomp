@@ -5,45 +5,25 @@
         "moduleNum": 0,
         "defaultCompilerFlags": "-proc gekko -fp hard -inline off -O4 -Cpp_exceptions off",
         "sections": {
-            ".init":                { "index": 0,  "align": 16 },
-            ".text":                { "index": 1,  "align": 16 },
-            ".ctors":               { "index": 9,  "align": 4 },
-            ".dtors":               { "index": 10, "align": 8 },
-            ".data":                { "index": 11, "align": 8 },
-            ".rodata":              { "index": 12, "align": 8 },
-            ".sdata2":              { "index": 14, "align": 4 },
-            ".sbss2":               { "index": -1, "align": 4 },
-            ".sdata":               { "index": 13, "align": 4 },
-            ".sbss":                { "index": -1, "align": 4 },
-            ".bss":                 { "index": -1, "align": 4 }
+            ".init":                { "index": 0,  "align": 16, "size": "0x26c0" },
+            ".text":                { "index": 1,  "align": 16, "size": "0x2e7560" },
+            ".ctors":               { "index": 9,  "align": 4, "size": "0x2d4" },
+            ".dtors":               { "index": 10, "align": 8, "size": "0x20" },
+            ".data":                { "index": 11, "align": 8, "size": "0x106c0" },
+            ".rodata":              { "index": 12, "align": 8, "size": "0x532e0" },
+            ".sdata2":              { "index": 14, "align": 4, "size": "0x4b60" },
+            ".sbss2":               { "index": -1, "align": 4, "size": "0x4b60" },
+            ".sdata":               { "index": 13, "align": 4, "size": "0x2520" },
+            ".sbss":                { "index": -1, "align": 4, "size": "0x14c0" },
+            ".bss":                 { "index": -1, "align": 4, "size": "0xd6000" }
         }
     },
     "slices": [
-        {
-            "name": "wiimj2d_1.o",
-            "memoryRanges": {
-                ".init": "0x0-0x26c0",
-                ".text": "0x0-0x15AEF0",
-                ".data": "0x0-0x106c0",
-                ".rodata": "0x0-0x532e0",
-                ".sbss2": "0x0-0x5f00",
-                ".sdata2": "0x0-0x4b60",
-                ".sbss": "0x0-0x1418",
-                ".sdata": "0x0-0x2508",
-                ".bss": "0x0-0xd6000"
-            }
-        },
         {
             "name": "dol/cLib/c_tree.o",
             "source": "dol/cLib/c_tree.cpp",
             "memoryRanges": {
                 ".text": "0x15AEF0-0x15B100"
-            }
-        },
-        {
-            "name": "wiimj2d_2.o",
-            "memoryRanges": {
-                ".text": "0x15B100-0x2d62f0"
             }
         },
         {
@@ -65,30 +45,14 @@
             }
         },
         {
-            "name": "wiimj2d_3.o",
-            "memoryRanges": {
-                ".text": "0x2d6700-0x2d6e50"
-            }
-        },
-        {
             "name": "runtime/__init_cpp_exceptions.o",
             "source": "runtime/__init_cpp_exceptions.cpp",
             "compilerFlags": "-proc gekko -fp hard -O4,p -char signed -rtti off -enum int -func_align 4 -Cpp_exceptions off",
             "memoryRanges": {
                 ".text": "0x2d6e50-0x2d6ec0",
                 ".ctors": "0x0-0x4",
-                ".dtors": "0x0-0x8",
+                ".dtors": "0x0-0xc",
                 ".sdata": "0x2508-0x250c"
-            }
-        },
-        {
-            "name": "wiimj2d_4.o",
-            "memoryRanges": {
-                ".text": "0x2d6ec0-0x2e7560",
-                ".ctors": "0x4-0x2d4",
-                ".dtors": "0xc-0x20",
-                ".sdata": "0x250c-0x2520",
-                ".sbss": "0x141c-0x14c0"
             }
         }
     ]
