@@ -177,35 +177,46 @@ class ElfSection:
 class ElfStrtab(ElfSection):
     def __init__(self, name='.strtab', strs: list[str]=None) -> None:
         super().__init__(name)
-        self.strs = strs if strs else []
-        self.pos = 1
+        if strs:
+            i = 1
+            self.strs = []
+            self.lookup = {}
+            for s in strs:
+                self.strs.append(s)
+                self.lookup[i] = s
+                i += len(s) + 1
+            self.pos = i
+        else:
+            self.strs = []
+            self.lookup = {}
+            self.pos = 1
 
     @staticmethod
     def read(data: bytes, header: ElfSectionHeader) -> 'ElfStrtab':
         assert len(data) == header.sh_size
-        strs = data.decode('utf-8').split('\0')
+        strs = [s for s in data.decode('utf-8').split('\0') if s != '']
         sec = ElfStrtab('', strs)
         sec.header = header
         sec.data = data
         return sec
-    
-    def _get_data(self) -> None:
-        return b'\0' + ''.join([f'{str}\0' for str in self.strs]).encode('utf-8')
         
     def _prepare_for_write(self) -> None:
-        self.data = self._get_data()
+        self.data = b'\0' + ''.join([f'{str}\0' for str in self.strs]).encode('utf-8')
         return super()._prepare_for_write()
 
     def get_at_index(self, index: int) -> str:
-        return self.strs[index]
+        return self.strs[index - 1]
     def get_at_offset(self, index: int) -> str:
-        return self._get_data()[index:].split(b'\0')[0].decode('utf-8')
+        if index == 0:
+            return ''
+        return self.lookup[index] if index in self.lookup else ''
 
     def add_string(self, string: str) -> int:
         if string == '':
             return 0
         curr_pos = self.pos
         self.strs.append(string)
+        self.lookup[curr_pos] = string
         self.pos += len(string) + 1
         return curr_pos
 
@@ -258,22 +269,29 @@ class ElfSymbol:
 class ElfSymtab(ElfSection):
     def __init__(self, name='.symtab', syms: list[ElfSymbol]=None) -> None:
         super().__init__(name)
-        self.syms = syms if syms else [ElfSymbol('')]
+        self.syms = syms if syms else []
 
     @staticmethod
     def read(data: bytes, strtab: ElfStrtab, header: ElfSectionHeader) -> 'ElfSymtab':
         assert len(data) == header.sh_size
         syms = []
         for i in range(0, len(data), ElfSymbol._struct.size):
+            if i == 0:
+                # NULL symbol
+                continue
             syms.append(ElfSymbol.read(data, i, strtab))
         sec = ElfSymtab('', syms)
         sec.header = header
         return sec
 
     def _prepare_for_write(self) -> None:
-        self.data = b''.join([bytes(sym) for sym in self.syms])
+        null_sym = ElfSymbol('')
+        null_sym.st_name = 0
+        self.data = bytes(null_sym) + b''.join([bytes(sym) for sym in self.syms])
         self.header.sh_entsize = ElfSymbol._struct.size
-        last_local = [idx for idx, sym in enumerate(self.syms) if sym.st_info_bind == STB.STB_LOCAL][-1]
+        local_syms = [idx + 1 for idx, sym in enumerate(self.syms) if sym.st_info_bind == STB.STB_LOCAL]
+        print(local_syms)
+        last_local = local_syms[-1] if len(local_syms) > 0 else 0
         self.header.sh_info = last_local + 1
         super()._prepare_for_write()
 
@@ -286,6 +304,12 @@ class ElfSymtab(ElfSection):
     def add_symbol(self, sym: ElfSymbol) -> int:
         self.syms.append(sym)
         return len(self.syms) - 1
+
+    def get_symbol(self, idx: int) -> ElfSymbol:
+        return self.syms[idx]
+        
+    def get_symbols(self, name: str) -> list[ElfSymbol]:
+        return [i for i in self.syms if i.name == name]
 
 
 class ElfRela:
@@ -402,7 +426,7 @@ class ElfFile:
     def get_section(self, name: str) -> ElfSection:
         if not self.has_section(name):
             return None
-        return next(x for x in self.sections if x.name == name)
+        return next((x for x in self.sections if x.name == name), None)
 
     def get_section_index(self, name: str) -> int:
         for i, sec in enumerate(self.sections):
