@@ -1,4 +1,4 @@
-#include <dol/cLib/c_tree.h>
+#include <dol/cLib/c_tree.hpp>
 #include <types.h>
 
 cTreeNd_c::cTreeNd_c() {
@@ -78,7 +78,7 @@ bool cTreeMg_c::removeTreeNode(cTreeNd_c* node) {
     return true;
 }
 
-cTreeNd_c * cTreeNd_c::getTreeNext() {
+cTreeNd_c * cTreeNd_c::getTreeNext() const {
     cTreeNd_c* child = this->mpChild;
 
     if (child != nullptr) {
@@ -88,7 +88,7 @@ cTreeNd_c * cTreeNd_c::getTreeNext() {
     return this->getTreeNextNotChild();
 }
 
-cTreeNd_c* cTreeNd_c::getTreeNextNotChild() {
+cTreeNd_c* cTreeNd_c::getTreeNextNotChild() const {
     if (this->mpNext != nullptr) {
         return this->mpNext;
     }

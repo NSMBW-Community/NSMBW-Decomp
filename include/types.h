@@ -47,11 +47,3 @@ typedef struct {
 typedef float MTX33[3][3];
 typedef float MTX34[3][4];
 typedef float MTX44[4][4];
-
-#ifndef NULL
-    #ifdef  __cplusplus
-        #define NULL 0
-    #else
-        #define NULL ((void *)0)
-    #endif
-#endif

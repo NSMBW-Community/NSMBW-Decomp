@@ -20,10 +20,17 @@
     },
     "slices": [
         {
+            "name": "dol/cLib/c_list.o",
+            "source": "dol/cLib/c_list.cpp",
+            "memoryRanges": {
+                ".text": "0x15a8d0-0x15aa20"
+            }
+        },
+        {
             "name": "dol/cLib/c_tree.o",
             "source": "dol/cLib/c_tree.cpp",
             "memoryRanges": {
-                ".text": "0x15AEF0-0x15B100"
+                ".text": "0x15aef0-0x15b100"
             }
         },
         {

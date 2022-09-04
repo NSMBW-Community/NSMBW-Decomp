@@ -1,7 +1,5 @@
 #pragma once
 
-class cTreeNd_c;
-
 class cTreeNd_c {
 public:
     cTreeNd_c *mpParent;
@@ -11,8 +9,8 @@ public:
 
     cTreeNd_c();
     void forcedClear();
-    cTreeNd_c *getTreeNext();
-    cTreeNd_c *getTreeNextNotChild();
+    cTreeNd_c *getTreeNext() const;
+    cTreeNd_c *getTreeNextNotChild() const;
 };
 
 class cTreeMg_c {
