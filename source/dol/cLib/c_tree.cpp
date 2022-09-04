@@ -1,35 +1,38 @@
-#include "dol/cLib/c_tree.h"
-#include "types.h"
+#include <dol/cLib/c_tree.h>
+#include <types.h>
 
 cTreeNd_c::cTreeNd_c() {
     forcedClear();
 }
 
 void cTreeNd_c::forcedClear() {
-    mpParent = NULL;
-    mpChild = NULL;
-    mpPrev = NULL;
-    mpNext = NULL;
+    mpParent = nullptr;
+    mpChild = nullptr;
+    mpPrev = nullptr;
+    mpNext = nullptr;
 }
 
 bool cTreeMg_c::addTreeNode(cTreeNd_c* node, cTreeNd_c* parent) {
-    if (node != NULL) {
-        if (parent != NULL) {
+    if (node != nullptr) {
+        if (parent != nullptr) {
             node->mpParent = parent;
             cTreeNd_c* currChild = parent->mpChild;
-            if (currChild == NULL) {
+
+            if (currChild == nullptr) {
                 parent->mpChild = node;
             } else {
-                while (currChild->mpNext != NULL) {
+                while (currChild->mpNext != nullptr) {
                     currChild = currChild->mpNext;
                 }
                 currChild->mpNext = node;
                 node->mpPrev = currChild;
             }
+
         } else {
             cTreeNd_c* currNode = mpRootNode;
-            if (currNode != NULL) {
-                while (currNode->mpNext != NULL) {
+
+            if (currNode != nullptr) {
+                while (currNode->mpNext != nullptr) {
                     currNode = currNode->mpNext;
                 }
                 currNode->mpNext = node;
@@ -38,6 +41,7 @@ bool cTreeMg_c::addTreeNode(cTreeNd_c* node, cTreeNd_c* parent) {
                 mpRootNode = node;
             }
         }
+
     } else {
         return false;
     }
@@ -46,26 +50,27 @@ bool cTreeMg_c::addTreeNode(cTreeNd_c* node, cTreeNd_c* parent) {
 }
 
 bool cTreeMg_c::removeTreeNode(cTreeNd_c* node) {
-    if (node != NULL) {
-        if (node->mpChild != NULL) {
+    if (node != nullptr) {
+        if (node->mpChild != nullptr) {
             return false;
         }
 
-        if (node->mpPrev != NULL) {
+        if (node->mpPrev != nullptr) {
             node->mpPrev->mpNext = node->mpNext;
-        } else if (node->mpParent != NULL) {
+        } else if (node->mpParent != nullptr) {
             node->mpParent->mpChild = node->mpNext;
         } else if (node == this->mpRootNode) {
             this->mpRootNode = node->mpNext;
         }
 
-        if (node->mpNext != NULL) {
+        if (node->mpNext != nullptr) {
             node->mpNext->mpPrev = node->mpPrev;
         }
 
-        node->mpPrev = NULL;
-        node->mpNext = NULL;
-        node->mpParent = NULL;
+        node->mpPrev = nullptr;
+        node->mpNext = nullptr;
+        node->mpParent = nullptr;
+
     } else {
         return false;
     }
@@ -76,7 +81,7 @@ bool cTreeMg_c::removeTreeNode(cTreeNd_c* node) {
 cTreeNd_c * cTreeNd_c::getTreeNext() {
     cTreeNd_c* child = this->mpChild;
 
-    if (child != NULL) {
+    if (child != nullptr) {
         return child;
     }
 
@@ -84,17 +89,17 @@ cTreeNd_c * cTreeNd_c::getTreeNext() {
 }
 
 cTreeNd_c* cTreeNd_c::getTreeNextNotChild() {
-    if (this->mpNext != NULL) {
+    if (this->mpNext != nullptr) {
         return this->mpNext;
     }
 
     cTreeNd_c* currParent = this->mpParent;
-    while (currParent != NULL) {
-        if (currParent->mpNext != NULL) {
+    while (currParent != nullptr) {
+        if (currParent->mpNext != nullptr) {
             return currParent->mpNext;
         }
         currParent = currParent->mpParent;
     }
 
-    return NULL;
+    return nullptr;
 }

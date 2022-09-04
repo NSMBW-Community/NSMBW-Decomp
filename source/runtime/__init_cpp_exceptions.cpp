@@ -1,11 +1,7 @@
-extern "C" {
+#include <types.h>
+#include <runtime/__init_cpp_exceptions.hpp>
 
-typedef struct __eti_init_info {
-    void *eti_start;
-    void *eti_end;
-    void *code_start;
-    unsigned long code_size;
-} __eti_init_info;
+extern "C" {
 
 __declspec(section ".init") extern __eti_init_info 	_eti_init_info[];
 
@@ -18,13 +14,10 @@ static int fragmentID = -2;
 void __init_cpp_exceptions(void) {
     if (fragmentID == -2) {
         register char *temp; // r4
-        asm {
-            mr temp,r2
-        }
+        asm {mr temp, r2;};
         void *r2 = temp;
 
         __eti_init_info *info = _eti_init_info;
-
         fragmentID = __register_fragment(info, r2);
     }
 }
@@ -36,7 +29,7 @@ void __fini_cpp_exceptions(void) {
     }
 }
 
-}
+} // extern "C"
 
 #pragma section ".ctors$10"
 __declspec(section ".ctors$10")

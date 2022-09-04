@@ -1,9 +1,7 @@
-#include "dol/rel/rel_init.h"
-#include "dol/rel/rel.h"
+#include <runtime/rel.h>
 
 extern "C" {
 
-typedef void (*voidFctPtr) (void);
 __declspec(section ".ctors") extern voidFctPtr _ctors[];
 __declspec(section ".dtors") extern voidFctPtr _dtors[];
 
@@ -21,4 +19,4 @@ void _unresolved() {
     ModuleUnresolved();
 }
 
-}
+} // extern "C"

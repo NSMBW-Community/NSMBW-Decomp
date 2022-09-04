@@ -37,8 +37,8 @@
             }
         },
         {
-            "name": "runtime/exception_funcs.o",
-            "source": "runtime/exception_funcs.cpp",
+            "name": "runtime/class_arrays.o",
+            "source": "runtime/class_arrays.cpp",
             "compilerFlags": "-proc gekko -fp hard -O4 -char signed -rtti off -enum int -func_align 4 -use_lmw_stmw on -Cpp_exceptions on",
             "memoryRanges": {
                 ".text": "0x2d6350-0x2d6700"
