@@ -45,8 +45,7 @@ f8cffd634edbec6c1bc210dab02c1e32  original/d_en_bossNP.rel
 ddab9e5dca53d8c18bf4051b927e822e  original/wiimj2d.dol
 ```
 
-5. Install the dependencies: `pip install -r requirements.txt`.
-6. Obtain the CodeWarrior for Embedded PowerPC binaries from [here](https://cdn.discordapp.com/attachments/727918646525165659/917185027656286218/GC_WII_COMPILERS.zip) and place them in `compilers/`.
-7. Run `./build.py` to compile the sources and generate the output binaries.
+5. Obtain the CodeWarrior for Embedded PowerPC binaries from [here](https://cdn.discordapp.com/attachments/727918646525165659/917185027656286218/GC_WII_COMPILERS.zip) and place them in `compilers/`.
+6. Run `./build.py` to compile the sources and generate the output binaries.
 
 [Contributing]: docs/CONTRIBUTING.md
