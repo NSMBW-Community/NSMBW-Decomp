@@ -5,3 +5,6 @@ __dla__FPv=802b93d0
 ModuleConstructorsX=80160b60
 ModuleDestructorsX=80160bb0
 ModuleUnresolved=80160b50
+PSVECAdd=801c1530
+PSVECSubtract=801c1560
+PSVECScale=801c1590

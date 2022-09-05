@@ -27,6 +27,13 @@
             }
         },
         {
+            "name": "dol/cLib/c_m3d.o",
+            "source": "dol/cLib/c_m3d.cpp",
+            "memoryRanges": {
+                ".text": "0x15aa20-0x15aae0"
+            }
+        },
+        {
             "name": "dol/cLib/c_tree.o",
             "source": "dol/cLib/c_tree.cpp",
             "memoryRanges": {
