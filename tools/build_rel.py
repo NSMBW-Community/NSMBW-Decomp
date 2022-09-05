@@ -9,7 +9,6 @@ from elffile import *
 from elfconsts import *
 from relfile import Rel, RelRelocation, RelSection
 
-
 def find_symbol(syms: ElfSymtab, i: int, name: str, module_classify: dict[int, list], reloc: ElfRela) -> bool:
     try_found = syms.get_symbols(name)
     if try_found and try_found[0].st_shndx != SHN.SHN_UNDEF.value:
@@ -19,6 +18,47 @@ def find_symbol(syms: ElfSymtab, i: int, name: str, module_classify: dict[int, l
         module_classify[i].append((reloc, try_found[0]))
         return True
     return False
+
+def convert_to_rel_relocations(elf_relocs: list[tuple[ElfRela, ElfSymbol]], sec_idx: int) -> list[RelRelocation]:
+    res_relocs: list[RelRelocation] = []
+
+    change_section_reloc = RelRelocation()
+    change_section_reloc.reloc_type = PPC_RELOC_TYPE.R_RVL_SECT
+    change_section_reloc.offset = 0
+    change_section_reloc.section = sec_idx
+    change_section_reloc.addend = 0
+    res_relocs.append(change_section_reloc)
+    pos = 0
+
+    for rel, sym in elf_relocs:
+        if type(sym) is RelRelocation:
+            st_shndx = sym.section
+            st_value = sym.addend
+        elif type(sym) is ElfSymbol:
+            st_shndx = sym.st_shndx
+            st_value = sym.st_value
+
+        assert rel.r_offset >= pos
+        offset = rel.r_offset - pos
+
+        # Create R_RVL_NONE relocations until we get close enough to the address we want
+        while offset > 0xFFFF:
+            reloc_none = RelRelocation()
+            reloc_none.offset = 0xFFFF
+            reloc_none.reloc_type = PPC_RELOC_TYPE.R_RVL_NONE
+            pos += 0xFFFF
+            res_relocs.append(reloc_none)
+            offset = rel.r_offset - pos
+
+        # Make the actual relocation entry
+        out_reloc = RelRelocation()
+        out_reloc.offset = offset
+        pos = rel.r_offset
+        out_reloc.reloc_type = rel.r_info_type
+        out_reloc.section = st_shndx
+        out_reloc.addend = st_value
+        res_relocs.append(out_reloc)
+    return res_relocs
 
 
 def process_file(modules: list[ElfFile], idx: int, filename: Path, alias_db: dict[str, str], fakedir: str, str_file: list) -> int:
@@ -72,14 +112,10 @@ def process_file(modules: list[ElfFile], idx: int, filename: Path, alias_db: dic
 
         symbol_table: ElfSymtab = elffile.sections[rela_sec.header.sh_link]
 
-        module_classify: dict[int, list[tuple[ElfRela, any]]] = {}
-        relocs_sorted: list[ElfRela] = []
+        # Group the relocations by destination module and store the corresponding symbol
+        module_classify: dict[int, list[tuple[ElfRela, ElfSymbol]]] = {}
 
         for reloc in rela_sec.relocs:
-            relocs_sorted.append(reloc)
-
-        relocs_sorted.sort(key=lambda r: r.r_offset)
-        for reloc in relocs_sorted:
             symbol = symbol_table.get_symbol(reloc.r_info_sym)
             sym_name = symbol.name
 
@@ -97,14 +133,11 @@ def process_file(modules: list[ElfFile], idx: int, filename: Path, alias_db: dic
             m = re.search('R_([0-9a-fA-F]+)_([0-9a-fA-F]+)_([0-9a-fA-F]+)', sym_name)
             if m:
                 mod_num = int(m.group(1), 16)
-                out_reloc = RelRelocation()
-                out_reloc.section = int(m.group(2), 16)
-                out_reloc.addend = int(m.group(3), 16)
-                out_reloc.reloc_type = reloc.r_info_type
                 if mod_num not in module_classify:
-                    module_classify[mod_num] = [(reloc, out_reloc)]
-                else:
-                    module_classify[mod_num].append((reloc, out_reloc))
+                    module_classify[mod_num] = []
+                
+                sym = ElfSymbol('', st_shndx=int(m.group(2), 16), st_value=int(m.group(3), 16))
+                module_classify[mod_num].append((reloc, sym))
                 continue
 
             # Search own module
@@ -117,52 +150,18 @@ def process_file(modules: list[ElfFile], idx: int, filename: Path, alias_db: dic
                 if i != idx and find_symbol(mod.get_section('.symtab'), i, sym_name, module_classify, reloc):
                     found_sym = True
                     break
+            if found_sym:
+                continue
 
-            # Still not found? Bail
-            if not found_sym:
-                print_err('Error: Symbol', sym_name, 'not found!')
-                unresolved_symbol_count += 1
+            print_err('Error: Symbol', sym_name, 'not found!')
+            unresolved_symbol_count += 1
 
+        
+        # Convert ELF relocations to REL relocations
         for mod in module_classify:
             if mod not in module_relocations:
                 module_relocations[mod] = []
-
-            change_section_reloc = RelRelocation()
-            change_section_reloc.reloc_type = PPC_RELOC_TYPE.R_RVL_SECT
-            change_section_reloc.offset = 0
-            change_section_reloc.section = sec_idx
-            change_section_reloc.addend = 0
-            module_relocations[mod].append(change_section_reloc)
-            pos = 0
-
-            for rel, sym in module_classify[mod]:
-                if type(sym) is RelRelocation:
-                    st_shndx = sym.section
-                    st_value = sym.addend
-                elif type(sym) is ElfSymbol:
-                    st_shndx = sym.st_shndx
-                    st_value = sym.st_value
-
-                assert rel.r_offset >= pos
-                offset = rel.r_offset - pos
-
-                # Create R_RVL_NONE relocations until we get close enough to the address we want
-                while offset > 0xFFFF:
-                    reloc_none = RelRelocation()
-                    reloc_none.offset = 0xFFFF
-                    reloc_none.reloc_type = PPC_RELOC_TYPE.R_RVL_NONE
-                    pos += 0xFFFF
-                    module_relocations[mod].append(reloc_none)
-                    offset = rel.r_offset - pos
-
-                # Make the actual relocation entry
-                out_reloc = RelRelocation()
-                out_reloc.offset = offset
-                pos = rel.r_offset
-                out_reloc.reloc_type = rel.r_info_type
-                out_reloc.section = st_shndx
-                out_reloc.addend = st_value
-                module_relocations[mod].append(out_reloc)
+            module_relocations[mod].extend(convert_to_rel_relocations(module_classify[mod], sec_idx))
 
     # Append final relocation
     for mod in module_relocations:

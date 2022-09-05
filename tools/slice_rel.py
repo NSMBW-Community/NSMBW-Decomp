@@ -50,8 +50,6 @@ def extract_slice(rel_file: Rel, slice: Slice, module_relocs: dict[int, dict[Rel
     reloc_secs: list[ElfRelaSec] = []
 
     symtab_sec = ElfSymtab('.symtab')
-    shstrtab_sec = ElfStrtab('.shstrtab')
-    strtab_sec = ElfStrtab('.strtab')
 
     for sec in slice.slice_secs:
         if sec.sec_name == '.bss':
@@ -83,8 +81,6 @@ def extract_slice(rel_file: Rel, slice: Slice, module_relocs: dict[int, dict[Rel
             elf_file.add_section(reloc_sec)
 
     symtab_sec_idx = elf_file.add_section(symtab_sec)
-    elf_file.add_section(shstrtab_sec)
-    elf_file.add_section(strtab_sec)
 
     for rs in reloc_secs:
         rs.header.sh_link = symtab_sec_idx

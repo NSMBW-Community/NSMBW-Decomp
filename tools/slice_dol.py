@@ -14,8 +14,6 @@ def extract_slice(dol_file: Dol, slice: Slice, syms: dict[int, str]) -> ElfFile:
     elf_file = ElfFile(ET.ET_REL, EM.EM_PPC)
 
     symtab_sec = ElfSymtab('.symtab')
-    shstrtab_sec = ElfStrtab('.shstrtab')
-    strtab_sec = ElfStrtab('.strtab')
 
     for sec in slice.slice_secs:
         if sec.sec_name in ['.bss', '.sbss', '.sbss2']:
@@ -40,13 +38,10 @@ def extract_slice(dol_file: Dol, slice: Slice, syms: dict[int, str]) -> ElfFile:
             for idx, dol_sec in enumerate(dol_file.sections):
                 offs = syms[sym] - dol_sec.virt_addr
                 if sec.contains(idx, offs):
-                    print('Found', sym, f'at 0x{offs:0x}')
                     elfsym = ElfSymbol(sym, st_value=offs-sec.start_offs, st_info_bind=STB.STB_GLOBAL, st_shndx=sec_idx)
                     symtab_sec.add_symbol(elfsym)
 
     elf_file.add_section(symtab_sec)
-    elf_file.add_section(shstrtab_sec)
-    strtab_sec_idx = elf_file.add_section(strtab_sec)
 
     return elf_file
 
@@ -72,7 +67,6 @@ def slice_dol(dol_file: Path, out_path: Path) -> None:
             slice_file: SliceFile = load_slice_file(sf)
             print(f'Slicing module 0 ({f.name})...')
             dol_file = Dol(file=f)
-            #print(dol_file.sections)
 
             for slice in slice_file.slices:
                 elf = extract_slice(dol_file, slice, syms)
