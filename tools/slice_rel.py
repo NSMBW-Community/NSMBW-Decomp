@@ -84,9 +84,7 @@ def extract_slice(rel_file: Rel, slice: Slice, module_relocs: dict[int, dict[Rel
 
     symtab_sec_idx = elf_file.add_section(symtab_sec)
     elf_file.add_section(shstrtab_sec)
-    strtab_sec_idx = elf_file.add_section(strtab_sec)
-
-    symtab_sec.header.sh_link = strtab_sec_idx
+    elf_file.add_section(strtab_sec)
 
     for rs in reloc_secs:
         rs.header.sh_link = symtab_sec_idx

@@ -48,7 +48,6 @@ def extract_slice(dol_file: Dol, slice: Slice, syms: dict[int, str]) -> ElfFile:
     elf_file.add_section(shstrtab_sec)
     strtab_sec_idx = elf_file.add_section(strtab_sec)
 
-    symtab_sec.header.sh_link = strtab_sec_idx
     return elf_file
 
 
