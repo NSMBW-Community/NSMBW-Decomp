@@ -4,28 +4,24 @@
 import re
 from pathlib import Path
 
-from elftools.elf.elffile import ELFFile
-from elftools.elf.relocation import Relocation
-from elftools.elf.sections import Symbol
-
 from color_term import *
-from elfconsts import PPC_RELOC_TYPE
+from elffile import *
+from elfconsts import *
 from relfile import Rel, RelRelocation, RelSection
 
 
-def find_symbol(mod: ELFFile, i: int, symbol: Symbol, module_classify: dict[int, list], reloc: Relocation) -> bool:
-    symtab = mod.get_section_by_name('.symtab')
-    try_found = symtab.get_symbol_by_name(symbol.name)
-    if try_found and try_found[0]['st_shndx'] != 'SHN_UNDEF':
+def find_symbol(syms: ElfSymtab, i: int, name: str, module_classify: dict[int, list], reloc: ElfRela) -> bool:
+    try_found = syms.get_symbols(name)
+    if try_found and try_found[0].st_shndx != SHN.SHN_UNDEF.value:
         if i not in module_classify:
-            module_classify[i] = [(reloc, try_found[0])]
-        else:
-            module_classify[i].append((reloc, try_found[0]))
+            module_classify[i] = []
+
+        module_classify[i].append((reloc, try_found[0]))
         return True
     return False
 
 
-def process_file(modules: list[ELFFile], idx: int, filename: Path, alias_db: dict[str, str], fakedir: str, str_file: list) -> int:
+def process_file(modules: list[ElfFile], idx: int, filename: Path, alias_db: dict[str, str], fakedir: str, str_file: list) -> int:
     unresolved_symbol_count: int = 0
 
     # Generate .str file and output filename
@@ -44,8 +40,9 @@ def process_file(modules: list[ELFFile], idx: int, filename: Path, alias_db: dic
     elffile = modules[idx]
     module_relocations: dict[int, list[RelRelocation]] = {}
 
-    for sec_idx, section in enumerate(elffile.iter_sections()):
-        if section['sh_type'] != 'SHT_PROGBITS' or section.name == '.comment':
+    for sec_idx, section in enumerate(elffile.sections):
+        sec_addr_align = section.header.sh_addralign
+        if section.header.sh_type != SHT.SHT_PROGBITS or section.name == '.comment':
 
             # Non-text/data sections are added to the REL as empty sections
             empty_sec = RelSection()
@@ -53,56 +50,57 @@ def process_file(modules: list[ELFFile], idx: int, filename: Path, alias_db: dic
             # Special case: .bss section does get length field set
             if section.name == '.bss':
                 empty_sec.is_bss = True
-                empty_sec._sec_len = section.data_size
-                rel_file.bss_size = section.data_size
-                rel_file.bss_align = section['sh_addralign']
+                empty_sec._sec_len = section.size()
+                rel_file.bss_size = section.size()
+                rel_file.bss_align = sec_addr_align
 
             rel_file.add_section(empty_sec)
             continue
 
         rel_sec = RelSection()
-        rel_sec.set_data(bytearray(section.data()))
+        rel_sec.set_data(bytearray(section.data))
         rel_sec.executable = section.name == '.text'
-        rel_sec.alignment = section['sh_addralign'] if section['sh_addralign'] > 0 else 4
+        rel_sec.alignment = sec_addr_align if sec_addr_align > 0 else 4
 
         if section.name == '.text':
-            rel_file.align = section['sh_addralign']
+            rel_file.align = sec_addr_align
         rel_file.add_section(rel_sec)
 
-        rela_sec = elffile.get_section_by_name('.rela' + section.name)
+        rela_sec: ElfRelaSec = elffile.get_section('.rela' + section.name)
         if not rela_sec:
             continue
 
-        symbol_table = elffile.get_section(rela_sec['sh_link'])
+        symbol_table: ElfSymtab = elffile.sections[rela_sec.header.sh_link]
 
-        module_classify: dict[int, list] = {}
-        relocs_sorted = []
+        module_classify: dict[int, list[tuple[ElfRela, any]]] = {}
+        relocs_sorted: list[ElfRela] = []
 
-        for reloc in rela_sec.iter_relocations():
+        for reloc in rela_sec.relocs:
             relocs_sorted.append(reloc)
 
-        relocs_sorted.sort(key=lambda r: r['r_offset'])
+        relocs_sorted.sort(key=lambda r: r.r_offset)
         for reloc in relocs_sorted:
-            symbol = symbol_table.get_symbol(reloc['r_info_sym'])
+            symbol = symbol_table.get_symbol(reloc.r_info_sym)
+            sym_name = symbol.name
 
             # Try to look up symbol in alias database
-            symname = alias_db.get(f'{unit_name}: {symbol.name}', alias_db.get(symbol.name, ''))
-            symbol.name = symname if symname else symbol.name
+            alias_symname = alias_db.get(f'{unit_name}: {sym_name}', alias_db.get(sym_name, ''))
+            if alias_symname:
+                sym_name = alias_symname
 
             # TODO: nice hardcode lol
-            if symbol.name == '__destroy_global_chain':
+            if sym_name == '__destroy_global_chain':
                 print_warn('Warning: __destroy_global_chain not found, using hardcoded address.')
-                symbol.name = f'R_{rel_file.index}_1_90'
+                sym_name = f'R_{rel_file.index}_1_90'
 
             # First check if hardcoded
-            m = re.search('R_([0-9a-fA-F]+)_([0-9a-fA-F]+)_([0-9a-fA-F]+)', symbol.name)
+            m = re.search('R_([0-9a-fA-F]+)_([0-9a-fA-F]+)_([0-9a-fA-F]+)', sym_name)
             if m:
-                # print_warn('Relocation symbol', symbol.name, 'found...')
                 mod_num = int(m.group(1), 16)
                 out_reloc = RelRelocation()
                 out_reloc.section = int(m.group(2), 16)
                 out_reloc.addend = int(m.group(3), 16)
-                out_reloc.reloc_type = PPC_RELOC_TYPE(reloc['r_info_type'])
+                out_reloc.reloc_type = reloc.r_info_type
                 if mod_num not in module_classify:
                     module_classify[mod_num] = [(reloc, out_reloc)]
                 else:
@@ -110,19 +108,19 @@ def process_file(modules: list[ELFFile], idx: int, filename: Path, alias_db: dic
                 continue
 
             # Search own module
-            if find_symbol(modules[idx], idx, symbol, module_classify, reloc):
+            if find_symbol(modules[idx].get_section('.symtab'), idx, sym_name, module_classify, reloc):
                 continue
 
             # Search other modules
             found_sym = False
             for i, mod in enumerate(modules):
-                if i != idx and find_symbol(mod, i, symbol, module_classify, reloc):
+                if i != idx and find_symbol(mod.get_section('.symtab'), i, sym_name, module_classify, reloc):
                     found_sym = True
                     break
 
             # Still not found? Bail
             if not found_sym:
-                print_err('Error: Symbol', symbol.name, 'not found!')
+                print_err('Error: Symbol', sym_name, 'not found!')
                 unresolved_symbol_count += 1
 
         for mod in module_classify:
@@ -141,12 +139,12 @@ def process_file(modules: list[ELFFile], idx: int, filename: Path, alias_db: dic
                 if type(sym) is RelRelocation:
                     st_shndx = sym.section
                     st_value = sym.addend
-                else:
-                    st_shndx = sym['st_shndx']
-                    st_value = sym['st_value']
+                elif type(sym) is ElfSymbol:
+                    st_shndx = sym.st_shndx
+                    st_value = sym.st_value
 
-                assert rel['r_offset'] >= pos
-                offset = rel['r_offset'] - pos
+                assert rel.r_offset >= pos
+                offset = rel.r_offset - pos
 
                 # Create R_RVL_NONE relocations until we get close enough to the address we want
                 while offset > 0xFFFF:
@@ -155,13 +153,13 @@ def process_file(modules: list[ELFFile], idx: int, filename: Path, alias_db: dic
                     reloc_none.reloc_type = PPC_RELOC_TYPE.R_RVL_NONE
                     pos += 0xFFFF
                     module_relocations[mod].append(reloc_none)
-                    offset = rel['r_offset'] - pos
+                    offset = rel.r_offset - pos
 
                 # Make the actual relocation entry
                 out_reloc = RelRelocation()
                 out_reloc.offset = offset
-                pos = rel['r_offset']
-                out_reloc.reloc_type = PPC_RELOC_TYPE(rel['r_info_type'])
+                pos = rel.r_offset
+                out_reloc.reloc_type = rel.r_info_type
                 out_reloc.section = st_shndx
                 out_reloc.addend = st_value
                 module_relocations[mod].append(out_reloc)
@@ -177,21 +175,21 @@ def process_file(modules: list[ELFFile], idx: int, filename: Path, alias_db: dic
         rel_file.relocations[mod] = module_relocations[mod]
 
     # Generate prolog, epilog and unresolved
-    symtab = elffile.get_section_by_name('.symtab')
-    prolog = symtab.get_symbol_by_name('_prolog')
+    symtab: ElfSymtab = elffile.get_section('.symtab')
+    prolog = symtab.get_symbols('_prolog')
     if prolog:
-        rel_file.prolog_section = prolog[0]['st_shndx']
-        rel_file.prolog = prolog[0]['st_value']
+        rel_file.prolog_section = prolog[0].st_shndx
+        rel_file.prolog = prolog[0].st_value
 
-    epilog = symtab.get_symbol_by_name('_epilog')
+    epilog = symtab.get_symbols('_epilog')
     if epilog:
-        rel_file.epilog_section = epilog[0]['st_shndx']
-        rel_file.epilog = epilog[0]['st_value']
+        rel_file.epilog_section = epilog[0].st_shndx
+        rel_file.epilog = epilog[0].st_value
 
-    unresolved = symtab.get_symbol_by_name('_unresolved')
+    unresolved = symtab.get_symbols('_unresolved')
     if unresolved:
-        rel_file.unresolved_section = unresolved[0]['st_shndx']
-        rel_file.unresolved = unresolved[0]['st_value']
+        rel_file.unresolved_section = unresolved[0].st_shndx
+        rel_file.unresolved = unresolved[0].st_value
 
     # Hardcoded, only needed if this part hasn't been decompiled
     if not prolog or not epilog or not unresolved:
@@ -204,7 +202,7 @@ def process_file(modules: list[ELFFile], idx: int, filename: Path, alias_db: dic
         rel_file.unresolved = 0x60
 
     # PLFs usually contain this section and also .rela.mwcats.text, so add those as dummy sections
-    if not elffile.get_section_by_name('.mwcats.text'):
+    if not elffile.get_section('.mwcats.text'):
         rel_file.add_section(RelSection())
         rel_file.add_section(RelSection())
 
@@ -243,7 +241,7 @@ def build_rel(elf_file: Path, plf_files: list[Path], alias_file: Path, fake_path
 
     # Open files and parse them
     files = [open(elf_file, 'rb')] + [open(plf, 'rb') for plf in plf_files]
-    modules = [ELFFile(f) for f in files]
+    modules = [ElfFile.read(f.read()) for f in files]
 
     # Process them
     for idx in range(1, len(modules)):

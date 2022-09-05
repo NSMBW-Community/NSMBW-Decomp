@@ -94,22 +94,22 @@ class ElfSectionHeader:
 
     @staticmethod
     def read(data: bytes, offset: int) -> 'ElfSectionHeader':
-        esh_res = ElfSectionHeader()
+        sh_res = ElfSectionHeader()
         (
-            esh_res.sh_name,
-            esh_res.sh_type,
+            sh_res.sh_name,
+            sh_res.sh_type,
             _sh_flags,
-            esh_res.sh_addr,
-            esh_res.sh_offset,
-            esh_res.sh_size,
-            esh_res.sh_link,
-            esh_res.sh_info,
-            esh_res.sh_addralign,
-            esh_res.sh_entsize
+            sh_res.sh_addr,
+            sh_res.sh_offset,
+            sh_res.sh_size,
+            sh_res.sh_link,
+            sh_res.sh_info,
+            sh_res.sh_addralign,
+            sh_res.sh_entsize
         ) = ElfSectionHeader._struct.unpack(data[offset:offset+ElfSectionHeader._struct.size])
-        esh_res.sh_flags = set([x for x in SHF if x.value & _sh_flags])
-        esh_res.sh_type = SHT(esh_res.sh_type)
-        return esh_res
+        sh_res.sh_flags = set([x for x in SHF if x.value & _sh_flags])
+        sh_res.sh_type = SHT(sh_res.sh_type)
+        return sh_res
 
     def __bytes__(self) -> bytes:
         assert self.sh_name is not None
@@ -166,10 +166,13 @@ class ElfSection:
         self._prepare_for_write()
         return self.data if self.data else bytes()
 
+    # Always use section.size() instead of len(section.data),
+    # since NOBITS sections can still have a length, but no initialized data
     def size(self) -> int:
         if self.data:
             return len(self.data)
         if self.header.sh_size:
+            # Needed for .bss section
             return self.header.sh_size
         return 0
 
@@ -177,19 +180,14 @@ class ElfSection:
 class ElfStrtab(ElfSection):
     def __init__(self, name='.strtab', strs: list[str]=None) -> None:
         super().__init__(name)
-        if strs:
-            i = 1
-            self.strs = []
-            self.lookup = {}
-            for s in strs:
-                self.strs.append(s)
-                self.lookup[i] = s
-                i += len(s) + 1
-            self.pos = i
-        else:
-            self.strs = []
-            self.lookup = {}
-            self.pos = 1
+        self.strs = strs if strs else []
+        
+        # For faster reads
+        self.pos = 1
+        self.lookup = {}
+        for s in self.strs:
+            self.lookup[self.pos] = s
+            self.pos += len(s) + 1
 
     @staticmethod
     def read(data: bytes, header: ElfSectionHeader) -> 'ElfStrtab':
@@ -199,25 +197,32 @@ class ElfStrtab(ElfSection):
         sec.header = header
         sec.data = data
         return sec
+
+    def clear(self):
+        self.strs = []
+        self.pos = 1
+        self.lookup = {}
         
     def _prepare_for_write(self) -> None:
-        self.data = b'\0' + ''.join([f'{str}\0' for str in self.strs]).encode('utf-8')
+        self.data = b'\0' + '\0'.join([f'{str}' for str in self.strs]).encode('utf-8') + b'\0'
         return super()._prepare_for_write()
 
     def get_at_index(self, index: int) -> str:
+        if index == 0:
+            return ''
         return self.strs[index - 1]
     def get_at_offset(self, index: int) -> str:
         if index == 0:
             return ''
         return self.lookup[index] if index in self.lookup else ''
 
-    def add_string(self, string: str) -> int:
-        if string == '':
+    def add_string(self, s: str) -> int:
+        if s == '':
             return 0
         curr_pos = self.pos
-        self.strs.append(string)
-        self.lookup[curr_pos] = string
-        self.pos += len(string) + 1
+        self.strs.append(s)
+        self.lookup[curr_pos] = s
+        self.pos += len(s) + 1
         return curr_pos
 
 
@@ -275,10 +280,8 @@ class ElfSymtab(ElfSection):
     def read(data: bytes, strtab: ElfStrtab, header: ElfSectionHeader) -> 'ElfSymtab':
         assert len(data) == header.sh_size
         syms = []
-        for i in range(0, len(data), ElfSymbol._struct.size):
-            if i == 0:
-                # NULL symbol
-                continue
+        # Skip NULL symbol
+        for i in range(ElfSymbol._struct.size, len(data), ElfSymbol._struct.size):
             syms.append(ElfSymbol.read(data, i, strtab))
         sec = ElfSymtab('', syms)
         sec.header = header
@@ -289,10 +292,11 @@ class ElfSymtab(ElfSection):
         null_sym.st_name = 0
         self.data = bytes(null_sym) + b''.join([bytes(sym) for sym in self.syms])
         self.header.sh_entsize = ElfSymbol._struct.size
+
         local_syms = [idx + 1 for idx, sym in enumerate(self.syms) if sym.st_info_bind == STB.STB_LOCAL]
-        print(local_syms)
         last_local = local_syms[-1] if len(local_syms) > 0 else 0
         self.header.sh_info = last_local + 1
+
         super()._prepare_for_write()
 
     def link_strtab(self, shstrtab: 'ElfStrtab', strtab: 'ElfStrtab', strtabndx: int) -> None:
@@ -303,10 +307,10 @@ class ElfSymtab(ElfSection):
 
     def add_symbol(self, sym: ElfSymbol) -> int:
         self.syms.append(sym)
-        return len(self.syms) - 1
+        return len(self.syms) # - 1 not needed as we don't keep track of the initial NULL section
 
     def get_symbol(self, idx: int) -> ElfSymbol:
-        return self.syms[idx]
+        return self.syms[idx - 1] # Accounting for initial NULL section
         
     def get_symbols(self, name: str) -> list[ElfSymbol]:
         return [i for i in self.syms if i.name == name]
@@ -324,9 +328,9 @@ class ElfRela:
     @staticmethod
     def read(data: bytes, offset: int) -> 'ElfRela':
         rela = ElfRela()
-        rela.r_offset, _r_info, rela.r_addend = ElfRela._struct.unpack(data[offset:offset+ElfRela._struct.size])
-        rela.r_info_sym = _r_info >> 8
-        rela.r_info_type = PPC_RELOC_TYPE(_r_info & 0xF)
+        rela.r_offset, r_info, rela.r_addend = ElfRela._struct.unpack(data[offset:offset+ElfRela._struct.size])
+        rela.r_info_sym = r_info >> 8
+        rela.r_info_type = PPC_RELOC_TYPE(r_info & 0xFF)
         return rela
 
     def __bytes__(self) -> bytes:
@@ -366,7 +370,7 @@ class ElfFile:
         self.e_header = ElfHeader(e_type, e_machine)
         self.sections: list[ElfSection] = [ElfSection()] # NULL section
 
-    def read_section(self, data: bytes, sec_index: int) -> tuple[ElfSectionHeader, bytes]:
+    def _read_section(self, data: bytes, sec_index: int) -> tuple[ElfSectionHeader, bytes]:
         sec_hdr_offs = self.e_header.e_shoff
         sec_hdr_size = self.e_header.e_shentsize
         hdr = ElfSectionHeader.read(data, sec_hdr_offs + sec_index * sec_hdr_size)
@@ -381,36 +385,30 @@ class ElfFile:
         elf_file = ElfFile()
         elf_file.e_header = ElfHeader.read(data, 0)
         
-        # Preload shstrtab
+        # Preload .shstrtab
         shstrtab_idx = elf_file.e_header.e_shstrndx
-        strtab_hdr, strtab_data = elf_file.read_section(data, shstrtab_idx)
+        strtab_hdr, strtab_data = elf_file._read_section(data, shstrtab_idx)
         shstrtab = ElfStrtab.read(strtab_data, strtab_hdr)
 
-        # preload strtab
+        # Preload .strtab
         strtab_idx = next(i for i in range(elf_file.e_header.e_shnum) if shstrtab.get_at_index(i) == '.strtab')
-        strtab_hdr, strtab_data = elf_file.read_section(data, strtab_idx)
+        strtab_hdr, strtab_data = elf_file._read_section(data, strtab_idx)
         strtab = ElfStrtab.read(strtab_data, strtab_hdr)
 
-        for i in range(elf_file.e_header.e_shnum):
-            if i == 0:
-                # Skip NULL section
-                continue
+        for i in range(1, elf_file.e_header.e_shnum): # Skip NULL section
             sec_name = shstrtab.get_at_index(i)
-            sec_hdr, sec_data = elf_file.read_section(data, i)
+            sec_hdr, sec_data = elf_file._read_section(data, i)
 
             if sec_hdr.sh_type == SHT.SHT_PROGBITS:
                 elf_sec = ElfSection.read(sec_data, sec_hdr)
             elif sec_hdr.sh_type == SHT.SHT_RELA:
                 elf_sec = ElfRelaSec.read(sec_data, sec_hdr)
             elif sec_hdr.sh_type == SHT.SHT_STRTAB:
-                if sec_name in ['.shstrtab', '.strtab']:
-                    # Don't actually save this, the information has already been extracted and will be re-generated at write
-                    continue
                 elf_sec = ElfStrtab.read(sec_data, sec_hdr)
             elif sec_hdr.sh_type == SHT.SHT_SYMTAB:
                 elf_sec = ElfSymtab.read(sec_data, strtab, sec_hdr)
             else:
-                elf_sec = ElfSection('', bytes(), sec_hdr)
+                elf_sec = ElfSection(sec_name, bytes(), sec_hdr)
             
             elf_sec.name = shstrtab.get_at_index(i)
             elf_file.sections.append(elf_sec)
@@ -441,9 +439,12 @@ class ElfFile:
             self.sections.append(ElfStrtab('.strtab'))
 
         shstrtabndx = self.get_section_index('.shstrtab')
-        shstrtab = self.get_section('.shstrtab')
         strtabndx = self.get_section_index('.strtab')
-        strtab = self.get_section('.strtab')
+        shstrtab: ElfStrtab = self.get_section('.shstrtab')
+        strtab: ElfStrtab = self.get_section('.strtab')
+
+        shstrtab.clear()
+        strtab.clear()
 
         self.e_header.e_phoff = 0
         self.e_header.e_phnum = 0
