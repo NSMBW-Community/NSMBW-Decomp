@@ -367,12 +367,12 @@ class ElfRelaSec(ElfSection):
 
 class ElfFile:
     def __init__(self, e_type: ET=ET.ET_NONE, e_machine=EM.EM_NONE) -> None:
-        self.e_header = ElfHeader(e_type, e_machine)
+        self.header = ElfHeader(e_type, e_machine)
         self.sections: list[ElfSection] = [ElfSection()] # NULL section
 
     def _read_section(self, data: bytes, sec_index: int) -> tuple[ElfSectionHeader, bytes]:
-        sec_hdr_offs = self.e_header.e_shoff
-        sec_hdr_size = self.e_header.e_shentsize
+        sec_hdr_offs = self.header.e_shoff
+        sec_hdr_size = self.header.e_shentsize
         hdr = ElfSectionHeader.read(data, sec_hdr_offs + sec_index * sec_hdr_size)
         res_data = None
         if hdr.has_data():
@@ -383,19 +383,19 @@ class ElfFile:
 
     def read(data: bytes) -> 'ElfFile':
         elf_file = ElfFile()
-        elf_file.e_header = ElfHeader.read(data, 0)
+        elf_file.header = ElfHeader.read(data, 0)
         
         # Preload .shstrtab
-        shstrtab_idx = elf_file.e_header.e_shstrndx
+        shstrtab_idx = elf_file.header.e_shstrndx
         strtab_hdr, strtab_data = elf_file._read_section(data, shstrtab_idx)
         shstrtab = ElfStrtab.read(strtab_data, strtab_hdr)
 
         # Preload .strtab
-        strtab_idx = next(i for i in range(elf_file.e_header.e_shnum) if shstrtab.get_at_index(i) == '.strtab')
+        strtab_idx = next(i for i in range(elf_file.header.e_shnum) if shstrtab.get_at_index(i) == '.strtab')
         strtab_hdr, strtab_data = elf_file._read_section(data, strtab_idx)
         strtab = ElfStrtab.read(strtab_data, strtab_hdr)
 
-        for i in range(1, elf_file.e_header.e_shnum): # Skip NULL section
+        for i in range(1, elf_file.header.e_shnum): # Skip NULL section
             sec_name = shstrtab.get_at_index(i)
             sec_hdr, sec_data = elf_file._read_section(data, i)
 
@@ -446,9 +446,9 @@ class ElfFile:
         shstrtab.clear()
         strtab.clear()
 
-        self.e_header.e_phoff = 0
-        self.e_header.e_phnum = 0
-        self.e_header.e_shstrndx = shstrtabndx
+        self.header.e_phoff = 0
+        self.header.e_phnum = 0
+        self.header.e_shstrndx = shstrtabndx
 
         for sec in self.sections:
             sec.link_strtab(shstrtab, strtab, strtabndx)
@@ -459,14 +459,14 @@ class ElfFile:
             sec.header.sh_offset = len(data) if sec.header.sh_type != SHT.SHT_NULL else 0
             data.extend(sec_data)
 
-        self.e_header.e_shnum = len(self.sections)
-        self.e_header.e_shoff = len(data)
+        self.header.e_shnum = len(self.sections)
+        self.header.e_shoff = len(data)
 
         for sec in self.sections:
             sec_hdr_data = bytes(sec.header)
             data.extend(sec_hdr_data)
 
-        header = bytes(self.e_header)
+        header = bytes(self.header)
         data[0:len(header)] = header
 
         return bytes(data)
