@@ -3,7 +3,7 @@
         "fileName": "wiimj2d.dol",
         "type": "DOL",
         "moduleNum": 0,
-        "defaultCompilerFlags": "-proc gekko -fp hard -inline off -O4 -Cpp_exceptions off",
+        "defaultCompilerFlags": "-proc gekko -fp hard -O4 -inline noauto -Cpp_exceptions off",
         "sections": {
             ".init":                { "index": 0,  "align": 16, "size": "0x26c0" },
             ".text":                { "index": 1,  "align": 16, "size": "0x2e7560" },
@@ -31,6 +31,15 @@
             "source": "dol/cLib/c_m3d.cpp",
             "memoryRanges": {
                 ".text": "0x15aa20-0x15aae0"
+            }
+        },
+        {
+            "name": "dol/cLib/c_random.o",
+            "source": "dol/cLib/c_random.cpp",
+            "memoryRanges": {
+                ".text": "0x15ae20-0x15aef0",
+                ".sdata": "0x1dc0-0x1dc8",
+                ".sdata2": "0x2ba8-0x2bb0"
             }
         },
         {
