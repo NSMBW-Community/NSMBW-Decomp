@@ -8,3 +8,4 @@ ModuleUnresolved=80160b50
 PSVECAdd=801c1530
 PSVECSubtract=801c1560
 PSVECScale=801c1590
+fmod=0x802e8904

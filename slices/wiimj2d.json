@@ -34,6 +34,17 @@
             }
         },
         {
+            "name": "dol/cLib/c_math.o",
+            "source": "dol/cLib/c_math.cpp",
+            "memoryRanges": {
+                ".text": "0x15aae0-0x15ae20",
+                ".ctors": "0x204-0x208",
+                ".data": "0x2a7f0-0x2aff8",
+                ".sbss": "0x7d0-0x7d8",
+                ".sdata2": "0x2b88-0x2ba8"
+            }
+        },
+        {
             "name": "dol/cLib/c_random.o",
             "source": "dol/cLib/c_random.cpp",
             "memoryRanges": {
