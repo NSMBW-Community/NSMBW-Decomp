@@ -110,8 +110,9 @@ s16 rad2s(float radians) {
 }
 } // namespace cM
 
-u16 U_GetAtanTable(float param_1,float param_2) {
-    return atntable[(int)((param_1 / param_2) * 1024.0f)];
+u16 U_GetAtanTable(float param_1, float param_2) {
+    int idx = (param_1 / param_2) * 1024.0f;
+    return atntable[idx];
 }
 
 namespace cM {

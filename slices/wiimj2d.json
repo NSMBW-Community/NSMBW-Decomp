@@ -9,8 +9,8 @@
             ".text":                { "index": 1,  "align": 16, "size": "0x2e7560" },
             ".ctors":               { "index": 9,  "align": 4, "size": "0x2d4" },
             ".dtors":               { "index": 10, "align": 8, "size": "0x20" },
-            ".data":                { "index": 11, "align": 8, "size": "0x106c0" },
-            ".rodata":              { "index": 12, "align": 8, "size": "0x532e0" },
+            ".rodata":              { "index": 11, "align": 8, "size": "0x106c0" },
+            ".data":                { "index": 12, "align": 8, "size": "0x532e0" },
             ".sdata2":              { "index": 14, "align": 4, "size": "0x4b60" },
             ".sbss2":               { "index": -1, "align": 4, "size": "0x4b60" },
             ".sdata":               { "index": 13, "align": 4, "size": "0x2520" },
@@ -84,7 +84,6 @@
             "compilerFlags": "-proc gekko -fp hard -O4,p -char signed -rtti off -enum int -func_align 4 -Cpp_exceptions off",
             "memoryRanges": {
                 ".text": "0x2d6e50-0x2d6ec0",
-                ".ctors": "0x0-0x4",
                 ".dtors": "0x0-0xc",
                 ".sdata": "0x2508-0x250c"
             }
