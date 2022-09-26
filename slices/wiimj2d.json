@@ -7,7 +7,8 @@
         "sections": {
             ".init":                { "index": 0,  "align": 16, "size": "0x26c0" },
             ".text":                { "index": 1,  "align": 16, "size": "0x2e7560" },
-            ".ctors":               { "index": 9,  "align": 4, "size": "0x2d4" },
+            ".ctors$10":            { "index": 9,  "align": 4, "size": "0x4" },
+            ".ctors":               { "index": 9,  "align": 4, "size": "0x2d0", "offset": "0x4" },
             ".dtors":               { "index": 10, "align": 8, "size": "0x20" },
             ".rodata":              { "index": 11, "align": 8, "size": "0x106c0" },
             ".data":                { "index": 12, "align": 8, "size": "0x532e0" },
@@ -84,6 +85,7 @@
             "compilerFlags": "-proc gekko -fp hard -O4,p -char signed -rtti off -enum int -func_align 4 -Cpp_exceptions off",
             "memoryRanges": {
                 ".text": "0x2d6e50-0x2d6ec0",
+                ".ctors$10": "0x0-0x4",
                 ".dtors": "0x0-0xc",
                 ".sdata": "0x2508-0x250c"
             }
