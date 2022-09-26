@@ -2,7 +2,6 @@
 #include <lib/MSL_C/math/fmod.h>
 #include <dol/cLib/c_random.hpp>
 
-// TODO: verify everything matches
 #define M_2PI 6.2831854820251465
 
 static cM_rand_c s_rnd = cM_rand_c(100);
@@ -114,15 +113,21 @@ u16 U_GetAtanTable(float param_1, float param_2) {
     return atntable[idx];
 }
 
+inline float fabs(float val) {
+    return __fabs(val);
+}
+
+inline bool isZero(float val) {
+    const int tmp = 0x34000000; // Minimum positive value that satisfies 1.0f + x != 1.0f
+    const float F_ULP = *(const float *)&tmp;
+    return (fabs(val) < F_ULP);
+}
+
 namespace cM {
 
 inline u32 atan2i(float param_1,float param_2) {
 
-    const int tmp = 0x34000000;
-    const float F_ULP = *(const float *)&tmp;
-
-    bool a = (F_ULP < (float)__fabs(param_1));
-    if (a) {
+    if (isZero(param_1)) {
         if (param_2 >= 0.0f) {
             return 0;
         } else {
@@ -130,8 +135,7 @@ inline u32 atan2i(float param_1,float param_2) {
         }
 
     } else {
-        bool b = (F_ULP < (float)__fabs(param_2));
-        if (b) {
+        if (isZero(param_2)) {
             if (param_1 >= 0.0f) {
                 return 0x4000;
             } else {
