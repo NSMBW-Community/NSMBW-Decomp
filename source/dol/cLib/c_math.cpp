@@ -93,16 +93,12 @@ u16 atntable[1025] = { 0x0, 0xA, 0x14, 0x1F, 0x29, 0x33, 0x3D, 0x47, 0x51, 0x5C,
 
 namespace cM {
 
-s16 rad2s(float radians) {
+inline float getConst() {
+    return 10430.378f;
+}
 
-    #ifdef NON_MATCHING
-    int mod = (int)(10430.378f * fmod(radians, M_PI * 2));
-    #else
-    register float remainder = fmod(radians, M_PI * 2);
-    register float multiplier = 10430.378f;
-    asm {fmuls multiplier, remainder, multiplier};
-    register int mod = (int)multiplier;
-    #endif
+s16 rad2s(float radians) {
+    int mod = (float)fmod(radians, M_PI * 2) * getConst();
 
     if (mod < -0x8000) {
         mod += 0x10000;
