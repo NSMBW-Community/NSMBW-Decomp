@@ -4,6 +4,7 @@
 #include <dol/cLib/c_random.hpp>
 
 // TODO: verify everything matches
+# define M_PI 3.14159265358979323846
 
 static cM_rand_c s_rnd = cM_rand_c(100);
 static cM_rand_c s_rnd2 = cM_rand_c(101);
@@ -92,8 +93,16 @@ u16 atntable[1025] = { 0x0, 0xA, 0x14, 0x1F, 0x29, 0x33, 0x3D, 0x47, 0x51, 0x5C,
 
 namespace cM {
 
-s16 rad2s(float rad) {
-    int mod = (int)((float)fmod(rad, 6.283185) * 10430.38f);
+s16 rad2s(float radians) {
+
+    #ifdef NON_MATCHING
+    int mod = (int)(10430.378f * fmod(radians, M_PI * 2));
+    #else
+    register float remainder = fmod(radians, M_PI * 2);
+    register float multiplier = 10430.378f;
+    asm {fmuls multiplier, remainder, multiplier};
+    register int mod = (int)multiplier;
+    #endif
 
     if (mod < -0x8000) {
         mod += 0x10000;
