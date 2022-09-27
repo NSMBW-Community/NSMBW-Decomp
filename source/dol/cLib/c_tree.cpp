@@ -12,11 +12,11 @@ void cTreeNd_c::forcedClear() {
     mpNext = nullptr;
 }
 
-bool cTreeMg_c::addTreeNode(cTreeNd_c* node, cTreeNd_c* parent) {
+bool cTreeMg_c::addTreeNode(cTreeNd_c *node, cTreeNd_c *parent) {
     if (node != nullptr) {
         if (parent != nullptr) {
             node->mpParent = parent;
-            cTreeNd_c* currChild = parent->mpChild;
+            cTreeNd_c *currChild = parent->mpChild;
 
             if (currChild == nullptr) {
                 parent->mpChild = node;
@@ -29,7 +29,7 @@ bool cTreeMg_c::addTreeNode(cTreeNd_c* node, cTreeNd_c* parent) {
             }
 
         } else {
-            cTreeNd_c* currNode = mpRootNode;
+            cTreeNd_c *currNode = mpRootNode;
 
             if (currNode != nullptr) {
                 while (currNode->mpNext != nullptr) {
@@ -49,7 +49,7 @@ bool cTreeMg_c::addTreeNode(cTreeNd_c* node, cTreeNd_c* parent) {
     return true;
 }
 
-bool cTreeMg_c::removeTreeNode(cTreeNd_c* node) {
+bool cTreeMg_c::removeTreeNode(cTreeNd_c *node) {
     if (node != nullptr) {
         if (node->mpChild != nullptr) {
             return false;
@@ -78,8 +78,8 @@ bool cTreeMg_c::removeTreeNode(cTreeNd_c* node) {
     return true;
 }
 
-cTreeNd_c * cTreeNd_c::getTreeNext() const {
-    cTreeNd_c* child = this->mpChild;
+cTreeNd_c *cTreeNd_c::getTreeNext() const {
+    cTreeNd_c *child = this->mpChild;
 
     if (child != nullptr) {
         return child;
@@ -88,12 +88,12 @@ cTreeNd_c * cTreeNd_c::getTreeNext() const {
     return this->getTreeNextNotChild();
 }
 
-cTreeNd_c* cTreeNd_c::getTreeNextNotChild() const {
+cTreeNd_c *cTreeNd_c::getTreeNextNotChild() const {
     if (this->mpNext != nullptr) {
         return this->mpNext;
     }
 
-    cTreeNd_c* currParent = this->mpParent;
+    cTreeNd_c *currParent = this->mpParent;
     while (currParent != nullptr) {
         if (currParent->mpNext != nullptr) {
             return currParent->mpNext;
