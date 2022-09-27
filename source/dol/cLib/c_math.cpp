@@ -1,4 +1,5 @@
 #include <types.h>
+#include <lib/MSL_C/math/fabs.h>
 #include <lib/MSL_C/math/fmod.h>
 #include <dol/cLib/c_random.hpp>
 
@@ -7,7 +8,7 @@
 static cM_rand_c s_rnd = cM_rand_c(100);
 static cM_rand_c s_rnd2 = cM_rand_c(101);
 
-u16 atntable[1025] = { 0x0, 0xA, 0x14, 0x1F, 0x29, 0x33, 0x3D, 0x47, 0x51, 0x5C, 0x66, 0x70, 0x7A,
+static u16 atntable[1025] = { 0x0, 0xA, 0x14, 0x1F, 0x29, 0x33, 0x3D, 0x47, 0x51, 0x5C, 0x66, 0x70, 0x7A,
 0x84, 0x8F, 0x99, 0xA3, 0xAD, 0xB7, 0xC2, 0xCC, 0xD6, 0xE0, 0xEA, 0xF4, 0xFF, 0x109, 0x113, 0x11D,
 0x127, 0x131, 0x13C, 0x146, 0x150, 0x15A, 0x164, 0x16F, 0x179, 0x183, 0x18D, 0x197, 0x1A1, 0x1AC,
 0x1B6, 0x1C0, 0x1CA, 0x1D4, 0x1DE, 0x1E9, 0x1F3, 0x1FD, 0x207, 0x211, 0x21B, 0x226, 0x230, 0x23A,
@@ -95,8 +96,14 @@ inline float getConst() {
     return 10430.378f;
 }
 
-s16 rad2s(float radians) {
-    int mod = (float)fmod(radians, M_2PI) * getConst();
+inline bool isZero(float val) {
+    const int tmp = 0x34000000; // Minimum positive value that satisfies 1.0f + x != 1.0f
+    const float F_ULP = *(const float *)&tmp;
+    return (fabsf(val) < F_ULP);
+}
+
+s16 rad2s(float rad) {
+    int mod = (float)fmod(rad, M_2PI) * getConst();
 
     if (mod < -0x8000) {
         mod += 0x10000;
@@ -108,73 +115,45 @@ s16 rad2s(float radians) {
 }
 } // namespace cM
 
-u16 U_GetAtanTable(float param_1, float param_2) {
-    int idx = (param_1 / param_2) * 1024.0f;
+u16 U_GetAtanTable(float sin, float cos) {
+    int idx = (sin / cos) * 1024.0f;
     return atntable[idx];
-}
-
-inline float fabs(float val) {
-    return __fabs(val);
-}
-
-inline bool isZero(float val) {
-    const int tmp = 0x34000000; // Minimum positive value that satisfies 1.0f + x != 1.0f
-    const float F_ULP = *(const float *)&tmp;
-    return (fabs(val) < F_ULP);
 }
 
 namespace cM {
 
-inline u32 atan2i(float param_1,float param_2) {
+inline u32 atan2i(float sin,float cos) {
 
-    if (isZero(param_1)) {
-        if (param_2 >= 0.0f) {
-            return 0;
+    if (isZero(sin)) {
+        return (cos >= 0.0f) ? 0 : 0x8000;
+
+    } else if (isZero(cos)) {
+        return (sin >= 0.0f) ? 0x4000 : 0xC000;
+
+    } else if (sin >= 0.0f) {
+        if (cos >= 0.0f) {
+            return (cos >= sin) ? U_GetAtanTable(sin, cos) : 0x4000 - U_GetAtanTable(cos, sin);
         } else {
-            return 0x8000;
+            return (-cos < sin) ? U_GetAtanTable(-cos, sin) + 0x4000 : 0x8000 - U_GetAtanTable(sin, -cos);
         }
+
+    } else if (cos < 0.0f) {
+        if (-cos >= -sin) {
+            return U_GetAtanTable(-sin, -cos) + 0x8000;
+        } else {
+            return 0xC000 - U_GetAtanTable(-cos, -sin);
+        }
+
+    } else if (cos < -sin) {
+        return U_GetAtanTable(cos, -sin) + 0xC000;
 
     } else {
-        if (isZero(param_2)) {
-            if (param_1 >= 0.0f) {
-                return 0x4000;
-            } else {
-                return 0xC000;
-            }
-
-        } else if (param_1 >= 0.0f) {
-            if (param_2 >= 0.0f) {
-                if (param_2 >= param_1) {
-                    return U_GetAtanTable(param_1, param_2);
-                } else {
-                    return 0x4000 - U_GetAtanTable(param_2, param_1);
-                }
-
-            } else {
-                if (-param_2 < param_1) {
-                    return U_GetAtanTable(-param_2, param_1) + 0x4000;
-                } else {
-                    return 0x8000 - U_GetAtanTable(param_1, -param_2);
-                }
-            }
-
-        } else if (param_2 < 0.0f) {
-            if (-param_2 >= -param_1) {
-                return U_GetAtanTable(-param_1, -param_2) + 0x8000;
-            } else {
-                return 0xC000 - U_GetAtanTable(-param_2, -param_1);
-            }
-
-        } else if (param_2 < -param_1) {
-            return U_GetAtanTable(param_2, -param_1) + 0xC000;
-        } else {
-            return -U_GetAtanTable(-param_1, param_2);
-        }
+        return -U_GetAtanTable(-sin, cos);
     }
 }
 
-s16 atan2s(float param_1, float param_2) {
-    return atan2i(param_1, param_2);
+s16 atan2s(float sin, float cos) {
+    return atan2i(sin, cos);
 }
 
 void initRnd(ulong seed) {
