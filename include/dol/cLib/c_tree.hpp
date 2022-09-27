@@ -14,9 +14,9 @@ public:
 };
 
 class cTreeMg_c {
+public:
     cTreeNd_c *mpRootNode;
 
-public:
     bool addTreeNode(cTreeNd_c *node, cTreeNd_c *parent);
     bool removeTreeNode(cTreeNd_c *node);
 };
