@@ -77,13 +77,24 @@ public:
     fBase_c *getConnectChild();
     fBase_c *getConnectBrNext();
 
-    virtual bool entryFrmHeap(unsigned long size, void *parentHeap);
-    virtual bool entryFrmHeapNonAdjust(unsigned long size, void *parentHeap);
+    virtual bool entryFrmHeap(u32 size, void *parentHeap);
+    virtual bool entryFrmHeapNonAdjust(u32 size, void *parentHeap);
     virtual void createHeap();
     
     virtual ~fBase_c();
 
+    void runCreate();
+
+    static void setTmpCtData(Profile prof, fTrNdBa_c *connectParent, u32 param, u8 groupType);
+    static fBase_c *fBase_make(Profile prof, fTrNdBa_c *connectParent, u32 param, u8 groupType);
+    static fBase_c *createChild(Profile prof, fBase_c *parent, u32 param, u8 groupType);
+    static fBase_c *createRoot(Profile prof, u32 param, u8 groupType);
+
 private:
     int commonPack(bool (fBase_c::*preFunc)(), int (fBase_c::*doFunc)(), bool (fBase_c::*postFunc)(MAIN_STATE_e));
 
+    static u32 m_rootUniqueID;
+    static u32 m_tmpCtParam;
+    static Profile m_tmpCtProfName;
+    static u8 m_tmpCtGroupType;
 };
