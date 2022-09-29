@@ -2,20 +2,9 @@
 #include <types.h>
 #include <lib/egg/heap/heap.hpp>
 #include <dol/profile/profile.hpp>
+#include <dol/base/f_helper_unk.hpp>
 #include <dol/base/f_manager.hpp>
 #include <dol/cLib/c_list.hpp>
-
-// Unknown name
-class fBaseUnusedClass {
-    short mNum;
-    short mCount;
-    void **mArrPtr;
-    char mUnknown[8];
-
-public:
-    virtual void vf8(); // stripped out of binary
-    virtual void vf10(); // stripped out of binary
-};
 
 class fBase_c {
 public:
@@ -38,7 +27,7 @@ public:
 
     fManager_c mMng;
 
-    fBaseUnusedClass mUnusedClassInstance;
+    fBaHelper_c mUnusedHelper;
     cListMg_c mUnusedList;
     EGG::Heap *mpHeap;
 
