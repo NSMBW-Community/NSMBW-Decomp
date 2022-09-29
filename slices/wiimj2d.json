@@ -62,6 +62,13 @@
             }
         },
         {
+            "name": "dol/base/f_helper_unk.o",
+            "source": "dol/base/f_helper_unk.cpp",
+            "memoryRanges": {
+                ".text": "0x15b2e0-0x15b490"
+            }
+        },
+        {
             "name": "dol/base/f_tree.o",
             "source": "dol/base/f_tree.cpp",
             "memoryRanges": {
