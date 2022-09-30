@@ -1,16 +1,17 @@
 #pragma once
 
+#include <dol/base/f_list_mg_ptmf.hpp>
+#include <dol/base/f_list_mg.hpp>
+
 class fTrNdBa_c;
+class fLiNdPrio_c;
 class fLiNdBa_c;
-class fLiNdBaPrio_c;
-class fLiMgPTMF_c;
-class fTrMgPTMF_c;
 
 class fManager_c {
     fTrNdBa_c *mConnectNode;
-    fLiNdBaPrio_c *mExecuteNode;
+    fLiNdPrio_c *mExecuteNode;
     short mExecuteOrder;
-    fLiNdBaPrio_c *mDrawNode;
+    fLiNdPrio_c *mDrawNode;
     short mDrawOrder;
     fLiNdBa_c *mSearchNode;
 
@@ -22,5 +23,5 @@ public:
     static fLiMgPTMF_c m_executeManage;
     static fLiMgPTMF_c m_deleteManage;
     static fLiMgPTMF_c m_drawManage;
-    static fTrMgPTMF_c m_searchManage[8];
+    static fLiMgBa_c m_searchManage[8];
 };
