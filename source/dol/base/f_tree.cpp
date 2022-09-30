@@ -1,5 +1,7 @@
-#include <dol/base/f_tree.hpp>
 #include <types.h>
+#include <dol/base/f_tree_mg_ptmf.hpp>
+#include <dol/base/f_tree_mg.hpp>
+#include <dol/base/f_tree_nd.hpp>
 
 bool fTrMgPTMF_c::walkPack() {
     if (mpPack == 0) return true;
