@@ -69,6 +69,13 @@
             }
         },
         {
+            "name": "dol/base/f_list.o",
+            "source": "dol/base/f_list.cpp",
+            "memoryRanges": {
+                ".text": "0x15c500-0x15c6b0"
+            }
+        },
+        {
             "name": "dol/base/f_manager.o",
             "source": "dol/base/f_manager.cpp",
             "memoryRanges": {

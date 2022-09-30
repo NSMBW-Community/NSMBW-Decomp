@@ -4,6 +4,26 @@
 #include <dol/base/f_list_mg_ptmf.hpp>
 #include <dol/base/f_base.hpp>
 
+bool fLiMgPrio_c::addNode(fLiNdPrio_c *node) {
+    fLiNdPrio_c *curr = getFirst();
+    if (node == nullptr) {
+        return false;
+    }
+
+    if (curr == nullptr) {
+        return append(node);
+    }
+    
+    if (curr->getOrder() > node->getOrder()) {
+        return insertAfter(node, nullptr);
+    }
+    
+    while (curr->getNext() && curr->getNext()->getOrder() <= node->getOrder()) {
+        curr = curr->getNext();
+    }
+    return insertAfter(node, curr);
+}
+
 bool fLiMgPTMF_c::walkPack() {
     if (mpPack == 0) return true;
     
@@ -14,4 +34,33 @@ bool fLiMgPTMF_c::walkPack() {
         curr = next;
     }
     return true;
+}
+
+const fLiNdBa_c *fLiMgBa_c::searchNodeByID(fBaseID_e id) const {
+    for (fLiNdBa_c *curr = (fLiNdBa_c *) mpFirst; curr != nullptr; curr = curr->getNext()) {
+        if (curr->mpOwner->mUniqueID == id) {
+            return curr;
+        }
+    }
+    
+    return nullptr;
+}
+
+int fLiMgBa_c::countNodeByProfName(Profile prof) const {
+    int count = 0;
+
+    for (fLiNdBa_c *curr = (fLiNdBa_c *) mpFirst; curr != nullptr; curr = curr->getNext()) {
+        if (curr->mpOwner->mProfName == prof) {
+            count++;
+        }
+    }
+    
+    return count;
+}
+
+void fLiNdBa_c::removeSelf() {
+    if (mpOwner != nullptr) {
+        mpOwner->mUnusedList.remove(this);
+        mpOwner = nullptr;
+    }
 }

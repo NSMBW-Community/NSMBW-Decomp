@@ -15,4 +15,7 @@ public:
     inline fLiNdPrio_c *getNext() {
         return (fLiNdPrio_c *) fLiNdBa_c::getNext();
     }
+    inline u16 getOrder() const {
+        return mOrder;
+    }
 };
