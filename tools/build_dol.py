@@ -41,7 +41,15 @@ def process_file(elf_file: ElfFile, filename: Path) -> None:
 
             if section.name == '.bss':
                 dol_file.bss_addr = section.header.sh_addr
-                dol_file.bss_len = 0x0de59c # TODO: how is this calculated?
+
+    bss_hdr = elf_file.get_section('.bss').header
+    sbss2_hdr = elf_file.get_section('.sbss2').header
+
+    bss_begin = bss_hdr.sh_addr
+    bss_end = sbss2_hdr.sh_addr + sbss2_hdr.sh_size
+    
+    # DOL bss size is actually (end of last bss section) - (start of first bss section)
+    dol_file.bss_len = bss_end - bss_begin
 
     # Fill up empty sections
     while sec_count < 18:
