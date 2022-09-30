@@ -2,23 +2,20 @@
 #include <types.h>
 #include <lib/egg/heap/heap.hpp>
 #include <dol/profile/profile.hpp>
+#include <dol/base/f_base_id.hpp>
 #include <dol/base/f_helper_unk.hpp>
 #include <dol/base/f_manager.hpp>
 #include <dol/cLib/c_list.hpp>
 
 class fBase_c {
 public:
-    u32 mUniqueID;
+    fBaseID_e mUniqueID;
     u32 mParam;
     Profile mProfName;
 
-    enum LIFECYCLE_STATE_e {
-        CREATING, // object has not yet been added to the fManager_c lists
-        CREATED, // object has been added to the fManager_c lists
-        DELETING // object has been removed from the fManager_c lists
-    };
-
-    LIFECYCLE_STATE_e mLifecycleState;
+    u8 mLifecycleState; // 0: object has not yet been added to the fManager_c lists
+                        // 1: object has been added to the fManager_c lists
+                        // 2: object has been removed from the fManager_c lists
     bool mWantsDelete;
     bool mIsNotDeferred;
     bool mIsDeferred;
@@ -46,25 +43,25 @@ public:
 
     virtual int create();
     virtual bool preCreate();
-    virtual bool postCreate(MAIN_STATE_e);
+    virtual bool postCreate(MAIN_STATE_e state);
 
     void createPack();
 
     virtual int doDelete();
     virtual bool preDelete();
-    virtual bool postDelete(MAIN_STATE_e);
+    virtual bool postDelete(MAIN_STATE_e state);
     
     void deletePack();
 
     virtual int execute();
     virtual bool preExecute();
-    virtual bool postExecute(MAIN_STATE_e);
+    virtual bool postExecute(MAIN_STATE_e state);
     
     void executePack();
 
     virtual int draw();
     virtual bool preDraw();
-    virtual bool postDraw(MAIN_STATE_e);
+    virtual bool postDraw(MAIN_STATE_e state);
     
     void drawPack();
 
@@ -91,6 +88,7 @@ public:
     static fBase_c *createRoot(Profile prof, u32 param, u8 groupType);
 
 private:
+    // Unofficial name
     int commonPack(bool (fBase_c::*preFunc)(), int (fBase_c::*doFunc)(), bool (fBase_c::*postFunc)(MAIN_STATE_e));
 
     static u32 m_rootUniqueID;

@@ -7,5 +7,6 @@
 // Unofficial name
 class fLiNdPrio_c : fLiNdBa_c {
 public:
-    short mPriority;
+    u16 mPriority1;
+    u16 mPriority2;
 };

@@ -3,7 +3,6 @@
 #include <types.h>
 #include <dol/cLib/c_tree.hpp>
 #include <dol/profile/profile.hpp>
-#include <dol/base/f_base.hpp>
 
 class fTrNdBa_c;
 

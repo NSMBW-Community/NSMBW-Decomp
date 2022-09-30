@@ -3,20 +3,20 @@
         "fileName": "wiimj2d.dol",
         "type": "DOL",
         "moduleNum": 0,
-        "defaultCompilerFlags": "-proc gekko -fp hard -O4 -inline noauto -Cpp_exceptions off",
+        "defaultCompilerFlags": "-proc gekko -fp hard -O4 -inline noauto -Cpp_exceptions off -enum int",
         "sections": {
             ".init":                { "index": 0,  "align": 16, "size": "0x26c0" },
             ".text":                { "index": 1,  "align": 16, "size": "0x2e7560" },
             ".ctors$10":            { "index": 9,  "align": 4, "size": "0x4" },
             ".ctors":               { "index": 9,  "align": 4, "size": "0x2d0", "offset": "0x4" },
-            ".dtors":               { "index": 10, "align": 8, "size": "0x20" },
+            ".dtors":               { "index": 10, "align": 4, "size": "0x20" },
             ".rodata":              { "index": 11, "align": 8, "size": "0x106c0" },
             ".data":                { "index": 12, "align": 8, "size": "0x532e0" },
-            ".sdata2":              { "index": 14, "align": 4, "size": "0x4b60" },
-            ".sbss2":               { "index": -1, "align": 4, "size": "0x4b60" },
-            ".sdata":               { "index": 13, "align": 4, "size": "0x2520" },
-            ".sbss":                { "index": -1, "align": 4, "size": "0x14c0" },
-            ".bss":                 { "index": -1, "align": 4, "size": "0xd6000" }
+            ".bss":                 { "index": -1, "align": 8, "size": "0xd6000" },
+            ".sdata":               { "index": 13, "align": 8, "size": "0x2520" },
+            ".sbss":                { "index": -1, "align": 8, "size": "0x14c0" },
+            ".sdata2":              { "index": 14, "align": 8, "size": "0x4b60" },
+            ".sbss2":               { "index": -1, "align": 8, "size": "0x5c" }
         }
     },
     "slices": [
@@ -69,6 +69,18 @@
             }
         },
         {
+            "name": "dol/base/f_manager.o",
+            "source": "dol/base/f_manager.cpp",
+            "memoryRanges": {
+                ".text": "0x15c6b0-0x15c9c0",
+                ".ctors": "0x208-0x20c",
+                ".data": "0x2b108-0x2b148",
+                ".bss": "0x26390-0x26430",
+                ".sbss": "0x7f0-0x7f8",
+                ".sdata": "0x1dd0-0x1dd8"
+            }
+        },
+        {
             "name": "dol/base/f_tree.o",
             "source": "dol/base/f_tree.cpp",
             "memoryRanges": {
@@ -82,7 +94,7 @@
             "compilerFlags": "-proc gekko -fp hard -O4,p -char signed -rtti off -enum int -func_align 4 -Cpp_exceptions off",
             "memoryRanges": {
                 ".text": "0x2d62f0-0x2d6350",
-                ".sbss": "0x1418-0x141c"
+                ".sbss": "0x1418-0x1420"
             }
         },
         {
@@ -101,7 +113,7 @@
                 ".text": "0x2d6e50-0x2d6ec0",
                 ".ctors$10": "0x0-0x4",
                 ".dtors": "0x0-0xc",
-                ".sdata": "0x2508-0x250c"
+                ".sdata": "0x2508-0x2510"
             }
         }
     ]
