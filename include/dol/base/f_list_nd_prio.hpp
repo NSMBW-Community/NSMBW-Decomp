@@ -5,8 +5,14 @@
 #include <dol/base/f_list_nd.hpp>
 
 // Unofficial name
-class fLiNdPrio_c : fLiNdBa_c {
+class fLiNdPrio_c : public fLiNdBa_c {
 public:
-    u16 mPriority1;
-    u16 mPriority2;
+    u16 mOrder;
+
+    inline fLiNdPrio_c *getPrev() {
+        return (fLiNdPrio_c *) fLiNdBa_c::getPrev();
+    }
+    inline fLiNdPrio_c *getNext() {
+        return (fLiNdPrio_c *) fLiNdBa_c::getNext();
+    }
 };
