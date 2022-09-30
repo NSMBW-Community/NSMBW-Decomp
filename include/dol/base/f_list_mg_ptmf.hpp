@@ -12,5 +12,5 @@ class fLiMgPTMF_c : fLiMgBa_c {
 public:
     fLiMgPTMF_c(void (fBase_c::*ptmf)()) : mpPack(ptmf) {}
 
-    void walkPack();
+    bool walkPack();
 };

@@ -1,6 +1,6 @@
 #pragma once
 
-// unknown class name and function names
+// Unofficial name
 class fBaHelper_c {
     short mStatus;
     short mCount;

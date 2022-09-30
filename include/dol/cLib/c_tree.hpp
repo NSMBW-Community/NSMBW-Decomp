@@ -1,5 +1,7 @@
 #pragma once
 
+#include <types.h>
+
 class cTreeNd_c {
 public:
     cTreeNd_c *mpParent;
@@ -16,6 +18,8 @@ public:
 class cTreeMg_c {
 public:
     cTreeNd_c *mpRootNode;
+
+    cTreeMg_c() : mpRootNode(nullptr) {}
 
     bool addTreeNode(cTreeNd_c *node, cTreeNd_c *parent);
     bool removeTreeNode(cTreeNd_c *node);

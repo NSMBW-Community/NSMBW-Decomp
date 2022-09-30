@@ -13,9 +13,9 @@ SECTIONS {
         .rodata ALIGN(0x20):{}    // Initialized global constant data
         .data ALIGN(0x20):{}      // Initialized global data
         .bss ALIGN(0x4):{}        // Uninitialized global data
-        .sdata ALIGN(0x4):{}      // Initialized global small data
-        .sbss ALIGN(0x4):{}       // Uninitialized global small data
-        .sdata2 ALIGN(0x4):{}     // Initialized global constant small data
-        .sbss2 ALIGN(0x4):{}      // Uninitialized global constant small data
+        .sdata ALIGN(0x8):{}      // Initialized global small data
+        .sbss ALIGN(0x8):{}       // Uninitialized global small data
+        .sdata2 ALIGN(0x8):{}     // Initialized global constant small data
+        .sbss2 ALIGN(0x8):{}      // Uninitialized global constant small data
     } > text
 }
