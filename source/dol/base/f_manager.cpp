@@ -17,7 +17,9 @@ int fManager_c::getSearchTableNum() {
 
 fBase_c *fManager_c::searchBaseByID(fBaseID_e id) {
     const fLiNdBa_c *res = m_searchManage[id & 7].searchNodeByID(id);
-    if (res != nullptr) return res->mpOwner;
+    if (res != nullptr) {
+        return res->mpOwner;
+    }
     return 0;
 }
 
@@ -28,8 +30,11 @@ fBase_c *fManager_c::searchBaseByProfName(Profile profName, const fBase_c *paren
     } else {
         connectNode = nullptr;
     }
+    
     const fTrNdBa_c *res = m_connectManage.searchNodeByProfName(profName, connectNode);
-    if (res != nullptr) return res->mpOwner;
+    if (res != nullptr) {
+        return res->mpOwner;
+    }
     return 0;
 }
 
@@ -40,8 +45,11 @@ fBase_c *fManager_c::searchBaseByGroupType(u8 groupType, const fBase_c *parent) 
     } else {
         connectNode = nullptr;
     }
+
     const fTrNdBa_c *res = m_connectManage.searchNodeByGroupType(groupType, connectNode);
-    if (res != nullptr) return res->mpOwner;
+    if (res != nullptr) {
+        return res->mpOwner;
+    }
     return 0;
 }
 

@@ -10,11 +10,6 @@ class fBase_c;
 
 class fLiMgBa_c : public cListMg_c {
 public:
-    fLiMgBa_c() {
-        mpFirst = nullptr;
-        mpLast = nullptr;
-    }
-
     int countNodeByProfName(Profile profID) const;
     const fLiNdBa_c *searchNodeByID(fBaseID_e id) const;
     
