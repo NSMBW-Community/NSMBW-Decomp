@@ -2,7 +2,9 @@
 #include <dol/base/f_helper_unk.hpp>
 
 void fBaHelper_c::Delete() {
-    if (mpArr == nullptr || mStatus == 0) return;
+    if (mpArr == nullptr || mStatus == 0) {
+        return;
+    }
     
     mCount--;
     while (mCount >= 0) {
@@ -12,7 +14,9 @@ void fBaHelper_c::Delete() {
 }
 
 int fBaHelper_c::Load(int value) {
-    if (mpArr == nullptr || mStatus == 2) return 2;
+    if (mpArr == nullptr || mStatus == 2) {
+        return 2;
+    }
     
     while (mpArr[mCount]) {
         mStatus = vf_0xc(mpArr[mCount]);
@@ -29,6 +33,7 @@ bool fBaHelper_c::LoadOnlyOne() {
     if (mStatus == 1) {
         mStatus = Load(0);
     }
+    
     if (mStatus == 1) {
         return false;
     } else {

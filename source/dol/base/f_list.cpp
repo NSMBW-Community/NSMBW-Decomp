@@ -25,7 +25,9 @@ bool fLiMgPrio_c::addNode(fLiNdPrio_c *node) {
 }
 
 bool fLiMgPTMF_c::walkPack() {
-    if (mpPack == 0) return true;
+    if (mpPack == 0) {
+        return true;
+    }
     
     fLiNdBa_c *curr = (fLiNdBa_c *) mpFirst;
     while (curr != nullptr) {

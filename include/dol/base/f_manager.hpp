@@ -32,6 +32,7 @@ public:
     static fLiMgBa_c m_searchManage[8];
 
     static u32 m_StopProcInf;
+    
     enum LOOP_PROC_e {
         NOTHING, CONNECT, CREATE, EXECUTE, DELETE, DRAW
     };

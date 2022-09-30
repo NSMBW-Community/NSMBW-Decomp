@@ -4,6 +4,7 @@
 #include <dol/base/f_list_mg.hpp>
 #include <dol/base/f_list_nd_prio.hpp>
 
+// Unofficial name
 class fLiMgPrio_c : public fLiMgBa_c {
 public:
 
