@@ -24,7 +24,7 @@ public:
 
     fManager_c mMng;
 
-    fBaHelper_c mUnusedHelper;
+    fBaHelper_c *mUnusedHelper;
     cListMg_c mUnusedList;
     EGG::Heap *mpHeap;
 

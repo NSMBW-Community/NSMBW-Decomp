@@ -8,6 +8,7 @@ public:
     cListNd_c *mpPrev;
     cListNd_c *mpNext;
 
+    inline cListNd_c *getPrev() { return mpPrev; }
     inline cListNd_c *getNext() { return mpNext; }
 };
 
@@ -18,6 +19,9 @@ public:
     cListNd_c *mpLast;
 
     cListMg_c() : mpFirst(nullptr), mpLast(nullptr) {}
+
+    inline cListNd_c *getFirst() { return mpFirst; }
+    inline cListNd_c *getLast() { return mpLast; }
 
     bool insertAfter(cListNd_c *pNode, cListNd_c *pPrevNode);
     bool remove(cListNd_c *pNode);

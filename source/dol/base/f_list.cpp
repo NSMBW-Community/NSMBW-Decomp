@@ -1,6 +1,8 @@
 #include <types.h>
 #include <dol/base/f_list_mg.hpp>
+#include <dol/base/f_list_mg_prio.hpp>
 #include <dol/base/f_list_mg_ptmf.hpp>
+#include <dol/base/f_base.hpp>
 
 bool fLiMgPTMF_c::walkPack() {
     if (mpPack == 0) return true;

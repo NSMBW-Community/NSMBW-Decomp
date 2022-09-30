@@ -9,7 +9,13 @@ class fLiNdBa_c : public cListNd_c {
 public:
     fBase_c *mpOwner;
 
+    inline fLiNdBa_c *getPrev() {
+        return (fLiNdBa_c *) cListNd_c::getPrev();
+    }
     inline fLiNdBa_c *getNext() {
         return (fLiNdBa_c *) cListNd_c::getNext();
     }
+
+    // Unofficial name
+    void removeSelf();
 };
