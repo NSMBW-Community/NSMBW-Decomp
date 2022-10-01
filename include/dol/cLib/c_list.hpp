@@ -22,8 +22,8 @@ public:
 
     cListMg_c() : mpFirst(nullptr), mpLast(nullptr) {}
 
-    inline cListNd_c *getFirst() { return mpFirst; }
-    inline cListNd_c *getLast() { return mpLast; }
+    cListNd_c *getFirst() const { return mpFirst; }
+    cListNd_c *getLast() const { return mpLast; }
 
     bool insertAfter(cListNd_c *pNode, cListNd_c *pPrevNode);
     bool remove(cListNd_c *pNode);

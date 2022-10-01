@@ -3,7 +3,7 @@
         "fileName": "wiimj2d.dol",
         "type": "DOL",
         "moduleNum": 0,
-        "defaultCompilerFlags": "-proc gekko -fp hard -O4 -inline noauto -Cpp_exceptions off -enum int",
+        "defaultCompilerFlags": "-proc gekko -fp hard -O4 -inline noauto -Cpp_exceptions off -enum int -enc SJIS -RTTI off",
         "sections": {
             ".init":                { "index": 0,  "align": 16, "size": "0x26c0" },
             ".text":                { "index": 1,  "align": 16, "size": "0x2e7560" },
@@ -66,6 +66,16 @@
             "source": "dol/base/f_helper_unk.cpp",
             "memoryRanges": {
                 ".text": "0x15b2e0-0x15b490"
+            }
+        },
+        {
+            "name": "dol/base/f_base.o",
+            "source": "dol/base/f_base.cpp",
+            "memoryRanges": {
+                ".text": "0x15b490-0x15c500",
+                ".data": "0x2aff8-0x2b108",
+                ".sbss": "0x7d8-0x7f0",
+                ".sdata": "0x1dc8-0x1dd0"
             }
         },
         {

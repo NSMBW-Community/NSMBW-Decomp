@@ -13,6 +13,11 @@ public:
     void forcedClear();
     cTreeNd_c *getTreeNext() const;
     cTreeNd_c *getTreeNextNotChild() const;
+
+    cTreeNd_c *getParent() const { return mpParent; }
+    cTreeNd_c *getChild() const { return mpChild; }
+    cTreeNd_c *getBrPrev() const { return mpPrev; }
+    cTreeNd_c *getBrNext() const { return mpNext; }
 };
 
 class cTreeMg_c {

@@ -19,6 +19,6 @@ public:
     }
 
     // Unofficial name
-    // Might not actually belong to this class (-> xor trick on hash)
+    // [Might not actually belong to this class (-> xor trick on hash)]
     void removeSelf();
 };
