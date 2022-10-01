@@ -35,12 +35,46 @@ def extract_slice(dol_file: Dol, slice: Slice, syms: dict[int, str]) -> ElfFile:
 
         # TODO: loading from a proper map should speed this up, as we also have the section indices there
         for sym in syms:
-            for idx, dol_sec in enumerate(dol_file.sections):
-                offs = syms[sym] - dol_sec.virt_addr
-                if sec.contains(idx, offs):
-                    elfsym = ElfSymbol(sym, st_value=offs-sec.start_offs, st_info_bind=STB.STB_GLOBAL, st_shndx=sec_idx)
-                    symtab_sec.add_symbol(elfsym)
+            elfsym = None
 
+            # -1 = uninitialized data section
+            if sec.sec_idx == -1:
+                # Search in unitialized sections (i.e. .bss, .sbss and .sbss2)
+                # This is stored a bit confusingly in the dol file format as it only has a field for the address of .bss
+                unitialized_sec_starts = []
+                curr = dol_file.bss_addr
+                rem_size = dol_file.bss_len
+                for i in range(len(dol_file.sections)):
+                    curr_sec = dol_file.sections[i]
+                    if curr_sec.virt_addr > curr:
+                        unitialized_sec_starts.append(curr)
+                        diff = curr_sec.virt_addr - curr
+                        rem_size -= diff
+                        curr = curr_sec.virt_addr + curr_sec.sec_len
+                if rem_size > 0:
+                    unitialized_sec_starts.append(curr)
+                
+                # Must use correct section
+                lookup = {
+                    '.bss': unitialized_sec_starts[0],
+                    '.sbss': unitialized_sec_starts[1],
+                    '.sbss2': unitialized_sec_starts[2],
+                }
+
+                offs = syms[sym] - lookup[sec.sec_name]
+                if sec.contains(-1, offs):
+                    elfsym = ElfSymbol(sym, st_value=offs-sec.start_offs, st_info_bind=STB.STB_GLOBAL, st_shndx=sec_idx)
+            else:
+                # Search in normal section
+                for idx, dol_sec in enumerate(dol_file.sections):
+                    offs = syms[sym] - dol_sec.virt_addr
+                    if sec.contains(idx, offs):
+                        elfsym = ElfSymbol(sym, st_value=offs-sec.start_offs, st_info_bind=STB.STB_GLOBAL, st_shndx=sec_idx)
+                        break
+
+            if elfsym != None:
+                symtab_sec.add_symbol(elfsym)
+                
     elf_file.add_section(symtab_sec)
 
     return elf_file
