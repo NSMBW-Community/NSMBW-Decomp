@@ -10,6 +10,8 @@ class fTrNdBa_c : public cTreeNd_c {
 public:    
     fBase_c *mpOwner;
 
+    fTrNdBa_c(fBase_c *owner) : mpOwner(owner) {}
+
     fTrNdBa_c *getTreeNext() const {
         return (fTrNdBa_c *) cTreeNd_c::getTreeNext();
     }

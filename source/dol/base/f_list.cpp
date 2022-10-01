@@ -1,10 +1,9 @@
 #include <types.h>
 #include <dol/base/f_list_mg.hpp>
-#include <dol/base/f_list_mg_prio.hpp>
 #include <dol/base/f_list_mg_ptmf.hpp>
 #include <dol/base/f_base.hpp>
 
-bool fLiMgPrio_c::addNode(fLiNdPrio_c *node) {
+bool fLiMgPTMF_c::addNode(fLiNdPrio_c *node) {
     fLiNdPrio_c *curr = getFirst();
     if (node == nullptr) {
         return false;

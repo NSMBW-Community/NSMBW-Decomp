@@ -8,6 +8,9 @@
 class fLiNdPrio_c : public fLiNdBa_c {
 public:
     u16 mOrder;
+    u16 mOrder2;
+    
+    fLiNdPrio_c(fBase_c *owner) : fLiNdBa_c(owner), mOrder(0), mOrder2(0) {}
 
     inline fLiNdPrio_c *getPrev() {
         return (fLiNdPrio_c *) fLiNdBa_c::getPrev();

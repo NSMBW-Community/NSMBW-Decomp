@@ -8,6 +8,8 @@ class fBase_c;
 class fLiNdBa_c : public cListNd_c {
 public:
     fBase_c *mpOwner;
+    
+    fLiNdBa_c(fBase_c *owner) : mpOwner(owner) {}
 
     inline fLiNdBa_c *getPrev() {
         return (fLiNdBa_c *) cListNd_c::getPrev();
