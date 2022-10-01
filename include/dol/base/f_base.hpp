@@ -7,15 +7,20 @@
 #include <dol/base/f_manager.hpp>
 #include <dol/base/f_list_mg.hpp>
 
+// [This file must be saved in Shift JIS!]
+// [TODO: any way to make it work without?]
+
+// [Translation: Heap that each process can have individually (fBase_c::mHeap)]
+#define F_BASE_HEAP_NAME "各プロセスが個別で持てるヒープ(fBase_c::mHeap)"
+
 class fBase_c {
 public:
     fBaseID_e mUniqueID;
     u32 mParam;
     Profile mProfName;
 
-    u8 mLifecycleState; // 0: object has not yet been added to the fManager_c lists
-                        // 1: object has been added to the fManager_c lists
-                        // 2: object has been removed from the fManager_c lists
+    u8 mLifecycleState;
+    
     bool mWantsDelete;
     bool mIsNotDeferred;
     bool mIsDeferred;
@@ -45,55 +50,64 @@ public:
     virtual bool preCreate();
     virtual void postCreate(MAIN_STATE_e state);
 
-    void createPack();
+    int createPack();
 
     virtual int doDelete();
     virtual bool preDelete();
     virtual void postDelete(MAIN_STATE_e state);
     
-    void deletePack();
+    int deletePack();
 
     virtual int execute();
     virtual bool preExecute();
     virtual void postExecute(MAIN_STATE_e state);
     
-    void executePack();
+    int executePack();
 
     virtual int draw();
     virtual bool preDraw();
     virtual void postDraw(MAIN_STATE_e state);
     
-    void drawPack();
+    int drawPack();
 
     virtual void deleteReady();
 
-    void connectProc();
     void deleteRequest();
+    int connectProc();
     
     fBase_c *getConnectParent();
     fBase_c *getConnectChild();
     fBase_c *getConnectBrNext();
 
-    virtual bool entryFrmHeap(u32 size, void *parentHeap);
-    virtual bool entryFrmHeapNonAdjust(u32 size, void *parentHeap);
-    virtual void createHeap();
-    
+    virtual bool entryFrmHeap(unsigned long size, EGG::Heap *parentHeap);
+    virtual bool entryFrmHeapNonAdjust(unsigned long size, EGG::Heap *parentHeap);
+    virtual bool createHeap();
+
     virtual ~fBase_c();
 
     void runCreate();
+    
+    fBase_c *getNonReadyChild() const;
+    bool hasNonReadyChild() const;
 
-    static void setTmpCtData(Profile prof, fTrNdBa_c *connectParent, u32 param, u8 groupType);
-    static fBase_c *fBase_make(Profile prof, fTrNdBa_c *connectParent, u32 param, u8 groupType);
-    static fBase_c *createChild(Profile prof, fBase_c *parent, u32 param, u8 groupType);
-    static fBase_c *createRoot(Profile prof, u32 param, u8 groupType);
+    bool isProcessFlag(u8 flag) const { return (mProcessFlags & flag) != 0; }
+
+    static void setTmpCtData(Profile prof, fTrNdBa_c *connectParent, unsigned long param, u8 groupType);
+    static fBase_c *fBase_make(Profile prof, fTrNdBa_c *connectParent, unsigned long param, u8 groupType);
+    static fBase_c *createChild(Profile prof, fBase_c *parent, unsigned long param, u8 groupType);
+    static fBase_c *createRoot(Profile prof, unsigned long param, u8 groupType);
 
 private:
     // Unofficial name
-    void commonPack(bool (fBase_c::*preFunc)(), int (fBase_c::*doFunc)(), bool (fBase_c::*postFunc)(MAIN_STATE_e));
+    int commonPack(int (fBase_c::*doFunc)(), bool (fBase_c::*preFunc)(), void (fBase_c::*postFunc)(MAIN_STATE_e));
 
     static fBaseID_e m_rootUniqueID;
     static u32 m_tmpCtParam;
     static Profile m_tmpCtProfName;
     static u8 m_tmpCtGroupType;
     static fTrNdBa_c *m_tmpCtConnectParent;
+    
+    // [TODO: find out signature]
+    static void (*sLoadAsyncCallback)();
+    static void (*sUnloadCallback)();
 };

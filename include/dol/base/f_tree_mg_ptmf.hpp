@@ -8,9 +8,9 @@ class fBase_c;
 
 // Unofficial name
 class fTrMgPTMF_c : public fTrMgBa_c {
-    void (fBase_c::*mpPack)();
+    int (fBase_c::*mpPack)();
 public:
-    fTrMgPTMF_c(void (fBase_c::*ptmf)()) : mpPack(ptmf) {}
+    fTrMgPTMF_c(int (fBase_c::*ptmf)()) : mpPack(ptmf) {}
 
     bool walkPack();
 };

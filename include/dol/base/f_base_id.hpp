@@ -1,3 +1,5 @@
 #pragma once
 
-enum fBaseID_e {};
+enum fBaseID_e {
+    INVALID = -1
+};

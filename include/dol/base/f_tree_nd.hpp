@@ -15,4 +15,20 @@ public:
     fTrNdBa_c *getTreeNext() const {
         return (fTrNdBa_c *) cTreeNd_c::getTreeNext();
     }
+    fTrNdBa_c *getTreeNextNotChild() const {
+        return (fTrNdBa_c *) cTreeNd_c::getTreeNextNotChild();
+    }
+
+    fTrNdBa_c *getParent() const {
+        return (fTrNdBa_c *) cTreeNd_c::getParent();
+    }
+    fTrNdBa_c *getChild() const {
+        return (fTrNdBa_c *) cTreeNd_c::getChild();
+    }
+    fTrNdBa_c *getBrPrev() const {
+        return (fTrNdBa_c *) cTreeNd_c::getBrPrev();
+    }
+    fTrNdBa_c *getBrNext() const {
+        return (fTrNdBa_c *) cTreeNd_c::getBrNext();
+    }
 };

@@ -8,10 +8,10 @@ class fBase_c;
 
 // Unofficial name
 class fLiMgPTMF_c : public fLiMgBa_c {
-    void (fBase_c::*mpPack)();
+    int (fBase_c::*mpPack)();
 
 public:
-    fLiMgPTMF_c(void (fBase_c::*ptmf)()) : mpPack(ptmf) {}
+    fLiMgPTMF_c(int (fBase_c::*ptmf)()) : mpPack(ptmf) {}
 
     bool addNode(fLiNdPrio_c *node);
 
