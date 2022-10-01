@@ -13,10 +13,10 @@ public:
     int countNodeByProfName(Profile profID) const;
     const fLiNdBa_c *searchNodeByID(fBaseID_e id) const;
     
-    inline fLiMgBa_c *getFirst() {
-        return (fLiMgBa_c *) cListMg_c::getFirst();
+    inline fLiNdBa_c *getFirst() {
+        return (fLiNdBa_c *) cListMg_c::getFirst();
     }
-    inline fLiMgBa_c *getLast() {
-        return (fLiMgBa_c *) cListMg_c::getLast();
+    inline fLiNdBa_c *getLast() {
+        return (fLiNdBa_c *) cListMg_c::getLast();
     }
 };

@@ -7,6 +7,8 @@ class cListNd_c {
 public:
     cListNd_c *mpPrev;
     cListNd_c *mpNext;
+    
+    cListNd_c() : mpPrev(nullptr), mpNext(nullptr) {}
 
     inline cListNd_c *getPrev() { return mpPrev; }
     inline cListNd_c *getNext() { return mpNext; }

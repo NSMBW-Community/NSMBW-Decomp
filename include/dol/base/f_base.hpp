@@ -5,7 +5,7 @@
 #include <dol/base/f_base_id.hpp>
 #include <dol/base/f_helper_unk.hpp>
 #include <dol/base/f_manager.hpp>
-#include <dol/cLib/c_list.hpp>
+#include <dol/base/f_list_mg.hpp>
 
 class fBase_c {
 public:
@@ -25,7 +25,7 @@ public:
     fManager_c mMng;
 
     fBaHelper_c *mpUnusedHelper;
-    cListMg_c mUnusedList;
+    fLiMgBa_c mUnusedList;
     EGG::Heap *mpHeap;
 
     enum MAIN_STATE_e {
@@ -43,25 +43,25 @@ public:
 
     virtual int create();
     virtual bool preCreate();
-    virtual bool postCreate(MAIN_STATE_e state);
+    virtual void postCreate(MAIN_STATE_e state);
 
     void createPack();
 
     virtual int doDelete();
     virtual bool preDelete();
-    virtual bool postDelete(MAIN_STATE_e state);
+    virtual void postDelete(MAIN_STATE_e state);
     
     void deletePack();
 
     virtual int execute();
     virtual bool preExecute();
-    virtual bool postExecute(MAIN_STATE_e state);
+    virtual void postExecute(MAIN_STATE_e state);
     
     void executePack();
 
     virtual int draw();
     virtual bool preDraw();
-    virtual bool postDraw(MAIN_STATE_e state);
+    virtual void postDraw(MAIN_STATE_e state);
     
     void drawPack();
 
@@ -89,10 +89,11 @@ public:
 
 private:
     // Unofficial name
-    int commonPack(bool (fBase_c::*preFunc)(), int (fBase_c::*doFunc)(), bool (fBase_c::*postFunc)(MAIN_STATE_e));
+    void commonPack(bool (fBase_c::*preFunc)(), int (fBase_c::*doFunc)(), bool (fBase_c::*postFunc)(MAIN_STATE_e));
 
-    static u32 m_rootUniqueID;
+    static fBaseID_e m_rootUniqueID;
     static u32 m_tmpCtParam;
     static Profile m_tmpCtProfName;
     static u8 m_tmpCtGroupType;
+    static fTrNdBa_c *m_tmpCtConnectParent;
 };

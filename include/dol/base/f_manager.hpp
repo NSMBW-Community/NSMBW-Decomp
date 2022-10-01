@@ -12,12 +12,18 @@
 class fBase_c;
 
 class fManager_c {
+public:
     fTrNdBa_c mConnectNode;
     fLiNdPrio_c mExecuteNode;
     fLiNdPrio_c mDrawNode;
     fLiNdBa_c mSearchNode;
 
-public:
+    fManager_c(fBase_c *owner) :
+        mConnectNode(owner),
+        mExecuteNode(owner),
+        mDrawNode(owner),
+        mSearchNode(owner) {}
+
     void mainLoop();
     static fBase_c *searchBaseByID(fBaseID_e id);
     static fBase_c *searchBaseByProfName(Profile profID, const fBase_c *parent);
