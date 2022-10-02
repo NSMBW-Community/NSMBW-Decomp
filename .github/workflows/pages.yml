@@ -1,0 +1,43 @@
+# Simple workflow for deploying static content to GitHub Pages
+name: Deploy static content to Pages
+
+on:
+  # Runs on pushes targeting the default branch
+  push:
+    branches: ["master"]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Allow one concurrent deployment
+concurrency:
+  group: "pages"
+  cancel-in-progress: true
+
+jobs:
+  # Single deploy job since we're just deploying
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+    - name: Doxygen GitHub Pages Deploy Action
+      # You may pin to the exact commit or the version.
+      # uses: DenverCoder1/doxygen-github-pages-action@f1a31f55f226a53e48f414a3aa45ede1d2fdf969
+      uses: DenverCoder1/doxygen-github-pages-action@v1.1.0
+      with:
+        # A GitHub token for pushing to the repo. Example: https://git.io/passing-token
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        # Branch name for pushing GitHub pages files
+        branch: gh-pages
+        # Folder where Doxygen will generate the HTML build files
+        folder: docs/html
+        # Path of the Doxygen configuration file
+        config_file: Doxyfile
