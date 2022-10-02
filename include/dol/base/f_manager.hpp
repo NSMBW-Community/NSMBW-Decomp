@@ -7,7 +7,7 @@
 #include <dol/base/f_list_nd_prio.hpp>
 #include <dol/base/f_tree_mg_ptmf.hpp>
 #include <dol/base/f_tree_nd.hpp>
-#include <dol/profile/profile.hpp>
+#include <dol/base/f_profile.hpp>
 
 class fBase_c;
 
@@ -29,7 +29,7 @@ public:
     static void mainLoop();
     
     static fBase_c *searchBaseByID(fBaseID_e id);
-    static fBase_c *searchBaseByProfName(Profile profID, const fBase_c *parent);
+    static fBase_c *searchBaseByProfName(ProfileName profID, const fBase_c *parent);
     static fBase_c *searchBaseByGroupType(unsigned char groupType, const fBase_c *parent);
     int getSearchTableNum();
 

@@ -47,7 +47,7 @@ const fLiNdBa_c *fLiMgBa_c::searchNodeByID(fBaseID_e id) const {
     return nullptr;
 }
 
-int fLiMgBa_c::countNodeByProfName(Profile prof) const {
+int fLiMgBa_c::countNodeByProfName(ProfileName prof) const {
     int count = 0;
 
     for (fLiNdBa_c *curr = (fLiNdBa_c *) mpFirst; curr != nullptr; curr = curr->getNext()) {
