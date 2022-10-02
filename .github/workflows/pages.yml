@@ -38,6 +38,6 @@ jobs:
         # Branch name for pushing GitHub pages files
         branch: gh-pages
         # Folder where Doxygen will generate the HTML build files
-        folder: docs/html
+        folder: ./
         # Path of the Doxygen configuration file
         config_file: Doxyfile
