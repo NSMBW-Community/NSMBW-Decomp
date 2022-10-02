@@ -1,7 +1,7 @@
 #pragma once
 #include <types.h>
 #include <lib/egg/heap/frm_heap.hpp>
-#include <dol/profile/profile.hpp>
+#include <dol/base/f_profile.hpp>
 #include <dol/base/f_base_id.hpp>
 #include <dol/base/f_helper_unk.hpp>
 #include <dol/base/f_manager.hpp>
@@ -15,7 +15,7 @@ class fBase_c {
 public:
     fBaseID_e mUniqueID; ///< A unique identifier for every base.
     u32 mParam; ///< Parameters that can be set to configure the behaviour. [These are the sprite data fields in Reggie]
-    Profile mProfName; ///< The name of the profile.
+    ProfileName mProfName; ///< The name of the profile.
 
     /// The possible states in the lifecycle.
     enum LIFECYCLE_e {
@@ -25,9 +25,9 @@ public:
     };
     u8 mLifecycleState; ///< Current lifecycle state. Value is a ::LIFECYCLE_e.
     
-    bool mDeleteRequested; ///< If this object is to be deleted.
-    bool delayManageAdd; ///< If the adding of this base should be delayed until the next ::connectProc call.
-    bool mRetryCreate; ///< If the next ::connectProc call should add this base to the fManager_c::m_createManage list.
+    bool mDeleteRequested; ///< If the base is to be deleted.
+    bool delayManageAdd; ///< If the adding of the base should be delayed until the next ::connectProc call.
+    bool mRetryCreate; ///< If the next ::connectProc call should add the base to fManager_c::m_createManage.
 
     /// The possible group types.
     enum GROUP_TYPE_e {
@@ -38,11 +38,11 @@ public:
     u8 mGroupType; ///< Current lifecycle state. Value is a ::GROUP_TYPE_e.
     u8 mProcessFlags; ///< Which process is to be executed. Value is a bitfield induced by fManager_c::PROC_FLAGS.
 
-    fManager_c mMng; //< This base's manager.
+    fManager_c mMng; ///< This base's manager.
 
     fBaHelper_c *mpUnusedHelper;
     fLiMgBa_c mUnusedList;
-    EGG::FrmHeap *mpHeap;
+    EGG::FrmHeap *mpHeap; ///< This object's own FrmHeap. [Seems unused]
 
     /// The states commonPack can be in after running the @e pre and @e do methods.
     enum MAIN_STATE_e {
@@ -63,19 +63,33 @@ public:
     int executePack(); //< @see ::commonPack()
     int drawPack(); //< @see ::commonPack()
 
-    /// Request deletion of this base.
-    void deleteRequest();
-    /// Deals with the connect tree and object lifecycle.
+    /// Deal with the connect tree and object lifecycle.
     int connectProc();
+
+    /// Request deletion of the base.
+    void deleteRequest();
     
     fBase_c *getConnectParent();
     fBase_c *getConnectChild();
     fBase_c *getConnectBrNext();
 
-    /// Attempt to finalize creation of this base.
+    /// Attempt to finalize creation of the base.
     void runCreate();
     
+    // [Unofficial name]
+    /**
+     * @brief Get a child base that is waiting to be added to fManager_c::m_createManage.
+     * 
+     * @return A child base satisfying this condition, or else nullptr.
+     */
     fBase_c *getNonReadyChild() const;
+
+    // [Unofficial name]
+    /**
+     * @brief Check if the base has a child base which is waiting to be added to fManager_c::m_createManage.
+     * 
+     * @return If such a child base exists.
+     */
     bool hasNonReadyChild() const;
 
     /// Check if a flag is set in ::mProcessFlags.
@@ -89,7 +103,7 @@ public:
      * @param param The parameter for the base.
      * @param groupType The group type of the base.
      */
-    static void setTmpCtData(Profile profName, fTrNdBa_c *connectParent, unsigned long param, u8 groupType);
+    static void setTmpCtData(ProfileName profName, fTrNdBa_c *connectParent, unsigned long param, u8 groupType);
     /**
      * @brief Instantiate a base under a parent base.
      * 
@@ -99,7 +113,7 @@ public:
      * @param groupType The group type of the base.
      * @return A pointer to the instantiated base.
      */
-    static fBase_c *createChild(Profile profName, fBase_c *parent, unsigned long param, u8 groupType);
+    static fBase_c *createChild(ProfileName profName, fBase_c *parent, unsigned long param, u8 groupType);
     /**
      * @brief Instantiate a base as a root node in the connect tree.
      * 
@@ -108,7 +122,7 @@ public:
      * @param groupType The group type of the base.
      * @return A pointer to the instantiated base.
      */
-    static fBase_c *createRoot(Profile profName, unsigned long param, u8 groupType);
+    static fBase_c *createRoot(ProfileName profName, unsigned long param, u8 groupType);
 
     static void (*sLoadAsyncCallback)(); ///< [Unused.]
     static void (*sUnloadCallback)(); ///< [Unused.]
@@ -140,8 +154,10 @@ private:
     virtual int preDraw();
     virtual void postDraw(MAIN_STATE_e state);
 
+    /// Inform the base that it will be deleted.
     virtual void deleteReady();
 
+    // [TODO: document the exact purpose these functions serve]
     virtual bool entryFrmHeap(unsigned long size, EGG::Heap *parentHeap);
     virtual bool entryFrmHeapNonAdjust(unsigned long size, EGG::Heap *parentHeap);
     virtual bool createHeap();
@@ -157,11 +173,11 @@ private:
      * @param groupType The group type of the base.
      * @return A pointer to the instantiated base.
      */
-    static fBase_c *fBase_make(Profile profName, fTrNdBa_c *connectParent, unsigned long param, u8 groupType);
+    static fBase_c *fBase_make(ProfileName profName, fTrNdBa_c *connectParent, unsigned long param, u8 groupType);
 
     static fBaseID_e m_rootUniqueID; ///< The ID which the base that is created next will be given. \see ::mUniqueID
     static u32 m_tmpCtParam; ///< The parameter which the base that is created next will be given.
-    static Profile m_tmpCtProfName; ///< The profile name which the base that is created next will be given.
+    static ProfileName m_tmpCtProfName; ///< The profile name which the base that is created next will be given.
     static u8 m_tmpCtGroupType; ///< The group type which the base that is created next will be given.
     static fTrNdBa_c *m_tmpCtConnectParent; ///< The parent which the base that is created next will be a child of.
 };

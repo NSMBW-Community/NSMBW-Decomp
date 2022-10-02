@@ -2,7 +2,7 @@
 
 #include <types.h>
 #include <dol/cLib/c_tree.hpp>
-#include <dol/profile/profile.hpp>
+#include <dol/base/f_profile.hpp>
 
 class fBase_c;
 

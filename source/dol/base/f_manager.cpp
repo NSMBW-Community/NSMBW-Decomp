@@ -23,7 +23,7 @@ fBase_c *fManager_c::searchBaseByID(fBaseID_e id) {
     return 0;
 }
 
-fBase_c *fManager_c::searchBaseByProfName(Profile profName, const fBase_c *parent) {
+fBase_c *fManager_c::searchBaseByProfName(ProfileName profName, const fBase_c *parent) {
     const fTrNdBa_c *connectNode;
     if (parent != nullptr) {
         connectNode = &parent->mMng.mConnectNode;

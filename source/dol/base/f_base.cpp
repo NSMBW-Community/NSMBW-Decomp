@@ -4,7 +4,7 @@
 #include <sjis_constants.h>
 
 fBaseID_e fBase_c::m_rootUniqueID = FIRST_ID;
-Profile fBase_c::m_tmpCtProfName;
+ProfileName fBase_c::m_tmpCtProfName;
 u32 fBase_c::m_tmpCtParam;
 u8 fBase_c::m_tmpCtGroupType;
 fTrNdBa_c *fBase_c::m_tmpCtConnectParent;
@@ -29,7 +29,7 @@ fBase_c::fBase_c() :
     fManager_c::m_searchManage[idx].prepend(&mMng.mSearchNode);
 
     // Try to get profile and set the order fields
-    ProfileData *prof = (*g_profiles)[mProfName];
+    fProfile::fBaseProfile_c *prof = (*fProfile::sProfileList)[mProfName];
     if (prof != nullptr) {
         u16 executeOrder = prof->mExecuteOrder;
         mMng.mExecuteNode.mOrder = executeOrder;
@@ -295,7 +295,7 @@ bool fBase_c::entryFrmHeap(unsigned long size, EGG::Heap *parentHeap) {
     EGG::FrmHeap *newHeap = nullptr;
     if (size != 0) {
         // First, try to make a heap with the given size
-        newHeap = makeFrmHeapAndUpdate(size, parentHeap, F_BASE_HEAP_NAME, 0x20, 0);
+        newHeap = mHeap::makeFrmHeapAndUpdate(size, parentHeap, F_BASE_HEAP_NAME, 0x20, 0);
         if (newHeap != nullptr) {
             bool createSuccess = createHeap();
             mHeap::restoreCurrentHeap();
@@ -313,7 +313,7 @@ bool fBase_c::entryFrmHeap(unsigned long size, EGG::Heap *parentHeap) {
     }
     if (newHeap == nullptr) {
         // If that failed, try to make a heap with maximum size
-        newHeap = makeFrmHeapAndUpdate(0xFFFFFFFF, parentHeap, F_BASE_HEAP_NAME, 0x20, 0);
+        newHeap = mHeap::makeFrmHeapAndUpdate(0xFFFFFFFF, parentHeap, F_BASE_HEAP_NAME, 0x20, 0);
         if (newHeap != nullptr) {
             bool createSuccess = createHeap();
             mHeap::restoreCurrentHeap();
@@ -326,7 +326,7 @@ bool fBase_c::entryFrmHeap(unsigned long size, EGG::Heap *parentHeap) {
         }
     }
     if (newHeap != nullptr) {
-        EGG::FrmHeap *largerHeap = makeFrmHeapAndUpdate(heapSize, parentHeap, F_BASE_HEAP_NAME, 0x20, 0);
+        EGG::FrmHeap *largerHeap = mHeap::makeFrmHeapAndUpdate(heapSize, parentHeap, F_BASE_HEAP_NAME, 0x20, 0);
         if (largerHeap != nullptr) {
             if (largerHeap < newHeap) {
                 mHeap::destroyFrmHeap(newHeap);
@@ -358,7 +358,7 @@ bool fBase_c::entryFrmHeapNonAdjust(unsigned long size, EGG::Heap *parentHeap) {
     if (mpHeap != nullptr) {
         return true;
     }
-    EGG::FrmHeap *newHeap = makeFrmHeapAndUpdate(size, parentHeap, F_BASE_HEAP_NAME, 0x20, 0);
+    EGG::FrmHeap *newHeap = mHeap::makeFrmHeapAndUpdate(size, parentHeap, F_BASE_HEAP_NAME, 0x20, 0);
     if (newHeap != nullptr) {
         bool createSuccess = createHeap();
         mHeap::restoreCurrentHeap();
@@ -420,19 +420,19 @@ bool fBase_c::hasNonReadyChild() const {
     return getNonReadyChild() != nullptr;
 }
 
-void fBase_c::setTmpCtData(Profile profName, fTrNdBa_c *connectParent, unsigned long param, u8 groupType) {
+void fBase_c::setTmpCtData(ProfileName profName, fTrNdBa_c *connectParent, unsigned long param, u8 groupType) {
     m_tmpCtParam = param;
     m_tmpCtProfName = profName;
     m_tmpCtGroupType = groupType;
     m_tmpCtConnectParent = connectParent;
 }
 
-fBase_c *fBase_c::fBase_make(Profile profName, fTrNdBa_c *connectParent, unsigned long param, u8 groupType) {
-    if ((*g_profiles)[profName] == nullptr) {
+fBase_c *fBase_c::fBase_make(ProfileName profName, fTrNdBa_c *connectParent, unsigned long param, u8 groupType) {
+    if ((*fProfile::sProfileList)[profName] == nullptr) {
         return nullptr;
     }
     setTmpCtData(profName, connectParent, param, groupType);
-    fBase_c *res = (fBase_c *) (*g_profiles)[profName]->mpClassInit();
+    fBase_c *res = (fBase_c *) (*fProfile::sProfileList)[profName]->mpClassInit();
     setTmpCtData(0, nullptr, 0, 0);
     if (res != nullptr) {
         res->runCreate();
@@ -440,13 +440,13 @@ fBase_c *fBase_c::fBase_make(Profile profName, fTrNdBa_c *connectParent, unsigne
     return res;
 }
 
-fBase_c *fBase_c::createChild(Profile profName, fBase_c *connectParent, unsigned long param, u8 groupType) {
+fBase_c *fBase_c::createChild(ProfileName profName, fBase_c *connectParent, unsigned long param, u8 groupType) {
     if (connectParent == nullptr) {
         return nullptr;
     }
     return fBase_make(profName, &connectParent->mMng.mConnectNode, param, groupType);
 }
 
-fBase_c *fBase_c::createRoot(Profile profName, unsigned long param, u8 groupType) {
+fBase_c *fBase_c::createRoot(ProfileName profName, unsigned long param, u8 groupType) {
     return fBase_make(profName, nullptr, param, groupType);
 }

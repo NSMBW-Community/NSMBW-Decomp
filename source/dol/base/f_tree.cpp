@@ -16,7 +16,7 @@ bool fTrMgPTMF_c::walkPack() {
     return true;
 }
 
-const fTrNdBa_c *fTrMgBa_c::searchNodeByProfName(Profile prof, const fTrNdBa_c *parent) {
+const fTrNdBa_c *fTrMgBa_c::searchNodeByProfName(ProfileName prof, const fTrNdBa_c *parent) {
     const fTrNdBa_c *root;
     
     if (parent != nullptr) {

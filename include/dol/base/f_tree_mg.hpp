@@ -2,7 +2,7 @@
 
 #include <types.h>
 #include <dol/cLib/c_tree.hpp>
-#include <dol/profile/profile.hpp>
+#include <dol/base/f_profile.hpp>
 
 class fTrNdBa_c;
 
@@ -16,7 +16,7 @@ public:
      * @param parent The root node to start search below, or nullptr to use the tree's root node.
      * @return const fTrNdBa_c* The found node, or nullptr if none was found.
      */
-    const fTrNdBa_c *searchNodeByProfName(Profile profName, const fTrNdBa_c *parent);
+    const fTrNdBa_c *searchNodeByProfName(ProfileName profName, const fTrNdBa_c *parent);
     /**
      * @brief Find a node with a given group type, optionally under a given parent root node.
      * 

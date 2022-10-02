@@ -1,7 +1,7 @@
 #pragma once
 
 #include <types.h>
-#include <dol/profile/profile.hpp>
+#include <dol/base/f_profile.hpp>
 #include <dol/cLib/c_list.hpp>
 #include <dol/base/f_base_id.hpp>
 #include <dol/base/f_list_nd.hpp>
@@ -17,7 +17,7 @@ public:
      * @param profName The profile name.
      * @return How many nodes were found.
      */
-    int countNodeByProfName(Profile profName) const;
+    int countNodeByProfName(ProfileName profName) const;
     /**
      * @brief Find a node in this list which has a certain ID.
      * 
