@@ -1,7 +1,7 @@
 #pragma once
 #include <types.h>
 
-// Unofficial name
+// [Unofficial name]
 class cM_rand_c {
 public:
     cM_rand_c(u32 seed) { mSeed = seed; };
