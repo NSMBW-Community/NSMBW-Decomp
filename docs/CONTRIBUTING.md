@@ -55,3 +55,42 @@ If your code does **not** match, use the `NONMATCHING` macro, and explain in a c
 
 - Pointer/reference types must have the asterisk/ampersand near the variable name.
 - Use C style casts to cast a type to another.
+
+### Comments
+Code comments should start with an uppercase letter and usually do not end in a period.
+
+Write comments that could not have been in the original code in square brackets. Examples include:
+   - `// Parameters that can be set to configure the behaviour of the base. [These are the sprite data fields in Reggie]`
+   - `// [TODO: is this an int or an enum?]`
+
+## Code documenting guidelines
+
+For documenting functions, members etc., we use Doxygen-style comments, using '@' for commands.
+
+In general, always start a documentation comment with an uppercase letter and terminate it with a period.
+
+For functions which require a decently long explanation, and/or documentation for the parameters and return values, use multiline comments, like this:
+```cpp
+/**
+ * @brief Instantiate a base under a parent base.
+ * 
+ * @param profName The profile name.
+ * @param parent The parent base.
+ * @param param The parameter for the base.
+ * @param groupType The group type of the base.
+ * @return A pointer to the instantiated base.
+ */
+```
+
+If the functionality is rather obvious, please still write a short comment. You can use single-line comments:
+```cpp
+/// @brief Request deletion of the base.
+void deleteRequest();
+```
+
+Or, if it looks better, you may also use inline comments:
+```cpp
+virtual int create(); ///< Create the base.
+virtual int preCreate(); ///< To be executed before ::create.
+virtual void postCreate(MAIN_STATE_e state); ///< To be executed after ::create.
+```
