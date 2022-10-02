@@ -6,7 +6,7 @@
 
 class fTrNdBa_c;
 
-/// A container for a tree of fTrNdBa_c nodes.
+/// @brief A container for a tree of fTrNdBa_c nodes.
 class fTrMgBa_c : public cTreeMg_c {
 public:
     /**

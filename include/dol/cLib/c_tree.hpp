@@ -3,22 +3,27 @@
 #include <types.h>
 
 /**
- * @brief A node in a tree.
+ * @brief A tree node.
+ * 
  * The tree is represented as a doubly-linked LCRS tree.
  * @see cTreeMg_c
  */
 class cTreeNd_c {
 public:
-    cTreeNd_c *mpParent; //< The parent node.
-    cTreeNd_c *mpChild; //< The child node.
-    cTreeNd_c *mpPrev; //< The previous sibling node.
-    cTreeNd_c *mpNext; //< The next sibling node.
+    cTreeNd_c *mpParent; ///< The parent node.
+    cTreeNd_c *mpChild; ///< The child node.
+    cTreeNd_c *mpPrev; ///< The previous sibling node.
+    cTreeNd_c *mpNext; ///< The next sibling node.
 
+    /// @brief Construct a new cTreeNd_c.
     cTreeNd_c();
+
     /// @brief Null out all fields.
     void forcedClear();
+
     /// @brief Get the next node in preorder traversal order.
     cTreeNd_c *getTreeNext() const;
+
     /// @brief Get the next node in preorder traversal order, excluding the node's children.
     cTreeNd_c *getTreeNextNotChild() const;
 
@@ -30,12 +35,14 @@ public:
 
 /**
  * @brief A tree container.
+ * 
  * @see cTreeNd_c
  */
 class cTreeMg_c {
 public:
-    cTreeNd_c *mpRootNode;
+    cTreeNd_c *mpRootNode; ///< The root node of the tree.
 
+    /// @brief Construct a new cTreeMg_c.
     cTreeMg_c() : mpRootNode(nullptr) {}
 
     /**

@@ -5,11 +5,16 @@
 
 class fBase_c;
 
-/// A list node with an owner reference.
+/// @brief A list node with an owner reference.
 class fLiNdBa_c : public cListNd_c {
 public:
     fBase_c *mpOwner; ///< The owner of this node.
     
+    /**
+     * @brief Construct a new fLiNdBa_c.
+     * 
+     * @param owner The owner of the node.
+     */
     fLiNdBa_c(fBase_c *owner) : mpOwner(owner) {}
 
     inline fLiNdBa_c *getPrev() const {
@@ -20,6 +25,6 @@ public:
     }
 
     // [Unofficial name, might not actually belong to this class (-> xor trick on hash)]
-    /// Removes this node from the owner's fBase_c::mUnusedList.
+    /// @brief Removes this node from the owner's fBase_c::mUnusedList.
     void removeSelf();
 };
