@@ -57,5 +57,5 @@ adjustFrmHeap__5mHeapFPQ23EGG7FrmHeap=8016e8a0
 destroyFrmHeap__5mHeapFPQ23EGG7FrmHeap=8016e880
 restoreCurrentHeap__5mHeapFv=8016eac0
 g_gameHeaps__5mHeap=80377f48
-makeFrmAndUpdate__FUlPQ23EGG4HeapPCcUiUi=8016eaf0
+makeFrmHeapAndUpdate__FUlPQ23EGG4HeapPCcUiUi=8016eaf0
 g_profiles=8042a698

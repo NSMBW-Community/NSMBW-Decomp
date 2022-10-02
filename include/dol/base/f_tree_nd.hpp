@@ -6,9 +6,10 @@
 
 class fBase_c;
 
+/// A tree node with an owner reference.
 class fTrNdBa_c : public cTreeNd_c {
 public:    
-    fBase_c *mpOwner;
+    fBase_c *mpOwner; ///< The owner of this node.
 
     fTrNdBa_c(fBase_c *owner) : mpOwner(owner) {}
 

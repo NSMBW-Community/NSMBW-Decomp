@@ -5,12 +5,12 @@
 #include <dol/base/f_base.hpp>
 
 bool fTrMgPTMF_c::walkPack() {
-    if (mpPack == 0) return true;
+    if (mpProcFunc == 0) return true;
     
     fTrNdBa_c *curr = (fTrNdBa_c *) mpRootNode;
     while (curr != nullptr) {
         fTrNdBa_c *next = curr->getTreeNext();
-        (curr->mpOwner->*mpPack)();
+        (curr->mpOwner->*mpProcFunc)();
         curr = next;
     }
     return true;

@@ -27,7 +27,6 @@ bool cTreeMg_c::addTreeNode(cTreeNd_c *node, cTreeNd_c *parent) {
                 currChild->mpNext = node;
                 node->mpPrev = currChild;
             }
-
         } else {
             cTreeNd_c *currNode = mpRootNode;
 
