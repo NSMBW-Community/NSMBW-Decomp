@@ -3,4 +3,4 @@
 // [This file must be edited in Shift JIS encoding]
 
 // [Translation: Heap that each process can have individually (fBase_c::mHeap)]
-#define F_BASE_HEAP_NAME "å„ãƒ—ãƒ­ã‚»ã‚¹ãŒå€‹åˆ¥ã§æŒã¦ã‚‹ãƒ’ãƒ¼ãƒ—(fBase_c::mHeap)"
+#define F_BASE_HEAP_NAME "ŠeƒvƒƒZƒX‚ªŒÂ•Ê‚Å‚Ä‚éƒq[ƒv(fBase_c::mHeap)"
