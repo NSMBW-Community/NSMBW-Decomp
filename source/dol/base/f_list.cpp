@@ -24,14 +24,14 @@ bool fLiMgPTMF_c::addNode(fLiNdPrio_c *node) {
 }
 
 bool fLiMgPTMF_c::walkPack() {
-    if (mpPack == 0) {
+    if (mpProcFunc == 0) {
         return true;
     }
     
     fLiNdBa_c *curr = (fLiNdBa_c *) mpFirst;
     while (curr != nullptr) {
         fLiNdBa_c *next = curr->getNext();
-        (curr->mpOwner->*mpPack)();
+        (curr->mpOwner->*mpProcFunc)();
         curr = next;
     }
     return true;

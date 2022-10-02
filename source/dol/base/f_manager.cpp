@@ -54,23 +54,23 @@ fBase_c *fManager_c::searchBaseByGroupType(u8 groupType, const fBase_c *parent) 
 }
 
 void fManager_c::mainLoop() {
-    if ((m_StopProcInf & 8) == 0) {
+    if ((m_StopProcInf & PROC_FLAG_DELETE) == 0) {
         m_nowLoopProc = DELETE;
         m_deleteManage.walkPack();
     }
-    if ((m_StopProcInf & 2) == 0) {
+    if ((m_StopProcInf & PROC_FLAG_CREATE) == 0) {
         m_nowLoopProc = CREATE;
         m_createManage.walkPack();
     }
-    if ((m_StopProcInf & 4) == 0) {
+    if ((m_StopProcInf & PROC_FLAG_EXECUTE) == 0) {
         m_nowLoopProc = EXECUTE;
         m_executeManage.walkPack();
     }
-    if ((m_StopProcInf & 16) == 0) {
+    if ((m_StopProcInf & PROC_FLAG_DRAW) == 0) {
         m_nowLoopProc = DRAW;
         m_drawManage.walkPack();
     }
-    if ((m_StopProcInf & 1) == 0) {
+    if ((m_StopProcInf & PROC_FLAG_CONNECT) == 0) {
         m_nowLoopProc = CONNECT;
         m_connectManage.walkPack();
     }

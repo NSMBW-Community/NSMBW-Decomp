@@ -4,21 +4,25 @@
 #include <dol/profile/profile.hpp>
 #include <dol/base/f_list_nd.hpp>
 
-// Unofficial name
+// [Unofficial name]
+/// A list node with priority fields for an order in a list.
 class fLiNdPrio_c : public fLiNdBa_c {
 public:
-    u16 mOrder;
-    u16 mOrder2;
+    u16 mOrder; ///< The priority of this node.
+    u16 mNewOrder; ///< The priority the node should change to if it differs from ::mOrder.
     
-    fLiNdPrio_c(fBase_c *owner) : fLiNdBa_c(owner), mOrder(0), mOrder2(0) {}
+    fLiNdPrio_c(fBase_c *owner) : fLiNdBa_c(owner), mOrder(0), mNewOrder(0) {}
 
-    inline fLiNdPrio_c *getPrev() {
+    fLiNdPrio_c *getPrev() const {
         return (fLiNdPrio_c *) fLiNdBa_c::getPrev();
     }
-    inline fLiNdPrio_c *getNext() {
+    fLiNdPrio_c *getNext() const {
         return (fLiNdPrio_c *) fLiNdBa_c::getNext();
     }
-    inline u16 getOrder() const {
+    u16 getOrder() const {
         return mOrder;
+    }
+    u16 getNewOrder() const {
+        return mNewOrder;
     }
 };

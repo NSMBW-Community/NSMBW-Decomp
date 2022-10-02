@@ -1,21 +1,19 @@
 #include <dol/cLib/c_list.hpp>
 #include <types.h>
 
-// NOTE: Class and function names are unofficial!
+bool cListMg_c::insertAfter(cListNd_c *node, cListNd_c *prevNode) {
+    if (prevNode == nullptr)
+        return prepend(node);
 
-bool cListMg_c::insertAfter(cListNd_c *pNode, cListNd_c *pPrevNode) {
-    if (pPrevNode == nullptr)
-        return prepend(pNode);
+    if (node != nullptr) {
+        node->mpNext = prevNode->mpNext;
+        node->mpPrev = prevNode;
+        prevNode->mpNext = node;
 
-    if (pNode != nullptr) {
-        pNode->mpNext = pPrevNode->mpNext;
-        pNode->mpPrev = pPrevNode;
-        pPrevNode->mpNext = pNode;
-
-        if (pNode->mpNext != nullptr) {
-            pNode->mpNext->mpPrev = pNode;
+        if (node->mpNext != nullptr) {
+            node->mpNext->mpPrev = node;
         } else {
-            mpLast = pNode;
+            mpLast = node;
         }
 
     } else {
@@ -25,22 +23,22 @@ bool cListMg_c::insertAfter(cListNd_c *pNode, cListNd_c *pPrevNode) {
     return true;
 }
 
-bool cListMg_c::remove(cListNd_c *pNode) {
-    if (pNode != nullptr) {
-        if (pNode->mpPrev != nullptr) {
-            pNode->mpPrev->mpNext = pNode->mpNext;
-        } else if (pNode == mpFirst) {
-            mpFirst = pNode->mpNext;
+bool cListMg_c::remove(cListNd_c *node) {
+    if (node != nullptr) {
+        if (node->mpPrev != nullptr) {
+            node->mpPrev->mpNext = node->mpNext;
+        } else if (node == mpFirst) {
+            mpFirst = node->mpNext;
         }
 
-        if (pNode->mpNext != nullptr) {
-            pNode->mpNext->mpPrev = pNode->mpPrev;
-        } else if (pNode == mpLast) {
-            mpLast = pNode->mpPrev;
+        if (node->mpNext != nullptr) {
+            node->mpNext->mpPrev = node->mpPrev;
+        } else if (node == mpLast) {
+            mpLast = node->mpPrev;
         }
 
-        pNode->mpPrev = nullptr;
-        pNode->mpNext = nullptr;
+        node->mpPrev = nullptr;
+        node->mpNext = nullptr;
 
     } else {
         return false;
@@ -49,15 +47,15 @@ bool cListMg_c::remove(cListNd_c *pNode) {
     return true;
 }
 
-bool cListMg_c::append(cListNd_c *pNode) {
-    if (pNode != nullptr) {
+bool cListMg_c::append(cListNd_c *node) {
+    if (node != nullptr) {
         if (mpLast != nullptr) {
-            mpLast->mpNext = pNode;
-            pNode->mpPrev = mpLast;
+            mpLast->mpNext = node;
+            node->mpPrev = mpLast;
         } else {
-            mpFirst = pNode;
+            mpFirst = node;
         }
-        mpLast = pNode;
+        mpLast = node;
 
     } else {
         return false;
@@ -66,15 +64,15 @@ bool cListMg_c::append(cListNd_c *pNode) {
     return true;
 }
 
-bool cListMg_c::prepend(cListNd_c *pNode) {
-    if (pNode != nullptr) {
+bool cListMg_c::prepend(cListNd_c *node) {
+    if (node != nullptr) {
         if (mpFirst != nullptr) {
-            mpFirst->mpPrev = pNode;
-            pNode->mpNext = mpFirst;
+            mpFirst->mpPrev = node;
+            node->mpNext = mpFirst;
         } else {
-            mpLast = pNode;
+            mpLast = node;
         }
-        mpFirst = pNode;
+        mpFirst = node;
 
     } else {
         return false;

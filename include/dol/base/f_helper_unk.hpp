@@ -1,6 +1,7 @@
 #pragma once
 
-// Unofficial name
+// [Unofficial name]
+/// [A helper class for fBase_c with unknown purpose.]
 class fBaHelper_c {
     short mStatus;
     short mCount;
@@ -10,9 +11,9 @@ class fBaHelper_c {
     short mUnknown;
 
 public:
-    virtual void vf_0x8(); // stripped out of binary
-    virtual int vf_0xc(void *); // stripped out of binary
-    virtual void vf_0x10(void *); // stripped out of binary
+    virtual void vf_0x8(); //< [Stripped out of binary.]
+    virtual int vf_0xc(void *); //< [Stripped out of binary.]
+    virtual void vf_0x10(void *); //< [Stripped out of binary.]
 
     void Delete();
     int Load(int);

@@ -2,11 +2,11 @@
 
 #include <types.h>
 
+// [TODO: add more functions]
+
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-// [TODO: add more functions]
 
 void *memset(void *, u32, u32);
 

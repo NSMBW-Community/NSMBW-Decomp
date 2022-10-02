@@ -18,7 +18,9 @@ typedef signed int s32;
 typedef signed long long s64;
 typedef float f32;
 typedef double f64;
-typedef unsigned long size_t;
+#ifdef __CWCC__
+    typedef unsigned long size_t;
+#endif
 typedef unsigned long ulong;
 typedef volatile s8 vs8;
 typedef volatile s16 vs16;
