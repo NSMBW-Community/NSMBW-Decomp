@@ -7,11 +7,16 @@
 class fBase_c;
 
 // [Unofficial name]
-/// A list of fLiNdPrio_c nodes with a reference to a process function.
+/// @brief A list of fLiNdPrio_c nodes with a reference to a process function.
 class fLiMgPTMF_c : public fLiMgBa_c {
     int (fBase_c::*mpProcFunc)(); ///< The process function for the list.
 
 public:
+    /**
+     * @brief Construct a new fLiMgPTMF_c.
+     * 
+     * @param procFunc The process function.
+     */
     fLiMgPTMF_c(int (fBase_c::*procFunc)()) : mpProcFunc(procFunc) {}
 
     /**

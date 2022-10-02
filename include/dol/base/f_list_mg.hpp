@@ -8,7 +8,7 @@
 
 class fBase_c;
 
-/// A list of fLiNdBa_c nodes.
+/// @brief A list of fLiNdBa_c nodes.
 class fLiMgBa_c : public cListMg_c {
 public:
     /**
@@ -18,6 +18,7 @@ public:
      * @return How many nodes were found.
      */
     int countNodeByProfName(ProfileName profName) const;
+    
     /**
      * @brief Find a node in this list which has a certain ID.
      * 

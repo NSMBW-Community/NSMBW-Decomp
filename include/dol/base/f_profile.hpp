@@ -6,33 +6,35 @@
  *  with the other f classes, so a similar naming scheme has been applied here.]
  */
 
-/// The name of a profile. Value is a fProfile::PROFILE_NAME_e.
+/// @brief The name of a profile. Value is a fProfile::PROFILE_NAME_e.
 typedef u16 ProfileName;
 
 // [Unofficial name]
-/// Namespace for all profile related structures
+/// @brief for all profile related structures.
 namespace fProfile {
     /**
      * @brief A set of information about a base.
+     * 
      * A profile consists of a pointer to a constructor function
      * and a priority for execution and drawing order.
      */
     struct fBaseProfile_c {
         void *(*mpClassInit)(); ///< The constructor function.
-        u16 mExecuteOrder;
-        u16 mDrawOrder;
+        u16 mExecuteOrder; ///< The execution priority of the actor.
+        u16 mDrawOrder; ///< The draw priority of the actor.
     };
     
     /**
      * @brief A set of information about an actor.
-     * In addition to the fields in fBaseProfile_c, it also contains some properties.
+     * 
+     * In addition to the fields in fBaseProfile_c, it also contains some properties about the actor.
      */
     struct fActorProfile_c : fBaseProfile_c {
         // [TODO: document the bitfield]
-        u32 mActorProperties;
+        u32 mActorProperties; ///< Some actor-related properties.
     };
     
-    /// A name of a profile. Can be used to index into the profile list.
+    /// @brief A name of a profile. Can be used to index into the profile list.
     enum PROFILE_NAME_e {
         // [TODO]
     };

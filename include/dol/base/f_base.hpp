@@ -9,6 +9,7 @@
 
 /**
  * @brief The base class for all scenes, actors, etc.
+ * 
  * A class that inherits from fBase_c is called a "base".
  */
 class fBase_c {
@@ -17,7 +18,7 @@ public:
     u32 mParam; ///< Parameters that can be set to configure the behaviour. [These are the sprite data fields in Reggie]
     ProfileName mProfName; ///< The name of the profile.
 
-    /// The possible states in the lifecycle.
+    /// @brief The possible states in the lifecycle.
     enum LIFECYCLE_e {
         WAITING_FOR_CREATE,
         ACTIVE,
@@ -29,7 +30,7 @@ public:
     bool delayManageAdd; ///< If the adding of the base should be delayed until the next ::connectProc call.
     bool mRetryCreate; ///< If the next ::connectProc call should add the base to fManager_c::m_createManage.
 
-    /// The possible group types.
+    /// @brief The possible group types.
     enum GROUP_TYPE_e {
         SCENE = 1,
         ACTOR = 2,
@@ -40,40 +41,40 @@ public:
 
     fManager_c mMng; ///< This base's manager.
 
-    fBaHelper_c *mpUnusedHelper;
-    fLiMgBa_c mUnusedList;
+    fBaHelper_c *mpUnusedHelper; ///< [Unused.]
+    fLiMgBa_c mUnusedList; ///< [Unused.]
     EGG::FrmHeap *mpHeap; ///< This object's own FrmHeap. [Seems unused]
 
-    /// The states commonPack can be in after running the @e pre and @e do methods.
+    /// @brief The states commonPack can be in after running the @e pre and @e do methods.
     enum MAIN_STATE_e {
-        UNSUCCESSFUL, //< The @e pre method failed.
-        ERROR, //< The @e post method failed.
-        SUCCESS, //< The @e post method succeeded.
-        WAITING //< [TODO: what does this mean?]
+        UNSUCCESSFUL, ///< The @e pre method failed.
+        ERROR, ///< The @e do method failed.
+        SUCCESS, ///< The @e do method succeeded.
+        WAITING // [TODO: document behaviour]
     };
 
 public:
-    fBase_c();
+    fBase_c(); ///< Construct a new base.
     
     static void *operator new(size_t);
     static void operator delete(void *);
     
-    int createPack(); //< @see ::commonPack()
-    int deletePack(); //< @see ::commonPack()
-    int executePack(); //< @see ::commonPack()
-    int drawPack(); //< @see ::commonPack()
+    int createPack(); ///< See ::commonPack.
+    int deletePack(); ///< See ::commonPack.
+    int executePack(); ///< See ::commonPack.
+    int drawPack(); ///< See ::commonPack.
 
-    /// Deal with the connect tree and object lifecycle.
+    /// @brief Deal with the connect tree and object lifecycle.
     int connectProc();
 
-    /// Request deletion of the base.
+    /// @brief Request deletion of the base.
     void deleteRequest();
     
-    fBase_c *getConnectParent();
-    fBase_c *getConnectChild();
-    fBase_c *getConnectBrNext();
+    fBase_c *getConnectParent(); ///< Get the parent base of this base in the connect tree.
+    fBase_c *getConnectChild(); ///< Get the first child base of this base in the connect tree.
+    fBase_c *getConnectBrNext(); ///< Get the next sibling base of this base in the connect tree.
 
-    /// Attempt to finalize creation of the base.
+    /// @brief Attempt to finalize creation of the base.
     void runCreate();
     
     // [Unofficial name]
@@ -92,7 +93,7 @@ public:
      */
     bool hasNonReadyChild() const;
 
-    /// Check if a flag is set in ::mProcessFlags.
+    /// @brief Check if a flag is set in ::mProcessFlags.
     bool isProcessFlag(u8 flag) const { return (mProcessFlags & flag) != 0; }
 
     /**
@@ -138,31 +139,31 @@ private:
      */
     int commonPack(int (fBase_c::*doFunc)(), int (fBase_c::*preFunc)(), void (fBase_c::*postFunc)(MAIN_STATE_e));
 
-    virtual int create();
-    virtual int preCreate();
-    virtual void postCreate(MAIN_STATE_e state);
+    virtual int create(); ///< Create the base.
+    virtual int preCreate(); ///< To be executed before ::create.
+    virtual void postCreate(MAIN_STATE_e state); ///< To be executed after ::create.
 
-    virtual int doDelete();
-    virtual int preDelete();
-    virtual void postDelete(MAIN_STATE_e state);
+    virtual int doDelete(); ///< Delete the base.
+    virtual int preDelete(); ///< To be executed before ::doDelete.
+    virtual void postDelete(MAIN_STATE_e state); ///< To be executed after ::doDelete.
 
-    virtual int execute();
-    virtual int preExecute();
-    virtual void postExecute(MAIN_STATE_e state);
+    virtual int execute(); ///< The main logic of the base.
+    virtual int preExecute(); ///< To be executed before ::execute.
+    virtual void postExecute(MAIN_STATE_e state); ///< To be executed after ::execute.
 
-    virtual int draw();
-    virtual int preDraw();
-    virtual void postDraw(MAIN_STATE_e state);
+    virtual int draw(); ///< Draw the base.
+    virtual int preDraw(); ///< To be executed before ::draw.
+    virtual void postDraw(MAIN_STATE_e state); ///< To be executed after ::draw.
 
-    /// Inform the base that it will be deleted.
+    /// @brief Inform the base that it will be deleted.
     virtual void deleteReady();
 
     // [TODO: document the exact purpose these functions serve]
-    virtual bool entryFrmHeap(unsigned long size, EGG::Heap *parentHeap);
-    virtual bool entryFrmHeapNonAdjust(unsigned long size, EGG::Heap *parentHeap);
-    virtual bool createHeap();
+    virtual bool entryFrmHeap(unsigned long size, EGG::Heap *parentHeap); ///< [TODO: document this method]
+    virtual bool entryFrmHeapNonAdjust(unsigned long size, EGG::Heap *parentHeap); ///< [TODO: document this method]
+    virtual bool createHeap(); ///< [TODO: document this method]
 
-    virtual ~fBase_c();
+    virtual ~fBase_c(); ///< Destruct the base.
 
     /**
      * @brief Instantiate a base.
