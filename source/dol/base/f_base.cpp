@@ -1,6 +1,7 @@
 #include <dol/base/f_base.hpp>
 #include <dol/m/m_heap.hpp>
 #include <lib/MSL_C/string.h>
+#include <sjis_constants.h>
 
 fBaseID_e fBase_c::m_rootUniqueID = (fBaseID_e) 1;
 Profile fBase_c::m_tmpCtProfName;

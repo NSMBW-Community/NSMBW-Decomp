@@ -7,12 +7,6 @@
 #include <dol/base/f_manager.hpp>
 #include <dol/base/f_list_mg.hpp>
 
-// [This file must be saved in Shift JIS!]
-// [TODO: any way to make it work without?]
-
-// [Translation: Heap that each process can have individually (fBase_c::mHeap)]
-#define F_BASE_HEAP_NAME "各プロセスが個別で持てるヒープ(fBase_c::mHeap)"
-
 class fBase_c {
 public:
     fBaseID_e mUniqueID;
