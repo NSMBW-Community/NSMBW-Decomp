@@ -3,6 +3,7 @@
 PROJECT_NAME           = NSMBW-Decomp
 PROJECT_BRIEF          = "A decompilation of New Super Mario Bros. Wii"
 OUTPUT_DIRECTORY       = ./doxygen
+HTML_OUTPUT            = .
 EXTRACT_PRIVATE        = YES
 EXTRACT_PRIV_VIRTUAL   = YES
 INPUT                  = ./source \
