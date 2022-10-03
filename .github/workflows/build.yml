@@ -26,8 +26,8 @@ jobs:
           BLOB_URL: 'http://rootcubed.dev/nsmbw/gh-actions-blob.zip.gpg'
         run: |
           $ProgressPreference = 'SilentlyContinue'
-          Invoke-WebRequest "$BLOB_URL" -OutFile .\gh-actions-blob.zip.gpg
-          echo "$BLOB_PASSPHRASE" | gpg -d --cipher-algo AES256 --yes --passphrase-fd 0 -o .\gh-actions-blob.zip .\gh-actions-blob.zip.gpg
+          Invoke-WebRequest "$env:BLOB_URL" -OutFile .\gh-actions-blob.zip.gpg
+          echo "$env:BLOB_PASSPHRASE" | gpg -d --cipher-algo AES256 --yes --passphrase-fd 0 -o .\gh-actions-blob.zip .\gh-actions-blob.zip.gpg
           Expand-Archive .\gh-actions-blob.zip
           Get-ChildItem -Path gh-actions-blob\compilers -Recurse -File | Move-Item -Destination compilers
           Remove-Item -Recurse -Force compilers
