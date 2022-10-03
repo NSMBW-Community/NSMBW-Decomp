@@ -9,7 +9,6 @@ permissions:
 
 jobs:          
   ci:
-    needs: download_blob
     runs-on: windows-2022
     steps:
       - name: Checkout repo
