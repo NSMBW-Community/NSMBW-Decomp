@@ -98,6 +98,13 @@
             }
         },
         {
+            "name": "dol/base/f_profile.o",
+            "source": "dol/base/f_profile.cpp",
+            "memoryRanges": {
+                ".sbss": "0x7f8-0x800"
+            }
+        },
+        {
             "name": "dol/base/f_tree.o",
             "source": "dol/base/f_tree.cpp",
             "memoryRanges": {

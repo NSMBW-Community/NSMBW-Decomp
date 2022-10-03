@@ -1,6 +1,7 @@
 #pragma once
 
 #include <types.h>
+#include <dol/base/f_profile_name.hpp>
 
 /*  [The compilation order suggests that this file might have been grouped together
  *  with the other f classes, so a similar naming scheme has been applied here.]
@@ -33,12 +34,7 @@ namespace fProfile {
         // [TODO: document the bitfield]
         u32 mActorProperties; ///< Some actor-related properties.
     };
-    
-    /// @brief A name of a profile. Can be used to index into the profile list.
-    enum PROFILE_NAME_e {
-        // [TODO]
-    };
         
-    extern fBaseProfile_c *(*sProfileList)[750]; ///< A list of all profiles.
+    extern fBaseProfile_c *(*sProfileList)[NUMBER_OF_ACTORS]; ///< A list of all profiles.
 
 }
