@@ -23,10 +23,10 @@ jobs:
       - name: Copy html docs
         run: |
           mkdir -p out/website/docs
-          cp -R doxygen/html out/website/docs
+          cp -R doxygen out/website/docs
       
       - name: Deploy to GitHub pages
         uses: JamesIves/github-pages-deploy-action@v4.4.0
         with:
-          folder: out/website
+          folder: out/website/docs
         
