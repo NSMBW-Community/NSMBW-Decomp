@@ -23,11 +23,11 @@ jobs:
       - name: Download and decrypt blob
         env:
           BLOB_PASSPHRASE: ${{ secrets.BLOB_PASSPHRASE }}
-          BLOB_URL: 'http://rootcubed.dev/nsmbw/gh-actions-blob.zip.gpg'
+          BLOB_URL: 'https://rootcubed.dev/nsmbw/gh-actions-blob.zip.gpg'
         run: |
-          $ProgressPreference = 'SilentlyContinue'
-          Invoke-WebRequest '$env:BLOB_URL' -OutFile .\gh-actions-blob.zip.gpg
-          gpg --pinentry-mode loopback -d --cipher-algo AES256 --yes --passphrase '$env:BLOB_PASSPHRASE' -o .\gh-actions-blob.zip .\gh-actions-blob.zip.gpg
+          $ProgressPreference = "SilentlyContinue"
+          Invoke-WebRequest "$env:BLOB_URL" -OutFile .\gh-actions-blob.zip.gpg
+          gpg --pinentry-mode loopback -d --cipher-algo AES256 --yes --passphrase "$env:BLOB_PASSPHRASE" -o .\gh-actions-blob.zip .\gh-actions-blob.zip.gpg
 
       - name: Copy blob data into correct locations
         run: |
