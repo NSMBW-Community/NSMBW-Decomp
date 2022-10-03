@@ -30,7 +30,7 @@ jobs:
           gpg --pinentry-mode loopback -d --cipher-algo AES256 --yes --passphrase '$env:BLOB_PASSPHRASE' -o .\gh-actions-blob.zip .\gh-actions-blob.zip.gpg
 
       - name: Copy blob data into correct locations
-        run:
+        run: |
           Expand-Archive .\gh-actions-blob.zip
           Remove-Item -Recurse -Force compilers
           Remove-Item -Recurse -Force original
