@@ -8,7 +8,6 @@ on:
 jobs:
   publish:
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/master'
     steps:
       - name: Checkout repo
         uses: actions/checkout@v3
@@ -18,11 +17,13 @@ jobs:
 
       - name: Generate documentation
         uses: mattnotmitt/doxygen-action@1.9.4
+        with:
+          enable-latex: true
         
       - name: Copy html docs
         run: |
           mkdir -p out/website/docs
-          cp -R out/doxygen out/website/docs
+          cp -R doxygen/html out/website/docs
       
       - name: Deploy to GitHub pages
         uses: JamesIves/github-pages-deploy-action@v4.4.0
