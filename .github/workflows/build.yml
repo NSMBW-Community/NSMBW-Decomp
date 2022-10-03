@@ -1,14 +1,15 @@
 name: Build and Publish
 
-on:
-  push:
-    branches: [ "master" ]
-  workflow_dispatch:
+on: [push, pull_request]
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
 
 jobs:
-  publish:
+  generate_docs:
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/master'
     steps:
       - name: Checkout repo
         uses: actions/checkout@v3
@@ -18,16 +19,26 @@ jobs:
 
       - name: Generate documentation
         uses: mattnotmitt/doxygen-action@1.9.4
-        with:
-          enable-latex: true
         
       - name: Copy html docs
         run: |
           mkdir -p out/website/docs
-          cp -a -v doxygen/. out/website/docs/
+          cp -a -v doxygen/. out/website/docs/    
       
-      - name: Deploy to GitHub pages
-        uses: JamesIves/github-pages-deploy-action@v4.4.0
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v1
         with:
-          folder: out/website/docs
-        
+          path: 'out/website/docs' 
+
+  deploy:
+    needs: generate_docs
+    if: github.ref == 'refs/heads/master' && github.event_name != 'pull_request'
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v1
+    
