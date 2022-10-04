@@ -51,7 +51,14 @@ jobs:
         run: mkdir -p out/doxygen
 
       - name: Generate documentation
-        uses: mattnotmitt/doxygen-action@1.9.4
+        run: |
+          apt install -y graphviz fonts-freefont-ttf
+          curl https://www.doxygen.nl/files/doxygen-1.9.5.linux.bin.tar.gz --output doxygen-1.9.5.linux.bin.tar.gz
+          tar xzf doxygen-1.9.5.linux.bin.tar.gz
+          cd doxygen-1.9.5
+          make install
+          cd ..
+          doxygen
         
       - name: Copy html docs
         run: |
