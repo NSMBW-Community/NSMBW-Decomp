@@ -38,7 +38,9 @@ jobs:
           Move-Item gh-actions-blob\original .
 
       - name: Build dol and rels
-        run: python build.py
+        run: |
+          python build.py
+          python progress.py --verify-obj --verify-bin --progress-summary
 
 
   generate_docs:
