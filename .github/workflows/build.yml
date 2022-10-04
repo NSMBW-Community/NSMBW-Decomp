@@ -52,11 +52,11 @@ jobs:
 
       - name: Generate documentation
         run: |
-          apt install -y graphviz fonts-freefont-ttf
+          sudo apt-get install -y graphviz fonts-freefont-ttf
           curl https://www.doxygen.nl/files/doxygen-1.9.5.linux.bin.tar.gz --output doxygen-1.9.5.linux.bin.tar.gz
           tar xzf doxygen-1.9.5.linux.bin.tar.gz
           cd doxygen-1.9.5
-          make install
+          sudo make install
           cd ..
           doxygen
         
