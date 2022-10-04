@@ -14,7 +14,6 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v3
 
-      # Dependencies
       - uses: actions/setup-python@v4
         with:
           python-version: '3.10.4'
@@ -29,7 +28,7 @@ jobs:
           Invoke-WebRequest "$env:BLOB_URL" -OutFile .\gh-actions-blob.zip.gpg
           gpg --pinentry-mode loopback -d --cipher-algo AES256 --yes --passphrase "$env:BLOB_PASSPHRASE" -o .\gh-actions-blob.zip .\gh-actions-blob.zip.gpg
 
-      - name: Copy blob data into correct locations
+      - name: Extract blob data to the needed directories
         run: |
           Expand-Archive .\gh-actions-blob.zip
           Remove-Item -Recurse -Force compilers
@@ -37,10 +36,11 @@ jobs:
           Move-Item gh-actions-blob\compilers .
           Move-Item gh-actions-blob\original .
 
-      - name: Build dol and rels
-        run: |
-          python build.py
-          python progress.py --verify-obj --verify-bin --progress-summary
+      - name: Build binaries
+        run: python build.py
+
+      - name: Run progress script
+        run: python progress.py --verify-obj --verify-bin --progress-summary
 
 
   generate_docs:
