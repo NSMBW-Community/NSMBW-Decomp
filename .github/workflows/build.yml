@@ -39,9 +39,6 @@ jobs:
 
       - name: Build dol and rels
         run: |
-          chcp 65001
-          set PYTHONIOENCODING=utf-8
-
           python build.py
           python progress.py --verify-obj --verify-bin --progress-summary
 

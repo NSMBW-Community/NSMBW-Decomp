@@ -42,9 +42,9 @@ def print_warnings_and_errors(warnings, errors):
             print_err('  ' + error)
 
 def print_banner(title):
-    print('┌' + '─' * (len(title) + 4) + '┐')
-    print('│' + '  ' + title + '  ' + '│')
-    print('└' + '─' * (len(title) + 4) + '┘')
+    print('+' + '-' * (len(title) + 4) + '+')
+    print('|' + '  ' + title + '  ' + '|')
+    print('+' + '-' * (len(title) + 4) + '+')
 
 # Verifies that all binaries match
 def verify_bin(slice_files: list[SliceFile]) -> bool:
