@@ -66,12 +66,16 @@ jobs:
         run: |
           mkdir -p out/website/docs
           cp -a -v doxygen/. out/website/
+        
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.10.4'
 
       - name: Run progress script to create artifacts
         run: |
-          python progress.py --create-badges
-          cp bin/*.json out/website/
           python progress.py --progress-csv | tail -n 1 >> out/website/progress.csv
+          python progress.py --create-badges
+          cp *.json out/website/
       
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v1

@@ -21,7 +21,7 @@ parser.add_argument('--verify-bin', help='Verifies that the output binaries matc
 parser.add_argument('--verify-obj', help='Verifies that the compiled object file sections are of the excepted length.', action='store_true')
 parser.add_argument('--progress-summary', help='Prints out a summary of the project\'s progress.', action='store_true')
 parser.add_argument('--progress-csv', help='Outputs a comma-separated string of progress information, used for the website.', action='store_true')
-parser.add_argument('--create-badges', help='Creates progress badge data. Outputs to bin/badge_<name>.json', action='store_true')
+parser.add_argument('--create-badges', help='Creates progress badge data. Outputs to badge_<name>.json', action='store_true')
 args = parser.parse_args()
 
 ##########################
@@ -193,9 +193,9 @@ def create_badges(slice_files: list[SliceFile]):
         # Interpolate between #93a80b and #29e419
         color = [str(round(x)) for x in color_lerp((147, 168, 11), (41, 228, 25), compiled / total)]
 
-        with open(f'bin/badge_{slice_stem}.json', 'w') as f:
+        with open(f'badge_{slice_stem}.json', 'w') as f:
             f.write(f'{{ "schemaVersion": 1, "label": "{slice_stem}", "message": "{perc}%", "color": "rgb({",".join(color)})" }}')
-            print(f'Wrote bin/badge_{slice_stem}.json')
+            print(f'Wrote badge_{slice_stem}.json')
     
     return True
 
