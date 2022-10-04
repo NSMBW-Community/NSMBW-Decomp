@@ -4,25 +4,23 @@
 typedef void (*ctorPtr)(void *, int);
 typedef void (*dtorPtr)(void *, int);
 
-/**
- * @brief This class is used to guarantee correct destruction of partially
- * constructed arrays if an exception is thrown from an array-element constructor.
- */
+/// @brief Guarantees the correct destruction of an array if an exception is thrown during its construction.
+/// @details [Since the game doesn't support exceptions, this is unused].
 class __partial_array_destructor {
 public:
-    void *mpArray; ///< Pointer to array memory.
-    u32 mSize; ///< Size of one array element.
-    u32 mCount; ///< Total number of array elements.
-    dtorPtr mpDtor; ///< Pointer to destructor function (or null).
-    u32 mCurrNum; ///< Number of currently constructed array elements.
+    void *mpArray; ///< A pointer to the array memory.
+    u32 mSize; ///< The size of one array element.
+    u32 mCount; ///< The total number of array elements.
+    dtorPtr mpDtor; ///< A pointer to the elements' default destructor.
+    u32 mCurrNum; ///< The number of currently constructed array elements.
 
     /**
-     * @brief Constructs a partial array destructor.
+     * @brief Creates a partial array destructor.
      *
-     * @param pArray Pointer to array memory.
-     * @param elSize Size of one array element.
-     * @param elCount Total number of array elements.
-     * @param pDtor Pointer to destructor function (or null).
+     * @param pArray A pointer to the array memory.
+     * @param elSize The size of one array element.
+     * @param elCount The total number of array elements.
+     * @param pDtor A pointer to the elements' default destructor, or @p nullptr .
      */
     __partial_array_destructor::__partial_array_destructor(void *pArray, u32 elSize, u32 elCount, dtorPtr pDtor) {
         mpArray = pArray;
@@ -32,7 +30,8 @@ public:
         mCurrNum = mCount;
     }
 
-    /// @brief Calls mpDtor() for each array element in reverse order if mCurrNum() is less than mCount().
+    /// @brief Destroys each array element in reverse order.
+    /// @details The function only acts if the array isn't fully constructed.
     __partial_array_destructor::~__partial_array_destructor() {
         if (mCurrNum < mCount && mpDtor) {
             for (char *ptr = (char *)mpArray + mSize * mCurrNum; mCurrNum > 0; mCurrNum--) {

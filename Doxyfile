@@ -6,6 +6,7 @@ OUTPUT_DIRECTORY       = doxygen
 HTML_OUTPUT            = .
 EXTRACT_PRIVATE        = YES
 EXTRACT_PRIV_VIRTUAL   = YES
+EXTRACT_STATIC         = YES
 INPUT                  = source \
                          include \
                          README.md

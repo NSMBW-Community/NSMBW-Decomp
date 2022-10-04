@@ -5,11 +5,12 @@
 extern "C" {
 
 /// @brief C++ exception table info.
+/// @details [Since the game doesn't support exceptions, this table is unused].
 typedef struct __eti_init_info {
-    void *eti_start; ///< Address of start of exception data for this code segment.
-    void *eti_end; ///< Address of end of exception data for this code segment.
-    void *code_start; ///< Address of first function of segment.
-    ulong code_size; ///< Address of the end of the segment's last function.
+    void *eti_start; ///< The address where the exception data for the code segment begins.
+    void *eti_end; ///< The address where the exception data for the code segment ends.
+    void *code_start; ///< The address where the segment's first function begins.
+    ulong code_size; ///< The size of the code segment.
 } __eti_init_info;
 
 } // extern "C"

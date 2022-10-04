@@ -9,12 +9,14 @@ __declspec(section ".dtors") extern voidFctPtr _dtors[];
 /// @endcond
 
 /// @brief Module initialization function.
+/// @details Runs all the module's static initializers.
 void _prolog() {
     ModuleConstructorsX(_ctors);
     finalizeProlog();
 }
 
 /// @brief Module deinitialization function.
+/// @details Runs all the module's static destructors.
 void _epilog() {
     finalizeEpilog();
     ModuleDestructorsX(_dtors);

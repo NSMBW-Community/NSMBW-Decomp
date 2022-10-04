@@ -2,12 +2,16 @@
 #include <lib/MSL_C/math/fabs.h>
 #include <lib/MSL_C/math/fmod.h>
 #include <dol/cLib/c_random.hpp>
+/// @file
 
+/// @cond
 #define M_2PI 6.2831854820251465
+/// @endcond
 
-static cM_rand_c s_rnd = cM_rand_c(100);
-static cM_rand_c s_rnd2 = cM_rand_c(101);
+static cM_rand_c s_rnd = cM_rand_c(100); ///< [Used for tile randomization, eye animations and a few more things].
+static cM_rand_c s_rnd2 = cM_rand_c(101); ///< [Unused].
 
+/// @cond
 static u16 atntable[1025] = { 0x0, 0xA, 0x14, 0x1F, 0x29, 0x33, 0x3D, 0x47, 0x51, 0x5C, 0x66, 0x70, 0x7A,
 0x84, 0x8F, 0x99, 0xA3, 0xAD, 0xB7, 0xC2, 0xCC, 0xD6, 0xE0, 0xEA, 0xF4, 0xFF, 0x109, 0x113, 0x11D,
 0x127, 0x131, 0x13C, 0x146, 0x150, 0x15A, 0x164, 0x16F, 0x179, 0x183, 0x18D, 0x197, 0x1A1, 0x1AC,
@@ -89,11 +93,13 @@ static u16 atntable[1025] = { 0x0, 0xA, 0x14, 0x1F, 0x29, 0x33, 0x3D, 0x47, 0x51
 0x1F7A, 0x1F7F, 0x1F84, 0x1F8A, 0x1F8F, 0x1F94, 0x1F99, 0x1F9E, 0x1FA4, 0x1FA9, 0x1FAE, 0x1FB3,
 0x1FB8, 0x1FBD, 0x1FC3, 0x1FC8, 0x1FCD, 0x1FD2, 0x1FD7, 0x1FDC, 0x1FE1, 0x1FE6, 0x1FEC, 0x1FF1,
 0x1FF6, 0x1FFB, 0x2000 };
+/// @endcond
 
 namespace cM {
 
+/// @cond
 inline float getConst() {
-    return 10430.378f;
+    return 10430.378f; // Equals to 65535 / 2PI
 }
 
 inline bool isZero(float val) {
@@ -101,6 +107,7 @@ inline bool isZero(float val) {
     const float F_ULP = *(const float *)&tmp;
     return (fabsf(val) < F_ULP);
 }
+/// @endcond
 
 s16 rad2s(float rad) {
     int mod = (float)fmod(rad, M_2PI) * getConst();
@@ -115,42 +122,58 @@ s16 rad2s(float rad) {
 }
 } // namespace cM
 
+/// @cond
 u16 U_GetAtanTable(float sin, float cos) {
     int idx = (sin / cos) * 1024.0f;
     return atntable[idx];
 }
+/// @endcond
 
 namespace cM {
 
+/// @cond
 inline u32 atan2i(float sin,float cos) {
 
+    // 0° or 180°
     if (isZero(sin)) {
         return (cos >= 0.0f) ? 0 : 0x8000;
 
+    // 90° or 270°
     } else if (isZero(cos)) {
         return (sin >= 0.0f) ? 0x4000 : 0xC000;
 
     } else if (sin >= 0.0f) {
+
+        // Angle between 0° and 45°/45° and 90°
         if (cos >= 0.0f) {
             return (cos >= sin) ? U_GetAtanTable(sin, cos) : 0x4000 - U_GetAtanTable(cos, sin);
+
+        // Angle between 90° and 135°/135° and 180°
         } else {
             return (-cos < sin) ? U_GetAtanTable(-cos, sin) + 0x4000 : 0x8000 - U_GetAtanTable(sin, -cos);
         }
 
     } else if (cos < 0.0f) {
+
+        // Angle between 180° and 225°
         if (-cos >= -sin) {
             return U_GetAtanTable(-sin, -cos) + 0x8000;
+
+        // Angle between 180° and 270°
         } else {
             return 0xC000 - U_GetAtanTable(-cos, -sin);
         }
 
+    // Angle between 270° and 315°
     } else if (cos < -sin) {
         return U_GetAtanTable(cos, -sin) + 0xC000;
 
+    // Angle between 315° and 360°
     } else {
         return -U_GetAtanTable(-sin, cos);
     }
 }
+/// @endcond
 
 s16 atan2s(float sin, float cos) {
     return atan2i(sin, cos);

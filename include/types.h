@@ -34,14 +34,19 @@ typedef volatile f32 vf32;
 typedef volatile f64 vf64;
 
 // Common structures
+
+/// @brief 2-dimensional floating point vector.
 typedef struct {
     float x, y;
 } VEC2;
 
+/// @brief 3-dimensional floating point vector.
 typedef struct {
     float x, y, z;
 } VEC3;
 
+/// @brief 3-dimensional short vector.
+/// @details [This is generally used to represent rotations].
 typedef struct {
     s16 x, y, z;
 } S16VEC;

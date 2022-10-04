@@ -6,13 +6,15 @@ extern "C" {
 
 /**
  * @brief Allocates and constructs an array of objects.
+ * @details The allocated memory must be @p size * @p n + 0x10.
+ * @details [Calls to this function are generated as part of the @p new[] macro].
  *
- * @param pBlock Pointer to allocated memory (+8 bytes).
- * @param pCtor Pointer to default constructor function	(or null).
- * @param pDtor Pointer to default destructor function (or null).
- * @param size Size of one array element.
- * @param n Number of array elements.
- * @return Pointer to first object in array.
+ * @param pBlock A pointer to the allocated memory, or @p nullptr .
+ * @param pCtor A pointer to the default constructor, or @p nullptr .
+ * @param pDtor A pointer to the default destructor, or @p nullptr .
+ * @param size The size of one array element.
+ * @param n The number of array elements.
+ * @return A pointer to the first array element.
  */
 void *__construct_new_array(void *pBlock, ctorPtr pCtor, dtorPtr pDtor, u32 size, u32 n) {
     char *ptr = (char *)pBlock;
@@ -39,11 +41,11 @@ void *__construct_new_array(void *pBlock, ctorPtr pCtor, dtorPtr pDtor, u32 size
 /**
  * @brief Constructs an array of objects.
  *
- * @param pBlock Pointer to array memory.
- * @param pCtor Pointer to default constructor function.
- * @param pDtor Pointer to default destructor function (or null).
- * @param size Size of one array element.
- * @param n Number of array elements.
+ * @param pBlock A pointer to the array memory.
+ * @param pCtor A pointer to the default constructor.
+ * @param pDtor A pointer to the default destructor, or @p nullptr .
+ * @param size The size of one array element.
+ * @param n The number of array elements.
  */
 void __construct_array(void *pBlock, ctorPtr pCtor, dtorPtr pDtor, u32 size, u32 n) {
     __partial_array_destructor pad(pBlock, size, n, pDtor);
@@ -58,10 +60,10 @@ void __construct_array(void *pBlock, ctorPtr pCtor, dtorPtr pDtor, u32 size, u32
 /**
  * @brief Destroys an array of objects.
  *
- * @param pBlock Pointer to array memory.
- * @param pDtor Pointer to default destructor function.
- * @param size Size of one array element.
- * @param n Number of array elements.
+ * @param pBlock A pointer to the array memory.
+ * @param pDtor A pointer to the default destructor.
+ * @param size The size of one array element.
+ * @param n The number of array elements.
  */
 void __destroy_arr(void *pBlock, dtorPtr pDtor, u32 size, u32 n) {
     for (char *p = (char *)pBlock + size * n; n > 0; n--) {
@@ -72,9 +74,10 @@ void __destroy_arr(void *pBlock, dtorPtr pDtor, u32 size, u32 n) {
 
 /**
  * @brief Destroys and deletes an array of objects.
+ * @details [Calls to this function are generated as part of the @p delete[] macro].
  *
- * @param pBlock Pointer to allocated array memory (or null).
- * @param pDtor Pointer to default destructor function (or null).
+ * @param pBlock A pointer to the allocated memory, or @p nullptr .
+ * @param pDtor A pointer to the default destructor, or @p nullptr .
  */
 void __destroy_new_array(void *pBlock, dtorPtr pDtor) {
     if (pBlock != nullptr) {
