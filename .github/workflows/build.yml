@@ -8,6 +8,41 @@ permissions:
   id-token: write
 
 jobs:
+  ci:
+    runs-on: windows-2022
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.10.4'
+          architecture: 'x64'
+      
+      - name: Download and decrypt blob
+        env:
+          BLOB_PASSPHRASE: ${{ secrets.BLOB_PASSPHRASE }}
+          BLOB_URL: 'https://rootcubed.dev/nsmbw/gh-actions-blob.zip.gpg'
+        run: |
+          $ProgressPreference = "SilentlyContinue"
+          Invoke-WebRequest "$env:BLOB_URL" -OutFile .\gh-actions-blob.zip.gpg
+          gpg --pinentry-mode loopback -d --cipher-algo AES256 --yes --passphrase "$env:BLOB_PASSPHRASE" -o .\gh-actions-blob.zip .\gh-actions-blob.zip.gpg
+
+      - name: Extract blob data to the needed directories
+        run: |
+          Expand-Archive .\gh-actions-blob.zip
+          Remove-Item -Recurse -Force compilers
+          Remove-Item -Recurse -Force original
+          Move-Item gh-actions-blob\compilers .
+          Move-Item gh-actions-blob\original .
+
+      - name: Build binaries
+        run: python build.py
+
+      - name: Run progress script
+        run: python progress.py --verify-obj --verify-bin --progress-summary
+
+
   generate_docs:
     runs-on: ubuntu-latest
     steps:
@@ -18,17 +53,34 @@ jobs:
         run: mkdir -p out/doxygen
 
       - name: Generate documentation
-        uses: mattnotmitt/doxygen-action@1.9.4
+        run: |
+          sudo apt-get install -y graphviz fonts-freefont-ttf
+          curl https://www.doxygen.nl/files/doxygen-1.9.5.linux.bin.tar.gz --output doxygen-1.9.5.linux.bin.tar.gz
+          tar xzf doxygen-1.9.5.linux.bin.tar.gz
+          cd doxygen-1.9.5
+          sudo make install
+          cd ..
+          doxygen
         
       - name: Copy html docs
         run: |
           mkdir -p out/website/docs
-          cp -a -v doxygen/. out/website/docs/    
+          cp -a -v doxygen/. out/website/
+        
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.10.4'
+
+      - name: Run progress script to create artifacts
+        run: |
+          python progress.py --progress-csv | tail -n 1 >> out/website/progress.csv
+          python progress.py --create-badges
+          cp *.json out/website/
       
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v1
         with:
-          path: 'out/website/docs' 
+          path: 'out/website'
 
   deploy:
     needs: generate_docs
@@ -41,4 +93,3 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v1
-    

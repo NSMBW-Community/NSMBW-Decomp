@@ -1,5 +1,10 @@
 # NSMBW-Decomp
 
+![Progress badge DOL](https://img.shields.io/endpoint?url=https%3A%2F%2Fclf78.github.io%2FNSMBW-Decomp%2Fbadge_wiimj2d.json)
+![Progress badge d_profileNP](https://img.shields.io/endpoint?url=https%3A%2F%2Fclf78.github.io%2FNSMBW-Decomp%2Fbadge_d_profileNP.json)
+![Progress badge d_basesNP](https://img.shields.io/endpoint?url=https%3A%2F%2Fclf78.github.io%2FNSMBW-Decomp%2Fbadge_d_basesNP.json)
+![Progress badge d_en_bossNP](https://img.shields.io/endpoint?url=https%3A%2F%2Fclf78.github.io%2FNSMBW-Decomp%2Fbadge_d_en_bossNP.json)
+
 A decompilation project of New Super Mario Bros. Wii, based on the PALv1 binaries.
 
 #### Quick links
