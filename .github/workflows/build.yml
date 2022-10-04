@@ -7,7 +7,7 @@ permissions:
   pages: write
   id-token: write
 
-jobs:          
+jobs:
   ci:
     runs-on: windows-2022
     steps:
@@ -65,12 +65,18 @@ jobs:
       - name: Copy html docs
         run: |
           mkdir -p out/website/docs
-          cp -a -v doxygen/. out/website/docs/    
+          cp -a -v doxygen/. out/website/
+
+      - name: Run progress script to create artifacts
+        run: |
+          python progress.py --create-badges
+          cp bin/*.json out/website/
+          python progress.py --progress-csv | tail -n 1 >> out/website/progress.csv
       
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v1
         with:
-          path: 'out/website/docs' 
+          path: 'out/website'
 
   deploy:
     needs: generate_docs

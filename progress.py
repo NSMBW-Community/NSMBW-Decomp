@@ -3,8 +3,10 @@
 
 import argparse
 import hashlib
-from math import ceil
+import math
+import subprocess
 import sys
+from urllib.request import urlopen
 from pathlib import Path
 
 sys.path.append('tools')
@@ -18,11 +20,15 @@ parser = argparse.ArgumentParser(description='Tool to verify built binaries and 
 parser.add_argument('--verify-bin', help='Verifies that the output binaries match the original files.', action='store_true')
 parser.add_argument('--verify-obj', help='Verifies that the compiled object file sections are of the excepted length.', action='store_true')
 parser.add_argument('--progress-summary', help='Prints out a summary of the project\'s progress.', action='store_true')
-parser.add_argument('--progress-csv', help='Appends this commit\'s progress to the progress file for the website.', action='store_true')
-parser.add_argument('--create-badges', help='Creates progress badge data.', action='store_true')
+parser.add_argument('--progress-csv', help='Outputs a comma-separated string of progress information, used for the website.', action='store_true')
+parser.add_argument('--create-badges', help='Creates progress badge data. Outputs to bin/badge_<name>.json', action='store_true')
 args = parser.parse_args()
 
-def print_warnings_and_errors(warnings, errors):
+##########################
+# Begin helper functions #
+##########################
+
+def print_warnings_and_errors(warnings: list[str], errors: list[str]) -> None:
     num_warnings = len(warnings)
     num_errors = len(errors)
     if num_warnings == 0 and num_errors == 0:
@@ -41,10 +47,35 @@ def print_warnings_and_errors(warnings, errors):
         for error in errors:
             print_err('  ' + error)
 
-def print_banner(title):
+def print_banner(title: str) -> None:
     print('+' + '-' * (len(title) + 4) + '+')
     print('|' + '  ' + title + '  ' + '|')
     print('+' + '-' * (len(title) + 4) + '+')
+
+def color_lerp(col_a: tuple[int, int, int], col_b: tuple[int, int, int], frac: float):
+    return [a + (b - a) * frac for a, b in zip(col_a, col_b)]
+
+def get_git_revision_hash() -> dict[str, str]:
+    return subprocess.check_output(['git', 'rev-parse', 'HEAD']).decode('ascii').strip()
+def get_git_revision_timestamp() -> int:
+    return int(subprocess.check_output(['git', 'log', '-1', '--format=%ct']).decode('ascii').strip())
+
+def calculate_decompiled_bytes(slice_file: SliceFile, filter_sections: list[str]) -> tuple[int, int]:
+    count_compiled_bytes = 0
+    count_total_bytes = 0
+    for slice in slice_file.slices:
+        for slice_sec in [i for i in slice.slice_secs if i.sec_name in filter_sections]:
+            byte_count = slice_sec.end_offs - slice_sec.start_offs
+
+            count_total_bytes += byte_count
+            if slice.slice_src:
+                count_compiled_bytes += byte_count
+        
+    return [count_compiled_bytes, count_total_bytes]
+
+########################
+# Begin task functions #
+########################
 
 # Verifies that all binaries match
 def verify_bin(slice_files: list[SliceFile]) -> bool:
@@ -71,7 +102,7 @@ def verify_bin(slice_files: list[SliceFile]) -> bool:
 
 # Helper function to align to an address
 def align_addr(addr: int, align: int):
-    return align * ceil(addr / align)
+    return align * math.ceil(addr / align)
 
 # Verify lengths of section lengths
 def verify_obj(slice_files: list[SliceFile]) -> bool:
@@ -115,42 +146,62 @@ def verify_obj(slice_files: list[SliceFile]) -> bool:
 # Outputs progress summary
 def progress_summary(slice_files: list[SliceFile]) -> bool:
     count_compiled_bytes_total = 0
-    count_sliced_bytes_total = 0
+    count_total_bytes_total = 0
 
     for slice_file in slice_files:
-        count_compiled_bytes = 0
-        count_sliced_bytes = 0
-        for slice in slice_file.slices:
-            text_section = next((i for i in slice.slice_secs if i.sec_name == '.text'), None)
-            init_section = next((i for i in slice.slice_secs if i.sec_name == '.init'), None)
-            section_code_bytes = 0
-            if text_section:
-                section_code_bytes += text_section.end_offs - text_section.start_offs
-            if init_section:
-                section_code_bytes += init_section.end_offs - init_section.start_offs
-
-            if not slice.slice_src:
-                count_sliced_bytes += section_code_bytes
-            else:
-                count_compiled_bytes += section_code_bytes
+        count_compiled_bytes, count_total_bytes = calculate_decompiled_bytes(slice_file, ['.init', '.text'])
                 
-        perc = (count_compiled_bytes / (count_compiled_bytes + count_sliced_bytes)) * 100
-        print(f'{slice_file.meta.name}: Decompiled {count_compiled_bytes}/{count_compiled_bytes + count_sliced_bytes} code bytes ({perc:.3f}%)')
+        perc = (count_compiled_bytes / count_total_bytes) * 100
+        print(f'{slice_file.meta.name}: Decompiled {count_compiled_bytes}/{count_total_bytes} code bytes ({perc:.3f}%)')
 
         count_compiled_bytes_total += count_compiled_bytes
-        count_sliced_bytes_total += count_sliced_bytes
+        count_total_bytes_total += count_total_bytes
 
-    sum = count_compiled_bytes_total + count_sliced_bytes_total
-    perc = (count_compiled_bytes_total / (sum)) * 100
-    print(f'Total: Decompiled {count_compiled_bytes_total}/{sum} code bytes ({perc:.3f}%)')
+    perc = (count_compiled_bytes_total / count_total_bytes_total) * 100
+    print(f'Total: Decompiled {count_compiled_bytes_total}/{count_total_bytes_total} code bytes ({perc:.3f}%)')
     return True
 
-def progress_csv():
-    return True
-def create_badges():
+
+slicefile_names = ['wiimj2d.dol', 'd_profileNP.rel', 'd_basesNP.rel', 'd_en_bossNP.rel']
+code_sec_names = ['.init', '.text']
+
+def progress_csv(slice_files: list[SliceFile]):
+    hash = get_git_revision_hash()
+    timestamp = get_git_revision_timestamp()
+
+    progress_list = []
+    for slicefile_name in slicefile_names:
+        slice_file = next((i for i in slice_files if i.meta.name == slicefile_name))
+        progress_list.extend(calculate_decompiled_bytes(slice_file, code_sec_names))
+
+    csv = [
+        timestamp, hash,
+        *progress_list
+    ]
+
+    print(','.join([str(i) for i in csv]))
+
     return True
 
-# Start of main logic
+def create_badges(slice_files: list[SliceFile]):
+    for slicefile_name in slicefile_names:
+        slice_file = next((i for i in slice_files if i.meta.name == slicefile_name))
+        compiled, total = calculate_decompiled_bytes(slice_file, code_sec_names)
+        perc = str(round(compiled / total * 100, 3))
+        slice_stem = slicefile_name.split(".")[0]
+
+        # Interpolate between #93a80b and #29e419
+        color = [str(round(x)) for x in color_lerp((147, 168, 11), (41, 228, 25), compiled / total)]
+
+        with open(f'bin/badge_{slice_stem}.json', 'w') as f:
+            f.write(f'{{ "schemaVersion": 1, "label": "{slice_stem}", "message": "{perc}%", "color": "rgb({",".join(color)})" }}')
+            print(f'Wrote bin/badge_{slice_stem}.json')
+    
+    return True
+
+####################
+# Begin main logic #
+####################
 
 slice_files: list[SliceFile] = []
 
@@ -171,11 +222,11 @@ tasks = {
         'func': verify_bin
     },
     'progress_csv': {
-        'banner': '',
+        'banner': 'CSV creation',
         'func': progress_csv
     },
     'create_badges': {
-        'banner': '',
+        'banner': 'Badge creation',
         'func': create_badges
     },
     'progress_summary': {
