@@ -6,7 +6,6 @@ import hashlib
 import math
 import subprocess
 import sys
-from urllib.request import urlopen
 from pathlib import Path
 
 sys.path.append('tools')
@@ -16,11 +15,15 @@ from project_settings import *
 from slicelib import SliceFile, load_slice_file
 from elffile import ElfFile
 
-parser = argparse.ArgumentParser(description='Tool to verify built binaries and generate progress files for the website. Terminates with a non-zero exit code if an error was encountered.')
+parser = argparse.ArgumentParser(description='Tool to verify built binaries and generate progress files for the website.\
+    Terminates with a non-zero exit code if an error was encountered.')
+
 parser.add_argument('--verify-bin', help='Verifies that the output binaries match the original files.', action='store_true')
 parser.add_argument('--verify-obj', help='Verifies that the compiled object file sections are of the excepted length.', action='store_true')
 parser.add_argument('--progress-summary', help='Prints out a summary of the project\'s progress.', action='store_true')
-parser.add_argument('--progress-csv', help='Outputs a comma-separated string of progress information, used for the website.', action='store_true')
+parser.add_argument('--progress-csv', nargs='?', default=False, const=True, type=Path,
+    help='Outputs a comma-separated string of progress information, used for the website.\
+        Specify a path to load the previous progress file, the new progress string is only written back to it if the progress amount has changed.')
 parser.add_argument('--create-badges', help='Creates progress badge data. Outputs to badge_<name>.json', action='store_true')
 args = parser.parse_args()
 
@@ -58,7 +61,7 @@ def color_lerp(col_a: tuple[int, int, int], col_b: tuple[int, int, int], frac: f
 def get_git_revision_hash() -> dict[str, str]:
     return subprocess.check_output(['git', 'rev-parse', 'HEAD']).decode('ascii').strip()
 def get_git_revision_timestamp() -> int:
-    return int(subprocess.check_output(['git', 'log', '-1', '--format=%ct']).decode('ascii').strip())
+    return int(subprocess.check_output(['git', 'log', '-1', '--format=%at']).decode('ascii').strip())
 
 def calculate_decompiled_bytes(slice_file: SliceFile, filter_sections: list[str]) -> tuple[int, int]:
     count_compiled_bytes = 0
@@ -162,10 +165,11 @@ def progress_summary(slice_files: list[SliceFile]) -> bool:
     return True
 
 
-slicefile_names = ['wiimj2d.dol', 'd_profileNP.rel', 'd_basesNP.rel', 'd_en_bossNP.rel']
+slicefile_names = ['wiimj2d.dol', 'd_profileNP.rel', 'd_basesNP.rel', 'd_enemiesNP.rel', 'd_en_bossNP.rel']
 code_sec_names = ['.init', '.text']
 
 def progress_csv(slice_files: list[SliceFile]):
+    # Grab data
     hash = get_git_revision_hash()
     timestamp = get_git_revision_timestamp()
 
@@ -178,8 +182,24 @@ def progress_csv(slice_files: list[SliceFile]):
         timestamp, hash,
         *progress_list
     ]
+    csv_str = ','.join([str(i) for i in csv])
 
-    print(','.join([str(i) for i in csv]))
+    global args
+    if vars(args)['progress_csv'] != True:
+        # File was supplied, write back to it if progress changed
+        with open(vars(args)['progress_csv'], 'r+') as f:
+
+            last_line = f.readlines()[-1].strip()
+            last_line_progress_vals = [int(x) for x in last_line.split(',')[2:]] # Skip timestamp and commit hash
+
+            if progress_list != last_line_progress_vals:
+                print_success('Progress detected! Writing to file.')
+                f.write(csv_str + '\n')
+            else:
+                print('No change in progress detected, not writing to progress file.')
+    
+    # Always output to console
+    print(csv_str)
 
     return True
 
