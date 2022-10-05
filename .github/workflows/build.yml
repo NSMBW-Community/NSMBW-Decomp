@@ -64,7 +64,9 @@ jobs:
 
       - name: Run progress script to create artifacts
         run: |
-          python progress.py --progress-csv | tail -n 1 >> out/website/progress.csv
+# TODO: change this to https://clf78.github.io/NSMBW-Decomp/progress.csv once merged into master
+          curl https://raw.githubusercontent.com/CLF78/NSMBW-Decomp/progress_site/website/progress.csv --output out/website/progress.csv
+          python progress.py --progress-csv out/website/progress.csv
           python progress.py --create-badges
           cp *.json out/website/
 
