@@ -63,7 +63,7 @@ Write comments that could not have been in the original code in square brackets.
    - `// Parameters that can be set to configure the behaviour of the base. [These are the sprite data fields in Reggie]`
    - `// [TODO: is this an int or an enum?]`
 
-## Code documenting guidelines
+## Code Documenting Guidelines
 
 For documenting functions, members etc., we use Doxygen-style comments, using '@' for commands.
 
