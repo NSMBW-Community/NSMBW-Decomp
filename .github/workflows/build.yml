@@ -63,9 +63,11 @@ jobs:
           cp -a -v doxygen/. out/website/
 
       - name: Run progress script to create artifacts
+        # TODO: change URL to https://clf78.github.io/NSMBW-Decomp/progress.csv once merged into master
+        env:
+          PROGRESS_URL: 'https://raw.githubusercontent.com/CLF78/NSMBW-Decomp/progress_site/website/progress.csv'
         run: |
-# TODO: change this to https://clf78.github.io/NSMBW-Decomp/progress.csv once merged into master
-          curl https://raw.githubusercontent.com/CLF78/NSMBW-Decomp/progress_site/website/progress.csv --output out/website/progress.csv
+          curl $PROGRESS_URL --output out/website/progress.csv
           python progress.py --progress-csv out/website/progress.csv
           python progress.py --create-badges
           cp *.json out/website/
