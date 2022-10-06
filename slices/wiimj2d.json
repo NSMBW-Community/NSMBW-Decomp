@@ -62,15 +62,15 @@
             }
         },
         {
-            "name": "dol/base/f_helper_unk.o",
-            "source": "dol/base/f_helper_unk.cpp",
+            "name": "dol/framework/f_helper_unk.o",
+            "source": "dol/framework/f_helper_unk.cpp",
             "memoryRanges": {
                 ".text": "0x15b2e0-0x15b490"
             }
         },
         {
-            "name": "dol/base/f_base.o",
-            "source": "dol/base/f_base.cpp",
+            "name": "dol/framework/f_base.o",
+            "source": "dol/framework/f_base.cpp",
             "memoryRanges": {
                 ".text": "0x15b490-0x15c500",
                 ".data": "0x2aff8-0x2b108",
@@ -79,15 +79,15 @@
             }
         },
         {
-            "name": "dol/base/f_list.o",
-            "source": "dol/base/f_list.cpp",
+            "name": "dol/framework/f_list.o",
+            "source": "dol/framework/f_list.cpp",
             "memoryRanges": {
                 ".text": "0x15c500-0x15c6b0"
             }
         },
         {
-            "name": "dol/base/f_manager.o",
-            "source": "dol/base/f_manager.cpp",
+            "name": "dol/framework/f_manager.o",
+            "source": "dol/framework/f_manager.cpp",
             "memoryRanges": {
                 ".text": "0x15c6b0-0x15c9c0",
                 ".ctors": "0x208-0x20c",
@@ -98,15 +98,15 @@
             }
         },
         {
-            "name": "dol/base/f_profile.o",
-            "source": "dol/base/f_profile.cpp",
+            "name": "dol/framework/f_profile.o",
+            "source": "dol/framework/f_profile.cpp",
             "memoryRanges": {
                 ".sbss": "0x7f8-0x800"
             }
         },
         {
-            "name": "dol/base/f_tree.o",
-            "source": "dol/base/f_tree.cpp",
+            "name": "dol/framework/f_tree.o",
+            "source": "dol/framework/f_tree.cpp",
             "memoryRanges": {
                 ".text": "0x15c9c0-0x15cb30"
             }

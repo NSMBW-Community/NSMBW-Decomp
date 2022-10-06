@@ -1,12 +1,12 @@
 #pragma once
-#include <dol/base/f_base_id.hpp>
-#include <dol/base/f_list_mg_ptmf.hpp>
-#include <dol/base/f_list_mg.hpp>
-#include <dol/base/f_list_nd.hpp>
-#include <dol/base/f_list_nd_prio.hpp>
-#include <dol/base/f_tree_mg_ptmf.hpp>
-#include <dol/base/f_tree_nd.hpp>
-#include <dol/base/f_profile.hpp>
+#include <dol/framework/f_base_id.hpp>
+#include <dol/framework/f_list_mg_ptmf.hpp>
+#include <dol/framework/f_list_mg.hpp>
+#include <dol/framework/f_list_nd.hpp>
+#include <dol/framework/f_list_nd_prio.hpp>
+#include <dol/framework/f_tree_mg_ptmf.hpp>
+#include <dol/framework/f_tree_nd.hpp>
+#include <dol/framework/f_profile.hpp>
 
 class fBase_c;
 

@@ -1,6 +1,6 @@
 #pragma once
 #include <types.h>
-#include <dol/base/f_profile_name.hpp>
+#include <dol/framework/f_profile_name.hpp>
 /// @file
 
 /// @brief The name of a profile. Value is a fProfile::PROFILE_NAME_e.

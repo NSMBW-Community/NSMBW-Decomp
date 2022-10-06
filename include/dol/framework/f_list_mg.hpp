@@ -1,9 +1,9 @@
 #pragma once
 #include <types.h>
-#include <dol/base/f_profile.hpp>
+#include <dol/framework/f_profile.hpp>
 #include <dol/cLib/c_list.hpp>
-#include <dol/base/f_base_id.hpp>
-#include <dol/base/f_list_nd.hpp>
+#include <dol/framework/f_base_id.hpp>
+#include <dol/framework/f_list_nd.hpp>
 
 class fBase_c;
 

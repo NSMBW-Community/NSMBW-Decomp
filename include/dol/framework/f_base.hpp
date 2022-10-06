@@ -1,11 +1,11 @@
 #pragma once
 #include <types.h>
 #include <lib/egg/heap/frm_heap.hpp>
-#include <dol/base/f_profile.hpp>
-#include <dol/base/f_base_id.hpp>
-#include <dol/base/f_helper_unk.hpp>
-#include <dol/base/f_manager.hpp>
-#include <dol/base/f_list_mg.hpp>
+#include <dol/framework/f_profile.hpp>
+#include <dol/framework/f_base_id.hpp>
+#include <dol/framework/f_helper_unk.hpp>
+#include <dol/framework/f_manager.hpp>
+#include <dol/framework/f_list_mg.hpp>
 
 /// @brief The base class for all scenes, actors and various other processes.
 /// @details A class that inherits from fBase_c is called a "base".

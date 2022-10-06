@@ -1,7 +1,7 @@
 #pragma once
 #include <types.h>
 #include <dol/cLib/c_tree.hpp>
-#include <dol/base/f_tree_mg.hpp>
+#include <dol/framework/f_tree_mg.hpp>
 
 class fBase_c;
 

@@ -1,4 +1,4 @@
-#include <dol/base/f_base.hpp>
+#include <dol/framework/f_base.hpp>
 #include <dol/m/m_heap.hpp>
 #include <lib/MSL_C/string.h>
 #include <sjis_constants.h>

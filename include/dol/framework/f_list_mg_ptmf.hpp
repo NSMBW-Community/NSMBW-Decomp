@@ -1,8 +1,8 @@
 #pragma once
 
 #include <types.h>
-#include <dol/base/f_list_mg.hpp>
-#include <dol/base/f_list_nd_prio.hpp>
+#include <dol/framework/f_list_mg.hpp>
+#include <dol/framework/f_list_nd_prio.hpp>
 
 class fBase_c;
 
