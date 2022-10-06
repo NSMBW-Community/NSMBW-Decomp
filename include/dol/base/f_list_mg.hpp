@@ -1,5 +1,4 @@
 #pragma once
-
 #include <types.h>
 #include <dol/base/f_profile.hpp>
 #include <dol/cLib/c_list.hpp>
@@ -12,7 +11,7 @@ class fBase_c;
 class fLiMgBa_c : public cListMg_c {
 public:
     /**
-     * @brief Count the number of nodes of a given profile in this list.
+     * @brief Counts the number of nodes of a given profile in this list.
      * 
      * @param profName The profile name.
      * @return How many nodes were found.
@@ -20,16 +19,19 @@ public:
     int countNodeByProfName(ProfileName profName) const;
     
     /**
-     * @brief Find a node in this list which has a certain ID.
+     * @brief Finds a node in this list with the given ID.
      * 
-     * @param id The ID to search for
-     * @return The found node, or nullptr if none were found.
+     * @param id The ID to search for.
+     * @return The found node, or @p nullptr if none were found.
      */
     const fLiNdBa_c *searchNodeByID(fBaseID_e id) const;
-    
+
+    /// @copydoc cListMg_c::getFirst
     inline fLiNdBa_c *getFirst() const {
         return (fLiNdBa_c *) cListMg_c::getFirst();
     }
+
+    /// @copydoc cListMg_c::getLast
     inline fLiNdBa_c *getLast() const {
         return (fLiNdBa_c *) cListMg_c::getLast();
     }

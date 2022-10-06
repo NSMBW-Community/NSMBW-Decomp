@@ -2,8 +2,8 @@
 
 #include <types.h>
 
-// [Unofficial name]
 /// @brief A doubly-linked list node.
+/// @note Unofficial name.
 /// @see cListMg_c
 class cListNd_c {
 public:
@@ -17,8 +17,8 @@ public:
     cListNd_c *getNext() const { return mpNext; } ///< Gets the next node.
 };
 
-// [Unofficial name]
 /// @brief A doubly-linked list container.
+/// @note Unofficial name.
 /// @see cListNd_c
 class cListMg_c {
 public:

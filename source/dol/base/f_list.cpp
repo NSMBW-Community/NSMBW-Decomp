@@ -43,7 +43,6 @@ const fLiNdBa_c *fLiMgBa_c::searchNodeByID(fBaseID_e id) const {
             return curr;
         }
     }
-    
     return nullptr;
 }
 
@@ -55,7 +54,6 @@ int fLiMgBa_c::countNodeByProfName(ProfileName prof) const {
             count++;
         }
     }
-    
     return count;
 }
 

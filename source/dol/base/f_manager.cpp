@@ -20,7 +20,7 @@ fBase_c *fManager_c::searchBaseByID(fBaseID_e id) {
     if (res != nullptr) {
         return res->mpOwner;
     }
-    return 0;
+    return nullptr;
 }
 
 fBase_c *fManager_c::searchBaseByProfName(ProfileName profName, const fBase_c *parent) {
@@ -35,7 +35,7 @@ fBase_c *fManager_c::searchBaseByProfName(ProfileName profName, const fBase_c *p
     if (res != nullptr) {
         return res->mpOwner;
     }
-    return 0;
+    return nullptr;
 }
 
 fBase_c *fManager_c::searchBaseByGroupType(u8 groupType, const fBase_c *parent) {
@@ -50,7 +50,7 @@ fBase_c *fManager_c::searchBaseByGroupType(u8 groupType, const fBase_c *parent) 
     if (res != nullptr) {
         return res->mpOwner;
     }
-    return 0;
+    return nullptr;
 }
 
 void fManager_c::mainLoop() {
@@ -58,21 +58,26 @@ void fManager_c::mainLoop() {
         m_nowLoopProc = DELETE;
         m_deleteManage.walkPack();
     }
+
     if ((m_StopProcInf & PROC_FLAG_CREATE) == 0) {
         m_nowLoopProc = CREATE;
         m_createManage.walkPack();
     }
+
     if ((m_StopProcInf & PROC_FLAG_EXECUTE) == 0) {
         m_nowLoopProc = EXECUTE;
         m_executeManage.walkPack();
     }
+
     if ((m_StopProcInf & PROC_FLAG_DRAW) == 0) {
         m_nowLoopProc = DRAW;
         m_drawManage.walkPack();
     }
+
     if ((m_StopProcInf & PROC_FLAG_CONNECT) == 0) {
         m_nowLoopProc = CONNECT;
         m_connectManage.walkPack();
     }
+
     m_nowLoopProc = NOTHING;
 }

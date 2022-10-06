@@ -1,4 +1,5 @@
 namespace fProfile {
+
     /// @brief A name of a profile. Can be used to index into fProfile::sProfileList.
     enum PROFILE_NAME_e {
         BOOT,

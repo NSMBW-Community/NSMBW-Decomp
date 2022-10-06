@@ -36,7 +36,7 @@ public:
 
     /// @brief See ::commonPack.
     enum PACK_RESULT_e {
-        NOT_READY, ///< Execution has to be repeated later (only for ::create).
+        NOT_READY, ///< Execution has to be repeated later [(only for ::create)].
         SUCCEEDED, ///< Execution succeeded.
         FAILED, ///< Execution failed.
     };

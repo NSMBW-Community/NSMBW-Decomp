@@ -1,5 +1,4 @@
 #pragma once
-
 #include <types.h>
 #include <dol/cLib/c_tree.hpp>
 #include <dol/base/f_profile.hpp>
@@ -10,19 +9,19 @@ class fTrNdBa_c;
 class fTrMgBa_c : public cTreeMg_c {
 public:
     /**
-     * @brief Find a node with a given profile name, optionally under a given parent root node.
+     * @brief Finds a node with a given profile name, optionally under a given parent root node.
      * 
      * @param profName The profile name.
-     * @param parent The root node to start search below, or nullptr to use the tree's root node.
-     * @return const fTrNdBa_c* The found node, or nullptr if none was found.
+     * @param parent The root node to start search below, or @p nullptr to use the tree's root node.
+     * @return The found node, or @p nullptr if none was found.
      */
     const fTrNdBa_c *searchNodeByProfName(ProfileName profName, const fTrNdBa_c *parent);
     /**
      * @brief Find a node with a given group type, optionally under a given parent root node.
      * 
      * @param groupType The group type.
-     * @param parent The root node to start search below, or nullptr to use the tree's root node.
-     * @return const fTrNdBa_c* The found node, or nullptr if none was found.
+     * @param parent The root node to start search below, or @p nullptr to use the tree's root node.
+     * @return The found node, or @p nullptr if none was found.
      */
-    const fTrNdBa_c *searchNodeByGroupType(unsigned char groupType, const fTrNdBa_c *parent);
+    const fTrNdBa_c *searchNodeByGroupType(u8 groupType, const fTrNdBa_c *parent);
 };
