@@ -3,32 +3,65 @@
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NSMBW Decomp Progress</title>
-    <link rel="preconnect" href="https://fonts.gstatic.com">
-    <link href="https://fonts.googleapis.com/css2?family=Galindo:wght@400&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=0.9">
+    <title>NSMBW Decomp Project</title>
+    <style>
+        @font-face {
+            font-family: "NSMBW";
+            font-style: normal;
+            font-weight: 400;
+            font-display: swap;
+            src: url(../NSMBW.woff) format("woff");
+        }
+    </style>
     <link href="style.css" rel="stylesheet">
 </head>
 <body>
-    <header id="header">
-        <a class="gamebutton gamefont" href="https://rootcubed.dev/nsmbw-symbols/">
-            About
-            <div class="gbcornercont"><div class="gbcorner1"></div><div class="gbcorner2"></div><div class="gbcorner3"></div><div class="gbcorner4"></div></div>
+    <div id="bg-cont"></div>
+    <div class="main-container" id="main-container-about">
+        <div class="title-banner gamefont">
+            <span>WELCOME</span>
+        </div>
+        <div class="ui-container col2">
+            <p>
+                Welcome to the main page of the New Super Mario Bros. Wii decompilation project!
+            </p>
+        </div>
+        <div class="title-banner gamefont">
+            <span>ABOUT</span>
+        </div>
+        <div class="ui-container col1">
+            <p>
+                A decompilation of New Super Mario Bros. Wii, brought to you by a bunch of clever procrastinators.
+            </p>
+        </div>
+        <div class="title-banner gamefont">
+            <span>LINKS</span>
+        </div>
+        <div id="links" class="ui-container col3">
+            <a class="gamebutton gamefont" id="btn-progress" href="#">
+                Progress page
+                <div class="gbcorner1"></div><div class="gbcorner2"></div><div class="gbcorner3"></div><div class="gbcorner4"></div>
+            </a>
+            <a class="gamebutton gamefont" href="/doxygen">
+                Documentation
+                <div class="gbcorner1"></div><div class="gbcorner2"></div><div class="gbcorner3"></div><div class="gbcorner4"></div>
+            </a>
+            <a class="gamebutton gamefont" href="https://github.com/CLF78/NSMBW-Decomp">
+                GitHub
+                <div class="gbcorner1"></div><div class="gbcorner2"></div><div class="gbcorner3"></div><div class="gbcorner4"></div>
+            </a>
+            <a class="gamebutton gamefont" href="https://rootcubed.dev/nsmbw-symbols/">
+                Symbol list
+                <div class="gbcorner1"></div><div class="gbcorner2"></div><div class="gbcorner3"></div><div class="gbcorner4"></div>
+            </a>
+        </div>
+    </div>
+    <div class="main-container" id="main-container-progress" style="display: none;">
+        <a class="gamebutton gamefont fixed" id="btn-about" href="#">
+            Back
+            <div class="gbcorner1"></div><div class="gbcorner2"></div><div class="gbcorner3"></div><div class="gbcorner4"></div>
         </a>
-        <a class="gamebutton gamefont" href="https://rootcubed.dev/nsmbw-symbols/">
-            Progress
-            <div class="gbcornercont"><div class="gbcorner1"></div><div class="gbcorner2"></div><div class="gbcorner3"></div><div class="gbcorner4"></div></div>
-        </a>
-        <a class="gamebutton gamefont" href="https://rootcubed.dev/nsmbw-symbols/">
-            GitHub
-            <div class="gbcornercont"><div class="gbcorner1"></div><div class="gbcorner2"></div><div class="gbcorner3"></div><div class="gbcorner4"></div></div>
-        </a>
-        <a class="gamebutton gamefont" href="https://rootcubed.dev/nsmbw-symbols/">
-            Symbol list
-            <div class="gbcornercont"><div class="gbcorner1"></div><div class="gbcorner2"></div><div class="gbcorner3"></div><div class="gbcorner4"></div></div>
-        </a>
-    </header>
-    <div id="main-container">
         <div class="title-banner gamefont">
             <span>DECOMPILATION PROGRESS</span>
         </div>
@@ -36,7 +69,7 @@
         <div class="title-banner gamefont">
             <span>PROGRESS GRAPH</span>
         </div>
-        <div id="prog-graph-container">
+        <div id="prog-graph-container" class="ui-container graph-container col1">
             <canvas id="prog-graph" width="1000" height="700"></canvas>
         </div>
     </div>

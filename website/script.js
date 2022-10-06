@@ -74,7 +74,7 @@ function configureGraph(csvData) {
     const paddingH = paddingU + (1 - paddingD);
 
     ctx.textBaseline = "middle";
-    ctx.font = "40px Galindo";
+    ctx.font = "40px NSMBW";
 
     ctx.clearRect(0, 0, cw, ch);
 
@@ -141,7 +141,7 @@ function configureGraph(csvData) {
         ctx.lineTo(pointList[i][0], pointList[i][1]);
     }
     ctx.stroke();
-/*
+
     ctx.fillStyle = "#d1ad0f88";
     ctx.beginPath();
     ctx.moveTo(pointList[0][0], pointList[0][1]);
@@ -150,7 +150,7 @@ function configureGraph(csvData) {
     }
     ctx.lineTo(cw * paddingR, ch * paddingD);
     ctx.lineTo(cw * paddingL, ch * paddingD);
-    ctx.fill();*/
+    ctx.fill();
 
     ctx.strokeStyle = "#d4b324";
     ctx.fillStyle = "#d1ad0f88";
@@ -161,5 +161,18 @@ function configureGraph(csvData) {
         ctx.stroke();
     }
 
-    requestAnimationFrame(() => configureGraph(csvData));
+    //requestAnimationFrame(() => configureGraph(csvData));
 }
+
+const btnAbout = document.getElementById("btn-about");
+const btnProgress = document.getElementById("btn-progress");
+btnAbout.addEventListener("click", () => {
+    document.getElementById("main-container-about").style.display = "";
+    document.getElementById("main-container-progress").style.display = "none";
+    btnAbout.blur();
+});
+btnProgress.addEventListener("click", () => {
+    document.getElementById("main-container-about").style.display = "none";
+    document.getElementById("main-container-progress").style.display = "";
+    btnProgress.blur();
+});
