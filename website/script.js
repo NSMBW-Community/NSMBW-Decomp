@@ -147,7 +147,7 @@ function configureGraph(csvData) {
         svg.append(svgLine(x, ch * paddingU, x, ch * paddingD, "#bbb", 1));
         const dateFormatted = i.toLocaleString("default", {
             month: "short",
-            year: "2-digit"
+            year: "numeric"
         });
         const textAttrs = { "text-anchor": "end", "dominant-baseline": "hanging" };
         svg.append(svgText(dateFormatted, x, ch * paddingD + 10, "black", "black", 5, textAttrs, { "font-size": "1.6em" }));
