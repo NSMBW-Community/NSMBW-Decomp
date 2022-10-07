@@ -27,12 +27,13 @@ class SliceSection:
 
 
 class Slice:
-    def __init__(self, slice_name: str, source: str, slice_secs: list[SliceSection], cc_flags: str, force_active: list[str]) -> None:
+    def __init__(self, slice_name: str, source: str, slice_secs: list[SliceSection], cc_flags: str, deadstrip: list[str], no_deadstrip: list[str]) -> None:
         self.slice_name = slice_name
         self.slice_src = source
         self.slice_secs = slice_secs
         self.cc_flags = cc_flags.split(' ') if cc_flags else None
-        self.force_active = force_active
+        self.deadstrip = deadstrip
+        self.no_deadstrip = no_deadstrip
 
     def __repr__(self) -> str:
         return f'<Slice {self.slice_name}, {self.slice_secs}>'
@@ -94,7 +95,7 @@ def make_filler_slice(name: str, sec_range: dict[str, tuple[int, int]], slice_me
         slice_sections.append(SliceSection(sec_name, sec_info.index, start, end, sec_info.align))
 
     if len(slice_sections) > 0:
-        return Slice(name, None, slice_sections, None, None)
+        return Slice(name, None, slice_sections, None, None, None)
 
 def load_slice_file(file: typing.TextIO) -> SliceFile:
     slice_json = json.load(file)
@@ -124,7 +125,8 @@ def load_slice_file(file: typing.TextIO) -> SliceFile:
 
         src = slice.get('source', None)
         flags = slice.get('compilerFlags', None)
-        fa = slice.get('forceActive', None)
+        ds = slice.get('deadstrip', None)
+        nds = slice.get('noDeadstrip', None)
 
         # Generate filler slice
         filler_slice = make_filler_slice(f'filler_{filler_slice_idx}.o', filler_sec_range, slice_meta)
@@ -133,7 +135,7 @@ def load_slice_file(file: typing.TextIO) -> SliceFile:
             filler_slice_idx += 1
 
         # Add actual slice
-        slices.append(Slice(slice_name, src, slice_sections, flags, fa))
+        slices.append(Slice(slice_name, src, slice_sections, flags, ds, nds))
 
     # Ensure filler slices extend to the end
     filler_sec_range = {s: (0, 0) for s in curr_sec_positions}

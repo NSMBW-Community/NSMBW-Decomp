@@ -15,6 +15,8 @@ from project_settings import *
 from slice_dol import slice_dol
 from slice_rel import slice_rel
 from slicelib import SliceFile, SliceType, load_slice_file
+from elffile import ElfFile, ElfSymtab
+from elfconsts import STT
 
 def print_cmd(*nargs, **kwargs):
     global args
@@ -91,7 +93,7 @@ for slice_file in slices:
 
         if use_file:
             file_names.append(use_file)
-            if not slice.force_active:
+            if not slice.deadstrip and not slice.no_deadstrip:
                 lcf_force_files.append(use_file)
 
 
@@ -105,9 +107,24 @@ for slice_file in slices:
         f.write('FORCEFILES {\n\t')
         f.write('\n\t'.join(['\\'.join(path.relative_to(PROJECTDIR).parts) for path in lcf_force_files])) # The linker requires backslashes
         f.write('\n}\n')
-        force_actives = []
-        for slice in [x.force_active for x in slice_file.slices if x.force_active]:
-            force_actives.extend(slice)
+
+        force_actives = set()
+        for slice in slice_file.slices:
+            if slice.no_deadstrip:
+                # Simply add the symbols not to deadstrip to FORCEACTIVE
+                force_actives.update(slice.no_deadstrip)
+            
+            if slice.deadstrip and slice.slice_src:
+                # A bit more compilated; we need to add all symbols except for the ones
+                # we don't want to deadstrip to the FORCEACTIVE directive.
+                # We load the compiled ELF file and go through the symbols.
+                elf_file = ElfFile.read(open(f'{BUILDDIR}/compiled/{slice_name_stem}/{slice.slice_name}', 'rb').read())
+                symtab: ElfSymtab = elf_file.get_section('.symtab')
+                for sym in [x for x in symtab.syms if x.name not in slice.deadstrip]:
+                    # Only certain types of symbols
+                    if sym.st_info_type in [STT.STT_FUNC, STT.STT_OBJECT]:
+                        force_actives.add(sym.name)
+        
         f.write('FORCEACTIVE {\n\t')
         f.write('\n\t'.join(force_actives))
         f.write('\n}\n\n')

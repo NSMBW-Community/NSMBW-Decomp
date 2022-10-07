@@ -114,7 +114,7 @@
         {
             "name": "runtime/global_destructor_chain.o",
             "source": "runtime/global_destructor_chain.c",
-            "forceActive": ["__register_global_object", "__destroy_global_chain"],
+            "deadstrip": ["__destroy_global_chain_reference"],
             "compilerFlags": "-proc gekko -fp hard -O4,p -char signed -rtti off -enum int -func_align 4 -Cpp_exceptions off",
             "memoryRanges": {
                 ".text": "0x2d62f0-0x2d6350",
