@@ -1,0 +1,349 @@
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+#bg-cont {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: -1;
+    overflow: hidden;
+    width: 100%;
+    height: 100%;
+}
+
+#bg-cont::before {
+    content: ' ';
+    position: absolute;
+    width: calc(2 * max(100vw, 100vh));
+    height: calc(2 * max(100vw, 100vh));
+    top: 0;
+    left: 0;
+    --cb-primary: #e0ca5b;
+    --cb-secondary: #ecd76a;
+    background-color: #e0ca5b;
+    background:
+        linear-gradient(45deg, var(--cb-primary) 25.1%, transparent 25.1%),
+        linear-gradient(45deg, transparent 74.9%, var(--cb-primary) 74.9%),
+        linear-gradient(45deg, var(--cb-primary) 25.1%, transparent 25.1%),
+        linear-gradient(45deg, transparent 74.9%, var(--cb-primary) 74.9%),
+        var(--cb-secondary);
+    background-size: 100px 100px;
+    background-position: 0 0, 0 0, 50px 50px, 50px 50px;
+    will-change: transform;
+    animation: scrolling-checkerboard infinite linear 1s;
+    z-index: -1;
+}
+
+@keyframes scrolling-checkerboard {
+    0% {
+        transform: translate(-100px, -100px);
+    }
+    100% {
+        transform: translate(-50px, -50px);
+    }
+}
+
+/* http://owumaro.github.io/text-stroke-generator/ */
+.gamefont {
+    font-family: "NSMBW", sans-serif;
+    font-size: 18px;
+    color: white;
+    text-shadow: rgb(0, 0, 0) 2px 0px 0px, rgb(0, 0, 0) 1.75517px 0.958851px 0px, rgb(0, 0, 0) 1.0806px 1.68294px 0px, rgb(0, 0, 0) 0.141474px 1.99499px 0px, rgb(0, 0, 0) -0.832294px 1.81859px 0px, rgb(0, 0, 0) -1.60229px 1.19694px 0px, rgb(0, 0, 0) -1.97999px 0.28224px 0px, rgb(0, 0, 0) -1.87291px -0.701566px 0px, rgb(0, 0, 0) -1.30729px -1.51361px 0px, rgb(0, 0, 0) -0.421592px -1.95506px 0px, rgb(0, 0, 0) 0.567324px -1.91785px 0px, rgb(0, 0, 0) 1.41734px -1.41108px 0px, rgb(0, 0, 0) 1.92034px -0.558831px 0px;
+}
+.title-banner {
+    /* Additional shadow at the beginning */
+    text-shadow: 4px 4px #0009, #000 3px 0px 0px, #000 2.83487px 0.981584px 0px, #000 2.35766px 1.85511px 0px, #000 1.62091px 2.52441px 0px, #000 0.705713px 2.91581px 0px, #000 -0.287171px 2.98622px 0px, #000 -1.24844px 2.72789px 0px, #000 -2.07227px 2.16926px 0px, #000 -2.66798px 1.37182px 0px, #000 -2.96998px 0.42336px 0px, #000 -2.94502px -0.571704px 0px, #000 -2.59586px -1.50383px 0px, #000 -1.96093px -2.27041px 0px, #000 -1.11013px -2.78704px 0px, #000 -0.137119px -2.99686px 0px, #000 0.850987px -2.87677px 0px, #000 1.74541px -2.43999px 0px, #000 2.44769px -1.73459px 0px, #000 2.88051px -0.838247px 0px;
+}
+.prog-val, .sf-name {
+    text-shadow: #000 3px 0px 0px, #000 2.83487px 0.981584px 0px, #000 2.35766px 1.85511px 0px, #000 1.62091px 2.52441px 0px, #000 0.705713px 2.91581px 0px, #000 -0.287171px 2.98622px 0px, #000 -1.24844px 2.72789px 0px, #000 -2.07227px 2.16926px 0px, #000 -2.66798px 1.37182px 0px, #000 -2.96998px 0.42336px 0px, #000 -2.94502px -0.571704px 0px, #000 -2.59586px -1.50383px 0px, #000 -1.96093px -2.27041px 0px, #000 -1.11013px -2.78704px 0px, #000 -0.137119px -2.99686px 0px, #000 0.850987px -2.87677px 0px, #000 1.74541px -2.43999px 0px, #000 2.44769px -1.73459px 0px, #000 2.88051px -0.838247px 0px;
+}
+
+#links {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    bottom: 0;
+    left: 0;
+    flex-flow: row wrap;
+}
+
+.main-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 100px;
+}
+
+.title-banner {
+    background: #f9ed64;
+    text-align: center;
+    border-top: 3px solid #fffd71;
+    border-bottom: 3px solid #fffd71;
+    padding: 5px 20px;
+    font-size: 1.9em;
+    letter-spacing: 1px;
+    margin: 20px;
+}
+
+.ind-progress-container {
+    border: solid black 1.5px;
+    border-radius: 10px;
+    padding: 10px;
+    display: grid;
+    grid-template-columns: 1fr 0.6fr 0.6fr;
+    grid-template-rows: 1.5fr 0.5fr 1.5fr;
+    gap: 0px 20px;
+    grid-template-areas:
+        "sf-name byte-count  prog-perc"
+        "sf-name filler-line prog-perc"
+        "sf-name add-count   prog-perc";
+    align-content: space-around;
+    align-items: center;
+    margin: 5px 0;
+    box-shadow: 6px 6px #0003;
+}
+
+.ind-progress-container.p1 {
+    background: linear-gradient(#e57 0%, #fdd 100%);
+}
+.ind-progress-container.p1 .prog-val {
+    color: #fa1;
+}
+.ind-progress-container.p2 {
+    background: linear-gradient(#4b3 0%, #efc 100%);
+}
+.ind-progress-container.p2 .prog-val {
+    color: #af3;
+}
+.ind-progress-container.p3 {
+    background: linear-gradient(#fd3 0%, #ffd 100%);
+}
+.ind-progress-container.p3 .prog-val {
+    color: #ff3;
+}
+.ind-progress-container.p4 {
+    background: linear-gradient(#7bf 0%, #cee 100%);
+}
+.ind-progress-container.p4 .prog-val {
+    color: #5dd;
+}
+.ind-progress-container.p5 {
+    background: linear-gradient(#d7f 0%, #ece 100%);
+}
+.ind-progress-container.p5 .prog-val {
+    color: #e9f;
+}
+
+.sf-name {
+    color: white;
+    font-size: 2em;
+    grid-area: sf-name;
+}
+.byte-count {
+    text-align: right;
+    grid-area: byte-count;
+}
+.add-count {
+    text-align: right;
+    grid-area: add-count;
+}
+
+.filler-line {
+    grid-area: filler-line;
+    border-top: 1px solid #000a;
+}
+
+.prog-cont {
+    grid-area: prog-perc;
+    background-color: #eeed;
+    border-radius: 10px;
+    padding: 5px;
+    display: grid;
+    align-content: center;
+    text-align: center;
+    box-sizing: border-box;
+}
+
+.prog-val {
+    font-size: 2em;
+}
+
+.prog-val-title {
+    color: black;
+    font-size: 1.5em;
+    text-shadow: none;
+}
+
+.ui-container {
+    display: flex;
+    flex-direction: column;
+    border-radius: 10px;
+    border: 4px solid #b3b3b382;
+    padding: 10px;
+    color: white;
+}
+.ui-container.graph-container {
+    padding: 0;
+    max-height: 100%;
+    max-width: 1000px;
+    width: 100%;
+    position: relative;
+}
+.ui-container.col1 { background: #254196bd; }
+.ui-container.col2 { background: #878787a3; }
+.ui-container.col3 { background: #9d0c0c8f; }
+.ui-container.no-col { background: none; border: none; }
+
+#prog-graph-svg {
+    width: 100%;
+    height: 100%;
+}
+
+#prog-graph-svg text {
+    font-family: "NSMBW", sans-serif;
+    font-size: 1.8em;
+}
+
+#commit-info {
+    position: absolute;
+    top: 0;
+    left: 0;
+    background-color: #cee982d1;
+    border: 4px solid #91ac78cf;
+}
+
+#commit-info a, #commit-info a:visited {
+    color: #efe542;
+}
+
+#infobox-perc {
+    text-align: center;
+    font-size: 1.4em;
+}
+
+.gamebutton {
+    color: white;
+    display: inline-block;
+    font-size: 1.3em;
+    padding: 20px;
+    border-radius: 5px;
+    background:
+        linear-gradient(#fff 0%, transparent 5px, transparent calc(100% - 10px), #fff 100%),
+        linear-gradient(90deg, #fff 0%, transparent 5px, transparent calc(100% - 5px), #fff 100%),
+        radial-gradient(circle at top left, #fff 0%, #fffd 5px, transparent 10px),
+        linear-gradient(#69d 0%, #aea 100%);
+    cursor: pointer;
+    text-decoration: none;
+    position: relative;
+    transition: transform 0.1s ease;
+}
+.gamebutton:hover {
+    background:
+        linear-gradient(#fff 0%, transparent 5px, transparent calc(100% - 10px), #fff 100%),
+        linear-gradient(90deg, #fff 0%, transparent 5px, transparent calc(100% - 5px), #fff 100%),
+        radial-gradient(circle at top left, #fff 0%, #fffd 5px, transparent 10px),
+        linear-gradient(#48d 0%, #5da 100%);
+    transform: scale(1.1);
+    transition: transform 0.2s cubic-bezier(0.2, 2.5, 0.5, -0.1);
+}
+.gamebutton.fixed {
+    position: fixed;
+    bottom: 10px;
+    left: 10px;
+}
+
+.gamebutton .gbcorner1, .gamebutton .gbcorner2, .gamebutton .gbcorner3, .gamebutton .gbcorner4 {
+    display: none;
+}
+.gamebutton:hover .gbcorner1, .gamebutton:hover .gbcorner2, .gamebutton:hover .gbcorner3, .gamebutton:hover .gbcorner4 {
+    display: block;
+}
+.gbcorner1, .gbcorner2, .gbcorner3, .gbcorner4, .gbcorner1::after, .gbcorner2::after, .gbcorner3::after, .gbcorner4::after {
+    position: absolute;
+    width: 15px;
+    height: 15px;
+}
+.gbcorner1, .gbcorner2, .gbcorner3, .gbcorner4 {
+    z-index: 2;
+    background-color: black;
+}
+.gbcorner1::after, .gbcorner2::after, .gbcorner3::after, .gbcorner4::after {
+    content: ' ';
+    z-index: 3;
+    background-color: #f9da3b;
+}
+.gbcorner1 {
+    animation: cursor-anim-1 1s infinite step-end;
+    clip-path: polygon(14% 8.75%, 90.25% 6%, 89.5% 52.25%, 53% 49.75%, 53% 99.25%, 10.25% 97.75%);
+}
+.gbcorner1::after {
+    clip-path: polygon(22.75% 19.5%, 79.75% 16.5%, 79.5% 40.25%, 41% 35.5%, 44% 86.75%, 23.25% 85.25%);
+}
+.gbcorner2 {
+    animation: cursor-anim-2 1s infinite step-end;
+    transform: scaleX(-1);
+    clip-path: polygon(14% 8.75%, 90.25% 6%, 89.5% 52.25%, 53% 49.75%, 53% 99.25%, 10.25% 97.75%);
+}
+.gbcorner2::after {
+    clip-path: polygon(22.75% 19.5%, 79.75% 16.5%, 79.5% 40.25%, 41% 35.5%, 44% 86.75%, 23.25% 85.25%);
+}
+.gbcorner3 {
+    animation: cursor-anim-3 1s infinite step-end;
+    transform: scaleY(-1);
+    clip-path: polygon(14% 8.75%, 90.25% 6%, 89.5% 52.25%, 53% 49.75%, 53% 99.25%, 10.25% 97.75%);
+}
+.gbcorner3::after {
+    clip-path: polygon(22.75% 19.5%, 79.75% 16.5%, 79.5% 40.25%, 41% 35.5%, 44% 86.75%, 23.25% 85.25%);
+}
+.gbcorner4 {
+    animation: cursor-anim-4 1s infinite step-end;
+    transform: scaleX(-1) scaleY(-1);
+    clip-path: polygon(14% 8.75%, 90.25% 6%, 89.5% 52.25%, 53% 49.75%, 53% 99.25%, 10.25% 97.75%);
+}
+.gbcorner4::after {
+    clip-path: polygon(22.75% 19.5%, 79.75% 16.5%, 79.5% 40.25%, 41% 35.5%, 44% 86.75%, 23.25% 85.25%);
+}
+.gbcornercont {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+@keyframes cursor-anim-1 {
+    0% { top: -6px; left: -6px; }
+    50% { top: -2px; left: -2px; }
+}
+@keyframes cursor-anim-2 {
+    0% { top: -6px; right: -6px; }
+    50% { top: -2px; right: -2px; }
+}
+@keyframes cursor-anim-3 {
+    0% { bottom: -6px; left: -6px; }
+    50% { bottom: -2px; left: -2px; }
+}
+@keyframes cursor-anim-4 {
+    0% { bottom: -6px; right: -6px; }
+    50% { bottom: -2px; right: -2px; }
+}
+
+@media only screen and (max-width: 800px) {
+    .sf-name {
+        font-size: 1.8em;
+        text-align: center;
+    }
+    .byte-count, .add-count {
+        text-align: center;
+    }
+
+    .ind-progress-container {
+        grid-template-rows: 1.5fr 1fr 0.5fr 1fr;
+        grid-template-areas:
+        "sf-name     sf-name      sf-name"
+        "byte-count  byte-count   prog-perc"
+        "filler-line filler-line  prog-perc"
+        "add-count  add-count   prog-perc";
+    }
+}
+

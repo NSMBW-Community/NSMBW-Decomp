@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=0.9">
+    <title>NSMBW Decomp Project</title>
+    <style>
+        @font-face {
+            font-family: "NSMBW";
+            font-style: normal;
+            font-weight: 400;
+            font-display: swap;
+            src: url(../NSMBW.woff) format("woff");
+        }
+    </style>
+    <link href="style.css" rel="stylesheet">
+</head>
+<body>
+    <div id="bg-cont"></div>
+    <div class="main-container" id="main-container-about">
+        <div class="title-banner gamefont">
+            <span>ABOUT</span>
+        </div>
+        <div class="ui-container col3" style="max-width: 800px;">
+            <p>
+                Welcome to the homepage of the New Super Mario Bros. Wii decompilation project!
+            </p>
+            <p>
+                This project attempts to reverse engineer this classic Wii game in a way so that when compiled back, the resulting binary maches the original one exactly.
+
+                You can find more information on the <a href="https://github.com/CLF78/NSMBW-Decomp">GitHub repository</a>.
+            </p>
+        </div>
+        <div class="title-banner gamefont">
+            <span>LINKS</span>
+        </div>
+        <div id="links" class="ui-container no-col">
+            <a class="gamebutton gamefont" id="btn-progress" href="#progress">
+                Progress page
+                <div class="gbcorner1"></div><div class="gbcorner2"></div><div class="gbcorner3"></div><div class="gbcorner4"></div>
+            </a>
+            <a class="gamebutton gamefont" href="/doxygen">
+                Documentation
+                <div class="gbcorner1"></div><div class="gbcorner2"></div><div class="gbcorner3"></div><div class="gbcorner4"></div>
+            </a>
+            <a class="gamebutton gamefont" href="https://github.com/CLF78/NSMBW-Decomp">
+                GitHub
+                <div class="gbcorner1"></div><div class="gbcorner2"></div><div class="gbcorner3"></div><div class="gbcorner4"></div>
+            </a>
+            <a class="gamebutton gamefont" href="https://rootcubed.dev/nsmbw-symbols/">
+                Symbol list
+                <div class="gbcorner1"></div><div class="gbcorner2"></div><div class="gbcorner3"></div><div class="gbcorner4"></div>
+            </a>
+        </div>
+    </div>
+    <div class="main-container" id="main-container-progress" style="display: none;">
+        <div class="title-banner gamefont">
+            <span>DECOMPILATION PROGRESS</span>
+        </div>
+        <div id="prog-conts-container"></div>
+        <div class="title-banner gamefont">
+            <span>PROGRESS GRAPH</span>
+        </div>
+        <div id="prog-graph-container" class="ui-container graph-container col1">
+            <div id="commit-info" class="ui-container gamefont"></div>
+            <span id="graph-bg-percentage" class="gamefont"></span>
+            <svg id="prog-graph-svg" width="1000" height="700" viewBox="0 0 1000 700"></svg>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
