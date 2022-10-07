@@ -44,9 +44,6 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v3
 
-      - name: Create Doxygen directory
-        run: mkdir -p out/doxygen
-
       - name: Generate documentation
         run: |
           sudo apt-get install -y graphviz fonts-freefont-ttf
@@ -57,11 +54,6 @@ jobs:
           cd ..
           doxygen
 
-      - name: Copy html docs
-        run: |
-          mkdir -p out/website/docs
-          cp -a -v doxygen/. out/website/
-
       - name: Run progress script to create artifacts
         env:
           PROGRESS_URL: 'https://clf78.github.io/NSMBW-Decomp/progress.csv'
@@ -69,6 +61,12 @@ jobs:
           curl $PROGRESS_URL --output out/website/progress.csv
           python progress.py --progress-csv out/website/progress.csv
           python progress.py --create-badges
+
+      - name: Copy website files
+        run: |
+          mkdir -p out/website/
+          cp -a -v website/. out/website/
+          cp -a -v doxygen/. out/website/doxygen
           cp *.json out/website/
 
       - name: Upload artifact
