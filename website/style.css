@@ -185,15 +185,35 @@ body {
 }
 .ui-container.graph-container {
     padding: 0;
+    max-height: 100%;
+    max-width: 1000px;
+    width: 100%;
+    position: relative;
 }
 .ui-container.col1 { background: #254196bd; }
 .ui-container.col2 { background: #3d8722a3; }
 .ui-container.col3 { background: #e09a2dc4; }
 
-#prog-graph {
-    max-height: 100%;
-    max-width: 1000px;
+#prog-graph-svg {
     width: 100%;
+    height: 100%;
+}
+
+#prog-graph-svg text {
+    font-family: "NSMBW", sans-serif;
+    font-size: 1.8em;
+}
+
+#commit-info {
+    position: absolute;
+    top: 0;
+    left: 0;
+    background-color: #cee982d1;
+    border: 4px solid #a6c38a82;
+}
+
+#commit-info a, #commit-info a:visited {
+    color: #efe542;
 }
 
 .gamebutton {

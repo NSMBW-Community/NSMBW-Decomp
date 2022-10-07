@@ -11,6 +11,19 @@ const indProgContainer = data => `
 </div>
 `;
 
+const cw = 1000;
+const ch = 700;
+const paddingL = 0.1;
+const paddingR = 0.97;
+const paddingU = 0.05;
+const paddingD = 0.95;
+const paddingW = paddingL + (1 - paddingR);
+const paddingH = paddingU + (1 - paddingD);
+
+const svg = document.getElementById("prog-graph-svg");
+
+let globalCsvData, globalInfoLine;
+
 fetch("progress.csv").then(r => r.text()).then(r => {
     let data = r.trim().replace(/\r/g, "").split("\n").map(e => {
         const split = e.match(/[^,]+/g);
@@ -24,8 +37,10 @@ fetch("progress.csv").then(r => r.text()).then(r => {
             "d_en_bossNP.rel": [parseInt(split[10]), parseInt(split[11])],
         };
     });
+    globalCsvData = data;
     configureOverview(data);
     configureGraph(data);
+    globalCsvData = data;
 });
 
 function configureOverview(csvData) {
@@ -58,110 +73,142 @@ function nextMonth(date) {
     return newDate;
 }
 
+function svgAddAttrs(el, attrs) {
+    if (attrs) {
+        for (const attr in attrs) {
+            el.setAttribute(attr, attrs[attr]);
+        }
+    }
+}
+function svgLine(x1, y1, x2, y2, stroke, strokeWeight, attrs) {
+    let el = document.createElementNS("http://www.w3.org/2000/svg", "line");
+    el.setAttribute("x1", x1);
+    el.setAttribute("y1", y1);
+    el.setAttribute("x2", x2);
+    el.setAttribute("y2", y2);
+    svgAddAttrs(el, attrs);
+    el.style.stroke = stroke;
+    el.style.strokeWidth = strokeWeight;
+    return el;
+};
+function svgText(content, x, y, fill, stroke, strokeWeight, attrs) {
+    let el = document.createElementNS("http://www.w3.org/2000/svg", "text");
+    el.innerHTML = content;
+    el.setAttribute("x", x);
+    el.setAttribute("y", y);
+    svgAddAttrs(el, attrs);
+    el.style.stroke = stroke;
+    el.style.fill = fill;
+    el.style.strokeWidth = strokeWeight;
+    return el;
+};
+function svgCircle(r, x, y, fill, stroke, strokeWeight, attrs) {
+    let el = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+    el.setAttribute("r", r);
+    el.setAttribute("cx", x);
+    el.setAttribute("cy", y);
+    svgAddAttrs(el, attrs);
+    el.style.stroke = stroke;
+    el.style.fill = fill;
+    el.style.strokeWidth = strokeWeight;
+    return el;
+};
+
 function configureGraph(csvData) {
-    const canvas = document.getElementById("prog-graph");
-    /** @type {CanvasRenderingContext2D} */
-    const ctx = canvas.getContext("2d");
-    ctx.canvas.width = 2000;
-    ctx.canvas.height = 1400;
-    const cw = canvas.width;
-    const ch = canvas.height;
-    const paddingL = 0.1;
-    const paddingR = 0.97;
-    const paddingU = 0.05;
-    const paddingD = 0.95;
-    const paddingW = paddingL + (1 - paddingR);
-    const paddingH = paddingU + (1 - paddingD);
-
-    ctx.textBaseline = "middle";
-    ctx.font = "40px NSMBW";
-
-    ctx.clearRect(0, 0, cw, ch);
-
-    ctx.fillStyle = "#eee";
-    ctx.strokeStyle = "#bbb";
-    ctx.beginPath();
     // y axes
-    ctx.textAlign = "right";
     for (let i = 0; i <= 100; i += 10) {
         const y = (ch * paddingU) + (ch * (1 - paddingH) / 100) * i;
-        ctx.moveTo(cw * paddingL, y);
-        ctx.lineTo(cw * paddingR, y);
-        ctx.fillText((100 - i) + "%", cw * paddingL * 0.9, y);
+        svg.append(svgLine(cw * paddingL, y, cw * paddingR, y, "#bbb", 1));
+        const percText = (100 - i) + "%";
+        const textAttrs = { "text-anchor": "end", "dominant-baseline": "central" };
+        svg.append(svgText(percText, cw * paddingL * 0.9, y, "black", "black", 6, textAttrs));
+        svg.append(svgText(percText, cw * paddingL * 0.9, y, "white", "white", 0, textAttrs));
     }
+
     // x axes
-    ctx.textAlign = "center";
-    ctx.textBaseline = "top";
     const begin = csvData[0].ts;
     const end = csvData[csvData.length - 1].ts;
 
-    // Round up to nearest month
-    const beginMY = nextMonth(begin);
+    const beginMY = nextMonth(begin); // Round up to nearest month
 
     for (let i = beginMY; i <= end; i = nextMonth(i)) {
         const frac = (i - begin) / (end - begin);
         const x = (cw * paddingL) + (cw * (1 - paddingW)) * frac;
-        ctx.moveTo(x, ch * paddingU);
-        ctx.lineTo(x, ch * paddingD);
+        svg.append(svgLine(x, ch * paddingU, x, ch * paddingD, "#bbb", 1));
         const dateFormatted = i.toLocaleString("default", {
             month: "short",
             year: "2-digit"
         });
-        ctx.fillText(dateFormatted, x, ch * paddingD + 10);
+        const textAttrs = { "text-anchor": "end", "dominant-baseline": "hanging" };
+        svg.append(svgText(dateFormatted, x, ch * paddingD + 10, "black", "black", 6, textAttrs));
+        svg.append(svgText(dateFormatted, x, ch * paddingD + 10, "white", "white", 0, textAttrs));
     }
-    ctx.stroke();
 
-    ctx.beginPath();
-    // Bold zero y- and x-axis
-    ctx.lineWidth = 2;
-    ctx.strokeStyle = "#eee";
-    ctx.moveTo(cw * paddingL, ch * paddingU);
-    ctx.lineTo(cw * paddingL, ch * paddingD + 15);
-    ctx.moveTo(cw * paddingL - 15, ch * paddingD);
-    ctx.lineTo(cw * paddingR, ch * paddingD);
-    ctx.stroke();
-    
+    // Bold zero y axis
+    svg.append(svgLine(cw * paddingL, ch * paddingU, cw * paddingL, ch * paddingD, "#eee", 2));
 
-    // Draw points
-    let pointList = [];
-    for (const progPoint of csvData) {
+    // Info line
+    globalInfoLine = svgLine(-9999, ch * paddingU, -9999, ch * paddingD, "#000", 3);
+    svg.append(globalInfoLine);
+    // Info line starts at latest commit
+    mouseMove(1000, 0);
+
+    // Draw points, add XY coords to csvData
+    for (let i = 0; i < csvData.length; i++) {
+        const progPoint = csvData[i];
         const timeFrac = (progPoint.ts.getTime() - begin) / (end - begin);
         const x = (cw * paddingL) + (cw * (1 - paddingW)) * timeFrac;
-        const progFrac = progPoint["wiimj2d.dol"][0] / progPoint["wiimj2d.dol"][1];
+        const sfNames = ["wiimj2d.dol", "d_profileNP.rel", "d_basesNP.rel", "d_en_bossNP.rel"]
+        const doneAllSFs = sfNames.reduce((a, v) => a + progPoint[v][0], 0);
+        const totalAllSFs = sfNames.reduce((a, v) => a + progPoint[v][1], 0);
+        const progFrac = doneAllSFs / totalAllSFs;
         const y = (ch * paddingU) + ch * (1 - paddingH) * (1 - progFrac);
-        pointList.push([x, y]);
+        globalCsvData[i].x = x;
+        globalCsvData[i].y = y;
     }
-    // line
-    ctx.strokeStyle = "#d4b32488";
-    ctx.lineWidth = 5;
-
-    ctx.beginPath();
-    ctx.moveTo(pointList[0][0], pointList[0][1]);
-    for (let i = 1; i < pointList.length; i++) {
-        ctx.lineTo(pointList[i][0], pointList[i][1]);
-    }
-    ctx.stroke();
-
-    ctx.fillStyle = "#d1ad0f88";
-    ctx.beginPath();
-    ctx.moveTo(pointList[0][0], pointList[0][1]);
-    for (let i = 1; i < pointList.length; i++) {
-        ctx.lineTo(pointList[i][0], pointList[i][1]);
-    }
-    ctx.lineTo(cw * paddingR, ch * paddingD);
-    ctx.lineTo(cw * paddingL, ch * paddingD);
-    ctx.fill();
-
-    ctx.strokeStyle = "#d4b324";
-    ctx.fillStyle = "#d1ad0f88";
-    for (const point of pointList) {
-        ctx.beginPath();
-        ctx.arc(point[0], point[1], 8, 0, 2 * Math.PI);
-        ctx.fill();
-        ctx.stroke();
+    
+    // Lines between points
+    for (let i = 0; i < csvData.length; i++) {
+        svg.append(svgCircle(5, csvData[i].x, csvData[i].y, "#d1ad0f88", "#d4b324", 2));
+        if (i >= 1) {
+            svg.append(svgLine(csvData[i - 1].x, csvData[i - 1].y, csvData[i].x, csvData[i].y, "#d4b32488", 5));
+        }
     }
 
-    //requestAnimationFrame(() => configureGraph(csvData));
+    svg.addEventListener("mousemove", ev => {
+        let bounds = svg.getBoundingClientRect();
+        let x = (ev.clientX - bounds.left) / svg.clientWidth * cw;
+        let y = (ev.clientY - bounds.top) / svg.clientHeight * ch;
+        mouseMove(x, y);
+    });
+}
+
+let prevNearest;
+function mouseMove(x, y) {
+    if (!globalCsvData || !globalInfoLine) return;
+    let nearestPoint;
+    if (x == undefined) {
+        nearestPoint = prevNearest;
+    } else {
+        nearestPoint = globalCsvData.reduce((p, c) => (Math.abs(c.x - x) < Math.abs(p.x - x)) ? c : p, globalCsvData[0]);
+    }
+    prevNearest = nearestPoint;
+    const commitInfobox = document.getElementById("commit-info");
+    const infoboxContent = `
+        <span>Commit <a href="#">${nearestPoint.commit_hash.substring(0, 6)}</a></span>
+        <span>${nearestPoint.ts.toLocaleString().replace(",", "")}</span>
+    `;
+    if (commitInfobox.innerHTML != infoboxContent) {
+        commitInfobox.innerHTML = infoboxContent;
+    }
+
+    // TODO: Better positioning
+
+    commitInfobox.style.left = (nearestPoint.x / cw) * svg.clientWidth + "px";
+    commitInfobox.style.top = (nearestPoint.y / ch) * svg.clientHeight + "px";
+
+    globalInfoLine.setAttribute("x1", nearestPoint.x);
+    globalInfoLine.setAttribute("x2", nearestPoint.x);
 }
 
 const btnAbout = document.getElementById("btn-about");
@@ -174,5 +221,8 @@ btnAbout.addEventListener("click", () => {
 btnProgress.addEventListener("click", () => {
     document.getElementById("main-container-about").style.display = "none";
     document.getElementById("main-container-progress").style.display = "";
+    mouseMove(); // reload commit info box
     btnProgress.blur();
 });
+
+window.addEventListener("resize", () => mouseMove()); // reload commit info box
