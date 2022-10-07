@@ -209,7 +209,7 @@ body {
     top: 0;
     left: 0;
     background-color: #cee982d1;
-    border: 4px solid #a6c38a82;
+    border: 4px solid #91ac78cf;
 }
 
 #commit-info a, #commit-info a:visited {
@@ -321,7 +321,7 @@ body {
     50% { bottom: -2px; right: -2px; }
 }
 
-@media only screen and (max-width: 768px) {
+@media only screen and (max-width: 800px) {
     .sf-name {
         font-size: 1.8em;
         text-align: center;

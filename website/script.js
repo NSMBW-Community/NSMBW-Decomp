@@ -148,17 +148,15 @@ function configureGraph(csvData) {
     svg.append(svgLine(cw * paddingL, ch * paddingU, cw * paddingL, ch * paddingD, "#eee", 2));
 
     // Info line
-    globalInfoLine = svgLine(-9999, ch * paddingU, -9999, ch * paddingD, "#000", 3);
+    globalInfoLine = svgLine(-9999, ch * paddingU, -9999, ch * paddingD, "#96d932d1", 3);
     svg.append(globalInfoLine);
-    // Info line starts at latest commit
-    mouseMove(1000, 0);
 
     // Draw points, add XY coords to csvData
     for (let i = 0; i < csvData.length; i++) {
         const progPoint = csvData[i];
         const timeFrac = (progPoint.ts.getTime() - begin) / (end - begin);
         const x = (cw * paddingL) + (cw * (1 - paddingW)) * timeFrac;
-        const sfNames = ["wiimj2d.dol", "d_profileNP.rel", "d_basesNP.rel", "d_en_bossNP.rel"]
+        const sfNames = ["wiimj2d.dol", "d_profileNP.rel", "d_basesNP.rel", "d_en_bossNP.rel"];
         const doneAllSFs = sfNames.reduce((a, v) => a + progPoint[v][0], 0);
         const totalAllSFs = sfNames.reduce((a, v) => a + progPoint[v][1], 0);
         const progFrac = doneAllSFs / totalAllSFs;
@@ -171,16 +169,22 @@ function configureGraph(csvData) {
     for (let i = 0; i < csvData.length; i++) {
         svg.append(svgCircle(5, csvData[i].x, csvData[i].y, "#d1ad0f88", "#d4b324", 2));
         if (i >= 1) {
-            svg.append(svgLine(csvData[i - 1].x, csvData[i - 1].y, csvData[i].x, csvData[i].y, "#d4b32488", 5));
+            svg.append(svgLine(csvData[i - 1].x, csvData[i - 1].y, csvData[i].x, csvData[i].y, "#d4b32499", 3));
         }
     }
+    
+    // Info line starts at latest commit
+    mouseMove();
 
-    svg.addEventListener("mousemove", ev => {
+    const callMouseMoveEv = ev => {
         let bounds = svg.getBoundingClientRect();
         let x = (ev.clientX - bounds.left) / svg.clientWidth * cw;
         let y = (ev.clientY - bounds.top) / svg.clientHeight * ch;
         mouseMove(x, y);
-    });
+    };
+
+    svg.addEventListener("mousemove", callMouseMoveEv);
+    svg.addEventListener("touchmove", ev => callMouseMoveEv(ev.targetTouches.item(0)));
 }
 
 let prevNearest;
@@ -188,41 +192,82 @@ function mouseMove(x, y) {
     if (!globalCsvData || !globalInfoLine) return;
     let nearestPoint;
     if (x == undefined) {
-        nearestPoint = prevNearest;
+        if (prevNearest == undefined) {
+            nearestPoint = globalCsvData[globalCsvData.length - 1];
+        } else {
+            nearestPoint = prevNearest;
+        }
+    } else if (x == Infinity) {
+        nearestPoint = globalCsvData[globalCsvData.length - 1];
     } else {
         nearestPoint = globalCsvData.reduce((p, c) => (Math.abs(c.x - x) < Math.abs(p.x - x)) ? c : p, globalCsvData[0]);
     }
     prevNearest = nearestPoint;
     const commitInfobox = document.getElementById("commit-info");
     const infoboxContent = `
-        <span>Commit <a href="#">${nearestPoint.commit_hash.substring(0, 6)}</a></span>
+        <span>Commit <a href="https://github.com/CLF78/NSMBW-Decomp/commit/${nearestPoint.commit_hash}">${nearestPoint.commit_hash.substring(0, 6)}</a></span>
         <span>${nearestPoint.ts.toLocaleString().replace(",", "")}</span>
     `;
     if (commitInfobox.innerHTML != infoboxContent) {
         commitInfobox.innerHTML = infoboxContent;
     }
 
-    // TODO: Better positioning
+    const bounds = commitInfobox.getBoundingClientRect();
+    const ratioW = svg.clientWidth / cw;
+    const ratioH = svg.clientHeight / ch;
+    let leftVal, topVal;
+    if (nearestPoint.x - bounds.width / 2 < cw * paddingL) {
+        leftVal = cw * paddingL * ratioW;
+    } else if (nearestPoint.x + bounds.width / 2 > cw * paddingR) {
+        leftVal = cw * paddingR * ratioW - bounds.width;
+    } else {
+        leftVal = (nearestPoint.x / cw) * svg.clientWidth - bounds.width / 2;
+    }
+    if (nearestPoint.y - bounds.height < ch * paddingU) {
+        topVal = ch * paddingU * ratioH + 10;
+    } else {
+        topVal = nearestPoint.y * ratioH - bounds.height - 10;
+    }
 
-    commitInfobox.style.left = (nearestPoint.x / cw) * svg.clientWidth + "px";
-    commitInfobox.style.top = (nearestPoint.y / ch) * svg.clientHeight + "px";
+    commitInfobox.style.left = leftVal + "px";
+    commitInfobox.style.top = topVal + "px";
 
     globalInfoLine.setAttribute("x1", nearestPoint.x);
     globalInfoLine.setAttribute("x2", nearestPoint.x);
 }
 
-const btnAbout = document.getElementById("btn-about");
-const btnProgress = document.getElementById("btn-progress");
-btnAbout.addEventListener("click", () => {
+function showAbout() {
     document.getElementById("main-container-about").style.display = "";
     document.getElementById("main-container-progress").style.display = "none";
-    btnAbout.blur();
-});
-btnProgress.addEventListener("click", () => {
+}
+function showProgress() {
     document.getElementById("main-container-about").style.display = "none";
     document.getElementById("main-container-progress").style.display = "";
-    mouseMove(); // reload commit info box
+    mouseMove();
+}
+
+const btnProgress = document.getElementById("btn-progress");
+btnProgress.addEventListener("click", e => {
+    history.pushState("", "", "#progress");
+    e.preventDefault();
+    showProgress();
     btnProgress.blur();
 });
 
-window.addEventListener("resize", () => mouseMove()); // reload commit info box
+if (location.hash == "#progress") {
+    showProgress();
+}
+
+window.addEventListener("resize", () => mouseMove());
+
+window.addEventListener("", () => {
+    document.getElementById("main-container-about").style.display = "";
+    document.getElementById("main-container-progress").style.display = "none";
+});
+window.addEventListener("popstate", e => {
+    if (location.hash == "#progress") {
+        showProgress();
+    } else {
+        showAbout();
+    }
+});
