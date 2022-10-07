@@ -1,8 +1,6 @@
 #include <types.h>
 #include <dol/cLib/c_random.hpp>
 
-// NOTE: Class, function and variable names are unofficial!
-
 u32 cM_rand_c::mConst1 = 0x19660D;
 u32 cM_rand_c::mConst2 = 0x3C6EF35F;
 

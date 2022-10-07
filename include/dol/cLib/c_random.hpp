@@ -1,8 +1,8 @@
 #pragma once
 #include <types.h>
 
-// [Unofficial name]
 /// @brief Random number generation helper class.
+/// @note Unofficial name.
 class cM_rand_c {
 public:
 
@@ -16,10 +16,9 @@ public:
     u32 mSeed; ///< The current seed.
 
 private:
-    /**
-     * @brief Flawed implementation of the @p ranqd1 algorithm.
-     * <a href="https://roadrunnerwmc.github.io/blog/2020/05/08/nsmb-rng.html">Here is why.</a>
-    */
+    /// @brief Implementation of the @p ranqd1 algorithm.
+    /// @bug The implementation is flawed.
+    /// <a href="https://roadrunnerwmc.github.io/blog/2020/05/08/nsmb-rng.html">This post explains why.</a>
     inline u32 ranqdStep();
 
     static u32 mConst1; ///< Constant @p a from the @p ranqd1 algorithm.

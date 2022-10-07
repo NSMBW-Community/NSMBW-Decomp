@@ -1,8 +1,8 @@
 #include <types.h>
-#include <dol/base/f_tree_mg_ptmf.hpp>
-#include <dol/base/f_tree_mg.hpp>
-#include <dol/base/f_tree_nd.hpp>
-#include <dol/base/f_base.hpp>
+#include <dol/framework/f_tree_mg_ptmf.hpp>
+#include <dol/framework/f_tree_mg.hpp>
+#include <dol/framework/f_tree_nd.hpp>
+#include <dol/framework/f_base.hpp>
 
 bool fTrMgPTMF_c::walkPack() {
     if (mpProcFunc == 0) return true;

@@ -1,5 +1,5 @@
 #include <types.h>
-#include <dol/base/f_helper_unk.hpp>
+#include <dol/framework/f_helper_unk.hpp>
 
 void fBaHelper_c::Delete() {
     if (mpArr == nullptr || mStatus == 0) {

@@ -1,4 +1,4 @@
-#include <dol/base/f_profile.hpp>
+#include <dol/framework/f_profile.hpp>
 
 using namespace fProfile;
 

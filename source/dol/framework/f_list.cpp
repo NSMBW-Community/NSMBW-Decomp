@@ -1,7 +1,7 @@
 #include <types.h>
-#include <dol/base/f_list_mg.hpp>
-#include <dol/base/f_list_mg_ptmf.hpp>
-#include <dol/base/f_base.hpp>
+#include <dol/framework/f_list_mg.hpp>
+#include <dol/framework/f_list_mg_ptmf.hpp>
+#include <dol/framework/f_base.hpp>
 
 bool fLiMgPTMF_c::addNode(fLiNdPrio_c *node) {
     fLiNdPrio_c *curr = getFirst();
@@ -43,7 +43,6 @@ const fLiNdBa_c *fLiMgBa_c::searchNodeByID(fBaseID_e id) const {
             return curr;
         }
     }
-    
     return nullptr;
 }
 
@@ -55,7 +54,6 @@ int fLiMgBa_c::countNodeByProfName(ProfileName prof) const {
             count++;
         }
     }
-    
     return count;
 }
 
