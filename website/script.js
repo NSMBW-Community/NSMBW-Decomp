@@ -1,15 +1,18 @@
-const indProgContainer = data => `
+const indProgContainer = data => {
+    let percStr = (data.perc >= 100) ? "100%" : data.perc.toFixed(3) + "%";
+    return `
 <div class="ind-progress-container p${data.num} gamefont">
     <span class="sf-name">${data.name}</span>
     <span class="byte-count">Code bytes done:<br>${data.doneBytes}/${data.totalBytes}</span>
     <span class="add-count">Since last commit:<br>+${data.percChange.toFixed(3)}%</span>
     <div class="prog-cont">
         <span class="prog-val-title">SCORE</span>
-        <span class="prog-val">${data.perc.toFixed(3)}%</span>
+        <span class="prog-val">${percStr}</span>
     </div>
     <div class="filler-line"></div>
 </div>
 `;
+};
 
 const cw = 1000;
 const ch = 700;
@@ -147,7 +150,7 @@ function configureGraph(csvData) {
         svg.append(svgLine(x, ch * paddingU, x, ch * paddingD, "#bbb", 1));
         const dateFormatted = i.toLocaleString("default", {
             month: "short",
-            year: "2-digit"
+            year: "numeric"
         });
         const textAttrs = { "text-anchor": "end", "dominant-baseline": "hanging" };
         svg.append(svgText(dateFormatted, x, ch * paddingD + 10, "black", "black", 5, textAttrs, { "font-size": "1.6em" }));
