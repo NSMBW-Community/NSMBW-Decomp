@@ -20,6 +20,8 @@ const paddingD = 0.95;
 const paddingW = paddingL + (1 - paddingR);
 const paddingH = paddingU + (1 - paddingD);
 
+const sfNames = ["wiimj2d.dol", "d_profileNP.rel", "d_basesNP.rel", "d_en_bossNP.rel"];
+
 const svg = document.getElementById("prog-graph-svg");
 
 let globalCsvData, globalInfoLine;
@@ -80,7 +82,14 @@ function svgAddAttrs(el, attrs) {
         }
     }
 }
-function svgLine(x1, y1, x2, y2, stroke, strokeWeight, attrs) {
+function svgAddStyles(el, styles) {
+    if (styles) {
+        for (const style in styles) {
+            el.style[style] = styles[style];
+        }
+    }
+}
+function svgLine(x1, y1, x2, y2, stroke, strokeWeight, attrs, styles) {
     let el = document.createElementNS("http://www.w3.org/2000/svg", "line");
     el.setAttribute("x1", x1);
     el.setAttribute("y1", y1);
@@ -91,7 +100,7 @@ function svgLine(x1, y1, x2, y2, stroke, strokeWeight, attrs) {
     el.style.strokeWidth = strokeWeight;
     return el;
 };
-function svgText(content, x, y, fill, stroke, strokeWeight, attrs) {
+function svgText(content, x, y, fill, stroke, strokeWeight, attrs, styles) {
     let el = document.createElementNS("http://www.w3.org/2000/svg", "text");
     el.innerHTML = content;
     el.setAttribute("x", x);
@@ -100,9 +109,10 @@ function svgText(content, x, y, fill, stroke, strokeWeight, attrs) {
     el.style.stroke = stroke;
     el.style.fill = fill;
     el.style.strokeWidth = strokeWeight;
+    svgAddStyles(el, styles);
     return el;
 };
-function svgCircle(r, x, y, fill, stroke, strokeWeight, attrs) {
+function svgCircle(r, x, y, fill, stroke, strokeWeight, attrs, styles) {
     let el = document.createElementNS("http://www.w3.org/2000/svg", "circle");
     el.setAttribute("r", r);
     el.setAttribute("cx", x);
@@ -140,8 +150,8 @@ function configureGraph(csvData) {
             year: "2-digit"
         });
         const textAttrs = { "text-anchor": "end", "dominant-baseline": "hanging" };
-        svg.append(svgText(dateFormatted, x, ch * paddingD + 10, "black", "black", 6, textAttrs));
-        svg.append(svgText(dateFormatted, x, ch * paddingD + 10, "white", "white", 0, textAttrs));
+        svg.append(svgText(dateFormatted, x, ch * paddingD + 10, "black", "black", 5, textAttrs, { "font-size": "1.6em" }));
+        svg.append(svgText(dateFormatted, x, ch * paddingD + 10, "white", "white", 0, textAttrs, { "font-size": "1.6em" }));
     }
 
     // Bold zero y axis
@@ -156,13 +166,14 @@ function configureGraph(csvData) {
         const progPoint = csvData[i];
         const timeFrac = (progPoint.ts.getTime() - begin) / (end - begin);
         const x = (cw * paddingL) + (cw * (1 - paddingW)) * timeFrac;
-        const sfNames = ["wiimj2d.dol", "d_profileNP.rel", "d_basesNP.rel", "d_en_bossNP.rel"];
         const doneAllSFs = sfNames.reduce((a, v) => a + progPoint[v][0], 0);
         const totalAllSFs = sfNames.reduce((a, v) => a + progPoint[v][1], 0);
         const progFrac = doneAllSFs / totalAllSFs;
         const y = (ch * paddingU) + ch * (1 - paddingH) * (1 - progFrac);
+        globalCsvData[i].totalFrac = progFrac;
         globalCsvData[i].x = x;
         globalCsvData[i].y = y;
+        globalCsvData[i].prev = i >= 1 ? globalCsvData[i - 1] : globalCsvData[0];
     }
     
     // Lines between points
@@ -206,7 +217,8 @@ function mouseMove(x, y) {
     const commitInfobox = document.getElementById("commit-info");
     const infoboxContent = `
         <span>Commit <a href="https://github.com/CLF78/NSMBW-Decomp/commit/${nearestPoint.commit_hash}">${nearestPoint.commit_hash.substring(0, 6)}</a></span>
-        <span>${nearestPoint.ts.toLocaleString().replace(",", "")}</span>
+        <span style="margin-bottom: 10px;">${nearestPoint.ts.toLocaleString().replace(",", "")}</span>
+        <span id="infobox-perc">${(nearestPoint.totalFrac * 100).toFixed(3)}%</span>
     `;
     if (commitInfobox.innerHTML != infoboxContent) {
         commitInfobox.innerHTML = infoboxContent;

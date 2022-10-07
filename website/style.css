@@ -191,8 +191,9 @@ body {
     position: relative;
 }
 .ui-container.col1 { background: #254196bd; }
-.ui-container.col2 { background: #3d8722a3; }
-.ui-container.col3 { background: #e09a2dc4; }
+.ui-container.col2 { background: #878787a3; }
+.ui-container.col3 { background: #9d0c0c8f; }
+.ui-container.no-col { background: none; border: none; }
 
 #prog-graph-svg {
     width: 100%;
@@ -216,7 +217,13 @@ body {
     color: #efe542;
 }
 
+#infobox-perc {
+    text-align: center;
+    font-size: 1.4em;
+}
+
 .gamebutton {
+    color: white;
     display: inline-block;
     font-size: 1.3em;
     padding: 20px;

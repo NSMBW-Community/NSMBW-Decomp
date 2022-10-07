@@ -20,25 +20,22 @@
     <div id="bg-cont"></div>
     <div class="main-container" id="main-container-about">
         <div class="title-banner gamefont">
-            <span>WELCOME</span>
-        </div>
-        <div class="ui-container col2">
-            <p>
-                Welcome to the main page of the New Super Mario Bros. Wii decompilation project!
-            </p>
-        </div>
-        <div class="title-banner gamefont">
             <span>ABOUT</span>
         </div>
-        <div class="ui-container col1">
+        <div class="ui-container col3" style="max-width: 800px;">
             <p>
-                A decompilation of New Super Mario Bros. Wii, brought to you by a bunch of clever procrastinators.
+                Welcome to the homepage of the New Super Mario Bros. Wii decompilation project!
+            </p>
+            <p>
+                This project attempts to reverse engineer this classic Wii game in a way so that when compiled back, the resulting binary maches the original one exactly.
+
+                You can find more information on the <a href="https://github.com/CLF78/NSMBW-Decomp">GitHub repository</a>.
             </p>
         </div>
         <div class="title-banner gamefont">
             <span>LINKS</span>
         </div>
-        <div id="links" class="ui-container col3">
+        <div id="links" class="ui-container no-col">
             <a class="gamebutton gamefont" id="btn-progress" href="#progress">
                 Progress page
                 <div class="gbcorner1"></div><div class="gbcorner2"></div><div class="gbcorner3"></div><div class="gbcorner4"></div>
@@ -66,7 +63,8 @@
             <span>PROGRESS GRAPH</span>
         </div>
         <div id="prog-graph-container" class="ui-container graph-container col1">
-            <div id="commit-info" class="ui-container gamefont">Commit ...</div>
+            <div id="commit-info" class="ui-container gamefont"></div>
+            <span id="graph-bg-percentage" class="gamefont"></span>
             <svg id="prog-graph-svg" width="1000" height="700" viewBox="0 0 1000 700"></svg>
         </div>
     </div>
