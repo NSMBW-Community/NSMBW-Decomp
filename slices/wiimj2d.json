@@ -62,6 +62,13 @@
             }
         },
         {
+            "name": "dol/cLib/c_owner_set.o",
+            "source": "dol/cLib/c_owner_set.cpp",
+            "memoryRanges": {
+                ".text": "0x15b100-0x15b2e0"
+            }
+        },
+        {
             "name": "dol/framework/f_helper_unk.o",
             "source": "dol/framework/f_helper_unk.cpp",
             "memoryRanges": {
