@@ -58,10 +58,9 @@ def print_banner(title: str) -> None:
 def color_lerp(col_a: tuple[int, int, int], col_b: tuple[int, int, int], frac: float):
     return [a + (b - a) * frac for a, b in zip(col_a, col_b)]
 
-def get_git_revision_hash() -> dict[str, str]:
-    return subprocess.check_output(['git', 'rev-parse', 'HEAD']).decode('ascii').strip()
-def get_git_revision_timestamp() -> int:
-    return int(subprocess.check_output(['git', 'log', '-1', '--format=%at']).decode('ascii').strip())
+def get_git_commit_list() -> list[dict[str, any]]:
+    out = subprocess.check_output(['git', '--no-pager', 'log', '--format=%H %at']).decode().strip().split('\n')
+    return list(map(lambda x: { 'timestamp': int(x.split(' ')[1]), 'hash': x.split(' ')[0] }, out))
 
 def calculate_decompiled_bytes(slice_file: SliceFile, filter_sections: list[str]) -> tuple[int, int]:
     count_compiled_bytes = 0
@@ -168,38 +167,82 @@ def progress_summary(slice_files: list[SliceFile]) -> bool:
 slicefile_names = ['wiimj2d.dol', 'd_profileNP.rel', 'd_basesNP.rel', 'd_enemiesNP.rel', 'd_en_bossNP.rel']
 code_sec_names = ['.init', '.text']
 
-def progress_csv(slice_files: list[SliceFile]):
+def read_progress_csv_line(line: str) -> dict[str, any]:
+    splitted = line.split(',')
+    return {
+        'timestamp': int(splitted[0]),
+        'hash': splitted[1],
+        'progress_vals': [int(x) for x in splitted[2:]]
+    }
+
+def get_historical_progress_data(commits, last_tracked) -> list[dict[str, any]]:
+    # Get branch name for reverting back to it at the end
+    branch_name = subprocess.check_output(['git', 'rev-parse', '--abbrev-ref', 'HEAD']).decode().strip().split('\n')[-1]
+
+    new_progress_lines = []
+    last = last_tracked
+    for commit in reversed(commits): # skip HEAD too
+        print_warn(f'Rolling back to {commit["hash"]}.')
+        try:
+            subprocess.check_output(['git', 'checkout', commit['hash']])
+            line = subprocess.check_output(['python', 'progress.py', '--progress-csv']).decode().strip().split('\n')[-1]
+            data = read_progress_csv_line(line)
+            if last['progress_vals'] != data['progress_vals']:
+                new_progress_lines.append(data)
+            last = data
+        except subprocess.CalledProcessError as e:
+            print_err('Rolling back failed. Skipping rollback step.')
+            break
+    
+    # Go back to where we were before
+    try:
+        subprocess.check_output(['git', 'checkout', branch_name])
+    except subprocess.CalledProcessError as e:
+        print_err('Could not revert to current commit.')
+    return new_progress_lines
+
+def progress_csv(slice_files: list[SliceFile]) -> bool:
     # Grab data
-    hash = get_git_revision_hash()
-    timestamp = get_git_revision_timestamp()
+    commits = get_git_commit_list()
+    hash = commits[0]['hash']
+    timestamp = commits[0]['timestamp']
 
     progress_list = []
     for slicefile_name in slicefile_names:
         slice_file = next((i for i in slice_files if i.meta.name == slicefile_name))
         progress_list.extend(calculate_decompiled_bytes(slice_file, code_sec_names))
 
-    csv = [
-        timestamp, hash,
-        *progress_list
-    ]
-    csv_str = ','.join([str(i) for i in csv])
+    csv = [timestamp, hash, *progress_list]
+    latest_commit_csv_str = ','.join([str(i) for i in csv])
 
     global args
     if vars(args)['progress_csv'] != True:
         # File was supplied, write back to it if progress changed
-        with open(vars(args)['progress_csv'], 'r+') as f:
+        last_line_data = None
+        with open(vars(args)['progress_csv'], 'r') as f:
+            last_line_data = read_progress_csv_line(f.readlines()[-1].strip())
+        
+        if progress_list != last_line_data['progress_vals']:
+            print_success('Progress detected! Going through previous commits and writing to file.')
 
-            last_line = f.readlines()[-1].strip()
-            last_line_progress_vals = [int(x) for x in last_line.split(',')[2:]] # Skip timestamp and commit hash
+            # Trim the list of commits to those which came after the last line in the progress csv
+            idx_last = next((i for i, x in enumerate(commits) if x['hash'] == last_line_data['hash']), None)
+            commits_to_track = commits[1:idx_last] # Skip HEAD too
 
-            if progress_list != last_line_progress_vals:
-                print_success('Progress detected! Writing to file.')
-                f.write(csv_str + '\n')
-            else:
-                print('No change in progress detected, not writing to progress file.')
+            data = get_historical_progress_data(commits_to_track, last_line_data)
+            
+            with open(vars(args)['progress_csv'], 'a') as f:
+                for line in data:
+                    csv = [line['timestamp'], line['hash'], *line['progress_vals']]
+                    csv_str = ','.join([str(i) for i in csv])
+                    f.write(csv_str + '\n')
+                # Write csv string of this commit
+                f.write(latest_commit_csv_str + '\n')
+        else:
+            print('No change in progress detected, not writing to progress file.')
     
     # Always output to console
-    print(csv_str)
+    print(latest_commit_csv_str)
 
     return True
 
