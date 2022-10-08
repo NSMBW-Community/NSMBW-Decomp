@@ -212,8 +212,8 @@ def progress_csv(slice_files: list[SliceFile]) -> bool:
         slice_file = next((i for i in slice_files if i.meta.name == slicefile_name))
         progress_list.extend(calculate_decompiled_bytes(slice_file, code_sec_names))
 
-    csv = [timestamp, hash, *progress_list]
-    latest_commit_csv_str = ','.join([str(i) for i in csv])
+    latest_csv = [timestamp, hash, *progress_list]
+    latest_commit_csv_str = ','.join([str(i) for i in latest_csv])
 
     global args
     if vars(args)['progress_csv'] != True:
@@ -227,17 +227,26 @@ def progress_csv(slice_files: list[SliceFile]) -> bool:
 
             # Trim the list of commits to those which came after the last line in the progress csv
             idx_last = next((i for i, x in enumerate(commits) if x['hash'] == last_line_data['hash']), None)
-            commits_to_track = commits[1:idx_last] # Skip HEAD too
+
+            # Unfortunate hardcode; first revision where progress script implements correct functionality in all following revisions
+            first_good_revision = '29b1a9bf5a11217cb2f60b74c3b4358290470209'
+            idx_first_good = next((i for i, x in enumerate(commits) if x['hash'] == first_good_revision), None)
+
+            commits_to_track = commits[1:min(idx_last, idx_first_good)] # Skip HEAD too
 
             data = get_historical_progress_data(commits_to_track, last_line_data)
+            if latest_csv[2:] != data[-1]['progress_vals']:
+                data.append({
+                    'timestamp': int(latest_csv[0]),
+                    'hash': latest_csv[1],
+                    'progress_vals': [int(x) for x in latest_csv[2:]]
+                })
             
             with open(vars(args)['progress_csv'], 'a') as f:
                 for line in data:
                     csv = [line['timestamp'], line['hash'], *line['progress_vals']]
                     csv_str = ','.join([str(i) for i in csv])
                     f.write(csv_str + '\n')
-                # Write csv string of this commit
-                f.write(latest_commit_csv_str + '\n')
         else:
             print('No change in progress detected, not writing to progress file.')
     
