@@ -16,7 +16,7 @@ from slice_dol import slice_dol
 from slice_rel import slice_rel
 from slicelib import SliceFile, SliceType, load_slice_file
 from elffile import ElfFile, ElfSymtab
-from elfconsts import STT
+from elfconsts import STB, STT
 
 def print_cmd(*nargs, **kwargs):
     global args
@@ -122,7 +122,7 @@ for slice_file in slices:
                 symtab: ElfSymtab = elf_file.get_section('.symtab')
                 for sym in [x for x in symtab.syms if x.name not in slice.deadstrip]:
                     # Only certain types of symbols
-                    if sym.st_info_type in [STT.STT_FUNC, STT.STT_OBJECT]:
+                    if sym.st_info_type in [STT.STT_FUNC, STT.STT_OBJECT] and sym.st_info_bind == STB.STB_GLOBAL:
                         force_actives.add(sym.name)
         
         f.write('FORCEACTIVE {\n\t')

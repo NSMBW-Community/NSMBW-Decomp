@@ -134,7 +134,10 @@ def verify_obj(slice_files: list[SliceFile]) -> bool:
                             exp_len = al_end - al_start
                             obj_len = align_addr(elf_sec.size(), slice_sec.alignment)
                             if obj_len != exp_len:
-                                warnings.append(f'Length of section {sec_name} not matching (expected {exp_len}, got {obj_len})')
+                                add_note = ''
+                                if slice.deadstrip or slice.no_deadstrip:
+                                    add_note = '\n  This is to be expected with classes that have deadstripped symbols.'
+                                warnings.append(f'Length of section {sec_name} not matching (expected {exp_len}, got {obj_len}){add_note}')
 
                 # Print result
                 print(print_name + ': ', end='')
