@@ -96,63 +96,7 @@ public:
     static void *operator new(size_t);
     static void operator delete(void *); ///< @p delete operator override for all bases.
 
-    /**
-     * @brief Creates a child base with the given parent.
-     *
-     * @param profName The base's profile name.
-     * @param parent The base's parent.
-     * @param param The base's parameters.
-     * @param groupType The base's group type.
-     * @return A pointer to the instantiated base, or @p nullptr .
-     */
-    static fBase_c *createChild(ProfileName profName, fBase_c *parent, unsigned long param, u8 groupType);
-
-    /**
-     * @brief Creates a base without a parent.
-     *
-     * @param profName The base's profile name.
-     * @param param The base's parameters.
-     * @param groupType The base's group type.
-     * @return A pointer to the instantiated base, or @p nullptr .
-     */
-    static fBase_c *createRoot(ProfileName profName, unsigned long param, u8 groupType);
-
-    static void (*sLoadAsyncCallback)(); ///< [Unused].
-    static void (*sUnloadCallback)(); ///< [Unused].
-
-private:
-
-    /// @brief Attempts to finalize creation of the base.
-    void runCreate();
-
-    /// @brief Gets a child of the base that is waiting to be added to fManager_c::m_createManage.
-    /// @return A child satisfying this condition, else @p nullptr .
-    /// @note Unofficial name.
-    fBase_c *getNonReadyChild() const;
-
-    /// @brief Checks if a flag is set in ::mProcessFlags.
-    bool isProcessFlag(u8 flag) const { return (mProcessFlags & flag) != 0; }
-
-    /**
-     * @brief Sets temporary data to be used for the next base's construction.
-     *
-     * @param profName The base's profile name.
-     * @param connectParent The connect node of the base's parent, or @p nullptr .
-     * @param param The base's parameters.
-     * @param groupType The base's group type.
-     */
-    static void setTmpCtData(ProfileName profName, fTrNdBa_c *connectParent, unsigned long param, u8 groupType);
-
-    /**
-     * @brief Common code for the pack tasks.
-     *
-     * @param doFunc The main function for this task.
-     * @param preFunc The function that is called before the main function.
-     * @param postFunc The function that is called after the main function.
-     * @return A ::PACK_RESULT_e value returned from doFunc, or preFunc if doFunc was not executed.
-     */
-    int commonPack(int (fBase_c::*doFunc)(), int (fBase_c::*preFunc)(), void (fBase_c::*postFunc)(MAIN_STATE_e));
-
+protected:
     /// @brief Code to be executed on base creation.
     /// @details This function usually runs once and is used for initialization of
     /// settings and/or assets.
@@ -250,6 +194,64 @@ private:
     virtual bool createHeap(); ///< [Unused, does nothing].
 
     virtual ~fBase_c(); ///< Destroys the base.
+
+public:
+    /**
+     * @brief Creates a child base with the given parent.
+     *
+     * @param profName The base's profile name.
+     * @param parent The base's parent.
+     * @param param The base's parameters.
+     * @param groupType The base's group type.
+     * @return A pointer to the instantiated base, or @p nullptr .
+     */
+    static fBase_c *createChild(ProfileName profName, fBase_c *parent, unsigned long param, u8 groupType);
+
+    /**
+     * @brief Creates a base without a parent.
+     *
+     * @param profName The base's profile name.
+     * @param param The base's parameters.
+     * @param groupType The base's group type.
+     * @return A pointer to the instantiated base, or @p nullptr .
+     */
+    static fBase_c *createRoot(ProfileName profName, unsigned long param, u8 groupType);
+
+    static int (*sLoadAsyncCallback)(); ///< [Unused].
+    static void (*sUnloadCallback)(); ///< [Unused].
+
+private:
+
+    /// @brief Attempts to finalize creation of the base.
+    void runCreate();
+
+    /// @brief Gets a child of the base that is waiting to be added to fManager_c::m_createManage.
+    /// @return A child satisfying this condition, else @p nullptr .
+    /// @note Unofficial name.
+    fBase_c *getNonReadyChild() const;
+
+    /// @brief Checks if a flag is set in ::mProcessFlags.
+    bool isProcessFlag(u8 flag) const { return (mProcessFlags & flag) != 0; }
+
+    /**
+     * @brief Sets temporary data to be used for the next base's construction.
+     *
+     * @param profName The base's profile name.
+     * @param connectParent The connect node of the base's parent, or @p nullptr .
+     * @param param The base's parameters.
+     * @param groupType The base's group type.
+     */
+    static void setTmpCtData(ProfileName profName, fTrNdBa_c *connectParent, unsigned long param, u8 groupType);
+
+    /**
+     * @brief Common code for the pack tasks.
+     *
+     * @param doFunc The main function for this task.
+     * @param preFunc The function that is called before the main function.
+     * @param postFunc The function that is called after the main function.
+     * @return A ::PACK_RESULT_e value returned from doFunc, or preFunc if doFunc was not executed.
+     */
+    int commonPack(int (fBase_c::*doFunc)(), int (fBase_c::*preFunc)(), void (fBase_c::*postFunc)(MAIN_STATE_e));
 
     /**
      * @brief Internal function for base construction.

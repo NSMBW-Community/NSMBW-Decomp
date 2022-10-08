@@ -8,6 +8,14 @@
 /// with the other f classes, so a similar naming scheme has been applied here.
 typedef u16 ProfileName;
 
+/**
+ * @brief Gets a string representing the profile name.
+ * 
+ * @param profName The profile name for which to get the name string of.
+ * @return A string containing the profile name.
+ */
+char *dProf_getName(ProfileName profName);
+
 /// @brief for all profile related structures.
 /// @note Unofficial name.
 namespace fProfile {

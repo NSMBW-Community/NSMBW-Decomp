@@ -4,3 +4,6 @@
 
 // [Translation: Heap that each process can have individually (fBase_c::mHeap)]
 #define F_BASE_HEAP_NAME "各プロセスが個別で持てるヒープ(fBase_c::mHeap)"
+
+// [Translation: Others (non-actors inheriting dBase_c)]
+#define D_BASE_KIND_STRING "その他(dBase_c継承の非アクター)"

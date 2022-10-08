@@ -21,6 +21,16 @@
     },
     "slices": [
         {
+            "name": "dol/bases/d_base.o",
+            "source": "dol/bases/d_base.cpp",
+            "deadstrip": ["__dt__13cOwnerSetMg_cFv"],
+            "memoryRanges": {
+                ".text": "0x65ca0-0x65f50",
+                ".data": "0x10e18-0x10e88",
+                ".sbss": "0x1d0-0x1d8"
+            }
+        },
+        {
             "name": "dol/cLib/c_list.o",
             "source": "dol/cLib/c_list.cpp",
             "memoryRanges": {

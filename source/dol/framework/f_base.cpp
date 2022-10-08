@@ -9,7 +9,7 @@ u32 fBase_c::m_tmpCtParam;
 u8 fBase_c::m_tmpCtGroupType;
 fTrNdBa_c *fBase_c::m_tmpCtConnectParent;
 
-void (*fBase_c::sLoadAsyncCallback)();
+int (*fBase_c::sLoadAsyncCallback)();
 void (*fBase_c::sUnloadCallback)();
 
 fBase_c::fBase_c() :
