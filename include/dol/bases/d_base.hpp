@@ -4,7 +4,7 @@
 #include <dol/cLib/c_owner_set.hpp>
 
 
-/// @brief A slightly extended version of fBase_c.
+/// @brief An extension of fBase_c with base kind and name strings.
 /// @details All bases should inherit from this class, not from fBase_c.
 class dBase_c : public fBase_c, public cOwnerSetMg_c {
     public:
@@ -25,6 +25,7 @@ class dBase_c : public fBase_c, public cOwnerSetMg_c {
 
         virtual ~dBase_c(); ///< @copydoc fBase_c::~fBase_c
         
+        /// @brief Gets a string describing the kind of this base.
         virtual const char *getKindString() const;
 
         /// @copydoc fManager_c::searchBaseByProfName
@@ -38,8 +39,8 @@ class dBase_c : public fBase_c, public cOwnerSetMg_c {
         static dBase_c *createRoot(ProfileName profName, unsigned long param, u8 groupType);
 
 private:
-        const char* mpKindString; ///< A string describing the kind of this base.
-        const char* mpNameString; ///< A string representing the name of the profile this base belongs to.
+        const char* mpKindString; ///< A string describing the kind of this base. [Never read from.]
+        const char* mpNameString; ///< A string representing the name of the profile this base belongs to. [Never read from.]
 
         static int loadAsyncCallback(); ///< @note Unofficial name.
         static void unloadCallback(); ///< @note Unofficial name.
