@@ -59,3 +59,5 @@ restoreCurrentHeap__5mHeapFv=8016eac0
 g_gameHeaps__5mHeap=80377f48
 makeFrmHeapAndUpdate__5mHeapFUlPQ23EGG4HeapPCcUiUi=8016eaf0
 sProfileList__8fProfile=8042a698
+dProf_getName__FUs=801018c0
+getRandomSeed__8dGameComFv=800b2ec0
