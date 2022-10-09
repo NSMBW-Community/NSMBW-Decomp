@@ -1,7 +1,7 @@
 #include <dol/bases/d_base.hpp>
 #include <dol/bases/d_game_com.hpp>
 #include <dol/framework/f_profile.hpp>
-#include <sjis_constants.h>
+#include <constants/sjis_constants.h>
 
 dBase_c::dBase_c() :
     mpKindString(getKindString()),

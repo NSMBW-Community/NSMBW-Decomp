@@ -1,7 +1,7 @@
 #include <dol/framework/f_base.hpp>
 #include <dol/m/m_heap.hpp>
 #include <lib/MSL_C/string.h>
-#include <sjis_constants.h>
+#include <constants/sjis_constants.h>
 
 fBaseID_e fBase_c::m_rootUniqueID = FIRST_ID;
 ProfileName fBase_c::m_tmpCtProfName;

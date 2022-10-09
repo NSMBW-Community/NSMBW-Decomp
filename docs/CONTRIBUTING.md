@@ -1,17 +1,21 @@
 # Contributing
 
-## Guidelines
+## Code Guidelines
 
 ### General
 
 - Lines should not exceed `100` characters, these can be split into multiple lines.
-- Use `nullptr` instead of `0` when assigning / comparing a pointer.
-- Use the `.cpp`/`.hpp` extension for C++ files, the `.c`/`.h` extension for C files and the `.s` extension for ASM files
-- The preferred indentation style is 1TBS/OTBS.
+- Use `nullptr` instead of `0` when assigning / comparing a pointer (unless strictly necessary).
+- Use the `.cpp`/`.hpp` extension for C++ files, the `.c`/`.h` extension for C files and the `.s` extension for ASM files.
+- The preferred indentation style is [1TBS/OTBS](https://en.wikipedia.org/wiki/Indent_style#Variant:_1TBS_(OTBS)).
+
+### Nonmatching Code
+
+- If your code does **not** match, use the `NONMATCHING` macro, and explain in a comment why it does not match.
 
 ### Headers
 
-- Use forward-declared types when possible
+- Use forward-declared types when possible.
 - At the top of every header place:
 
     ```c++
@@ -30,67 +34,82 @@
 
 ### Names
 
-- Names for known symbols should match **exactly**, even including typos in the symbol.
-- Member variables must be prefixed with `m`.
-- Arguments for functions must be prefixed with `p` for pointers.
-- Functions with no symbols must use **camelCase**.
-
-### Classes
-
-- When referencing a class member, do **not** use `this->`, unless it is required for compilation.
-- Functions for classes must be put in the following order:  
-  - Constructor  
-  - Destructor  
-  - Operators  
-  - Virtual Functions  
-  - Member Functions
-
-  If the virtual functions are not in the order that they are in the vtable, then the rule above can be ignored as these functions must be placed in order.
-
-### Nonmatching Code
-
-If your code does **not** match, use the `NONMATCHING` macro, and explain in a comment why it does not match.
+- Names for known symbols should match **exactly**, including typos.
+- Member variables must be prefixed with `m` (and `p` if they're a pointer).
+- Static member variables must be prefixed with `s` (and `p` if they're a pointer).
+- The above rule can be ignored if the existing symbol differs.
+- Functions with no known symbol must use **camelCase**.
 
 ### Types
 
 - Pointer/reference types must have the asterisk/ampersand near the variable name.
 - Use C style casts to cast a type to another.
 
-### Comments
-Code comments should start with an uppercase letter and usually do not end in a period.
+### Constants
 
-Write comments that could not have been in the original code in square brackets. Examples include:
-   - `// Parameters that can be set to configure the behaviour of the base. [These are the sprite data fields in Reggie]`
+- Constants with a heavy impact on the game must be declared and used properly. If such a constant appears in more than one compilation unit, it must be placed in `constants/game_constants.h`. Else, place it in the correct header file.
+- Japanese text strings **must** be placed in `constants/sjis_constants.h`.
+
+### Comments
+
+- Code comments should begin with an uppercase letter and usually not end in a period.
+- Place comments that could not have been in the original code between square brackets. Examples include:
+   - `// Parameters that can be set to configure the behaviour of the base. [These are the sprite data fields in Reggie].`
    - `// [TODO: is this an int or an enum?]`
 
-## Code Documenting Guidelines
+### Classes
 
-For documenting functions, members etc., we use Doxygen-style comments, using '@' for commands.
+- When referencing a class member, do **not** use `this->` unless required for compilation.
+- Class members must be placed in the following order:
+  - Nested Classes/Structures/Enumerations
+  - Functions
+  - Variables (place static ones last)
 
-In general, always start a documentation comment with an uppercase letter and terminate it with a period.
+- Functions for classes must be placed in the following order:
+  - Constructor
+  - Destructor
+  - Operators
+  - Virtual Functions
+  - Member Functions (place static ones last)
 
-For functions which require a decently long explanation, and/or documentation for the parameters and return values, use multiline comments, like this:
-```cpp
-/**
- * @brief Instantiate a base under a parent base.
- * 
- * @param profName The profile name.
- * @param parent The parent base.
- * @param param The parameter for the base.
- * @param groupType The group type of the base.
- * @return A pointer to the instantiated base.
- */
-```
+- Set appropriate access modifiers for each member. Within each category listed above, place the entries in the following order:
+  - Public
+  - Protected
+  - Private
 
-If the functionality is rather obvious, please still write a short comment. You can use single-line comments:
-```cpp
-/// @brief Request deletion of the base.
-void deleteRequest();
-```
+- If the virtual functions do not follow the ordering conventions, then those rules can be ignored.
 
-Or, if it looks better, you may also use inline comments:
-```cpp
-virtual int create(); ///< Create the base.
-virtual int preCreate(); ///< To be executed before ::create.
-virtual void postCreate(MAIN_STATE_e state); ///< To be executed after ::create.
-```
+## Documentation Guidelines
+
+Doxygen is being used for generating documentation:
+- Use `@` to begin Doxygen commands.
+- In general, always start a documentation comment with an uppercase letter and terminate it with a period.
+- For functions which require a decently long explanation, and/or documentation for the parameters and return values, use multiline comments, like this:
+  ```cpp
+  /**
+   * @brief Instantiates a base under a parent base.
+   *
+   * @param profName The profile name.
+   * @param parent The base's parent.
+   * @param param The base's parameters.
+   * @param groupType The base's group type.
+   * @return A pointer to the instantiated base.
+   */
+  ```
+
+- If the functionality is rather obvious, please still write a short comment. You can use single-line comments:
+  ```cpp
+  /// @brief Requests deletion of the base.
+  void deleteRequest();
+  ```
+
+  Or, if it looks better, you may also use inline comments:
+  ```cpp
+  virtual int create(); ///< Creates the base.
+  virtual int preCreate(); ///< Code to be executed before ::create.
+  virtual void postCreate(MAIN_STATE_e state); ///< Code to be executed after ::create.
+  ```
+
+- Try to refer to variables/arguments using articles and try to use the third person when documenting functions. See above for examples.
+- Do **not** document inline getters/setters unless their logic is complex, document the corresponding variables instead.
+- If no official symbol has been cracked for a class or a function, report this information using the `@note` command. For unknown class names, adding the note to each member function is not necessary.
