@@ -1,8 +1,6 @@
 #pragma once
-
 #include <dol/framework/f_base.hpp>
 #include <dol/cLib/c_owner_set.hpp>
-
 
 /// @brief An extension of fBase_c with base kind and name strings.
 /// @details All bases should inherit from this class, not from fBase_c.

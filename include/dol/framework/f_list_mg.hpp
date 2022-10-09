@@ -26,12 +26,10 @@ public:
      */
     const fLiNdBa_c *searchNodeByID(fBaseID_e id) const;
 
-    /// @copydoc cListMg_c::getFirst
     inline fLiNdBa_c *getFirst() const {
         return (fLiNdBa_c *) cListMg_c::getFirst();
     }
 
-    /// @copydoc cListMg_c::getLast
     inline fLiNdBa_c *getLast() const {
         return (fLiNdBa_c *) cListMg_c::getLast();
     }

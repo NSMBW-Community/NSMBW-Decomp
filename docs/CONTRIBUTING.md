@@ -64,6 +64,7 @@
   - Nested Classes/Structures/Enumerations
   - Functions
   - Variables (place static ones last)
+  - Friends
 
 - Functions for classes must be placed in the following order:
   - Constructor

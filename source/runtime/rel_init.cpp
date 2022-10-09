@@ -3,10 +3,8 @@
 
 extern "C" {
 
-/// @cond
 __declspec(section ".ctors") extern voidFctPtr _ctors[];
 __declspec(section ".dtors") extern voidFctPtr _dtors[];
-/// @endcond
 
 /// @brief Module initialization function.
 /// @details Runs all the module's static initializers.

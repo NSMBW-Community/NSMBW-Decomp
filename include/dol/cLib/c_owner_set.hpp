@@ -1,5 +1,4 @@
 #pragma once
-
 #include <types.h>
 
 /// @brief A set node with a pointer to the owning container.
@@ -44,10 +43,10 @@ public:
      * @param owner The owner of the node.
      */
     void remove(cOwnerSetNd_c *nd, void *owner);
-    
+
+private:
     /// @brief Clears out the set and unlinks all child nodes.
     void clear();
 
-private:
     cOwnerSetNd_c* mpRoot; ///< The first element of the set.
 };
