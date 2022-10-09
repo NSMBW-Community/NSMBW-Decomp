@@ -9,8 +9,6 @@ class fBase_c;
 /// @brief A list of fLiNdPrio_c nodes with a reference to a process function.
 /// @note Unofficial name.
 class fLiMgPTMF_c : public fLiMgBa_c {
-    int (fBase_c::*mpProcFunc)(); ///< The process function for the list.
-
 public:
     /// @brief Constructs a new fLiMgPTMF_c.
     /// @param procFunc The process function.
@@ -28,13 +26,14 @@ public:
     /// @return If the operation was successful.
     bool walkPack();
 
-    /// @copydoc cListMg_c::getFirst
     fLiNdPrio_c *getFirst() const {
         return (fLiNdPrio_c *) fLiMgBa_c::getFirst();
     }
 
-    /// @copydoc cListMg_c::getLast
     fLiNdPrio_c *getLast() const {
         return (fLiNdPrio_c *) fLiMgBa_c::getLast();
     }
+
+private:
+    int (fBase_c::*mpProcFunc)(); ///< The process function for the list.
 };

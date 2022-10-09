@@ -2,7 +2,7 @@
 #include <types.h>
 /// @file
 
-/// @details [cM stands for C Math].
+/// @brief C Math library.
 namespace cM {
 
     // Conversion utilities

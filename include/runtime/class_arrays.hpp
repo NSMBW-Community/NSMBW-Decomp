@@ -8,12 +8,6 @@ typedef void (*dtorPtr)(void *, int);
 /// @details [Since the game doesn't support exceptions, this is unused].
 class __partial_array_destructor {
 public:
-    void *mpArray; ///< A pointer to the array memory.
-    u32 mSize; ///< The size of one array element.
-    u32 mCount; ///< The total number of array elements.
-    dtorPtr mpDtor; ///< A pointer to the elements' default destructor.
-    u32 mCurrNum; ///< The number of currently constructed array elements.
-
     /**
      * @brief Creates a partial array destructor.
      *
@@ -40,4 +34,10 @@ public:
             }
         }
     }
+
+    void *mpArray; ///< A pointer to the array memory.
+    u32 mSize; ///< The size of one array element.
+    u32 mCount; ///< The total number of array elements.
+    dtorPtr mpDtor; ///< A pointer to the elements' default destructor.
+    u32 mCurrNum; ///< The number of currently constructed array elements.
 };
