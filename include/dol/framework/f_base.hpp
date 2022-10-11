@@ -173,9 +173,9 @@ public:
     /// @brief Requests deletion of the base.
     void deleteRequest();
 
-    fBase_c *getConnectParent(); ///< Gets the base's parent.
-    fBase_c *getConnectChild(); ///< Gets the base's first child.
-    fBase_c *getConnectBrNext(); ///< Gets the base's next sibling.
+    fBase_c *getConnectParent() const; ///< Gets the base's parent.
+    fBase_c *getConnectChild() const; ///< Gets the base's first child.
+    fBase_c *getConnectBrNext() const; ///< Gets the base's next sibling.
 
     /// @brief Checks if the base has a child waiting to be added to fManager_c::m_createManage.
     /// @return If such a child base exists.

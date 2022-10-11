@@ -298,21 +298,21 @@ void fBase_c::deleteRequest() {
     }
 }
 
-fBase_c *fBase_c::getConnectParent() {
+fBase_c *fBase_c::getConnectParent() const {
     if (mMng.mConnectNode.getParent() != nullptr) {
         return mMng.mConnectNode.getParent()->mpOwner;
     }
     return nullptr;
 }
 
-fBase_c *fBase_c::getConnectChild() {
+fBase_c *fBase_c::getConnectChild() const {
     if (mMng.mConnectNode.getChild() != nullptr) {
         return mMng.mConnectNode.getChild()->mpOwner;
     }
     return nullptr;
 }
 
-fBase_c *fBase_c::getConnectBrNext() {
+fBase_c *fBase_c::getConnectBrNext() const {
     if (mMng.mConnectNode.getBrNext() != nullptr) {
         return mMng.mConnectNode.getBrNext()->mpOwner;
     }
