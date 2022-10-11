@@ -128,7 +128,7 @@ def main(source_file: str, startaddr: int, endaddr: int, includes: list[str]) ->
     try:
         with urllib.request.urlopen('https://decomp.me/api/scratch', data) as f:
             result = json.loads(f.read().decode('utf-8'))
-            print_success(f'Scratch created successfully at https://decomp.me{result["html_url"]}!')
+            print_success(f'Scratch created successfully at https://decomp.me{result["html_url"]}')
     except Exception as e:
         print_err('Failed to request scratch:', e)
 
