@@ -38,18 +38,18 @@ typedef volatile f64 vf64;
 /// @brief 2-dimensional floating point vector.
 typedef struct {
     float x, y;
-} VEC2;
+} Vec2;
 
 /// @brief 3-dimensional floating point vector.
 typedef struct {
     float x, y, z;
-} VEC3;
+} Vec;
 
 /// @brief 3-dimensional short vector.
 /// @details [This is generally used to represent rotations].
 typedef struct {
     s16 x, y, z;
-} S16VEC;
+} S16Vec;
 
 typedef float MTX33[3][3];
 typedef float MTX34[3][4];
