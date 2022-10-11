@@ -81,14 +81,15 @@ for slice_file in slices:
     file_names: list[str] = []
     lcf_force_files: list[str] = []
     for slice in slice_file.slices:
-        try_paths = [Path(f'{BUILDDIR}/{x}/{slice_name_stem}/{slice.slice_name}') for x in ['compiled', 'sliced']]
+        compiled_path = Path(f'{BUILDDIR}/compiled/{slice_name_stem}/{slice.slice_name}')
+        sliced_path = Path(f'{BUILDDIR}/sliced/{slice_name_stem}/{slice.slice_name}')
 
         use_file: Path = None
-        if try_paths[0].exists():
-            use_file = try_paths[0]
+        if slice.slice_src:
+            use_file = compiled_path
             count_compiled_used += 1
-        elif try_paths[1].exists():
-            use_file = try_paths[1]
+        else:
+            use_file = sliced_path
             count_sliced_used += 1
 
         if use_file:
