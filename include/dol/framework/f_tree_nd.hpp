@@ -12,12 +12,10 @@ public:
     /// @param owner The node's owner.
     fTrNdBa_c(fBase_c *owner) : mpOwner(owner) {}
 
-    /// @copydoc cTreeNd_c::getTreeNext
     fTrNdBa_c *getTreeNext() const {
         return (fTrNdBa_c *) cTreeNd_c::getTreeNext();
     }
 
-    /// @copydoc cTreeNd_c::getTreeNextNotChild
     fTrNdBa_c *getTreeNextNotChild() const {
         return (fTrNdBa_c *) cTreeNd_c::getTreeNextNotChild();
     }

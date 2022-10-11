@@ -1,5 +1,4 @@
 #pragma once
-
 #include <types.h>
 
 /// @brief A collection of various functions used throughout the game.

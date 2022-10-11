@@ -254,11 +254,6 @@ private:
      */
     static void setTmpCtData(ProfileName profName, fTrNdBa_c *connectParent, unsigned long param, u8 groupType);
 
-protected:
-    static int (*sLoadAsyncCallback)(); ///< [Unused].
-    static void (*sUnloadCallback)(); ///< [Unused].
-
-private:
     /**
      * @brief Internal function for base construction.
      *
@@ -270,6 +265,11 @@ private:
      */
     static fBase_c *fBase_make(ProfileName profName, fTrNdBa_c *connectParent, unsigned long param, u8 groupType);
 
+protected:
+    static int (*sLoadAsyncCallback)(); ///< [Unused].
+    static void (*sUnloadCallback)(); ///< [Unused].
+
+private:
     static fBaseID_e m_rootUniqueID; ///< Unique ID counter for base construction. @see ::mUniqueID
     static u32 m_tmpCtParam; ///< Temporary storage for the next constructed base's params. @see ::mParam
     static ProfileName m_tmpCtProfName; ///< Temporary storage for the next constructed base's profile name. @see ::mProfName
