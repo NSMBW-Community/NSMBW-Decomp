@@ -15,7 +15,7 @@ public:
      * @param parent The root node to start search below, or @p nullptr to use the tree's root node.
      * @return The found node, or @p nullptr if none was found.
      */
-    const fTrNdBa_c *searchNodeByProfName(ProfileName profName, const fTrNdBa_c *parent);
+    const fTrNdBa_c *searchNodeByProfName(ProfileName profName, const fTrNdBa_c *parent) const;
     /**
      * @brief Find a node with a given group type, optionally under a given parent root node.
      * 
@@ -23,5 +23,5 @@ public:
      * @param parent The root node to start search below, or @p nullptr to use the tree's root node.
      * @return The found node, or @p nullptr if none was found.
      */
-    const fTrNdBa_c *searchNodeByGroupType(u8 groupType, const fTrNdBa_c *parent);
+    const fTrNdBa_c *searchNodeByGroupType(u8 groupType, const fTrNdBa_c *parent) const;
 };

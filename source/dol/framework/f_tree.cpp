@@ -16,7 +16,7 @@ bool fTrMgPTMF_c::walkPack() {
     return true;
 }
 
-const fTrNdBa_c *fTrMgBa_c::searchNodeByProfName(ProfileName prof, const fTrNdBa_c *parent) {
+const fTrNdBa_c *fTrMgBa_c::searchNodeByProfName(ProfileName prof, const fTrNdBa_c *parent) const {
     const fTrNdBa_c *root;
     
     if (parent != nullptr) {
@@ -33,7 +33,7 @@ const fTrNdBa_c *fTrMgBa_c::searchNodeByProfName(ProfileName prof, const fTrNdBa
     return nullptr;
 }
 
-const fTrNdBa_c *fTrMgBa_c::searchNodeByGroupType(u8 groupType, const fTrNdBa_c *parent) {
+const fTrNdBa_c *fTrMgBa_c::searchNodeByGroupType(u8 groupType, const fTrNdBa_c *parent) const {
     const fTrNdBa_c *root;
     
     if (parent != nullptr) {
