@@ -26,6 +26,7 @@ class dBase_c : public fBase_c, public cOwnerSetMg_c {
         /// @brief Gets a string describing the kind of this base.
         virtual const char *getKindString() const;
 
+        /// @copydoc fManager_c::searchBaseByProfName
         static dBase_c *searchBaseByProfName(ProfileName profile, const dBase_c* parent);
 
         static void initLoader(); ///< [Unknown purpose. Callbacks do nothing and don't seem to ever be called].

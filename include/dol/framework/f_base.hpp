@@ -201,10 +201,10 @@ private:
     /**
      * @brief Deals with the connect tree and object lifecycle.
      *  @details Main tasks include:
-     *  * Moving bases marked for deletion to the deletion list (and deleting its children);
-     *  * Updating process flags;
-     *  * Reordering the execute and draw list on priority changes;
-     *  * Processing bases that deferred their addition to the manager lists;
+     *  * Moving bases marked for deletion to the deletion list (and deleting its children)
+     *  * Updating process flags
+     *  * Reordering the execute and draw list on priority changes
+     *  * Processing bases that deferred their addition to the manager lists
      *
      *  The function always returns 1.
      */
