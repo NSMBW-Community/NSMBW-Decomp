@@ -13,10 +13,10 @@ dControllerInformation_c::~dControllerInformation_c() {}
 
 int dControllerInformation_c::create() {
     if (mIsCreated) {
-        return 1;
+        return SUCCEEDED;
     }
     if (!createLayout()) {
-        return 0;
+        return NOT_READY;
     }
     mLayout.ReverseAnimeStartSetup(0, false);
     mLayout.AnimePlay();
@@ -24,7 +24,7 @@ int dControllerInformation_c::create() {
     mIsCreated = true;
     mVisible = false;
     mState = IDLE;
-    return 1;
+    return SUCCEEDED;
 }
 
 bool dControllerInformation_c::createLayout() {
@@ -83,14 +83,14 @@ int dControllerInformation_c::execute() {
         mLayout.AnimePlay();
         mLayout.calc();
     }
-    return 1;
+    return SUCCEEDED;
 }
 
 int dControllerInformation_c::draw() {
     if (mIsCreated && mVisible) {
         mLayout.entry();
     }
-    return 1;
+    return SUCCEEDED;
 }
 
 int dControllerInformation_c::doDelete() {
