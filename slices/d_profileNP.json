@@ -10,8 +10,8 @@
             ".text":                { "index": 1,  "align": 16, "size": "0x1fb8" },
             ".ctors":               { "index": 2,  "align": 4, "size": "0x4" },
             ".dtors":               { "index": 3,  "align": 4, "size": "0x4" },
-            ".data":                { "index": 4,  "align": 8, "size": "0x1d8" },
-            ".rodata":              { "index": 5,  "align": 8, "size": "0x2cfc" },
+            ".rodata":              { "index": 4,  "align": 8, "size": "0x1d8" },
+            ".data":                { "index": 5,  "align": 8, "size": "0x2cfc" },
             ".bss":                 { "index": 6,  "align": 8, "size": "0x208" },
             ".rela.text":           { "index": 7,  "align": 4, "size": "0x0" },
             ".rela.ctors":          { "index": 8,  "align": 4, "size": "0x0" },
@@ -28,14 +28,14 @@
     },
     "slices": [
         {
-            "name": "rel_init.o",
+            "name": "runtime/rel_init.o",
             "source": "runtime/rel_init.cpp",
             "memoryRanges": {
                 ".text": "0x0-0x70"
             }
         },
         {
-            "name": "global_destructor_chain.o",
+            "name": "runtime/global_destructor_chain.o",
             "source": "runtime/global_destructor_chain.c",
             "compilerFlags": "-c -Cpp_exceptions off -O4 -fp hard -sdata 0 -sdata2 0",
             "memoryRanges": {
@@ -45,28 +45,29 @@
             }
         },
         {
-            "name": "profiles.o",
+            "name": "d_profileNP/framework/profiles.o",
             "memoryRanges": {
                 ".text": "0xf0-0x130",
-                ".rodata": "0x0-0xbb8"
+                ".data": "0x0-0xbb8"
             }
         },
         {
-            "name": "d_controller_information.o",
+            "name": "d_profileNP/bases/d_controller_information.o",
             "memoryRanges": {
                 ".text": "0x130-0x4e0",
-                ".data": "0x0-0x18",
-                ".rodata": "0xbb8-0xd28"
+                ".data": "0xbb8-0xd28",
+                ".rodata": "0x0-0x18",
+                ".bss": "0x8-0x10"
             }
         },
         {
-            "name": "d_yes_no_window.o",
+            "name": "d_profileNP/bases/d_yes_no_window.o",
             "memoryRanges": {
                 ".text": "0x4e0-0x1fb8",
                 ".ctors": "0x0-0x4",
-                ".data": "0x18-0x1d8",
-                ".rodata": "0xd28-0x2cfc",
-                ".bss": "0x8-0x208"
+                ".data": "0xd28-0x2cfc",
+                ".rodata": "0x18-0x1d8",
+                ".bss": "0x10-0x208"
             }
         }
     ]

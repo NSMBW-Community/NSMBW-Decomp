@@ -10,8 +10,8 @@
             ".text":                { "index": 1,  "align": 16, "size": "0x1c6004" },
             ".ctors":               { "index": 2,  "align": 4, "size": "0x4f8" },
             ".dtors":               { "index": 3,  "align": 4, "size": "0x4" },
-            ".data":                { "index": 4,  "align": 8, "size": "0xa5fc" },
-            ".rodata":              { "index": 5,  "align": 8, "size": "0x51c98" },
+            ".rodata":              { "index": 4,  "align": 8, "size": "0xa5fc" },
+            ".data":                { "index": 5,  "align": 8, "size": "0x51c98" },
             ".bss":                 { "index": 6,  "align": 8, "size": "0x12484" },
             ".rela.text":           { "index": 7,  "align": 4, "size": "0x0" },
             ".rela.ctors":          { "index": 8,  "align": 4, "size": "0x0" },
@@ -29,7 +29,7 @@
     },
     "slices": [
         {
-            "name": "rel_init.o",
+            "name": "runtime/rel_init.o",
             "source": "runtime/rel_init.cpp",
             "memoryRanges": {
                 ".text": "0x0-0x70"

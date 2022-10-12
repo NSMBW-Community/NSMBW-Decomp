@@ -71,7 +71,7 @@ function configureOverview(csvData) {
 }
 
 function nextMonth(date) {
-    const tmp = (date.getMonth() == 1) ? [0, date.getFullYear() + 1] : [date.getMonth() + 1, date.getFullYear()];
+    const tmp = (date.getMonth() == 11) ? [0, date.getFullYear() + 1] : [date.getMonth() + 1, date.getFullYear()];
     const newDate = new Date(date);
     newDate.setMonth(tmp[0], 1);
     newDate.setYear(tmp[1]);
@@ -152,7 +152,7 @@ function configureGraph(csvData) {
             month: "short",
             year: "numeric"
         });
-        const textAttrs = { "text-anchor": "end", "dominant-baseline": "hanging" };
+        const textAttrs = { "text-anchor": "middle", "dominant-baseline": "hanging" };
         svg.append(svgText(dateFormatted, x, ch * paddingD + 10, "black", "black", 5, textAttrs, { "font-size": "1.6em" }));
         svg.append(svgText(dateFormatted, x, ch * paddingD + 10, "white", "white", 0, textAttrs, { "font-size": "1.6em" }));
     }
