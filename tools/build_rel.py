@@ -135,7 +135,7 @@ def process_file(modules: list[ElfFile], idx: int, filename: Path, alias_db: dic
                 mod_num = int(m.group(1), 16)
                 if mod_num not in module_classify:
                     module_classify[mod_num] = []
-                
+
                 sym = ElfSymbol('', st_shndx=int(m.group(2), 16), st_value=int(m.group(3), 16))
                 module_classify[mod_num].append((reloc, sym))
                 continue
@@ -156,7 +156,7 @@ def process_file(modules: list[ElfFile], idx: int, filename: Path, alias_db: dic
             print_err('Error: Symbol', sym_name, 'not found!')
             unresolved_symbol_count += 1
 
-        
+
         # Convert ELF relocations to REL relocations
         for mod in module_classify:
             if mod not in module_relocations:

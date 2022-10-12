@@ -6,6 +6,6 @@
 
 namespace EGG {
     class FrmHeap : public Heap {
-        
+
     };
 }

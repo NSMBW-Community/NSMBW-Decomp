@@ -16,7 +16,7 @@ public:
 
     /**
      * @brief Inserts a node in the correct place according to its priority.
-     * 
+     *
      * @param node The node to insert.
      * @return If the operation was successful.
      */

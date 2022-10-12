@@ -12,15 +12,15 @@ class fLiMgBa_c : public cListMg_c {
 public:
     /**
      * @brief Counts the number of nodes of a given profile in this list.
-     * 
+     *
      * @param profName The profile name.
      * @return How many nodes were found.
      */
     int countNodeByProfName(ProfileName profName) const;
-    
+
     /**
      * @brief Finds a node in this list with the given ID.
-     * 
+     *
      * @param id The ID to search for.
      * @return The found node, or @p nullptr if none were found.
      */
