@@ -181,7 +181,7 @@ class ElfStrtab(ElfSection):
     def __init__(self, name='.strtab', strs: list[str]=None) -> None:
         super().__init__(name)
         self.strs = strs if strs else []
-        
+
         # For faster reads
         self.pos = 1
         self.lookup = {}
@@ -202,7 +202,7 @@ class ElfStrtab(ElfSection):
         self.strs = []
         self.pos = 1
         self.lookup = {}
-        
+
     def _prepare_for_write(self) -> None:
         self.data = b'\0' + '\0'.join([f'{str}' for str in self.strs]).encode('utf-8') + b'\0'
         return super()._prepare_for_write()
@@ -311,7 +311,7 @@ class ElfSymtab(ElfSection):
 
     def get_symbol(self, idx: int) -> ElfSymbol:
         return self.syms[idx - 1] # Accounting for initial NULL section
-        
+
     def get_symbols(self, name: str) -> list[ElfSymbol]:
         return [i for i in self.syms if i.name == name]
 
@@ -384,7 +384,7 @@ class ElfFile:
     def read(data: bytes) -> 'ElfFile':
         elf_file = ElfFile()
         elf_file.header = ElfHeader.read(data, 0)
-        
+
         # Preload .shstrtab
         shstrtab_idx = elf_file.header.e_shstrndx
         strtab_hdr, strtab_data = elf_file._read_section(data, shstrtab_idx)
@@ -409,7 +409,7 @@ class ElfFile:
                 elf_sec = ElfSymtab.read(sec_data, strtab, sec_hdr)
             else:
                 elf_sec = ElfSection(sec_name, bytes(), sec_hdr)
-            
+
             elf_sec.name = shstrtab.get_at_index(i)
             elf_file.sections.append(elf_sec)
         return elf_file

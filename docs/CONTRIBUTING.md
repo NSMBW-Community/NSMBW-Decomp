@@ -64,6 +64,7 @@
   - Nested Classes/Structures/Enumerations
   - Functions
   - Variables (place static ones last)
+  - Friends
 
 - Functions for classes must be placed in the following order:
   - Constructor
@@ -83,7 +84,7 @@
 
 Doxygen is being used for generating documentation:
 - Use `@` to begin Doxygen commands.
-- In general, always start a documentation comment with an uppercase letter and terminate it with a period.
+- In general, always start a documentation comment with an uppercase letter and terminate it with a period. Try to refer to variables/arguments using articles and try to use the third person when documenting functions. See below for examples.
 - For functions which require a decently long explanation, and/or documentation for the parameters and return values, use multiline comments, like this:
   ```cpp
   /**
@@ -110,6 +111,6 @@ Doxygen is being used for generating documentation:
   virtual void postCreate(MAIN_STATE_e state); ///< Code to be executed after ::create.
   ```
 
-- Try to refer to variables/arguments using articles and try to use the third person when documenting functions. See above for examples.
-- Do **not** document inline getters/setters unless their logic is complex, document the corresponding variables instead.
 - If no official symbol has been cracked for a class or a function, report this information using the `@note` command. For unknown class names, adding the note to each member function is not necessary.
+- Do **not** document inline getters/setters unless their logic is complex, document the corresponding variables instead.
+- Documenting not yet decompiled code is not necessary.

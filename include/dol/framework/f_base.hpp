@@ -45,6 +45,7 @@ public:
     u32 mParam; ///< A bitfield that configures the base's behaviour. [Represents nybbles 5 to 12 of Reggie's spritedata].
     ProfileName mProfName; ///< The base's profile name.
 
+private:
     u8 mLifecycleState; ///< The current lifecycle state. Value is a ::LIFECYCLE_e.
     bool mDeleteRequested; ///< If the base is to be deleted.
     bool mDelayManageAdd; ///< If the adding of the base should be delayed until the next ::connectProc call.
@@ -57,38 +58,11 @@ public:
 
     fBaHelper_c *mpUnusedHelper; ///< [Unused].
     fLiMgBa_c mUnusedList; ///< [Unused].
+
     EGG::FrmHeap *mpHeap; ///< The base's own FrmHeap. [Unused].
 
+public:
     fBase_c(); ///< Constructs a new base.
-
-    int createPack(); ///< See ::commonPack.
-    int deletePack(); ///< See ::commonPack.
-    int executePack(); ///< See ::commonPack.
-    int drawPack(); ///< See ::commonPack.
-
-    /**
-     * @brief Deals with the connect tree and object lifecycle.
-     *  @details Main tasks include:
-     *  * Moving bases marked for deletion to the deletion list (and deleting its children);
-     *  * Updating process flags;
-     *  * Reordering the execute and draw list on priority changes;
-     *  * Processing bases that deferred their addition to the manager lists;
-     *
-     *  The function always returns 1.
-     */
-    int connectProc();
-
-    /// @brief Requests deletion of the base.
-    void deleteRequest();
-
-    fBase_c *getConnectParent(); ///< Gets the base's parent.
-    fBase_c *getConnectChild(); ///< Gets the base's first child.
-    fBase_c *getConnectBrNext(); ///< Gets the base's next sibling.
-
-    /// @brief Checks if the base has a child waiting to be added to fManager_c::m_createManage.
-    /// @return If such a child base exists.
-    /// @note Unofficial name.
-    bool hasNonReadyChild() const;
 
     /// @brief @p new operator override for all bases.
     /// @details Every base is allocated in mHeap::g_gameHeaps[0], and memory is cleared
@@ -196,6 +170,58 @@ protected:
     virtual ~fBase_c(); ///< Destroys the base.
 
 public:
+    /// @brief Requests deletion of the base.
+    void deleteRequest();
+
+    fBase_c *getConnectParent() const; ///< Gets the base's parent.
+    fBase_c *getConnectChild() const; ///< Gets the base's first child.
+    fBase_c *getConnectBrNext() const; ///< Gets the base's next sibling.
+
+    /// @brief Checks if the base has a child waiting to be added to fManager_c::m_createManage.
+    /// @return If such a child base exists.
+    /// @note Unofficial name.
+    bool hasNonReadyChild() const;
+
+private:
+    int createPack(); ///< See ::commonPack.
+    int deletePack(); ///< See ::commonPack.
+    int executePack(); ///< See ::commonPack.
+    int drawPack(); ///< See ::commonPack.
+
+    /**
+     * @brief Common code for the pack tasks.
+     *
+     * @param doFunc The main function for this task.
+     * @param preFunc The function that is called before the main function.
+     * @param postFunc The function that is called after the main function.
+     * @return A ::PACK_RESULT_e value returned from doFunc, or preFunc if doFunc was not executed.
+     */
+    int commonPack(int (fBase_c::*doFunc)(), int (fBase_c::*preFunc)(), void (fBase_c::*postFunc)(MAIN_STATE_e));
+
+    /**
+     * @brief Deals with the connect tree and object lifecycle.
+     *  @details Main tasks include:
+     *  * Moving bases marked for deletion to the deletion list (and deleting its children)
+     *  * Updating process flags
+     *  * Reordering the execute and draw list on priority changes
+     *  * Processing bases that deferred their addition to the manager lists
+     *
+     *  The function always returns 1.
+     */
+    int connectProc();
+
+    /// @brief Attempts to finalize creation of the base.
+    void runCreate();
+
+    /// @brief Gets a child of the base that is waiting to be added to fManager_c::m_createManage.
+    /// @return A child satisfying this condition, else @p nullptr .
+    /// @note Unofficial name.
+    fBase_c *getNonReadyChild() const;
+
+    /// @brief Checks if a flag is set in ::mProcessFlags.
+    bool isProcessFlag(u8 flag) const { return (mProcessFlags & flag) != 0; }
+
+public:
     /**
      * @brief Creates a child base with the given parent.
      *
@@ -217,22 +243,7 @@ public:
      */
     static fBase_c *createRoot(ProfileName profName, unsigned long param, u8 groupType);
 
-    static int (*sLoadAsyncCallback)(); ///< [Unused].
-    static void (*sUnloadCallback)(); ///< [Unused].
-
 private:
-
-    /// @brief Attempts to finalize creation of the base.
-    void runCreate();
-
-    /// @brief Gets a child of the base that is waiting to be added to fManager_c::m_createManage.
-    /// @return A child satisfying this condition, else @p nullptr .
-    /// @note Unofficial name.
-    fBase_c *getNonReadyChild() const;
-
-    /// @brief Checks if a flag is set in ::mProcessFlags.
-    bool isProcessFlag(u8 flag) const { return (mProcessFlags & flag) != 0; }
-
     /**
      * @brief Sets temporary data to be used for the next base's construction.
      *
@@ -242,16 +253,6 @@ private:
      * @param groupType The base's group type.
      */
     static void setTmpCtData(ProfileName profName, fTrNdBa_c *connectParent, unsigned long param, u8 groupType);
-
-    /**
-     * @brief Common code for the pack tasks.
-     *
-     * @param doFunc The main function for this task.
-     * @param preFunc The function that is called before the main function.
-     * @param postFunc The function that is called after the main function.
-     * @return A ::PACK_RESULT_e value returned from doFunc, or preFunc if doFunc was not executed.
-     */
-    int commonPack(int (fBase_c::*doFunc)(), int (fBase_c::*preFunc)(), void (fBase_c::*postFunc)(MAIN_STATE_e));
 
     /**
      * @brief Internal function for base construction.
@@ -264,9 +265,18 @@ private:
      */
     static fBase_c *fBase_make(ProfileName profName, fTrNdBa_c *connectParent, unsigned long param, u8 groupType);
 
+protected:
+    static int (*sLoadAsyncCallback)(); ///< [Unused].
+    static void (*sUnloadCallback)(); ///< [Unused].
+
+private:
     static fBaseID_e m_rootUniqueID; ///< Unique ID counter for base construction. @see ::mUniqueID
     static u32 m_tmpCtParam; ///< Temporary storage for the next constructed base's params. @see ::mParam
     static ProfileName m_tmpCtProfName; ///< Temporary storage for the next constructed base's profile name. @see ::mProfName
     static u8 m_tmpCtGroupType; ///< Temporary storage for the next constructed base's group type. @see ::mGroupType
     static fTrNdBa_c *m_tmpCtConnectParent; ///< Temporary storage for the next constructed base's parent connect node.
+
+    friend class fManager_c;
+    friend class fLiNdBa_c;
+    friend class fTrMgBa_c;
 };

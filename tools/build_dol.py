@@ -47,7 +47,7 @@ def process_file(elf_file: ElfFile, filename: Path) -> None:
 
     bss_begin = bss_hdr.sh_addr
     bss_end = sbss2_hdr.sh_addr + sbss2_hdr.sh_size
-    
+
     # DOL bss size is actually (end of last bss section) - (start of first bss section)
     dol_file.bss_len = bss_end - bss_begin
 

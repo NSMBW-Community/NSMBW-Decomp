@@ -28,11 +28,6 @@ public:
         NOTHING, CONNECT, CREATE, EXECUTE, DELETE, DRAW
     };
 
-    fTrNdBa_c mConnectNode; ///< The node in ::m_connectManage.
-    fLiNdPrio_c mExecuteNode; ///< The node in ::m_executeManage.
-    fLiNdPrio_c mDrawNode; ///< The node in ::m_drawManage.
-    fLiNdBa_c mSearchNode; ///< The node in ::m_searchManage.
-
     /// @brief Constructs a new fManager_c.
     /// @param owner The manager's owner.
     fManager_c(fBase_c *owner) :
@@ -40,11 +35,11 @@ public:
         mExecuteNode(owner),
         mDrawNode(owner),
         mSearchNode(owner) {}
-    
+
     /// @brief Gets the index of the search list corresponding to the owner of the manager.
     /// @see m_searchManage
     int getSearchTableNum();
-    
+
     /// @brief Executes the currently enabled processes on all the bases in the respective lists.
     static void mainLoop();
 
@@ -56,6 +51,12 @@ public:
 
     /// @brief Searches for a base with a given group type, optionally under a given parent.
     static fBase_c *searchBaseByGroupType(unsigned char groupType, const fBase_c *parent);
+
+private:
+    fTrNdBa_c mConnectNode; ///< The node in ::m_connectManage.
+    fLiNdPrio_c mExecuteNode; ///< The node in ::m_executeManage.
+    fLiNdPrio_c mDrawNode; ///< The node in ::m_drawManage.
+    fLiNdBa_c mSearchNode; ///< The node in ::m_searchManage.
 
     static fTrMgPTMF_c m_connectManage; ///< A tree that connects all loaded bases.
     static fLiMgPTMF_c m_createManage; ///< A list of all the bases scheduled for creation.
@@ -70,4 +71,6 @@ public:
 
     static u32 m_StopProcInf; ///< Which processes should be executed this frame.
     static LOOP_PROC_e m_nowLoopProc; ///< The process ::mainLoop is currently in.
+
+    friend class fBase_c;
 };

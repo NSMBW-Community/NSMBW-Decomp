@@ -53,7 +53,7 @@ def extract_slice(dol_file: Dol, slice: Slice, syms: dict[int, str]) -> ElfFile:
                         curr = curr_sec.virt_addr + curr_sec.sec_len
                 if rem_size > 0:
                     unitialized_sec_starts.append(curr)
-                
+
                 # Must use correct section
                 lookup = {
                     '.bss': unitialized_sec_starts[0],
@@ -74,7 +74,7 @@ def extract_slice(dol_file: Dol, slice: Slice, syms: dict[int, str]) -> ElfFile:
 
             if elfsym != None:
                 symtab_sec.add_symbol(elfsym)
-                
+
     elf_file.add_section(symtab_sec)
 
     return elf_file

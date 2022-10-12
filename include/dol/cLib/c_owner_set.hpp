@@ -1,5 +1,4 @@
 #pragma once
-
 #include <types.h>
 
 /// @brief A set node with a pointer to the owning container.
@@ -13,7 +12,7 @@ public:
 private:
     void* mpOwner; ///< The set that contains this node.
     cOwnerSetNd_c* mpNext; ///< The next node in the set.
-    
+
     friend class cOwnerSetMg_c;
 };
 
@@ -25,13 +24,13 @@ class cOwnerSetMg_c {
 public:
     /// @brief Constructs a new cSetMg_c.
     cOwnerSetMg_c() : mpRoot(nullptr) {}
-    
+
     /// @brief Destroys the set.
     ~cOwnerSetMg_c() { clear(); };
 
     /**
      * @brief Adds a node to the set.
-     * 
+     *
      * @param nd The node to add.
      * @param owner The owner of the node.
      */
@@ -39,15 +38,15 @@ public:
 
     /**
      * @brief Removes a node from the set.
-     * 
+     *
      * @param nd The node to remove.
      * @param owner The owner of the node.
      */
     void remove(cOwnerSetNd_c *nd, void *owner);
-    
+
+private:
     /// @brief Clears out the set and unlinks all child nodes.
     void clear();
 
-private:
     cOwnerSetNd_c* mpRoot; ///< The first element of the set.
 };

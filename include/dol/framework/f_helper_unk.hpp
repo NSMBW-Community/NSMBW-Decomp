@@ -11,11 +11,11 @@ class fBaHelper_c {
     s16 filler2;
     s16 mUnknown;
 
-public:
     virtual void vf_0x8(); ///< [Stripped out of binary].
     virtual int vf_0xc(void *); ///< [Stripped out of binary].
     virtual void vf_0x10(void *); ///< [Stripped out of binary].
 
+public:
     void Delete(); ///< [TODO: document this method]
     int Load(int); ///< [TODO: document this method]
     bool LoadOnlyOne(); ///< [TODO: document this method]

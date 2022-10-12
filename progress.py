@@ -72,7 +72,7 @@ def calculate_decompiled_bytes(slice_file: SliceFile, filter_sections: list[str]
             count_total_bytes += byte_count
             if slice.slice_src:
                 count_compiled_bytes += byte_count
-        
+
     return [count_compiled_bytes, count_total_bytes]
 
 ########################
@@ -142,7 +142,7 @@ def verify_obj(slice_files: list[SliceFile]) -> bool:
                 # Print result
                 print(print_name + ': ', end='')
                 print_warnings_and_errors(warnings, errors)
-                
+
                 # warnings don't count as errors
                 if len(errors) > 0:
                     no_errors = False
@@ -155,7 +155,7 @@ def progress_summary(slice_files: list[SliceFile]) -> bool:
 
     for slice_file in slice_files:
         count_compiled_bytes, count_total_bytes = calculate_decompiled_bytes(slice_file, ['.init', '.text'])
-                
+
         perc = (count_compiled_bytes / count_total_bytes) * 100
         print(f'{slice_file.meta.name}: Decompiled {count_compiled_bytes}/{count_total_bytes} code bytes ({perc:.3f}%)')
 
@@ -196,7 +196,7 @@ def get_historical_progress_data(commits, last_tracked) -> list[dict[str, any]]:
         except subprocess.CalledProcessError as e:
             print_err('Rolling back failed. Skipping rollback step.')
             break
-    
+
     # Go back to where we were before
     try:
         subprocess.check_output(['git', 'checkout', branch_name])
@@ -224,7 +224,7 @@ def progress_csv(slice_files: list[SliceFile]) -> bool:
         last_line_data = None
         with open(vars(args)['progress_csv'], 'r') as f:
             last_line_data = read_progress_csv_line(f.readlines()[-1].strip())
-        
+
         if progress_list != last_line_data['progress_vals']:
             print_success('Progress detected! Going through previous commits and writing to file.')
 
@@ -244,7 +244,7 @@ def progress_csv(slice_files: list[SliceFile]) -> bool:
                     'hash': latest_csv[1],
                     'progress_vals': [int(x) for x in latest_csv[2:]]
                 })
-            
+
             with open(vars(args)['progress_csv'], 'a') as f:
                 for line in data:
                     csv = [line['timestamp'], line['hash'], *line['progress_vals']]
@@ -252,7 +252,7 @@ def progress_csv(slice_files: list[SliceFile]) -> bool:
                     f.write(csv_str + '\n')
         else:
             print('No change in progress detected, not writing to progress file.')
-    
+
     # Always output to console
     print(latest_commit_csv_str)
 
@@ -271,7 +271,7 @@ def create_badges(slice_files: list[SliceFile]):
         with open(f'badge_{slice_stem}.json', 'w') as f:
             f.write(f'{{ "schemaVersion": 1, "label": "{slice_stem}", "message": "{perc}%", "color": "rgb({",".join(color)})" }}')
             print(f'Wrote badge_{slice_stem}.json')
-    
+
     return True
 
 ####################
