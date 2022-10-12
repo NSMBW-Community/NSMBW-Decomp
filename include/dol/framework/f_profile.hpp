@@ -3,6 +3,20 @@
 #include <dol/framework/f_profile_name.hpp>
 /// @file
 
+/// @brief Creates a profile of a base with given values for execute and draw order.
+#define SPECIAL_BASE_PROFILE(profName, className, executeOrder, drawOrder) void *classInit_##className() { return new className(); } \
+    fProfile::fBaseProfile_c g_profile_##profName = { &classInit_##className, executeOrder, drawOrder }
+
+/// @brief Creates a profile of an actor with given values for execute and draw order and the actor properties. @see SPECIAL_BASE_PROFILE
+#define SPECIAL_ACTOR_PROFILE(profName, className, executeOrder, drawOrder, properties) void *classInit_##className() { return new className(); } \
+    const fProfile::fActorProfile_c g_profile_##profName = { &classInit_##className, executeOrder, drawOrder, properties }
+
+/// @brief Creates a profile of a base the profile number as the priority for both the draw and execute order. @see SPECIAL_BASE_PROFILE
+#define DEFAULT_BASE_PROFILE(profName, className) SPECIAL_BASE_PROFILE(profName, className, fProfile::profName, fProfile::profName);
+
+/// @brief Creates a profile of an actor with default values. @see DEFAULT_BASE_PROFILE
+#define DEFAULT_ACTOR_PROFILE(profName, className, properties) SPECIAL_ACTOR_PROFILE(profName, className, fProfile::profName, fProfile::profName, properties);
+
 /// @brief The name of a profile. Value is a fProfile::PROFILE_NAME_e.
 /// @note The compilation order suggests that this file might have been grouped together
 /// with the other f classes, so a similar naming scheme has been applied here.
