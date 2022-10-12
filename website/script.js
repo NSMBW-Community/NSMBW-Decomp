@@ -178,7 +178,7 @@ function configureGraph(csvData) {
         globalCsvData[i].y = y;
         globalCsvData[i].prev = i >= 1 ? globalCsvData[i - 1] : globalCsvData[0];
     }
-    
+
     // Lines between points
     for (let i = 0; i < csvData.length; i++) {
         svg.append(svgCircle(5, csvData[i].x, csvData[i].y, "#d1ad0f88", "#d4b324", 2));
@@ -186,7 +186,7 @@ function configureGraph(csvData) {
             svg.append(svgLine(csvData[i - 1].x, csvData[i - 1].y, csvData[i].x, csvData[i].y, "#d4b32499", 3));
         }
     }
-    
+
     // Info line starts at latest commit
     mouseMove();
 

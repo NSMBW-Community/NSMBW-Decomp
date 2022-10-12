@@ -113,7 +113,7 @@ for slice_file in slices:
             if slice.no_deadstrip:
                 # Simply add the symbols not to deadstrip to FORCEACTIVE
                 force_actives.update(slice.no_deadstrip)
-            
+
             if slice.deadstrip and slice.slice_src:
                 # A bit more compilated; we need to add all symbols except for the ones
                 # we don't want to deadstrip to the FORCEACTIVE directive.
@@ -124,7 +124,7 @@ for slice_file in slices:
                     # Only certain types of symbols
                     if sym.st_info_type in [STT.STT_FUNC, STT.STT_OBJECT] and sym.st_info_bind == STB.STB_GLOBAL:
                         force_actives.add(sym.name)
-        
+
         f.write('FORCEACTIVE {\n\t')
         f.write('\n\t'.join(force_actives))
         f.write('\n}\n\n')

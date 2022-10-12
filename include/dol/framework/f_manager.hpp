@@ -35,11 +35,11 @@ public:
         mExecuteNode(owner),
         mDrawNode(owner),
         mSearchNode(owner) {}
-    
+
     /// @brief Gets the index of the search list corresponding to the owner of the manager.
     /// @see m_searchManage
     int getSearchTableNum();
-    
+
     /// @brief Executes the currently enabled processes on all the bases in the respective lists.
     static void mainLoop();
 

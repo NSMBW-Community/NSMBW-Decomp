@@ -4,7 +4,7 @@
 
 extern "C" {
 
-__declspec(section ".init") extern __eti_init_info 	_eti_init_info[];
+__declspec(section ".init") extern __eti_init_info _eti_init_info[];
 
 extern void __destroy_global_chain();
 extern int __register_fragment(void *, void *);

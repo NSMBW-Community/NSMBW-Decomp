@@ -12,11 +12,11 @@ bool fLiMgPTMF_c::addNode(fLiNdPrio_c *node) {
     if (curr == nullptr) {
         return append(node);
     }
-    
+
     if (curr->getOrder() > node->getOrder()) {
         return insertAfter(node, nullptr);
     }
-    
+
     while (curr->getNext() && curr->getNext()->getOrder() <= node->getOrder()) {
         curr = curr->getNext();
     }
@@ -27,7 +27,7 @@ bool fLiMgPTMF_c::walkPack() {
     if (mpProcFunc == 0) {
         return true;
     }
-    
+
     fLiNdBa_c *curr = (fLiNdBa_c *) mpFirst;
     while (curr != nullptr) {
         fLiNdBa_c *next = curr->getNext();

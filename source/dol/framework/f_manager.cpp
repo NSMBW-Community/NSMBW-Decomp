@@ -30,7 +30,7 @@ fBase_c *fManager_c::searchBaseByProfName(ProfileName profName, const fBase_c *p
     } else {
         connectNode = nullptr;
     }
-    
+
     const fTrNdBa_c *res = m_connectManage.searchNodeByProfName(profName, connectNode);
     if (res != nullptr) {
         return res->mpOwner;

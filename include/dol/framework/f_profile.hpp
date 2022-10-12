@@ -10,7 +10,7 @@ typedef u16 ProfileName;
 
 /**
  * @brief Gets a string representing the profile name.
- * 
+ *
  * @param profName The profile name for which to get the name string of.
  * @return A string containing the profile name.
  */
@@ -28,7 +28,7 @@ namespace fProfile {
         u16 mExecuteOrder; ///< The execution priority of the base.
         u16 mDrawOrder; ///< The draw priority of the base.
     };
-    
+
     /// @brief A set of basic information needed to construct an actor.
     /// @details In addition to the fields in fBaseProfile_c, it also contains some properties about the actor.
     struct fActorProfile_c : fBaseProfile_c {

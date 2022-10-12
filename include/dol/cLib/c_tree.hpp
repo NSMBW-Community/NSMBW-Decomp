@@ -41,7 +41,7 @@ public:
 
     /**
      * @brief Adds a node to the tree, either to the root node or to a specified parent node.
-     * 
+     *
      * @param node The node to add.
      * @param parent The parent node to attach it to, or @p nullptr to attach it to the tree root.
      * @return If the operation was successful.
@@ -50,7 +50,7 @@ public:
 
     /**
      * @brief Removes a node from the tree.
-     * 
+     *
      * @param node The node to remove.
      * @return If the operation was successful.
      */

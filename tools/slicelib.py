@@ -110,7 +110,7 @@ def load_slice_file(file: typing.TextIO) -> SliceFile:
     for slice in slice_json['slices']:
         slice_name = slice['name']
         slice_sections: list[SliceSection] = []
-        
+
         filler_sec_range = {s: (0, 0) for s in curr_sec_positions}
 
         for sec_name in slice['memoryRanges']:
@@ -141,7 +141,7 @@ def load_slice_file(file: typing.TextIO) -> SliceFile:
     filler_sec_range = {s: (0, 0) for s in curr_sec_positions}
     for sec_name in curr_sec_positions:
         filler_sec_range[sec_name] = (curr_sec_positions[sec_name], slice_meta.secs[sec_name].size)
-    
+
     filler_slice = make_filler_slice(f'filler_{filler_slice_idx}.o', filler_sec_range, slice_meta)
     if filler_slice is not None:
         slices.append(filler_slice)
