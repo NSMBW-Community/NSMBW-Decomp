@@ -84,7 +84,7 @@
 
 Doxygen is being used for generating documentation:
 - Use `@` to begin Doxygen commands.
-- In general, always start a documentation comment with an uppercase letter and terminate it with a period. Try to refer to variables/arguments using articles and try to use the third person when documenting functions. See above for examples.
+- In general, always start a documentation comment with an uppercase letter and terminate it with a period. Try to refer to variables/arguments using articles and try to use the third person when documenting functions. See below for examples.
 - For functions which require a decently long explanation, and/or documentation for the parameters and return values, use multiline comments, like this:
   ```cpp
   /**
