@@ -238,7 +238,7 @@ def progress_csv(slice_files: list[SliceFile]) -> bool:
             commits_to_track = commits[1:min(idx_last, idx_first_good)] # Skip HEAD too
 
             data = get_historical_progress_data(commits_to_track, last_line_data)
-            if len(data) > 0 and latest_csv[2:] != data[-1]['progress_vals']:
+            if len(data) == 0 or latest_csv[2:] != data[-1]['progress_vals']:
                 data.append({
                     'timestamp': int(latest_csv[0]),
                     'hash': latest_csv[1],
