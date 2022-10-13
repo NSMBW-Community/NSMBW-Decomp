@@ -2,7 +2,7 @@
     "meta": {
         "fileName": "d_profileNP.rel",
         "type": "REL",
-        "defaultCompilerFlags": "-sdata 0 -sdata2 0 -proc gekko -fp hard -O4,p -char signed -rtti off -enum int -Cpp_exceptions off",
+        "defaultCompilerFlags": "-sdata 0 -sdata2 0 -proc gekko -fp hard -O4,p -inline noauto -char signed -rtti off -enum int -Cpp_exceptions off",
         "moduleNum": 1,
         "baseAddr": "807685A0",
         "sections": {
@@ -53,6 +53,7 @@
         },
         {
             "name": "d_profileNP/bases/d_controller_information.o",
+            "source": "d_profileNP/bases/d_controller_information.cpp",
             "memoryRanges": {
                 ".text": "0x130-0x4e0",
                 ".data": "0xbb8-0xd28",
