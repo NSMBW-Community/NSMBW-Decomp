@@ -13,8 +13,8 @@ public:
     void *getResource(unsigned long, const char *);
 
 private:
-    nw4r::lyt::ResourceAccessor *mResAccessor;
-    void *mResource;
+    nw4r::lyt::ResourceAccessor *mpResAccessor;
+    void *mpResource;
 };
 
 } // namespace m2d

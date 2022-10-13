@@ -23,7 +23,7 @@ public:
 
 private:
     ARCHandle mArcHandle;
-    void* mArcBuf;
+    void* mpArcBuf;
     ut::detail::LinkListImpl mFontList;
     char mResRootDir[128];
 };

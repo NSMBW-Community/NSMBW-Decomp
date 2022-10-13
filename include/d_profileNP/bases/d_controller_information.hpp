@@ -2,17 +2,17 @@
 #include <dol/bases/d_base.hpp>
 #include <dol/bases/d_lytbase.hpp>
 
-/// @brief A base that display the controller information screen.
-/// @details This is the screen that reads "Hold the Wii remote sideways".
+/// @brief A base that displays the controller information screen.
+/// @details This is the screen that reads "Hold the Wii Remote sideways".
 class dControllerInformation_c : public dBase_c {
 public:
     /// @brief The state that controls what the layout should be doing.
     enum STATE_e {
-        IDLE, ///< Initial state; waiting for layout creation
-        SHOW_IN, ///< Show the pop-out animation of the 2 button
-        SHOW_LOOP, ///< Play the 2 button animation as soon as the pop-out animation has finished.
-        WAITING_FOR_END, ///< Continue playing the 2 button animation.
-        END ///< 2 button has been pressed, play the sound effect and play the shrinking 2 button animation.
+        IDLE, ///< Initial state; waiting for layout creation.
+        SHOW_IN, ///< Play the button pop-out animation.
+        SHOW_LOOP, ///< Wait for the pop-out to finish.
+        WAITING_FOR_END, ///< Play the button animation while waiting for user input.
+        END ///< The button has been pressed, play the sound effect and play the shrinking button animation.
     };
 
     dControllerInformation_c();

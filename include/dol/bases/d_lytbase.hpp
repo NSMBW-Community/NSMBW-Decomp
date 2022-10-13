@@ -46,10 +46,10 @@ public:
 private:
     d2d::ResAccMultLoader_c mResAccessorLoader;
 
-    m2d::AnmResV2_c *mAnimRes;
-    m2d::AnmGroup_c *mAnimGroup;
+    m2d::AnmResV2_c *mpAnimRes;
+    m2d::AnmGroup_c *mpAnimGroup;
 
-    bool *mEnabledAnims;
+    bool *mpEnabledAnims;
     int mAnimCount;
 
     int mGroupCount;

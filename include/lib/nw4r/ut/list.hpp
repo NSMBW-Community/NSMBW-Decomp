@@ -12,8 +12,8 @@ struct LinkListNode {
 class List {
     LinkListNode* mpHead;
     LinkListNode* mpTail;
-    u16 mpCount;
-    u16 mpOffset;
+    u16 mCount;
+    u16 mOffset;
 };
 
 } // namespace ut

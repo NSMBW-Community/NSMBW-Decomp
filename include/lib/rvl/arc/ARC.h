@@ -6,11 +6,11 @@ extern "C" {
 #endif
 
 typedef struct {
-    void *mArchiveStartAddr;
-    void *mFstStart;
-    void *mFileStart;
+    void *mpArchiveStartAddr;
+    void *mpFstStart;
+    void *mpFileStart;
     u32 mEntryNum;
-    char *mFstStringStart;
+    char *mpFstStringStart;
     u32 mFstLength;
     u32 mCurrDir;
 } ARCHandle;

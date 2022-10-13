@@ -20,7 +20,7 @@ public:
 private:
     nw4r::lyt::Layout mLayout;
     nw4r::lyt::DrawInfo mDrawInfo;
-    ResAccMult_c *mResAccessor;
+    ResAccMult_c *mpResAccessor;
 
     nw4r::math::VEC2 mPos;
 

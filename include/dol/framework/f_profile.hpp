@@ -11,7 +11,7 @@
 #define SPECIAL_ACTOR_PROFILE(profName, className, executeOrder, drawOrder, properties) void *className##_classInit() { return new className(); } \
     const fProfile::fActorProfile_c g_profile_##profName = { &className##_classInit, executeOrder, drawOrder, properties }
 
-/// @brief Creates a profile of a base the profile number as the priority for both the draw and execute order. @see SPECIAL_BASE_PROFILE
+/// @brief Creates a profile for a base, with the profile number as the priority for both the draw and execute order. @see SPECIAL_BASE_PROFILE
 #define DEFAULT_BASE_PROFILE(profName, className) SPECIAL_BASE_PROFILE(profName, className, fProfile::profName, fProfile::profName);
 
 /// @brief Creates a profile of an actor with default values. @see DEFAULT_BASE_PROFILE

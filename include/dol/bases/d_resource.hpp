@@ -25,7 +25,7 @@ public:
     bool request(const char *);
 
 private:
-    void *mResource;
+    void *mpResource;
     d2d::dDvd::loader_c mLoader;
 };
 

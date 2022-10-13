@@ -13,12 +13,11 @@ public:
 private:
     u32 mSize;
     u32 mCommand;
-    EGG::Heap* mHeap;
-    void* mBuffer;
+    EGG::Heap* mpHeap;
+    void* mpBuffer;
 };
 
 void create(long, EGG::Heap *, EGG::Heap *);
-
 
 } // namespace dDvd
 } // namespace d2d
