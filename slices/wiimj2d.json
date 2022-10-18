@@ -31,6 +31,15 @@
             }
         },
         {
+            "name": "dol/bases/d_mj2d_data.o",
+            "source": "dol/bases/d_mj2d_data.cpp",
+            "memoryRanges": {
+                ".text": "0xc7830-0xc8070",
+                ".rodata": "0x3470-0x3480",
+                ".sdata": "0x5f0-0x5f8"
+            }
+        },
+        {
             "name": "dol/cLib/c_list.o",
             "source": "dol/cLib/c_list.cpp",
             "memoryRanges": {
