@@ -1,9 +1,10 @@
 #pragma once
 #include <types.h>
 #include <constants/game_constants.h>
+/// @file
 
-#define SAVE_VERSION 14
-#define SAVE_SUB_VERSION 0
+#define SAVE_VERSION 14 ///< The current save version.
+#define SAVE_SUB_VERSION 0 ///< The current save subversion.
 
 class dSaveMng_c;
 
@@ -46,7 +47,7 @@ private:
         void setSelectFileNo(s8 file); ///< Sets the last used save data slot.
 
         char mMagic[4]; ///< The savegame magic.
-        u8 mVersion[2]; ///< The save data version and subversion. @details [Defaults are 14 and 0].
+        u8 mVersion[2]; ///< The save data version and subversion. See ::SAVE_VERSION and ::SAVE_SUB_VERSION.
         u8 mLastSelectedFile; ///< The last selected save data slot.
         // [1 byte padding]
 
@@ -62,7 +63,7 @@ private:
         /// @details Playing a world in extra modes requires said world to be unlocked in at least
         /// one save slot. [Value is a bitfield].
         u16 mExtraModesUnlockedWorlds;
-        // 2 bytes padding
+        // [2 bytes padding]
 
         u32 mChecksum; ///< The CRC32 checksum of the above data (excluding ::mMagic).
 
@@ -107,7 +108,7 @@ public:
         COIN_ALL = 0x8, ///< All the Star Coins in the regular worlds were obtained.
         COIN_ALL_SPECIAL = 0x10, ///< All the Star Coins in the special worlds were obtained.
         GAME_COMPLETED = 0x20, ///< All the above objectives were completed.
-        SUPER_GUIDE_TRIGGERED = 0x40 ///< The player died more than 7 times in a single stage.
+        SUPER_GUIDE_TRIGGERED = 0x40 ///< The player died at least ::SUPER_GUIDE_DEATH_COUNT times in a single stage.
     };
 
     /// @brief The Toad House types at the start node of each world.
@@ -275,7 +276,7 @@ private:
     /// @brief Gets the death count for World 3-4 for the worldmap switch-enabled variant.
     int getSwitchDeathCount() const;
 
-    u8 mVersion[2]; ///< The save data version and subversion. @details [Defaults are 14 and 0].
+    u8 mVersion[2]; ///< The save data version and subversion. See ::SAVE_VERSION and ::SAVE_SUB_VERSION.
 
     u8 mGameCompletion; ///< The overall completion of the save slot. See ::GAME_COMPLETION_e.
 
