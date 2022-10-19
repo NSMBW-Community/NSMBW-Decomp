@@ -49,7 +49,7 @@ private:
         char mMagic[4]; ///< The savegame magic.
         u8 mVersion[2]; ///< The save data version and subversion. See ::SAVE_VERSION and ::SAVE_SUB_VERSION.
         u8 mLastSelectedFile; ///< The last selected save data slot.
-        // [1 byte padding]
+        u8 mUnknown7; ///< [Unused, most likely declared as padding].
 
         /// @brief The play count of each level in Free Mode.
         /// @details [Value is increased by 0x100 for every playthrough until 10000].
@@ -61,9 +61,9 @@ private:
 
         /// @brief The worlds unlocked in Extra Modes.
         /// @details Playing a world in extra modes requires said world to be unlocked in at least
-        /// one save slot. [Value is a bitfield].
+        /// one save slot. Value is a bitfield.
         u16 mExtraModesUnlockedWorlds;
-        // [2 bytes padding]
+        u16 mUnknown69A; ///< [Unused, most likely declared as padding].
 
         u32 mChecksum; ///< The CRC32 checksum of the above data (excluding ::mMagic).
 
@@ -251,7 +251,8 @@ public:
     u8 getEnemyCurrNode(int world, int enemy) const;
 
     /// @brief Sets the path direction for the given map enemy.
-    /// @details Values are: 0 (forwards) and 1 (backwards).
+    /// @details Values are: 0 (forwards), 1 (backwards) and 2 (initial value).
+    /// @todo Turn the value list into an enum and move it to the appropriate section once decompiled.
     /// @note Unofficial name.
     void setEnemyLastDirection(int world, int enemy, u8 direction);
 

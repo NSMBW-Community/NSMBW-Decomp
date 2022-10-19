@@ -95,7 +95,7 @@ int dMj2dGame_c::getScore() const {
 }
 
 void dMj2dGame_c::setStaffCreditHighScore(u16 score) {
-    if (mStaffRollHighScore < score ) {
+    if (mStaffRollHighScore < score) {
         mStaffRollHighScore = score;
     }
 }
@@ -201,7 +201,7 @@ int dMj2dGame_c::getCourseDataFlag(int world, int level) const {
 }
 
 bool dMj2dGame_c::isCourseDataFlag(int world, int level, ulong flag) const {
-    return (flag & mStageCompletion[world][level]) != 0;
+    return (mStageCompletion[world][level] & flag) != 0;
 }
 
 void dMj2dGame_c::onCourseDataFlag(int world, int level, ulong flag) {
@@ -300,7 +300,7 @@ void dMj2dHeader_c::setMultiModeCompletion(int world) {
 }
 
 bool dMj2dHeader_c::getMultiModeCompletion(int world) const {
-    return (mExtraModesUnlockedWorlds & 1 << world);
+    return mExtraModesUnlockedWorlds & (1 << world);
 }
 
 void dMj2dHeader_c::versionUpdate() {
