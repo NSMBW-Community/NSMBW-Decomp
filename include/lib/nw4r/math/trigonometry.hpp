@@ -20,14 +20,14 @@ float CosFIdx(float fidx);
 /// @param idx The angle measured in units of 1/65536th of a circle.
 /// @return The sine for idx.
 inline float SinIdx(s16 idx) {
-    return SinFIdx(OSu16tofloat((u16*)&idx) * (1.0f / 256.0f));
+    return SinFIdx(OSu16tof32((u16*)&idx) * (1.0f / 256.0f));
 }
 
 /// @brief Finds the cosine value.
 /// @param idx The angle measured in units of 1/65536th of a circle.
 /// @return The cosine for idx.
 inline float CosIdx(s16 idx) {
-    return CosFIdx(OSu16tofloat((u16*)&idx) * (1.0f / 256.0f));
+    return CosFIdx(OSu16tof32((u16*)&idx) * (1.0f / 256.0f));
 }
 
 } // namespace math
