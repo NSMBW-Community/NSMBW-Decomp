@@ -1,5 +1,6 @@
 #pragma once
 #include <types.h>
+#include <lib/rvl/mtx/vec.h>
 /// @file
 /// @details [cM3d stands for C Math 3D. It is unknown why a namespace wasn't used].
 

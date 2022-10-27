@@ -1,13 +1,15 @@
 #pragma once
 #include <types.h>
+/// @file
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-void PSVECAdd(const Vec *v1, const Vec *v2, Vec *out);
-void PSVECSubtract(const Vec *v1, const Vec *v2, Vec *out);
-void PSVECScale(const Vec *src, Vec *dst, f32 scale);
+typedef float Mtx[3][4]; ///< 3x4 matrix.
+typedef float Mtx44[4][4]; ///< 4x4 matrix.
+
+void PSMTXConcat(const Mtx *a, const Mtx *b, Mtx *out); ///< Concatenates two matrices.
 
 #ifdef __cplusplus
 }

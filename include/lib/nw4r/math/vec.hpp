@@ -9,5 +9,12 @@ struct VEC2 {
     float y;
 };
 
+/// @brief A three-dimensional vector.
+struct VEC3 {
+    float x;
+    float y;
+    float z;
+};
+
 } // namespace math
 } // namespace nw4r
