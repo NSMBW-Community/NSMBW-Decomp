@@ -1,6 +1,6 @@
 #pragma once
 #include <dol/bases/d_resource.hpp>
-#include <dol/m/m2d/base.hpp>
+#include <dol/mLib/m2d/base.hpp>
 #include <lib/nw4r/lyt/lyt_layout.hpp>
 #include <lib/nw4r/lyt/lyt_resource.hpp>
 #include <lib/nw4r/lyt/lyt_draw_info.hpp>

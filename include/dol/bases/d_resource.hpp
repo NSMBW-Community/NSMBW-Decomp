@@ -1,6 +1,6 @@
 #pragma once
 #include <dol/bases/d_dvd.hpp>
-#include <dol/m/m2d/resource.hpp>
+#include <dol/mLib/m2d/resource.hpp>
 #include <lib/nw4r/lyt/lyt_resource.hpp>
 #include <lib/egg/heap/heap.hpp>
 

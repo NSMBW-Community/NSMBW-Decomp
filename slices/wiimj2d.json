@@ -138,6 +138,25 @@
             }
         },
         {
+            "name": "dol/mLib/m_angle.o",
+            "source": "dol/mLib/m_angle.cpp",
+            "memoryRanges": {
+                ".text": "0x1643e0-0x164430",
+                ".ctors": "0x20c-0x210",
+                ".sbss": "0x830-0x850"
+            }
+        },
+        {
+            "name": "dol/mLib/m_mtx.o",
+            "source": "dol/mLib/m_mtx.cpp",
+            "memoryRanges": {
+                ".text": "0x168560-0x168bb0",
+                ".ctors": "0x218-0x21c",
+                ".bss": "0x265d8-0x26608",
+                ".sdata2": "0x2ca0-0x2cb0"
+            }
+        },
+        {
             "name": "runtime/global_destructor_chain.o",
             "source": "runtime/global_destructor_chain.c",
             "deadstrip": ["__destroy_global_chain_reference"],
