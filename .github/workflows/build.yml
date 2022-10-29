@@ -58,7 +58,7 @@ jobs:
 
       - name: Run progress script to create artifacts
         env:
-          PROGRESS_URL: 'https://clf78.github.io/NSMBW-Decomp/progress.csv'
+          PROGRESS_URL: 'https://nsmbw-community.github.io/NSMBW-Decomp/progress.csv'
         run: |
           curl $PROGRESS_URL --output progress.csv
           python progress.py --progress-csv progress.csv
