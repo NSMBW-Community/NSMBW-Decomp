@@ -219,7 +219,7 @@ function mouseMove(x, y) {
     prevNearest = nearestPoint;
     const commitInfobox = document.getElementById("commit-info");
     const infoboxContent = `
-        <span>Commit <a href="https://github.com/CLF78/NSMBW-Decomp/commit/${nearestPoint.commit_hash}">${nearestPoint.commit_hash.substring(0, 6)}</a></span>
+        <span>Commit <a href="https://github.com/NSMBW-Community/NSMBW-Decomp/commit/${nearestPoint.commit_hash}">${nearestPoint.commit_hash.substring(0, 6)}</a></span>
         <span style="margin-bottom: 10px;">${nearestPoint.ts.toLocaleString().replace(",", "")}</span>
         <span id="infobox-perc">${(nearestPoint.totalFrac * 100).toFixed(3)}%</span>
     `;
