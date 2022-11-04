@@ -24,7 +24,7 @@ class mAng3_c {
         s16 z; ///< The rotation on the z axis.
 
         static mAng3_c Zero; ///< The null rotation vector.
-        static mAng3_c Ex; ///< Rotation vector base for the x axis.
-        static mAng3_c Ey; ///< Rotation vector base for the y axis.
-        static mAng3_c Ez; ///< Rotation vector base for the z axis.
+        static mAng3_c Ex; ///< Unit vector for the rotation on the x axis.
+        static mAng3_c Ey; ///< Unit vector for the rotation on the y axis.
+        static mAng3_c Ez; ///< Unit vector for the rotation on the z axis.
 };
