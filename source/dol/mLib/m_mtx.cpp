@@ -38,6 +38,7 @@ void mMtx_c::XrotS(mAng angle) {
     }
     #endif
 
+    // [Declaring the float as a variable is required for matching].
     float zero = 0.0f;
     mData[0][1] = zero;
     mData[0][2] = zero;
@@ -96,6 +97,7 @@ void mMtx_c::ZrotS(mAng angle) {
     float cos = nw4r::math::CosIdx((short)angle.mAngle);
     float sin = nw4r::math::SinIdx((short)angle.mAngle);
 
+    // [Declaring the floats as variables is required for matching].
     float one = 1.0f;
     float zero = 0.0f;
     float negSin = -sin;
@@ -134,6 +136,7 @@ void mMtx_c::XYZrotM(mAng xRot, mAng yRot, mAng zRot) {
     XrotM(xRot);
 }
 
+// [This approach is required for matching].
 inline float calcLength(float x, float y) {
     x *= x;
     y *= y;
