@@ -6,17 +6,17 @@
 extern "C" {
 #endif
 
-/// @brief Two-dimensional floating point vector.
+/// @brief A two-dimensional floating point vector.
 typedef struct {
     float x, y;
 } Vec2;
 
-/// @brief Three-dimensional floating point vector.
+/// @brief A three-dimensional floating point vector.
 typedef struct {
     float x, y, z;
 } Vec;
 
-/// @brief Three-dimensional short vector.
+/// @brief A three-dimensional short vector.
 typedef struct {
     s16 x, y, z;
 } S16Vec;
