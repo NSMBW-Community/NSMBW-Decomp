@@ -352,7 +352,7 @@ bool fBase_c::entryFrmHeap(unsigned long size, EGG::Heap *parentHeap) {
 
     // If that failed, try to make a heap with maximum size
     if (newHeap == nullptr) {
-        newHeap = mHeap::makeFrmHeapAndUpdate(0xFFFFFFFF, parentHeap, F_BASE_HEAP_NAME, 0x20, 0);
+        newHeap = mHeap::makeFrmHeapAndUpdate(-1, parentHeap, F_BASE_HEAP_NAME, 0x20, 0);
 
         if (newHeap != nullptr) {
             bool createSuccess = createHeap();
@@ -433,7 +433,7 @@ bool fBase_c::createHeap() {
 }
 
 void *fBase_c::operator new(size_t size) {
-    void *mem = EGG::Heap::alloc(size, 0xFFFFFFFC, mHeap::g_gameHeaps[0]);
+    void *mem = EGG::Heap::alloc(size, -4, mHeap::g_gameHeaps[0]);
     if (mem != nullptr) {
         memset(mem, 0, size);
     }

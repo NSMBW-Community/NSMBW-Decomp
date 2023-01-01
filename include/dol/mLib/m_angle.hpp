@@ -22,10 +22,10 @@ struct mAng {
     operator const s16*() const { return &mAngle; }
 
     /// @brief Augmented addition operator.
-    mAng& operator+=(const mAng& v) { mAngle += v.mAngle; return *this; }
+    mAng &operator+=(const mAng &v) { mAngle += v.mAngle; return *this; }
 
     /// @brief Augmented subtraction operator.
-    mAng& operator-=(const mAng& v) { mAngle -= v.mAngle; return *this; }
+    mAng &operator-=(const mAng &v) { mAngle -= v.mAngle; return *this; }
 
     /// @brief Positive operator.
     mAng operator+() const { return *this; }
@@ -34,16 +34,16 @@ struct mAng {
     mAng operator-() const { return mAng(-mAngle); }
 
     /// @brief Addition operator.
-    mAng operator+(const mAng& v) const { return mAng(mAngle + v.mAngle); }
+    mAng operator+(const mAng &v) const { return mAng(mAngle + v.mAngle); }
 
     /// @brief Subtraction operator.
-    mAng operator-(const mAng& v) const { return mAng(mAngle - v.mAngle); }
+    mAng operator-(const mAng &v) const { return mAng(mAngle - v.mAngle); }
 
     /// @brief Equality operator.
-    bool operator==(const mAng& v) const { return mAngle == v.mAngle; }
+    bool operator==(const mAng &v) const { return mAngle == v.mAngle; }
 
     /// @brief Inequality operator.
-    bool operator!=(const mAng& v) const { return mAngle != v.mAngle; }
+    bool operator!=(const mAng &v) const { return mAngle != v.mAngle; }
 
     s16 mAngle; ///< The rotation.
 };
@@ -63,7 +63,7 @@ public:
     mAng3_c(s16 fx, s16 fy, s16 fz) { x = fx; y = fy; z = fz; }
 
     /// @brief Constructs a new vector from an existing vector from the MTX library.
-    mAng3_c(const S16Vec& v) { x = v.x; y = v.y; z = v.z; }
+    mAng3_c(const S16Vec &v) { x = v.x; y = v.y; z = v.z; }
 
     /// @brief Short cast operator.
     operator s16*() { return &x; }
@@ -78,10 +78,10 @@ public:
     operator const S16Vec*() const { return (const S16Vec*)&x; }
 
     /// @brief Augmented addition operator.
-    mAng3_c& operator+=(const mAng3_c& v) { x += v.x; y += v.y; z += v.z; return *this; }
+    mAng3_c &operator+=(const mAng3_c &v) { x += v.x; y += v.y; z += v.z; return *this; }
 
     /// @brief Augmented subtraction operator.
-    mAng3_c& operator-=(const mAng3_c& v) { x -= v.x; y -= v.y; z -= v.z; return *this; }
+    mAng3_c &operator-=(const mAng3_c &v) { x -= v.x; y -= v.y; z -= v.z; return *this; }
 
     /// @brief Positive operator.
     mAng3_c operator+() const { return *this; }
@@ -90,16 +90,16 @@ public:
     mAng3_c operator-() const { return mAng3_c(-x, -y, -z); }
 
     /// @brief Addition operator.
-    mAng3_c operator+(const mAng3_c& v) const { return mAng3_c(x + v.x, y + v.y, z + v.z); }
+    mAng3_c operator+(const mAng3_c &v) const { return mAng3_c(x + v.x, y + v.y, z + v.z); }
 
     /// @brief Subtraction operator.
-    mAng3_c operator-(const mAng3_c& v) const { return mAng3_c(x - v.x, y - v.y, z - v.z); }
+    mAng3_c operator-(const mAng3_c &v) const { return mAng3_c(x - v.x, y - v.y, z - v.z); }
 
     /// @brief Equality operator.
-    bool operator==(const mAng3_c& v) const { return x == v.x && y == v.y && z == v.z; }
+    bool operator==(const mAng3_c &v) const { return x == v.x && y == v.y && z == v.z; }
 
     /// @brief Inequality operator.
-    bool operator!=(const mAng3_c& v) const { return x != v.x || y != v.y || z != v.z; }
+    bool operator!=(const mAng3_c &v) const { return x != v.x || y != v.y || z != v.z; }
 
     s16 x; ///< The rotation on the X axis.
     s16 y; ///< The rotation on the Y axis.

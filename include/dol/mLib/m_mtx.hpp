@@ -3,7 +3,7 @@
 #include <dol/mLib/m_angle.hpp>
 #include <lib/nw4r/math/vec.hpp>
 
-/// @brief 3x4 matrix.
+/// @brief A 3x4 matrix.
 /// @details [Used by game-specific code].
 class mMtx_c {
 public:

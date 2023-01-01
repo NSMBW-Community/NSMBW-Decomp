@@ -12,6 +12,7 @@
 ### Nonmatching Code
 
 - If your code does **not** match, use the `NONMATCHING` macro, and explain in a comment why it does not match.
+- The aforementioned macro can also be used to offer alternative, better-looking code.
 
 ### Headers
 
@@ -80,7 +81,7 @@
 
 - If the virtual functions do not follow the ordering conventions, then those rules can be ignored.
 
-## Documentation Guidelines
+## Documentation
 
 Doxygen is being used for generating documentation:
 - Use `@` to begin Doxygen commands.

@@ -8,7 +8,7 @@ class fBase_c;
 /// @brief A tree node with an owner reference.
 class fTrNdBa_c : public cTreeNd_c {
 public:
-    /// @brief Constructs a new fTrNdBa_c.
+    /// @brief Constructs a new tree node.
     /// @param owner The node's owner.
     fTrNdBa_c(fBase_c *owner) : mpOwner(owner) {}
 

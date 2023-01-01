@@ -1,8 +1,5 @@
 #pragma once
-
 #include <lib/egg/heap/frm_heap.hpp>
-
-// [TODO: extend and document this]
 
 namespace mHeap {
     void restoreCurrentHeap();

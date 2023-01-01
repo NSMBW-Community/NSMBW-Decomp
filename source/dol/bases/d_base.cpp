@@ -10,6 +10,8 @@ dBase_c::dBase_c() :
 dBase_c::~dBase_c() {}
 
 dBase_c* dBase_c::searchBaseByProfName(ProfileName profile, const dBase_c *parent) {
+
+    // [Possibly a stripped assert? No way someone is this dumb]
     const dBase_c* searchParent;
     if (parent != nullptr) {
         searchParent = parent;
@@ -19,6 +21,7 @@ dBase_c* dBase_c::searchBaseByProfName(ProfileName profile, const dBase_c *paren
 
     dBase_c* foundBase = (dBase_c*) fManager_c::searchBaseByProfName(profile, searchParent);
 
+    // [Same here]
     if (foundBase != nullptr) {
         return foundBase;
     }

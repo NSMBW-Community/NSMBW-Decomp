@@ -10,7 +10,7 @@ class fBase_c;
 /// @note Unofficial name.
 class fLiMgPTMF_c : public fLiMgBa_c {
 public:
-    /// @brief Constructs a new fLiMgPTMF_c.
+    /// @brief Constructs a new list node.
     /// @param procFunc The process function.
     fLiMgPTMF_c(int (fBase_c::*procFunc)()) : mpProcFunc(procFunc) {}
 
@@ -22,7 +22,7 @@ public:
      */
     bool addNode(fLiNdPrio_c *node);
 
-    /// @brief Calls the process function ::procFunc on the owner of each node in the list.
+    /// @brief Calls the process function ::mpProcFunc on the owner of each node in the list.
     /// @return If the operation was successful.
     bool walkPack();
 

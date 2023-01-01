@@ -4,15 +4,17 @@
 
 #define AMBUSH_ENEMY_COUNT 4 ///< The maximum amount of ambush enemies per world map.
 
+#define HINT_MOVIE_COUNT 70 ///< The total hint movie count.
+
 #define MAX_LIVES 99 ///< The maximum life count.
 
 #define MAX_STOCK_ITEM 99 ///< The maximum inventory amount per item.
 
-#define HINT_MOVIE_COUNT 70 ///< The total hint movie count.
-
 #define SAVE_SLOT_COUNT 3 ///< The total save slot count.
 
 #define STAR_COIN_COUNT 3 ///< The amount of Star Coins per level.
+
+#define STARTING_LIVES_COUNT 5 ///< The amount of starting lives.
 
 #define SUPER_GUIDE_DEATH_COUNT 8 ///< The amount of deaths required for the Super Guide to show.
 

@@ -116,6 +116,7 @@ s16 rad2s(float rad) {
 }
 } // namespace cM
 
+// [Why is this out of the namespace?]
 u16 U_GetAtanTable(float sin, float cos) {
     int idx = (sin / cos) * 1024.0f;
     return atntable[idx];

@@ -1,12 +1,11 @@
 #pragma once
 #include <types.h>
 
-/// @brief A doubly-linked list node.
+/// @brief A doubly-linked list node. See cListMg_c.
 /// @note Unofficial name.
-/// @see cListMg_c
 class cListNd_c {
 public:
-    /// @brief Constructs a new cListNd_c.
+    /// @brief Constructs a new list node.
     cListNd_c() : mpPrev(nullptr), mpNext(nullptr) {}
 
     cListNd_c *getPrev() const { return mpPrev; }
@@ -19,12 +18,11 @@ protected:
     friend class cListMg_c;
 };
 
-/// @brief A doubly-linked list container.
+/// @brief A doubly-linked list container. See cListNd_c.
 /// @note Unofficial name.
-/// @see cListNd_c
 class cListMg_c {
 public:
-    /// @brief Constructs a new cListMg_c.
+    /// @brief Constructs a new list container.
     cListMg_c() : mpFirst(nullptr), mpLast(nullptr) {}
 
     /**

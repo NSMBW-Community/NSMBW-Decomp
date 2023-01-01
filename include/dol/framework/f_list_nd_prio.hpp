@@ -7,7 +7,7 @@
 /// @note Unofficial name.
 class fLiNdPrio_c : public fLiNdBa_c {
 public:
-    /// @brief Constructs a new fLiNdPrio_c.
+    /// @brief Constructs a new list node.
     /// @param owner The node's owner.
     fLiNdPrio_c(fBase_c *owner) : fLiNdBa_c(owner), mOrder(0), mNewOrder(0) {}
 

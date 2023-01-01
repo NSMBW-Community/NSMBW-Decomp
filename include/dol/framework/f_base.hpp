@@ -65,8 +65,8 @@ public:
     fBase_c(); ///< Constructs a new base.
 
     /// @brief @p new operator override for all bases.
-    /// @details Every base is allocated in mHeap::g_gameHeaps[0], and memory is cleared
-    /// before construction.
+    /// @details Every base is allocated in mHeap::g_gameHeaps[0] starting from the top,
+    /// and memory is cleared before construction.
     static void *operator new(size_t);
     static void operator delete(void *); ///< @p delete operator override for all bases.
 
@@ -270,10 +270,10 @@ protected:
     static void (*sUnloadCallback)(); ///< [Unused].
 
 private:
-    static fBaseID_e m_rootUniqueID; ///< Unique ID counter for base construction. @see ::mUniqueID
-    static u32 m_tmpCtParam; ///< Temporary storage for the next constructed base's params. @see ::mParam
-    static ProfileName m_tmpCtProfName; ///< Temporary storage for the next constructed base's profile name. @see ::mProfName
-    static u8 m_tmpCtGroupType; ///< Temporary storage for the next constructed base's group type. @see ::mGroupType
+    static fBaseID_e m_rootUniqueID; ///< Unique ID counter for base construction. See ::mUniqueID.
+    static u32 m_tmpCtParam; ///< Temporary storage for the next constructed base's params. See ::mParam.
+    static ProfileName m_tmpCtProfName; ///< Temporary storage for the next constructed base's profile name. See ::mProfName.
+    static u8 m_tmpCtGroupType; ///< Temporary storage for the next constructed base's group type. See ::mGroupType.
     static fTrNdBa_c *m_tmpCtConnectParent; ///< Temporary storage for the next constructed base's parent connect node.
 
     friend class fManager_c;

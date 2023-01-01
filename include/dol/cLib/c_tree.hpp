@@ -1,12 +1,11 @@
 #pragma once
 #include <types.h>
 
-/// @brief A tree node.
+/// @brief A tree node. See cTreeMg_c.
 /// @details The tree is represented as a doubly-linked LCRS tree.
-/// @see cTreeMg_c
 class cTreeNd_c {
 public:
-    /// @brief Constructs a new cTreeNd_c.
+    /// @brief Constructs a new tree node.
     cTreeNd_c();
 
     /// @brief Gets the next node in preorder traversal order.
@@ -21,7 +20,7 @@ public:
     cTreeNd_c *getBrNext() const { return mpNext; }
 
 protected:
-    /// @brief Nulls out all fields.
+    /// @brief Clears all fields.
     void forcedClear();
 
     cTreeNd_c *mpParent; ///< The parent node.
@@ -32,11 +31,10 @@ protected:
     friend class cTreeMg_c;
 };
 
-/// @brief A tree container.
-/// @see cTreeNd_c
+/// @brief A tree container. See cTreeNd_c.
 class cTreeMg_c {
 public:
-    /// @brief Constructs a new cTreeMg_c.
+    /// @brief Constructs a new tree container.
     cTreeMg_c() : mpRootNode(nullptr) {}
 
     /**

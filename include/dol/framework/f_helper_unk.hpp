@@ -16,7 +16,7 @@ class fBaHelper_c {
     virtual void vf_0x10(void *); ///< [Stripped out of binary].
 
 public:
-    void Delete(); ///< [TODO: document this method]
-    int Load(int); ///< [TODO: document this method]
-    bool LoadOnlyOne(); ///< [TODO: document this method]
+    void Delete(); ///< @todo Document this method.
+    int Load(int); ///< @todo Document this method.
+    bool LoadOnlyOne(); ///< @todo Document this method.
 };

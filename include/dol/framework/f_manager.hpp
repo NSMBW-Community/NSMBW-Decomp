@@ -28,7 +28,7 @@ public:
         NOTHING, CONNECT, CREATE, EXECUTE, DELETE, DRAW
     };
 
-    /// @brief Constructs a new fManager_c.
+    /// @brief Constructs a new manager.
     /// @param owner The manager's owner.
     fManager_c(fBase_c *owner) :
         mConnectNode(owner),
@@ -36,8 +36,7 @@ public:
         mDrawNode(owner),
         mSearchNode(owner) {}
 
-    /// @brief Gets the index of the search list corresponding to the owner of the manager.
-    /// @see m_searchManage
+    /// @brief Gets the index of the search list corresponding to the owner of the manager. See ::m_searchManage.
     int getSearchTableNum();
 
     /// @brief Executes the currently enabled processes on all the bases in the respective lists.

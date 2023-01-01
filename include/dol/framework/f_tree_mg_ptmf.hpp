@@ -9,11 +9,11 @@ class fBase_c;
 /// @note Unofficial name.
 class fTrMgPTMF_c : public fTrMgBa_c {
 public:
-    /// @brief Constructs a new fTrMgPTMF_c.
+    /// @brief Constructs a new tree container.
     /// @param procFunc The process function.
     fTrMgPTMF_c(int (fBase_c::*procFunc)()) : mpProcFunc(procFunc) {}
 
-    /// @brief Calls the process function ::procFunc on the owner of each node in the tree.
+    /// @brief Calls the process function ::mpProcFunc on the owner of each node in the tree.
     /// @return If the operation was successful.
     bool walkPack();
 

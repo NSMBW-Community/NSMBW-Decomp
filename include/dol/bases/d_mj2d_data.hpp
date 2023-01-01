@@ -112,7 +112,7 @@ public:
     };
 
     /// @brief The Toad House types at the start node of each world.
-    /// @details RESCUE values are used when rescuing Toads in single player mode.
+    /// @details RESCUE values are used in houses that spawn after a successful Toad Rescue mission.
     enum START_KINOKO_KIND_e {
         NONE,
         YELLOW,
@@ -284,7 +284,11 @@ private:
     u8 mCurrentWorld; ///< The world the player is currently in.
     u8 mCurrentSubWorld; ///< The subworld the player is currently in.
     u8 mCurrentPathNode; ///< The path node the player is currently on. @todo [Verify].
-    u8 mIbaraNow; ///< The worldmap vine reshuffle counter.
+
+    /// @brief The worldmap vine reshuffle counter.
+    /// @details [Value decreases everytime a level is played. If it reaches zero, the vines are moved].
+    u8 mIbaraNow;
+
     u8 mSwitchOn; ///< The status of the worldmap switch.
     u8 mUnknown8; ///< [Unused].
 
@@ -296,18 +300,19 @@ private:
     u8 mPlayerContinue[PLAYER_COUNT]; ///< The continue count for each player.
     s8 mPlayerCoin[PLAYER_COUNT]; ///< The coin count for each player.
     u8 mPlayerLife[PLAYER_COUNT]; ///< The life count for each player.
-    u8 mPlayerCreateItem[PLAYER_COUNT]; ///< The Star Power flag for each player.
-    u8 mPlayerCharacter[PLAYER_COUNT]; ///< The character for each player.
-    u8 mPlayerPowerup[PLAYER_COUNT]; ///< The powerup for each player.
+    u8 mPlayerCreateItem[PLAYER_COUNT]; ///< The Star Power flag for each player. See ::PlayerCreateItem.
+    u8 mPlayerCharacter[PLAYER_COUNT]; ///< The character for each player. See ::PlayerCharacter.
+    u8 mPlayerPowerup[PLAYER_COUNT]; ///< The powerup for each player. See ::PlayerPowerup.
 
-    u8 mWorldCompletion[WORLD_COUNT]; ///< The completion flags for each world.
+    u8 mWorldCompletion[WORLD_COUNT]; ///< The completion flags for each world. See ::WORLD_COMPLETION_e.
     u8 mEnemyRevivalCount[WORLD_COUNT][AMBUSH_ENEMY_COUNT]; ///< The revival counter for each map enemy.
 
     u16 mUnknown64; ///< [Unused].
     u16 mStaffRollHighScore; ///< The staff credits high score.
-    u32 mScore; ///< The score.
+    u32 mScore; ///< The regular score.
 
-    u32 mStageCompletion[WORLD_COUNT][STAGE_COUNT]; ///< The completion flags for each level.
+    /// @brief The completion flags for each level. See ::COURSE_COMPLETION_e.
+    u32 mStageCompletion[WORLD_COUNT][STAGE_COUNT];
     bool mHintMovieBought[HINT_MOVIE_COUNT]; ///< The hint movie bought status for each movie.
     u8 mKinopioCourseNo[WORLD_COUNT]; ///< The Toad Rescue level for each world.
 
@@ -315,8 +320,10 @@ private:
     u8 mEnemyPathNode[WORLD_COUNT][AMBUSH_ENEMY_COUNT]; ///< The path node for each map enemy.
     u8 mEnemyDirection[WORLD_COUNT][AMBUSH_ENEMY_COUNT]; ///< The movement direction for each map enemy.
 
-    u8 mDeathCount[WORLD_COUNT][STAGE_COUNT]; ///< The death count for each level.
-    u8 mDeathCountSwitch; ///< The death count for the worldmap switch variant of World 3-4.
+    /// @brief The death count for each level.
+    /// @details The value is cumulative, and not reset after clearing the level.
+    u8 mDeathCount[WORLD_COUNT][STAGE_COUNT];
+    u8 mDeathCountSwitch; ///< The death count for the worldmap switch variant of World 3-4. See ::mDeathCount.
 
     u8 pad[0x13]; // [Aligns the data to 32]
     u32 mChecksum; ///< The CRC32 checksum of the above data.

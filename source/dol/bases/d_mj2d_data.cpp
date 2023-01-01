@@ -10,22 +10,27 @@ dMj2dGame_c::dMj2dGame_c() {
 }
 
 void dMj2dGame_c::initialize() {
+
+    // Clear slot and set version and completion
     memset(this, 0, sizeof(dMj2dGame_c));
     mVersion[0] = SAVE_VERSION;
     mVersion[1] = SAVE_SUB_VERSION;
     mGameCompletion |= SAVE_EMPTY;
 
+    // Unlock the rescue stage for each world
     for (int world = 0; world <= NORMAL_WORLD_COUNT; world++) {
         onCourseDataFlag(world, STAGE_RESCUE, GOAL_MASK);
     }
 
+    // Initialize the player data
     for (int player = 0; player < PLAYER_COUNT; player++) {
         setPlrID(player, sDefaultCharacters[player]);
         setPlrMode(player, NO_POWERUP);
-        setRest(player, 5);
+        setRest(player, STARTING_LIVES_COUNT);
         setCreateItem(player, NO_CREATE_ITEM);
     }
 
+    // Initialize map data
     for (int world = 0; world < WORLD_COUNT; world++) {
         setKinopioCourseNo(world, STAGE_COUNT);
 
@@ -146,6 +151,7 @@ void dMj2dGame_c::setDeathCount(int world, int level, bool isSwitchPressed, u8 c
         mGameCompletion |= SUPER_GUIDE_TRIGGERED;
     }
 
+    // [Hardcoded check for World 3-4]
     if (isSwitchPressed && world == WORLD_3 && level == STAGE_4) {
         setSwitchDeathCount(count);
     } else {
@@ -154,6 +160,7 @@ void dMj2dGame_c::setDeathCount(int world, int level, bool isSwitchPressed, u8 c
 }
 
 int dMj2dGame_c::getDeathCount(int world, int level, bool isSwitchPressed) const {
+    // [Hardcoded check for World 3-4]
     if (isSwitchPressed && world == WORLD_3 && level == STAGE_4) {
         return getSwitchDeathCount();
     }

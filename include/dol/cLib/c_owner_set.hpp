@@ -1,9 +1,9 @@
 #pragma once
 #include <types.h>
+/// @file
 
-/// @brief A set node with a pointer to the owning container.
+/// @brief A set node with a pointer to the owning container. See cOwnerSetMg_c.
 /// @note Unofficial name.
-/// @see cOwnerSetMg_c
 class cOwnerSetNd_c {
 public:
     void *getOwner() const { return mpOwner; }
@@ -16,13 +16,12 @@ private:
     friend class cOwnerSetMg_c;
 };
 
-/// @brief A set container.
+/// @brief A set container. See cOwnerSetNd_c.
 /// @details The set is implemented as a singly-linked list.
 /// @note Unofficial name.
-/// @see cOwnerSetNd_c
 class cOwnerSetMg_c {
 public:
-    /// @brief Constructs a new cSetMg_c.
+    /// @brief Constructs a new set container.
     cOwnerSetMg_c() : mpRoot(nullptr) {}
 
     /// @brief Destroys the set.
@@ -50,3 +49,7 @@ private:
 
     cOwnerSetNd_c* mpRoot; ///< The first element of the set.
 };
+
+/// @brief [Looks like a badly stripped assert].
+/// @note Unofficial name.
+void unknown();

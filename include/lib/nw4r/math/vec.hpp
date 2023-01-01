@@ -3,13 +3,13 @@
 namespace nw4r {
 namespace math {
 
-/// @brief A two-dimensional vector.
+/// @brief A two-dimensional floating point vector.
 struct VEC2 {
     float x;
     float y;
 };
 
-/// @brief A three-dimensional vector.
+/// @brief A three-dimensional floating point vector.
 struct VEC3 {
     float x;
     float y;

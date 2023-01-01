@@ -1,4 +1,5 @@
 #pragma once
+/// @file
 
 /**
  * @brief A unique identifier for an fBase_c object.

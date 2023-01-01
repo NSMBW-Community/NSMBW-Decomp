@@ -9,7 +9,7 @@ class fBase_c;
 class fLiNdBa_c : public cListNd_c {
 public:
 
-    /// @brief Constructs a new fLiNdBa_c.
+    /// @brief Constructs a new list node.
     /// @param owner The node's owner.
     fLiNdBa_c(fBase_c *owner) : mpOwner(owner) {}
 
@@ -22,7 +22,7 @@ public:
     }
 
     /// @brief Removes this node from the owner's fBase_c::mUnusedList.
-    /// @note Might not actually belong to this class (xor trick on hash).
+    /// @note Unofficial name. Might not actually belong to this class (xor trick on hash).
     void removeSelf();
 
     fBase_c *mpOwner; ///< The owner of this node.

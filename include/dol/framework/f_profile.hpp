@@ -46,9 +46,7 @@ namespace fProfile {
     /// @brief A set of basic information needed to construct an actor.
     /// @details In addition to the fields in fBaseProfile_c, it also contains some properties about the actor.
     struct fActorProfile_c : fBaseProfile_c {
-        /// @brief Some actor-related properties.
-        /// @todo Document the bitfield.
-        u32 mActorProperties;
+        u32 mActorProperties; ///< Some actor-related properties. @todo Document the bitfield.
     };
 
     extern fBaseProfile_c *(*sProfileList)[NUMBER_OF_ACTORS]; ///< A list of all profiles.

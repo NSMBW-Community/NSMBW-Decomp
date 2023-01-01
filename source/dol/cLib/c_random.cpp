@@ -5,6 +5,7 @@ u32 cM_rand_c::mConst1 = 0x19660D;
 u32 cM_rand_c::mConst2 = 0x3C6EF35F;
 
 // This decompiled terribly but at least it matches
+// Original algorithm: https://s3.amazonaws.com/nrbook.com/book_C210_pdf/chap07c.pdf (page 284-285)
 inline u32 cM_rand_c::ranqdStep() {
 
     // Variables must be declared in this order or there will be regswaps
