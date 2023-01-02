@@ -5,8 +5,12 @@
 #include <dol/framework/f_base.hpp>
 
 bool fTrMgPTMF_c::walkPack() {
-    if (mpProcFunc == 0) return true;
+    // Gracefully fail if the processing function isn't set
+    if (mpProcFunc == 0) {
+        return true;
+    }
 
+    // Call the processing function for each node in the tree
     fTrNdBa_c *curr = (fTrNdBa_c *) mpRootNode;
     while (curr != nullptr) {
         fTrNdBa_c *next = curr->getTreeNext();

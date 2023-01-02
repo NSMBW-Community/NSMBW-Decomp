@@ -14,7 +14,7 @@ extern void __unregister_fragment(int);
 static int fragmentID = -2;
 
 /// @brief Registers the exception table.
-/// @details [Since the game doesn't support exceptions, this is unused]
+/// @details [Since the game doesn't support exceptions, this is unused].
 void __init_cpp_exceptions(void) {
     if (fragmentID == -2) {
         register char *temp; // r4
@@ -27,7 +27,7 @@ void __init_cpp_exceptions(void) {
 }
 
 /// @brief Unregisters the exception table.
-/// @details [Since the game's main loop never exits, this is unused]
+/// @details [Since the game's main loop never exits, this is unused].
 void __fini_cpp_exceptions(void) {
     if (fragmentID != -2) {
         __unregister_fragment(fragmentID);

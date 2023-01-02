@@ -5,18 +5,23 @@
 
 bool fLiMgPTMF_c::addNode(fLiNdPrio_c *node) {
     fLiNdPrio_c *curr = getFirst();
+
+    // Null pointer check
     if (node == nullptr) {
         return false;
     }
 
+    // If the first node isn't set, make the new node the first and last
     if (curr == nullptr) {
         return append(node);
     }
 
+    // If the first node's order is lower than the new node, place the latter first
     if (curr->getOrder() > node->getOrder()) {
         return insertAfter(node, nullptr);
     }
 
+    // Else traverse through the list until a node with lower order is found or the end is reached
     while (curr->getNext() && curr->getNext()->getOrder() <= node->getOrder()) {
         curr = curr->getNext();
     }
@@ -24,10 +29,13 @@ bool fLiMgPTMF_c::addNode(fLiNdPrio_c *node) {
 }
 
 bool fLiMgPTMF_c::walkPack() {
+
+    // Gracefully fail if the processing function isn't set
     if (mpProcFunc == 0) {
         return true;
     }
 
+    // Call the processing function for each node in the list
     fLiNdBa_c *curr = (fLiNdBa_c *) mpFirst;
     while (curr != nullptr) {
         fLiNdBa_c *next = curr->getNext();
