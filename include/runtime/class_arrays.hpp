@@ -1,8 +1,9 @@
 #pragma once
 #include <types.h>
+/// @file
 
-typedef void (*ctorPtr)(void *, int);
-typedef void (*dtorPtr)(void *, int);
+typedef void (*ctorPtr)(void *, int); ///< Constructor function pointer.
+typedef void (*dtorPtr)(void *, int); ///< Destructor function pointer.
 
 /// @brief Guarantees the correct destruction of an array if an exception is thrown during its construction.
 /// @details [Since the game doesn't support exceptions, this is unused].

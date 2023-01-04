@@ -3,7 +3,7 @@
 namespace nw4r {
 namespace ut {
 
-/// @brief A 32-bit color.
+/// @brief A 32-bit RGBA color.
 struct Color {
     union {
         struct {

@@ -26,7 +26,7 @@ public:
     /// @details [The function calculates ::g_basesRandomSeed for no reason before passing
     /// execution to the base class].
     virtual int preDraw();
-    virtual void postDraw(fBase_c::MAIN_STATE_e status); ///< See fBase_cpostDraw.
+    virtual void postDraw(fBase_c::MAIN_STATE_e status); ///< See fBase_c::postDraw.
 
     virtual ~dBase_c();
 

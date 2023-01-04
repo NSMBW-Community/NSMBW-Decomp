@@ -32,3 +32,6 @@ typedef volatile u32 vu32;
 typedef volatile u64 vu64;
 typedef volatile f32 vf32;
 typedef volatile f64 vf64;
+
+// Macros
+#define ARRAY_SIZE(a) (sizeof(a) / sizeof(a[0]))

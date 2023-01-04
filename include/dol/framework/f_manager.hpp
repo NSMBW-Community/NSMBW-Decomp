@@ -8,24 +8,26 @@
 #include <dol/framework/f_tree_nd.hpp>
 #include <dol/framework/f_profile.hpp>
 
+#define GET_PROC_FLAG(proc) (1 << (proc - 1))
+
 class fBase_c;
 
 /// @brief A class that manages the execution of the bases.
 class fManager_c {
 public:
 
-    /// @brief Flags used for bitmasks of the different processes. @see ::LOOP_PROC_e
-    enum PROC_FLAGS {
-        PROC_FLAG_CONNECT = 1,
-        PROC_FLAG_CREATE = 2,
-        PROC_FLAG_EXECUTE = 4,
-        PROC_FLAG_DELETE = 8,
-        PROC_FLAG_DRAW = 16
-    };
-
-    /// @brief The processes for fManager_c. @see ::PROC_FLAGS
+    /// @brief The processes for fManager_c.
     enum LOOP_PROC_e {
         NOTHING, CONNECT, CREATE, EXECUTE, DELETE, DRAW
+    };
+
+    /// @brief Flags for different processes, induced from ::LOOP_PROC_e.
+    enum PROC_FLAGS {
+        PROC_FLAG_CONNECT = GET_PROC_FLAG(CONNECT),
+        PROC_FLAG_CREATE = GET_PROC_FLAG(CREATE),
+        PROC_FLAG_EXECUTE = GET_PROC_FLAG(EXECUTE),
+        PROC_FLAG_DELETE = GET_PROC_FLAG(DELETE),
+        PROC_FLAG_DRAW = GET_PROC_FLAG(DRAW)
     };
 
     /// @brief Constructs a new manager.

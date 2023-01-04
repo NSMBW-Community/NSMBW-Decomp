@@ -131,11 +131,11 @@ public:
 
     void initialize(); ///< Initializes the slot data.
 
-    void setPlrID(int player, int character); ///< Sets @p player 's character.
-    int getPlrID(int player) const; ///< Gets @p player 's character.
+    void setPlrID(int player, int character); ///< Sets @p player 's character. See ::PlayerCharacter.
+    int getPlrID(int player) const; ///< Gets @p player 's character. See ::PlayerCharacter.
 
-    void setPlrMode(int player, u8 powerup); ///< Sets @p player 's powerup.
-    int getPlrMode(int player) const; ///< Gets @p player 's powerup.
+    void setPlrMode(int player, u8 powerup); ///< Sets @p player 's powerup. See ::PlayerPowerup.
+    int getPlrMode(int player) const; ///< Gets @p player 's powerup. See ::PlayerPowerup.
 
     void setRest(int player, u8 lives); ///< Sets @p player 's life count.
     int getRest(int player) const; ///< Gets @p player 's life count.

@@ -37,7 +37,9 @@ void cOwnerSetMg_c::remove(cOwnerSetNd_c *nd, void *owner) {
         unknown();
     }
 
+    // Check that the owner matches
     if (nd != nullptr && nd->mpOwner == owner) {
+
         // If it's the root node, set the next node as the root
         if (mpRoot == nd) {
             mpRoot = nd->mpNext;

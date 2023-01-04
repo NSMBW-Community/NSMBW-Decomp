@@ -30,7 +30,7 @@ typedef u16 ProfileName;
  */
 char *dProf_getName(ProfileName profName);
 
-/// @brief for all profile related structures.
+/// @brief For all profile related structures.
 /// @note Unofficial name.
 namespace fProfile {
 
