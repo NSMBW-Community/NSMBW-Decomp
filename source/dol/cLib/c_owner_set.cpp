@@ -1,11 +1,11 @@
 #include <dol/cLib/c_owner_set.hpp>
 
-void unknown() {
+void UNK_80161880() {
 }
 
 void cOwnerSetMg_c::add(cOwnerSetNd_c *nd, void *owner) {
     if (this == nullptr || nd == nullptr || owner == nullptr) {
-        unknown();
+        UNK_80161880();
     }
 
     if (nd != nullptr) {
@@ -34,7 +34,7 @@ void cOwnerSetMg_c::add(cOwnerSetNd_c *nd, void *owner) {
 
 void cOwnerSetMg_c::remove(cOwnerSetNd_c *nd, void *owner) {
     if (this == nullptr || nd == nullptr || owner == nullptr) {
-        unknown();
+        UNK_80161880();
     }
 
     // Check that the owner matches
@@ -64,7 +64,7 @@ void cOwnerSetMg_c::remove(cOwnerSetNd_c *nd, void *owner) {
 
 void cOwnerSetMg_c::clear() {
     if (this == nullptr) {
-        unknown();
+        UNK_80161880();
     }
 
     cOwnerSetNd_c *curr = mpRoot;

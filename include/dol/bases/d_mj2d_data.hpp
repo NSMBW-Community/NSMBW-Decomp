@@ -286,7 +286,7 @@ private:
     u8 mCurrentPathNode; ///< The path node the player is currently on. @todo [Verify].
 
     /// @brief The worldmap vine reshuffle counter.
-    /// @details [Value decreases everytime a level is played. If it reaches zero, the vines are moved].
+    /// @details [Value decreases every time a level is played. If it reaches zero, the vines are moved].
     u8 mIbaraNow;
 
     u8 mSwitchOn; ///< The status of the worldmap switch.

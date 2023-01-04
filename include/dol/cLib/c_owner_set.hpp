@@ -52,4 +52,4 @@ private:
 
 /// @brief [Looks like a badly stripped assert].
 /// @note Unofficial name.
-void unknown();
+void UNK_80161880();

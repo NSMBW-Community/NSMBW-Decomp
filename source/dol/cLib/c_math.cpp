@@ -1,10 +1,9 @@
 #include <types.h>
 #include <lib/MSL_C/math/fabs.h>
 #include <lib/MSL_C/math/fmod.h>
+#include <lib/nw4r/math/constant.hpp>
 #include <dol/cLib/c_random.hpp>
 /// @file
-
-#define M_2PI 6.2831854820251465
 
 static cM_rand_c s_rnd = cM_rand_c(100); ///< [Used for tile randomization, eye animations and a few more things].
 static cM_rand_c s_rnd2 = cM_rand_c(101); ///< [Unused].
@@ -94,8 +93,8 @@ static u16 atntable[1025] = { 0x0, 0xA, 0x14, 0x1F, 0x29, 0x33, 0x3D, 0x47, 0x51
 
 namespace cM {
 
-inline float getConst() {
-    return 10430.378f; // Equals roughly to 65535 / 2PI
+inline float getCircleUnit() {
+    return 65536 / (2 * nw4r::math::F_PI);
 }
 
 inline bool isZero(float val) {
@@ -106,7 +105,7 @@ inline bool isZero(float val) {
 
 s16 rad2s(float rad) {
     // Clamp the value between -65535 and 65535
-    int mod = (float)fmod(rad, M_2PI) * getConst();
+    int mod = (float)fmod(rad, 2 * nw4r::math::F_PI) * getCircleUnit();
 
     if (mod < -0x8000) {
         mod += 0x10000;
