@@ -48,8 +48,3 @@ private:
     static int loadAsyncCallback(); ///< [Unused, does nothing]. @note Unofficial name.
     static void unloadCallback(); ///< [Unused, does nothing]. @note Unofficial name.
 };
-
-/// @brief Random seed written to after dBase_c::preDraw.
-/// @details [Unused. Not part of the dBase_c class as its mangled hash is the same as its demangled hash].
-/// @note Unofficial name.
-static u32 g_basesRandomSeed;
