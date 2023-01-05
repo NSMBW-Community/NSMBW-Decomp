@@ -24,9 +24,6 @@ public:
     /// @brief Constructs a new vector from an existing vector from the nw4r::math library.
     mVec2_c(const nw4r::math::VEC2 &v) { x = v.x; y = v.y; }
 
-    /// @brief Destroys the vector.
-    ~mVec2_c() {}
-
     /// @brief Float cast operator.
     operator f32*() { return &x; }
 
@@ -105,9 +102,6 @@ public:
 
     /// @brief Constructs a new vector from an existing vector from the nw4r::math library.
     mVec3_c(const nw4r::math::VEC3 &v) { x = v.x; y = v.y; z = v.z; }
-
-    /// @brief Destroys the vector.
-    ~mVec3_c() {}
 
     /// @brief Float cast operator.
     operator f32*() { return &x; }

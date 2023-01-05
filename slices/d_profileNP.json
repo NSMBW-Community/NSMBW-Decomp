@@ -57,8 +57,7 @@
             "memoryRanges": {
                 ".text": "0x130-0x4e0",
                 ".data": "0xbb8-0xd28",
-                ".rodata": "0x0-0x18",
-                ".bss": "0x8-0x10"
+                ".rodata": "0x0-0x18"
             }
         },
         {

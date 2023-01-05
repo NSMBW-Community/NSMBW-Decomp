@@ -2,6 +2,12 @@
 #include <dol/bases/d_game_com.hpp>
 #include <dol/framework/f_profile.hpp>
 #include <constants/sjis_constants.h>
+/// @file
+
+/// @brief Random seed written to after dBase_c::preDraw.
+/// @details [Unused. Not part of the dBase_c class as its mangled hash is the same as its demangled hash].
+/// @note Unofficial name.
+static u32 g_basesRandomSeed;
 
 dBase_c::dBase_c() :
     mpKindString(getKindString()),
