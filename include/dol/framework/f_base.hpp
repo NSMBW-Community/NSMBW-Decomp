@@ -85,10 +85,10 @@ protected:
 
     /// @brief Code to be executed after ::create.
     /// @details Allows running different code based on the result of the previous two functions.
-    /// For fBase_c, this function will:
-    /// * Mark the base as created if creation was successful.
-    /// * Request deletion of the base if creation resulted in an error.
-    /// * Other states will not produce any result.
+    /// For fBase_c, this function:
+    /// * Marks the base as created if creation was successful.
+    /// * Requests deletion of the base if creation resulted in an error.
+    /// * Other states do not produce any result.
     virtual void postCreate(MAIN_STATE_e state);
 
     /// @brief Code to be executed on base deletion.
@@ -105,11 +105,11 @@ protected:
 
     /// @brief Code to be executed after ::doDelete.
     /// @details Allows running different code based on the result of the previous two functions.
-    /// For fBase_c, if deletion was successful, this function will:
-    /// * Remove the base from the lists it's still in.
-    /// * Delete the base's heap and ultimately the base itself.
+    /// For fBase_c, if deletion was successful, this function:
+    /// * Removes the base from the lists it's still in.
+    /// * Deletes the base's heap and ultimately the base itself.
     ///
-    /// Other states will not produce any result.
+    /// Other states do not produce any result.
     virtual void postDelete(MAIN_STATE_e state);
 
     /// @brief Contains the base's main logic.
@@ -149,8 +149,8 @@ protected:
 
     /**
      * @brief Tries to create a heap for the base [Unused].
-     * @details Should the heap creation fail, the function will try to create a smaller heap.
-     * If that also fails, the function will request the deletion of the base.
+     * @details Should the heap creation fail, the function tries to create a smaller heap.
+     * If that also fails, the function requests the deletion of the base.
      * @param size The heap's size.
      * @param parentHeap The parent heap.
      * @return If the heap creation was successful.
@@ -159,7 +159,7 @@ protected:
 
     /**
      * @brief Tries to create a heap for the base [Unused].
-     * @details Unlike ::entryFrmHeap, this function will give up immediately if heap creation fails.
+     * @details Unlike ::entryFrmHeap, this function gives up immediately if heap creation fails.
      * @param size The heap's size.
      * @param parentHeap The parent heap.
      * @return If the heap creation was successful.

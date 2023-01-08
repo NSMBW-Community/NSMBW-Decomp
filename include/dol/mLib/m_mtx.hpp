@@ -2,6 +2,7 @@
 #include <types.h>
 #include <dol/mLib/m_angle.hpp>
 #include <lib/nw4r/math/vec.hpp>
+#include <lib/rvl/mtx/mtx.h>
 
 /// @brief A 3x4 matrix.
 /// @details [Used by game-specific code].
@@ -12,6 +13,12 @@ public:
 
     /// @brief Constructs a matrix with the given components.
     mMtx_c(float _00, float _01, float _02, float _03, float _10, float _11, float _12, float _13, float _20, float _21, float _22, float _23);
+
+    /// @brief Mtx cast operator.
+    operator Mtx*() { return &mData; }
+
+    /// @brief Const Mtx cast operator.
+    operator const Mtx*() const { return &mData; }
 
     void XrotS(mAng angle); ///< Generates a rotation matrix for the X axis with the given angle.
     void XrotM(mAng angle); ///< Rotates the matrix on the X axis by the given angle.
