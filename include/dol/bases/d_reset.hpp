@@ -30,7 +30,6 @@ namespace dReset {
             NONE ///< Does not execute any reset procedure.
         };
 
-    private:
         EGG::Heap *heap;
         EGG::ColorFader *colorFader;
 
@@ -67,7 +66,6 @@ namespace dReset {
         bool executingFade;
         bool _3E;
 
-    public:
         static dReset::Manage_c* GetInstance(); ///< Gets a pointer to the instance of this class.
     };
 
