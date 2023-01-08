@@ -35,7 +35,7 @@ dBase_c* dBase_c::searchBaseByProfName(ProfileName profile, const dBase_c *paren
 }
 
 int dBase_c::preCreate() {
-    return (fBase_c::preCreate() != 0);
+    return (fBase_c::preCreate() != NOT_READY);
 }
 
 void dBase_c::postCreate(fBase_c::MAIN_STATE_e status) {
@@ -43,7 +43,7 @@ void dBase_c::postCreate(fBase_c::MAIN_STATE_e status) {
 }
 
 int dBase_c::preDelete() {
-    return (fBase_c::preDelete() != 0);
+    return (fBase_c::preDelete() != NOT_READY);
 }
 
 void dBase_c::postDelete(fBase_c::MAIN_STATE_e status) {

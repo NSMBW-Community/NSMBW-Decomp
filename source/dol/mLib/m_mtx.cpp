@@ -64,7 +64,7 @@ void mMtx_c::XrotM(mAng angle) {
     if (angle.mAngle != 0) {
         mMtx_c rotatedMtx = mMtx_c();
         rotatedMtx.XrotS(angle);
-        PSMTXConcat((const Mtx *)this, (const Mtx *)&rotatedMtx, (Mtx *)this);
+        PSMTXConcat(*this, rotatedMtx, *this);
     }
 }
 
@@ -89,7 +89,7 @@ void mMtx_c::YrotM(mAng angle) {
     if (angle.mAngle != 0) {
         mMtx_c rotatedMtx = mMtx_c();
         rotatedMtx.YrotS(angle);
-        PSMTXConcat((const Mtx*)this, (const Mtx*)&rotatedMtx, (Mtx*)this);
+        PSMTXConcat(*this, rotatedMtx, *this);
     }
 }
 
@@ -120,7 +120,7 @@ void mMtx_c::ZrotM(mAng angle) {
     if (angle.mAngle != 0) {
         mMtx_c rotatedMtx = mMtx_c();
         rotatedMtx.ZrotS(angle);
-        PSMTXConcat((const Mtx*)this, (const Mtx*)&rotatedMtx, (Mtx*)this);
+        PSMTXConcat(*this, rotatedMtx, *this);
     }
 }
 

@@ -9,7 +9,7 @@
 class dSaveMng_c;
 
 /// @brief Save data header holder.
-/// @details The data stored here is temporary, as it will be discarded unless the game is saved.
+/// @details The data stored here is temporary, as it is discarded unless the game is saved.
 /// Size must be 32-byte aligned.
 class dMj2dHeader_c {
     public:
@@ -76,7 +76,7 @@ private:
 };
 
 /// @brief Save slot data holder.
-/// @details The data stored here is temporary, as it will be discarded unless the game is saved.
+/// @details The data stored here is temporary, as it is discarded unless the game is saved.
 /// Size must be 32-byte aligned.
 class dMj2dGame_c {
 public:

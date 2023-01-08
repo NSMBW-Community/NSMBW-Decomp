@@ -31,6 +31,17 @@
             }
         },
         {
+            "name": "dol/bases/d_base_actor.o",
+            "source": "dol/bases/d_base_actor.cpp",
+            "memoryRanges": {
+                ".text": "0x65f50-0x667c0",
+                ".ctors": "0xa8-0xac",
+                ".data": "0x10e88-0x10ee8",
+                ".sbss": "0x1d8-0x1e8",
+                ".sdata2": "0xbb0-0xbc0"
+            }
+        },
+        {
             "name": "dol/bases/d_mj2d_data.o",
             "source": "dol/bases/d_mj2d_data.cpp",
             "memoryRanges": {
