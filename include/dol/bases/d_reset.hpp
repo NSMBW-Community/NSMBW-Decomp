@@ -30,13 +30,14 @@ namespace dReset {
             NONE ///< Does not execute any reset procedure.
         };
 
+    private:
         EGG::Heap *heap;
         EGG::ColorFader *colorFader;
 
         int modeProc; ///< The game's current running state. See ::Mode_e.
 
         /// @brief The running state the game's about to switch to. See ::Mode_e.
-        /// @details The state does not change if the state is set to Mode_e::NO_CHANGE.
+        /// @details The state does not change if this is set to Mode_e::NO_CHANGE.
         int modeInit;
 
         int prevMode;
@@ -66,7 +67,8 @@ namespace dReset {
         bool executingFade;
         bool _3E;
 
-        static dReset::Manage_c* GetInstance();
+    public:
+        static dReset::Manage_c* GetInstance(); ///< Gets a pointer to the instance of this class.
     };
 
 } // namespace dReset
