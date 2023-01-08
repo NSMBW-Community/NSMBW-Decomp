@@ -195,13 +195,12 @@ void dBaseActor_c::calcSpeedX() {
     float newSpeed = mSpeed.x;
 
     // If the X speed hasn't reached the max, increase it until it reaches the limit
+    // Else decrease it until the limit
     if (mSpeed.x < mSpeedMax.x) {
         newSpeed += mAccelF;
         if (newSpeed > mSpeedMax.x) {
             newSpeed = mSpeedMax.x;
         }
-
-    // Else decrease it until the limit
     } else if (mSpeed.x > mSpeedMax.x) {
         newSpeed -= mAccelF;
         if (newSpeed < mSpeedMax.x) {
