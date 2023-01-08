@@ -86,10 +86,10 @@ int dBaseActor_c::preExecute() {
         // Make sure the game isn't being reset
         dReset::Manage_c *manage = dReset::Manage_c::GetInstance();
         return !(
-            (manage->modeInit == dReset::Manage_c::SOFT_RESET ||
-            manage->modeProc == dReset::Manage_c::SOFT_RESET) ||
-            (manage->modeInit == dReset::Manage_c::SAFETY_WAIT ||
-            manage->modeProc == dReset::Manage_c::SAFETY_WAIT)
+            (manage->mModeInit == dReset::Manage_c::SOFT_RESET ||
+            manage->mModeProc == dReset::Manage_c::SOFT_RESET) ||
+            (manage->mModeInit == dReset::Manage_c::SAFETY_WAIT ||
+            manage->mModeProc == dReset::Manage_c::SAFETY_WAIT)
             );
     }
 }
@@ -159,11 +159,10 @@ void dBaseActor_c::calcSpeed() {
     float sin = nw4r::math::SinIdx(mLastAngle.y);
     float cos = nw4r::math::CosIdx(mLastAngle.y);
 
-    // Distribute mSpeedF on the X and Z axes according to the actor's rotation
-    // Use fall acceleration for the Y speed
+    // Distribute mSpeedF on the X and Z axes according to the actor's rotation and use the regular Y speed
     // [Defining newZ is required for matching]
     float newZ = mSpeedF * cos;
-    mSpeed.y = _fmax(mSpeed.y + mAccelY, mAccelFall);
+    mSpeed.y = _fmax(mSpeed.y + mAccelY, mMaxFallSpeed);
     mSpeed.x = mSpeedF * sin;
     mSpeed.z = newZ;
 }
@@ -197,14 +196,14 @@ void dBaseActor_c::calcSpeedX() {
 
     // If the X speed hasn't reached the max, increase it until it reaches the limit
     if (mSpeed.x < mSpeedMax.x) {
-        newSpeed += mAccelX;
+        newSpeed += mAccelF;
         if (newSpeed > mSpeedMax.x) {
             newSpeed = mSpeedMax.x;
         }
 
     // Else decrease it until the limit
     } else if (mSpeed.x > mSpeedMax.x) {
-        newSpeed -= mAccelX;
+        newSpeed -= mAccelF;
         if (newSpeed < mSpeedMax.x) {
             newSpeed = mSpeedMax.x;
         }
@@ -224,21 +223,22 @@ void dBaseActor_c::calcSpeedY() {
 }
 
 void dBaseActor_c::calcSpeedF() {
-    // [Is mAccelF really an acceleration? This function hints at it being a speed limit if anything]
-    if (mSpeedF < mAccelF) {
-        mSpeedF = _fmin(mSpeedF + mAccelX, mAccelF);
-    } else if (mSpeedF > mAccelF) {
-        mSpeedF = _fmax(mSpeedF - mAccelX, mAccelF);
+    // If the speed hasn't exceeded the limit, increase it until the limit is reached
+    // Else decrease it until the limit
+    if (mSpeedF < mMaxSpeedF) {
+        mSpeedF = _fmin(mSpeedF + mAccelF, mMaxSpeedF);
+    } else if (mSpeedF > mMaxSpeedF) {
+        mSpeedF = _fmax(mSpeedF - mAccelF, mMaxSpeedF);
     }
 }
 
 void dBaseActor_c::calcFallSpeed() {
     // If the speed has exceeded the limit, decrease it until the limit is reached
     // Else increase it until the limit
-    if (mSpeed.y < mAccelFall) {
-        mSpeed.y = _fmin(mSpeed.y - mAccelY, mAccelFall);
-    } else if (mSpeed.y > mAccelFall) {
-        mSpeed.y = _fmax(mSpeed.y + mAccelY, mAccelFall);
+    if (mSpeed.y < mMaxFallSpeed) {
+        mSpeed.y = _fmin(mSpeed.y - mAccelY, mMaxFallSpeed);
+    } else if (mSpeed.y > mMaxFallSpeed) {
+        mSpeed.y = _fmax(mSpeed.y + mAccelY, mMaxFallSpeed);
     }
 }
 

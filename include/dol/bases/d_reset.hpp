@@ -30,41 +30,41 @@ namespace dReset {
             NONE ///< Does not execute any reset procedure.
         };
 
-        EGG::Heap *heap;
-        EGG::ColorFader *colorFader;
+        EGG::Heap *mpHeap;
+        EGG::ColorFader *mpColorFader;
 
-        int modeProc; ///< The game's current running state. See ::Mode_e.
+        int mModeProc; ///< The game's current running state. See ::Mode_e.
 
         /// @brief The running state the game's about to switch to. See ::Mode_e.
         /// @details The state does not change if this is set to Mode_e::NO_CHANGE.
-        int modeInit;
+        int mModeInit;
 
-        int prevMode;
-        int execMode; ///< The hard reset procedure to be executed. See ::Exec_e.
+        int mPrevMode;
+        int mExecMode; ///< The hard reset procedure to be executed. See ::Exec_e.
 
-        bool hbmReset;
-        bool hbmReturnMenu;
+        bool mHbmReset;
+        bool mHbmReturnMenu;
 
-        bool resetCallbackCalled;
-        bool powerCallbackCalled;
-        bool interiorReturnDataManager;
+        bool mResetCallbackCalled;
+        bool mPowerCallbackCalled;
+        bool mInteriorReturnDataManager;
 
-        u32 hbmResetTypeMaybe;
-        u32 hbmPowerOffTypeMaybe;
-        u32 softResetStateMaybe;
-        bool softResetPermitted;
-        bool _2D;
+        u32 mHbmResetTypeMaybe;
+        u32 mHbmPowerOffTypeMaybe;
+        u32 mSoftResetStateMaybe;
+        bool mSoftResetPermitted;
+        bool mUnknown2D;
 
-        bool softResetRequested;
-        bool fadeOutRequested;
-        bool _30;
+        bool mSoftResetRequested;
+        bool mFadeOutRequested;
+        bool mUnknown30;
 
-        void *audioResetFunc;
-        void *audioExitFunc;
+        void *mpAudioResetFunc;
+        void *mpAudioExitFunc;
 
-        bool bootCompleted;
-        bool executingFade;
-        bool _3E;
+        bool mBootCompleted;
+        bool mExecutingFade;
+        bool mUnknown3E;
 
         static dReset::Manage_c* GetInstance(); ///< Gets a pointer to the instance of this class.
     };
