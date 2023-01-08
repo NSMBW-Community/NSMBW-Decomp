@@ -64,16 +64,19 @@ protected:
     virtual void finalUpdate(); ///< Code to be executed after all the actors' ::execute method has run.
 
 public:
-    /// @brief Updates the actor's speed on all axes, using ::mSpeedF on X/Z and ::mAccelFall on Y.
+    /// @brief Updates the actor's speed (3D actors).
+    /// @details ::mSpeedF gets applied to the direction the actor is facing, while
+    /// ::mAccelY is added to the vertical speed.
     void calcSpeed();
 
-    /// @brief Updates the actor's speed on the X axis (using ::mSpeedF) and on the Y axis (using ::mAccelFall).
+    /// @brief Updates the actor's speed (2D actors).
+    /// @details ::mSpeedF gets applied to the X axis.
     void calcSpeedXY();
 
-    void calcSpeedX(); ///< Updates the actor's X speed, using ::mSpeedMax as limit.
-    void calcFallSpeed(); ///< Updates the actor's Y speed, using ::mAccelFall as limit.
-    void calcSpeedY(); ///< Updates the actor's Y speed, using ::mSpeedMax as limit.
-    void calcSpeedF(); ///< Updates ::mSpeedF, using ::mAccelF as limit.
+    void calcSpeedX(); ///< Applies ::mAccelF to the actor's X speed, using ::mSpeedMax as the speed limit.
+    void calcFallSpeed(); ///< Applies ::mAccelY to the actor's Y speed, using ::mMaxFallSpeed as the speed limit.
+    void calcSpeedY(); ///< Applies ::mAccelY to the actor's Y speed, using ::mSpeedMax as the speed limit.
+    void calcSpeedF(); ///< Applies ::mAccelF to ::mSpeedF, using ::mMaxSpeedF as the speed limit.
 
     void makeMtx(); ///< Updates the actor's world matrix.
 
@@ -137,11 +140,11 @@ public:
     mAng3_c mAngle; ///< The actor's rotation.
     mAng3_c mLastAngle; ///< The actor's rotation in the previous frame.
 
-    float mSpeedF; ///< [A speed value. Unknown difference from the regular speed].
-    float mAccelF; ///< [An acceleration value. Unknown difference from the other accelerations].
-    float mAccelY; ///< The actor's acceleration on the Y axis.
-    float mAccelFall; ///< The actor's fall acceleration.
-    float mAccelX; ///< The actor's acceleration on the X axis.
+    float mSpeedF; ///< The actor's horizontal speed.
+    float mMaxSpeedF; ///< The actor's maximum horizontal speed.
+    float mAccelY; ///< The actor's vertical acceleration.
+    float mMaxFallSpeed; ///< The actor's maximum fall speed.
+    float mAccelF; ///< The actor's horizontal acceleration.
 
     u32 mActorProperties; ///< The actor's properties. See fProfile::fActorProfile_c::mActorProperties.
     bool mVisible; ///< Whether the actor should be visible or not. Defaults to @p true .
