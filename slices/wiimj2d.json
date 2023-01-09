@@ -51,6 +51,30 @@
             }
         },
         {
+            "name": "dol/s/s_StateMethod.o",
+            "source": "dol/s/s_StateMethod.cpp",
+            "deadstrip": [
+                "refreshStateMethod__14sStateMethod_cFv",
+                "getState__14sStateMethod_cCFv",
+                "getNewStateID__14sStateMethod_cCFv",
+                "getStateID__14sStateMethod_cCFv",
+                "getOldStateID__14sStateMethod_cCFv"
+            ],
+            "memoryRanges": {
+                ".text": "0x159360-0x159650",
+                ".data": "0x2a6e8-0x2a728"
+            }
+        },
+        {
+            "name": "dol/s/s_StateMethodUsr_FI.o",
+            "source": "dol/s/s_StateMethodUsr_FI.cpp",
+            "deadstrip": ["__dt__20sStateMethodUsr_FI_cFv"],
+            "memoryRanges": {
+                ".text": "0x159650-0x159800",
+                ".data": "0x2a728-0x2a768"
+            }
+        },
+        {
             "name": "dol/cLib/c_list.o",
             "source": "dol/cLib/c_list.cpp",
             "memoryRanges": {
