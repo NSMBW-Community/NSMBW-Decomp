@@ -1,11 +1,11 @@
 #pragma once
 
 /// @brief The interface for state IDs.
-/// @details A state ID is made up of a name string and a unique number.
+/// @details A state ID is made up of a name string and a unique number, where 0 denotes a null state.
 class sStateIDIf_c {
 public:
     virtual ~sStateIDIf_c() = 0;
-    virtual bool isNull() const = 0; ///< Returns if this state has number 0.
+    virtual bool isNull() const = 0; ///< Returns if this is a null state.
     virtual bool isEqual(const sStateIDIf_c &other) const = 0; ///< Returns true if both states have the same number.
 
     virtual bool operator==(const sStateIDIf_c &other) const = 0; ///< Overloaded equality operator, uses ::isEqual.
