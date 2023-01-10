@@ -1,8 +1,7 @@
 #include <types.h>
-
-#include <dol/s/s_StateInterfaces.hpp>
-#include <dol/s/s_StateMethod.hpp>
-#include <dol/s/s_StateID.hpp>
+#include <dol/sLib/s_StateInterfaces.hpp>
+#include <dol/sLib/s_StateMethod.hpp>
+#include <dol/sLib/s_StateID.hpp>
 
 sStateMethod_c::sStateMethod_c(sStateIDChkIf_c &checker, sStateFctIf_c &factory, const sStateIDIf_c &initialState) :
     mpStateChk(checker),
@@ -12,9 +11,9 @@ sStateMethod_c::sStateMethod_c(sStateIDChkIf_c &checker, sStateFctIf_c &factory,
     mIsValid(false),
     mStateChanged(false),
     mRefreshStateMethod(false),
-    mpNewStateID((sStateIDIf_c *) &initialState),
+    mpNewStateID(&initialState),
     mpOldStateID(&sStateID::null),
-    mpStateID((sStateIDIf_c *) &initialState),
+    mpStateID(&initialState),
     mpState(nullptr) {
 }
 
@@ -64,7 +63,7 @@ void sStateMethod_c::finalizeStateMethod() {
 
 void sStateMethod_c::changeStateMethod(const sStateIDIf_c &newID) {
     if (!newID.isNull()) {
-        mpNewStateID = (sStateIDIf_c *) &newID;
+        mpNewStateID = &newID;
         changeStateLocalMethod(newID);
         mStateChanged = true;
     }

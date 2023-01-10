@@ -1,6 +1,5 @@
 #include <types.h>
-
-#include <dol/s/s_StateMethodUsr_FI.hpp>
+#include <dol/sLib/s_StateMethodUsr_FI.hpp>
 
 sStateMethodUsr_FI_c::sStateMethodUsr_FI_c(sStateIDChkIf_c &check, sStateFctIf_c &factory, const sStateIDIf_c &state) :
     sStateMethod_c(check, factory, state) {
@@ -13,7 +12,7 @@ int sStateMethodUsr_FI_c::initializeStateLocalMethod() {
 }
 
 void sStateMethodUsr_FI_c::executeStateLocalMethod() {
-    initializeStateMethod(); // To ensure we are in a valid state (note that only does something if !mIsValid)
+    initializeStateMethod(); // Ensure we are in a valid state (this only actually initializes the state if !mIsValid)
     mpState->execute();
 }
 
@@ -24,5 +23,5 @@ void sStateMethodUsr_FI_c::finalizeStateLocalMethod() {
 
 void sStateMethodUsr_FI_c::changeStateLocalMethod(const sStateIDIf_c &newID) {
     finalizeStateMethod(); // Terminate the current state
-    initializeStateMethod(); // And initialize the new state
+    initializeStateMethod(); // Initialize the new state
 }

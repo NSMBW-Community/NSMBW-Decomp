@@ -51,8 +51,8 @@
             }
         },
         {
-            "name": "dol/s/s_StateID.o",
-            "source": "dol/s/s_StateID.cpp",
+            "name": "dol/sLib/s_StateID.o",
+            "source": "dol/sLib/s_StateID.cpp",
             "deadstrip": [
                 "__vt__12sStateIDIf_cFv",
                 "__dt__12sStateIDIf_cFv"
@@ -66,8 +66,8 @@
             }
         },
         {
-            "name": "dol/s/s_StateMethod.o",
-            "source": "dol/s/s_StateMethod.cpp",
+            "name": "dol/sLib/s_StateMethod.o",
+            "source": "dol/sLib/s_StateMethod.cpp",
             "deadstrip": [
                 "refreshStateMethod__14sStateMethod_cFv",
                 "getState__14sStateMethod_cCFv",
@@ -81,8 +81,8 @@
             }
         },
         {
-            "name": "dol/s/s_StateMethodUsr_FI.o",
-            "source": "dol/s/s_StateMethodUsr_FI.cpp",
+            "name": "dol/sLib/s_StateMethodUsr_FI.o",
+            "source": "dol/sLib/s_StateMethodUsr_FI.cpp",
             "deadstrip": ["__dt__20sStateMethodUsr_FI_cFv"],
             "memoryRanges": {
                 ".text": "0x159650-0x159800",

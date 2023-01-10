@@ -2,22 +2,24 @@
 
 /// @brief The interface for state IDs.
 /// @details A state ID is made up of a name string and a unique number, where 0 denotes a null state.
+/// Null states do not have any corresponding behaviour. They can be used, for example,
+/// if a state holder needs to be initialized but the initial state ID is not known yet.
 class sStateIDIf_c {
 public:
     virtual ~sStateIDIf_c() {}
-    virtual bool isNull() const = 0; ///< Returns if this is a null state.
-    virtual bool isEqual(const sStateIDIf_c &other) const = 0; ///< Returns true if both states have the same number.
+    virtual bool isNull() const = 0; ///< Returns whether this is a null state.
+    virtual bool isEqual(const sStateIDIf_c &other) const = 0; ///< Returns whether both states have the same number.
 
-    virtual bool operator==(const sStateIDIf_c &other) const = 0; ///< Overloaded equality operator, uses ::isEqual.
-    virtual bool operator!=(const sStateIDIf_c &other) const = 0; ///< Overloaded inequality operator, uses ::isEqual.
+    virtual bool operator==(const sStateIDIf_c &other) const = 0; ///< Overloaded equality operator, using ::isEqual.
+    virtual bool operator!=(const sStateIDIf_c &other) const = 0; ///< Overloaded inequality operator, using ::isEqual.
 
-    virtual bool isSameName(const char *name) const = 0; ///< Returns true if this state ID's is called @p name.
+    virtual bool isSameName(const char *name) const = 0; ///< Returns whether this state ID is called @p name.
     virtual const char *name() const = 0; ///< Returns the name of this state ID.
     virtual unsigned int number() const = 0; ///< Returns the number of this state ID.
 };
 
 /// @brief The interface for state ID checkers.
-/// @details [This class is not really used, but it seems to be intended for testing if a state is "normal", but not sure how this would be useful.]
+/// @details [This class is not really used, but it seems to be intended for testing if a state is "normal", but not sure how this would be useful].
 class sStateIDChkIf_c {
 public:
     virtual ~sStateIDChkIf_c() {}
@@ -53,8 +55,8 @@ public:
     virtual void finalizeState() = 0; ///< Prepares the current state for termination.
     virtual void changeState(const sStateIDIf_c &newStateID) = 0; ///< Transitions to a new state ID.
     virtual void refreshState() = 0; ///< Marks the current state to be executed again.
-    virtual sStateIf_c *getState() const = 0; ///< The state holder.
-    virtual sStateIDIf_c *getNewStateID() const = 0; ///< The next state ID.
-    virtual sStateIDIf_c *getStateID() const = 0; ///< The current state ID.
-    virtual sStateIDIf_c *getOldStateID() const = 0; ///< The previous state ID.
+    virtual sStateIf_c *getState() const = 0; ///< Gets the state holder.
+    virtual sStateIDIf_c *getNewStateID() const = 0; ///< Gets the next state ID.
+    virtual sStateIDIf_c *getStateID() const = 0; ///< Gets the current state ID.
+    virtual sStateIDIf_c *getOldStateID() const = 0; ///< Gets the previous state ID.
 };

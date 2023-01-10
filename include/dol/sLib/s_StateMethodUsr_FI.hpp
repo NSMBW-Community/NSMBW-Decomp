@@ -1,8 +1,8 @@
 #pragma once
-#include <dol/s/s_StateMethod.hpp>
+#include <dol/sLib/s_StateMethod.hpp>
 
 /// @brief An extension to sStateMethod_c that implements the remaining abstract methods.
-/// @details [Name might mean "Functionality implementation".]
+/// @details [Name might mean "Functionality implementation"].
 class sStateMethodUsr_FI_c : public sStateMethod_c {
 public:
     sStateMethodUsr_FI_c(sStateIDChkIf_c &checker, sStateFctIf_c &factory, const sStateIDIf_c &initialState);
