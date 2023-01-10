@@ -62,10 +62,10 @@ void sStateMethod_c::finalizeStateMethod() {
     }
 }
 
-void sStateMethod_c::changeStateMethod(const sStateIDIf_c &state) {
-    if (!state.isNull()) {
-        mpNewStateID = (sStateIDIf_c *) &state;
-        changeStateLocalMethod(state);
+void sStateMethod_c::changeStateMethod(const sStateIDIf_c &newID) {
+    if (!newID.isNull()) {
+        mpNewStateID = (sStateIDIf_c *) &newID;
+        changeStateLocalMethod(newID);
         mStateChanged = true;
     }
 }

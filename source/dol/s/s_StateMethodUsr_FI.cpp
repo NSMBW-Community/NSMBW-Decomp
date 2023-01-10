@@ -22,7 +22,7 @@ void sStateMethodUsr_FI_c::finalizeStateLocalMethod() {
     mpStateFct.dispose(mpState);
 }
 
-void sStateMethodUsr_FI_c::changeStateLocalMethod(const sStateIDIf_c &state) {
+void sStateMethodUsr_FI_c::changeStateLocalMethod(const sStateIDIf_c &newID) {
     finalizeStateMethod(); // Terminate the current state
     initializeStateMethod(); // And initialize the new state
 }
