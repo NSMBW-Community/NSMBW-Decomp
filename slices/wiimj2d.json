@@ -51,6 +51,13 @@
             }
         },
         {
+            "name": "dol/sLib/s_Phase.o",
+            "source": "dol/sLib/s_Phase.cpp",
+            "memoryRanges": {
+                ".text": "0x158fc0-0x159090"
+            }
+        },
+        {
             "name": "dol/sLib/s_StateID.o",
             "source": "dol/sLib/s_StateID.cpp",
             "deadstrip": [
