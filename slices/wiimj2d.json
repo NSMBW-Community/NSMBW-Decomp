@@ -51,6 +51,21 @@
             }
         },
         {
+            "name": "dol/s/s_StateID.o",
+            "source": "dol/s/s_StateID.cpp",
+            "deadstrip": [
+                "__vt__12sStateIDIf_cFv",
+                "__dt__12sStateIDIf_cFv"
+            ],
+            "memoryRanges": {
+                ".text": "0x159180-0x159360",
+                ".ctors": "0x200-0x204",
+                ".data": "0x2a6c0-0x2a6e8",
+                ".bss": "0x26378-0x26390",
+                ".sbss": "0x7a0-0x7a8"
+            }
+        },
+        {
             "name": "dol/s/s_StateMethod.o",
             "source": "dol/s/s_StateMethod.cpp",
             "deadstrip": [

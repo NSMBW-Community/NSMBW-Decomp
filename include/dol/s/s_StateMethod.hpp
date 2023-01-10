@@ -11,7 +11,7 @@ public:
     virtual void initializeStateMethod(); ///< @copydoc sStateMgrIf_c::initializeState
     virtual void executeStateMethod(); ///< @copydoc sStateMgrIf_c::executeState
     virtual void finalizeStateMethod(); ///< @copydoc sStateMgrIf_c::finalizeState
-    virtual void changeStateMethod(const sStateIDIf_c &);  ///< @copydoc sStateMgrIf_c::changeState
+    virtual void changeStateMethod(const sStateIDIf_c &newStateID);  ///< @copydoc sStateMgrIf_c::changeState
     virtual void refreshStateMethod() { mRefreshStateMethod = true; } ///< @copydoc sStateMgrIf_c::refreshState
     virtual sStateIf_c *getState() const { return mpState; } ///< @copydoc sStateMgrIf_c::getState
     virtual sStateIDIf_c *getNewStateID() const { return mpNewStateID; } ///< @copydoc sStateMgrIf_c::getNewStateID
@@ -21,7 +21,7 @@ public:
     virtual int initializeStateLocalMethod() = 0; ///< Performs the actual state initialization.
     virtual void executeStateLocalMethod() = 0; ///< Performs the actual state execution.
     virtual void finalizeStateLocalMethod() = 0; ///< Performs the actual state termination.
-    virtual void changeStateLocalMethod(const sStateIDIf_c &) = 0; ///< Performs the actual state transition.
+    virtual void changeStateLocalMethod(const sStateIDIf_c &newStateID) = 0; ///< Performs the actual state transition.
 
 protected:
     sStateIDChkIf_c &mpStateChk; ///< The state checker to use. [Unused.]
