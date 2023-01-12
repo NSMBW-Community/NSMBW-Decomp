@@ -42,7 +42,7 @@ fBase_c::fBase_c() :
         mMng.mDrawNode.mNewOrder = drawOrder;
     }
 
-    // Disable execute and draw step if the parent does so too
+    // Disable execute and/or draw step if the parent does so too
     fBase_c *parent = getConnectParent();
     if (parent != nullptr) {
         if (parent->isProcControlFlag(ROOT_DISABLE_EXECUTE) || parent->isProcControlFlag(DISABLE_EXECUTE)) {
@@ -170,7 +170,7 @@ int fBase_c::execute() {
 }
 
 int fBase_c::preExecute() {
-    // Can only execute if not creating or execution is disabled
+    // Can only execute if not deleting or execution is disabled
     if (mDeleteRequested || isProcControlFlag(DISABLE_EXECUTE)) {
         return NOT_READY;
     }
@@ -230,7 +230,7 @@ int fBase_c::connectProc() {
         }
 
     } else {
-        // Disable execute and draw step if the parent does so too
+        // Disable execute and/or draw step if the parent does so too
         fBase_c *parent = getConnectParent();
         if (parent != nullptr) {
             if (parent->isProcControlFlag(ROOT_DISABLE_EXECUTE) || parent->isProcControlFlag(DISABLE_EXECUTE)) {
