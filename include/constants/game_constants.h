@@ -19,7 +19,7 @@
 #define SUPER_GUIDE_DEATH_COUNT 8 ///< The amount of deaths required for the Super Guide to show.
 
 /// @brief The identifiers for each character.
-enum PlayerCharacter {
+enum PLAYER_CHARACTER_e {
     MARIO,
     LUIGI,
     BLUE_TOAD,
@@ -28,7 +28,7 @@ enum PlayerCharacter {
 };
 
 /// @brief Various flags applied to the player on occasion.
-enum PlayerCreateItem {
+enum PLAYER_CREATE_ITEM_e {
     NO_CREATE_ITEM = 0x0,
     STAR_POWER = 0x1, ///< Gives the player Star Power.
     RIDING_YOSHI = 0x2, ///< Spawns a Yoshi along with the player.
@@ -37,7 +37,7 @@ enum PlayerCreateItem {
 };
 
 /// @brief The identifiers for each powerup.
-enum PlayerPowerup {
+enum PLAYER_POWERUP_e {
     NO_POWERUP,
     MUSHROOM,
     FIRE_FLOWER,
@@ -49,7 +49,7 @@ enum PlayerPowerup {
 };
 
 /// @brief The numbers corresponding to each level type.
-enum Stage {
+enum STAGE_e {
     STAGE_1,
     STAGE_2,
     STAGE_3,
@@ -82,7 +82,7 @@ enum Stage {
 };
 
 /// @brief The numbers corresponding to each world.
-enum World {
+enum WORLD_e {
     WORLD_1,
     WORLD_2,
     WORLD_3,

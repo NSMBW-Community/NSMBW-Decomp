@@ -9,7 +9,7 @@
 
 /// @brief The identifiers for each text message.
 /// @todo Fill this.
-enum Message {
+enum MESSAGE_e {
     TEST_MESSAGE,
 
     // The following are used to format escape sequences
