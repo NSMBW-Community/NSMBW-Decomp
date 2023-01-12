@@ -51,6 +51,12 @@
 - Constants with a heavy impact on the game must be declared and used properly. If such a constant appears in more than one compilation unit, it must be placed in `constants/game_constants.h`. Else, place it in the correct header file.
 - Japanese text strings **must** be placed in `constants/sjis_constants.h`.
 
+### Enumerations
+
+- Unless a cracked symbol says otherwise, the following conventions apply:
+  - The enumeration tag should be all uppercase with the suffix `_e`
+  - The identifiers should be all uppercase and not be prefixed with the tag
+
 ### Comments
 
 - Code comments should begin with an uppercase letter and usually not end in a period.

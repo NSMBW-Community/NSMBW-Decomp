@@ -10,7 +10,7 @@ namespace dReset {
     public:
 
         /// @brief The game's possible running states.
-        enum Mode_e {
+        enum MODE_e {
             NORMAL, ///< The game is running regularly.
             SOFT_RESET, ///< The game is being soft reset (from the Home Menu).
             HBM_WAIT, ///< The home menu is open.
@@ -21,7 +21,7 @@ namespace dReset {
         };
 
         /// @brief The possible hard reset procedures.
-        enum Exec_e {
+        enum EXEC_e {
             RESTART_GAME, ///< Reboots the game's DOL. [Unused].
             REBOOT_SYSTEM, ///< Reboots the entire console. [Unused].
             RETURN_WII_MENU, ///< Returns to the Wii Menu.
@@ -33,14 +33,14 @@ namespace dReset {
         EGG::Heap *mpHeap;
         EGG::ColorFader *mpColorFader;
 
-        int mModeProc; ///< The game's current running state. See ::Mode_e.
+        int mModeProc; ///< The game's current running state. See ::MODE_e.
 
-        /// @brief The running state the game's about to switch to. See ::Mode_e.
-        /// @details The state does not change if this is set to Mode_e::NO_CHANGE.
+        /// @brief The running state the game's about to switch to. See ::MODE_e.
+        /// @details The state does not change if this is set to MODE_e::NO_CHANGE.
         int mModeInit;
 
         int mPrevMode;
-        int mExecMode; ///< The hard reset procedure to be executed. See ::Exec_e.
+        int mExecMode; ///< The hard reset procedure to be executed. See ::EXEC_e.
 
         bool mHbmReset;
         bool mHbmReturnMenu;
