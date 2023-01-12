@@ -11,7 +11,7 @@ public:
     virtual int preCreate(); ///< See dBase_c::preCreate.
 
     /// @brief Code to be executed after ::create.
-    /// @details Appends a LASTACTOR to the end of this scene's actors.
+    /// @details Appends a LASTACTOR child base to this scene.
     virtual void postCreate(fBase_c::MAIN_STATE_e status);
 
     virtual int preDelete(); ///< See dBase_c::preDelete.
@@ -19,7 +19,7 @@ public:
 
     /// @brief Code to be executed before ::execute.
     /// @details If ::m_nextScene is set, prepares to transition to the next state.
-    /// Once all initial child bases have been added, clear the CONNECT and EXECUTE flag.
+    /// Once all initial child bases have been added, enable the execute and draw step on this base and its children.
     virtual int preExecute();
     virtual void postExecute(fBase_c::MAIN_STATE_e status); ///< See dBase_c::postExecute.
 
@@ -50,7 +50,7 @@ public:
 
     sPhase_c *mpPhase; ///< The phase to be completed before ::preExecute succeeds.
 
-    static u32 mPara; ///< The parameter value for the next scene.
+    static u32 mPara; ///< The parameters for the next scene.
     static ProfileName m_nextScene;  ///< The profile name of the next scene.
     static ProfileName m_nowScene;  ///< The profile name of the current scene.
     static ProfileName m_oldScene;  ///< The profile name of the previous scene.
