@@ -52,3 +52,5 @@ class AnmResV2_c;
 class AnmGroup_c;
 
 } // namespace m2d
+
+class mColor;

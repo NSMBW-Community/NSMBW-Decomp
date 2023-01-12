@@ -5,4 +5,5 @@
 /// @details Name stands for Game Common.
 namespace dGameCom {
     u32 getRandomSeed(); ///< Gets a seed used for randomness.
+    void clearGameStop();
 }

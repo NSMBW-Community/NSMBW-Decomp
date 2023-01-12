@@ -38,7 +38,9 @@ public:
 
     static void initLoader(); ///< [Unknown purpose. Callbacks do nothing and don't seem to ever be called].
 
+    /// @brief See fBase_c::createChild.
     static dBase_c *createBase(ProfileName profName, dBase_c *parent, unsigned long param, u8 groupType);
+    /// @brief See fBase_c::createRoot.
     static dBase_c *createRoot(ProfileName profName, unsigned long param, u8 groupType);
 
 private:
