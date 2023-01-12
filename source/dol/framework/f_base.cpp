@@ -42,14 +42,14 @@ fBase_c::fBase_c() :
         mMng.mDrawNode.mNewOrder = drawOrder;
     }
 
-    // Use the process flags from the parent, if set
+    // Disable execute and draw step if the parent does so too
     fBase_c *parent = getConnectParent();
     if (parent != nullptr) {
-        if (parent->isProcessFlag(fManager_c::PROC_FLAG_CONNECT) || parent->isProcessFlag(fManager_c::PROC_FLAG_CREATE)) {
-            mProcessFlags |= fManager_c::PROC_FLAG_CREATE;
+        if (parent->isProcControlFlag(ROOT_DISABLE_EXECUTE) || parent->isProcControlFlag(DISABLE_EXECUTE)) {
+            setProcControlFlag(DISABLE_EXECUTE);
         }
-        if (parent->isProcessFlag(fManager_c::PROC_FLAG_EXECUTE) || parent->isProcessFlag(fManager_c::PROC_FLAG_DELETE)) {
-            mProcessFlags |= fManager_c::PROC_FLAG_DELETE;
+        if (parent->isProcControlFlag(ROOT_DISABLE_DRAW) || parent->isProcControlFlag(DISABLE_DRAW)) {
+            setProcControlFlag(DISABLE_DRAW);
         }
     }
 }
@@ -170,8 +170,8 @@ int fBase_c::execute() {
 }
 
 int fBase_c::preExecute() {
-    // Can only execute if not creating or deleting
-    if (mDeleteRequested || isProcessFlag(fManager_c::PROC_FLAG_CREATE)) {
+    // Can only execute if not creating or execution is disabled
+    if (mDeleteRequested || isProcControlFlag(DISABLE_EXECUTE)) {
         return NOT_READY;
     }
     return SUCCEEDED;
@@ -190,8 +190,8 @@ int fBase_c::draw() {
 }
 
 int fBase_c::preDraw() {
-    // Can only draw if not deleting
-    if (mDeleteRequested || isProcessFlag(fManager_c::PROC_FLAG_DELETE)) {
+    // Can only draw if not deleting or drawing is disabled
+    if (mDeleteRequested || isProcControlFlag(DISABLE_DRAW)) {
         return NOT_READY;
     }
     return SUCCEEDED;
@@ -230,19 +230,19 @@ int fBase_c::connectProc() {
         }
 
     } else {
-        // Copy over the process flags from the parent, if any
+        // Disable execute and draw step if the parent does so too
         fBase_c *parent = getConnectParent();
         if (parent != nullptr) {
-            if (parent->isProcessFlag(fManager_c::PROC_FLAG_CONNECT) || parent->isProcessFlag(fManager_c::PROC_FLAG_CREATE)) {
-                mProcessFlags |= fManager_c::PROC_FLAG_CREATE;
-            } else if (isProcessFlag(fManager_c::PROC_FLAG_CREATE)) {
-                mProcessFlags &= ~fManager_c::PROC_FLAG_CREATE;
+            if (parent->isProcControlFlag(ROOT_DISABLE_EXECUTE) || parent->isProcControlFlag(DISABLE_EXECUTE)) {
+                setProcControlFlag(DISABLE_EXECUTE);
+            } else if (isProcControlFlag(DISABLE_EXECUTE)) {
+                clearProcControlFlag(DISABLE_EXECUTE);
             }
 
-            if (parent->isProcessFlag(fManager_c::PROC_FLAG_EXECUTE) || parent->isProcessFlag(fManager_c::PROC_FLAG_DELETE)) {
-                mProcessFlags |= fManager_c::PROC_FLAG_DELETE;
-            } else if (isProcessFlag(fManager_c::PROC_FLAG_DELETE)) {
-                mProcessFlags &= ~fManager_c::PROC_FLAG_DELETE;
+            if (parent->isProcControlFlag(ROOT_DISABLE_DRAW) || parent->isProcControlFlag(DISABLE_DRAW)) {
+                setProcControlFlag(DISABLE_DRAW);
+            } else if (isProcControlFlag(DISABLE_DRAW)) {
+                clearProcControlFlag(DISABLE_DRAW);
             }
         }
 

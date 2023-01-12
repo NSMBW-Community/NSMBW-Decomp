@@ -41,18 +41,33 @@ public:
         FAILED, ///< Execution failed.
     };
 
+    /// @brief Controls if @p execute and @p draw should be skipped.
+    enum PROC_DISABLE_e {
+        ROOT_DISABLE_EXECUTE = 1, ///< Execution is disabled, and this is a root base.
+        DISABLE_EXECUTE = 2, ///< Execution is disabled.
+        ROOT_DISABLE_DRAW = 4, ///< Drawing is disabled, and this is a root base.
+        DISABLE_DRAW = 8 ///< Drawing is disabled.
+    };
+
     fBaseID_e mUniqueID; ///< A unique identifier for every base.
     u32 mParam; ///< A bitfield that configures the base's behaviour. [Represents nybbles 5 to 12 of Reggie's spritedata].
     ProfileName mProfName; ///< The base's profile name.
 
-private:
+protected:
     u8 mLifecycleState; ///< The current lifecycle state. Value is a ::LIFECYCLE_e.
     bool mDeleteRequested; ///< If the base is to be deleted.
     bool mDelayManageAdd; ///< If the adding of the base should be delayed until the next ::connectProc call.
     bool mRetryCreate; ///< If the next ::connectProc call should add the base to fManager_c::m_createManage.
 
     u8 mGroupType; ///< The base's group type. Value is a ::GROUP_TYPE_e.
-    u8 mProcessFlags; ///< Which process is to be executed. Value is a bitfield induced by fManager_c::PROC_FLAGS.
+    u8 mProcControl; ///< Which processes are to be skipped. Value is a bitfield induced by ::PROC_DISABLE_e.
+
+    /// @brief Checks if a flag is set in ::mProcessFlags.
+    bool isProcControlFlag(u8 flag) const { return (mProcControl & flag) != 0; }
+    /// @brief Sets a flag in ::mProcessFlags.
+    void setProcControlFlag(u8 flag) { mProcControl |= flag; }
+    /// @brief Clears a flag in ::mProcessFlags.
+    void clearProcControlFlag(u8 flag) { mProcControl &= ~flag; }
 
     fManager_c mMng; ///< The base's process manager.
 
@@ -217,9 +232,6 @@ private:
     /// @return A child satisfying this condition, else @p nullptr .
     /// @note Unofficial name.
     fBase_c *getNonReadyChild() const;
-
-    /// @brief Checks if a flag is set in ::mProcessFlags.
-    bool isProcessFlag(u8 flag) const { return (mProcessFlags & flag) != 0; }
 
 public:
     /**
