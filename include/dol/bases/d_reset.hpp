@@ -30,6 +30,10 @@ namespace dReset {
             NONE ///< Does not execute any reset procedure.
         };
 
+        void SetSoftResetFinish();
+        void SetSoftResetScene();
+        void PostDeleteScene();
+
         EGG::Heap *mpHeap;
         EGG::ColorFader *mpColorFader;
 

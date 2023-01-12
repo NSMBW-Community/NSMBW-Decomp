@@ -51,6 +51,16 @@
             }
         },
         {
+            "name": "dol/bases/d_scene.o",
+            "source": "dol/bases/d_scene.cpp",
+            "memoryRanges": {
+                ".text": "0xdb320-0xdb8f0",
+                ".data": "0x1cc38-0x1cc88",
+                ".sdata": "0x10c0-0x10d0",
+                ".sbss": "0x488-0x490"
+            }
+        },
+        {
             "name": "dol/sLib/s_Phase.o",
             "source": "dol/sLib/s_Phase.cpp",
             "memoryRanges": {
