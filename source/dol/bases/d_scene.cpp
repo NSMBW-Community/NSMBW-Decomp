@@ -23,9 +23,11 @@ bool dScene_c::m_isAutoFadeIn = true;
 dScene_c::dScene_c() {
     setProcControlFlag(ROOT_DISABLE_EXECUTE);
     setProcControlFlag(ROOT_DISABLE_DRAW);
+
     mpPhase = nullptr;
     EffectManager_c::m_firstCalc = false;
     dGameCom::clearGameStop();
+
     dActor_c::mExecStopReq = 0;
     dActor_c::mDrawStopReq = 0;
     dActor_c::mExecStop = 0;
@@ -34,7 +36,7 @@ dScene_c::dScene_c() {
 
 dScene_c::~dScene_c() {
     if (dWarningManager_c::m_WarningForbid > 0) {
-      dWarningManager_c::m_WarningForbid--;
+        dWarningManager_c::m_WarningForbid--;
     }
     dAudio::destroySceneSnd();
 }
@@ -43,6 +45,7 @@ int dScene_c::preCreate() {
     if (dBase_c::preCreate() == NOT_READY) {
         return NOT_READY;
     }
+
     m_isAutoFadeIn = true;
     return SUCCEEDED;
 }
@@ -75,10 +78,12 @@ int dScene_c::preExecute() {
     if (dBase_c::preExecute() == NOT_READY) {
         return NOT_READY;
     }
+
     if (mpPhase != nullptr && mpPhase->callMethod(this) != sPhase_c::DONE) {
         // Phase not finished yet
         return NOT_READY;
     }
+
     if (m_nextScene != fProfile::INVALID) {
         // Prepare to go to next state
         if (mFader_c::isStatus(mFaderBase_c::HIDDEN)) {
@@ -88,6 +93,7 @@ int dScene_c::preExecute() {
         }
         return NOT_READY;
     }
+
     if (isProcControlFlag(ROOT_DISABLE_EXECUTE)) {
         if (!hasNonReadyChild()) {
             // We may run the execute and draw steps of this base and its children from now on
@@ -96,11 +102,13 @@ int dScene_c::preExecute() {
         }
         return NOT_READY;
     }
+
     if (mFader_c::isStatus(mFaderBase_c::OPAQUE) && m_isAutoFadeIn) {
         // Begin fade in if needed, also initialize sound objects
         dFader_c::startFadeIn(m_fadeInFrame);
         dAudio::requestStartScene(m_nowScene);
     }
+
     return SUCCEEDED;
 }
 
@@ -138,6 +146,7 @@ dScene_c *dScene_c::createNextScene() {
     if (m_otherSceneFlg || m_nextScene == fProfile::INVALID) {
         return nullptr;
     }
+
     dScene_c *newScene = (dScene_c *) createRoot(m_nextScene, mPara, SCENE);
     if (newScene != nullptr) {
         m_oldScene = m_nowScene;
@@ -146,6 +155,7 @@ dScene_c *dScene_c::createNextScene() {
         m_otherSceneFlg = true;
         return newScene;
     }
+
     return nullptr;
 }
 
@@ -174,9 +184,11 @@ void dScene_c::setNextScene(ProfileName nextScene, unsigned long param, bool for
 void dScene_c::setFadeInFrame(unsigned short length) {
     m_fadeInFrame = length;
 }
+
 void dScene_c::setFadeOutFrame(unsigned short length) {
     m_fadeOutFrame = length;    
 }
+
 void dScene_c::setFadeInOutFrame(unsigned short length) {
     m_fadeInFrame = length;
     m_fadeOutFrame = length;

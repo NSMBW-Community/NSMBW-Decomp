@@ -6,12 +6,12 @@ sPhase_c::sPhase_c(phaseMethod **methodList, int count) {
     mCurrMethod = 0;
 }
 
-sPhase_c::CHAIN_RESULT_e sPhase_c::callMethod(void *thisPtr) {
+sPhase_c::METHOD_RESULT_e sPhase_c::callMethod(void *thisPtr) {
     if (mCurrMethod >= mPhaseLength) {
         return DONE;
     }
 
-    CHAIN_RESULT_e result = OK;
+    METHOD_RESULT_e result = OK;
     while (result == OK) {
         result = (mpMethodList[mCurrMethod])(thisPtr);
 
@@ -23,5 +23,6 @@ sPhase_c::CHAIN_RESULT_e sPhase_c::callMethod(void *thisPtr) {
             }
         }
     }
+
     return result;
 }
