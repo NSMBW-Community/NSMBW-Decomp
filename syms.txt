@@ -136,3 +136,5 @@ CXUncompressLZ=801d82d0
 Bind__Q34nw4r3g3d7ResFileFQ34nw4r3g3d7ResFile=8023a490
 Init__Q34nw4r3g3d7ResFileFv=8023a6d0
 CheckRevision__Q34nw4r3g3d7ResFileCFv=8023a9a0
+resetMaterial__3m3dFv=80165090
+Invalidate__Q34nw4r3g3d8G3DStateFUl=8024d720

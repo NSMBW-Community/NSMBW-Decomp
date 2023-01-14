@@ -26,15 +26,13 @@ public:
     /// @param status The fader's initial status (::OPAQUE or ::HIDDEN).
     mFaderBase_c(const mColor &color, EStatus status);
 
-    /// @brief Destroys the fader.
-    virtual ~mFaderBase_c();
+    virtual ~mFaderBase_c(); ///< Destroys the fader.
 
     /// @brief Sets the fader's status.
     /// @details The implementation is left to the derived classes.
     virtual void setStatus(EStatus status) = 0;
 
-    /// @brief Gets the fader's status.
-    virtual EStatus getStatus() const;
+    virtual EStatus getStatus() const; ///< Gets the fader's status.
 
     /// @brief Initiates a fade in from pure blacked-out.
     /// @details The screen must be ::OPAQUE for the operation to be executed.
@@ -54,11 +52,8 @@ public:
     /// @details The implementation is left to the derived classes.
     virtual void draw() = 0;
 
-    /// @brief Sets the duration of the fade. Duration must not be zero.
-    void setFrame(u16 duration);
-
-    /// @brief Sets the fader's color. Alpha is not modified.
-    void setColor(const mColor &color);
+    void setFrame(u16 duration); ///< Sets the duration of the fade. Duration must not be zero.
+    void setColor(const mColor &color); ///< Sets the fader's color. Alpha is not modified.
 
 protected:
     EStatus mStatus; ///< The fader's status.
