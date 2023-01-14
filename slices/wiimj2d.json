@@ -214,6 +214,13 @@
             }
         },
         {
+            "source": "dol/mLib/m_fader_base.cpp",
+            "memoryRanges": {
+                ".text": "0x1675c0-0x1677c0",
+                ".data": "0x2b780-0x2b7a8"
+            }
+        },
+        {
             "source": "dol/mLib/m_mtx.cpp",
             "memoryRanges": {
                 ".text": "0x168560-0x168bb0",

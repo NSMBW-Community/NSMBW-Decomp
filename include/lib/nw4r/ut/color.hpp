@@ -1,19 +1,11 @@
 #pragma once
+#include <lib/rvl/gx/GXStruct.h>
 
 namespace nw4r {
 namespace ut {
 
 /// @brief A 32-bit RGBA color.
-struct Color {
-    union {
-        struct {
-            u8 r;
-            u8 g;
-            u8 b;
-            u8 a;
-        };
-        u32 rgba;
-    };
+struct Color : public GXColor {
 };
 
 } // namespace ut
