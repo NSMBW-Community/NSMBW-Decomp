@@ -158,12 +158,10 @@ public:
     int getStaffCreditHighScore() const; ///< Gets the staff credit high score.
 
     /// @brief Sets the given hint movie as bought.
-    /// @note Unofficial name.
-    void setHintMovieBought(int movie);
+    void onOtehonMenuOpenFlag(int movie);
 
     /// @brief Checks if the given hint movie was bought.
-    /// @note Unofficial name.
-    bool getHintMovieBought(int movie) const;
+    bool isOtehonMenuOpenFlag(int movie) const;
 
     /// @brief Sets the obtained Star Coin(s) for the given world/level. See ::COURSE_COMPLETION_e.
     /// @details Other flags are discarded.
@@ -313,7 +311,7 @@ private:
 
     /// @brief The completion flags for each level. See ::COURSE_COMPLETION_e.
     u32 mStageCompletion[WORLD_COUNT][STAGE_COUNT];
-    bool mHintMovieBought[HINT_MOVIE_COUNT]; ///< The hint movie bought status for each movie.
+    bool mOtehonMenuOpen[HINT_MOVIE_COUNT]; ///< The hint movie bought status for each movie.
     u8 mKinopioCourseNo[WORLD_COUNT]; ///< The Toad Rescue level for each world.
 
     u8 mEnemySubWorld[WORLD_COUNT][AMBUSH_ENEMY_COUNT]; ///< The subworld number for each map enemy.

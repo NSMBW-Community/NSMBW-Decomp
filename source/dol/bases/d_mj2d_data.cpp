@@ -109,12 +109,12 @@ int dMj2dGame_c::getStaffCreditHighScore() const {
     return mStaffRollHighScore;
 }
 
-void dMj2dGame_c::setHintMovieBought(int movie) {
-    mHintMovieBought[movie] = true;
+void dMj2dGame_c::onOtehonMenuOpenFlag(int movie) {
+    mOtehonMenuOpen[movie] = true;
 }
 
-bool dMj2dGame_c::getHintMovieBought(int movie) const {
-    return mHintMovieBought[movie] != 0;
+bool dMj2dGame_c::isOtehonMenuOpenFlag(int movie) const {
+    return mOtehonMenuOpen[movie] != 0;
 }
 
 void dMj2dGame_c::setCollectCoin(int world, int level, u8 coins) {

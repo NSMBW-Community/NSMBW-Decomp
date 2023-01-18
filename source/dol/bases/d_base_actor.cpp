@@ -1,22 +1,9 @@
 #include <dol/bases/d_base_actor.hpp>
 #include <dol/bases/d_reset.hpp>
 #include <dol/bases/d_scene.hpp>
+#include <dol/cLib/c_math.hpp>
 #include <lib/nw4r/math/trigonometry.hpp>
 #include <lib/rvl/mtx/mtx.h>
-
-// [Custom fmin function that doesn't match the standard library, so let's put it here]
-// [Nintendo, why??]
-inline float _fmin(float x, float y) {
-    if (x > y) return y;
-    else return x;
-}
-
-// [Custom fmax function that doesn't match the standard library, so let's put it here]
-// [Nintendo, why??]
-inline float _fmax(float x, float y) {
-    if (x < y) return y;
-    else return x;
-}
 
 mVec3_c *dBaseActor_c::m_tmpCtPosP;
 mAng3_c *dBaseActor_c::m_tmpCtAngleP;
@@ -162,7 +149,7 @@ void dBaseActor_c::calcSpeed() {
     // Distribute mSpeedF on the X and Z axes according to the actor's rotation and use the regular Y speed
     // [Defining newZ is required for matching]
     float newZ = mSpeedF * cos;
-    mSpeed.y = _fmax(mSpeed.y + mAccelY, mMaxFallSpeed);
+    mSpeed.y = cM::fmax(mSpeed.y + mAccelY, mMaxFallSpeed);
     mSpeed.x = mSpeedF * sin;
     mSpeed.z = newZ;
 }
@@ -225,9 +212,9 @@ void dBaseActor_c::calcSpeedF() {
     // If the speed hasn't exceeded the limit, increase it until the limit is reached
     // Else decrease it until the limit
     if (mSpeedF < mMaxSpeedF) {
-        mSpeedF = _fmin(mSpeedF + mAccelF, mMaxSpeedF);
+        mSpeedF = cM::fmin(mSpeedF + mAccelF, mMaxSpeedF);
     } else if (mSpeedF > mMaxSpeedF) {
-        mSpeedF = _fmax(mSpeedF - mAccelF, mMaxSpeedF);
+        mSpeedF = cM::fmax(mSpeedF - mAccelF, mMaxSpeedF);
     }
 }
 
@@ -235,9 +222,9 @@ void dBaseActor_c::calcFallSpeed() {
     // If the speed has exceeded the limit, decrease it until the limit is reached
     // Else increase it until the limit
     if (mSpeed.y < mMaxFallSpeed) {
-        mSpeed.y = _fmin(mSpeed.y - mAccelY, mMaxFallSpeed);
+        mSpeed.y = cM::fmin(mSpeed.y - mAccelY, mMaxFallSpeed);
     } else if (mSpeed.y > mMaxFallSpeed) {
-        mSpeed.y = _fmax(mSpeed.y + mAccelY, mMaxFallSpeed);
+        mSpeed.y = cM::fmax(mSpeed.y + mAccelY, mMaxFallSpeed);
     }
 }
 
