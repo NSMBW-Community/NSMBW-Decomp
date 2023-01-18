@@ -1,6 +1,6 @@
 #include <types.h>
-#include <lib/MSL_C/math/fabs.h>
-#include <lib/MSL_C/math/fmod.h>
+#include <lib/MSL_C/float.h>
+#include <lib/MSL_C/math.h>
 #include <lib/nw4r/math/constant.hpp>
 #include <dol/cLib/c_random.hpp>
 /// @file
@@ -98,9 +98,7 @@ inline float getCircleUnit() {
 }
 
 inline bool isZero(float val) {
-    const int tmp = 0x34000000; // Minimum positive value that satisfies 1.0f + x != 1.0f
-    const float F_ULP = *(const float *)&tmp;
-    return (fabsf(val) < F_ULP);
+    return (fabsf(val) < FLT_EPSILON);
 }
 
 s16 rad2s(float rad) {

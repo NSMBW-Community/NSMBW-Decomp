@@ -1,4 +1,5 @@
 #include <types.h>
+#include <utility_inlines.hpp>
 #include <lib/nw4r/math/arithmetic.hpp>
 #include <lib/nw4r/math/trigonometry.hpp>
 #include <lib/rvl/mtx/mtx.h>
@@ -23,41 +24,21 @@ mMtx_c::mMtx_c(float _00, float _01, float _02, float _03, float _10, float _11,
 }
 
 void mMtx_c::XrotS(mAng angle) {
-    float cos = nw4r::math::CosIdx((s16)angle.mAngle);
-    register float sin = nw4r::math::SinIdx((s16)angle.mAngle);
+    float cos = getFloat(nw4r::math::CosIdx((s16)angle.mAngle));
+    float sin = getFloat(nw4r::math::SinIdx((s16)angle.mAngle));
 
     mData[0][0] = 1.0f;
-
-    // [The fneg instruction is generated at the wrong place no matter what.
-    // Since I couldn't find a way to overcome this issue, I just forced CW's hand].
-    #ifndef NONMATCHING
-
-    register float negSin;
-    asm volatile {
-        fneg negSin, sin;
-    }
-    #endif
-
-    // [Declaring the float as a variable is required for matching].
-    float zero = 0.0f;
-    mData[0][1] = zero;
-    mData[0][2] = zero;
-    mData[0][3] = zero;
-    mData[1][0] = zero;
+    mData[0][1] = 0.0f;
+    mData[0][2] = 0.0f;
+    mData[0][3] = 0.0f;
+    mData[1][0] = 0.0f;
     mData[1][1] = cos;
-
-    // [Follow-up from previous non-matching code].
-    #ifdef NONMATCHING
     mData[1][2] = -sin;
-    #else
-    mData[1][2] = negSin;
-    #endif
-
-    mData[1][3] = zero;
-    mData[2][0] = zero;
+    mData[1][3] = 0.0f;
+    mData[2][0] = 0.0f;
     mData[2][1] = sin;
     mData[2][2] = cos;
-    mData[2][3] = zero;
+    mData[2][3] = 0.0f;
 }
 
 void mMtx_c::XrotM(mAng angle) {
@@ -69,8 +50,9 @@ void mMtx_c::XrotM(mAng angle) {
 }
 
 void mMtx_c::YrotS(mAng angle) {
-    float cos = nw4r::math::CosIdx((short)angle.mAngle);
-    float sin = nw4r::math::SinIdx((short)angle.mAngle);
+    float cos = getFloat(nw4r::math::CosIdx((s16)angle.mAngle));
+    float sin = getFloat(nw4r::math::SinIdx((s16)angle.mAngle));
+
     mData[0][0] = cos;
     mData[0][1] = 0.0f;
     mData[0][2] = sin;
@@ -94,26 +76,21 @@ void mMtx_c::YrotM(mAng angle) {
 }
 
 void mMtx_c::ZrotS(mAng angle) {
-    float cos = nw4r::math::CosIdx((short)angle.mAngle);
-    float sin = nw4r::math::SinIdx((short)angle.mAngle);
-
-    // [Declaring the floats as variables is required for matching].
-    float one = 1.0f;
-    float zero = 0.0f;
-    float negSin = -sin;
+    float cos = getFloat(nw4r::math::CosIdx((s16)angle.mAngle));
+    float sin = getFloat(nw4r::math::SinIdx((s16)angle.mAngle));
 
     mData[0][0] = cos;
-    mData[0][2] = zero;
-    mData[0][1] = negSin;
-    mData[0][3] = zero;
+    mData[0][1] = -sin;
+    mData[0][2] = 0.0f;
+    mData[0][3] = 0.0f;
     mData[1][0] = sin;
     mData[1][1] = cos;
-    mData[1][2] = zero;
-    mData[1][3] = zero;
-    mData[2][0] = zero;
-    mData[2][1] = zero;
-    mData[2][2] = one;
-    mData[2][3] = zero;
+    mData[1][2] = 0.0f;
+    mData[1][3] = 0.0f;
+    mData[2][0] = 0.0f;
+    mData[2][1] = 0.0f;
+    mData[2][2] = 1.0f;
+    mData[2][3] = 0.0f;
 }
 
 void mMtx_c::ZrotM(mAng angle) {
@@ -137,7 +114,7 @@ void mMtx_c::XYZrotM(mAng xRot, mAng yRot, mAng zRot) {
 }
 
 // [This approach is required for matching].
-inline float calcLength(float x, float y) {
+inline float calcLengthSq(float x, float y) {
     x *= x;
     y *= y;
     x += y;
@@ -145,7 +122,7 @@ inline float calcLength(float x, float y) {
 }
 
 void mMtx_c::toRot(mAng3_c &out) const {
-    float cos = nw4r::math::FSqrt(calcLength(mData[0][2], mData[2][2]));
+    float cos = nw4r::math::FSqrt(calcLengthSq(mData[0][2], mData[2][2]));
 
     short xRot = cM::atan2s(-mData[1][2], cos);
     out.x = xRot;

@@ -10,6 +10,7 @@ PSMTXTrans=801c0d10
 PSVECAdd=801c1530
 PSVECSubtract=801c1560
 PSVECScale=801c1590
+PSVECMag=801c1600
 fmod=0x802e8904
 __ptmf_null=0x802fd628
 __ptmf_test=0x802dce80

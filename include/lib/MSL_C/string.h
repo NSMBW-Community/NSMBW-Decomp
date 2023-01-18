@@ -1,8 +1,5 @@
 #pragma once
-
 #include <types.h>
-
-// [TODO: add more functions]
 
 #ifdef __cplusplus
 extern "C" {

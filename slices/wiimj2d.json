@@ -224,6 +224,17 @@
             }
         },
         {
+            "name": "dol/mLib/m_vec.o",
+            "source": "dol/mLib/m_vec.cpp",
+            "deadstrip": ["DUMMY_M_VEC__Fs"],
+            "memoryRanges": {
+                ".text": "0x16a340-0x16a610",
+                ".ctors": "0x220-0x224",
+                ".bss": "0x26748-0x26778",
+                ".sdata2": "0x2cd0-0x2ce0"
+            }
+        },
+        {
             "name": "runtime/global_destructor_chain.o",
             "source": "runtime/global_destructor_chain.c",
             "deadstrip": ["__destroy_global_chain_reference"],
