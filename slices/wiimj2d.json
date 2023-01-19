@@ -31,6 +31,17 @@
             }
         },
         {
+            "source": "dol/bases/d_wipe_kuppa.cpp",
+            "memoryRanges": {
+                ".text": "0x159f0-0x15f10",
+                ".rodata": "0x3b8-0x3e0",
+                ".data": "0x2fd0-0x3088",
+                ".sdata": "0x150-0x168",
+                ".sdata2": "0x178-0x180",
+                ".sbss": "0x80-0x88"
+            }
+        },
+        {
             "source": "dol/bases/d_base.cpp",
             "deadstrip": ["__dt__13cOwnerSetMg_cFv"],
             "memoryRanges": {

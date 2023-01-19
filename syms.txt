@@ -144,3 +144,4 @@ getPlayer__9daPyMng_cFi=8005f900
 getDispCenterY__8dGameComFv=800b30e0
 getRootPane__Q23d2d7Multi_cFv=80007220
 PPaneRegister__9LytBase_cFPPCcPPQ34nw4r3lyt7Picturei=800c8f30
+WPaneRegister__9LytBase_cFPPCcPPQ34nw4r3lyt6Windowi=800c8ec0
