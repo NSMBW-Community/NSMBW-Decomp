@@ -37,8 +37,19 @@
                 ".rodata": "0x3b8-0x3e0",
                 ".data": "0x2fd0-0x3088",
                 ".sdata": "0x150-0x168",
-                ".sdata2": "0x178-0x180",
-                ".sbss": "0x80-0x88"
+                ".sbss": "0x80-0x88",
+                ".sdata2": "0x178-0x180"
+            }
+        },
+        {
+            "source": "dol/bases/d_wipe_mario.cpp",
+            "memoryRanges": {
+                ".text": "0x15f10-0x16430",
+                ".rodata": "0x3e0-0x408",
+                ".data": "0x3088-0x3140",
+                ".sdata": "0x168-0x180",
+                ".sbss": "0x88-0x90",
+                ".sdata2": "0x180-0x188"
             }
         },
         {
