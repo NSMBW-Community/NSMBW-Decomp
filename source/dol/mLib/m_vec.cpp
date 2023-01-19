@@ -13,8 +13,6 @@ float DUMMY_M_VEC(s16 val) {
 }
 
 inline bool isZero(float val) {
-    const int tmp = 0x34000000; // Minimum positive value that satisfies 1.0f + x != 1.0f
-    const float F_ULP = *(const float *)&tmp;
     return (fabsf(val) <= FLT_EPSILON);
 }
 
