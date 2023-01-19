@@ -16,6 +16,7 @@ public:
     virtual bool build(const char *, ResAccMult_c *);
 
     void entry();
+    nw4r::lyt::Pane *getRootPane();
 
 private:
     nw4r::lyt::Layout mLayout;

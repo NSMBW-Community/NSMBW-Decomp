@@ -21,6 +21,16 @@
     },
     "slices": [
         {
+            "source": "dol/bases/d_wipe_dokan.cpp",
+            "memoryRanges": {
+                ".text": "0x15410-0x159f0",
+                ".rodata": "0x380-0x3b8",
+                ".data": "0x2ec0-0x2fd0",
+                ".sdata": "0x148-0x150",
+                ".sbss": "0x78-0x80"
+            }
+        },
+        {
             "source": "dol/bases/d_base.cpp",
             "deadstrip": ["__dt__13cOwnerSetMg_cFv"],
             "memoryRanges": {

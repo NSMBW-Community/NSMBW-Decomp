@@ -17,8 +17,8 @@ public:
     /// @todo Figure out what these do.
     /// @note Unofficial name.
     enum FLAG_e {
-        FLAG_1 = 1,
-        FLAG_2 = 2
+        FADE_IN_COMPLETE = 1,
+        FADE_OUT_COMPLETE = 2
     };
 
     /// @brief Constructs a new fader.

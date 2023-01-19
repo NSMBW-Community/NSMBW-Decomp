@@ -8,7 +8,7 @@ mCurrFrame(0),
 mFaderColor()
 {
     setColor(color);
-    mFlag |= FLAG_2;
+    mFlag |= FADE_OUT_COMPLETE;
     switch(status) {
         case OPAQUE: mStatus = OPAQUE; break;
         case HIDDEN: mStatus = HIDDEN; break;
@@ -56,18 +56,16 @@ int mFaderBase_c::calc() {
     int result = 0;
 
     if (mStatus == FADE_IN) {
-        u32 curFrame = mCurrFrame;
-        mCurrFrame++;
-        if (curFrame > mFrameCount) {
+        if (mCurrFrame++ > mFrameCount) {
             mStatus = HIDDEN;
-            result = (mFlag & FLAG_1) != 0;
+            result = (mFlag & FADE_IN_COMPLETE) != 0;
         }
 
     } else if (mStatus == FADE_OUT) {
         mCurrFrame++;
         if (mCurrFrame > mFrameCount + 1) {
             mStatus = OPAQUE;
-            result = (mFlag & FLAG_2) != 0;
+            result = (mFlag & FADE_OUT_COMPLETE) != 0;
         }
     }
 

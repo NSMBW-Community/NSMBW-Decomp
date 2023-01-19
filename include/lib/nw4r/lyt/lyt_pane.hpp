@@ -49,7 +49,24 @@ public:
     unsigned short GetExtUserDataNum() const;
     void *FindExtUserDataByName(const char *);
 
+    void setVisible(bool visible) {
+        mFlags = (mFlags & 0xfe) | visible;
+    }
+    void setFieldB8(u8 value) { mField_b8 = value; }
+
 private:
+    char mFill1[0x28]; // To be RE'd
+    math::VEC3 pos;
+    math::VEC3 rot;
+    math::VEC2 scale;
+    float width;
+    float height;
+    char mFill2[0x64]; // To be RE'd
+    u8 mField_b8;
+    u8 mField_b9;
+    u8 mOriginType;
+    u8 mFlags;
+
     static int typeInfo;
 };
 
