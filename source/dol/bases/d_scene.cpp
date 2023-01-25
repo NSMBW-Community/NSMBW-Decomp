@@ -95,7 +95,7 @@ int dScene_c::preExecute() {
     }
 
     if (isProcControlFlag(ROOT_DISABLE_EXECUTE)) {
-        if (!hasNonReadyChild()) {
+        if (!checkChildProcessCreateState()) {
             // We may run the execute and draw steps of this base and its children from now on
             clearProcControlFlag(ROOT_DISABLE_EXECUTE);
             clearProcControlFlag(ROOT_DISABLE_DRAW);

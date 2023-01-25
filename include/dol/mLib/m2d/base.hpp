@@ -6,7 +6,7 @@ namespace m2d {
 
 class Base_c {
 public:
-    nw4r::ut::LinkListNode mNode;
+    nw4r::ut::Link mNode;
 
     virtual ~Base_c();
 

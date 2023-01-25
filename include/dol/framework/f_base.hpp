@@ -194,8 +194,7 @@ public:
 
     /// @brief Checks if the base has a child waiting to be added to fManager_c::m_createManage.
     /// @return If such a child base exists.
-    /// @note Unofficial name.
-    bool hasNonReadyChild() const;
+    bool checkChildProcessCreateState() const;
 
 private:
     int createPack(); ///< See ::commonPack.
@@ -230,8 +229,7 @@ private:
 
     /// @brief Gets a child of the base that is waiting to be added to fManager_c::m_createManage.
     /// @return A child satisfying this condition, else @p nullptr .
-    /// @note Unofficial name.
-    fBase_c *getNonReadyChild() const;
+    fBase_c *getChildProcessCreateState() const;
 
 public:
     /**
