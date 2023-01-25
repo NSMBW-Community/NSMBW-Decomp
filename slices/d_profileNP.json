@@ -28,14 +28,12 @@
     },
     "slices": [
         {
-            "name": "runtime/rel_init.o",
             "source": "runtime/rel_init.cpp",
             "memoryRanges": {
                 ".text": "0x0-0x70"
             }
         },
         {
-            "name": "runtime/global_destructor_chain.o",
             "source": "runtime/global_destructor_chain.c",
             "compilerFlags": "-c -Cpp_exceptions off -O4 -fp hard -sdata 0 -sdata2 0",
             "memoryRanges": {
@@ -45,14 +43,13 @@
             }
         },
         {
-            "name": "d_profileNP/framework/profiles.o",
+            "name": "profiles.o",
             "memoryRanges": {
                 ".text": "0xf0-0x130",
                 ".data": "0x0-0xbb8"
             }
         },
         {
-            "name": "d_profileNP/bases/d_controller_information.o",
             "source": "d_profileNP/bases/d_controller_information.cpp",
             "memoryRanges": {
                 ".text": "0x130-0x4e0",
@@ -61,7 +58,7 @@
             }
         },
         {
-            "name": "d_profileNP/bases/d_yes_no_window.o",
+            "name": "d_yes_no_window.o",
             "memoryRanges": {
                 ".text": "0x4e0-0x1fb8",
                 ".ctors": "0x0-0x4",

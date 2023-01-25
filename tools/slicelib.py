@@ -106,9 +106,10 @@ def load_slice_file(file: typing.TextIO) -> SliceFile:
     curr_sec_positions = {s: 0 for s in slice_meta.secs if slice_meta.secs[s].size != 0}
 
     filler_slice_idx = 0
+    unnamed_slice_idx = 0
 
     for slice in slice_json['slices']:
-        slice_name = slice['name']
+        slice_name = slice.get('name', None)
         slice_sections: list[SliceSection] = []
 
         filler_sec_range = {s: (0, 0) for s in curr_sec_positions}
@@ -135,7 +136,15 @@ def load_slice_file(file: typing.TextIO) -> SliceFile:
             filler_slice_idx += 1
 
         # Add actual slice
-        slices.append(Slice(slice_name, src, slice_sections, flags, ds, nds))
+        final_slice_name = slice_name
+        if slice_name is None:
+            if src is None:
+                final_slice_name = f"unnamed_{unnamed_slice_idx}.o"
+                unnamed_slice_idx += 1
+            else:
+                final_slice_name = f"{src.split('.')[0].replace('/', '_')}.o"
+
+        slices.append(Slice(final_slice_name, src, slice_sections, flags, ds, nds))
 
     # Ensure filler slices extend to the end
     filler_sec_range = {s: (0, 0) for s in curr_sec_positions}

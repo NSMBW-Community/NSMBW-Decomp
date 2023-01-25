@@ -39,14 +39,17 @@ slices = sorted(slices, key=lambda x: x.meta.mod_num)
 
 # Step 1: compile sources
 for slice_file in slices:
+    i = 0
     for slice in slice_file.slices:
+        print(f'Compiling sources for {slice_file.meta.name}... {i + 1}/{len(slice_file.slices)}', end='\r', flush=True)
+        i += 1
         unit_name = Path(slice_file.meta.name).stem
         if slice.slice_src:
             ccflags = slice_file.meta.default_compiler_flags
             if slice.cc_flags:
                 ccflags = slice.cc_flags
 
-            Path(f'{BUILDDIR}/compiled/{unit_name}/{slice.slice_src}').parents[0].mkdir(parents=True, exist_ok=True)
+            Path(f'{BUILDDIR}/compiled/{unit_name}/{slice.slice_name}').parents[0].mkdir(parents=True, exist_ok=True)
 
             cmd = [] if sys.platform == 'win32' else ['wine']
             cmd.extend([CC, '-c', *ccflags, f'{SRCDIR}/{slice.slice_src}'])
@@ -56,6 +59,7 @@ for slice_file in slices:
             out = subprocess.run(cmd)
             if out.returncode != 0:
                 sys.exit()
+    print_success(f'\nCompiled sources for {slice_file.meta.name}.')
 
 count_compiled_used = 0
 count_sliced_used = 0
@@ -127,7 +131,7 @@ for slice_file in slices:
                         force_actives.add(sym.name)
 
         f.write('FORCEACTIVE {\n\t')
-        f.write('\n\t'.join(force_actives))
+        f.write('\n\t'.join(sorted(force_actives)))
         f.write('\n}\n\n')
         f.write(base_lcf_contents)
 

@@ -29,7 +29,6 @@
     },
     "slices": [
         {
-            "name": "runtime/rel_init.o",
             "source": "runtime/rel_init.cpp",
             "memoryRanges": {
                 ".text": "0x0-0x70"
