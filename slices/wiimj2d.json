@@ -21,7 +21,6 @@
     },
     "slices": [
         {
-            "name": "dol/bases/d_base.o",
             "source": "dol/bases/d_base.cpp",
             "deadstrip": ["__dt__13cOwnerSetMg_cFv"],
             "memoryRanges": {
@@ -31,7 +30,6 @@
             }
         },
         {
-            "name": "dol/bases/d_base_actor.o",
             "source": "dol/bases/d_base_actor.cpp",
             "memoryRanges": {
                 ".text": "0x65f50-0x667c0",
@@ -42,7 +40,6 @@
             }
         },
         {
-            "name": "dol/bases/d_mj2d_data.o",
             "source": "dol/bases/d_mj2d_data.cpp",
             "memoryRanges": {
                 ".text": "0xc7830-0xc8070",
@@ -51,7 +48,6 @@
             }
         },
         {
-            "name": "dol/bases/d_scene.o",
             "source": "dol/bases/d_scene.cpp",
             "memoryRanges": {
                 ".text": "0xdb320-0xdb8f0",
@@ -61,14 +57,12 @@
             }
         },
         {
-            "name": "dol/sLib/s_Phase.o",
             "source": "dol/sLib/s_Phase.cpp",
             "memoryRanges": {
                 ".text": "0x158fc0-0x159090"
             }
         },
         {
-            "name": "dol/sLib/s_StateID.o",
             "source": "dol/sLib/s_StateID.cpp",
             "deadstrip": [
                 "__vt__12sStateIDIf_cFv",
@@ -83,7 +77,6 @@
             }
         },
         {
-            "name": "dol/sLib/s_StateMethod.o",
             "source": "dol/sLib/s_StateMethod.cpp",
             "deadstrip": [
                 "refreshStateMethod__14sStateMethod_cFv",
@@ -98,7 +91,6 @@
             }
         },
         {
-            "name": "dol/sLib/s_StateMethodUsr_FI.o",
             "source": "dol/sLib/s_StateMethodUsr_FI.cpp",
             "deadstrip": ["__dt__20sStateMethodUsr_FI_cFv"],
             "memoryRanges": {
@@ -107,21 +99,18 @@
             }
         },
         {
-            "name": "dol/cLib/c_list.o",
             "source": "dol/cLib/c_list.cpp",
             "memoryRanges": {
                 ".text": "0x15a8d0-0x15aa20"
             }
         },
         {
-            "name": "dol/cLib/c_m3d.o",
             "source": "dol/cLib/c_m3d.cpp",
             "memoryRanges": {
                 ".text": "0x15aa20-0x15aae0"
             }
         },
         {
-            "name": "dol/cLib/c_math.o",
             "source": "dol/cLib/c_math.cpp",
             "memoryRanges": {
                 ".text": "0x15aae0-0x15ae20",
@@ -132,7 +121,6 @@
             }
         },
         {
-            "name": "dol/cLib/c_random.o",
             "source": "dol/cLib/c_random.cpp",
             "memoryRanges": {
                 ".text": "0x15ae20-0x15aef0",
@@ -141,28 +129,24 @@
             }
         },
         {
-            "name": "dol/cLib/c_tree.o",
             "source": "dol/cLib/c_tree.cpp",
             "memoryRanges": {
                 ".text": "0x15aef0-0x15b100"
             }
         },
         {
-            "name": "dol/cLib/c_owner_set.o",
             "source": "dol/cLib/c_owner_set.cpp",
             "memoryRanges": {
                 ".text": "0x15b100-0x15b2e0"
             }
         },
         {
-            "name": "dol/framework/f_helper_unk.o",
             "source": "dol/framework/f_helper_unk.cpp",
             "memoryRanges": {
                 ".text": "0x15b2e0-0x15b490"
             }
         },
         {
-            "name": "dol/framework/f_base.o",
             "source": "dol/framework/f_base.cpp",
             "memoryRanges": {
                 ".text": "0x15b490-0x15c500",
@@ -172,14 +156,12 @@
             }
         },
         {
-            "name": "dol/framework/f_list.o",
             "source": "dol/framework/f_list.cpp",
             "memoryRanges": {
                 ".text": "0x15c500-0x15c6b0"
             }
         },
         {
-            "name": "dol/framework/f_manager.o",
             "source": "dol/framework/f_manager.cpp",
             "memoryRanges": {
                 ".text": "0x15c6b0-0x15c9c0",
@@ -191,21 +173,18 @@
             }
         },
         {
-            "name": "dol/framework/f_profile.o",
             "source": "dol/framework/f_profile.cpp",
             "memoryRanges": {
                 ".sbss": "0x7f8-0x800"
             }
         },
         {
-            "name": "dol/framework/f_tree.o",
             "source": "dol/framework/f_tree.cpp",
             "memoryRanges": {
                 ".text": "0x15c9c0-0x15cb30"
             }
         },
         {
-            "name": "dol/mLib/m_angle.o",
             "source": "dol/mLib/m_angle.cpp",
             "memoryRanges": {
                 ".text": "0x1643e0-0x164430",
@@ -214,7 +193,6 @@
             }
         },
         {
-            "name": "dol/mLib/m_mtx.o",
             "source": "dol/mLib/m_mtx.cpp",
             "memoryRanges": {
                 ".text": "0x168560-0x168bb0",
@@ -224,7 +202,6 @@
             }
         },
         {
-            "name": "dol/mLib/m_vec.o",
             "source": "dol/mLib/m_vec.cpp",
             "deadstrip": ["DUMMY_M_VEC__Fs"],
             "memoryRanges": {
@@ -235,15 +212,13 @@
             }
         },
         {
-            "name": "lib/nw4hbm/ut/listhbm.o",
-            "source": "lib/nw4hbm/ut/listhbm.cpp",
+            "source": "lib/nw4hbm/ut/list.cpp",
             "compilerFlags": "-proc gekko -fp hard -O4 -Cpp_exceptions off -enum int -RTTI off",
             "memoryRanges": {
                 ".text": "0x183f80-0x1840f0"
             }
         },
         {
-            "name": "lib/nw4r/ut/list.o",
             "source": "lib/nw4r/ut/list.cpp",
             "deadstrip": ["List_Prepend__Q24nw4r2utFPQ34nw4r2ut4ListPv"],
             "compilerFlags": "-proc gekko -fp hard -O4 -Cpp_exceptions off -enum int -RTTI off",
@@ -252,7 +227,6 @@
             }
         },
         {
-            "name": "runtime/global_destructor_chain.o",
             "source": "runtime/global_destructor_chain.c",
             "deadstrip": ["__destroy_global_chain_reference"],
             "compilerFlags": "-proc gekko -fp hard -O4,p -char signed -rtti off -enum int -func_align 4 -Cpp_exceptions off",
@@ -262,7 +236,6 @@
             }
         },
         {
-            "name": "runtime/class_arrays.o",
             "source": "runtime/class_arrays.cpp",
             "compilerFlags": "-proc gekko -fp hard -O4 -char signed -rtti off -enum int -func_align 4 -use_lmw_stmw on -Cpp_exceptions on",
             "memoryRanges": {
@@ -270,7 +243,6 @@
             }
         },
         {
-            "name": "runtime/__init_cpp_exceptions.o",
             "source": "runtime/__init_cpp_exceptions.cpp",
             "compilerFlags": "-proc gekko -fp hard -O4,p -char signed -rtti off -enum int -func_align 4 -Cpp_exceptions off",
             "memoryRanges": {
