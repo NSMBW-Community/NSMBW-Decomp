@@ -235,6 +235,23 @@
             }
         },
         {
+            "name": "lib/nw4hbm/ut/listhbm.o",
+            "source": "lib/nw4hbm/ut/listhbm.cpp",
+            "compilerFlags": "-proc gekko -fp hard -O4 -Cpp_exceptions off -enum int -RTTI off",
+            "memoryRanges": {
+                ".text": "0x183f80-0x1840f0"
+            }
+        },
+        {
+            "name": "lib/nw4r/ut/list.o",
+            "source": "lib/nw4r/ut/list.cpp",
+            "deadstrip": ["List_Prepend__Q24nw4r2utFPQ34nw4r2ut4ListPv"],
+            "compilerFlags": "-proc gekko -fp hard -O4 -Cpp_exceptions off -enum int -RTTI off",
+            "memoryRanges": {
+                ".text": "0x222790-0x2229f0"
+            }
+        },
+        {
             "name": "runtime/global_destructor_chain.o",
             "source": "runtime/global_destructor_chain.c",
             "deadstrip": ["__destroy_global_chain_reference"],

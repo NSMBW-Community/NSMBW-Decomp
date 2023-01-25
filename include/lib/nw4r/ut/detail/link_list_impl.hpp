@@ -9,7 +9,7 @@ class LinkListImpl {
     class Iterator;
 
     u32 mCount;
-    LinkListNode mNode;
+    Link mNode;
 };
 
 } // namespace detail

@@ -459,7 +459,7 @@ void fBase_c::runCreate() {
     }
 }
 
-fBase_c *fBase_c::getNonReadyChild() const {
+fBase_c *fBase_c::getChildProcessCreateState() const {
     const fTrNdBa_c *connectNode = &mMng.mConnectNode;
     fTrNdBa_c *end = connectNode->getTreeNextNotChild();
     fTrNdBa_c *curr = connectNode->getChild();
@@ -473,8 +473,8 @@ fBase_c *fBase_c::getNonReadyChild() const {
     return nullptr;
 }
 
-bool fBase_c::hasNonReadyChild() const {
-    return getNonReadyChild() != nullptr;
+bool fBase_c::checkChildProcessCreateState() const {
+    return getChildProcessCreateState() != nullptr;
 }
 
 void fBase_c::setTmpCtData(ProfileName profName, fTrNdBa_c *connectParent, unsigned long param, u8 groupType) {
