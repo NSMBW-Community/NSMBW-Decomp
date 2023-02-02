@@ -121,7 +121,7 @@ dBaseActor_c *dBaseActor_c::construct(ProfileName profName, unsigned long param,
     return (dBaseActor_c *)dBase_c::createBase(profName, parent, param, ACTOR);
 }
 
-void dBaseActor_c::draw2DAll() {
+void dBaseActor_c::draw2DActorOnLyt1() {
     dBaseActor_c *currActor = nullptr;
 
     while (currActor = (dBaseActor_c *)fManager_c::searchBaseByGroupType(fBase_c::ACTOR, currActor), currActor != nullptr) {
@@ -129,7 +129,7 @@ void dBaseActor_c::draw2DAll() {
     }
 }
 
-void dBaseActor_c::draw2D_lyt2_All() {
+void dBaseActor_c::draw2DActorOnLyt2() {
     dBaseActor_c *currActor = nullptr;
 
     while (currActor = (dBaseActor_c *)fManager_c::searchBaseByGroupType(fBase_c::ACTOR, currActor), currActor != nullptr) {
@@ -232,7 +232,6 @@ mVec3_c dBaseActor_c::getCenterPos() const {
     return mPos + mCenterOffs;
 }
 
-
-int dBaseActor_c::countProf(ProfileName profile) {
+int dBaseActor_c::GetProfNameActorNum(ProfileName profile) {
     return dBaseActor_c::m_actorManage.countNodeByProfName(profile);
 }

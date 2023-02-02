@@ -35,8 +35,8 @@ void dMj2dGame_c::initialize() {
         setKinopioCourseNo(world, STAGE_COUNT);
 
         for (int enemy = 0; enemy < AMBUSH_ENEMY_COUNT; enemy++) {
-            setEnemyCurrNode(world, enemy, -1);
-            setEnemyLastDirection(world, enemy, 2);
+            setCSEnemyPosIndex(world, enemy, -1);
+            setCSEnemyWalkDir(world, enemy, 2);
         }
     }
 
@@ -219,36 +219,36 @@ void dMj2dGame_c::offCourseDataFlag(int world, int level, ulong flag) {
     mStageCompletion[world][level] &= ~flag;
 }
 
-void dMj2dGame_c::setEnemyRevivalCount(int world, int enemy, u8 count) {
+void dMj2dGame_c::setCSEnemyRevivalCnt(int world, int enemy, int count) {
     mEnemyRevivalCount[world][enemy] = count;
 }
 
-u8 dMj2dGame_c::getEnemyRevivalCount(int world, int enemy) const {
+u8 dMj2dGame_c::getCSEnemyRevivalCnt(int world, int enemy) const {
     return mEnemyRevivalCount[world][enemy];
 }
 
-void dMj2dGame_c::setEnemySubWorld(int world, int enemy, u8 subworld) {
-    mEnemySubWorld[world][enemy] = subworld;
+void dMj2dGame_c::setCSEnemySceneNo(int world, int enemy, u8 subworld) {
+    mEnemySceneNo[world][enemy] = subworld;
 }
 
-u8 dMj2dGame_c::getEnemySubWorld(int world, int enemy) const {
-    return mEnemySubWorld[world][enemy];
+u8 dMj2dGame_c::getCSEnemySceneNo(int world, int enemy) const {
+    return mEnemySceneNo[world][enemy];
 }
 
-void dMj2dGame_c::setEnemyCurrNode(int world, int enemy, u8 node) {
-    mEnemyPathNode[world][enemy] = node;
+void dMj2dGame_c::setCSEnemyPosIndex(int world, int enemy, u8 node) {
+    mEnemyPosIndex[world][enemy] = node;
 }
 
-u8 dMj2dGame_c::getEnemyCurrNode(int world, int enemy) const {
-    return mEnemyPathNode[world][enemy];
+u8 dMj2dGame_c::getCSEnemyPosIndex(int world, int enemy) const {
+    return mEnemyPosIndex[world][enemy];
 }
 
-void dMj2dGame_c::setEnemyLastDirection(int world, int enemy, u8 direction) {
-    mEnemyDirection[world][enemy] = direction;
+void dMj2dGame_c::setCSEnemyWalkDir(int world, int enemy, u8 direction) {
+    mEnemyWalkDir[world][enemy] = direction;
 }
 
-u8 dMj2dGame_c::getEnemyLastDirection(int world, int enemy) const {
-    return mEnemyDirection[world][enemy];
+u8 dMj2dGame_c::getCSEnemyWalkDir(int world, int enemy) const {
+    return mEnemyWalkDir[world][enemy];
 }
 
 void dMj2dGame_c::setKinopioCourseNo(int world, int level) {

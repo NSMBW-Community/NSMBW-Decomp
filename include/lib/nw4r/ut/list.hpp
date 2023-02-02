@@ -31,11 +31,11 @@ void List_Insert(List *list, void *target, void *obj);
 void List_Remove(List *list, void *obj); ///< Deletes an object from the list.
 
 /// @brief Gets the object linked after the given one.
-/// @details If the @p obj is @p nullptr , the list's head object is returned.
+/// @details If @p obj is @p nullptr , the list's head object is returned.
 void *List_GetNext(const List *list, const void *obj);
 
 /// @brief Gets the object linked before the given one.
-/// @details If the @p obj is @p nullptr , the list's tail object is returned.
+/// @details If @p obj is @p nullptr , the list's tail object is returned.
 void *List_GetPrev(const List *list, const void *obj);
 
 } // namespace ut
