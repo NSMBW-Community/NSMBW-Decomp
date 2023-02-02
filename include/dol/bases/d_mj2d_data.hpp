@@ -225,38 +225,30 @@ public:
     int getCourseDataFlag(int world, int level) const;
 
     /// @brief Sets the revival counter for the given map enemy.
-    /// @note Unofficial name.
-    void setEnemyRevivalCount(int world, int enemy, u8 count);
+    void setCSEnemyRevivalCnt(int world, int enemy, int count);
 
     /// @brief Gets the revival counter for the given map enemy.
-    /// @note Unofficial name.
-    u8 getEnemyRevivalCount(int world, int enemy) const;
+    u8 getCSEnemyRevivalCnt(int world, int enemy) const;
 
     /// @brief Sets the subworld number for the given map enemy.
-    /// @note Unofficial name.
-    void setEnemySubWorld(int world, int enemy, u8 subworld);
+    void setCSEnemySceneNo(int world, int enemy, u8 subworld);
 
     /// @brief Gets the subworld number for the given map enemy.
-    /// @note Unofficial name.
-    u8 getEnemySubWorld(int world, int enemy) const;
+    u8 getCSEnemySceneNo(int world, int enemy) const;
 
     /// @brief Sets the path node for the given map enemy.
-    /// @note Unofficial name.
-    void setEnemyCurrNode(int world, int enemy, u8 node);
+    void setCSEnemyPosIndex(int world, int enemy, u8 node);
 
     /// @brief Gets the path node for the given map enemy.
-    /// @note Unofficial name.
-    u8 getEnemyCurrNode(int world, int enemy) const;
+    u8 getCSEnemyPosIndex(int world, int enemy) const;
 
     /// @brief Sets the path direction for the given map enemy.
     /// @details Values are: 0 (forwards), 1 (backwards) and 2 (initial value).
     /// @todo Turn the value list into an enum and move it to the appropriate section once decompiled.
-    /// @note Unofficial name.
-    void setEnemyLastDirection(int world, int enemy, u8 direction);
+    void setCSEnemyWalkDir(int world, int enemy, u8 direction);
 
     /// @brief Gets the path direction for the given map enemy.
-    /// @note Unofficial name.
-    u8 getEnemyLastDirection(int world, int enemy) const;
+    u8 getCSEnemyWalkDir(int world, int enemy) const;
 
     /// @brief Sets the Toad rescue level for the given world.
     void setKinopioCourseNo(int world, int level);
@@ -314,9 +306,9 @@ private:
     bool mOtehonMenuOpen[HINT_MOVIE_COUNT]; ///< The hint movie bought status for each movie.
     u8 mKinopioCourseNo[WORLD_COUNT]; ///< The Toad Rescue level for each world.
 
-    u8 mEnemySubWorld[WORLD_COUNT][AMBUSH_ENEMY_COUNT]; ///< The subworld number for each map enemy.
-    u8 mEnemyPathNode[WORLD_COUNT][AMBUSH_ENEMY_COUNT]; ///< The path node for each map enemy.
-    u8 mEnemyDirection[WORLD_COUNT][AMBUSH_ENEMY_COUNT]; ///< The movement direction for each map enemy.
+    u8 mEnemySceneNo[WORLD_COUNT][AMBUSH_ENEMY_COUNT]; ///< The subworld number for each map enemy.
+    u8 mEnemyPosIndex[WORLD_COUNT][AMBUSH_ENEMY_COUNT]; ///< The path node for each map enemy.
+    u8 mEnemyWalkDir[WORLD_COUNT][AMBUSH_ENEMY_COUNT]; ///< The movement direction for each map enemy.
 
     /// @brief The death count for each level.
     /// @details The value is cumulative, and not reset after clearing the level.

@@ -84,10 +84,10 @@ public:
     void posMove(mVec3_c &delta); ///< Moves the actor by the given delta.
     void posMove(); ///< Moves the actor by its speed.
 
-    int countProf(ProfileName profile); ///< Counts the instances of the given actor profile.
+    int GetProfNameActorNum(ProfileName profile); ///< Counts the instances of the given actor profile.
 
-    static void draw2DAll(); ///< Calls ::draw2D on every actor. @note Unofficial name.
-    static void draw2D_lyt2_All(); ///< Calls ::draw2D_lyt2 on every actor. @note Unofficial name.
+    static void draw2DActorOnLyt1(); ///< Calls ::draw2D on every actor.
+    static void draw2DActorOnLyt2(); ///< Calls ::draw2D_lyt2 on every actor.
 
     /**
      * @brief Creates an actor without a parent.
