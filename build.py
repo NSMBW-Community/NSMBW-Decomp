@@ -17,6 +17,7 @@ from slice_rel import slice_rel
 from slicelib import SliceFile, SliceType, load_slice_file
 from elffile import ElfFile, ElfSymtab
 from elfconsts import STB, STT
+from elf_patch import patch_elf
 
 def print_cmd(*nargs, **kwargs):
     global args
@@ -37,7 +38,7 @@ for file in SLICEDIR.glob('*.json'):
 # Ensure correct order of slices
 slices = sorted(slices, key=lambda x: x.meta.mod_num)
 
-# Step 1: compile sources
+# Step 1: Compile sources
 for slice_file in slices:
     i = 0
     for slice in slice_file.slices:
@@ -58,7 +59,7 @@ for slice_file in slices:
             print_cmd(*cmd)
             out = subprocess.run(cmd)
             if out.returncode != 0:
-                sys.exit()
+                sys.exit(1)
     print_success(f'\nCompiled sources for {slice_file.meta.name}.')
 
 count_compiled_used = 0
@@ -66,7 +67,7 @@ count_sliced_used = 0
 
 for slice_file in slices:
 
-    # Step 2: slice main.dol and RELs
+    # Step 2: Slice main.dol and RELs
     slice_name_stem = Path(slice_file.meta.name).stem
     slice_is_rel = slice_file.meta.type == SliceType.REL
 
@@ -75,8 +76,16 @@ for slice_file in slices:
     else:
         slice_dol(Path(f'{ORIGDIR}/{slice_file.meta.name}'), Path(f'{BUILDDIR}/sliced/{slice_name_stem}'))
     print_success('Sliced', slice_file.meta.name, end='.\n')
+    
+    # Step 3: Patch non-matching object files
+    for slice in slice_file.slices:
+        if slice.slice_src:
+            compiled_path = Path(f'{BUILDDIR}/compiled/{slice_name_stem}/{slice.slice_name}')
+            sliced_path = Path(f'{BUILDDIR}/sliced/{slice_name_stem}/{slice.slice_name}')
+            patched_path = Path(f'{BUILDDIR}/compiled/{slice_name_stem}/{slice.slice_name}.patched')
+            patch_elf(compiled_path, sliced_path, compiled_path)
 
-    # Step 3: link object files
+    # Step 4: Link object files
     ldflags_dol = '-proc gekko -fp hard'
     ldflags_rel = '-proc gekko -fp hard -sdata 0 -sdata2 0 -m _prolog -opt_partial'
     out_file = slice_name_stem + ('.plf' if slice_is_rel else '.elf')
@@ -141,12 +150,12 @@ for slice_file in slices:
     print_cmd(*cmd)
     out = subprocess.run(cmd)
     if out.returncode != 0:
-        sys.exit()
+        sys.exit(1)
 
-# Step 4: build main.dol
+# Step 5: Build main.dol
 build_dol(Path(f'{BUILDDIR}/wiimj2d.elf'))
 
-# Step 5: build RELs
+# Step 6: Build RELs
 fake_path = 'd:\\home\\Project\\WIIMJ2D\\EU\\PRD\\RVL\\bin\\'
 out_rel_names = [Path(f'{BUILDDIR}/{x.meta.name.replace(".rel", ".plf").replace(".dol", ".elf")}') for x in slices]
 build_rel(out_rel_names[0], out_rel_names[1:], ALIAS_FILE, fake_path)

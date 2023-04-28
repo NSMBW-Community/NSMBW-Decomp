@@ -34,3 +34,7 @@ typedef volatile f64 vf64;
 
 // Macros
 #define ARRAY_SIZE(a) (sizeof(a) / sizeof(a[0]))
+
+#define NONMATCHING(funcname) _Pragma("section R \".patches\"") __declspec(section ".patches") const char PATCH_##funcname[] = "replace(" #funcname ")";
+
+#define REMOVE(funcname) _Pragma("section R \".patches\"") __declspec(section ".patches") const char PATCH_##funcname[] = "remove(" #funcname ")";

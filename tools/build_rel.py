@@ -110,14 +110,11 @@ def process_file(modules: list[ElfFile], idx: int, filename: Path, alias_db: dic
         if not rela_sec:
             continue
 
-        symbol_table: ElfSymtab = elffile.sections[rela_sec.header.sh_link]
-
         # Group the relocations by destination module and store the corresponding symbol
         module_classify: dict[int, list[tuple[ElfRela, ElfSymbol]]] = {}
 
         for reloc in rela_sec.relocs:
-            symbol = symbol_table.get_symbol(reloc.r_info_sym)
-            sym_name = symbol.name
+            sym_name = reloc.sym.name
 
             # Try to look up symbol in alias database
             alias_symname = alias_db.get(f'{unit_name}: {sym_name}', alias_db.get(sym_name, ''))

@@ -267,7 +267,7 @@ def create_badges(slice_files: list[SliceFile]):
         slice_file = next((i for i in slice_files if i.meta.name == slicefile_name))
         compiled, total = calculate_decompiled_bytes(slice_file, code_sec_names)
         perc = str(round(compiled / total * 100, 3))
-        slice_stem = slicefile_name.split(".")[0]
+        slice_stem = slicefile_name.split('.')[0]
 
         # Interpolate between #93a80b and #29e419
         color = [str(round(x)) for x in color_lerp((147, 168, 11), (41, 228, 25), compiled / total)]

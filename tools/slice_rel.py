@@ -67,14 +67,14 @@ def extract_slice(rel_file: Rel, slice: Slice, module_relocs: dict[int, dict[Rel
     for sec in slice.slice_secs:
         relocs_in_section = [x for x in module_relocs[rel_file.index] if sec.contains(x.section, x.addend)]
         if len(relocs_in_section) > 0:
-            reloc_sec = ElfRelaSec(f'.rela{sec.sec_name}')
+            reloc_sec = ElfRelaSec(f'.rela{sec.sec_name}', symtab=symtab_sec)
             reloc_secs.append(reloc_sec)
             for reloc_origin in relocs_in_section:
                 reloc_dest = module_relocs[rel_file.index][reloc_origin]
                 sym = ElfSymbol(str(reloc_dest[0]), st_info_bind=STB.STB_GLOBAL)
-                sym_idx = symtab_sec.add_symbol(sym)
+                symtab_sec.add_symbol(sym)
                 r_offset = reloc_origin.addend - sec.start_offs
-                elf_reloc = ElfRela(r_offset, sym_idx, reloc_dest[1], 0)
+                elf_reloc = ElfRela(sym, r_offset, reloc_dest[1], 0)
                 reloc_sec.add_reloc(elf_reloc)
 
             reloc_sec.header.sh_info = elf_file.get_section_index(sec.sec_name)

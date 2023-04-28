@@ -10,7 +10,7 @@ from elfconsts import *
 from project_settings import *
 from slicelib import *
 
-def extract_slice(dol_file: Dol, slice: Slice, syms: dict[int, str]) -> ElfFile:
+def extract_slice(dol_file: Dol, slice: Slice, syms: dict[int, (str, int)]) -> ElfFile:
     elf_file = ElfFile(ET.ET_REL, EM.EM_PPC)
 
     symtab_sec = ElfSymtab('.symtab')
@@ -34,7 +34,8 @@ def extract_slice(dol_file: Dol, slice: Slice, syms: dict[int, str]) -> ElfFile:
             symtab_sec.add_symbol(ElfSymbol('__start', st_value=offs-sec.start_offs, st_size=4, st_info_bind=STB.STB_GLOBAL, st_info_type=STT.STT_FUNC, st_shndx=sec_idx))
 
         # TODO: loading from a proper map should speed this up, as we also have the section indices there
-        for sym in syms:
+        for sym_name in syms:
+            sym_addr, sym_size = syms[sym_name]
             elfsym = None
 
             # -1 = uninitialized data section
@@ -61,15 +62,15 @@ def extract_slice(dol_file: Dol, slice: Slice, syms: dict[int, str]) -> ElfFile:
                     '.sbss2': unitialized_sec_starts[2],
                 }
 
-                offs = syms[sym] - lookup[sec.sec_name]
+                offs = sym_addr - lookup[sec.sec_name]
                 if sec.contains(-1, offs):
-                    elfsym = ElfSymbol(sym, st_value=offs-sec.start_offs, st_info_bind=STB.STB_GLOBAL, st_shndx=sec_idx)
+                    elfsym = ElfSymbol(sym_name, st_size=sym_size, st_value=offs-sec.start_offs, st_info_bind=STB.STB_GLOBAL, st_shndx=sec_idx)
             else:
                 # Search in normal section
                 for idx, dol_sec in enumerate(dol_file.sections):
-                    offs = syms[sym] - dol_sec.virt_addr
+                    offs = sym_addr - dol_sec.virt_addr
                     if sec.contains(idx, offs):
-                        elfsym = ElfSymbol(sym, st_value=offs-sec.start_offs, st_info_bind=STB.STB_GLOBAL, st_shndx=sec_idx)
+                        elfsym = ElfSymbol(sym_name, st_size=sym_size, st_value=offs-sec.start_offs, st_info_bind=STB.STB_GLOBAL, st_shndx=sec_idx)
                         break
 
             if elfsym != None:
@@ -86,14 +87,17 @@ def slice_dol(dol_file: Path, out_path: Path) -> None:
         return
 
     # TODO: use an actual symbol map file
-    syms: dict[int, str] = {}
+    syms: dict[int, (str, int)] = {}
     with open(SYMBOL_FILE) as sym_file:
         for line in sym_file:
             if line != '\n':
                 sym, addr = line.split('=')
                 if sym in syms:
                     print_warn('Warning: symbol', sym, 'defined multiple times in', SYMBOL_FILE.name, end='!\n')
-                syms[sym] = int(addr, 16)
+                if len(addr.split(':')) == 1:
+                    syms[sym] = (int(addr, 16), 0)
+                else:
+                    syms[sym] = (int(addr.split(':')[0], 16), int(addr.split(':')[1], 0))
 
     # Read slices
     with open(dol_file, 'rb') as f:
