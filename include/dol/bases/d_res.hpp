@@ -7,14 +7,15 @@
 #include <dol/mLib/m_dvd.h>
 
 /**
- * @brief A utility class for loading resource files. A resource file is a .arc file.
+ * @brief A utility class for loading resource files (a file contained within a .arc file).
  * 
- * @details 
+ * @details dRes_c is a holder for multiple archive (.arc) files.
  */
 class dRes_c {
 public:
 
     /// @brief A callback class for EGG::Archive::searchInside.
+    /// @details The calls to ::execute function occur during the initial loading of an archive.
     class callback_c {
     public:
         /// @brief Initializes the callback with the file name.
@@ -35,21 +36,19 @@ public:
     class searchCallback_c {
     public:
         /// @brief Constructs a new searchCallback_c.
-        searchCallback_c(callback_c *callback, u8 **files, int numFiles, unsigned int fileIdx, u32 folderSig) {
-            mpCallback = callback;
-            mpFiles = files;
-            mNumFiles = numFiles;
-            mFileIdx = fileIdx;
-            mFolderSig = folderSig;
+        searchCallback_c(callback_c *callback, u8 **files, int numFiles, int fileIdx, u32 folderSig) :
+            mpCallback(callback),
+            mpFiles(files),
+            mNumFiles(numFiles),
+            mFileIdx(fileIdx),
+            mFolderSig(folderSig) {
         }
 
         /// @brief The callback function for files.
-        /// @note Unofficial name.
         static void callback(void *cbInfo, void *file, const ARCDirEntry *dirEntry, const char *path);
 
     private:
         /// @brief The internal callback function for files.
-        /// @note Unofficial name.
         void callback(void *file, const ARCDirEntry *dirEntry, const char *path);
 
         callback_c *mpCallback; ///< The callback to be called if ::dirEntry is a file.
@@ -59,7 +58,7 @@ public:
         u32 mFolderSig; ///< The first 4 characters of the current folder.
     };
 
-    /// @brief A class that contains information about a resource.
+    /// @brief A class that holds information about an archive file.
     class info_c {
     public:
         info_c(); ///< Constructs a new info_c.
@@ -70,13 +69,13 @@ public:
         bool cleanup();
 
         /**
-         * @brief Sets information about the resource to be loaded.
+         * @brief Sets information about the archive to be loaded.
          * 
          * @param arcName The name of the archive.
          * @param containingFolder The path to the archive.
          * @param allocDirection The allocation direction. 1: top-down, anything else: bottom-up.
-         * @param heap The heap to load the resource into.
-         * @return Whether the resource was prepared successfully and will be loaded.
+         * @param heap The heap to load the archive files into.
+         * @return Whether the archive was prepared successfully and will be loaded.
          */
         bool set(const char *arcName, const char *containingFolder, u8 allocDirection, EGG::Heap *heap);
 
@@ -99,10 +98,10 @@ public:
     private:
 
         /**
-         * @brief Opens the resource and executes the callback on each file and folder.
+         * @brief Loads the resource and executes the callback on each file and folder.
          * 
          * @details If the callback is nullptr, the files will still be loaded and pointers to each file will be stored in ::mpFiles.
-         * @param callback The callback for this resource.
+         * @param callback The callback for this resource, or @p nullptr .
          * @return Whether the resource was opened successfully.
          */
         int loadRes(callback_c *callback);
@@ -113,7 +112,7 @@ public:
         EGG::Archive *mpArchive; ///< The archive of the resource.
         EGG::Heap *mpMountHeap; ///< The heap used for mounting the resource.
         void *mpArcBinary; ///< The binary data of the resource.
-        unsigned long mUnk; ///< Unknown.
+        int mUnk; ///< Unknown.
         EGG::FrmHeap *mDataHeap; ///< The heap used for loading the resource. [No p because of the string "dRes_c::info_c::mDataHeap"]
         u8 **mpFiles; ///< A pointer to an array of file data pointers.
 
@@ -132,18 +131,18 @@ public:
     bool init(u16 maxCount, callback_c *callback);
 
     /**
-     * @brief Sets an resource to be loaded next.
+     * @brief Registers an archive to be loaded next.
      * 
-     * @param arcName The name of the archive to load from.
+     * @param resName The name of the archive to load from.
      * @param filePath The path to the archive.
      * @param allocDir The allocation direction. 1: top-down, anything else: bottom-up.
      * @param heap The heap to load the resource into.
      * @return Whether the operation was successful.
      */
-    bool setRes(const char *arcName, const char *filePath, u8 allocDir, EGG::Heap *heap);
+    bool setRes(const char *arcName, const char *containingFolder, u8 allocDir, EGG::Heap *heap);
 
     /**
-     * @brief Marks the resource as not needed anymore.
+     * @brief Marks the archive as not needed anymore.
      * @param arcName The name of the archive to unload.
      * @return Whether the operation was successful.
      */
@@ -152,75 +151,77 @@ public:
     /**
      * @brief Loads a resource.
      * 
-     * @param arcName The name of the resource to load.
-     * @param filePath The path to the resource.
+     * @param arcName The name of the archive which contains the resource.
+     * @param resPath The path to the resource.
      * @return A pointer to the contents of the resource.
      */
-    void *getRes(const char *arcName, const char *filePath) const;
+    void *getRes(const char *arcName, const char *resPath) const;
 
     /**
      * @brief Loads a resource.
      * 
-     * @param arcName The name of the resource to load.
-     * @param filePath The path to the resource.
+     * @param arcName The name of the archive which contains the resource.
+     * @param resPath The path to the resource.
      * @param size A pointer where the size of the resource will be written to.
      * @return A pointer to the contents of the resource.
      */
-    void *getRes(const char *arcName, const char *filePath, unsigned long *size) const;
+    void *getRes(const char *arcName, const char *resPath, unsigned long *size) const;
 
     /**
-     * @brief Loads a resource.
+     * @brief Loads a resource which may optionally be compressed.
+     * @details If the resource is not found, it tries to load "<resource name>.LZ".
+     * Only .LZ compression is supported.
      * 
-     * @param arcName The name of the resource to load.
-     * @param filePath The path to the resource.
+     * @param arcName The name of the archive which contains the resource.
+     * @param resPath The path to the resource.
      * @param size A pointer where the size of the resource will be written to.
      * @param compressionType A pointer where the compression type of the resource will be written to.
      * @return A pointer to the contents of the resource.
      */
-    void *getRes(const char *arcName, const char *filePath, unsigned long *size, int *compressionType) const;
+    void *getRes(const char *arcName, const char *resPath, unsigned long *size, int *compressionType) const;
 
     /// @brief Loads a resource without logging if the resource is not found.
     /// @see ::getRes(const char*, const char*) const
-    void *getResSilently(const char *arcName, const char *filePath) const;
+    void *getResSilently(const char *arcName, const char *resPath) const;
     
     /// @brief Loads a resource without logging if the resource is not found.
     /// @see ::getRes(const char*, const char*, unsigned long*) const
-    void *getResSilently(const char *arcName, const char *filePath, unsigned long *size) const;
+    void *getResSilently(const char *arcName, const char *resPath, unsigned long *size) const;
 
     /// @brief Attempts to trigger the callback on a resource that has finished loading since the last call to this function.
     /// @return Whether the callback was able to be triggered.
     bool syncAllRes();
     
     /**
-     * @brief Gets the info_c for a resource.
+     * @brief Gets the info_c for an archive.
      * 
-     * @param arcName The name of the resource.
-     * @return The info_c for the resource.
+     * @param arcName The name of the archive.
+     * @return The info_c for the archive.
      */
     info_c *getResInfo(const char *arcName) const;
 
     /**
-     * @brief Gets the info_c for a resource if it has a valid archive.
-     * @param arcName The name of the resource.
-     * @return The info_c for the resource if it has a valid archive, otherwise nullptr.
+     * @brief Gets the info_c for a archive if it has a valid archive.
+     * @param arcName The name of the archive.
+     * @return The info_c for the archive if it has a valid archive, otherwise nullptr.
      */
     info_c *getResInfoLoaded(const char *arcName) const;
 
-    /// @brief Gets an info_c that can be used to store a new resource.
-    /// @return The info_c for the new resource.
+    /// @brief Gets an info_c that can be used to store an archive reference.
+    /// @return The info_c for the archive.
     info_c *newResInfo();
 
     /// @brief Copies an uncompressed resource.
     static void copyRes(const void *from, void *to, int size);
 
     /// @brief Copies a compressed resource.
-    static void copyRes(const void *from, void *to, int size, int compressionLevel);
+    static void copyRes(const void *from, void *to, int size, int compressionType);
 
 
 private:
-    info_c *mpInfos; ///< An array of resource holders.
+    info_c *mpArcInfos; ///< An array of archive holders.
     u16 mNumInfos; ///< The number of info_c instances.
     callback_c *mpCallback; ///< The callback for when a resource is loaded.
 
-    static void (*mSetCallback)(const char *arcName, EGG::Heap *heap); ///< The callback for when dRes_c::info_c::set is called.
+    static void (*mSetCallback)(const char *arcName, EGG::Heap *heap); ///< The callback for when dRes_c::info_c::set is called. [Unused].
 };

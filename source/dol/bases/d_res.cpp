@@ -4,23 +4,23 @@
 
 void (*dRes_c::mSetCallback)(const char *arcName, EGG::Heap *heap);
 
-dRes_c::dRes_c() {
-    mpInfos = nullptr;
-    mNumInfos = 0;
-    mpCallback = nullptr;
+dRes_c::dRes_c() :
+    mpArcInfos(nullptr),
+    mNumInfos(0),
+    mpCallback(nullptr) {
 }
 
 dRes_c::~dRes_c() {
-    if (mpInfos != nullptr) {
-        delete[] mpInfos;
-        mpInfos = nullptr;
+    if (mpArcInfos != nullptr) {
+        delete[] mpArcInfos;
+        mpArcInfos = nullptr;
         mNumInfos = 0;
     }
 }
 
 bool dRes_c::init(u16 maxCount, callback_c *callback) {
-    mpInfos = new info_c[maxCount];
-    if (!mpInfos) {
+    mpArcInfos = new info_c[maxCount];
+    if (!mpArcInfos) {
         return false;
     }
     mNumInfos = maxCount;
@@ -29,8 +29,8 @@ bool dRes_c::init(u16 maxCount, callback_c *callback) {
     return true;
 }
 
-bool dRes_c::setRes(const char *arcName, const char *filePath, u8 allocDir, EGG::Heap *heap) {
-    // First try to find an existing instance of the resource
+bool dRes_c::setRes(const char *arcName, const char *containingFolder, u8 allocDir, EGG::Heap *heap) {
+    // First try to find an existing instance of the archive
     info_c *info = getResInfo(arcName);
     if (info == nullptr) {
         // We need a new instance
@@ -38,7 +38,7 @@ bool dRes_c::setRes(const char *arcName, const char *filePath, u8 allocDir, EGG:
         if (info == nullptr) {
             return false;
         }
-        if (!info->set(arcName, filePath, allocDir, heap)) {
+        if (!info->set(arcName, containingFolder, allocDir, heap)) {
             info->cleanup();
             return false;
         }
@@ -55,42 +55,42 @@ bool dRes_c::deleteRes(const char *arcName) {
 
     info->decRefCount();
     if (info->getRefCount() == 0) {
-        // Resource not needed anymore
+        // Archive not needed anymore
         info->cleanup();
     }
     return true;
 }
 
-void *dRes_c::getRes(const char *arcName, const char *filePath) const {
+void *dRes_c::getRes(const char *arcName, const char *resPath) const {
     void *data = nullptr;
     info_c *info = getResInfoLoaded(arcName);
     if (info != nullptr && info->getArchive() != nullptr) {
-        data = info->getArchive()->getFile(filePath, nullptr);
+        data = info->getArchive()->getFile(resPath, nullptr);
     }
     return data;
 }
 
-void *dRes_c::getRes(const char *arcName, const char *filePath, unsigned long *size) const {
+void *dRes_c::getRes(const char *arcName, const char *resPath, unsigned long *size) const {
     void *data = nullptr;
     int newSize = 0;
     info_c *info = getResInfoLoaded(arcName);
     if (info != nullptr && info->getArchive() != nullptr) {
         EGG::Archive *archive = info->getArchive();
         EGG::Archive::FileInfo fi = { 0, 0 };
-        data = archive->getFile(filePath, &fi);
+        data = archive->getFile(resPath, &fi);
         newSize = fi.mFileSize;
     }
     *size = newSize;
     return data;
 }
 
-void *dRes_c::getRes(const char *arcName, const char *filePath, unsigned long *size, int *compressionType) const {
+void *dRes_c::getRes(const char *arcName, const char *resPath, unsigned long *size, int *compressionType) const {
     void *data = nullptr;
     int newSize = 0;
     info_c *info = getResInfoLoaded(arcName);
     if (info != nullptr && info->getArchive() != nullptr) {
         EGG::Archive *archive = info->getArchive();
-        long entryID = archive->convertPathToEntryID(filePath);
+        long entryID = archive->convertPathToEntryID(resPath);
         if (entryID >= 0) {
             // File exists
             EGG::Archive::FileInfo fi = { 0, 0 };
@@ -107,7 +107,7 @@ void *dRes_c::getRes(const char *arcName, const char *filePath, unsigned long *s
         } else {
             // File not found, try with .LZ extension
             char path[256];
-            snprintf(path, sizeof(path), "%s.LZ", filePath);
+            snprintf(path, sizeof(path), "%s.LZ", resPath);
             entryID = archive->convertPathToEntryID(path);
 
             if (entryID >= 0) {
@@ -131,21 +131,21 @@ void *dRes_c::getRes(const char *arcName, const char *filePath, unsigned long *s
     memcpy(to, from, size);
 }
 
- void dRes_c::copyRes(const void *from, void *to, int size, int compressionLevel) {
-    if (compressionLevel == 0) {
+ void dRes_c::copyRes(const void *from, void *to, int size, int compressionType) {
+    if (compressionType == 0) {
         copyRes(from, to, size);
     } else {
         CXUncompressLZ(from, to);
     }
 }
 
-void *dRes_c::getResSilently(const char *arcName, const char *filePath) const {
+void *dRes_c::getResSilently(const char *arcName, const char *resPath) const {
     void *data = nullptr;
 
     info_c *info = getResInfoLoaded(arcName);
     if (info != nullptr && info->getArchive() != nullptr) {
         EGG::Archive *archive = info->getArchive();
-        long entryID = archive->convertPathToEntryID(filePath);
+        long entryID = archive->convertPathToEntryID(resPath);
 
         if (entryID >= 0) {
             // File exists, load it
@@ -156,14 +156,14 @@ void *dRes_c::getResSilently(const char *arcName, const char *filePath) const {
     return data;
 }
 
-void *dRes_c::getResSilently(const char *arcName, const char *filePath, unsigned long *size) const {
+void *dRes_c::getResSilently(const char *arcName, const char *resPath, unsigned long *size) const {
     void *data = nullptr;
     int newSize = 0;
 
     info_c *info = getResInfoLoaded(arcName);
     if (info != nullptr && info->getArchive() != nullptr) {
         EGG::Archive *archive = info->getArchive();
-        long entryID = archive->convertPathToEntryID(filePath);
+        long entryID = archive->convertPathToEntryID(resPath);
 
         if (entryID >= 0) {
             // File exists, load it
@@ -179,7 +179,7 @@ void *dRes_c::getResSilently(const char *arcName, const char *filePath, unsigned
 }
 
 bool dRes_c::syncAllRes() {
-    info_c *info = &mpInfos[0];
+    info_c *info = &mpArcInfos[0];
     for (int i = 0; i < mNumInfos; i++) {
         if (info->getDvdCmd() != nullptr) {
             if (info->setRes(mpCallback) > 0) {
@@ -193,7 +193,7 @@ bool dRes_c::syncAllRes() {
 
 dRes_c::info_c *dRes_c::getResInfo(const char *arcName) const {
     int count = mNumInfos; // [Needed for matching]
-    info_c *info = &mpInfos[0];
+    info_c *info = &mpArcInfos[0];
     for (int i = 0; i < count; i++) {
         if (info->getRefCount() > 0 && strcmp(arcName, info->getName()) == 0) {
             return info;
@@ -204,7 +204,7 @@ dRes_c::info_c *dRes_c::getResInfo(const char *arcName) const {
 }
 
 dRes_c::info_c *dRes_c::newResInfo() {
-    info_c *info = &mpInfos[0];
+    info_c *info = &mpArcInfos[0];
     for (int i = 0; i < mNumInfos; i++) {
         // An info_c can be used if it has no references
         if (info->getRefCount() == 0) {
