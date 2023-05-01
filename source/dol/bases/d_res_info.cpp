@@ -97,7 +97,7 @@ int dRes_c::info_c::setRes(callback_c *callback) {
             return -1;
         }
 
-        // Prepare the heap for the resource
+        // Prepare the heap for the archive data
         EGG::Heap *heap = (mpMountHeap != nullptr) ? mpMountHeap : mHeap::g_gameHeaps[0];
         mDataHeap = mHeap::makeFrmHeapAndUpdate(-1, heap, "dRes_c::info_c::mDataHeap", 0x20, 0);
         if (mDataHeap == nullptr) {
