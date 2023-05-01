@@ -23,7 +23,7 @@ const paddingD = 0.95;
 const paddingW = paddingL + (1 - paddingR);
 const paddingH = paddingU + (1 - paddingD);
 
-const sfNames = ["wiimj2d.dol", "d_profileNP.rel", "d_basesNP.rel", "d_en_bossNP.rel"];
+const sfNames = ["wiimj2d.dol", "d_profileNP.rel", "d_basesNP.rel", "d_enemiesNP.rel", "d_en_bossNP.rel"];
 
 const svg = document.getElementById("prog-graph-svg");
 
