@@ -15,6 +15,13 @@ typedef struct {
     u32 mCurrDir;
 } ARCHandle;
 
+typedef struct {
+    ARCHandle *mpHandle;
+    int mEntryNum;
+    int mIsDirectory;
+    const char *mpName;
+} ARCDirEntry;
+
 #ifdef __cplusplus
 }
 #endif

@@ -48,6 +48,30 @@
             }
         },
         {
+            "source": "dol/bases/d_res_info.cpp",
+            "memoryRanges": {
+                ".text": "0xd82b0-0xd88c0",
+                ".data": "0x1b1a0-0x1b1c8"
+            }
+        },
+        {
+            "source": "dol/bases/d_res.cpp",
+            "memoryRanges": {
+                ".text": "0xd88c0-0xd8ff0",
+                ".sdata": "0x908-0x910",
+                ".sbss": "0x470-0x478"
+            }
+        },
+        {
+            "source": "dol/bases/d_res_mng.cpp",
+            "deadstrip": ["__vt__Q26dRes_c10callback_c"],
+            "memoryRanges": {
+                ".text": "0xd8ff0-0xd91d0",
+                ".data": "0x1b1c8-0x1b1e8",
+                ".sbss": "0x478-0x480"
+            }
+        },
+        {
             "source": "dol/bases/d_scene.cpp",
             "memoryRanges": {
                 ".text": "0xdb320-0xdb8f0",
@@ -64,10 +88,7 @@
         },
         {
             "source": "dol/sLib/s_StateID.cpp",
-            "deadstrip": [
-                "__vt__12sStateIDIf_cFv",
-                "__dt__12sStateIDIf_cFv"
-            ],
+            "deadstrip": ["__vt__12sStateIDIf_cFv"],
             "memoryRanges": {
                 ".text": "0x159180-0x159360",
                 ".ctors": "0x200-0x204",
