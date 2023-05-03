@@ -19,17 +19,17 @@ public:
     virtual ~dResMng_c(); ///< Destroys this dResMng_c.
 
     /**
-     * @brief Registers multiple archives to be loaded next.
+     * @brief Registers multiple archives to be loaded.
      * 
      * @param path The path to the folder containing the archives.
      * @param names An array of archive names.
      * @param count The number of archives in ::names.
-     * @param heap The heap to load the archive into.
+     * @param heap The heap to load the archives into.
      */
     void setRes(const char *path, char **names, int count, EGG::Heap *heap);
 
     /**
-     * @brief Registers a single archive to be loaded next.
+     * @brief Registers a single archive to be loaded.
      * 
      * @param path The path to the folder containing the archive.
      * @param name The name of the archive.

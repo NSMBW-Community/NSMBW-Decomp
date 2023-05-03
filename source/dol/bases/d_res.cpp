@@ -6,7 +6,7 @@ void (*dRes_c::mSetCallback)(const char *arcName, EGG::Heap *heap);
 
 dRes_c::dRes_c() :
     mpArcInfos(nullptr),
-    mNumInfos(0),
+    mNumArcs(0),
     mpCallback(nullptr) {
 }
 
@@ -14,7 +14,7 @@ dRes_c::~dRes_c() {
     if (mpArcInfos != nullptr) {
         delete[] mpArcInfos;
         mpArcInfos = nullptr;
-        mNumInfos = 0;
+        mNumArcs = 0;
     }
 }
 
@@ -23,7 +23,7 @@ bool dRes_c::init(u16 maxCount, callback_c *callback) {
     if (!mpArcInfos) {
         return false;
     }
-    mNumInfos = maxCount;
+    mNumArcs = maxCount;
     mpCallback = callback;
 
     return true;
@@ -180,7 +180,7 @@ void *dRes_c::getResSilently(const char *arcName, const char *resPath, unsigned 
 
 bool dRes_c::syncAllRes() {
     info_c *info = &mpArcInfos[0];
-    for (int i = 0; i < mNumInfos; i++) {
+    for (int i = 0; i < mNumArcs; i++) {
         if (info->getDvdCmd() != nullptr) {
             if (info->setRes(mpCallback) > 0) {
                 return true;
@@ -192,7 +192,7 @@ bool dRes_c::syncAllRes() {
 }
 
 dRes_c::info_c *dRes_c::getResInfo(const char *arcName) const {
-    int count = mNumInfos; // [Needed for matching]
+    int count = mNumArcs; // [Needed for matching]
     info_c *info = &mpArcInfos[0];
     for (int i = 0; i < count; i++) {
         if (info->getRefCount() > 0 && strcmp(arcName, info->getName()) == 0) {
@@ -205,7 +205,7 @@ dRes_c::info_c *dRes_c::getResInfo(const char *arcName) const {
 
 dRes_c::info_c *dRes_c::newResInfo() {
     info_c *info = &mpArcInfos[0];
-    for (int i = 0; i < mNumInfos; i++) {
+    for (int i = 0; i < mNumArcs; i++) {
         // An info_c is free if it has no references
         if (info->getRefCount() == 0) {
             return info;

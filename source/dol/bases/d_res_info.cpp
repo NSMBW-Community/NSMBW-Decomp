@@ -4,14 +4,14 @@
 #include <lib/rvl/dc/DC.h>
 #include <lib/MSL_C/string.h>
 
-dRes_c::info_c::info_c() {
-    mRefCount = 0;
-    mpDvdCmd = nullptr;
-    mpArchive = nullptr;
-    mpMountHeap = nullptr;
-    mpArcBinary = nullptr;
-    mDataHeap = nullptr;
-    mpFiles = nullptr;
+dRes_c::info_c::info_c() : 
+    mRefCount(0),
+    mpDvdCmd(nullptr),
+    mpArchive(nullptr),
+    mpMountHeap(nullptr),
+    mpArcBinary(nullptr),
+    mDataHeap(nullptr),
+    mpFiles(nullptr) {
 }
 
 dRes_c::info_c::~info_c() {
