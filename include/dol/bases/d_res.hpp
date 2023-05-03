@@ -62,7 +62,7 @@ public:
         ~info_c(); ///< Destroys this info_c.
 
         /// @brief Unmounts the archive and frees the holder for use.
-        /// @return Whether this info_c was cleaned up successfully.
+        /// @return Whether the operation was successful.
         bool cleanup();
 
         /**
@@ -108,7 +108,7 @@ public:
         mDvd_mountMemArchive_c *mpDvdCmd; ///< The DVD command for mounting the archive.
         EGG::Archive *mpArchive; ///< An EGG::Archive instance for this archive.
         EGG::Heap *mpMountHeap; ///< The heap used for mounting the archive.
-        void *mpArcBinary; ///< The binary data of the archive.
+        void *mpArcBinary; ///< The raw archive data.
         int mUnk; ///< Unknown.
         EGG::FrmHeap *mDataHeap; ///< The heap used for loading the resources of the archive. [No p because of the string "dRes_c::info_c::mDataHeap"]
         u8 **mpFiles; ///< An array of pointers to the data of each loaded resource.
@@ -121,8 +121,8 @@ public:
     /**
      * @brief Initializes the dRes_c.
      * 
-     * @param maxCount Number of archive holders to allocate.
-     * @param callback Callback for after a archive has been loaded.
+     * @param maxCount The number of archive holders to allocate.
+     * @param callback The callback for after a archive has been loaded.
      * @return Whether the initialization was successful.
      */
     bool init(u16 maxCount, callback_c *callback);
@@ -139,7 +139,7 @@ public:
     bool setRes(const char *arcName, const char *containingFolder, u8 allocDir, EGG::Heap *heap);
 
     /**
-     * @brief Marks the archive as not needed anymore.
+     * @brief Marks the archive as no longer needed.
      * @param arcName The name of the archive to unload.
      * @return Whether the operation was successful.
      */
@@ -217,7 +217,7 @@ public:
 
 private:
     info_c *mpArcInfos; ///< An array of archive holders.
-    u16 mNumInfos; ///< The number of info_c instances.
+    u16 mNumArcs; ///< The number of archive holders.
     callback_c *mpCallback; ///< The callback for when a resource is loaded.
 
     static void (*mSetCallback)(const char *arcName, EGG::Heap *heap); ///< The callback for when dRes_c::info_c::set is called. [Unused].
