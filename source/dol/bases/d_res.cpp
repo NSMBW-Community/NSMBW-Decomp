@@ -92,7 +92,7 @@ void *dRes_c::getRes(const char *arcName, const char *resPath, unsigned long *si
         EGG::Archive *archive = info->getArchive();
         long entryID = archive->convertPathToEntryID(resPath);
         if (entryID >= 0) {
-            // File exists
+            // Resource exists
             EGG::Archive::FileInfo fi = { 0, 0 };
             data = archive->getFileFast(entryID, &fi);
 
@@ -105,7 +105,7 @@ void *dRes_c::getRes(const char *arcName, const char *resPath, unsigned long *si
                 }
             }
         } else {
-            // File not found, try with .LZ extension
+            // Resource not found, try with .LZ extension
             char path[256];
             snprintf(path, sizeof(path), "%s.LZ", resPath);
             entryID = archive->convertPathToEntryID(path);
@@ -148,7 +148,7 @@ void *dRes_c::getResSilently(const char *arcName, const char *resPath) const {
         long entryID = archive->convertPathToEntryID(resPath);
 
         if (entryID >= 0) {
-            // File exists, load it
+            // Resource exists, load it
             data = archive->getFileFast(entryID, nullptr);
         }
     }
@@ -166,7 +166,7 @@ void *dRes_c::getResSilently(const char *arcName, const char *resPath, unsigned 
         long entryID = archive->convertPathToEntryID(resPath);
 
         if (entryID >= 0) {
-            // File exists, load it
+            // Resource exists, load it
             EGG::Archive::FileInfo fi = { 0, 0 };
             data = archive->getFileFast(entryID, &fi);
             newSize = fi.mFileSize;
@@ -206,7 +206,7 @@ dRes_c::info_c *dRes_c::getResInfo(const char *arcName) const {
 dRes_c::info_c *dRes_c::newResInfo() {
     info_c *info = &mpArcInfos[0];
     for (int i = 0; i < mNumInfos; i++) {
-        // An info_c can be used if it has no references
+        // An info_c is free if it has no references
         if (info->getRefCount() == 0) {
             return info;
         }

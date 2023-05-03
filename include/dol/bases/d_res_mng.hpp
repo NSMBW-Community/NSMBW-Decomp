@@ -4,10 +4,10 @@
 
 #define MAX_NUM_RES 300 ///< The maximum number of resources that can be loaded at once.
 
-/// @brief A singleton class that manages loading resource files (a file contained within a .arc file).
+/// @brief A singleton class that manages loading resource files (files contained within a .arc file).
 class dResMng_c {
 private:
-    /// @brief A callback class for EGG::Archive::searchInside that returns the file data and handles loading g3d data.
+    /// @brief A callback class for processing resources that handles loading g3d data.
     class resCallback_c : public dRes_c::callback_c {
     public:
         virtual void init(const char *name);
@@ -21,7 +21,7 @@ public:
     /**
      * @brief Registers multiple archives to be loaded next.
      * 
-     * @param path The path to the folder.
+     * @param path The path to the folder containing the archives.
      * @param names An array of archive names.
      * @param count The number of archives in ::names.
      * @param heap The heap to load the archive into.
@@ -31,16 +31,18 @@ public:
     /**
      * @brief Registers a single archive to be loaded next.
      * 
-     * @param path The path to the folder.
+     * @param path The path to the folder containing the archive.
      * @param name The name of the archive.
      * @param heap The heap to load the archive into.
      * @return Whether the archive was loaded successfully.
      */
     bool setRes(const char *path, const char *name, EGG::Heap *heap);
 
-    static dResMng_c *m_instance; ///< The instance of this class.
+    dRes_c mRes; ///< The resource manager.
 
 private:
-    dRes_c mRes; ///< The resource manager.
     resCallback_c mCallback; ///< The callback for after a file has been loaded.
+
+public:
+    static dResMng_c *m_instance; ///< The instance of this class.
 };
