@@ -4,6 +4,7 @@
 import argparse
 import hashlib
 import math
+import re
 import subprocess
 import sys
 from pathlib import Path
@@ -62,6 +63,35 @@ def get_git_commit_list() -> list[dict[str, any]]:
     out = subprocess.check_output(['git', '--no-pager', 'log', '--format=%H %at']).decode().strip().split('\n')
     return list(map(lambda x: { 'timestamp': int(x.split(' ')[1]), 'hash': x.split(' ')[0] }, out))
 
+# Parse symbol map (needed for size of nonmatching symbols)
+syms = dict()
+with open('syms.txt') as sym_file:
+    for line in [x for x in sym_file.readlines() if x != '\n']:
+        sym, addr = line.split('=')
+        addr_spl = addr.split(':')
+        if len(addr_spl) == 1:
+            syms[sym] = { 'addr': int(addr, 16), 'size': 0 }
+        else:
+            syms[sym] = { 'addr': int(addr_spl[0], 16), 'size': int(addr_spl[1], 0) }
+
+# Counts the number of nonmatching bytes in a file by looking for NONMATCHING() macros
+def count_nonmatching_bytes(src_file: Path) -> int:
+    with open(src_file) as f:
+        src_lines = f.readlines()
+
+    nonmatching_bytes = 0
+    for line in src_lines:
+        m = re.match(r'^NONMATCHING\((\w+)\)$', line)
+        if not m:
+            continue
+        sym_name = m.group(1)
+        if sym_name not in syms or syms[sym_name]['size'] == 0:
+            print_err(f'Nonmatching symbol {sym_name} not found in symbol map or has size 0!')
+            continue
+        nonmatching_bytes += syms[sym_name]['size']
+
+    return nonmatching_bytes
+
 def calculate_decompiled_bytes(slice_file: SliceFile, filter_sections: list[str]) -> tuple[int, int]:
     count_compiled_bytes = 0
     count_total_bytes = 0
@@ -72,6 +102,10 @@ def calculate_decompiled_bytes(slice_file: SliceFile, filter_sections: list[str]
             count_total_bytes += byte_count
             if slice.slice_src:
                 count_compiled_bytes += byte_count
+
+                # Check for nonmatching symbols
+                count_compiled_bytes -= count_nonmatching_bytes(Path(f'{SRCDIR}/{slice.slice_src}'))
+
 
     return [count_compiled_bytes, count_total_bytes]
 
