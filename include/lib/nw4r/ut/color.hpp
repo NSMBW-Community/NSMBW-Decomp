@@ -1,5 +1,5 @@
 #pragma once
-#include <lib/rvl/gx/GXStruct.h>
+#include <lib/rvl/gx/GX.h>
 
 namespace nw4r {
 namespace ut {

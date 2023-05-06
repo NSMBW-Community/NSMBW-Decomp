@@ -1,5 +1,6 @@
 #pragma once
-#include <lib/egg/heap/frm_heap.hpp>
+#include <types.h>
+#include <lib/egg/heap/eggFrmHeap.hpp>
 
 namespace mHeap {
     void restoreCurrentHeap();

@@ -2,7 +2,6 @@
 
 // Codewarrior-specific pragmas
 #ifdef __CWCC__
-#pragma cpp_extensions on
 #pragma cpp1x on
 #pragma gcc_extensions on
 #endif

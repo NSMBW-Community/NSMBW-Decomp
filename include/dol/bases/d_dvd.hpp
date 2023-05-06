@@ -1,6 +1,6 @@
 #pragma once
 #include <types.h>
-#include <lib/egg/heap/heap.hpp>
+#include <lib/egg/heap/eggHeap.hpp>
 
 namespace d2d {
 namespace dDvd {

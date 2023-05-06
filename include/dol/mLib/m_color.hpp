@@ -1,5 +1,5 @@
 #pragma once
-#include <lib/rvl/gx/GXStruct.h>
+#include <lib/rvl/gx/GX.h>
 
 /// @brief A 32-bit RGBA color.
 /// @details Game-specific implementation.
