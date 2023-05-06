@@ -5,7 +5,7 @@ EGG::ColorFader::ColorFader(float x, float y, float w, float h, nw4r::ut::Color 
     mFlag(0),
     mFrameCount(20),
     mFrame(0),
-    mCurrColor(0xFFFFFFFF),
+    mCurrColor(),
     mLeft(x),
     mTop(y),
     mRight(x + w),
