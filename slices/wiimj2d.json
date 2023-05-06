@@ -287,6 +287,14 @@
             }
         },
         {
+            "source": "dol/mLib/m_wipe_fader.cpp",
+            "memoryRanges": {
+                ".text": "0x16a610-0x16ad80",
+                ".data": "0x2b8d0-0x2b900",
+                ".sdata2": "0x2ce0-0x2d18"
+            }
+        },
+        {
             "source": "lib/nw4hbm/ut/list.cpp",
             "compilerFlags": "-proc gekko -fp hard -O4 -Cpp_exceptions off -enum int -RTTI off",
             "memoryRanges": {
