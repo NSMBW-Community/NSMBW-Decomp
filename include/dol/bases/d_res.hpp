@@ -1,8 +1,8 @@
 #pragma once
 #include <types.h>
 #include <lib/rvl/arc/ARC.h>
-#include <lib/egg/heap/heap.hpp>
-#include <lib/egg/heap/frm_heap.hpp>
+#include <lib/egg/heap/eggHeap.hpp>
+#include <lib/egg/heap/eggFrmHeap.hpp>
 #include <lib/egg/archive.hpp>
 #include <dol/mLib/m_dvd.h>
 

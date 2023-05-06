@@ -1,26 +1,64 @@
 #pragma once
-#include <lib/nw4r/ut/color.hpp>
-#include <_dummy_classes.hpp>
+#include <dol/mLib/m_color.hpp>
 
+/// @brief Base fader implementation.
 class mFaderBase_c {
 public:
+
+    /// @brief The fader's status.
     enum EStatus {
-        OPAQUE = 0, ///< The screen is completely blacked out.
-        HIDDEN = 1, ///< The screen is completely unblocked.
-        FADE_IN = 2, ///< Transition from OPAQUE -> HIDDEN
-        FADE_OUT = 3 ///< Transition from HIDDEN -> OPAQUE
+        OPAQUE, ///< The screen is completely blacked out.
+        HIDDEN, ///< The screen is completely unblocked.
+        FADE_IN, ///< Transition from OPAQUE to HIDDEN.
+        FADE_OUT ///< Transition from HIDDEN to OPAQUE.
     };
 
-    mFaderBase_c(const mColor &color, EStatus status);
-    virtual ~mFaderBase_c();
+    /// @brief Some flags related to the fader.
+    /// @todo Figure out what these do.
+    /// @note Unofficial name.
+    enum FLAG_e {
+        FADE_IN_COMPLETE = 1,
+        FADE_OUT_COMPLETE = 2
+    };
 
+    /// @brief Constructs a new fader.
+    /// @param color The fader's color.
+    /// @param status The fader's initial status (::OPAQUE or ::HIDDEN).
+    mFaderBase_c(const mColor &color, EStatus status);
+
+    virtual ~mFaderBase_c(); ///< Destroys the fader.
+
+    /// @brief Sets the fader's status.
+    /// @details The implementation is left to the derived classes.
     virtual void setStatus(EStatus status) = 0;
-    virtual EStatus getStatus() const;
-    virtual void fadeIn();
-    virtual void fadeOut();
-    virtual void calc();
-    virtual void draw();
-    
-    void setFrame(unsigned short duration);
-    void setColor(const mColor &color);
+
+    virtual EStatus getStatus() const; ///< Gets the fader's status.
+
+    /// @brief Initiates a fade in from pure blacked-out.
+    /// @details The screen must be ::OPAQUE for the operation to be executed.
+    /// @return If the action was carried out.
+    virtual bool fadeIn();
+
+    /// @brief Initiates a fade out from no-obstruction.
+    /// @details The screen must be ::HIDDEN for the operation to be executed.
+    /// @return If the action was carried out.
+    virtual bool fadeOut();
+
+    /// @brief Calculates the fader at the current frame.
+    /// @return If the operation was successful.
+    virtual int calc();
+
+    /// @brief Draws the fader.
+    /// @details The implementation is left to the derived classes.
+    virtual void draw() = 0;
+
+    void setFrame(u16 duration); ///< Sets the duration of the fade. Duration must not be zero.
+    void setColor(const mColor &color); ///< Sets the fader's color. Alpha is not modified.
+
+protected:
+    EStatus mStatus; ///< The fader's status.
+    u8 mFlag; ///< The fader's flags.
+    u16 mFrameCount; ///< The fader's duration.
+    u16 mCurrFrame; ///< The fader's current frame.
+    mColor mFaderColor; ///< The fader's color.
 };

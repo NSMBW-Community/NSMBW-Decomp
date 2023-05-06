@@ -1,6 +1,6 @@
 #pragma once
 #include <types.h>
-#include <lib/egg/heap/frm_heap.hpp>
+#include <lib/egg/heap/eggFrmHeap.hpp>
 #include <dol/framework/f_profile.hpp>
 #include <dol/framework/f_base_id.hpp>
 #include <dol/framework/f_helper_unk.hpp>

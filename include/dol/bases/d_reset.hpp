@@ -1,6 +1,6 @@
 #pragma once
-#include <lib/egg/heap/heap.hpp>
-#include <lib/egg/color_fader.hpp>
+#include <lib/egg/heap/eggHeap.hpp>
+#include <lib/egg/fader/eggColorFader.hpp>
 #include <types.h>
 
 namespace dReset {

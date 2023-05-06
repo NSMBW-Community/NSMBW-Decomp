@@ -2,7 +2,7 @@
 #include <dol/bases/d_dvd.hpp>
 #include <dol/mLib/m2d/resource.hpp>
 #include <lib/nw4r/lyt/lyt_resource.hpp>
-#include <lib/egg/heap/heap.hpp>
+#include <lib/egg/heap/eggHeap.hpp>
 
 namespace d2d {
 

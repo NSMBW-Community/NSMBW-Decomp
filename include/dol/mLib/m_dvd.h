@@ -1,6 +1,6 @@
 #pragma once
 #include <types.h>
-#include <lib/egg/heap/heap.hpp>
+#include <lib/egg/heap/eggHeap.hpp>
 #include <lib/egg/archive.hpp>
 
 class mDvd_command_c {

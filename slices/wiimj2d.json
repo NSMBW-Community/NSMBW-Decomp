@@ -21,6 +21,38 @@
     },
     "slices": [
         {
+            "source": "dol/bases/d_wipe_dokan.cpp",
+            "memoryRanges": {
+                ".text": "0x15410-0x159f0",
+                ".rodata": "0x380-0x3b8",
+                ".data": "0x2ec0-0x2fd0",
+                ".sdata": "0x148-0x150",
+                ".sbss": "0x78-0x80"
+            }
+        },
+        {
+            "source": "dol/bases/d_wipe_kuppa.cpp",
+            "memoryRanges": {
+                ".text": "0x159f0-0x15f10",
+                ".rodata": "0x3b8-0x3e0",
+                ".data": "0x2fd0-0x3088",
+                ".sdata": "0x150-0x168",
+                ".sbss": "0x80-0x88",
+                ".sdata2": "0x178-0x180"
+            }
+        },
+        {
+            "source": "dol/bases/d_wipe_mario.cpp",
+            "memoryRanges": {
+                ".text": "0x15f10-0x16430",
+                ".rodata": "0x3e0-0x408",
+                ".data": "0x3088-0x3140",
+                ".sdata": "0x168-0x180",
+                ".sbss": "0x88-0x90",
+                ".sdata2": "0x180-0x188"
+            }
+        },
+        {
             "source": "dol/bases/d_base.cpp",
             "deadstrip": ["__dt__13cOwnerSetMg_cFv"],
             "memoryRanges": {
@@ -214,6 +246,28 @@
             }
         },
         {
+            "source": "dol/mLib/m_color_fader.cpp",
+            "memoryRanges": {
+                ".text": "0x164550-0x164910",
+                ".data": "0x2b3a8-0x2b3d0",
+                ".sdata2": "0x2c70-0x2c88"
+            }
+        },
+        {
+            "source": "dol/mLib/m_fader.cpp",
+            "memoryRanges": {
+                ".text": "0x167460-0x1675c0",
+                ".sbss": "0x880-0x888"
+            }
+        },
+        {
+            "source": "dol/mLib/m_fader_base.cpp",
+            "memoryRanges": {
+                ".text": "0x1675c0-0x1677c0",
+                ".data": "0x2b780-0x2b7a8"
+            }
+        },
+        {
             "source": "dol/mLib/m_mtx.cpp",
             "memoryRanges": {
                 ".text": "0x168560-0x168bb0",
@@ -233,6 +287,14 @@
             }
         },
         {
+            "source": "dol/mLib/m_wipe_fader.cpp",
+            "memoryRanges": {
+                ".text": "0x16a610-0x16ad80",
+                ".data": "0x2b8d0-0x2b900",
+                ".sdata2": "0x2ce0-0x2d18"
+            }
+        },
+        {
             "source": "lib/nw4hbm/ut/list.cpp",
             "compilerFlags": "-proc gekko -fp hard -O4 -Cpp_exceptions off -enum int -RTTI off",
             "memoryRanges": {
@@ -245,6 +307,15 @@
             "compilerFlags": "-proc gekko -fp hard -O4 -Cpp_exceptions off -enum int -RTTI off",
             "memoryRanges": {
                 ".text": "0x222790-0x2229f0"
+            }
+        },
+        {
+            "source": "lib/egg/fader/eggColorFader.cpp",
+            "deadstrip": ["__vt__Q23EGG5Fader", "getStatus__Q23EGG10ColorFaderCFv"],
+            "memoryRanges": {
+                ".text": "0x2b49f0-0x2b4f40",
+                ".data": "0x51b78-0x51ba0",
+                ".sdata2": "0x40b0-0x40b8"
             }
         },
         {

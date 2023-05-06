@@ -1,6 +1,6 @@
 #pragma once
 
-#include <lib/egg/heap/heap.hpp>
+#include <lib/egg/heap/eggHeap.hpp>
 
 // [TODO: extend this]
 

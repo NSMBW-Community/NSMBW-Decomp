@@ -1,4 +1,4 @@
-# Doxyfile 1.9.5
+# Doxyfile 1.9.6
 
 PROJECT_NAME           = NSMBW-Decomp
 PROJECT_BRIEF          = "A decompilation of New Super Mario Bros. Wii"

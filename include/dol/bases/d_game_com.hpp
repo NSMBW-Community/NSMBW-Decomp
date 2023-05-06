@@ -6,4 +6,5 @@
 namespace dGameCom {
     u32 getRandomSeed(); ///< Gets a seed used for randomness.
     void clearGameStop();
+    float getDispCenterY();
 }
