@@ -1,15 +1,15 @@
 #include <lib/egg/fader/eggColorFader.hpp>
 #include <lib/rvl/gx/GX.h>
 
-EGG::ColorFader::ColorFader(float x, float y, float w, float h, nw4r::ut::Color color, Fader::EStatus initialStatus) {
-    mFlag = 0;
-    mFrameCount = 20;
-    mFrame = 0;
-    mCurrColor.rgba = 0xFFFFFFFF;
-    mLeft = x;
-    mTop = y;
-    mRight = x + w;
-    mBottom = y + h;
+EGG::ColorFader::ColorFader(float x, float y, float w, float h, nw4r::ut::Color color, Fader::EStatus initialStatus) :
+    mFlag(0),
+    mFrameCount(20),
+    mFrame(0),
+    mCurrColor(0xFFFFFFFF),
+    mLeft(x),
+    mTop(y),
+    mRight(x + w),
+    mBottom(y + h) {
     setColor(color);
     setStatus(initialStatus);
     mFlag |= 2;

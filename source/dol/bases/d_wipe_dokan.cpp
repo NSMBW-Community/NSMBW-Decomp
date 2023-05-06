@@ -68,6 +68,7 @@ const actMeth actMeths[] = {
     &dWipeDokan_c::AnimeEndCheck,
     &dWipeDokan_c::CloseSetup
 };
+
 int dWipeDokan_c::calc() {
     if (!mIsCreated) {
         return 1;
@@ -111,7 +112,7 @@ void dWipeDokan_c::AnimeEndCheck() {
 }
 
 bool dWipeDokan_c::MuKiDecision() {
-    int actPlayer = daPyDemoMng_c::mspInstance->plNo;
+    int actPlayer = daPyDemoMng_c::mspInstance->mPlNo;
     if (actPlayer < 0) {
         return false;
     }

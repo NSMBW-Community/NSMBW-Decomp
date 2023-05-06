@@ -6,6 +6,9 @@ namespace ut {
 
 /// @brief A 32-bit RGBA color.
 struct Color : public GXColor {
+    Color(u32 rgba) {
+        this->rgba = rgba;
+    }
 };
 
 } // namespace ut

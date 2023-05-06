@@ -64,6 +64,7 @@ const actMeth actMeths[] = {
     &dWipeMario_c::AnimeEndCheck,
     &dWipeMario_c::CloseSetup
 };
+
 int dWipeMario_c::calc() {
     if (!mIsCreated) {
         return 1;

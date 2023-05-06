@@ -3,8 +3,9 @@
 #include <lib/rvl/vi/VI.h>
 
 mWipeFader_c::mWipeFader_c(mColor col, mFaderBase_c::EStatus status) :
-    mFaderBase_c(col, status) {
-    mpTextureData = nullptr;
+    mFaderBase_c(col, status),
+    mpTextureData(nullptr) {
+
     PSMTXIdentity(&mTexMtx);
     mTexWidth = 0;
     mTexHeight = 0;
@@ -62,7 +63,6 @@ void mWipeFader_c::calcMtx() {
     float scale = 128.0f / (256 - mProgress);
 
     // Move to center, scale, move back
-    
     PSMTXTrans(&mTexMtx, 0.5f, 0.5f, 0.0f);
     
     Mtx scaleMtx;
