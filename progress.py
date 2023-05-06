@@ -237,6 +237,10 @@ def progress_csv(slice_files: list[SliceFile]) -> bool:
 
             commits_to_track = commits[1:min(idx_last, idx_first_good)] # Skip HEAD too
 
+            # In case of a rebase, we might have "new" commits that were made before the last tracked commit,
+            # so we need to ignore those.
+            commits_to_track = [x for x in commits_to_track if x['timestamp'] > last_line_data['timestamp']]
+
             data = get_historical_progress_data(commits_to_track, last_line_data)
             if len(data) == 0 or latest_csv[2:] != data[-1]['progress_vals']:
                 data.append({
