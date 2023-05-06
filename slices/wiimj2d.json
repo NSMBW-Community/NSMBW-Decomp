@@ -246,6 +246,14 @@
             }
         },
         {
+            "source": "dol/mLib/m_color_fader.cpp",
+            "memoryRanges": {
+                ".text": "0x164550-0x164910",
+                ".data": "0x2b3a8-0x2b3d0",
+                ".sdata2": "0x2c70-0x2c88"
+            }
+        },
+        {
             "source": "dol/mLib/m_fader.cpp",
             "memoryRanges": {
                 ".text": "0x167460-0x1675c0",
