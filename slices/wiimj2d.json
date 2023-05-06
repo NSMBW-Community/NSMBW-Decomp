@@ -310,6 +310,15 @@
             }
         },
         {
+            "source": "lib/egg/fader/eggColorFader.cpp",
+            "deadstrip": ["__vt__Q23EGG5Fader", "getStatus__Q23EGG10ColorFaderCFv"],
+            "memoryRanges": {
+                ".text": "0x2b49f0-0x2b4f40",
+                ".data": "0x51b78-0x51ba0",
+                ".sdata2": "0x40b0-0x40b8"
+            }
+        },
+        {
             "source": "runtime/global_destructor_chain.c",
             "deadstrip": ["__destroy_global_chain_reference"],
             "compilerFlags": "-proc gekko -fp hard -O4,p -char signed -rtti off -enum int -func_align 4 -Cpp_exceptions off",
