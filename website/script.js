@@ -17,7 +17,7 @@ const indProgContainer = data => {
 const cw = 1000;
 const ch = 700;
 const paddingL = 0.1;
-const paddingR = 0.97;
+const paddingR = 0.95;
 const paddingU = 0.05;
 const paddingD = 0.95;
 const paddingW = paddingL + (1 - paddingR);
@@ -70,11 +70,13 @@ function configureOverview(csvData) {
     document.getElementById("prog-conts-container").innerHTML = htmls.join("");
 }
 
-function nextMonth(date) {
-    const tmp = (date.getMonth() == 11) ? [0, date.getFullYear() + 1] : [date.getMonth() + 1, date.getFullYear()];
-    const newDate = new Date(date);
-    newDate.setMonth(tmp[0], 1);
-    newDate.setYear(tmp[1]);
+function addMonths(date, addend) {
+    let newMonth = date.getMonth() + addend;
+    let addYear = Math.floor(newMonth / 12);
+    newMonth %= 12;
+    let newDate = new Date(date.getTime());
+    newDate.setMonth(newMonth);
+    newDate.setFullYear(newDate.getFullYear() + addYear);
     return newDate;
 }
 
@@ -142,9 +144,13 @@ function configureGraph(csvData) {
     const begin = csvData[0].ts;
     const end = csvData[csvData.length - 1].ts;
 
-    const beginMY = nextMonth(begin); // Round up to nearest month
+    const beginMY = addMonths(begin, 1); // Round up to nearest month
+    const endMY = addMonths(end, 0); // Round down to nearest month
 
-    for (let i = beginMY; i <= end; i = nextMonth(i)) {
+    const monthDiff = (endMY.getMonth() - beginMY.getMonth()) + (endMY.getFullYear() - beginMY.getFullYear()) * 12;
+    const numMonthsPerTick = Math.round(monthDiff / 4);
+
+    for (let i = beginMY; i <= endMY; i = addMonths(i, numMonthsPerTick)) {
         const frac = (i - begin) / (end - begin);
         const x = (cw * paddingL) + (cw * (1 - paddingW)) * frac;
         svg.append(svgLine(x, ch * paddingU, x, ch * paddingD, "#bbb", 1));
