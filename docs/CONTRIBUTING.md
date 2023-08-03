@@ -55,7 +55,7 @@
 
 - Unless a cracked symbol says otherwise, the following conventions apply:
   - The enumeration tag should be all uppercase with the suffix `_e`
-  - The identifiers should be all uppercase and not be prefixed with the tag
+  - The identifiers should be all uppercase and not be prefixed with the tag, unless strictly necessary
 
 ### Comments
 
@@ -69,14 +69,14 @@
 - When referencing a class member, do **not** use `this->` unless required for compilation.
 - Class members must be placed in the following order:
   - Nested Classes/Structures/Enumerations
-  - Functions
+  - Functions (place static ones last)
   - Variables (place static ones last)
   - Friends
 
 - Functions for classes must be placed in the following order:
   - Constructor
-  - Destructor
-  - Operators
+  - Destructor (unless virtual)
+  - Operators (unless virtual)
   - Virtual Functions
   - Member Functions (place static ones last)
 
