@@ -19,7 +19,7 @@ parser = argparse.ArgumentParser(description='Tool to verify built binaries and 
     Terminates with a non-zero exit code if an error was encountered.')
 
 parser.add_argument('--verify-bin', help='Verifies that the output binaries match the original files.', action='store_true')
-parser.add_argument('--verify-obj', help='Verifies that the compiled object file sections are of the excepted length.', action='store_true')
+parser.add_argument('--verify-obj', help='Verifies that the compiled object file sections are of the expected length.', action='store_true')
 parser.add_argument('--progress-summary', help='Prints out a summary of the project\'s progress.', action='store_true')
 parser.add_argument('--progress-csv', nargs='?', default=False, const=True, type=Path,
     help='Outputs a comma-separated string of progress information, used for the website.\
