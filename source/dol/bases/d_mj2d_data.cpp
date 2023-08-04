@@ -155,7 +155,7 @@ void dMj2dGame_c::setDeathCount(int world, int level, bool isSwitchPressed, u8 c
     if (isSwitchPressed && world == WORLD_3 && level == STAGE_4) {
         setSwitchDeathCount(count);
     } else {
-        mDeathCount[world][level] = count;    
+        mDeathCount[world][level] = count;
     }
 }
 

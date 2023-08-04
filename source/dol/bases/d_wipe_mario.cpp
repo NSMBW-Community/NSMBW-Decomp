@@ -21,7 +21,7 @@ bool dWipeMario_c::createLayout() {
         "wipeMario_02_inWindow.brlan",
         "wipeMario_02_outWindow.brlan"
     };
-    
+
     static const int groupIdxs[] = {0, 1};
     static const char *groupNames[] = {
         "A00_inWindow",
@@ -31,7 +31,7 @@ bool dWipeMario_c::createLayout() {
     static const char *windowNames[] = {
         "W_Mario_00"
     };
-    
+
     if (mIsCreated) {
         return true;
     }

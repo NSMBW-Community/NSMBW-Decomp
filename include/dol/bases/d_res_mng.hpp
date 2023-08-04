@@ -20,7 +20,7 @@ public:
 
     /**
      * @brief Registers multiple archives to be loaded.
-     * 
+     *
      * @param path The path to the folder containing the archives.
      * @param names An array of archive names.
      * @param count The number of archives in ::names.
@@ -30,7 +30,7 @@ public:
 
     /**
      * @brief Registers a single archive to be loaded.
-     * 
+     *
      * @param path The path to the folder containing the archive.
      * @param name The name of the archive.
      * @param heap The heap to load the archive into.

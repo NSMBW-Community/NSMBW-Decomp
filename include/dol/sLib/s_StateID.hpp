@@ -14,7 +14,7 @@ public:
         }
         unsigned int curr;
     };
-    
+
     sStateID_c(const char *name);
     ~sStateID_c();
 

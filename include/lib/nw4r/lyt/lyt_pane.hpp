@@ -41,7 +41,7 @@ public:
     virtual Material *GetMaterial() const;
     virtual Material *GetMaterial(unsigned long) const;
     virtual void LoadMtx(const nw4r::lyt::DrawInfo &);
-    
+
     void AppendChild(nw4r::lyt::Pane *);
     void RemoveChild(nw4r::lyt::Pane *);
 

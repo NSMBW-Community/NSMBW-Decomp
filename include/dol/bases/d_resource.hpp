@@ -8,7 +8,7 @@ namespace d2d {
 
 class ResAccMult_c : public m2d::ResAccIf_c {
     class InternalAccessor : nw4r::lyt::ArcResourceAccessor {};
-    
+
     ResAccMult_c();
 
     virtual void creater();

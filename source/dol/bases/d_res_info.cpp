@@ -4,7 +4,7 @@
 #include <lib/rvl/os/OSCache.h>
 #include <lib/MSL_C/string.h>
 
-dRes_c::info_c::info_c() : 
+dRes_c::info_c::info_c() :
     mRefCount(0),
     mpDvdCmd(nullptr),
     mpArchive(nullptr),
@@ -140,7 +140,7 @@ void dRes_c::searchCallback_c::callback(void *cbInfo, void *file, const ARCDirEn
     ((searchCallback_c *) cbInfo)->callback(file, dirEntry, path);
 }
 
-int dRes_c::info_c::loadRes(dRes_c::callback_c *callback) {    
+int dRes_c::info_c::loadRes(dRes_c::callback_c *callback) {
     int numFiles = mpArchive->countFile();
     mpFiles = new u8 *[numFiles];
     if (mpFiles == nullptr) {
@@ -151,7 +151,7 @@ int dRes_c::info_c::loadRes(dRes_c::callback_c *callback) {
     for (unsigned int i = 0; i < numFiles; i++) {
         mpFiles[i] = nullptr;
     }
-    
+
     if (callback != nullptr) {
         // Use the callback to populate ::mpFiles
         callback->init(mName);

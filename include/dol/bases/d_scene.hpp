@@ -29,12 +29,12 @@ public:
     static void setStartScene(); ///< Sets up the scene to be shown when the game boots up.
     static void setResetScene(); ///< Sets up the scene to be shown after a game reset.
     static dScene_c *createNextScene(); ///< Creates and returns a root base for the next scene.
-    
+
     /**
      * @brief Attempts to prepare the transition to a new state.
      * @details If the game is resetting, the transition is not performed,
      * unless forceChange is @p true.
-     * 
+     *
      * @param nextScene The next scene's profile name.
      * @param param The next scene's parameters.
      * @param forceChange If the transition should always be performed.

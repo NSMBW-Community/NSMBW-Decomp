@@ -163,14 +163,14 @@ void dScene_c::setNextScene(ProfileName nextScene, unsigned long param, bool for
     if (m_nextScene != fProfile::INVALID) {
         return;
     }
-  
+
     dReset::Manage_c *resetMng = dReset::Manage_c::GetInstance();
     bool isChangeDisallowed =
         ((resetMng->mModeInit == dReset::Manage_c::SOFT_RESET) ||
         (resetMng->mModeProc == dReset::Manage_c::SOFT_RESET)) ||
         ((resetMng->mModeInit == dReset::Manage_c::SAFETY_WAIT) ||
         (resetMng->mModeProc == dReset::Manage_c::SAFETY_WAIT));
-    
+
     if (!isChangeDisallowed || forceChange) {
         if (m_nowScene == fProfile::STAGE && nextScene != fProfile::STAGE) {
             dScStage_c::m_isCourseOut = true;
@@ -186,7 +186,7 @@ void dScene_c::setFadeInFrame(unsigned short length) {
 }
 
 void dScene_c::setFadeOutFrame(unsigned short length) {
-    m_fadeOutFrame = length;    
+    m_fadeOutFrame = length;
 }
 
 void dScene_c::setFadeInOutFrame(unsigned short length) {

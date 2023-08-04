@@ -26,7 +26,7 @@ public:
 
     ut::Font *GetFont() const;
     void SetFont(const ut::Font *);
-    
+
 private:
     static int typeInfo;
 };

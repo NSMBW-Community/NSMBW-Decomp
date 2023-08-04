@@ -7,7 +7,7 @@ class sStateMethod_c {
 public:
     /**
      * @brief Constructs a new sStateMethod_c instance.
-     * 
+     *
      * @param checker The state checker to use.
      * @param factory The state factory to use.
      * @param initialState The initial state ID of this instance.
@@ -43,6 +43,6 @@ protected:
     const sStateIDIf_c *mpNewStateID; ///< The next state ID.
     const sStateIDIf_c *mpOldStateID; ///< The previous state ID.
     const sStateIDIf_c *mpStateID; ///< The current state ID.
-    
+
     sStateIf_c *mpState; ///< The current state holder.
 };

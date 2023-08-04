@@ -23,7 +23,7 @@ bool dWipeDokan_c::createLayout() {
         "wipeDokan_02_outBlackDown.brlan",
         "wipeDokan_02_inBlackUp.brlan"
     };
-    
+
     static const int groupIdxs[] = {0, 1, 2, 3};
     static const char *groupNames[] = {
         "A00_wipeDokan",
@@ -35,7 +35,7 @@ bool dWipeDokan_c::createLayout() {
     static const char *picNames[] = {
         "P_baseBlack_00"
     };
-    
+
     if (mIsCreated) {
         return true;
     }
