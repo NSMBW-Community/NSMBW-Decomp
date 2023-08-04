@@ -6,7 +6,7 @@
 class fBase_c;
 
 /// @brief A container for a tree of fTrNdBa_c nodes with a reference to a process function.
-/// @note Unofficial name.
+/// @unofficial
 class fTrMgPTMF_c : public fTrMgBa_c {
 public:
     /// @brief Constructs a new tree container.

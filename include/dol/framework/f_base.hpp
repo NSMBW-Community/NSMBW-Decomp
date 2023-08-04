@@ -71,10 +71,10 @@ protected:
 
     fManager_c mMng; ///< The base's process manager.
 
-    fBaHelper_c *mpUnusedHelper; ///< [Unused].
-    fLiMgBa_c mUnusedList; ///< [Unused].
+    fBaHelper_c *mpUnusedHelper; ///< @unused
+    fLiMgBa_c mUnusedList; ///< @unused
 
-    EGG::FrmHeap *mpHeap; ///< The base's own FrmHeap. [Unused].
+    EGG::FrmHeap *mpHeap; ///< @unused The base's own FrmHeap.
 
 public:
     fBase_c(); ///< Constructs a new base.
@@ -163,7 +163,7 @@ protected:
     virtual void deleteReady();
 
     /**
-     * @brief Tries to create a heap for the base [Unused].
+     * @unused Tries to create a heap for the base.
      * @details Should the heap creation fail, the function tries to create a smaller heap.
      * If that also fails, the function requests the deletion of the base.
      * @param size The heap's size.
@@ -173,14 +173,14 @@ protected:
     virtual bool entryFrmHeap(unsigned long size, EGG::Heap *parentHeap);
 
     /**
-     * @brief Tries to create a heap for the base [Unused].
+     * @unused Tries to create a heap for the base.
      * @details Unlike ::entryFrmHeap, this function gives up immediately if heap creation fails.
      * @param size The heap's size.
      * @param parentHeap The parent heap.
      * @return If the heap creation was successful.
      */
     virtual bool entryFrmHeapNonAdjust(unsigned long size, EGG::Heap *parentHeap);
-    virtual bool createHeap(); ///< [Unused, does nothing].
+    virtual bool createHeap(); ///< @unused Does nothing.
 
     virtual ~fBase_c(); ///< Destroys the base.
 
@@ -276,8 +276,8 @@ private:
     static fBase_c *fBase_make(ProfileName profName, fTrNdBa_c *connectParent, unsigned long param, u8 groupType);
 
 protected:
-    static int (*sLoadAsyncCallback)(); ///< [Unused].
-    static void (*sUnloadCallback)(); ///< [Unused].
+    static int (*sLoadAsyncCallback)(); ///< @unused
+    static void (*sUnloadCallback)(); ///< @unused
 
 private:
     static fBaseID_e m_rootUniqueID; ///< Unique ID counter for base construction. See ::mUniqueID.

@@ -7,7 +7,7 @@
 class fBase_c;
 
 /// @brief A list of fLiNdPrio_c nodes with a reference to a process function.
-/// @note Unofficial name.
+/// @unofficial
 class fLiMgPTMF_c : public fLiMgBa_c {
 public:
     /// @brief Constructs a new list node.

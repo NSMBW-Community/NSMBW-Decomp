@@ -29,7 +29,7 @@ public:
     virtual int doDelete();
     virtual int execute();
     virtual int draw();
-    
+
     /// @brief Loads the resources and creates the layout for the base.
     /// @return If the creation was successful.
     bool createLayout();

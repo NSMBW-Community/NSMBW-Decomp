@@ -4,7 +4,7 @@
 class sPhase_c {
 public:
     /// @brief Return value of a phase method and ::callMethod.
-    /// @note Unofficial name.
+    /// @unofficial
     enum METHOD_RESULT_e {
         WAIT, ///< Do not proceed to the next method in the phase.
         OK, ///< Proceed to the next method in the phase.
@@ -14,14 +14,14 @@ public:
 
     /**
      * @brief Constructs a new phase with a given method list.
-     * 
+     *
      * @param methodList The list of methods in the phase.
      * @param count The length of the method list.
      */
     sPhase_c(phaseMethod **methodList, int count);
     /**
      * @brief Executes the phase until the end is reached or a method returns METHOD_RESULT_e::WAIT.
-     * 
+     *
      * @param thisPtr A pointer to the owner.
      * @return METHOD_RESULT_e::WAIT if the phase is not done yet, and METHOD_RESULT_e::DONE if the phase is finished.
      */

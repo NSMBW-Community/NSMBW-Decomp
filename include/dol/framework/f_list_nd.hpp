@@ -5,7 +5,7 @@
 class fBase_c;
 
 /// @brief A list node with an owner reference.
-/// @note Unofficial name.
+/// @unofficial
 class fLiNdBa_c : public cListNd_c {
 public:
 
@@ -22,7 +22,7 @@ public:
     }
 
     /// @brief Removes this node from the owner's fBase_c::mUnusedList.
-    /// @note Unofficial name. Might not actually belong to this class (xor trick on hash).
+    /// @unofficial Might not actually belong to this class (xor trick on hash).
     void removeSelf();
 
     fBase_c *mpOwner; ///< The owner of this node.

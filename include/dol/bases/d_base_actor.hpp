@@ -21,8 +21,8 @@ public:
         MAP_ACTOR, ///< Used for most map actors.
         MAP_ENEMY, ///< Used for map enemies.
         MAP_PLAYER, ///< The worldmap player actor [dWmPlayer_c].
-        MAP_STOP, ///< The unused daWmStop_c actor.
-        UNK_6, ///< [Unused].
+        MAP_STOP, ///< @unused Identifies the daWmStop_c actor.
+        UNK_6, ///< @unused
         MENU_PLAYER, ///< The menu player actor [da2DPlayer_c].
         GENERIC_ACTOR, ///< The default value.
     };

@@ -18,27 +18,27 @@ class dMj2dHeader_c {
         void initialize(); ///< Initializes the header data.
 
         /// @brief Gets the Free Mode play count for the given world/level. See ::mFreeModePlayCount.
-        /// @note Unofficial name.
+        /// @unofficial
         u16 getFreeModePlayCount(int world, int level) const;
 
         /// @brief Sets the Free Mode play count for the given world/level. See ::mFreeModePlayCount.
-        /// @note Unofficial name.
+        /// @unofficial
         void setFreeModePlayCount(int world, int level, u16 count);
 
         /// @brief Gets the Coin Battle play count for the given world/level. See ::mCoinBattlePlayCount.
-        /// @note Unofficial name.
+        /// @unofficial
         u16 getCoinBattlePlayCount(int world, int level) const;
 
         /// @brief Sets the Coin Battle play count for the given world/level. See ::mCoinBattlePlayCount.
-        /// @note Unofficial name.
+        /// @unofficial
         void setCoinBattlePlayCount(int world, int level, u16 count);
 
         /// @brief Unlocks the given world in extra modes.
-        /// @note Unofficial name.
+        /// @unofficial
         void setMultiModeCompletion(int world);
 
         /// @brief Checks if the given world is unlocked in extra modes.
-        /// @note Unofficial name.
+        /// @unofficial
         bool getMultiModeCompletion(int world) const;
 
 private:
@@ -49,7 +49,7 @@ private:
         char mMagic[4]; ///< The savegame magic.
         u8 mVersion[2]; ///< The save data version and subversion. See ::SAVE_VERSION and ::SAVE_SUB_VERSION.
         u8 mLastSelectedFile; ///< The last selected save data slot.
-        u8 mUnknown7; ///< [Unused, most likely declared as padding].
+        u8 mUnknown7; ///< @unused [Most likely declared as padding].
 
         /// @brief The play count of each level in Free Mode.
         /// @details [Value is increased by 0x100 for every playthrough until 10000].
@@ -63,13 +63,13 @@ private:
         /// @details Playing a world in extra modes requires said world to be unlocked in at least
         /// one save slot. Value is a bitfield.
         u16 mExtraModesUnlockedWorlds;
-        u16 mUnknown69A; ///< [Unused, most likely declared as padding].
+        u16 mUnknown69A; ///< @unused [Most likely declared as padding].
 
         u32 mChecksum; ///< The CRC32 checksum of the above data (excluding ::mMagic).
 
         /// @brief The expected savegame magic.
         /// @details Value is @p SMNP for PAL games.
-        /// @note Unofficial name. Is this even part of the class?
+        /// @unofficial Is this even part of the class?
         static char sSaveMagic[4];
 
         friend class dSaveMng_c;
@@ -280,7 +280,7 @@ private:
     u8 mIbaraNow;
 
     u8 mSwitchOn; ///< The status of the worldmap switch.
-    u8 mUnknown8; ///< [Unused].
+    u8 mUnknown8; ///< @unused
 
     u8 mStockItemCount[POWERUP_COUNT]; ///< The inventory amount for each item.
 
@@ -297,7 +297,7 @@ private:
     u8 mWorldCompletion[WORLD_COUNT]; ///< The completion flags for each world. See ::WORLD_COMPLETION_e.
     u8 mEnemyRevivalCount[WORLD_COUNT][AMBUSH_ENEMY_COUNT]; ///< The revival counter for each map enemy.
 
-    u16 mUnknown64; ///< [Unused].
+    u16 mUnknown64; ///< @unused
     u16 mStaffRollHighScore; ///< The staff credits high score.
     u32 mScore; ///< The regular score.
 
@@ -319,7 +319,7 @@ private:
     u32 mChecksum; ///< The CRC32 checksum of the above data.
 
     /// @brief The default character for each player.
-    /// @note Unofficial name. Should be part of the class in theory.
+    /// @unofficial Should be part of the class in theory.
     static const u32 sDefaultCharacters[4];
 
     friend class dSaveMng_c;

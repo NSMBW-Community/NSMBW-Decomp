@@ -118,6 +118,7 @@ Doxygen is being used for generating documentation:
   virtual void postCreate(MAIN_STATE_e state); ///< Code to be executed after ::create.
   ```
 
-- If no official symbol has been cracked for a class or a function, report this information using the `@note` command. For unknown class names, adding the note to each member function is not necessary.
+- If no official symbol has been cracked for a class or a function, report this information using the `@unofficial` command. For unknown class names, adding the note to each member function is not necessary.
+- If something in the code is confirmed to be unused, report this information using the `@unused` command (which replaces `@brief`).
 - Do **not** document inline getters/setters unless their logic is complex, document the corresponding variables instead.
 - Documenting not yet decompiled code is not necessary.

@@ -3,7 +3,7 @@
 
 namespace dAudio {
     void requestStartScene(ProfileName prof);
-    void prepareSceneSnd(); ///< @note Unofficial name.
-    void destroySceneSnd(); ///< @note Unofficial name.
+    void prepareSceneSnd(); ///< @unofficial
+    void destroySceneSnd(); ///< @unofficial
     void setNextScene(ProfileName prof, unsigned long bgmIndex);
 };

@@ -2,7 +2,7 @@
 #include <types.h>
 
 /// @brief Random number generation helper class.
-/// @note Unofficial name.
+/// @unofficial
 class cM_rand_c {
 public:
 

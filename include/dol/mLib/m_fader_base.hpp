@@ -15,7 +15,7 @@ public:
 
     /// @brief Some flags related to the fader.
     /// @todo Figure out what these do.
-    /// @note Unofficial name.
+    /// @unofficial
     enum FLAG_e {
         FADE_IN_COMPLETE = 1,
         FADE_OUT_COMPLETE = 2

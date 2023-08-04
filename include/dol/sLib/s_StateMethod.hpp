@@ -31,7 +31,7 @@ public:
     virtual void changeStateLocalMethod(const sStateIDIf_c &newStateID) = 0; ///< @pure Performs the actual state transition.
 
 protected:
-    sStateIDChkIf_c &mpStateChk; ///< The state checker to use. [Unused].
+    sStateIDChkIf_c &mpStateChk; ///< @unused The state checker to use.
     sStateFctIf_c &mpStateFct; ///< The state factory which produces the state holder.
 
     bool mInitFinalizeLock; ///< A lock to ensure ::initializeStateMethod and ::finalizeStateMethod are not called recursively.

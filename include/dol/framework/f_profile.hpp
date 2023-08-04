@@ -31,7 +31,7 @@ typedef u16 ProfileName;
 char *dProf_getName(ProfileName profName);
 
 /// @brief For all profile related structures.
-/// @note Unofficial name.
+/// @unofficial
 namespace fProfile {
 
     /// @brief A set of basic information needed to construct a base.

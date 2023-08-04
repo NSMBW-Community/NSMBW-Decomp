@@ -40,3 +40,6 @@ GROUP_GRAPHS           = NO
 INCLUDE_GRAPH          = NO
 INCLUDED_BY_GRAPH      = NO
 INTERACTIVE_SVG        = YES
+
+ALIASES += unused="\xrefitem unused \"\" \"Unused Elements\" \brief [Unused]."
+ALIASES += unofficial="\note Unofficial name."

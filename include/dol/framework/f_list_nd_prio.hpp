@@ -4,7 +4,7 @@
 #include <dol/framework/f_list_nd.hpp>
 
 /// @brief A list node with priority fields for an order in a list.
-/// @note Unofficial name.
+/// @unofficial
 class fLiNdPrio_c : public fLiNdBa_c {
 public:
     /// @brief Constructs a new list node.

@@ -30,7 +30,7 @@ public:
     };
 
     /// @brief A callback class for EGG::Archive::searchInside.
-    /// @note Unofficial name.
+    /// @unofficial
     class searchCallback_c {
     public:
         /// @brief Constructs a new searchCallback_c.
@@ -221,5 +221,6 @@ private:
     u16 mNumArcs; ///< The number of archive holders.
     callback_c *mpCallback; ///< The callback for when a resource is loaded.
 
-    static void (*mSetCallback)(const char *arcName, EGG::Heap *heap); ///< The callback for when dRes_c::info_c::set is called. [Unused].
+    /// @unused The callback for when dRes_c::info_c::set is called.
+    static void (*mSetCallback)(const char *arcName, EGG::Heap *heap);
 };

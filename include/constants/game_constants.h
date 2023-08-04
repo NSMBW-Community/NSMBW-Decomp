@@ -62,9 +62,9 @@ enum STAGE_e {
     STAGE_COIN_BATTLE = 19,
     STAGE_GHOST_HOUSE,
     STAGE_TOWER,
-    STAGE_TOWER_2, ///< [Unused].
+    STAGE_TOWER_2, ///< @unused
     STAGE_CASTLE,
-    STAGE_CASTLE_2, ///< [Unused].
+    STAGE_CASTLE_2, ///< @unused
     STAGE_KINOKO_HOUSE,
     STAGE_KINOKO_HOUSE_2,
     STAGE_KINOKO_HOUSE_3,
@@ -92,7 +92,7 @@ enum WORLD_e {
     WORLD_7,
     WORLD_8,
     WORLD_9,
-    WORLD_10, ///< [Unused].
+    WORLD_10, ///< @unused
     WORLD_COUNT,
 
     LAST_WORLD = WORLD_8,

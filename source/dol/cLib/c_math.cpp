@@ -6,7 +6,7 @@
 /// @file
 
 static cM_rand_c s_rnd = cM_rand_c(100); ///< [Used for tile randomization, eye animations and a few more things].
-static cM_rand_c s_rnd2 = cM_rand_c(101); ///< [Unused].
+static cM_rand_c s_rnd2 = cM_rand_c(101); ///< @unused
 
 // Pre-calculated arctangent table for angles 0-45°
 static u16 atntable[1025] = { 0x0, 0xA, 0x14, 0x1F, 0x29, 0x33, 0x3D, 0x47, 0x51, 0x5C, 0x66, 0x70, 0x7A,
