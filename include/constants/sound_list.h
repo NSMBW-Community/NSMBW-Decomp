@@ -2,6 +2,7 @@
 /// @file
 
 /// @brief The identifiers for each sound effect/music track.
+/// @ingroup constants
 enum SOUND_e {
     SE_NULL = -1,
     SE_DEMO_OP_DUMMY_U,

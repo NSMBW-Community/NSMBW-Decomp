@@ -2,6 +2,9 @@
 /// @file
 // Please place the defines/enums in alphabetical order!
 
+/// @addtogroup constants
+/// @{
+
 #define AMBUSH_ENEMY_COUNT 4 ///< The maximum amount of ambush enemies per world map.
 
 #define HINT_MOVIE_COUNT 70 ///< The total hint movie count.
@@ -100,3 +103,5 @@ enum WORLD_e {
     NORMAL_WORLD_COUNT = LAST_WORLD + 1,
     SPECIAL_WORLD_COUNT = LAST_SPECIAL_WORLD - LAST_WORLD
 };
+
+/// @}

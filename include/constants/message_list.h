@@ -1,6 +1,9 @@
 #pragma once
 /// @file
 
+/// @addtogroup constants
+/// @{
+
 /// @brief Gets the group ID from a message ID.
 #define GET_MSG_GROUP(id) ((id) >> 8)
 
@@ -50,3 +53,5 @@ enum MESSAGE_e {
 
     HOLD_WIIMOTE_SIDEWAYS = 0x6808,
 };
+
+/// @}
