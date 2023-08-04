@@ -1,35 +1,41 @@
-# Doxyfile 1.9.6
-
+# Doxyfile 1.9.7
 PROJECT_NAME           = NSMBW-Decomp
 PROJECT_BRIEF          = "A decompilation of New Super Mario Bros. Wii"
 OUTPUT_DIRECTORY       = doxygen
 HTML_OUTPUT            = .
+
+MARKDOWN_ID_STYLE      = GITHUB
+
 EXTRACT_PRIVATE        = YES
 EXTRACT_PRIV_VIRTUAL   = YES
 EXTRACT_STATIC         = YES
+
+SHOW_INCLUDE_FILES     = NO
+SHOW_USED_FILES        = NO
+SORT_MEMBER_DOCS       = NO
+
 INPUT                  = source \
                          include \
-                         README.md
+                         docs
 INPUT_FILE_ENCODING    = sjis_constants.h=SHIFT_JIS
-FILE_PATTERNS          = *.c \
-                         *.cpp \
-                         *.h \
-                         *.hpp \
-                         *.hpp \
-                         *.s
 RECURSIVE              = YES
-USE_MDFILE_AS_MAINPAGE = README.md
+USE_MDFILE_AS_MAINPAGE = docs/INTRODUCTION.md
+
+SOURCE_BROWSER         = YES
+SOURCE_TOOLTIPS        = YES
+
+ALPHABETICAL_INDEX     = NO
+DISABLE_INDEX          = YES
+ENUM_VALUES_PER_LINE   = 1
+GENERATE_TREEVIEW      = YES
 HTML_COLORSTYLE        = TOGGLE
+
 GENERATE_LATEX         = NO
 HAVE_DOT               = YES
 COLLABORATION_GRAPH    = NO
 DIRECTORY_GRAPH        = NO
+DOT_IMAGE_FORMAT       = svg
+GROUP_GRAPHS           = NO
 INCLUDE_GRAPH          = NO
 INCLUDED_BY_GRAPH      = NO
-DOT_IMAGE_FORMAT       = svg
-SHOW_INCLUDE_FILES     = NO
-SHOW_USED_FILES        = NO
-SOURCE_BROWSER         = YES
-SOURCE_TOOLTIPS        = YES
-SORT_MEMBER_DOCS       = NO
-HIDE_UNDOC_MEMBERS     = YES
+INTERACTIVE_SVG        = YES
