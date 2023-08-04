@@ -16,11 +16,12 @@ public:
     class callback_c {
     public:
         /// @brief Initializes the callback with the resource name.
+        /// @pure
         virtual void init(const char *name) = 0;
 
         /**
          * @brief Executes the callback.
-         * 
+         * @pure
          * @param data The resource data.
          * @param folderSig The first 4 characters of the folder name.
          * @return The resource data.

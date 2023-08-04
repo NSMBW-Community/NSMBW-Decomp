@@ -19,7 +19,7 @@
 - Use forward-declared types when possible.
 - At the top of every header place:
 
-    ```c++
+    ```cpp
     #pragma once
     ```
 
@@ -27,7 +27,7 @@
 
 - For includes use:
 
-    ```c++
+    ```cpp
     #include <...>
     ```
 
