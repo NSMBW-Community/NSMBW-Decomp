@@ -45,8 +45,8 @@ The game code can be logically divided into five major components, each comprisi
 ### Game-Specific Code Structure
 Thanks to the [symbols we have recovered](https://rootcubed.dev/nsmbw-symbols/), we can divide the @ref game "game-specific code" into several parts as follows:
 - @ref framework "The base game framework" (classes prefixed with `f`) is the core of the game engine. _If you want to learn how the game works, start from here._
-- The @ref slib s library is comprised of math utilities and, most importantly, the state system.
-- The @ref mlib m library wraps the functionality of @ref egg, @ref nw4r and the @ref rvl to provide even higher level APIs.
-- The @ref snd library provides the top level sound API for the game.
+- The @ref slib "s" library is comprised of math utilities and, most importantly, the state system.
+- The @ref mlib "m" library wraps the functionality of @ref egg, @ref nw4r and the @ref rvl to provide even higher level APIs.
+- The @ref snd library provides an application layer sound API.
 - @ref clib "Various utility classes" can be found under the `c` prefix.
 - @ref game "Anything else left" (mostly classes prefixed with `d`) is truly game-specific code.
