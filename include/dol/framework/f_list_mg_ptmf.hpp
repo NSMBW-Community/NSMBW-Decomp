@@ -7,6 +7,7 @@
 class fBase_c;
 
 /// @brief A list of fLiNdPrio_c nodes with a reference to a process function.
+/// @ingroup framework dol
 /// @unofficial
 class fLiMgPTMF_c : public fLiMgBa_c {
 public:

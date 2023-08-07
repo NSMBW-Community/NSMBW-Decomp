@@ -8,6 +8,7 @@
 class fBase_c;
 
 /// @brief A list of fLiNdBa_c nodes.
+/// @ingroup framework dol
 class fLiMgBa_c : public cListMg_c {
 public:
     /**

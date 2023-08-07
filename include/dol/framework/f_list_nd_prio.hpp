@@ -4,6 +4,7 @@
 #include <dol/framework/f_list_nd.hpp>
 
 /// @brief A list node with priority fields for an order in a list.
+/// @ingroup framework dol
 /// @unofficial
 class fLiNdPrio_c : public fLiNdBa_c {
 public:

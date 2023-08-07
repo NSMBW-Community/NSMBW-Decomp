@@ -3,6 +3,9 @@
 #include <dol/framework/f_profile_name.hpp>
 /// @file
 
+/// @addtogroup profile
+/// @{
+
 /// @brief Creates a profile of a base with given values for execute and draw order.
 #define SPECIAL_BASE_PROFILE(profName, className, executeOrder, drawOrder) void *className##_classInit() { return new className(); } \
     fProfile::fBaseProfile_c g_profile_##profName = { &className##_classInit, executeOrder, drawOrder }
@@ -19,12 +22,12 @@
 
 /// @brief The name of a profile. Value is a fProfile::PROFILE_NAME_e.
 /// @note The compilation order suggests that this file might have been grouped together
-/// with the other f classes, so a similar naming scheme has been applied here.
+/// with the rest of framework, so a similar naming scheme has been applied here.
 typedef u16 ProfileName;
 
 /**
  * @brief Gets a string representing the profile name.
- *
+ * @ingroup dol
  * @param profName The profile name for which to get the name string of.
  * @return A string containing the profile name.
  */
@@ -49,6 +52,8 @@ namespace fProfile {
         u32 mActorProperties; ///< Some actor-related properties. @todo Document the bitfield.
     };
 
-    extern fBaseProfile_c *(*sProfileList)[NUMBER_OF_ACTORS]; ///< A list of all profiles.
+    extern fBaseProfile_c *(*sProfileList)[NUMBER_OF_ACTORS]; ///< A list of all profiles. @ingroup dol
 
 } // namespace fProfile
+
+/// @}

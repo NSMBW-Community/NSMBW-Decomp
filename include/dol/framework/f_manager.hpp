@@ -13,6 +13,7 @@
 class fBase_c;
 
 /// @brief A class that manages the execution of the bases.
+/// @ingroup framework dol
 class fManager_c {
 public:
 

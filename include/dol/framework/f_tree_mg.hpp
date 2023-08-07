@@ -6,6 +6,7 @@
 class fTrNdBa_c;
 
 /// @brief A container for a tree of fTrNdBa_c nodes.
+/// @ingroup framework dol
 class fTrMgBa_c : public cTreeMg_c {
 public:
     /**

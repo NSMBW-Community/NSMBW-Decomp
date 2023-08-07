@@ -6,6 +6,7 @@
 class fBase_c;
 
 /// @brief A tree node with an owner reference.
+/// @ingroup framework dol
 class fTrNdBa_c : public cTreeNd_c {
 public:
     /// @brief Constructs a new tree node.

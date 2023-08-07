@@ -9,6 +9,7 @@
 
 /// @brief The base class for all scenes, actors and various other processes.
 /// @details A class that inherits from fBase_c is called a "base".
+/// @ingroup framework dol
 class fBase_c {
 public:
 

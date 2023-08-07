@@ -5,6 +5,7 @@
 class fBase_c;
 
 /// @brief A list node with an owner reference.
+/// @ingroup framework dol
 /// @unofficial
 class fLiNdBa_c : public cListNd_c {
 public:

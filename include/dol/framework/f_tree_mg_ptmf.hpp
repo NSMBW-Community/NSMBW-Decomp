@@ -6,6 +6,7 @@
 class fBase_c;
 
 /// @brief A container for a tree of fTrNdBa_c nodes with a reference to a process function.
+/// @ingroup framework dol
 /// @unofficial
 class fTrMgPTMF_c : public fTrMgBa_c {
 public:
