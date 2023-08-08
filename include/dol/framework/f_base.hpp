@@ -7,42 +7,141 @@
 #include <dol/framework/f_manager.hpp>
 #include <dol/framework/f_list_mg.hpp>
 
-/// @brief The base class for all scenes, actors and various other processes.
-/// @details A class that inherits from fBase_c is called a "base".
-/// @ingroup framework dol
+/**
+ * @brief The base class for all scenes, actors and various other processes.
+ * @ingroup framework dol
+ * @details
+ * ## Overview
+ * fBase_c defines the core elements of a process, to provide common behaviour across all bases.
+ *
+ * The most significant components are:
+ * - ::mUniqueID, a unique identifier for every created base.
+ * - ::mParam, a 32-bit value used to configure the base. For profiles representing Reggie sprites, this
+ * field is equivalent to nybbles 5-12 of the Reggie sprite data.
+ * - ::mProfName, an identifier for the base's profile.
+ * - ::mGroupType, which specifies the base's group type (see
+ * [Inheritance and Group Types](#inheritance-and-group-types) for more details).
+ * - The other fields are related to the base's lifecycle or are entirely unused.
+ *
+ * ## Creating Bases
+ * A base can be created by calling the ::createRoot or the ::createChild functions. Derivative classes
+ * offer their own implementations of these functions with additional parameters available; their use
+ * is recommended.
+ *
+ * Overloaded @ref ::operator new "new" and @ref ::operator delete "delete" operators are provided
+ * for convenience.
+ *
+ * ## Deleting Bases
+ * Bases can be deleted by calling ::deleteRequest on them. A base will be informed of its impending
+ * deletion when its ::deleteReady method is called. Please note that deleting a base will delete all
+ * its children as well.
+ *
+ * ## Iterating Bases
+ * A small iteration API is provided:
+ * - Use ::getConnectParent to get a base's parent.
+ * - Use ::getConnectChild to get a base's first child.
+ * - Use ::getConnectBrNext to get a base's next sibling.
+ *
+ * For conducting global base searches, please refer to fManager_c.
+ *
+ * ## Inheritance and Group Types
+ * The ::mGroupType field offers basic type information about a base:
+ * - Bases with group type ::OTHER are generic processes, and inherit from dBase_c.
+ * - Bases with group type ::SCENE are scene profiles, and inherit from dScene_c.
+ * - Bases with group type ::ACTOR are game entities, and inherit from dBaseActor_c.
+ *
+ * No bases inherit fBase_c directly.
+ *
+ * ## Base Lifecycle
+ * The lifecycle of a base consists of multiple operations, whose behaviour can be overridden at any
+ * point. Each operation has an @ref fManager_c "associated linked list", containing all bases for which
+ * said operation is scheduled for the current frame. fBase_c manages operation scheduling internally,
+ * therefore developer interaction is not required.
+ * 
+ * ### Operation Flow
+ * Every operation is composed by three steps: @p pre , @p do and @p post (each with their own methods).
+ * While the @p do method is generally reserved for profile-specific behaviour, the @p pre and @p post
+ * methods are commonly used to supply shared behaviour in base classes.
+ *
+ * The @p pre and @p do steps return a ::PACK_RESULT_e value, which is converted to a ::MAIN_STATE_e value
+ * to determine the result of the operation. Said value is then passed to the @p post method, which acts
+ * accordingly.
+ * @p pre step result | @p do step result | @p post argument
+ * :-----------------: | :----------------: | :--------------:
+ * ::NOT_READY | <i>N/A (not run)</i> | ::CANCELED
+ * ::SUCCEEDED | ::NOT_READY | ::WAITING
+ * ::SUCCEEDED | ::SUCCEEDED | ::SUCCESS
+ * ::SUCCEEDED | ::FAILED | ::ERROR
+ * Operations are carried out by the ::commonPack function.
+ *
+ * ### Core Operations
+ * fBase_c defines five core operations:
+ * - @p create runs immediately after construction, and can be used to set up the base or load resources
+ * for it. The operation result leads to three possible outcomes:
+ *  - If the operation result is ::SUCCESS, the base enters the main execution cycle.
+ *  - If the operation result is ::CANCELED or ::WAITING, the operation is repeated the next frame.
+ *  - If the operation result is ::ERROR, the base is deleted.
+ *
+ * - @p execute serves as the base's own main loop, running every frame. This operation can be skipped by
+ * enabling the relevant ::PROC_DISABLE_e flag.
+ * - @p draw offers an alternative main loop specifically for rendering code. It also runs every frame,
+ * and can be skipped by enabling the relevant ::PROC_DISABLE_e flag.
+ * - @p delete runs immediately before destruction, and can be used to deallocate resources or remove
+ * links to other bases. This operation will not proceed until all the base's children are deleted.
+ * - @p connect is an internal operation for process management that runs along the previous four;
+ * bases should not override it. See ::connectProc for more information on the tasks carried out in this
+ * operation.
+ * 
+ * @image html dol/framework/fBase_lifecycle.svg The lifecycle of a base.
+ * 
+ * ## Unused Content
+ * - ::sLoadAsyncCallback and ::sUnloadCallback are presumably related to the scrapped relocatable
+ * profile system (more details here). These callbacks are set to empty placeholder functions
+ * by dBase_c::initLoader. Judging by their names, they were supposed to be called after a profile module
+ * would have been loaded/unloaded.
+ * - Each base supports having its own @ref ::mpHeap "heap". The heap name, translated from Japanese,
+ * is <i>Heap that each process can have individually (fBase_c::mHeap)</i>. Two working methods for creating
+ * this heap are still in the game (::entryFrmHeap, ::entryFrmHeapNonAdjust), but are unused. This per-base
+ * allocation method was most likely discontinued in favour of mAllocator_c and its derivatives.
+ * - Two additional unused list-like structures are present in the class: ::mpUnusedHelper and
+ * ::mUnusedList. Since the symbols for the related functions have not yet been cracked, it's difficult
+ * to tell what their purpose might have been.
+ * 
+ * @todo Link to unused relocation system article when it gets written.
+ */
 class fBase_c {
 public:
 
-    /// @brief The possible states in the lifecycle.
+    /// @brief The possible lifecycle states.
     enum LIFECYCLE_e {
-        WAITING_FOR_CREATE,
-        ACTIVE,
-        TO_BE_DELETED
+        CREATING, ///< The base's @p create operation has yet to conclude.
+        ACTIVE, ///< The base is in the main execution cycle.
+        DELETING, ///< The base's @p delete operation is about to run.
     };
 
     /// @brief The possible group types.
     enum GROUP_TYPE_e {
-        OTHER, ///< [Value used by generic bases].
-        SCENE, ///< [Set by all bases inheriting from dScene_c].
-        ACTOR ///< [Set by all bases inheriting from dBaseActor_c].
+        OTHER, ///< The base is a @ref dBase_c "generic process".
+        SCENE, ///< The base is a @ref dScene_c "scene".
+        ACTOR ///< The base is an @ref dBaseActor_c "actor".
     };
 
-    /// @brief The states ::commonPack can be in after running the @e pre and @e do methods.
+    /// @brief The possible operation results.
     enum MAIN_STATE_e {
-        CANCELED, ///< The @e pre method failed.
-        ERROR, ///< The @e do method failed.
-        SUCCESS, ///< The @e do method succeeded.
-        WAITING ///< The @e pre / @e do method needs to be run again [only applies to ::create].
+        CANCELED, ///< The operation was canceled early.
+        ERROR, ///< The operation could not be completed.
+        SUCCESS, ///< The operation was completed successfully.
+        WAITING ///< The operation is waiting for something and cannot be completed yet.
     };
 
-    /// @brief See ::commonPack.
+    /// @brief The possible operation step results.
     enum PACK_RESULT_e {
-        NOT_READY, ///< Execution has to be repeated later [(only for ::create)].
-        SUCCEEDED, ///< Execution succeeded.
-        FAILED, ///< Execution failed.
+        NOT_READY, ///< The step could not completed at this time.
+        SUCCEEDED, ///< The step was completed successfully.
+        FAILED, ///< The step could not be completed.
     };
 
-    /// @brief Controls if @p execute and @p draw should be skipped.
+    /// @brief Controls if the @p execute and @p draw operations should be skipped.
     enum PROC_DISABLE_e {
         ROOT_DISABLE_EXECUTE = 1, ///< Execution is disabled, and this is a root base.
         DISABLE_EXECUTE = 2, ///< Execution is disabled.
@@ -50,138 +149,125 @@ public:
         DISABLE_DRAW = 8 ///< Drawing is disabled.
     };
 
-    fBaseID_e mUniqueID; ///< A unique identifier for every base.
+    /// @brief The base's unique identifier.
+    /// @details This value is incremented for every created base. Should it max out, the game will
+    /// intentionally stall.
+    fBaseID_e mUniqueID;
     u32 mParam; ///< A bitfield that configures the base's behaviour. [Represents nybbles 5 to 12 of Reggie's spritedata].
     ProfileName mProfName; ///< The base's profile name.
 
 protected:
-    u8 mLifecycleState; ///< The current lifecycle state. Value is a ::LIFECYCLE_e.
-    bool mDeleteRequested; ///< If the base is to be deleted.
-    bool mDelayManageAdd; ///< If the adding of the base should be delayed until the next ::connectProc call.
-    bool mRetryCreate; ///< If the next ::connectProc call should add the base to fManager_c::m_createManage.
+    u8 mLifecycleState; ///< The base's lifecycle state. Value is a ::LIFECYCLE_e.
+
+    /// @brief If deletion of the base was requested, but the corresponding operation has not been
+    /// scheduled yet.
+    bool mDeleteRequested;
+
+    /// @brief If the @p create operation was completed, but scheduling the @p execute and @p draw
+    /// operations isn't possible at this time.
+    /// @details If true, scheduling will be deferred to the next @p connect operation.
+    bool mDeferExecute;
+
+    /// @brief If the @p create operation has not been completed, and rescheduling it isn't possible at
+    /// this time.
+    /// @details If true, rescheduling will be deferred to the next @p connect operation.
+    bool mDeferRetryCreate;
 
     u8 mGroupType; ///< The base's group type. Value is a ::GROUP_TYPE_e.
-    u8 mProcControl; ///< Which processes are to be skipped. Value is a bitfield induced by ::PROC_DISABLE_e.
+    u8 mProcControl; ///< The operations to be skipped. Value is a ::PROC_DISABLE_e.
 
-    /// @brief Checks if a flag is set in ::mProcessFlags.
+    /// @brief Checks if a flag is set in ::mProcControl.
     bool isProcControlFlag(u8 flag) const { return (mProcControl & flag) != 0; }
-    /// @brief Sets a flag in ::mProcessFlags.
+    /// @brief Sets a flag in ::mProcControl.
     void setProcControlFlag(u8 flag) { mProcControl |= flag; }
-    /// @brief Clears a flag in ::mProcessFlags.
+    /// @brief Clears a flag in ::mProcControl.
     void clearProcControlFlag(u8 flag) { mProcControl &= ~flag; }
 
     fManager_c mMng; ///< The base's process manager.
 
-    fBaHelper_c *mpUnusedHelper; ///< @unused
-    fLiMgBa_c mUnusedList; ///< @unused
+    fBaHelper_c *mpUnusedHelper; ///< @unused See [Unused Content](#unused-content).
+    fLiMgBa_c mUnusedList; ///< @unused See [Unused Content](#unused-content).
 
-    EGG::FrmHeap *mpHeap; ///< @unused The base's own FrmHeap.
+    EGG::FrmHeap *mpHeap; ///< @unused The base's dedicated heap.
 
 public:
     fBase_c(); ///< Constructs a new base.
 
     /// @brief @p new operator override for all bases.
-    /// @details Every base is allocated in mHeap::g_gameHeaps[0] starting from the top,
-    /// and memory is cleared before construction.
+    /// @details Bases are allocated in mHeap::g_gameHeaps[0] in a top-down direction, and are
+    /// zero-initialized.
     static void *operator new(size_t);
     static void operator delete(void *); ///< @p delete operator override for all bases.
 
 protected:
-    /// @brief Code to be executed on base creation.
-    /// @details This function usually runs once and is used for initialization of
-    /// settings and/or assets.
+    /// @brief @p do method for the @p create operation.
     /// @return A ::PACK_RESULT_e value.
     virtual int create();
 
-    /// @brief Code to be executed before ::create.
-    /// @details This function is usually overridden to check for pre-conditions
-    /// before running ::create.
+    /// @brief @p pre method for the @p create operation.
     /// @return A ::PACK_RESULT_e value.
     virtual int preCreate();
 
-    /// @brief Code to be executed after ::create.
-    /// @details Allows running different code based on the result of the previous two functions.
-    /// For fBase_c, this function:
-    /// * Marks the base as created if creation was successful.
-    /// * Requests deletion of the base if creation resulted in an error.
-    /// * Other states do not produce any result.
+    /// @brief @p post method for the @p create operation.
     virtual void postCreate(MAIN_STATE_e state);
 
-    /// @brief Code to be executed on base deletion.
-    /// @details This function usually runs once, and is used for disabling functionalities
-    /// such as collision or for deallocating resources.
+    /// @brief @p do method for the @p delete operation.
+    /// @details This method was renamed due to conflict with the @p delete C++ keyword.
     /// @return A ::PACK_RESULT_e value.
     virtual int doDelete();
 
-    /// @brief Code to be executed before ::doDelete.
-    /// @details This function is usually overridden to check for pre-conditions
-    /// before running ::doDelete.
+    /// @brief @p pre method for the @p delete operation.
     /// @return A ::PACK_RESULT_e value.
     virtual int preDelete();
 
-    /// @brief Code to be executed after ::doDelete.
-    /// @details Allows running different code based on the result of the previous two functions.
-    /// For fBase_c, if deletion was successful, this function:
-    /// * Removes the base from the lists it's still in.
-    /// * Deletes the base's heap and ultimately the base itself.
-    ///
-    /// Other states do not produce any result.
+    /// @brief @p post method for the @p delete operation.
     virtual void postDelete(MAIN_STATE_e state);
 
-    /// @brief Contains the base's main logic.
-    /// @details This function runs every frame and can be considered the base's own
-    /// main loop.
+    /// @brief @p do method for the @p execute operation.
     /// @return A ::PACK_RESULT_e value.
     virtual int execute();
 
-    /// @brief Code to be executed before ::execute.
-    /// @details This function is usually overridden to check for pre-conditions
-    /// before running ::execute (such as checking zone boundaries or the game being paused).
+    /// @brief @p pre method for the @p execute operation.
     /// @return A ::PACK_RESULT_e value.
     virtual int preExecute();
 
-    /// @brief Code to be executed after ::execute.
-    /// @details Allows running different code based on the result of the previous two functions.
+    /// @brief @p post method for the @p execute operation.
     virtual void postExecute(MAIN_STATE_e state);
 
-    /// @brief Contains the base's drawing logic.
-    /// @details This function runs every frame and contains code for drawing the base on screen
-    /// (if the base doesn't need drawing, the function is empty).
+    /// @brief @p do method for the @p draw operation.
     /// @return A ::PACK_RESULT_e value.
     virtual int draw();
 
-    /// @brief Code to be executed before ::draw.
-    /// @details This function is usually overridden to check for pre-conditions
-    /// before running ::draw (such as checking if the base is effectively on screen).
+    /// @brief @p pre method for the @p draw operation.
     /// @return A ::PACK_RESULT_e value.
     virtual int preDraw();
 
-    /// @brief Code to be executed after ::draw.
-    /// @details Allows running different code based on the result of the previous two functions.
+    /// @brief @p post method for the @p draw operation.
     virtual void postDraw(MAIN_STATE_e state);
 
-    /// @brief Informs the base that it will be deleted.
+    /// @brief Informs the base that it's about to be deleted.
     virtual void deleteReady();
 
     /**
-     * @unused Tries to create a heap for the base.
-     * @details Should the heap creation fail, the function tries to create a smaller heap.
-     * If that also fails, the function requests the deletion of the base.
-     * @param size The heap's size.
-     * @param parentHeap The parent heap.
+     * @unused Creates a heap of the given size for the base.
+     * @details If the requested heap space is not available, the heap is adjusted to allocate all the
+     * available memory. If that also fails, the base is deleted.
+     * @param size The heap's size, or @p -1 to allocate all available space.
+     * @param parentHeap The parent heap, or @p nullptr to use the current heap.
      * @return If the heap creation was successful.
      */
     virtual bool entryFrmHeap(unsigned long size, EGG::Heap *parentHeap);
 
     /**
-     * @unused Tries to create a heap for the base.
-     * @details Unlike ::entryFrmHeap, this function gives up immediately if heap creation fails.
-     * @param size The heap's size.
-     * @param parentHeap The parent heap.
+     * @unused Creates a heap of the given size for the base.
+     * @details Unlike ::entryFrmHeap, the base is immediately deleted if the requested space is not
+     * available.
+     * @param size The heap's size, or @p -1 to allocate all available space.
+     * @param parentHeap The parent heap, or @p nullptr to use the current heap.
      * @return If the heap creation was successful.
      */
     virtual bool entryFrmHeapNonAdjust(unsigned long size, EGG::Heap *parentHeap);
-    virtual bool createHeap(); ///< @unused Does nothing.
+    virtual bool createHeap(); ///< @unused [Does nothing].
 
     virtual ~fBase_c(); ///< Destroys the base.
 
@@ -193,51 +279,50 @@ public:
     fBase_c *getConnectChild() const; ///< Gets the base's first child.
     fBase_c *getConnectBrNext() const; ///< Gets the base's next sibling.
 
-    /// @brief Checks if the base has a child waiting to be added to fManager_c::m_createManage.
+    /// @brief Checks if the base has at least one child in the @ref ::LIFECYCLE_e::CREATING "CREATING" state.
     /// @return If such a child base exists.
     bool checkChildProcessCreateState() const;
 
 private:
-    int createPack(); ///< See ::commonPack.
-    int deletePack(); ///< See ::commonPack.
-    int executePack(); ///< See ::commonPack.
-    int drawPack(); ///< See ::commonPack.
+    int createPack(); ///< Executes the @p create operation. See ::commonPack.
+    int deletePack(); ///< Executes the @p delete operation. See ::commonPack.
+    int executePack(); ///< Executes the @p execute operation. See ::commonPack.
+    int drawPack(); ///< Executes the @p draw operation. See ::commonPack.
 
     /**
-     * @brief Common code for the pack tasks.
+     * @brief Executes an operation. See [here](#operation-flow) for more details.
      *
-     * @param doFunc The main function for this task.
-     * @param preFunc The function that is called before the main function.
-     * @param postFunc The function that is called after the main function.
+     * @param doFunc The operation's @p do method.
+     * @param preFunc The operation's @p pre method.
+     * @param postFunc The operation's @p post method.
      * @return A ::PACK_RESULT_e value returned from doFunc, or preFunc if doFunc was not executed.
      */
     int commonPack(int (fBase_c::*doFunc)(), int (fBase_c::*preFunc)(), void (fBase_c::*postFunc)(MAIN_STATE_e));
 
     /**
-     * @brief Deals with the connect tree and object lifecycle.
-     *  @details Main tasks include:
-     *  * Moving bases marked for deletion to the deletion list (and deleting its children)
-     *  * Updating process flags
-     *  * Reordering the execute and draw list on priority changes
-     *  * Processing bases that deferred their addition to the manager lists
-     *
-     *  The function always returns 1.
+     * @brief Executes the @p connect operation.
+     * @details This operation carries out the following tasks:
+     * - Schedule the base (and its children) for deletion if deletion was requested (see ::mDeleteRequested)
+     * - Propagate updates to ::mProcControl on the root base.
+     * - Update the base's position in the @p execute and @p draw lists on priority changes
+     * - Process any deferred schedule requests (see ::mDeferExecute and ::mDeferRetryCreate)
+     * @return The operation always returns ::SUCCEEDED.
      */
     int connectProc();
 
-    /// @brief Attempts to finalize creation of the base.
+    /// @brief Kickstarts the base's lifecycle by running the @p create operation.
     void runCreate();
 
-    /// @brief Gets a child of the base that is waiting to be added to fManager_c::m_createManage.
-    /// @return A child satisfying this condition, else @p nullptr .
+    /// @brief Gets a child of the base in the @ref ::LIFECYCLE_e::CREATING "CREATING" state.
+    /// @return The first child satisfying this condition, or @p nullptr if none is found.
     fBase_c *getChildProcessCreateState() const;
 
 public:
     /**
-     * @brief Creates a child base with the given parent.
+     * @brief Creates a child base under the given parent.
      *
      * @param profName The base's profile name.
-     * @param parent The base's parent.
+     * @param parent The base's parent. Must not be @p nullptr .
      * @param param The base's parameters.
      * @param groupType The base's group type.
      * @return A pointer to the instantiated base, or @p nullptr .
@@ -245,7 +330,7 @@ public:
     static fBase_c *createChild(ProfileName profName, fBase_c *parent, unsigned long param, u8 groupType);
 
     /**
-     * @brief Creates a base without a parent.
+     * @brief Creates a root base.
      *
      * @param profName The base's profile name.
      * @param param The base's parameters.
@@ -277,8 +362,8 @@ private:
     static fBase_c *fBase_make(ProfileName profName, fTrNdBa_c *connectParent, unsigned long param, u8 groupType);
 
 protected:
-    static int (*sLoadAsyncCallback)(); ///< @unused
-    static void (*sUnloadCallback)(); ///< @unused
+    static int (*sLoadAsyncCallback)(); ///< @unused See [Unused Content](#unused-content).
+    static void (*sUnloadCallback)(); ///< @unused See [Unused Content](#unused-content).
 
 private:
     static fBaseID_e m_rootUniqueID; ///< Unique ID counter for base construction. See ::mUniqueID.
@@ -287,7 +372,9 @@ private:
     static u8 m_tmpCtGroupType; ///< Temporary storage for the next constructed base's group type. See ::mGroupType.
     static fTrNdBa_c *m_tmpCtConnectParent; ///< Temporary storage for the next constructed base's parent connect node.
 
+    /// @cond
     friend class fManager_c;
     friend class fLiNdBa_c;
     friend class fTrMgBa_c;
+    /// @endcond
 };

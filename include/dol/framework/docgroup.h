@@ -12,7 +12,7 @@
  *
  * Nintendo refers to these processes as bases. Each type of base is defined by a profile, which
  * determines its behaviour (is it a Goomba, or Mario, or the HUD, or the abstract concept of a world
- * map?) and the priority it has relative to other base types. More details about profiles can be
+ * map?) and establishes its priority relative to other base types. More details about profiles can be
  * found @ref profile "here".
  *
  * Processes follow a hierarchical tree structure:
@@ -20,28 +20,29 @@
  * relationships between bases. An example is the Hammer Bro: all the hammers it throws are siblings of
  * each other, and the Hammer Bro is their parent.
  * - The root process for all bases is the current scene; this allows the game to clean up after itself by
- * deleting all processes when switching between scenes. More details about this topic can be found
+ * deleting all processes when switching between scenes. Further information on this topic can be found
  * @ref dScene_c "here".
  *
  * ## Base Implementation
- * All bases inherit the fBase_c class, which defines the core elements of a process to provide common
- * behaviour across all bases. See the fBase_c documentation for more detailed information.
+ * All bases inherit from the fBase_c class, which defines the core elements of a process to provide
+ * common behaviour across all bases. For more detailed information, please refer to the fBase_c
+ * documentation.
  *
- * The execution cycle for each base consists of multiple operations, whose behaviour can be overridden
- * by every base. Each operation has an associated linked list, containing all bases for which said
- * operation is scheduled for the current frame.
+ * The lifecycle of a base consists of multiple operations, whose behaviour can be overridden at any
+ * point. Each operation has an @ref fManager_c "associated linked list", containing all bases for which
+ * said operation is scheduled for the current frame.
  *
  * fBase_c defines five core operations:
  * - @p create runs immediately after construction (generally only once), and can be used to set up the
  * base or load resources for it.
- * - @p execute acts as the base's own main loop and runs every frame.
- * - @p draw is an alternate main loop dedicated to rendering code. It also runs every frame.
- * - @p doDelete runs immediately before destruction (generally only once), and can be used to deallocate
+ * - @p execute serves as the base's own main loop, running every frame.
+ * - @p draw offers an alternative main loop specifically for rendering code. It also runs every frame.
+ * - @p delete runs immediately before destruction (generally only once), and can be used to deallocate
  * resources or remove links to other bases.
  * - @p connect is an internal operation for process management. Bases should not override it.
  *
  * The fManager_c class is responsible for managing the execution cycle of each base. It also offers
- * various utilities to search for bases with specific criteria.
+ * various utilities for searching for bases meeting specific criteria.
  *
  * @{
  *

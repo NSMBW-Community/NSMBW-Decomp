@@ -755,8 +755,8 @@ namespace fProfile {
         LASTACTOR_STAGE,
         LASTACTOR,
 
-        // Not an actor, only used to get the number of actors!
-        NUMBER_OF_ACTORS,
-        INVALID = NUMBER_OF_ACTORS
+        // Not a profile, only used to get the number of profiles!
+        PROFILE_COUNT,
+        INVALID = PROFILE_COUNT
     };
 }

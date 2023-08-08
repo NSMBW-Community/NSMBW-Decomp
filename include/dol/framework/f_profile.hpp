@@ -52,7 +52,7 @@ namespace fProfile {
         u32 mActorProperties; ///< Some actor-related properties. @todo Document the bitfield.
     };
 
-    extern fBaseProfile_c *(*sProfileList)[NUMBER_OF_ACTORS]; ///< A list of all profiles. @ingroup dol
+    extern fBaseProfile_c *(*sProfileList)[PROFILE_COUNT]; ///< A list of all profiles. @ingroup dol
 
 } // namespace fProfile
 
