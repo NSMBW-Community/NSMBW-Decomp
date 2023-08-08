@@ -1,6 +1,7 @@
 # Doxyfile 1.9.7
 PROJECT_NAME           = NSMBW-Decomp
 PROJECT_BRIEF          = "A decompilation of New Super Mario Bros. Wii"
+PROJECT_LOGO           = docs/img/logo.svg
 OUTPUT_DIRECTORY       = doxygen
 HTML_OUTPUT            = .
 
@@ -18,6 +19,7 @@ INPUT                  = source \
                          include \
                          docs
 INPUT_FILE_ENCODING    = sjis_constants.h=SHIFT_JIS
+IMAGE_PATH             = docs/img
 RECURSIVE              = YES
 USE_MDFILE_AS_MAINPAGE = docs/INTRODUCTION.md
 
