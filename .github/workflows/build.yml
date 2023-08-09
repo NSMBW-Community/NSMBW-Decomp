@@ -17,7 +17,7 @@ jobs:
       - name: Setup python
         uses: actions/setup-python@v4
         with:
-          python-version: '3.10'
+          python-version: '3.11'
 
       - name: Download and decrypt blob
         env:
@@ -54,7 +54,7 @@ jobs:
       - name: Setup python
         uses: actions/setup-python@v4
         with:
-          python-version: '3.10'
+          python-version: '3.11'
 
       - name: Generate documentation
         run: |
@@ -77,13 +77,13 @@ jobs:
       - name: Copy website files
         run: |
           mkdir -p out/website/
-          cp -a -v website/. out/website/
-          cp -a -v doxygen/. out/website/doxygen
+          cp -v website/. out/website/
+          cp -a -v doxygen/. out/website/docs
           cp progress.csv out/website/
           cp *.json out/website/
 
       - name: Upload artifact
-        uses: actions/upload-pages-artifact@v1
+        uses: actions/upload-pages-artifact@v2
         with:
           path: 'out/website'
 
@@ -97,4 +97,4 @@ jobs:
     steps:
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v1
+        uses: actions/deploy-pages@v2
