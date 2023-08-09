@@ -5,9 +5,11 @@
 /// @{
 
 /// @brief Gets the group ID from a message ID.
+/// @hideinitializer
 #define GET_MSG_GROUP(id) ((id) >> 8)
 
 /// @brief Converts a message ID to make it relative to its group ID.
+/// @hideinitializer
 #define GET_MSG_REL_ID(id) ((id) & 0xFF)
 
 /// @brief The identifiers for each text message.

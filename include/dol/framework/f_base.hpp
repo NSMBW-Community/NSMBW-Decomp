@@ -57,7 +57,7 @@
  * point. Each operation has an @ref fManager_c "associated linked list", containing all bases for which
  * said operation is scheduled for the current frame. fBase_c manages operation scheduling internally,
  * therefore developer interaction is not required.
- * 
+ *
  * ### Operation Flow
  * Every operation is composed by three steps: @p pre , @p do and @p post (each with their own methods).
  * While the @p do method is generally reserved for profile-specific behaviour, the @p pre and @p post
@@ -91,9 +91,9 @@
  * - @p connect is an internal operation for process management that runs along the previous four;
  * bases should not override it. See ::connectProc for more information on the tasks carried out in this
  * operation.
- * 
+ *
  * @image html dol/framework/fBase_lifecycle.svg The lifecycle of a base.
- * 
+ *
  * ## Unused Content
  * - ::sLoadAsyncCallback and ::sUnloadCallback are presumably related to the scrapped relocatable
  * profile system (more details here). These callbacks are set to empty placeholder functions
@@ -106,7 +106,7 @@
  * - Two additional unused list-like structures are present in the class: ::mpUnusedHelper and
  * ::mUnusedList. Since the symbols for the related functions have not yet been cracked, it's difficult
  * to tell what their purpose might have been.
- * 
+ *
  * @todo Link to unused relocation system article when it gets written.
  */
 class fBase_c {
@@ -372,9 +372,7 @@ private:
     static u8 m_tmpCtGroupType; ///< Temporary storage for the next constructed base's group type. See ::mGroupType.
     static fTrNdBa_c *m_tmpCtConnectParent; ///< Temporary storage for the next constructed base's parent connect node.
 
-    /// @cond
     friend class fManager_c;
     friend class fLiNdBa_c;
     friend class fTrMgBa_c;
-    /// @endcond
 };

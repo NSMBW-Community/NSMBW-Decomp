@@ -7,17 +7,24 @@
 /// @{
 
 /// @brief Creates a profile of a base with given values for execute and draw order.
+/// @hideinitializer
 #define SPECIAL_BASE_PROFILE(profName, className, executeOrder, drawOrder) void *className##_classInit() { return new className(); } \
     fProfile::fBaseProfile_c g_profile_##profName = { &className##_classInit, executeOrder, drawOrder }
 
-/// @brief Creates a profile of an actor with given values for execute and draw order and the actor properties. @see SPECIAL_BASE_PROFILE
+/// @brief Creates a profile of an actor with given values for execute and draw order and the actor properties.
+/// @hideinitializer
+/// @see SPECIAL_BASE_PROFILE
 #define SPECIAL_ACTOR_PROFILE(profName, className, executeOrder, drawOrder, properties) void *className##_classInit() { return new className(); } \
     const fProfile::fActorProfile_c g_profile_##profName = { &className##_classInit, executeOrder, drawOrder, properties }
 
-/// @brief Creates a profile for a base, with the profile number as the priority for both the draw and execute order. @see SPECIAL_BASE_PROFILE
+/// @brief Creates a profile for a base, with the profile number as the priority for both the draw and execute order.
+/// @hideinitializer
+/// @see SPECIAL_BASE_PROFILE
 #define DEFAULT_BASE_PROFILE(profName, className) SPECIAL_BASE_PROFILE(profName, className, fProfile::profName, fProfile::profName);
 
-/// @brief Creates a profile of an actor with default values. @see DEFAULT_BASE_PROFILE
+/// @brief Creates a profile of an actor with default values.
+/// @hideinitializer
+/// @see DEFAULT_BASE_PROFILE
 #define DEFAULT_ACTOR_PROFILE(profName, className, properties) SPECIAL_ACTOR_PROFILE(profName, className, fProfile::profName, fProfile::profName, properties);
 
 /// @brief The name of a profile. Value is a fProfile::PROFILE_NAME_e.

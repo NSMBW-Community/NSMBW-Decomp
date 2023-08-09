@@ -1,24 +1,19 @@
-# Main Page
+## Main Page
+
+<img src="../website/doxygen/logo_big.png" style="max-width: 35%; display: block; margin-left: 5%;" />
+
 Welcome to the New Super Mario Bros. Wii decompilation project!
 
 [TOC]
 
-## Quick links
-- @ref logical "Browse Documentation by Library"
-- @ref physical "Browse Documentation by File"
-- [Browse Repository](https://github.com/NSMBW-Community/NSMBW-Decomp)
-- [Decompilation Progress](https://nsmbw-community.github.io/NSMBW-Decomp/#progress)
-- [Build System Overview](https://github.com/NSMBW-Community/NSMBW-Decomp/blob/master/README.md)
-- [Contribution Guidelines](docs/CONTRIBUTING.md)
-
-## Introduction
+### Introduction
 New Super Mario Bros. Wii was written in a mix of C and C++ and then compiled to PowerPC (PPC) [assembly code](https://en.wikipedia.org/wiki/Assembly_language) by the **Metrowerks CodeWarrior** compiler. While C/C++ code is not directly executable, PPC Assembly Code can be run directly on the Wii's hardware.
 
 The final game only includes the PPC assembly code, and it's highly unlikely that the original C/C++ code for the game will ever be made public. The objective of this decompilation project is to reconstruct the latter to gain insights into how the game functions, making it easier to implement changes.
 
-## Code Structure
+### Code Structure
 
-### Physical Structure
+#### Physical Structure
 The game's code is physically divided into five files:
 - @ref dol "main.dol"
 - @ref profileNP "d_profileNP.rel.LZ"
@@ -34,7 +29,7 @@ The `.rel.LZ` files hold most of the game-specific code and operate in a manner 
 
 The decompilation aims to provide matching C/C++ code for all of these files.
 
-### Logical Structure
+#### Logical Structure
 The game code can be logically divided into five major components, each comprising multiple sub-components:
 - A @ref stdlib "PowerPC implementation" of the [C Standard Library](https://en.wikipedia.org/wiki/C_standard_library).
 - The @ref rvl, a framework providing a set of tools, libraries and APIs that game developers can use to interface with the Wii's hardware in a secure and controlled manner. It is written in C and is used in every Wii game.
@@ -42,7 +37,7 @@ The game code can be logically divided into five major components, each comprisi
 - @ref egg, another middleware library providing higher-level utilities on top of the @ref rvl. It is written in C++ and is not available to third-party developers.
 - Anything else not falling into the categories mentioned above constitutes [game-specific code](#game-specific-code-structure), although there are indications that parts of it belong to a makeshift game engine, extensively reused by Nintendo during that time period.
 
-### Game-Specific Code Structure
+#### Game-Specific Code Structure
 Thanks to the [symbols we have recovered](https://rootcubed.dev/nsmbw-symbols/), we can divide the @ref game "game-specific code" into several parts as follows:
 - @ref framework "The base game framework" (classes prefixed with `f`) is the core of the game engine. _If you want to learn how the game works, start from here._
 - The @ref slib "s" library is comprised of math utilities and, most importantly, the state system.
