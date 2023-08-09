@@ -77,7 +77,7 @@ jobs:
       - name: Copy website files
         run: |
           mkdir -p out/website/
-          cp -v website/. out/website/
+          cp -v website/* out/website/
           cp -a -v doxygen/. out/website/docs
           cp progress.csv out/website/
           cp *.json out/website/
