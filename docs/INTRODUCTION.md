@@ -1,6 +1,6 @@
 ## Main Page
 
-<img src="../website/doxygen/logo_big.png" style="max-width: 35%; display: block; margin-left: 5%;" />
+<img src="logo_big.png" style="max-width: 50%; display: block; margin-left: 5%;" />
 
 Welcome to the New Super Mario Bros. Wii decompilation project!
 

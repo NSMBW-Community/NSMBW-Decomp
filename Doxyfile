@@ -65,6 +65,8 @@ STRIP_FROM_INC_PATH    = include
 
 ALIASES                += unused="\xrefitem unused \"\" \"Unused Elements\" \brief [Unused]."
 ALIASES                += unofficial="\note Unofficial name."
+ALIASES                += inlineimage="@image{inline} html"
+ALIASES                += imagecaption{1}="<div class=\"image caption\">\1</div>"
 
 # The MARKDOWN_ID_STYLE tag can be used to specify the algorithm used to
 # generate identifiers for the Markdown headings. Note: Every identifier is
@@ -250,7 +252,7 @@ HTML_OUTPUT            = .
 # of the possible markers and block names see the documentation.
 # This tag requires that the tag GENERATE_HTML is set to YES.
 
-HTML_HEADER            =
+HTML_HEADER            = website/doxygen/header.html
 
 # The HTML_FOOTER tag can be used to specify a user-defined HTML footer for each
 # generated HTML page. If the tag is left blank doxygen will generate a standard
@@ -260,7 +262,7 @@ HTML_HEADER            =
 # that doxygen normally uses.
 # This tag requires that the tag GENERATE_HTML is set to YES.
 
-HTML_FOOTER            =
+HTML_FOOTER            = website/doxygen/footer.html
 
 # The HTML_EXTRA_STYLESHEET tag can be used to specify additional user-defined
 # cascading style sheets that are included after the standard style sheets
@@ -289,7 +291,12 @@ HTML_EXTRA_STYLESHEET  = website/doxygen/doxygen-awesome-css/doxygen-awesome.css
 # files will be copied as-is; there are no commands or markers available.
 # This tag requires that the tag GENERATE_HTML is set to YES.
 
-HTML_EXTRA_FILES       =
+HTML_EXTRA_FILES       = website/doxygen/logo_big.png \
+                         website/doxygen/logo_card.png \
+                         website/doxygen/doxygen-awesome-css/doxygen-awesome-darkmode-toggle.js \
+                         website/doxygen/doxygen-awesome-css/doxygen-awesome-fragment-copy-button.js \
+                         website/doxygen/doxygen-awesome-css/doxygen-awesome-paragraph-link.js \
+                         website/doxygen/doxygen-awesome-css/doxygen-awesome-interactive-toc.js
 
 # The HTML_COLORSTYLE tag can be used to specify if the generated HTML output
 # should be rendered with a dark or light theme.
@@ -313,7 +320,7 @@ HTML_COLORSTYLE        = LIGHT
 # Minimum value: 0, maximum value: 359, default value: 220.
 # This tag requires that the tag GENERATE_HTML is set to YES.
 
-HTML_COLORSTYLE_HUE    = 209
+HTML_COLORSTYLE_HUE    = 0
 
 # The HTML_COLORSTYLE_SAT tag controls the purity (or saturation) of the colors
 # in the HTML output. For a value of 0 the output will use gray-scales only. A
@@ -321,7 +328,7 @@ HTML_COLORSTYLE_HUE    = 209
 # Minimum value: 0, maximum value: 255, default value: 100.
 # This tag requires that the tag GENERATE_HTML is set to YES.
 
-HTML_COLORSTYLE_SAT    = 255
+HTML_COLORSTYLE_SAT    = 88
 
 # The HTML_COLORSTYLE_GAMMA tag controls the gamma correction applied to the
 # luminance component of the colors in the HTML output. Values below 100
@@ -332,7 +339,7 @@ HTML_COLORSTYLE_SAT    = 255
 # Minimum value: 40, maximum value: 240, default value: 80.
 # This tag requires that the tag GENERATE_HTML is set to YES.
 
-HTML_COLORSTYLE_GAMMA  = 113
+HTML_COLORSTYLE_GAMMA  = 90
 
 # With HTML_INDEX_NUM_ENTRIES one can control the preferred number of entries
 # shown in the various tree structured indices initially; the user can expand

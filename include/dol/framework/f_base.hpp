@@ -92,7 +92,8 @@
  * bases should not override it. See ::connectProc for more information on the tasks carried out in this
  * operation.
  *
- * @image html dol/framework/fBase_lifecycle.svg The lifecycle of a base.
+ * @inlineimage dol/framework/fBase_lifecycle.svg
+ * @imagecaption{The lifecycle of a base.}
  *
  * ## Unused Content
  * - ::sLoadAsyncCallback and ::sUnloadCallback are presumably related to the scrapped relocatable

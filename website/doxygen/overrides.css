@@ -1,3 +1,51 @@
+html {
+	/* Replace primary colors */
+    --primary-color: #be3232 !important;
+    --primary-dark-color: #af2828 !important;
+    --primary-light-color: #e34141 !important;
+
+	/* Use warning color for bug color */
+    --bug-color: var(--warning-color) !important;
+    --bug-color-dark: var(--warning-color-dark) !important;
+    --bug-color-darker: var(--warning-color-darker) !important;
+
+	/* Use deprecated color for note color */
+    --note-color: var(--deprecated-color) !important;
+    --note-color-dark: var(--deprecated-color-dark) !important;
+    --note-color-darker: var(--deprecated-color-darker) !important;
+
+	/* Use deprecated color for todo color */
+    --todo-color: var(--deprecated-color) !important;
+    --todo-color-dark: var(--deprecated-color-dark) !important;
+    --todo-color-darker: var(--deprecated-color-darker) !important;
+}
+
+/* Make links brighter  */
+a:link, a:visited, a:hover, a:focus, a:active {
+    color: var(--primary-light-color) !important;
+}
+
+/* Remove the ugly hover shadow on the bottom navigator and replace it with underline */
+.navpath li.navelem a:hover {
+    text-shadow: none !important;
+    text-decoration-line: underline !important;
+}
+
+/* Use darker primary color for hovered/active/focused top menu buttons */
+.sm-dox ul a:hover, .sm-dox ul a:active, .sm-dox ul a:focus, .sm-dox a:hover, .sm-dox a:active, .tablist li a:hover {
+    background-color: var(--primary-dark-color) !important;
+}
+
+/* Change directory level numbers color */
+.directory .levels span {
+    color: var(--primary-light-color) !important;
+}
+
+/* Change prototype color */
+h2.memtitle, h2.memtitle:after, div.memproto {
+    background: var(--code-background) !important;
+}
+
 /* Add border to cell descriptions (left) */
 td.mdescLeft {
     border-left: 1px solid var(--separator-color);
@@ -14,7 +62,7 @@ td.mdescRight {
 td.memItemLeft, td.memItemRight {
     border-radius: 0px !important;
     padding-right: 0px !important;
-    background-color: var(--side-nav-background) !important;
+    background-color: var(--code-background) !important;
 }
 
 /* Remove table cell separator */
@@ -22,7 +70,7 @@ td.memSeparator {
     display: none;
 }
 
-/* Add a short separator between table rows */
+/* Add short padding between table rows */
 tr[class*="memdesc"] {
     transform: translateY(-4px) !important;
 }
@@ -47,4 +95,24 @@ p.definition {
 div.headertitle {
     margin-top: -20px;
     margin-bottom: -10px;
+}
+
+/* Remove colors on dark mode directories/files */
+html.dark-mode .icondoc, html.dark-mode .iconfopen, html.dark-mode .iconfclosed {
+    filter: saturate(0) !important;
+}
+
+/* Disable color inversion on menu arrows and restore it on light mode files */
+html.dark-mode img[src="closed.png"], html.dark-mode img[src="open.png"], .icondoc {
+    filter: none !important;
+}
+
+/* Restore padding on inherit dropdowns */
+table.memberdecls .inherit_header td {
+    padding: 6px 0px 2px 5px !important;
+}
+
+/* Reduce bottom margin to counter the above padding */
+table.memberdecls .groupheader {
+    margin-bottom: var(--spacing-medium) !important;
 }
