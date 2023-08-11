@@ -745,7 +745,7 @@ namespace fProfile {
         CHARACTER_CHANGE_INDICATOR,
         MULTI_COURSE_SELECT_CONTENTS,
         COLLECTION_COIN_DATE,
-        CONTROLLER_INFORMATION,
+        CONTROLLER_INFORMATION, ///< The profile for dControllerInformation_c.
         DRAW_GAME,
         STAFF_CREDIT_SCORE,
         THE_END,

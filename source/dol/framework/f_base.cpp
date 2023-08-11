@@ -34,8 +34,8 @@ fBase_c::fBase_c() :
     fProfile::fBaseProfile_c *prof = (*fProfile::sProfileList)[mProfName];
     if (prof != nullptr) {
         u16 executeOrder = prof->mExecuteOrder;
-        mMng.mExecuteNode.mOrder = executeOrder;
-        mMng.mExecuteNode.mNewOrder = executeOrder;
+        mMng.mMainNode.mOrder = executeOrder;
+        mMng.mMainNode.mNewOrder = executeOrder;
 
         u16 drawOrder = prof->mDrawOrder;
         mMng.mDrawNode.mOrder = drawOrder;
@@ -97,14 +97,14 @@ void fBase_c::postCreate(MAIN_STATE_e state) {
 
     // Creation successful, remove the base from the creation list
     if (state == SUCCESS) {
-        fManager_c::m_createManage.remove(&mMng.mExecuteNode);
+        fManager_c::m_createManage.remove(&mMng.mMainNode);
 
         // Since operations cannot be scheduled while the corresponding process
         // is running, defer execution scheduling to the connect operation
         if (fManager_c::m_nowLoopProc == fManager_c::EXECUTE) {
             mDeferExecute = true;
         } else {
-            fManager_c::m_executeManage.addNode(&mMng.mExecuteNode);
+            fManager_c::m_executeManage.addNode(&mMng.mMainNode);
             fManager_c::m_drawManage.addNode(&mMng.mDrawNode);
             mLifecycleState = ACTIVE;
         }
@@ -144,7 +144,7 @@ void fBase_c::postDelete(MAIN_STATE_e state) {
         // Remove from all manager lists
         fManager_c::m_connectManage.removeTreeNode(&mMng.mConnectNode);
         fManager_c::m_searchManage[mMng.getSearchTableNum()].remove(&mMng.mSearchNode);
-        fManager_c::m_deleteManage.remove(&mMng.mExecuteNode);
+        fManager_c::m_deleteManage.remove(&mMng.mMainNode);
 
         // Delete the heap
         if (mpHeap != nullptr) {
@@ -215,13 +215,13 @@ int fBase_c::connectProc() {
 
         // Move the base from its current manager lists to the delete list
         if (mLifecycleState == ACTIVE) {
-            fManager_c::m_executeManage.remove(&mMng.mExecuteNode);
+            fManager_c::m_executeManage.remove(&mMng.mMainNode);
             fManager_c::m_drawManage.remove(&mMng.mDrawNode);
         } else {
-            fManager_c::m_createManage.remove(&mMng.mExecuteNode);
+            fManager_c::m_createManage.remove(&mMng.mMainNode);
         }
 
-        fManager_c::m_deleteManage.prepend(&mMng.mExecuteNode);
+        fManager_c::m_deleteManage.prepend(&mMng.mMainNode);
         mLifecycleState = DELETING;
 
         // Delete all its children recursively
@@ -252,10 +252,10 @@ int fBase_c::connectProc() {
         // for all those duplicated temporaries. Couldn't figure out a better solution, though]
         if (mLifecycleState == ACTIVE) {
 
-            fLiNdPrio_c *executeNode = &mMng.mExecuteNode;
+            fLiNdPrio_c *executeNode = &mMng.mMainNode;
             if (executeNode->mNewOrder != executeNode->mOrder) {
-                fManager_c::m_executeManage.remove(&mMng.mExecuteNode);
-                fLiNdPrio_c *executeNode2 = &mMng.mExecuteNode;
+                fManager_c::m_executeManage.remove(&mMng.mMainNode);
+                fLiNdPrio_c *executeNode2 = &mMng.mMainNode;
                 executeNode2->mOrder = executeNode2->mNewOrder;
                 fManager_c::m_executeManage.addNode(executeNode2);
             }
@@ -272,11 +272,11 @@ int fBase_c::connectProc() {
         } else if (mLifecycleState != DELETING) {
             if (mDeferRetryCreate) {
                 mDeferRetryCreate = false;
-                fManager_c::m_createManage.append(&mMng.mExecuteNode);
+                fManager_c::m_createManage.append(&mMng.mMainNode);
 
             } else if (mDeferExecute) {
                 mDeferExecute = false;
-                fManager_c::m_executeManage.addNode(&mMng.mExecuteNode);
+                fManager_c::m_executeManage.addNode(&mMng.mMainNode);
                 fManager_c::m_drawManage.addNode(&mMng.mDrawNode);
                 mLifecycleState = ACTIVE;
             }
@@ -457,7 +457,7 @@ void fBase_c::runCreate() {
         if (fManager_c::m_nowLoopProc == fManager_c::CREATE) {
             mDeferRetryCreate = true;
         } else {
-            fManager_c::m_createManage.append(&mMng.mExecuteNode);
+            fManager_c::m_createManage.append(&mMng.mMainNode);
         }
     }
 }

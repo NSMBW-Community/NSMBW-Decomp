@@ -21,7 +21,8 @@
  * - ::mProfName, an identifier for the base's profile.
  * - ::mGroupType, which specifies the base's group type (see
  * [Inheritance and Group Types](#inheritance-and-group-types) for more details).
- * - The other fields are related to the base's lifecycle or are entirely unused.
+ * - The class embeds @ref ::mMng "an instance of fManager_c", which manages most of the base's lifecycle.
+ * - The other fields are also related to the base's lifecycle or are entirely unused.
  *
  * ## Creating Bases
  * A base can be created by calling the ::createRoot or the ::createChild functions. Derivative classes
@@ -55,8 +56,11 @@
  * ## Base Lifecycle
  * The lifecycle of a base consists of multiple operations, whose behaviour can be overridden at any
  * point. Each operation has an @ref fManager_c "associated linked list", containing all bases for which
- * said operation is scheduled for the current frame. fBase_c manages operation scheduling internally,
- * therefore developer interaction is not required.
+ * said operation is scheduled for the current frame. fBase_c (and fManager_c) manage operation scheduling
+ * internally, therefore developer interaction is not required.
+ *
+ * Operations can be disabled globally by setting the @ref fManager_c::m_StopProcInf "m_StopProcInf"
+ * flag in fManager_c.
  *
  * ### Operation Flow
  * Every operation is composed by three steps: @p pre , @p do and @p post (each with their own methods).
@@ -274,6 +278,7 @@ protected:
 
 public:
     /// @brief Requests deletion of the base.
+    /// @details Calling this function multiple times has no effect.
     void deleteRequest();
 
     fBase_c *getConnectParent() const; ///< Gets the base's parent.
