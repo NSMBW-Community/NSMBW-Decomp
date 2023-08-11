@@ -54,8 +54,9 @@
 ### Enumerations
 
 - Unless a cracked symbol says otherwise, the following conventions apply:
-  - The enumeration tag should be all uppercase with the suffix `_e`
-  - The identifiers should be all uppercase and not be prefixed with the tag, unless strictly necessary
+  - The enumeration tag should be all uppercase with the suffix `_e`.
+  - Enumeration identifiers should be all uppercase.
+  - Global enum identifiers must be prefixed, while for class enum identifiers it's optional (do it, for example, if it increases readability or prevents confusion).
 
 ### Comments
 
@@ -85,7 +86,7 @@
   - Protected
   - Private
 
-- If the virtual functions do not follow the ordering conventions, then those rules can be ignored.
+- If the virtual functions do not follow the ordering conventions, the above rules can be ignored.
 
 ## Documentation
 

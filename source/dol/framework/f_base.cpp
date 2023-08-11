@@ -3,7 +3,7 @@
 #include <lib/MSL_C/string.h>
 #include <constants/sjis_constants.h>
 
-fBaseID_e fBase_c::m_rootUniqueID = FIRST_ID;
+fBaseID_e fBase_c::m_rootUniqueID = BASE_ID_FIRST;
 ProfileName fBase_c::m_tmpCtProfName;
 u32 fBase_c::m_tmpCtParam;
 u8 fBase_c::m_tmpCtGroupType;
@@ -21,7 +21,7 @@ fBase_c::fBase_c() :
 
     // Update the unique ID. If it maxes out the counter, stall the game
     m_rootUniqueID = (fBaseID_e) (m_rootUniqueID + 1);
-    if (m_rootUniqueID == MAX_ID) {
+    if (m_rootUniqueID == BASE_ID_MAX) {
         while (true);
     }
 

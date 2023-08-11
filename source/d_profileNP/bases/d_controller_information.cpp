@@ -47,8 +47,8 @@ bool dControllerInformation_c::createLayout() {
     };
 
     static const int textBoxMsgs[] = {
-        GET_MSG_REL_ID(HOLD_WIIMOTE_SIDEWAYS),
-        GET_MSG_REL_ID(HOLD_WIIMOTE_SIDEWAYS),
+        GET_MSG_REL_ID(MSG_HOLD_WIIMOTE_SIDEWAYS),
+        GET_MSG_REL_ID(MSG_HOLD_WIIMOTE_SIDEWAYS),
     };
 
     static const char *textBoxNames[] = {
@@ -64,7 +64,7 @@ bool dControllerInformation_c::createLayout() {
     mLayout.build("ControllerInformation_07.brlyt", nullptr);
     mLayout.AnimeResRegister(animeNames, ARRAY_SIZE(animeNames));
     mLayout.GroupRegister(groupNames, groupIdxs, ARRAY_SIZE(groupNames));
-    mLayout.TPaneNameRegister(textBoxNames, textBoxMsgs, GET_MSG_GROUP(HOLD_WIIMOTE_SIDEWAYS), ARRAY_SIZE(textBoxNames));
+    mLayout.TPaneNameRegister(textBoxNames, textBoxMsgs, GET_MSG_GROUP(MSG_HOLD_WIIMOTE_SIDEWAYS), ARRAY_SIZE(textBoxNames));
 
     return true;
 }

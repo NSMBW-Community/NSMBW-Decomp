@@ -23,31 +23,31 @@
 
 /// @brief The identifiers for each character.
 enum PLAYER_CHARACTER_e {
-    MARIO,
-    LUIGI,
-    BLUE_TOAD,
-    YELLOW_TOAD,
+    PLAYER_MARIO,
+    PLAYER_LUIGI,
+    PLAYER_BLUE_TOAD,
+    PLAYER_YELLOW_TOAD,
     PLAYER_COUNT
 };
 
 /// @brief Various flags applied to the player on occasion.
 enum PLAYER_CREATE_ITEM_e {
-    NO_CREATE_ITEM = 0x0,
-    STAR_POWER = 0x1, ///< Gives the player Star Power.
-    RIDING_YOSHI = 0x2, ///< Spawns a Yoshi along with the player.
-    BUBBLED = 0x4, ///< Spawns the player inside a bubble.
-    RESCUE_TOAD = 0x8 ///< Spawns a Rescue Toad instead of the regular player character.
+    CREATE_ITEM_NONE = 0x0,
+    CREATE_ITEM_STAR_POWER = 0x1, ///< Gives the player Star Power.
+    CREATE_ITEM_YOSHI = 0x2, ///< Spawns a Yoshi along with the player.
+    CREATE_ITEM_BUBBLE = 0x4, ///< Spawns the player inside a bubble.
+    CREATE_ITEM_RESCUE_TOAD = 0x8 ///< Spawns a Rescue Toad instead of the regular player character.
 };
 
 /// @brief The identifiers for each powerup.
 enum PLAYER_POWERUP_e {
-    NO_POWERUP,
-    MUSHROOM,
-    FIRE_FLOWER,
-    MINI_MUSHROOM,
-    PROPELLER_SHROOM,
-    PENGUIN_SUIT,
-    ICE_FLOWER,
+    POWERUP_NONE,
+    POWERUP_MUSHROOM,
+    POWERUP_FIRE_FLOWER,
+    POWERUP_MINI_MUSHROOM,
+    POWERUP_PROPELLER_SHROOM,
+    POWERUP_PENGUIN_SUIT,
+    POWERUP_ICE_FLOWER,
     POWERUP_COUNT
 };
 

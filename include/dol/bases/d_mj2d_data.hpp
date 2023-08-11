@@ -112,15 +112,15 @@ public:
     };
 
     /// @brief The Toad House types at the start node of each world.
-    /// @details RESCUE values are used in houses that spawn after a successful Toad Rescue mission.
+    /// @details Values marked with R are used for houses that spawn after a successful Toad Rescue mission.
     enum START_KINOKO_KIND_e {
-        NONE,
-        YELLOW,
-        RED,
-        GREEN,
-        YELLOW_RESCUE,
-        RED_RESCUE,
-        GREEN_RESCUE
+        TOAD_HOUSE_NONE,
+        TOAD_HOUSE_YELLOW,
+        TOAD_HOUSE_RED,
+        TOAD_HOUSE_GREEN,
+        TOAD_HOUSE_YELLOW_R,
+        TOAD_HOUSE_RED_R,
+        TOAD_HOUSE_GREEN_R
     };
 
     /// @brief Constructs the holder.

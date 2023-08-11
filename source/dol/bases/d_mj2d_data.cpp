@@ -3,7 +3,7 @@
 #include <lib/MSL_C/string.h>
 #include <dol/bases/d_mj2d_data.hpp>
 
-const u32 dMj2dGame_c::sDefaultCharacters[PLAYER_COUNT] = {MARIO, LUIGI, YELLOW_TOAD, BLUE_TOAD};
+const u32 dMj2dGame_c::sDefaultCharacters[PLAYER_COUNT] = {PLAYER_MARIO, PLAYER_LUIGI, PLAYER_YELLOW_TOAD, PLAYER_BLUE_TOAD};
 char dMj2dHeader_c::sSaveMagic[4] = {'S', 'M', 'N', 'P'};
 
 dMj2dGame_c::dMj2dGame_c() {
@@ -25,9 +25,9 @@ void dMj2dGame_c::initialize() {
     // Initialize the player data
     for (int player = 0; player < PLAYER_COUNT; player++) {
         setPlrID(player, sDefaultCharacters[player]);
-        setPlrMode(player, NO_POWERUP);
+        setPlrMode(player, POWERUP_NONE);
         setRest(player, STARTING_LIVES_COUNT);
-        setCreateItem(player, NO_CREATE_ITEM);
+        setCreateItem(player, CREATE_ITEM_NONE);
     }
 
     // Initialize map data
@@ -76,11 +76,11 @@ int dMj2dGame_c::getRest(int player) const {
 }
 
 void dMj2dGame_c::setCreateItem(int player, u8 flag) {
-    mPlayerCreateItem[player] = flag & STAR_POWER;
+    mPlayerCreateItem[player] = flag & CREATE_ITEM_STAR_POWER;
 }
 
 int dMj2dGame_c::getCreateItem(int player) const {
-    return mPlayerCreateItem[player] & STAR_POWER;
+    return mPlayerCreateItem[player] & CREATE_ITEM_STAR_POWER;
 }
 
 void dMj2dGame_c::setCoin(int player, s8 coins) {
