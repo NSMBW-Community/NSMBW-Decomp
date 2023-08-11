@@ -16,8 +16,8 @@ namespace dReset {
             HBM_WAIT, ///< The home menu is open.
             DISK_WAIT, ///< The game cannot read the DVD and cannot proceed.
             FATAL_ERROR, ///< The game cannot read the NAND and cannot proceed.
-            SAFETY_WAIT, ///< The game is about to execute the hard reset procedure indicated in ::execMode.
-            NO_CHANGE ///< The game's running state hasn't changed [value used in ::modeInit].
+            SAFETY_WAIT, ///< The game is about to execute the hard reset procedure indicated in ::mExecMode.
+            NO_CHANGE ///< The game's running state hasn't changed [value used in ::mModeInit].
         };
 
         /// @brief The possible hard reset procedures.

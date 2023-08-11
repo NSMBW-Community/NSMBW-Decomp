@@ -131,21 +131,21 @@ public:
 
     void initialize(); ///< Initializes the slot data.
 
-    void setPlrID(int player, int character); ///< Sets @p player 's character. See ::PlayerCharacter.
-    int getPlrID(int player) const; ///< Gets @p player 's character. See ::PlayerCharacter.
+    void setPlrID(int player, int character); ///< Sets @p player 's character. See ::PLAYER_CHARACTER_e.
+    int getPlrID(int player) const; ///< Gets @p player 's character. See ::PLAYER_CHARACTER_e.
 
-    void setPlrMode(int player, u8 powerup); ///< Sets @p player 's powerup. See ::PlayerPowerup.
-    int getPlrMode(int player) const; ///< Gets @p player 's powerup. See ::PlayerPowerup.
+    void setPlrMode(int player, u8 powerup); ///< Sets @p player 's powerup. See ::PLAYER_POWERUP_e.
+    int getPlrMode(int player) const; ///< Gets @p player 's powerup. See ::PLAYER_POWERUP_e.
 
     void setRest(int player, u8 lives); ///< Sets @p player 's life count.
     int getRest(int player) const; ///< Gets @p player 's life count.
 
-    /// @brief Sets @p player 's createItem flag. See ::PlayerCreateItem.
-    /// @details Flags other than ::STAR_POWER are ignored.
+    /// @brief Sets @p player 's createItem flag. See ::PLAYER_CREATE_ITEM_e.
+    /// @details Flags other than ::CREATE_ITEM_STAR_POWER are ignored.
     void setCreateItem(int player, u8 flag);
 
-    /// @brief Gets @p player 's createItem flag. See ::PlayerCreateItem.
-    /// @details Flags other than ::STAR_POWER are ignored.
+    /// @brief Gets @p player 's createItem flag. See ::PLAYER_CREATE_ITEM_e.
+    /// @details Flags other than ::CREATE_ITEM_STAR_POWER are ignored.
     int getCreateItem(int player) const;
 
     void setCoin(int player, s8 coins); ///< Sets @p player 's coin count.
@@ -290,9 +290,9 @@ private:
     u8 mPlayerContinue[PLAYER_COUNT]; ///< The continue count for each player.
     s8 mPlayerCoin[PLAYER_COUNT]; ///< The coin count for each player.
     u8 mPlayerLife[PLAYER_COUNT]; ///< The life count for each player.
-    u8 mPlayerCreateItem[PLAYER_COUNT]; ///< The Star Power flag for each player. See ::PlayerCreateItem.
-    u8 mPlayerCharacter[PLAYER_COUNT]; ///< The character for each player. See ::PlayerCharacter.
-    u8 mPlayerPowerup[PLAYER_COUNT]; ///< The powerup for each player. See ::PlayerPowerup.
+    u8 mPlayerCreateItem[PLAYER_COUNT]; ///< The Star Power flag for each player. See ::PLAYER_CREATE_ITEM_e.
+    u8 mPlayerCharacter[PLAYER_COUNT]; ///< The character for each player. See ::PLAYER_CHARACTER_e.
+    u8 mPlayerPowerup[PLAYER_COUNT]; ///< The powerup for each player. See ::PLAYER_POWERUP_e.
 
     u8 mWorldCompletion[WORLD_COUNT]; ///< The completion flags for each world. See ::WORLD_COMPLETION_e.
     u8 mEnemyRevivalCount[WORLD_COUNT][AMBUSH_ENEMY_COUNT]; ///< The revival counter for each map enemy.
