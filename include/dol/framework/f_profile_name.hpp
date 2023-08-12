@@ -3,6 +3,7 @@
 namespace fProfile {
 
     /// @brief A name of a profile. Can be used to index into fProfile::sProfileList.
+    /// @ingroup profile
     enum PROFILE_NAME_e {
         BOOT,
         AUTO_SELECT,
@@ -756,6 +757,9 @@ namespace fProfile {
         LASTACTOR,
 
         // Not a profile, only used to get the number of profiles!
+        /// @brief The total number of profiles.
+        /// @details This value varies across New Super Mario Bros. Wii versions due to profiles added
+        /// later in development.
         PROFILE_COUNT,
         INVALID = PROFILE_COUNT
     };

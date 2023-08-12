@@ -48,6 +48,36 @@
  *
  * @defgroup profile fProfile
  * @brief A profile is a basic set of information needed to construct a base.
+ * @details
  *
+ * There exist two kinds of profiles:
+ * - @ref fProfile::fBaseProfile_c "fBaseProfile_c": A basic profile that includes a constructor function
+ * and a value for execution/drawing priority. All @ref fBase_c::GROUP_TYPE_e "non-actor bases" utilize this
+ * profile type.
+ * - @ref fProfile::fActorProfile_c "fActorProfile_c": A specialized profile dedicated to
+ * @ref fBase_c::GROUP_TYPE_e::ACTOR "actor bases", featuring additional properties.
+ *
+ * The game maintains a @ref fProfile::sProfileList "list" of all profiles for base construction purposes.
+ *
+ * ## Profile Names
+ * Each profile has an @ref fProfile::PROFILE_NAME_e "associated name", which can be used to determine a
+ * base's profile and also acts as an index into the profile list. A list of all profile names in string
+ * form is also available, although unused.
+ *
+ * A @ref ProfileName "typedef" for profile names is provided to enhance code readability.
+ *
+ * ## Creating Profiles
+ * Use the following macros to create a profile:
+ * - Use ::DEFAULT_BASE_PROFILE (or ::DEFAULT_ACTOR_PROFILE) to use the default priority values.
+ * - Use ::SPECIAL_BASE_PROFILE (or ::SPECIAL_ACTOR_PROFILE) if custom priority values are required.
+ *
+ * Addition of the created profile and its name to the respective lists requires manual intervention.
+ *
+ * ## Unused Content
+ * A profile name in string format can be obtained by calling ::dProf_getName. This has no practical
+ * use (and is most likely a debug leftover), but it has greatly helped the research for official game
+ * entity names.
+ *
+ * @todo Add a link to the profile name list when it gets decompiled.
  * @}
  */
