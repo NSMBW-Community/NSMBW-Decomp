@@ -101,12 +101,15 @@ public:
     static void mainLoop();
 
     /// @brief Searches for a base with the given ID.
+    /// @details [This calls fLiMgBa_c::searchNodeByID internally].
     static fBase_c *searchBaseByID(fBaseID_e id);
 
     /// @brief Searches for a base with a given profile name, optionally under a given parent.
+    /// @details [This calls fTrMgBa_c::searchNodeByProfName internally].
     static fBase_c *searchBaseByProfName(ProfileName profID, const fBase_c *parent);
 
     /// @brief Searches for a base with a given group type, optionally under a given parent.
+    /// @details [This calls fTrMgBa_c::searchNodeByGroupType internally].
     static fBase_c *searchBaseByGroupType(unsigned char groupType, const fBase_c *parent);
 
 private:

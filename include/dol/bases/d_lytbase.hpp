@@ -1,6 +1,6 @@
 #pragma once
 #include <dol/bases/d_2d.hpp>
-#include <dol/bases/d_lyttextbox.hpp>
+#include <dol/bases/d_lyttextBox.hpp>
 #include <lib/nw4r/lyt/lyt_pane.hpp>
 #include <lib/nw4r/lyt/lyt_window.hpp>
 #include <lib/nw4r/lyt/lyt_picture.hpp>

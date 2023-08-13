@@ -5,6 +5,7 @@
 #include <dol/framework/f_base.hpp>
 
 bool fTrMgPTMF_c::walkPack() {
+
     // Gracefully fail if the processing function isn't set
     if (mpProcFunc == 0) {
         return true;
@@ -26,7 +27,7 @@ const fTrNdBa_c *fTrMgBa_c::searchNodeByProfName(ProfileName prof, const fTrNdBa
     if (parent != nullptr) {
         root = parent->getTreeNext();
     } else {
-        root = (fTrNdBa_c *) this->mpRootNode;
+        root = (fTrNdBa_c *) mpRootNode;
     }
 
     const fTrNdBa_c *curr = root;
@@ -43,7 +44,7 @@ const fTrNdBa_c *fTrMgBa_c::searchNodeByGroupType(u8 groupType, const fTrNdBa_c 
     if (parent != nullptr) {
         root = parent->getTreeNext();
     } else {
-        root = (fTrNdBa_c *) this->mpRootNode;
+        root = (fTrNdBa_c *) mpRootNode;
     }
 
     const fTrNdBa_c *curr = root;
