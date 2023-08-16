@@ -50,11 +50,14 @@ for slice_file in slices:
             if slice.cc_flags:
                 ccflags = slice.cc_flags
 
-            Path(f'{BUILDDIR}/compiled/{unit_name}/{slice.slice_name}').parents[0].mkdir(parents=True, exist_ok=True)
+            slice_file_path = Path(f'{BUILDDIR}/compiled/{unit_name}/{slice.slice_name}')
+            slice_source_path = Path(f'{SRCDIR}/{slice.slice_src}')
+
+            slice_file_path.parents[0].mkdir(parents=True, exist_ok=True)
 
             cmd = [] if sys.platform == 'win32' else ['wine']
-            cmd.extend([CC, '-c', *ccflags, f'{SRCDIR}/{slice.slice_src}'])
-            cmd.extend(['-o', f'{BUILDDIR}/compiled/{unit_name}/{slice.slice_name}'])
+            cmd.extend([CC, '-c', *ccflags, slice_source_path])
+            cmd.extend(['-o', slice_file_path])
             cmd.extend(['-I-', '-i', f'{INCDIR}'])
             print_cmd(*cmd)
             out = subprocess.run(cmd)
@@ -82,7 +85,6 @@ for slice_file in slices:
         if slice.slice_src:
             compiled_path = Path(f'{BUILDDIR}/compiled/{slice_name_stem}/{slice.slice_name}')
             sliced_path = Path(f'{BUILDDIR}/sliced/{slice_name_stem}/{slice.slice_name}')
-            patched_path = Path(f'{BUILDDIR}/compiled/{slice_name_stem}/{slice.slice_name}.patched')
             patch_elf(compiled_path, sliced_path, compiled_path)
 
     # Step 4: Link object files

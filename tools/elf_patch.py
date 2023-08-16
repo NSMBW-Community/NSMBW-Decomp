@@ -10,7 +10,7 @@ sys.path.append('tools')
 
 from color_term import *
 from project_settings import *
-from elffile import ElfFile, ElfSymtab, ElfSymbol, ElfRelaSec
+from elffile import ElfFile, ElfSection, ElfSymtab, ElfRelaSec
 
 class ElfPatcher:
     def __init__(self, elf_file: ElfFile, orig_elf_file: ElfFile = None):
@@ -18,69 +18,28 @@ class ElfPatcher:
         self.orig_elf_file = orig_elf_file
         self.elf_symtab: ElfSymtab = elf_file.get_section('.symtab')
         self.orig_elf_symtab: ElfSymtab = orig_elf_file.get_section('.symtab')
+
+    def remove_relocs_within(self, section: ElfSection, start_offs: int, end_offs: int):
+        rela_sec: ElfRelaSec = self.elf_file.get_section(f'.rela{section.name}')
+        rela_sec.relocs = [x for x in rela_sec.relocs if x.r_offset < start_offs or x.r_offset >= end_offs]
     
-    def shift_section_fixup(self, section_name: str, start_offs: int, shift_amount: int):
-        sec_index = self.elf_file.get_section_index(section_name)
+    def shift_relocs_after(self, section: ElfSection, start_offs: int, shift_amount: int):
+        sec_index = self.elf_file.get_section_index(section.name)
 
         # Shift symbols
-        syms_to_remove = []
         for sym in self.elf_symtab.syms:
-            if sym.st_shndx == sec_index:
-                if sym.st_value > start_offs:
-                    if shift_amount < 0 and sym.st_value < start_offs - shift_amount:
-                        syms_to_remove.append(sym)
-                    else:
-                        sym.st_value += shift_amount
-        for sym in syms_to_remove:
-            print(f'Removing symbol {sym} from {section_name}...')
-            self.elf_symtab.remove_symbol(sym)
-            # TODO: Remove from .mwcats and .comment
-        
+            if sym.st_shndx == sec_index and sym.st_value > start_offs:
+                sym.st_value += shift_amount
+
         # Shift relocations
-        rela_sec: ElfRelaSec = self.elf_file.get_section(f'.rela{section_name}')
+        rela_sec: ElfRelaSec = self.elf_file.get_section(f'.rela{section.name}')
         if not rela_sec:
             return
 
-        relocs_to_remove = []
         for rela in rela_sec.relocs:
             if rela.r_offset >= start_offs:
-                if shift_amount < 0 and rela.r_offset < start_offs - shift_amount:
-                    relocs_to_remove.append(rela)
-                else:
-                    rela.r_offset += shift_amount
+                rela.r_offset += shift_amount
 
-    
-    def remove_sym(self, sym_name: ElfSymbol):
-        sym = self.elf_symtab.get_symbols(sym_name)
-        if not sym:
-            print_err(f'Symbol {sym_name} not in ELF to be patched!')
-            return
-        sym = sym[0]
-        
-        alignment = self.elf_file.sections[sym.st_shndx].header.sh_addralign
-        true_size = ceil(sym.st_size / alignment) * alignment
-        
-        # Patch code data
-        sec = self.elf_file.sections[sym.st_shndx]
-        sec.data = sec.data[:sym.st_value] + sec.data[sym.st_value + true_size:]
-        
-        # Remove symbol
-        self.elf_symtab.remove_symbol(sym)
-
-        # Find relocations referencing this symbol
-        for rela_sec in self.elf_file.sections:
-            if type(rela_sec) != ElfRelaSec:
-                continue
-
-            relocs_to_remove = []
-            for rela in rela_sec.relocs:
-                if rela.sym == sym:
-                    relocs_to_remove.append(rela)
-            rela_sec.relocs = [x for x in rela_sec.relocs if x not in relocs_to_remove]
-        
-        self.shift_section_fixup(sec.name, sym.st_value, -true_size)
-        
-        # TODO: Remove from .mwcats and .comment
 
     def replace_with_original(self, sym_name: str):
         print(f'Patching {sym_name}...')
@@ -103,16 +62,17 @@ class ElfPatcher:
 
         old_sec = self.elf_file.sections[sym.st_shndx]
         new_sec = self.orig_elf_file.sections[orig_sym.st_shndx]
-        new_code = new_sec.data[orig_sym.st_value:orig_sym.st_value + orig_sym.st_size]
 
         alignment = self.elf_file.sections[sym.st_shndx].header.sh_addralign
         true_old_size = ceil(sym.st_size / alignment) * alignment
         true_new_size = ceil(orig_sym.st_size / alignment) * alignment
 
+        new_code = new_sec.data[orig_sym.st_value:orig_sym.st_value + true_new_size]
+
         # Patch code data
         self.elf_file.sections[sym.st_shndx].data = \
             old_sec.data[:sym.st_value] + \
-            new_code + b'\x00' * (true_new_size - orig_sym.st_size) + \
+            new_code + \
             old_sec.data[sym.st_value + true_old_size:]
         
         # Patch symbol
@@ -129,9 +89,12 @@ class ElfPatcher:
                     mwcats_sec.data[:sym_size_offs] + \
                     struct.pack('>H', orig_sym.st_size) + \
                     mwcats_sec.data[sym_size_offs + 2:]
-
+                
+        # Remove obsolete relocations within function
+        self.remove_relocs_within(old_sec, sym.st_value, sym.st_value + true_old_size)
         
-        self.shift_section_fixup(old_sec.name, sym.st_value, true_new_size - true_old_size)
+        # Shift relocations after function
+        self.shift_relocs_after(old_sec, sym.st_value, true_new_size - true_old_size)
 
 def patch_elf(nm_file: Path, corr_file: Path, out_file: Path):
     elf_file = ElfFile.read(open(nm_file, 'rb').read())
@@ -149,9 +112,7 @@ def patch_elf(nm_file: Path, corr_file: Path, out_file: Path):
     for cmd in cmds:
         cmd_name, sym_name = re.match(r'(\w+)\((\w+)\)', cmd).groups()
 
-        if cmd_name == 'remove':
-            elf_patcher.remove_sym(sym_name)
-        elif cmd_name == 'replace':
+        if cmd_name == 'replace':
             elf_patcher.replace_with_original(sym_name)
         else:
             print_err(f'Unknown command {cmd_name}')
