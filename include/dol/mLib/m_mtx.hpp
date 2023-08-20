@@ -5,7 +5,7 @@
 #include <lib/rvl/mtx/mtx.h>
 
 /// @brief A 3x4 matrix.
-/// @details [Used by game-specific code].
+/// @ingroup mlib
 class mMtx_c {
 public:
     /// @brief Constructs an empty matrix.

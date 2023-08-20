@@ -3,6 +3,7 @@
 
 /// @brief Fader management class.
 /// @details This ensures that only one fader is employed at once.
+/// @ingroup mlib
 class mFader_c {
 public:
     static void draw(); ///< Draws the current fader.

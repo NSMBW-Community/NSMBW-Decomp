@@ -3,6 +3,7 @@
 #include <dol/framework/f_profile.hpp>
 #include <dol/sLib/s_Phase.hpp>
 
+/// @ingroup bases
 class dScene_c : public dBase_c {
 public:
     dScene_c();

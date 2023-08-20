@@ -6,6 +6,9 @@
 extern "C" {
 #endif
 
+/// @addtogroup mtx
+/// @{
+
 typedef float Mtx[3][4]; ///< A 3x4 matrix.
 typedef float Mtx44[4][4]; ///< A 4x4 matrix.
 
@@ -16,6 +19,8 @@ void PSMTXTrans(Mtx *mtx, float x, float y, float z); ///< Sets a translation ma
 void PSMTXScale(Mtx *mtx, float x, float y, float z); ///< Sets a scaling matrix with the given components.
 
 void C_MTXOrtho(Mtx44 *, float, float, float, float, float, float);
+
+/// @}
 
 #ifdef __cplusplus
 }

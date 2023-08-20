@@ -5,6 +5,7 @@
 
 /// @brief A fader that animates a Mario texture in/out.
 /// @details Seen when entering a regular stage, for example.
+/// @ingroup bases
 class dWipeMario_c : public mFaderBase_c {
 public:
 

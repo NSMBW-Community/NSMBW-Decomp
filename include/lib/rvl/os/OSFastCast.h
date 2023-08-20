@@ -6,6 +6,9 @@
 extern "C" {
 #endif
 
+/// @addtogroup os
+/// @{
+
 // The GQRs used for casting
 #define OS_FASTCAST_U8 2
 #define OS_FASTCAST_U16 3
@@ -20,6 +23,8 @@ inline float OSu16tof32(register u16* in) {
     asm { psq_l r, 0(in), 1, OS_FASTCAST_U16 };
     return r;
 }
+
+/// @}
 
 #ifdef __cplusplus
 }

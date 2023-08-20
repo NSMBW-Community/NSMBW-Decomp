@@ -6,6 +6,9 @@
 extern "C" {
 #endif
 
+/// @addtogroup gx
+/// @{
+
 /// @brief A 32-bit RGBA color.
 typedef struct _GXColor {
     union {
@@ -462,6 +465,8 @@ static inline void GXTexCoord2f32(float x, float y) {
     WGPIPE.f = x;
     WGPIPE.f = y;
 }
+
+/// @}
 
 #ifdef __cplusplus
 }

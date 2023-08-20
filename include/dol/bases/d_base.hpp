@@ -5,6 +5,7 @@
 
 /// @brief An extension of fBase_c with base kind and name strings.
 /// @details All bases should inherit from this class, not from fBase_c.
+/// @ingroup bases
 class dBase_c : public fBase_c, public cOwnerSetMg_c {
 public:
 

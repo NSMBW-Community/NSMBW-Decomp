@@ -3,6 +3,7 @@
 
 /// @brief A class that handles state execution and transition.
 /// @details [Presumably, sStateMethod_c actually means "methods for state interaction", or something like that].
+/// @ingroup state
 class sStateMethod_c {
 public:
     /**

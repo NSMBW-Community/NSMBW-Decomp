@@ -2,8 +2,9 @@
 #include <dol/bases/d_base.hpp>
 #include <dol/bases/d_lytbase.hpp>
 
-/// @brief A base that displays the controller information screen.
+/// @brief Displays the controller information screen.
 /// @details This is the screen that reads "Hold the Wii Remote sideways".
+/// @ingroup bases profileNP
 class dControllerInformation_c : public dBase_c {
 public:
 

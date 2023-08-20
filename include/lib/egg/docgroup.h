@@ -5,3 +5,7 @@
 /// @defgroup egg EGG
 /// @brief A middleware library providing higher-level utilities on top of the @ref rvl "Revolution SDK".
 /// @details EGG is written in C++ and is not available to third-party developers.
+
+/// @defgroup eggcore Core
+/// @ingroup egg
+/// @brief A set of core system management utilities.

@@ -2,6 +2,7 @@
 #include <types.h>
 
 /// @brief A tree node. See cTreeMg_c.
+/// @ingroup clib
 /// @details The tree is represented as a doubly-linked LCRS tree.
 class cTreeNd_c {
 public:
@@ -32,6 +33,7 @@ protected:
 };
 
 /// @brief A tree container. See cTreeNd_c.
+/// @ingroup clib
 class cTreeMg_c {
 public:
     /// @brief Constructs a new tree container.

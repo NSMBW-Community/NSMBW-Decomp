@@ -3,6 +3,7 @@
 /// @file
 
 /// @brief C Math library.
+/// @ingroup clib
 namespace cM {
 
     // Conversion utilities

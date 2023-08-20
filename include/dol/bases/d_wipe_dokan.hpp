@@ -7,6 +7,7 @@
 /// @details Seen when entering a cloud area, for example.
 /// [This transition was used for the pipe transition earlier in development,
 /// which is why this class is called "dWipeDokan_c" (Dokan means "pipe")].
+/// @ingroup bases
 class dWipeDokan_c : public mFaderBase_c {
 public:
 

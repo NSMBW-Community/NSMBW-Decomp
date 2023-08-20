@@ -4,7 +4,7 @@
 #include <dol/mLib/m_angle.hpp>
 
 /// @brief A two-dimensional floating point vector.
-/// @details [Used by game-specific code].
+/// @ingroup mlib
 /// @todo Add EGG::vector2f operators.
 class mVec2_c {
 public:
@@ -83,7 +83,7 @@ public:
 };
 
 /// @brief A three-dimensional floating point vector.
-/// @details [Used by game-specific code].
+/// @ingroup mlib
 /// @todo Add EGG::vector3f operators.
 class mVec3_c {
 public:

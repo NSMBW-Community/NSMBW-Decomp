@@ -2,6 +2,7 @@
 #include <dol/mLib/m_color.hpp>
 
 /// @brief Base fader implementation.
+/// @ingroup mlib
 class mFaderBase_c {
 public:
 

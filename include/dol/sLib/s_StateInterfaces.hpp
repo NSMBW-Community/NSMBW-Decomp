@@ -1,5 +1,8 @@
 #pragma once
 
+/// @addtogroup state
+/// @{
+
 /// @brief The interface for state IDs.
 /// @details A state ID is made up of a name string and a unique number, where 0 denotes a null state.
 /// Null states do not have any corresponding behaviour. They can be used, for example,
@@ -61,3 +64,5 @@ public:
     virtual sStateIDIf_c *getStateID() const = 0; ///< @pure Gets the current state ID.
     virtual sStateIDIf_c *getOldStateID() const = 0; ///< @pure Gets the previous state ID.
 };
+
+/// @}

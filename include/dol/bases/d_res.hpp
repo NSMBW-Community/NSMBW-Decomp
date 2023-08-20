@@ -8,6 +8,7 @@
 
 /// @brief A utility class for loading resource files (files contained within a .arc file).
 /// @details dRes_c is a holder for multiple archive (.arc) files.
+/// @ingroup bases
 class dRes_c {
 public:
 

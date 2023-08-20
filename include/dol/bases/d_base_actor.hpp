@@ -10,6 +10,7 @@
 /// @brief Basic actor class, supporting positioning, rotation and movement/acceleration.
 /// @details All actors inheriting from this class use fProfile::fActorProfile_c for the profile
 /// (instead of fProfile::fBaseProfile_c) and are children to the current scene actor.
+/// @ingroup bases
 class dBaseActor_c : public dBase_c {
 public:
 

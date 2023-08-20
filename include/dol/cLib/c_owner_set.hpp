@@ -3,6 +3,7 @@
 /// @file
 
 /// @brief A set node with a pointer to the owning container. See cOwnerSetMg_c.
+/// @ingroup clib
 /// @unofficial
 class cOwnerSetNd_c {
 public:
@@ -18,6 +19,7 @@ private:
 
 /// @brief A set container. See cOwnerSetNd_c.
 /// @details The set is implemented as a singly-linked list.
+/// @ingroup clib
 /// @unofficial
 class cOwnerSetMg_c {
 public:
@@ -51,5 +53,6 @@ private:
 };
 
 /// @brief [Looks like a badly stripped assert].
+/// @ingroup clib
 /// @unofficial
 void UNK_80161880();

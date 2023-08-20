@@ -1,6 +1,7 @@
 #pragma once
 
 /// @brief A phase is a list of methods to be called in order.
+/// @ingroup slib dol
 class sPhase_c {
 public:
     /// @brief Return value of a phase method and ::callMethod.

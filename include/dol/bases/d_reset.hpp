@@ -3,6 +3,7 @@
 #include <lib/egg/fader/eggColorFader.hpp>
 #include <types.h>
 
+/// @ingroup bases
 namespace dReset {
 
     /// @brief System reset management class.
