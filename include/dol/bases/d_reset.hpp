@@ -3,6 +3,7 @@
 #include <lib/egg/fader/eggColorFader.hpp>
 #include <types.h>
 
+/// @ingroup bases
 namespace dReset {
 
     /// @brief System reset management class.
@@ -16,14 +17,14 @@ namespace dReset {
             HBM_WAIT, ///< The home menu is open.
             DISK_WAIT, ///< The game cannot read the DVD and cannot proceed.
             FATAL_ERROR, ///< The game cannot read the NAND and cannot proceed.
-            SAFETY_WAIT, ///< The game is about to execute the hard reset procedure indicated in ::execMode.
-            NO_CHANGE ///< The game's running state hasn't changed [value used in ::modeInit].
+            SAFETY_WAIT, ///< The game is about to execute the hard reset procedure indicated in ::mExecMode.
+            NO_CHANGE ///< The game's running state hasn't changed [value used in ::mModeInit].
         };
 
         /// @brief The possible hard reset procedures.
         enum Exec_e {
-            RESTART_GAME, ///< Reboots the game's DOL. [Unused].
-            REBOOT_SYSTEM, ///< Reboots the entire console. [Unused].
+            RESTART_GAME, ///< @unused Reboots the game's DOL.
+            REBOOT_SYSTEM, ///< @unused Reboots the entire console.
             RETURN_WII_MENU, ///< Returns to the Wii Menu.
             RETURN_DATA_MANAGER, ///< Returns to the Wii Menu's Data Manager.
             POWER_OFF, ///< Turns off the console.

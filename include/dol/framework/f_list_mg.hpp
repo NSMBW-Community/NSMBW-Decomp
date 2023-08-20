@@ -7,22 +7,25 @@
 
 class fBase_c;
 
-/// @brief A list of fLiNdBa_c nodes.
+/// @brief A base list, made of fLiNdBa_c nodes.
+/// @ingroup framework dol
+/// @note The class name stands for "List Manager (with) Base".
 class fLiMgBa_c : public cListMg_c {
 public:
+
     /**
-     * @brief Counts the number of nodes of a given profile in this list.
+     * @brief Counts the number of bases using the given profile name.
      *
      * @param profName The profile name.
-     * @return How many nodes were found.
+     * @return How many bases were found.
      */
     int countNodeByProfName(ProfileName profName) const;
 
     /**
-     * @brief Finds a node in this list with the given ID.
+     * @brief Searches for a base with the given ID.
      *
      * @param id The ID to search for.
-     * @return The found node, or @p nullptr if none were found.
+     * @return The node belonging to such base, or @p nullptr.
      */
     const fLiNdBa_c *searchNodeByID(fBaseID_e id) const;
 

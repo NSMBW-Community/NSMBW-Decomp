@@ -2,7 +2,8 @@
 #include <types.h>
 
 /// @brief A doubly-linked list node. See cListMg_c.
-/// @note Unofficial name.
+/// @ingroup clib
+/// @unofficial
 class cListNd_c {
 public:
     /// @brief Constructs a new list node.
@@ -19,7 +20,8 @@ protected:
 };
 
 /// @brief A doubly-linked list container. See cListNd_c.
-/// @note Unofficial name.
+/// @ingroup clib
+/// @unofficial
 class cListMg_c {
 public:
     /// @brief Constructs a new list container.

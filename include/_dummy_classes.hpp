@@ -34,10 +34,10 @@ class WindowFrameSize;
 
 namespace ut {
     class Font;
-    
+
     template <class T, int N>
     class LinkList {
-        
+
     };
 
     template <typename T>

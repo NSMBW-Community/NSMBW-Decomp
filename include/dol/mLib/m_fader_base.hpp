@@ -2,6 +2,7 @@
 #include <dol/mLib/m_color.hpp>
 
 /// @brief Base fader implementation.
+/// @ingroup mlib
 class mFaderBase_c {
 public:
 
@@ -15,7 +16,7 @@ public:
 
     /// @brief Some flags related to the fader.
     /// @todo Figure out what these do.
-    /// @note Unofficial name.
+    /// @unofficial
     enum FLAG_e {
         FADE_IN_COMPLETE = 1,
         FADE_OUT_COMPLETE = 2
@@ -28,10 +29,7 @@ public:
 
     virtual ~mFaderBase_c(); ///< Destroys the fader.
 
-    /// @brief Sets the fader's status.
-    /// @details The implementation is left to the derived classes.
-    virtual void setStatus(EStatus status) = 0;
-
+    virtual void setStatus(EStatus status) = 0; ///< @pure Sets the fader's status.
     virtual EStatus getStatus() const; ///< Gets the fader's status.
 
     /// @brief Initiates a fade in from pure blacked-out.
@@ -48,9 +46,7 @@ public:
     /// @return If the operation was successful.
     virtual int calc();
 
-    /// @brief Draws the fader.
-    /// @details The implementation is left to the derived classes.
-    virtual void draw() = 0;
+    virtual void draw() = 0; ///< @pure Draws the fader.
 
     void setFrame(u16 duration); ///< Sets the duration of the fade. Duration must not be zero.
     void setColor(const mColor &color); ///< Sets the fader's color. Alpha is not modified.

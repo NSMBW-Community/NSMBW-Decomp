@@ -93,6 +93,6 @@ void mColorFader_c::draw() {
     GXPosition3f32(h, -VI_VIRTUAL_HALF_HEIGHT, 0);
     GXPosition3f32(h, VI_VIRTUAL_HALF_HEIGHT, 0);
     GXPosition3f32(-h, VI_VIRTUAL_HALF_HEIGHT, 0);
-    
+
     GXEnd();
 }

@@ -21,7 +21,7 @@ bool dWipeKuppa_c::createLayout() {
         "wipeKuppa_05_inWindow.brlan",
         "wipeKuppa_05_outWindow.brlan"
     };
-    
+
     static const int groupIdxs[] = {0, 1};
     static const char *groupNames[] = {
         "A00_inWindow",
@@ -31,7 +31,7 @@ bool dWipeKuppa_c::createLayout() {
     static const char *windowNames[] = {
         "W_kuppa_00"
     };
-    
+
     if (mIsCreated) {
         return true;
     }

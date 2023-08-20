@@ -79,5 +79,5 @@ void fManager_c::mainLoop() {
         m_connectManage.walkPack();
     }
 
-    m_nowLoopProc = NOTHING;
+    m_nowLoopProc = NONE;
 }

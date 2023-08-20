@@ -3,11 +3,12 @@
 
 /// @brief A class that handles state execution and transition.
 /// @details [Presumably, sStateMethod_c actually means "methods for state interaction", or something like that].
+/// @ingroup state
 class sStateMethod_c {
 public:
     /**
      * @brief Constructs a new sStateMethod_c instance.
-     * 
+     *
      * @param checker The state checker to use.
      * @param factory The state factory to use.
      * @param initialState The initial state ID of this instance.
@@ -25,13 +26,13 @@ public:
     virtual const sStateIDIf_c *getStateID() const { return mpStateID; } ///< @copydoc sStateMgrIf_c::getStateID
     virtual const sStateIDIf_c *getOldStateID() const { return mpOldStateID; } ///< @copydoc sStateMgrIf_c::getOldStateID
 
-    virtual int initializeStateLocalMethod() = 0; ///< Performs the actual state initialization.
-    virtual void executeStateLocalMethod() = 0; ///< Performs the actual state execution.
-    virtual void finalizeStateLocalMethod() = 0; ///< Performs the actual state termination.
-    virtual void changeStateLocalMethod(const sStateIDIf_c &newStateID) = 0; ///< Performs the actual state transition.
+    virtual int initializeStateLocalMethod() = 0; ///< @pure Performs the actual state initialization.
+    virtual void executeStateLocalMethod() = 0; ///< @pure Performs the actual state execution.
+    virtual void finalizeStateLocalMethod() = 0; ///< @pure Performs the actual state termination.
+    virtual void changeStateLocalMethod(const sStateIDIf_c &newStateID) = 0; ///< @pure Performs the actual state transition.
 
 protected:
-    sStateIDChkIf_c &mpStateChk; ///< The state checker to use. [Unused].
+    sStateIDChkIf_c &mpStateChk; ///< @unused The state checker to use.
     sStateFctIf_c &mpStateFct; ///< The state factory which produces the state holder.
 
     bool mInitFinalizeLock; ///< A lock to ensure ::initializeStateMethod and ::finalizeStateMethod are not called recursively.
@@ -43,6 +44,6 @@ protected:
     const sStateIDIf_c *mpNewStateID; ///< The next state ID.
     const sStateIDIf_c *mpOldStateID; ///< The previous state ID.
     const sStateIDIf_c *mpStateID; ///< The current state ID.
-    
+
     sStateIf_c *mpState; ///< The current state holder.
 };

@@ -18,7 +18,7 @@ public:
     virtual void SetVtxColorElement(unsigned long, unsigned char);
 
     virtual void Append(const TexMap &);
-    
+
 private:
     static int typeInfo;
 };

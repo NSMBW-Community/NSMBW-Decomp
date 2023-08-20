@@ -5,6 +5,7 @@
 #define MAX_NUM_RES 300 ///< The maximum number of resources that can be loaded at once.
 
 /// @brief A singleton class that manages loading resource files (files contained within a .arc file).
+/// @ingroup bases
 class dResMng_c {
 private:
     /// @brief A callback class for processing resources that handles loading g3d data.
@@ -20,17 +21,17 @@ public:
 
     /**
      * @brief Registers multiple archives to be loaded.
-     * 
+     *
      * @param path The path to the folder containing the archives.
      * @param names An array of archive names.
-     * @param count The number of archives in ::names.
+     * @param count The number of archives in the array.
      * @param heap The heap to load the archives into.
      */
     void setRes(const char *path, char **names, int count, EGG::Heap *heap);
 
     /**
      * @brief Registers a single archive to be loaded.
-     * 
+     *
      * @param path The path to the folder containing the archive.
      * @param name The name of the archive.
      * @param heap The heap to load the archive into.

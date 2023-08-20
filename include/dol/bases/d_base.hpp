@@ -5,6 +5,7 @@
 
 /// @brief An extension of fBase_c with base kind and name strings.
 /// @details All bases should inherit from this class, not from fBase_c.
+/// @ingroup bases
 class dBase_c : public fBase_c, public cOwnerSetMg_c {
 public:
 
@@ -44,9 +45,9 @@ public:
     static dBase_c *createRoot(ProfileName profName, unsigned long param, u8 groupType);
 
 private:
-    const char* mpKindString; ///< A string describing the kind of this base. [Unused].
-    const char* mpNameString; ///< A string representing the name of the profile this base belongs to. [Unused].
+    const char* mpKindString; ///< @unused A string describing the kind of this base.
+    const char* mpNameString; ///< @unused A string representing the name of the profile this base belongs to.
 
-    static int loadAsyncCallback(); ///< [Unused, does nothing]. @note Unofficial name.
-    static void unloadCallback(); ///< [Unused, does nothing]. @note Unofficial name.
+    static int loadAsyncCallback(); ///< @unused [Does nothing]. @unofficial
+    static void unloadCallback(); ///< @unused [Does nothing]. @unofficial
 };

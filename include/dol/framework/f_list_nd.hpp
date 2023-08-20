@@ -4,8 +4,10 @@
 
 class fBase_c;
 
-/// @brief A list node with an owner reference.
-/// @note Unofficial name.
+/// @brief A base list node.
+/// @details Each node is owned by a @ref fBase_c "base" and represents it in the @ref fLiMgBa_c "list".
+/// @ingroup framework dol
+/// @unofficial
 class fLiNdBa_c : public cListNd_c {
 public:
 
@@ -21,8 +23,8 @@ public:
         return (fLiNdBa_c *) cListNd_c::getNext();
     }
 
-    /// @brief Removes this node from the owner's fBase_c::mUnusedList.
-    /// @note Unofficial name. Might not actually belong to this class (xor trick on hash).
+    /// @brief Removes this node from the owner's @ref fBase_c::mUnusedList mUnusedList.
+    /// @unofficial Might not actually belong to this class (xor trick on hash).
     void removeSelf();
 
     fBase_c *mpOwner; ///< The owner of this node.

@@ -4,6 +4,7 @@ namespace EGG {
 
     /// @brief Interface for a fader.
     /// @details This seems to be pretty much a copy-paste of mFaderBase_c (or vice-versa)
+    /// @ingroup eggcore
     class Fader {
     public:
 

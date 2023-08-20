@@ -10,7 +10,7 @@ mWipeFader_c::mWipeFader_c(mColor col, mFaderBase_c::EStatus status) :
     mTexWidth = 0;
     mTexHeight = 0;
     if (SCGetAspectRatio() == 1) {
-        // [Should just be VI_VIRTUAL_WIDTH_WIDE / VI_VIRTUAL_WIDTH_STD, 
+        // [Should just be VI_VIRTUAL_WIDTH_WIDE / VI_VIRTUAL_WIDTH_STD,
         // but that way of calculating the constant doesn't work...]
         mAspectRatioFactor = 1.36842095f;
     } else {
@@ -64,13 +64,13 @@ void mWipeFader_c::calcMtx() {
 
     // Move to center, scale, move back
     PSMTXTrans(&mTexMtx, 0.5f, 0.5f, 0.0f);
-    
+
     Mtx scaleMtx;
     float scrW = mAspectRatioFactor * VI_VIRTUAL_WIDTH_STD;
     float scrH = VI_VIRTUAL_HEIGHT;
     PSMTXScale(&scaleMtx, scale, scale * scrH / scrW, 0.0f);
     PSMTXConcat(&mTexMtx, &scaleMtx, &mTexMtx);
-    
+
     Mtx transMtx;
     PSMTXTrans(&transMtx, -0.5f, -0.5f, 0.0f);
     PSMTXConcat(&mTexMtx, &transMtx, &mTexMtx);
@@ -163,7 +163,7 @@ void mWipeFader_c::draw() {
         GXSetAlphaCompare(GX_GREATER, 0, GX_AOP_OR, GX_GREATER, 0);
         GXSetZMode(0, GX_NEVER, 0);
         GXSetCullMode(2);
-        
+
         GXBegin(GX_QUADS, GX_VTXFMT0, 4);
 
         GXPosition3f32(-width, -VI_VIRTUAL_HALF_HEIGHT, 0);

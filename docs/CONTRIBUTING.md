@@ -19,7 +19,7 @@
 - Use forward-declared types when possible.
 - At the top of every header place:
 
-    ```c++
+    ```cpp
     #pragma once
     ```
 
@@ -27,7 +27,7 @@
 
 - For includes use:
 
-    ```c++
+    ```cpp
     #include <...>
     ```
 
@@ -54,8 +54,9 @@
 ### Enumerations
 
 - Unless a cracked symbol says otherwise, the following conventions apply:
-  - The enumeration tag should be all uppercase with the suffix `_e`
-  - The identifiers should be all uppercase and not be prefixed with the tag
+  - The enumeration tag should be all uppercase with the suffix `_e`.
+  - Enumeration identifiers should be all uppercase.
+  - Global enum identifiers must be prefixed, while for class enum identifiers it's optional (do it, for example, if it increases readability or prevents confusion).
 
 ### Comments
 
@@ -69,14 +70,14 @@
 - When referencing a class member, do **not** use `this->` unless required for compilation.
 - Class members must be placed in the following order:
   - Nested Classes/Structures/Enumerations
-  - Functions
+  - Functions (place static ones last)
   - Variables (place static ones last)
   - Friends
 
 - Functions for classes must be placed in the following order:
   - Constructor
-  - Destructor
-  - Operators
+  - Destructor (unless virtual)
+  - Operators (unless virtual)
   - Virtual Functions
   - Member Functions (place static ones last)
 
@@ -85,7 +86,7 @@
   - Protected
   - Private
 
-- If the virtual functions do not follow the ordering conventions, then those rules can be ignored.
+- If the virtual functions do not follow the ordering conventions, the above rules can be ignored.
 
 ## Documentation
 
@@ -118,6 +119,7 @@ Doxygen is being used for generating documentation:
   virtual void postCreate(MAIN_STATE_e state); ///< Code to be executed after ::create.
   ```
 
-- If no official symbol has been cracked for a class or a function, report this information using the `@note` command. For unknown class names, adding the note to each member function is not necessary.
+- If no official symbol has been cracked for a class or a function, report this information using the `@unofficial` command. For unknown class names, adding the note to each member function is not necessary.
+- If something in the code is confirmed to be unused, report this information using the `@unused` command (which replaces `@brief`).
 - Do **not** document inline getters/setters unless their logic is complex, document the corresponding variables instead.
 - Documenting not yet decompiled code is not necessary.

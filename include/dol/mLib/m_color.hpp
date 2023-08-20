@@ -2,7 +2,7 @@
 #include <lib/rvl/gx/GX.h>
 
 /// @brief A 32-bit RGBA color.
-/// @details Game-specific implementation.
+/// @ingroup mlib
 struct mColor : public GXColor {
 
     /// @brief Constructs an empty color (defaults to white).

@@ -11,6 +11,7 @@ class dSaveMng_c;
 /// @brief Save data header holder.
 /// @details The data stored here is temporary, as it is discarded unless the game is saved.
 /// Size must be 32-byte aligned.
+/// @ingroup bases
 class dMj2dHeader_c {
     public:
         dMj2dHeader_c(); ///< Constructs the holder.
@@ -18,27 +19,27 @@ class dMj2dHeader_c {
         void initialize(); ///< Initializes the header data.
 
         /// @brief Gets the Free Mode play count for the given world/level. See ::mFreeModePlayCount.
-        /// @note Unofficial name.
+        /// @unofficial
         u16 getFreeModePlayCount(int world, int level) const;
 
         /// @brief Sets the Free Mode play count for the given world/level. See ::mFreeModePlayCount.
-        /// @note Unofficial name.
+        /// @unofficial
         void setFreeModePlayCount(int world, int level, u16 count);
 
         /// @brief Gets the Coin Battle play count for the given world/level. See ::mCoinBattlePlayCount.
-        /// @note Unofficial name.
+        /// @unofficial
         u16 getCoinBattlePlayCount(int world, int level) const;
 
         /// @brief Sets the Coin Battle play count for the given world/level. See ::mCoinBattlePlayCount.
-        /// @note Unofficial name.
+        /// @unofficial
         void setCoinBattlePlayCount(int world, int level, u16 count);
 
         /// @brief Unlocks the given world in extra modes.
-        /// @note Unofficial name.
+        /// @unofficial
         void setMultiModeCompletion(int world);
 
         /// @brief Checks if the given world is unlocked in extra modes.
-        /// @note Unofficial name.
+        /// @unofficial
         bool getMultiModeCompletion(int world) const;
 
 private:
@@ -49,7 +50,7 @@ private:
         char mMagic[4]; ///< The savegame magic.
         u8 mVersion[2]; ///< The save data version and subversion. See ::SAVE_VERSION and ::SAVE_SUB_VERSION.
         u8 mLastSelectedFile; ///< The last selected save data slot.
-        u8 mUnknown7; ///< [Unused, most likely declared as padding].
+        u8 mUnknown7; ///< @unused [Most likely declared as padding].
 
         /// @brief The play count of each level in Free Mode.
         /// @details [Value is increased by 0x100 for every playthrough until 10000].
@@ -63,13 +64,13 @@ private:
         /// @details Playing a world in extra modes requires said world to be unlocked in at least
         /// one save slot. Value is a bitfield.
         u16 mExtraModesUnlockedWorlds;
-        u16 mUnknown69A; ///< [Unused, most likely declared as padding].
+        u16 mUnknown69A; ///< @unused [Most likely declared as padding].
 
         u32 mChecksum; ///< The CRC32 checksum of the above data (excluding ::mMagic).
 
         /// @brief The expected savegame magic.
         /// @details Value is @p SMNP for PAL games.
-        /// @note Unofficial name. Is this even part of the class?
+        /// @unofficial Is this even part of the class?
         static char sSaveMagic[4];
 
         friend class dSaveMng_c;
@@ -78,6 +79,7 @@ private:
 /// @brief Save slot data holder.
 /// @details The data stored here is temporary, as it is discarded unless the game is saved.
 /// Size must be 32-byte aligned.
+/// @ingroup bases
 class dMj2dGame_c {
 public:
 
@@ -112,15 +114,15 @@ public:
     };
 
     /// @brief The Toad House types at the start node of each world.
-    /// @details RESCUE values are used in houses that spawn after a successful Toad Rescue mission.
+    /// @details Values marked with R are used for houses that spawn after a successful Toad Rescue mission.
     enum START_KINOKO_KIND_e {
-        NONE,
-        YELLOW,
-        RED,
-        GREEN,
-        YELLOW_RESCUE,
-        RED_RESCUE,
-        GREEN_RESCUE
+        TOAD_HOUSE_NONE,
+        TOAD_HOUSE_YELLOW,
+        TOAD_HOUSE_RED,
+        TOAD_HOUSE_GREEN,
+        TOAD_HOUSE_YELLOW_R,
+        TOAD_HOUSE_RED_R,
+        TOAD_HOUSE_GREEN_R
     };
 
     /// @brief Constructs the holder.
@@ -131,21 +133,21 @@ public:
 
     void initialize(); ///< Initializes the slot data.
 
-    void setPlrID(int player, int character); ///< Sets @p player 's character. See ::PlayerCharacter.
-    int getPlrID(int player) const; ///< Gets @p player 's character. See ::PlayerCharacter.
+    void setPlrID(int player, int character); ///< Sets @p player 's character. See ::PLAYER_CHARACTER_e.
+    int getPlrID(int player) const; ///< Gets @p player 's character. See ::PLAYER_CHARACTER_e.
 
-    void setPlrMode(int player, u8 powerup); ///< Sets @p player 's powerup. See ::PlayerPowerup.
-    int getPlrMode(int player) const; ///< Gets @p player 's powerup. See ::PlayerPowerup.
+    void setPlrMode(int player, u8 powerup); ///< Sets @p player 's powerup. See ::PLAYER_POWERUP_e.
+    int getPlrMode(int player) const; ///< Gets @p player 's powerup. See ::PLAYER_POWERUP_e.
 
     void setRest(int player, u8 lives); ///< Sets @p player 's life count.
     int getRest(int player) const; ///< Gets @p player 's life count.
 
-    /// @brief Sets @p player 's createItem flag. See ::PlayerCreateItem.
-    /// @details Flags other than ::STAR_POWER are ignored.
+    /// @brief Sets @p player 's createItem flag. See ::PLAYER_CREATE_ITEM_e.
+    /// @details Flags other than ::CREATE_ITEM_STAR_POWER are ignored.
     void setCreateItem(int player, u8 flag);
 
-    /// @brief Gets @p player 's createItem flag. See ::PlayerCreateItem.
-    /// @details Flags other than ::STAR_POWER are ignored.
+    /// @brief Gets @p player 's createItem flag. See ::PLAYER_CREATE_ITEM_e.
+    /// @details Flags other than ::CREATE_ITEM_STAR_POWER are ignored.
     int getCreateItem(int player) const;
 
     void setCoin(int player, s8 coins); ///< Sets @p player 's coin count.
@@ -280,7 +282,7 @@ private:
     u8 mIbaraNow;
 
     u8 mSwitchOn; ///< The status of the worldmap switch.
-    u8 mUnknown8; ///< [Unused].
+    u8 mUnknown8; ///< @unused
 
     u8 mStockItemCount[POWERUP_COUNT]; ///< The inventory amount for each item.
 
@@ -290,14 +292,14 @@ private:
     u8 mPlayerContinue[PLAYER_COUNT]; ///< The continue count for each player.
     s8 mPlayerCoin[PLAYER_COUNT]; ///< The coin count for each player.
     u8 mPlayerLife[PLAYER_COUNT]; ///< The life count for each player.
-    u8 mPlayerCreateItem[PLAYER_COUNT]; ///< The Star Power flag for each player. See ::PlayerCreateItem.
-    u8 mPlayerCharacter[PLAYER_COUNT]; ///< The character for each player. See ::PlayerCharacter.
-    u8 mPlayerPowerup[PLAYER_COUNT]; ///< The powerup for each player. See ::PlayerPowerup.
+    u8 mPlayerCreateItem[PLAYER_COUNT]; ///< The Star Power flag for each player. See ::PLAYER_CREATE_ITEM_e.
+    u8 mPlayerCharacter[PLAYER_COUNT]; ///< The character for each player. See ::PLAYER_CHARACTER_e.
+    u8 mPlayerPowerup[PLAYER_COUNT]; ///< The powerup for each player. See ::PLAYER_POWERUP_e.
 
     u8 mWorldCompletion[WORLD_COUNT]; ///< The completion flags for each world. See ::WORLD_COMPLETION_e.
     u8 mEnemyRevivalCount[WORLD_COUNT][AMBUSH_ENEMY_COUNT]; ///< The revival counter for each map enemy.
 
-    u16 mUnknown64; ///< [Unused].
+    u16 mUnknown64; ///< @unused
     u16 mStaffRollHighScore; ///< The staff credits high score.
     u32 mScore; ///< The regular score.
 
@@ -319,7 +321,7 @@ private:
     u32 mChecksum; ///< The CRC32 checksum of the above data.
 
     /// @brief The default character for each player.
-    /// @note Unofficial name. Should be part of the class in theory.
+    /// @unofficial Should be part of the class in theory.
     static const u32 sDefaultCharacters[4];
 
     friend class dSaveMng_c;

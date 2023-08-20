@@ -42,7 +42,7 @@ bool EGG::ColorFader::fadeIn() {
         mStatus = Fader::FADE_IN;
         mFrame = 0;
     }
-    
+
     return doFadeIn;
 }
 
@@ -52,7 +52,7 @@ bool EGG::ColorFader::fadeOut() {
         mStatus = Fader::FADE_OUT;
         mFrame = 0;
     }
-    
+
     return doFadeIn;
 }
 
@@ -91,18 +91,18 @@ int EGG::ColorFader::calc() {
     return result;
 }
 
-void EGG::ColorFader::draw() {    
+void EGG::ColorFader::draw() {
     if (mCurrColor.a == 0) {
         return;
     }
-    
+
     Mtx44 projMtx;
     C_MTXOrtho(&projMtx, mTop, mBottom, mLeft, mRight, 0, 1);
     GXSetProjection(&projMtx, 1);
 
     GXSetViewport(mLeft, mTop, getWidth(), getHeight(), 0, 1);
     GXSetScissor(mLeft, mTop, getWidth(), getHeight());
-    
+
     Mtx posMtx;
     PSMTXIdentity(&posMtx);
     GXLoadPosMtxImm(&posMtx, 0);
@@ -121,17 +121,17 @@ void EGG::ColorFader::draw() {
     GXSetNumTexGens(0);
     GXSetNumIndStages(0);
     __GXSetIndirectMask(0);
-    
+
     GXSetNumTevStages(1);
     GXSetTevOp(GX_TEVSTAGE0, 4);
     GXSetTevOrder(GX_TEVSTAGE0, GX_TEXCOORD_NULL, GX_TEXMAP_NULL, GX_COLOR0A0);
-    
+
     if (mCurrColor.a == 255) {
         GXSetBlendMode(GX_BM_NONE, GX_BL_ONE, GX_BL_ZERO, GX_LO_SET);
     } else {
         GXSetBlendMode(GX_BM_BLEND, GX_BL_SRCALPHA, GX_BL_INVSRCALPHA, GX_LO_SET);
     }
-    
+
     GXSetColorUpdate(1);
     GXSetAlphaUpdate(1);
     GXSetZMode(0, GX_NEVER, 0);

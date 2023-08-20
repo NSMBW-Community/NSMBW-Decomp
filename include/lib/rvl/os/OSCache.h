@@ -4,7 +4,12 @@
 extern "C" {
 #endif
 
+/// @addtogroup os
+/// @{
+
 void DCStoreRangeNoSync(void *start, size_t size);
+
+/// @}
 
 #ifdef __cplusplus
 }

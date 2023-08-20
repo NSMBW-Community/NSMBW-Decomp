@@ -20,4 +20,4 @@ __pycache__/
 .vscode/
 
 # Doxygen generated files
-doxygen
+/doxygen

@@ -8,6 +8,7 @@
 
 /// @brief A utility class for loading resource files (files contained within a .arc file).
 /// @details dRes_c is a holder for multiple archive (.arc) files.
+/// @ingroup bases
 class dRes_c {
 public:
 
@@ -16,11 +17,12 @@ public:
     class callback_c {
     public:
         /// @brief Initializes the callback with the resource name.
+        /// @pure
         virtual void init(const char *name) = 0;
 
         /**
          * @brief Executes the callback.
-         * 
+         * @pure
          * @param data The resource data.
          * @param folderSig The first 4 characters of the folder name.
          * @return The resource data.
@@ -29,7 +31,7 @@ public:
     };
 
     /// @brief A callback class for EGG::Archive::searchInside.
-    /// @note Unofficial name.
+    /// @unofficial
     class searchCallback_c {
     public:
         /// @brief Constructs a new searchCallback_c.
@@ -67,7 +69,7 @@ public:
 
         /**
          * @brief Sets information about the archive to be loaded.
-         * 
+         *
          * @param arcName The name of the archive.
          * @param containingFolder The path to the folder which the archive is in.
          * @param allocDirection The allocation direction. 1: top-down, anything else: bottom-up.
@@ -78,7 +80,7 @@ public:
 
         /**
          * @brief Attempts to load the archive into memory and load the resources with a callback.
-         * 
+         *
          * @param callback The callback for the resources.
          * @return A status code for the result of the operation. -1: error, 0: success, 1: not finished loading
          */
@@ -96,7 +98,7 @@ public:
 
         /**
          * @brief Executes a callback on each file and folder of the archive.
-         * 
+         *
          * @details If the callback is @p nullptr , the files will still be loaded and pointers to each file will be stored in ::mpFiles.
          * @param callback The callback for this resource, or @p nullptr .
          * @return Whether the resource was opened successfully.
@@ -120,7 +122,7 @@ public:
 
     /**
      * @brief Initializes the dRes_c.
-     * 
+     *
      * @param maxCount The number of archive holders to allocate.
      * @param callback The callback for after a archive has been loaded.
      * @return Whether the initialization was successful.
@@ -129,7 +131,7 @@ public:
 
     /**
      * @brief Registers an archive to be loaded next.
-     * 
+     *
      * @param resName The name of the archive to load.
      * @param filePath The path to the folder which the archive is in.
      * @param allocDir The allocation direction. 1: top-down, anything else: bottom-up.
@@ -147,7 +149,7 @@ public:
 
     /**
      * @brief Loads a resource.
-     * 
+     *
      * @param arcName The name of the archive which contains the resource.
      * @param resPath The path to the resource within the archive.
      * @return A pointer to the contents of the resource.
@@ -156,7 +158,7 @@ public:
 
     /**
      * @brief Loads a resource.
-     * 
+     *
      * @param arcName The name of the archive which contains the resource.
      * @param resPath The path to the resource within the archive.
      * @param size A pointer where the size of the resource will be written to.
@@ -168,7 +170,7 @@ public:
      * @brief Loads a resource which may optionally be compressed.
      * @details If the resource is not found, it tries to load "<resource name>.LZ".
      * Only .LZ compression is supported.
-     * 
+     *
      * @param arcName The name of the archive which contains the resource.
      * @param resPath The path to the resource within the archive.
      * @param size A pointer where the size of the resource will be written to.
@@ -180,7 +182,7 @@ public:
     /// @brief Loads a resource without logging a message if the resource is not found.
     /// @see ::getRes(const char*, const char*) const
     void *getResSilently(const char *arcName, const char *resPath) const;
-    
+
     /// @brief Loads a resource without logging a message if the resource is not found.
     /// @see ::getRes(const char*, const char*, unsigned long*) const
     void *getResSilently(const char *arcName, const char *resPath, unsigned long *size) const;
@@ -188,10 +190,10 @@ public:
     /// @brief Attempts to load the resources of an archive that has finished loading since the last call to this function. The callback is executed on all files and folders.
     /// @return Whether such an archive was found.
     bool syncAllRes();
-    
+
     /**
      * @brief Gets the info_c for an archive, if it exists.
-     * 
+     *
      * @param arcName The name of the archive.
      * @return The info_c for the archive, if it exists, otherwise @p nullptr .
      */
@@ -220,5 +222,6 @@ private:
     u16 mNumArcs; ///< The number of archive holders.
     callback_c *mpCallback; ///< The callback for when a resource is loaded.
 
-    static void (*mSetCallback)(const char *arcName, EGG::Heap *heap); ///< The callback for when dRes_c::info_c::set is called. [Unused].
+    /// @unused The callback for when dRes_c::info_c::set is called.
+    static void (*mSetCallback)(const char *arcName, EGG::Heap *heap);
 };

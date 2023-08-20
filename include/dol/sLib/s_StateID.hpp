@@ -3,6 +3,7 @@
 
 /// @brief A generic implementation of a state ID.
 /// @details It simply contains a name string and a unique number.
+/// @ingroup state
 class sStateID_c : public sStateIDIf_c {
 public:
     class NumberMemo_c {
@@ -14,7 +15,7 @@ public:
         }
         unsigned int curr;
     };
-    
+
     sStateID_c(const char *name);
     ~sStateID_c();
 
@@ -36,5 +37,7 @@ protected:
 };
 
 namespace sStateID {
+
+    /// @ingroup state
     extern sStateID_c null; ///< A null state instance.
 }

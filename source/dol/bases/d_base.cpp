@@ -4,9 +4,9 @@
 #include <constants/sjis_constants.h>
 /// @file
 
-/// @brief Random seed written to after dBase_c::preDraw.
-/// @details [Unused. Not part of the dBase_c class as its mangled hash is the same as its demangled hash].
-/// @note Unofficial name.
+/// @unused [Random seed written to after dBase_c::preDraw].
+/// @details [Not part of the dBase_c class as its mangled hash is the same as its demangled hash].
+/// @unofficial
 static u32 g_basesRandomSeed;
 
 dBase_c::dBase_c() :

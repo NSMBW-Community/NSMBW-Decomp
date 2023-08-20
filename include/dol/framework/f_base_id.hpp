@@ -1,13 +1,10 @@
 #pragma once
 /// @file
 
-/**
- * @brief A unique identifier for an fBase_c object.
- *
- * [It's not quite clear why this was declared as an enum.
- * Ninji suggested it might be for type checking].
- */
+/// @brief A unique identifier for each base.
+/// @ingroup framework
 enum fBaseID_e {
-    FIRST_ID = 1,
-    INVALID = -1
+    BASE_ID_NULL, ///< Represents the null base.
+    BASE_ID_FIRST, ///< The starting identifier value.
+    BASE_ID_MAX = -1 ///< The maximum identifier value.
 };

@@ -1,6 +1,6 @@
 #pragma once
 #include <dol/bases/d_2d.hpp>
-#include <dol/bases/d_lyttextbox.hpp>
+#include <dol/bases/d_lyttextBox.hpp>
 #include <lib/nw4r/lyt/lyt_pane.hpp>
 #include <lib/nw4r/lyt/lyt_window.hpp>
 #include <lib/nw4r/lyt/lyt_picture.hpp>
@@ -18,7 +18,7 @@ public:
     bool ReadResourceEx(const char *, int, bool);
     bool ReadResource(const char *, bool);
     bool ReadResource2(const char *, int);
-    bool ReadResource3(const char *, int); ///< @note Unofficial name; not in Shield version
+    bool ReadResource3(const char *, int); ///< @unofficial Not in Shield version.
 
     void NPaneRegister(const char **, nw4r::lyt::Pane **, int);
     void WPaneRegister(const char **, nw4r::lyt::Window **, int);
@@ -39,7 +39,7 @@ public:
     bool isAnime(int);
     bool isAllAnime();
 
-    void FUN_800c9770(void *, float *); ///< @note Unofficial name
+    void FUN_800c9770(void *, float *); ///< @unofficial
 
     bool doDelete();
 

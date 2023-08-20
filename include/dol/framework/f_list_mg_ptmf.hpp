@@ -6,24 +6,26 @@
 
 class fBase_c;
 
-/// @brief A list of fLiNdPrio_c nodes with a reference to a process function.
-/// @note Unofficial name.
+/// @brief A base list made of fLiNdPrio_c nodes, with a reference to a process function.
+/// @ingroup framework dol
+/// @unofficial
 class fLiMgPTMF_c : public fLiMgBa_c {
 public:
-    /// @brief Constructs a new list node.
-    /// @param procFunc The process function.
+
+    /// @brief Constructs a new list.
+    /// @param procFunc The process function, or @p nullptr.
     fLiMgPTMF_c(int (fBase_c::*procFunc)()) : mpProcFunc(procFunc) {}
 
     /**
-     * @brief Inserts a node in the correct place according to its priority.
+     * @brief Adds a node to the list, according to its priority.
      *
      * @param node The node to insert.
      * @return If the operation was successful.
      */
     bool addNode(fLiNdPrio_c *node);
 
-    /// @brief Calls the process function ::mpProcFunc on the owner of each node in the list.
-    /// @return If the operation was successful.
+    /// @brief Calls the @ref ::mpProcFunc "process function" on each base in the list.
+    /// @return Always returns true.
     bool walkPack();
 
     fLiNdPrio_c *getFirst() const {

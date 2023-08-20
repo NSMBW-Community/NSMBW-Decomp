@@ -3,6 +3,8 @@
 #include <lib/nw4r/ut/color.hpp>
 
 namespace EGG {
+
+    /// @ingroup eggcore
     class ColorFader : public Fader {
     public:
         enum ColorFaderFlag {

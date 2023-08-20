@@ -2,4 +2,4 @@
 
 using namespace fProfile;
 
-fBaseProfile_c *(*fProfile::sProfileList)[NUMBER_OF_ACTORS];
+fBaseProfile_c *(*fProfile::sProfileList)[PROFILE_COUNT];

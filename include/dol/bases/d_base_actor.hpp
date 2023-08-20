@@ -10,21 +10,22 @@
 /// @brief Basic actor class, supporting positioning, rotation and movement/acceleration.
 /// @details All actors inheriting from this class use fProfile::fActorProfile_c for the profile
 /// (instead of fProfile::fBaseProfile_c) and are children to the current scene actor.
+/// @ingroup bases
 class dBaseActor_c : public dBase_c {
 public:
 
     /// @brief An identifier that represents the actor's kind.
     /// @details [This does not seem to be used outside of worldmaps].
     enum ACTOR_KIND_e {
-        SYSTEM_ACTOR, ///< Used for behind-the-scenes actors [such as dCsSeqMng_c].
-        MAP_DEMO_ACTOR, ///< Used for map actors that are affected by cutscenes.
-        MAP_ACTOR, ///< Used for most map actors.
-        MAP_ENEMY, ///< Used for map enemies.
-        MAP_PLAYER, ///< The worldmap player actor [dWmPlayer_c].
-        MAP_STOP, ///< The unused daWmStop_c actor.
-        UNK_6, ///< [Unused].
-        MENU_PLAYER, ///< The menu player actor [da2DPlayer_c].
-        GENERIC_ACTOR, ///< The default value.
+        ACTOR_SYSTEM, ///< Used for behind-the-scenes actors [such as dCsSeqMng_c].
+        ACTOR_MAP_DEMO, ///< Used for map actors that are affected by cutscenes.
+        ACTOR_MAP, ///< Used for most map actors.
+        ACTOR_MAP_ENEMY, ///< Used for map enemies.
+        ACTOR_MAP_PLAYER, ///< The worldmap player actor [dWmPlayer_c].
+        ACTOR_MAP_STOP, ///< @unused Identifies the daWmStop_c actor.
+        ACTOR_UNK_6, ///< @unused
+        ACTOR_MENU_PLAYER, ///< The menu player actor [da2DPlayer_c].
+        ACTOR_GENERIC, ///< The default value.
     };
 
     dBaseActor_c();

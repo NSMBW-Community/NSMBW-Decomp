@@ -5,6 +5,7 @@
 
 /// @brief A fader that animates a Bowser texture in/out.
 /// @details Seen when entering a tower or castle stage, for example.
+/// @ingroup bases
 class dWipeKuppa_c : public mFaderBase_c {
 public:
 

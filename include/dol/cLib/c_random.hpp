@@ -2,7 +2,8 @@
 #include <types.h>
 
 /// @brief Random number generation helper class.
-/// @note Unofficial name.
+/// @ingroup clib
+/// @unofficial
 class cM_rand_c {
 public:
 

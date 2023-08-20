@@ -3,7 +3,7 @@
 #include <lib/MSL_C/string.h>
 #include <constants/sjis_constants.h>
 
-fBaseID_e fBase_c::m_rootUniqueID = FIRST_ID;
+fBaseID_e fBase_c::m_rootUniqueID = BASE_ID_FIRST;
 ProfileName fBase_c::m_tmpCtProfName;
 u32 fBase_c::m_tmpCtParam;
 u8 fBase_c::m_tmpCtGroupType;
@@ -19,9 +19,9 @@ fBase_c::fBase_c() :
     mGroupType(m_tmpCtGroupType),
     mMng(this) {
 
-    // Update the unique ID. Should it max out the counter, stall the game.
+    // Update the unique ID. If it maxes out the counter, stall the game
     m_rootUniqueID = (fBaseID_e) (m_rootUniqueID + 1);
-    if (m_rootUniqueID == INVALID) {
+    if (m_rootUniqueID == BASE_ID_MAX) {
         while (true);
     }
 
@@ -34,15 +34,15 @@ fBase_c::fBase_c() :
     fProfile::fBaseProfile_c *prof = (*fProfile::sProfileList)[mProfName];
     if (prof != nullptr) {
         u16 executeOrder = prof->mExecuteOrder;
-        mMng.mExecuteNode.mOrder = executeOrder;
-        mMng.mExecuteNode.mNewOrder = executeOrder;
+        mMng.mMainNode.mOrder = executeOrder;
+        mMng.mMainNode.mNewOrder = executeOrder;
 
         u16 drawOrder = prof->mDrawOrder;
         mMng.mDrawNode.mOrder = drawOrder;
         mMng.mDrawNode.mNewOrder = drawOrder;
     }
 
-    // Disable execute and/or draw step if the parent does so too
+    // Update process control flags to match the parent base
     fBase_c *parent = getConnectParent();
     if (parent != nullptr) {
         if (parent->isProcControlFlag(ROOT_DISABLE_EXECUTE) || parent->isProcControlFlag(DISABLE_EXECUTE)) {
@@ -97,14 +97,14 @@ void fBase_c::postCreate(MAIN_STATE_e state) {
 
     // Creation successful, remove the base from the creation list
     if (state == SUCCESS) {
-        fManager_c::m_createManage.remove(&mMng.mExecuteNode);
+        fManager_c::m_createManage.remove(&mMng.mMainNode);
 
-        // The base cannot be added to the execute/draw list during the execute process [(why?)],
-        // so delay the operation
+        // Since operations cannot be scheduled while the corresponding process
+        // is running, defer execution scheduling to the connect operation
         if (fManager_c::m_nowLoopProc == fManager_c::EXECUTE) {
-            mDelayManageAdd = true;
+            mDeferExecute = true;
         } else {
-            fManager_c::m_executeManage.addNode(&mMng.mExecuteNode);
+            fManager_c::m_executeManage.addNode(&mMng.mMainNode);
             fManager_c::m_drawManage.addNode(&mMng.mDrawNode);
             mLifecycleState = ACTIVE;
         }
@@ -131,7 +131,7 @@ int fBase_c::preDelete() {
         }
     }
 
-    // If the base has children, do not delete it
+    // If the base has children, do not delete it yet
     fBase_c *child = getConnectChild();
     if (child != nullptr) {
         return NOT_READY;
@@ -144,7 +144,7 @@ void fBase_c::postDelete(MAIN_STATE_e state) {
         // Remove from all manager lists
         fManager_c::m_connectManage.removeTreeNode(&mMng.mConnectNode);
         fManager_c::m_searchManage[mMng.getSearchTableNum()].remove(&mMng.mSearchNode);
-        fManager_c::m_deleteManage.remove(&mMng.mExecuteNode);
+        fManager_c::m_deleteManage.remove(&mMng.mMainNode);
 
         // Delete the heap
         if (mpHeap != nullptr) {
@@ -170,7 +170,7 @@ int fBase_c::execute() {
 }
 
 int fBase_c::preExecute() {
-    // Can only execute if not deleting or execution is disabled
+    // Can only execute if not deleting and execution is enabled
     if (mDeleteRequested || isProcControlFlag(DISABLE_EXECUTE)) {
         return NOT_READY;
     }
@@ -190,7 +190,7 @@ int fBase_c::draw() {
 }
 
 int fBase_c::preDraw() {
-    // Can only draw if not deleting or drawing is disabled
+    // Can only draw if not deleting and drawing is enabled
     if (mDeleteRequested || isProcControlFlag(DISABLE_DRAW)) {
         return NOT_READY;
     }
@@ -213,24 +213,25 @@ int fBase_c::connectProc() {
     if (mDeleteRequested) {
         mDeleteRequested = false;
 
-        // Remove the base from the relevant manager lists and add it to the delete list
+        // Move the base from its current manager lists to the delete list
         if (mLifecycleState == ACTIVE) {
-            fManager_c::m_executeManage.remove(&mMng.mExecuteNode);
+            fManager_c::m_executeManage.remove(&mMng.mMainNode);
             fManager_c::m_drawManage.remove(&mMng.mDrawNode);
         } else {
-            fManager_c::m_createManage.remove(&mMng.mExecuteNode);
+            fManager_c::m_createManage.remove(&mMng.mMainNode);
         }
 
-        fManager_c::m_deleteManage.prepend(&mMng.mExecuteNode);
-        mLifecycleState = TO_BE_DELETED;
+        fManager_c::m_deleteManage.prepend(&mMng.mMainNode);
+        mLifecycleState = DELETING;
 
-        // Also delete all its children
+        // Delete all its children recursively
+        // [Pointless code, since this is already done in deleteRequest]
         for (fTrNdBa_c *curr = mMng.mConnectNode.getChild(); curr != nullptr; curr = curr->getBrNext()) {
             curr->mpOwner->deleteRequest();
         }
 
     } else {
-        // Disable execute and/or draw step if the parent does so too
+        // Update process control flags to match the parent base
         fBase_c *parent = getConnectParent();
         if (parent != nullptr) {
             if (parent->isProcControlFlag(ROOT_DISABLE_EXECUTE) || parent->isProcControlFlag(DISABLE_EXECUTE)) {
@@ -251,10 +252,10 @@ int fBase_c::connectProc() {
         // for all those duplicated temporaries. Couldn't figure out a better solution, though]
         if (mLifecycleState == ACTIVE) {
 
-            fLiNdPrio_c *executeNode = &mMng.mExecuteNode;
+            fLiNdPrio_c *executeNode = &mMng.mMainNode;
             if (executeNode->mNewOrder != executeNode->mOrder) {
-                fManager_c::m_executeManage.remove(&mMng.mExecuteNode);
-                fLiNdPrio_c *executeNode2 = &mMng.mExecuteNode;
+                fManager_c::m_executeManage.remove(&mMng.mMainNode);
+                fLiNdPrio_c *executeNode2 = &mMng.mMainNode;
                 executeNode2->mOrder = executeNode2->mNewOrder;
                 fManager_c::m_executeManage.addNode(executeNode2);
             }
@@ -267,31 +268,32 @@ int fBase_c::connectProc() {
                 fManager_c::m_drawManage.addNode(drawNode2);
             }
 
-        // The base has delayed adding itself to the manager lists, try again
-        } else if (mLifecycleState != TO_BE_DELETED) {
-            if (mRetryCreate) {
-                mRetryCreate = false;
-                fManager_c::m_createManage.append(&mMng.mExecuteNode);
+        // Process deferred operation scheduling requests
+        } else if (mLifecycleState != DELETING) {
+            if (mDeferRetryCreate) {
+                mDeferRetryCreate = false;
+                fManager_c::m_createManage.append(&mMng.mMainNode);
 
-            } else if (mDelayManageAdd) {
-                mDelayManageAdd = false;
-                fManager_c::m_executeManage.addNode(&mMng.mExecuteNode);
+            } else if (mDeferExecute) {
+                mDeferExecute = false;
+                fManager_c::m_executeManage.addNode(&mMng.mMainNode);
                 fManager_c::m_drawManage.addNode(&mMng.mDrawNode);
                 mLifecycleState = ACTIVE;
             }
         }
     }
 
-    return 1;
+    return SUCCEEDED;
 }
 
 void fBase_c::deleteRequest() {
+
     // Check that deletion hasn't already been requested
-    if (!mDeleteRequested && mLifecycleState != TO_BE_DELETED) {
+    if (!mDeleteRequested && mLifecycleState != DELETING) {
         mDeleteRequested = true;
         deleteReady();
 
-        // Also delete all children
+        // Delete all children recursively
         for (fTrNdBa_c *curr = mMng.mConnectNode.getChild(); curr != nullptr; curr = curr->getBrNext()) {
             curr->mpOwner->deleteRequest();
         }
@@ -350,7 +352,7 @@ bool fBase_c::entryFrmHeap(unsigned long size, EGG::Heap *parentHeap) {
         }
     }
 
-    // If that failed, try to make a heap with maximum size
+    // If that failed, allocate all available space
     if (newHeap == nullptr) {
         newHeap = mHeap::makeFrmHeapAndUpdate(-1, parentHeap, F_BASE_HEAP_NAME, 0x20, 0);
 
@@ -404,6 +406,7 @@ bool fBase_c::entryFrmHeap(unsigned long size, EGG::Heap *parentHeap) {
 }
 
 bool fBase_c::entryFrmHeapNonAdjust(unsigned long size, EGG::Heap *parentHeap) {
+
     // Check if heap was already set
     if (mpHeap != nullptr) {
         return true;
@@ -447,14 +450,14 @@ void fBase_c::operator delete(void *mem) {
 void fBase_c::runCreate() {
     createPack();
 
-    // If the base is ready for creation check for the current process,
-    // as entries cannot be added to a list while the corresponding process
-    // is running. In that case, retry later
-    if (!mDeleteRequested && !mDelayManageAdd && mLifecycleState == WAITING_FOR_CREATE) {
+    // If the create operation has not yet been completed, reschedule it for the next tick
+    // Since operations cannot be scheduled while the corresponding process is running, defer
+    // it to the connect operation
+    if (!mDeleteRequested && !mDeferExecute && mLifecycleState == CREATING) {
         if (fManager_c::m_nowLoopProc == fManager_c::CREATE) {
-            mRetryCreate = true;
+            mDeferRetryCreate = true;
         } else {
-            fManager_c::m_createManage.append(&mMng.mExecuteNode);
+            fManager_c::m_createManage.append(&mMng.mMainNode);
         }
     }
 }
@@ -465,7 +468,7 @@ fBase_c *fBase_c::getChildProcessCreateState() const {
     fTrNdBa_c *curr = connectNode->getChild();
 
     while (curr != nullptr && curr != end) {
-        if (curr->mpOwner->mLifecycleState == WAITING_FOR_CREATE) {
+        if (curr->mpOwner->mLifecycleState == CREATING) {
             return curr->mpOwner;
         }
         curr = curr->getTreeNext();
@@ -498,7 +501,7 @@ fBase_c *fBase_c::fBase_make(ProfileName profName, fTrNdBa_c *connectParent, uns
     // Reset the temporary data
     setTmpCtData(0, nullptr, 0, 0);
 
-    // Run create if the construction was successful
+    // Run create operation if the construction was successful
     if (res != nullptr) {
         res->runCreate();
     }

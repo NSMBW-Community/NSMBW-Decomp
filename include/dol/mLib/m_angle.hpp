@@ -3,7 +3,7 @@
 #include <lib/rvl/mtx/vec.h>
 
 /// @brief A one-dimensional short angle vector.
-/// @details [Used by game-specific code].
+/// @ingroup mlib
 struct mAng {
 
     /// @brief Constructs an empty vector.
@@ -49,7 +49,7 @@ struct mAng {
 };
 
 /// @brief A three-dimensional short angle vector.
-/// @details [Used by game-specific code].
+/// @ingroup mlib
 class mAng3_c {
 public:
 

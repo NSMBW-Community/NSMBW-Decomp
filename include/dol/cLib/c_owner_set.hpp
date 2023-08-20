@@ -3,7 +3,8 @@
 /// @file
 
 /// @brief A set node with a pointer to the owning container. See cOwnerSetMg_c.
-/// @note Unofficial name.
+/// @ingroup clib
+/// @unofficial
 class cOwnerSetNd_c {
 public:
     void *getOwner() const { return mpOwner; }
@@ -18,7 +19,8 @@ private:
 
 /// @brief A set container. See cOwnerSetNd_c.
 /// @details The set is implemented as a singly-linked list.
-/// @note Unofficial name.
+/// @ingroup clib
+/// @unofficial
 class cOwnerSetMg_c {
 public:
     /// @brief Constructs a new set container.
@@ -51,5 +53,6 @@ private:
 };
 
 /// @brief [Looks like a badly stripped assert].
-/// @note Unofficial name.
+/// @ingroup clib
+/// @unofficial
 void UNK_80161880();

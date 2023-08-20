@@ -16,7 +16,7 @@ bool fLiMgPTMF_c::addNode(fLiNdPrio_c *node) {
         return append(node);
     }
 
-    // If the first node's order is lower than the new node, place the latter first
+    // If the new node's order is higher than the first node, set the new node as first
     if (curr->getOrder() > node->getOrder()) {
         return insertAfter(node, nullptr);
     }

@@ -3,6 +3,7 @@
 namespace fProfile {
 
     /// @brief A name of a profile. Can be used to index into fProfile::sProfileList.
+    /// @ingroup profile
     enum PROFILE_NAME_e {
         BOOT,
         AUTO_SELECT,
@@ -745,7 +746,7 @@ namespace fProfile {
         CHARACTER_CHANGE_INDICATOR,
         MULTI_COURSE_SELECT_CONTENTS,
         COLLECTION_COIN_DATE,
-        CONTROLLER_INFORMATION,
+        CONTROLLER_INFORMATION, ///< The profile for dControllerInformation_c.
         DRAW_GAME,
         STAFF_CREDIT_SCORE,
         THE_END,
@@ -755,8 +756,11 @@ namespace fProfile {
         LASTACTOR_STAGE,
         LASTACTOR,
 
-        // Not an actor, only used to get the number of actors!
-        NUMBER_OF_ACTORS,
-        INVALID = NUMBER_OF_ACTORS
+        // Not a profile, only used to get the number of profiles!
+        /// @brief The total number of profiles.
+        /// @details This value varies across New Super Mario Bros. Wii versions due to profiles added
+        /// later in development.
+        PROFILE_COUNT,
+        INVALID = PROFILE_COUNT
     };
 }

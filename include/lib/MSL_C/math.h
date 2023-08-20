@@ -5,6 +5,9 @@
 extern "C" {
 #endif
 
+/// @addtogroup stdlib
+/// @{
+
 /// @brief Returns the floating-point remainder of @p numer/denom (rounded towards zero).
 double fmod(double x, double denom);
 
@@ -17,6 +20,8 @@ inline double fabs(double x) {
 inline float fabsf(float x) {
     return __fabs(x);
 }
+
+/// @}
 
 #ifdef __cplusplus
 }

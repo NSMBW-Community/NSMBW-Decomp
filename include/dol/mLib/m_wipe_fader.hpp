@@ -2,6 +2,7 @@
 #include <dol/mLib/m_fader_base.hpp>
 
 /// @brief A fader that wipes a texture in and out to/from the center of the screen.
+/// @ingroup mlib
 class mWipeFader_c : public mFaderBase_c {
 public:
 

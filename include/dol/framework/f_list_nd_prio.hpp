@@ -3,10 +3,12 @@
 #include <dol/framework/f_profile.hpp>
 #include <dol/framework/f_list_nd.hpp>
 
-/// @brief A list node with priority fields for an order in a list.
-/// @note Unofficial name.
+/// @brief A base list node, with priority fields for reordering.
+/// @ingroup framework dol
+/// @unofficial
 class fLiNdPrio_c : public fLiNdBa_c {
 public:
+
     /// @brief Constructs a new list node.
     /// @param owner The node's owner.
     fLiNdPrio_c(fBase_c *owner) : fLiNdBa_c(owner), mOrder(0), mNewOrder(0) {}
@@ -27,6 +29,6 @@ public:
         return mNewOrder;
     }
 
-    u16 mOrder; ///< The priority of this node.
+    u16 mOrder; ///< The priority of this node. Lower values mean higher priority.
     u16 mNewOrder; ///< The priority the node should change to if it differs from ::mOrder.
 };
