@@ -17,7 +17,7 @@ public:
     };
 
     sStateID_c(const char *name);
-    ~sStateID_c();
+    virtual ~sStateID_c();
 
     virtual bool isNull() const;
     virtual bool isEqual(const sStateIDIf_c &other) const;

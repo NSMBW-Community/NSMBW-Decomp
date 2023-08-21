@@ -4,17 +4,18 @@
 /// @addtogroup constants
 /// @{
 
-/// @brief Gets the group ID from a message ID.
-/// @hideinitializer
-#define GET_MSG_GROUP(id) ((id) >> 8)
-
-/// @brief Converts a message ID to make it relative to its group ID.
-/// @hideinitializer
-#define GET_MSG_REL_ID(id) ((id) & 0xFF)
+/// @brief The identifiers for each BMG group.
+/// @todo Fill this.
+enum BMG_GROUPS_e {
+    BMG_CATEGORY_YES_NO_WINDOW,
+    BMG_CATEGORY_CONTROLLER_INFORMATION = 0x68,
+    BMG_CATEGORY_HINT_MOVIES = 0x12e
+};
 
 /// @brief The identifiers for each text message.
 /// @todo Fill this.
 enum MESSAGE_e {
+    // Group 0x00
     MSG_TEST,
 
     // The following are used to format escape sequences
@@ -53,7 +54,54 @@ enum MESSAGE_e {
     MSG_PICFONT_RED_BLOCK,
     MSG_PICFONT_BLOCK_OUTLINE,
 
-    MSG_HOLD_WIIMOTE_SIDEWAYS = 0x6808,
+    MSG_WATCH_ENDING,
+    MSG_YES_IM_SURE,
+    MSG_NO_WAIT,
+    MSG_OK_TRY,
+    MSG_NO_SKIP,
+    MSG_OK,
+    MSG_CANCEL,
+    MSG_SAVE,
+    MSG_DONT_SAVE,
+    MSG_SAVED_OK,
+    MSG_QUICK_SAVE,
+
+    MSG_TRY_WITHOUT_SUPER_GUIDE,
+    MSG_PROGRESS_SAVED_FIRST_TIME,
+    MSG_TOAD_HOUSES_BACK,
+    MSG_ITEM_HINT,
+    MSG_SAVE_DATA_CREATED,
+    MSG_ASK_SAVE,
+    MSG_PROGRESS_SAVED,
+    MSG_EXIT_FREE_MODE,
+    MSG_WATCH_HINT_MOVIE,
+    MSG_SKIP_COURSE,
+    MSG_SKIP_FINAL_COURSE,
+    MSG_EXIT_COIN_BATTLE,
+    MSG_GOT_ALL_STAR_COINS_NO_W9,
+    MSG_GOT_ALL_STAR_COINS_W9,
+    MSG_TOADS_CAPTURED,
+    MSG_RETURN_TO_TITLE,
+    MSG_TOADS_CAPTURED_MULTIPLAYER,
+    MSG_BACK_TO_MAP,
+    MSG_BACK_TO_COURSE_SELECTION,
+    MSG_GOT_ALL_STAR_COINS_WORLD_X,
+    MSG_RETURN_TO_TITLE_QUICK_SAVE,
+    MSG_SAVED_RETURNING_TO_TITLE,
+    MSG_COMPLETED_EVERYTHING,
+    MSG_BACK_TO_MAP2,
+
+    MSG_SWITCH_FIRST_TIME = 80,
+    MSG_SWITCH,
+    MSG_PEACH_HINT,
+    MSG_PEACH_HINT2,
+    
+    // Group 0x68
+    MSG_HOLD_WIIMOTE_SIDEWAYS = 8,
+
+    // Group 0x12e
+    MSG_STAR_COINS_REQUIRED = 7,
+    MSG_STAR_COINS_REQUIRED_X = 8,
 };
 
 /// @}

@@ -2,7 +2,7 @@
     "meta": {
         "fileName": "d_profileNP.rel",
         "type": "REL",
-        "defaultCompilerFlags": "-sdata 0 -sdata2 0 -proc gekko -fp hard -O4,p -inline noauto -char signed -rtti off -enum int -Cpp_exceptions off",
+        "defaultCompilerFlags": "-sdata 0 -sdata2 0 -proc gekko -fp hard -O4,p -inline noauto -char signed -rtti off -enum int -Cpp_exceptions off -ipa file",
         "moduleNum": 1,
         "baseAddr": "807685A0",
         "sections": {
@@ -39,7 +39,7 @@
             "memoryRanges": {
                 ".text": "0x70-0xf0",
                 ".dtors": "0x0-0x4",
-                ".bss": "0x0-0x8"
+                ".bss": "0x0-0x10"
             }
         },
         {
@@ -58,12 +58,12 @@
             }
         },
         {
-            "name": "d_yes_no_window.o",
+            "source": "d_profileNP/bases/d_yes_no_window.cpp",
             "memoryRanges": {
                 ".text": "0x4e0-0x1fb8",
                 ".ctors": "0x0-0x4",
                 ".data": "0xd28-0x2cfc",
-                ".rodata": "0x18-0x1d8",
+                ".rodata": "0x18-0x1c8",
                 ".bss": "0x10-0x208"
             }
         }

@@ -26,10 +26,10 @@ public:
     virtual const sStateIDIf_c *getStateID() const { return mpStateID; } ///< @copydoc sStateMgrIf_c::getStateID
     virtual const sStateIDIf_c *getOldStateID() const { return mpOldStateID; } ///< @copydoc sStateMgrIf_c::getOldStateID
 
-    virtual int initializeStateLocalMethod() = 0; ///< @pure Performs the actual state initialization.
-    virtual void executeStateLocalMethod() = 0; ///< @pure Performs the actual state execution.
-    virtual void finalizeStateLocalMethod() = 0; ///< @pure Performs the actual state termination.
-    virtual void changeStateLocalMethod(const sStateIDIf_c &newStateID) = 0; ///< @pure Performs the actual state transition.
+    virtual int initializeStateLocalMethod() = 0; ///<  Performs the actual state initialization.
+    virtual void executeStateLocalMethod() = 0; ///<  Performs the actual state execution.
+    virtual void finalizeStateLocalMethod() = 0; ///<  Performs the actual state termination.
+    virtual void changeStateLocalMethod(const sStateIDIf_c &newStateID) = 0; ///<  Performs the actual state transition.
 
 protected:
     sStateIDChkIf_c &mpStateChk; ///< @unused The state checker to use.
