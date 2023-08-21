@@ -43,7 +43,7 @@
             }
         },
         {
-            "name": "profiles.o",
+            "source": "d_profileNP/d_profile.cpp",
             "memoryRanges": {
                 ".text": "0xf0-0x130",
                 ".data": "0x0-0xbb8"

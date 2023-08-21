@@ -237,7 +237,7 @@ def build_rel(elf_file: Path, plf_files: list[Path], alias_file: Path, fake_path
             for line in f:
                 from_sym, to_sym = line.split('=')
                 if from_sym not in alias_db:
-                    alias_db[from_sym] = to_sym
+                    alias_db[from_sym] = to_sym.upper()
 
     # Initialize str file
     str_file = []
