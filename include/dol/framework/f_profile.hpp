@@ -19,13 +19,13 @@
 /// @brief Creates a basic profile, using the profile number as the execute and draw order value.
 /// @details The execution order is set to the profile number.
 /// @hideinitializer
-/// @see SPECIAL_BASE_PROFILE
-#define BASE_PROFILE(profName, className, drawOrder) CUSTOM_BASE_PROFILE(profName, className, fProfile::profName, fProfile::DRAW_ORDER::profName);
+/// @see ACTOR_PROFILE
+#define BASE_PROFILE(profName, className) CUSTOM_BASE_PROFILE(profName, className, fProfile::profName, fProfile::DRAW_ORDER::profName);
 
 /// @brief Creates an actor profile, using the profile number as the execute and draw order value.
 /// @details The execution order is set to the profile number.
 /// @hideinitializer
-/// @see DEFAULT_BASE_PROFILE
+/// @see BASE_PROFILE
 #define ACTOR_PROFILE(profName, className, properties) CUSTOM_ACTOR_PROFILE(profName, className, fProfile::profName, fProfile::DRAW_ORDER::profName, properties);
 
 /// @brief The name of a profile. Value is a fProfile::PROFILE_NAME_e.

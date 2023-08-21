@@ -68,8 +68,8 @@
  *
  * ## Creating Profiles
  * Use the following macros to create a profile:
- * - Use ::BASE_PROFILE (or ::ACTOR_PROFILE) to use the priority values given by the profile number (execute order)
- * and the values in @ref ::DRAW_ORDER::DRAW_ORDER_e (draw order).
+ * - Use ::BASE_PROFILE (or ::ACTOR_PROFILE) to use the priority values given by @ref ::PROFILE_NAME_e (execute order)
+ * and @ref ::DRAW_ORDER::DRAW_ORDER_e "DRAW_ORDER_e" (draw order).
  * - Use ::CUSTOM_BASE_PROFILE (or ::CUSTOM_ACTOR_PROFILE) if custom priority values are required.
  *
  * Addition of the created profile and its name to the respective lists requires manual intervention.
