@@ -42,7 +42,7 @@ public:
 };
 
 /// @brief The interface for state ID checkers.
-/// @details [This class is not really used, but it seems to be intended for testing if a state is "normal", but not sure how this would be useful].
+/// @details [This class is not really used, but it seems to be intended for testing if a state is "normal", most likely a debug leftover].
 class sStateIDChkIf_c {
 public:
     virtual ~sStateIDChkIf_c() {}

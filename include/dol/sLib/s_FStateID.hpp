@@ -9,7 +9,7 @@
 template<class T>
 class sFStateID_c : public sStateID_c {
 public:
-    typedef void (T::*statePTMF)();
+    typedef void (T::*stateFunc)();
 
     /**
      * @brief Constructs a new sFStateID_c instance.
@@ -19,7 +19,7 @@ public:
      * @param execute The execute method for this state ID.
      * @param finalize The finalize method for this state ID.
      */
-    sFStateID_c(const char *name, statePTMF initialize, statePTMF execute, statePTMF finalize) :
+    sFStateID_c(const char *name, stateFunc initialize, stateFunc execute, stateFunc finalize) :
         sStateID_c(name),
         mpInitialize(initialize),
         mpExecute(execute),
@@ -52,7 +52,7 @@ public:
     virtual void finalizeState(T &owner) const { (owner.*mpFinalize)(); }
 
 private:
-    statePTMF mpInitialize; ///< The initialize method for this state ID.
-    statePTMF mpExecute; ///< The execute method for this state ID.
-    statePTMF mpFinalize; ///< The finalize method for this state ID.
+    stateFunc mpInitialize; ///< The initialize method for this state ID.
+    stateFunc mpExecute; ///< The execute method for this state ID.
+    stateFunc mpFinalize; ///< The finalize method for this state ID.
 };

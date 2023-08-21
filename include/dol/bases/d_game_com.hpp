@@ -11,5 +11,5 @@ namespace dGameCom {
     float getDispCenterY();
     
     /// @unofficial
-    void updateSelectCursor(nw4r::lyt::Picture *pic, int index, bool unk);
+    void updateSelectCursor(nw4r::lyt::Picture *pic, int index, bool useSpecialDraw);
 }

@@ -3,12 +3,12 @@
 #include <dol/bases/d_lytbase.hpp>
 #include <dol/sLib/s_State.hpp>
 
-/// @brief Displays a yes/no window.
-/// @details This appears, for example, in the pause menu or when you press + on the world map.
+/// @brief Displays a confirmation prompt.
+/// @details This appears, for example, when the game asks the player if their progress should be saved.
 /// @ingroup bases
 class dYesNoWindow_c : public dBase_c {
 public:
-    /// @brief The type of the window.
+    /// @brief The prompt type.
     enum WINDOW_TYPE_e {
         SAVE_DATA_CREATED,
         SAVE,
@@ -49,7 +49,7 @@ public:
         POS_OK
     };
 
-    /// @brief The sound effects used for the yes/no window.
+    /// @brief The sound effect types used by the window.
     enum SOUND_e {
         SOUND_CLOSE,
         SOUND_WAIT,
@@ -57,7 +57,7 @@ public:
         SOUND_OPEN_ANIME
     };
 
-    /// @brief The animations used for the yes/no window.
+    /// @brief The animations used for the window.
     enum ANIMS_e {
         ANIM_IN_WINDOW,
         ANIM_IN_QUICK_SAVE,
@@ -92,16 +92,16 @@ public:
     virtual int doDelete();
 
 private:
-    /// @brief Fills in the layout of the window.
+    /// @brief Fills out the window content according to the settings.
     /// @details This includes:
     /// - Filling out the text boxes
     /// - Setting the visibility of the buttons
-    /// - Conditionally showing the quick save balloon
+    /// - Showing the quick save balloon if necessary
     void populateLayout();
 
     STATE_FUNC_DECLARE(dYesNoWindow_c, InitWait); ///< @brief Initial state. Switches to OpenAnimeStartWait immediately.
     STATE_FUNC_DECLARE(dYesNoWindow_c, OpenAnimeEndWait); ///< @brief Waiting for the window to finish the opening animation.
-    STATE_FUNC_DECLARE(dYesNoWindow_c, ButtonOnStageAnimeEndWait); ///< @brief Playing the button to finish the appearing animation.
+    STATE_FUNC_DECLARE(dYesNoWindow_c, ButtonOnStageAnimeEndWait); ///< @brief Plays the button appearing animation and waits for it to finish.
     STATE_FUNC_DECLARE(dYesNoWindow_c, ButtonChangeAnimeEndWait); ///< @brief Playing the button change animations.
     STATE_FUNC_DECLARE(dYesNoWindow_c, SelectWait); ///< @brief Waiting for either a button change or button hit to occur. 
     STATE_FUNC_DECLARE(dYesNoWindow_c, HitAnimeEndWait); ///< @brief Waiting for the button to finish the hit animation.
@@ -157,5 +157,5 @@ public:
     bool mIsAnimating; ///< @brief Whether an animation is currently playing.
     bool mKeepOpen; ///< @brief Whether the window should stay open after a button has been pressed.
     bool mCancel; ///< @brief Whether the window has been cancelled (and closed).
-    bool mHasBG; ///< @brief Whether the window has a picture background.
+    bool mHideBG; ///< @brief Whether to hide the translucent background that fills the screen.
 };

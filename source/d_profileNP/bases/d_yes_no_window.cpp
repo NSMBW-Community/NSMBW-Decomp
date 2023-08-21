@@ -10,6 +10,7 @@
 #include <constants/message_list.h>
 #include <constants/game_constants.h>
 #include <constants/sound_list.h>
+/// @file
 
 STATE_DEFINE(dYesNoWindow_c, InitWait);
 STATE_DEFINE(dYesNoWindow_c, OpenAnimeEndWait);
@@ -22,9 +23,9 @@ STATE_DEFINE(dYesNoWindow_c, HitAnimeAfterWait);
 
 BASE_PROFILE(YES_NO_WINDOW, dYesNoWindow_c);
 
-dYesNoWindow_c::dYesNoWindow_c() : mStateMgr(*this, StateID_InitWait) {
-    mHasLoadedLayout = false;
-}
+dYesNoWindow_c::dYesNoWindow_c() :
+    mStateMgr(*this, StateID_InitWait),
+    mHasLoadedLayout(false) {}
 
 dYesNoWindow_c::~dYesNoWindow_c() {}
 
@@ -123,7 +124,7 @@ int dYesNoWindow_c::create() {
     mKeepOpen = false;
     mStarCoinsRequired = 0;
     mCancel = false;
-    mHasBG = false;
+    mHideBG = false;
     
     mpRootPane->mFlags &= ~1;
     
@@ -139,7 +140,7 @@ int dYesNoWindow_c::execute() {
         mStateMgr.executeState();
         mLayout.AnimePlay();
         mLayout.calc();
-    } else if (mHasBG) {
+    } else if (mHideBG) {
         mLayout.calc();
     }
     return SUCCEEDED;
@@ -148,7 +149,7 @@ int dYesNoWindow_c::execute() {
 int dYesNoWindow_c::draw() {
     if (mHasLoadedLayout && mIsActive) {
         mLayout.entry();
-    } else if (mHasBG) {
+    } else if (mHideBG) {
         mLayout.entry();
     }
     return SUCCEEDED;
@@ -158,7 +159,7 @@ int dYesNoWindow_c::doDelete() {
     return mLayout.doDelete();
 }
 
-/// @brief IDs for the descriptions in the Yes/No window.
+/// @brief The prompt message for each type.
 static const int MainMsgIDs[] = {
     MSG_SAVE_DATA_CREATED,          // SAVE_DATA_CREATED
     MSG_ASK_SAVE,                   // SAVE
@@ -346,7 +347,7 @@ void dYesNoWindow_c::populateLayout() {
 // ----------------
 
 void dYesNoWindow_c::initializeState_InitWait() {
-    if (mHasBG) {
+    if (mHideBG) {
         return;
     }
     mpRootPane->mFlags &= ~1;
@@ -391,7 +392,7 @@ void dYesNoWindow_c::initializeState_OpenAnimeEndWait() {
         case EXIT_COIN_BATTLE:
         case PEACH_CASTLE_HINT1:
         case PEACH_CASTLE_HINT2:
-            if (!mHasBG) {
+            if (!mHideBG) {
                 mLayout.AnimeStartSetup(ANIM_IN_BG, false);
             }
             break;
@@ -414,7 +415,7 @@ void dYesNoWindow_c::executeState_OpenAnimeEndWait() {
 
 void dYesNoWindow_c::finalizeState_OpenAnimeEndWait() {
     mIsAnimating = false;
-    mHasBG = false;
+    mHideBG = false;
 }
 
 // ---------------------------------
@@ -560,7 +561,7 @@ void dYesNoWindow_c::initializeState_ClouseAnimeEndWait() {
         case EXIT_COIN_BATTLE:
         case PEACH_CASTLE_HINT1:
         case PEACH_CASTLE_HINT2:
-            if (!mHasBG) {
+            if (!mHideBG) {
                 mLayout.AnimeStartSetup(ANIM_OUT_BG, false);
             }
             break;
