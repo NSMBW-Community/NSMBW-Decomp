@@ -31,7 +31,7 @@ fBase_c::fBase_c() :
     fManager_c::m_searchManage[idx].prepend(&mMng.mSearchNode);
 
     // Try to get the profile and set the order fields
-    fProfile::fBaseProfile_c *prof = (*fProfile::sProfileList)[mProfName];
+    const fProfile::fBaseProfile_c *prof = (*fProfile::sProfileList)[mProfName];
     if (prof != nullptr) {
         u16 executeOrder = prof->mExecuteOrder;
         mMng.mMainNode.mOrder = executeOrder;

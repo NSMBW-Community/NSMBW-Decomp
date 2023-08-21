@@ -5,7 +5,7 @@
 #include <dol/framework/f_profile_name.hpp>
 #include <dol/snd/snd_audio_mgr.hpp>
 
-DEFAULT_BASE_PROFILE(CONTROLLER_INFORMATION, dControllerInformation_c);
+BASE_PROFILE(CONTROLLER_INFORMATION, dControllerInformation_c);
 
 dControllerInformation_c::dControllerInformation_c() : mIsCreated(false) {
 }

@@ -20,7 +20,7 @@ STATE_DEFINE(dYesNoWindow_c, HitAnimeEndWait);
 STATE_DEFINE(dYesNoWindow_c, ClouseAnimeEndWait);
 STATE_DEFINE(dYesNoWindow_c, HitAnimeAfterWait);
 
-SPECIAL_BASE_PROFILE(YES_NO_WINDOW, dYesNoWindow_c, fProfile::YES_NO_WINDOW, fProfile::YES_NO_WINDOW + 1);
+BASE_PROFILE(YES_NO_WINDOW, dYesNoWindow_c);
 
 dYesNoWindow_c::dYesNoWindow_c() : mStateMgr(*this, StateID_InitWait) {
     mHasLoadedLayout = false;
@@ -128,7 +128,7 @@ int dYesNoWindow_c::create() {
     mpRootPane->mFlags &= ~1;
     
     mLayout.AllAnimeEndSetup();
-    mLayout.ReverseAnimeStartSetup(20, false);
+    mLayout.ReverseAnimeStartSetup(ANIM_IN_BG, false);
     mLayout.AnimePlay();
     mLayout.calc();
     return SUCCEEDED;
@@ -260,6 +260,8 @@ static const int StartingCursorPositions[] = {
     dYesNoWindow_c::POS_OK   // PEACH_CASTLE_HINT2
 };
 
+const int SoundEffects[] = { SE_SYS_BACK, SE_SYS_DECIDE, SE_SYS_CURSOR, SE_SYS_DIALOGUE_IN };
+
 void dYesNoWindow_c::populateLayout() {
     static int fillLeftReqStarCoins = 2;
     MsgRes_c *msgRes = dMessage_c::getMesRes();
@@ -372,9 +374,9 @@ void dYesNoWindow_c::initializeState_OpenAnimeEndWait() {
     mIsAnimating = true;
 
     mLayout.AllAnimeEndSetup();
-    mLayout.ReverseAnimeStartSetup(4, false);
-    mLayout.ReverseAnimeStartSetup(5, false);
-    mLayout.ReverseAnimeStartSetup(6, false);
+    mLayout.ReverseAnimeStartSetup(ANIM_IN_YES, false);
+    mLayout.ReverseAnimeStartSetup(ANIM_IN_NO, false);
+    mLayout.ReverseAnimeStartSetup(ANIM_IN_OK, false);
 
     switch (mType) {
         case SAVE:
@@ -390,15 +392,15 @@ void dYesNoWindow_c::initializeState_OpenAnimeEndWait() {
         case PEACH_CASTLE_HINT1:
         case PEACH_CASTLE_HINT2:
             if (!mHasBG) {
-                mLayout.AnimeStartSetup(20, false);
+                mLayout.AnimeStartSetup(ANIM_IN_BG, false);
             }
             break;
     }
     if (mType == QUICK_SAVED) {
-        mLayout.AnimeStartSetup(1, false);
+        mLayout.AnimeStartSetup(ANIM_IN_QUICK_SAVE, false);
     }
-    mLayout.AnimeStartSetup(0, false);
-    SndAudioMgr::sInstance->startSystemSe(SE_SYS_DIALOGUE_IN, 1);
+    mLayout.AnimeStartSetup(ANIM_IN_WINDOW, false);
+    SndAudioMgr::sInstance->startSystemSe(SoundEffects[SOUND_OPEN_ANIME], 1);
 
     populateLayout();
 }
@@ -421,9 +423,9 @@ void dYesNoWindow_c::finalizeState_OpenAnimeEndWait() {
 
 void dYesNoWindow_c::initializeState_ButtonOnStageAnimeEndWait() {
     mIsAnimating = true;
-    mLayout.AnimeStartSetup(4, false);
-    mLayout.AnimeStartSetup(5, false);
-    mLayout.AnimeStartSetup(6, false);    
+    mLayout.AnimeStartSetup(ANIM_IN_YES, false);
+    mLayout.AnimeStartSetup(ANIM_IN_NO, false);
+    mLayout.AnimeStartSetup(ANIM_IN_OK, false);    
 }
 void dYesNoWindow_c::executeState_ButtonOnStageAnimeEndWait() {
     if (!mLayout.isAllAnime()) {
@@ -445,12 +447,12 @@ void dYesNoWindow_c::initializeState_ButtonChangeAnimeEndWait() {
     mLayout.AllAnimeEndSetup();
     if (mPrevCursorPos >= 0) {
         // ID 17 is the exit animation for button 0 (Yes)
-        mLayout.AnimeStartSetup(17 + mPrevCursorPos, false);
+        mLayout.AnimeStartSetup(ANIM_OFF_YES + mPrevCursorPos, false);
     }
     mPrevCursorPos = mCursorPos;
 
     // ID 7 is the in animation for button 0 (Yes)
-    mLayout.AnimeStartSetup(7 + mCursorPos, false);
+    mLayout.AnimeStartSetup(ANIM_ON_YES + mCursorPos, false);
 }
 
 void dYesNoWindow_c::executeState_ButtonChangeAnimeEndWait() {
@@ -469,9 +471,9 @@ void dYesNoWindow_c::finalizeState_ButtonChangeAnimeEndWait() {
 
 void dYesNoWindow_c::initializeState_SelectWait() {
     if (mType == QUICK_SAVED) {
-        mLayout.LoopAnimeStartSetup(3);
+        mLayout.LoopAnimeStartSetup(ANIM_LOOP_QUICK_SAVE);
     }
-    mLayout.LoopAnimeStartSetup(2);
+    mLayout.LoopAnimeStartSetup(ANIM_LOOP_WINDOW);
     dGameCom::updateSelectCursor(getPicturePane(mCursorPos), 0, false);
 }
 
@@ -479,7 +481,7 @@ void dYesNoWindow_c::executeState_SelectWait() {
     if (mCancel) {
         if (mType == QUICK_SAVED) {
             mLayout.AllAnimeEndSetup();
-            mLayout.AnimeStartSetup(16, false);
+            mLayout.AnimeStartSetup(ANIM_HIT_QUICK_SAVE, false);
         }
         mStateMgr.changeState(StateID_ClouseAnimeEndWait);
         return;
@@ -499,7 +501,7 @@ void dYesNoWindow_c::executeState_SelectWait() {
     if (mPrevCursorPos != mCursorPos) {
         // Cursor moved
 
-        SndAudioMgr::sInstance->startSystemSe(SE_SYS_CURSOR, 1);
+        SndAudioMgr::sInstance->startSystemSe(SoundEffects[SOUND_CURSOR_MOVE], 1);
         mStateMgr.changeState(StateID_ButtonChangeAnimeEndWait);
     }
 }
@@ -518,10 +520,10 @@ void dYesNoWindow_c::initializeState_HitAnimeEndWait() {
     mHitButton = false;
 
     if (mType == QUICK_SAVED) {
-        mLayout.AnimeStartSetup(16, false);
+        mLayout.AnimeStartSetup(ANIM_HIT_QUICK_SAVE, false);
     }
-    mLayout.AnimeStartSetup(13 + mCursorPos, false);
-    SndAudioMgr::sInstance->startSystemSe(SE_SYS_DECIDE, 1);
+    mLayout.AnimeStartSetup(ANIM_HIT_YES + mCursorPos, false);
+    SndAudioMgr::sInstance->startSystemSe(SoundEffects[SOUND_WAIT], 1);
 }
 
 void dYesNoWindow_c::executeState_HitAnimeEndWait() {
@@ -559,12 +561,12 @@ void dYesNoWindow_c::initializeState_ClouseAnimeEndWait() {
         case PEACH_CASTLE_HINT1:
         case PEACH_CASTLE_HINT2:
             if (!mHasBG) {
-                mLayout.AnimeStartSetup(21, false);
+                mLayout.AnimeStartSetup(ANIM_OUT_BG, false);
             }
             break;
     }
-    SndAudioMgr::sInstance->startSystemSe(SE_SYS_BACK, 1);
-    mLayout.AnimeStartSetup(22, false);
+    SndAudioMgr::sInstance->startSystemSe(SoundEffects[SOUND_CLOSE], 1);
+    mLayout.AnimeStartSetup(ANIM_OUT_WINDOW, false);
 }
 
 void dYesNoWindow_c::executeState_ClouseAnimeEndWait() {

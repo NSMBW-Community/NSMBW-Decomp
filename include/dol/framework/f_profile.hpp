@@ -8,24 +8,25 @@
 
 /// @brief Creates a basic profile with the given execute and draw order values.
 /// @hideinitializer
-#define SPECIAL_BASE_PROFILE(profName, className, executeOrder, drawOrder) void *className##_classInit() { return new className(); } \
+#define CUSTOM_BASE_PROFILE(profName, className, executeOrder, drawOrder) void *className##_classInit() { return new className(); } \
     fProfile::fBaseProfile_c g_profile_##profName = { &className##_classInit, executeOrder, drawOrder }
 
 /// @brief Creates an actor profile with the given execute/draw order and actor property values.
 /// @hideinitializer
-/// @see SPECIAL_BASE_PROFILE
-#define SPECIAL_ACTOR_PROFILE(profName, className, executeOrder, drawOrder, properties) void *className##_classInit() { return new className(); } \
+#define CUSTOM_ACTOR_PROFILE(profName, className, executeOrder, drawOrder, properties) void *className##_classInit() { return new className(); } \
     const fProfile::fActorProfile_c g_profile_##profName = { &className##_classInit, executeOrder, drawOrder, properties }
 
 /// @brief Creates a basic profile, using the profile number as the execute and draw order value.
+/// @details The execution order is set to the profile number.
 /// @hideinitializer
 /// @see SPECIAL_BASE_PROFILE
-#define DEFAULT_BASE_PROFILE(profName, className) SPECIAL_BASE_PROFILE(profName, className, fProfile::profName, fProfile::profName);
+#define BASE_PROFILE(profName, className, drawOrder) CUSTOM_BASE_PROFILE(profName, className, fProfile::profName, fProfile::DRAW_ORDER::profName);
 
 /// @brief Creates an actor profile, using the profile number as the execute and draw order value.
+/// @details The execution order is set to the profile number.
 /// @hideinitializer
 /// @see DEFAULT_BASE_PROFILE
-#define DEFAULT_ACTOR_PROFILE(profName, className, properties) SPECIAL_ACTOR_PROFILE(profName, className, fProfile::profName, fProfile::profName, properties);
+#define ACTOR_PROFILE(profName, className, properties) CUSTOM_ACTOR_PROFILE(profName, className, fProfile::profName, fProfile::DRAW_ORDER::profName, properties);
 
 /// @brief The name of a profile. Value is a fProfile::PROFILE_NAME_e.
 typedef u16 ProfileName;
@@ -65,7 +66,7 @@ namespace fProfile {
         u32 mActorProperties;
     };
 
-    extern fBaseProfile_c *(*sProfileList)[PROFILE_COUNT]; ///< A list of all profiles.
+    extern const fBaseProfile_c *(*sProfileList)[PROFILE_COUNT]; ///< A list of all profiles.
     /// @}
 
 } // namespace fProfile

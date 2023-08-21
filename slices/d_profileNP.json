@@ -63,7 +63,7 @@
                 ".text": "0x4e0-0x1fb8",
                 ".ctors": "0x0-0x4",
                 ".data": "0xd28-0x2cfc",
-                ".rodata": "0x18-0x1c8",
+                ".rodata": "0x18-0x1d8",
                 ".bss": "0x10-0x208"
             }
         }
