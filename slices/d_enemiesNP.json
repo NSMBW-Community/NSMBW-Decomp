@@ -2,7 +2,7 @@
     "meta": {
         "fileName": "d_enemiesNP.rel",
         "type": "REL",
-        "defaultCompilerFlags": "-sdata 0 -sdata2 0 -proc gekko -fp hard -O4,p -char signed -rtti off -enum int -Cpp_exceptions off",
+        "defaultCompilerFlags": "-sdata 0 -sdata2 0 -proc gekko -fp hard -O4,p -char signed -rtti off -enum int -Cpp_exceptions off -ipa file",
         "moduleNum": 3,
         "baseAddr": "809A2D90",
         "sections": {

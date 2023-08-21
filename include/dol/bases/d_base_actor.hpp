@@ -151,7 +151,7 @@ public:
     bool mVisible; ///< Whether the actor should be visible or not. Defaults to @p true .
 
 private:
-    static mVec3_c *m_tmpCtPosP; ///< Temporary storage for the next constructed actor's position. See ::mPos.
-    static mAng3_c *m_tmpCtAngleP; ///< Temporary storage for the next constructed actor's rotation. See ::mAngle.
+    static const mVec3_c *m_tmpCtPosP; ///< Temporary storage for the next constructed actor's position. See ::mPos.
+    static const mAng3_c *m_tmpCtAngleP; ///< Temporary storage for the next constructed actor's rotation. See ::mAngle.
     static fLiMgBa_c m_actorManage; ///< A list of all the constructed actors.
 };

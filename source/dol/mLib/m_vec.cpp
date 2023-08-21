@@ -9,7 +9,7 @@
 // [This is required to ensure correct sdata2 ordering]
 // [It will be deadstripped by the linker later]
 float DUMMY_M_VEC(s16 val) {
-    return nw4r::math::CosIdx(val);
+    return nw4r::math::CosS(val);
 }
 
 inline bool isZero(float val) {
@@ -36,8 +36,8 @@ bool mVec3_c::normalizeRS() {
 }
 
 void mVec3_c::rotX(mAng angle) {
-    float cos = getFloat(nw4r::math::CosIdx((s16)angle.mAngle));
-    float sin = getFloat(nw4r::math::SinIdx((s16)angle.mAngle));
+    float cos = angle.cos();
+    float sin = angle.sin();
     float y = this->y;
     float z = this->z;
     this->y = cos * y - sin * z;
@@ -45,8 +45,8 @@ void mVec3_c::rotX(mAng angle) {
 }
 
 void mVec3_c::rotY(mAng angle) {
-    float cos = getFloat(nw4r::math::CosIdx((s16)angle.mAngle));
-    float sin = getFloat(nw4r::math::SinIdx((s16)angle.mAngle));
+    float cos = angle.cos();
+    float sin = angle.sin();
     float x = this->x;
     float z = this->z;
     this->x = cos * x + sin * z;

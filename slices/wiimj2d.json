@@ -3,7 +3,7 @@
         "fileName": "wiimj2d.dol",
         "type": "DOL",
         "moduleNum": 0,
-        "defaultCompilerFlags": "-proc gekko -fp hard -O4 -inline noauto -Cpp_exceptions off -enum int -RTTI off",
+        "defaultCompilerFlags": "-proc gekko -fp hard -O4 -inline noauto -Cpp_exceptions off -enum int -RTTI off -ipa file",
         "sections": {
             ".init":                { "index": 0,  "align": 16, "size": "0x26c0" },
             ".text":                { "index": 1,  "align": 16, "size": "0x2e7560" },

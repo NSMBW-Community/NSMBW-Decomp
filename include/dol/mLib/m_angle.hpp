@@ -1,5 +1,6 @@
 #pragma once
 #include <types.h>
+#include <lib/nw4r/math/trigonometry.hpp>
 #include <lib/rvl/mtx/vec.h>
 
 /// @brief A one-dimensional short angle vector.
@@ -44,6 +45,13 @@ struct mAng {
 
     /// @brief Inequality operator.
     bool operator!=(const mAng &v) const { return mAngle != v.mAngle; }
+    
+    /// @brief Computes the sine of the angle.
+    float sin() const { return nw4r::math::SinS(mAngle); }
+
+    /// @brief Computes the cosine of the angle.
+    float cos() const { return nw4r::math::CosS(mAngle); }
+
 
     s16 mAngle; ///< The rotation.
 };

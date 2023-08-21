@@ -2,7 +2,7 @@
     "meta": {
         "fileName": "d_en_bossNP.rel",
         "type": "REL",
-        "defaultCompilerFlags": "-sdata 0 -sdata2 0 -proc gekko -fp hard -O4,p -char signed -rtti off -enum int -Cpp_exceptions off",
+        "defaultCompilerFlags": "-sdata 0 -sdata2 0 -proc gekko -fp hard -O4,p -char signed -rtti off -enum int -Cpp_exceptions off -ipa file",
         "moduleNum": 4,
         "baseAddr": "80B1CA10",
         "sections": {
