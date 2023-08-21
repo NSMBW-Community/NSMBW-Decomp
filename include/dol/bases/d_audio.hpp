@@ -6,4 +6,5 @@ namespace dAudio {
     void prepareSceneSnd(); ///< @unofficial
     void destroySceneSnd(); ///< @unofficial
     void setNextScene(ProfileName prof, unsigned long bgmIndex);
+    void pauseOffGameWithReset(); ///< @unofficial
 };

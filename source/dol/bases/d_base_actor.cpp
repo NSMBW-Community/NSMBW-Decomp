@@ -5,8 +5,8 @@
 #include <lib/nw4r/math/trigonometry.hpp>
 #include <lib/rvl/mtx/mtx.h>
 
-mVec3_c *dBaseActor_c::m_tmpCtPosP;
-mAng3_c *dBaseActor_c::m_tmpCtAngleP;
+const mVec3_c *dBaseActor_c::m_tmpCtPosP;
+const mAng3_c *dBaseActor_c::m_tmpCtAngleP;
 fLiMgBa_c dBaseActor_c::m_actorManage;
 
 dBaseActor_c::dBaseActor_c() :
@@ -109,8 +109,8 @@ void dBaseActor_c::draw2D_lyt2() {
 }
 
 void dBaseActor_c::setTmpCtData(const mVec3_c *position, const mAng3_c *rotation) {
-    m_tmpCtPosP = (mVec3_c *)position;
-    m_tmpCtAngleP = (mAng3_c *)rotation;
+    m_tmpCtPosP = position;
+    m_tmpCtAngleP = rotation;
 }
 
 dBaseActor_c *dBaseActor_c::construct(ProfileName profName, unsigned long param, const mVec3_c *position, const mAng3_c *rotation) {
@@ -143,8 +143,8 @@ dBaseActor_c *dBaseActor_c::construct(ProfileName profName, dBase_c *parent, uns
 }
 
 void dBaseActor_c::calcSpeed() {
-    float sin = nw4r::math::SinIdx(mLastAngle.y);
-    float cos = nw4r::math::CosIdx(mLastAngle.y);
+    float sin = nw4r::math::SinS(mLastAngle.y);
+    float cos = nw4r::math::CosS(mLastAngle.y);
 
     // Distribute mSpeedF on the X and Z axes according to the actor's rotation and use the regular Y speed
     // [Defining newZ is required for matching]

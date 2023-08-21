@@ -13,3 +13,5 @@ SECTIONS {
         .bss ALIGN(0x4):{}
     } > text
 }
+
+EXCLUDEFILES { wiimj2d.elf }

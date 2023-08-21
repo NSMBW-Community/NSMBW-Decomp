@@ -17,17 +17,31 @@ float SinFIdx(float fidx);
 float CosFIdx(float fidx);
 
 /// @brief Computes the sine value.
-/// @param idx The angle, measured in units of 1/65536th of a circle.
+/// @param ang The angle, measured in units of 1/65536th of a circle.
 /// @return The sine for idx.
-inline float SinIdx(s16 idx) {
-    return SinFIdx(OSu16tof32((u16*)&idx) * (1.0f / 256.0f));
+inline float SinF(float ang) {
+    return SinFIdx(ang * (1.0f / 256.f));
 }
 
 /// @brief Computes the cosine value.
 /// @param idx The angle measured in units of 1/65536th of a circle.
 /// @return The cosine for idx.
-inline float CosIdx(s16 idx) {
-    return CosFIdx(OSu16tof32((u16*)&idx) * (1.0f / 256.0f));
+inline float CosF(float ang) {
+    return CosFIdx(ang * (1.0f / 256.f));
+}
+
+/// @brief Computes the sine value.
+/// @param ang The angle, measured in units of 1/65536th of a circle.
+/// @return The sine for idx.
+inline float SinS(short ang) {
+    return SinF(OSu16tof32((u16 *) &ang));
+}
+
+/// @brief Computes the cosine value.
+/// @param idx The angle measured in units of 1/65536th of a circle.
+/// @return The cosine for idx.
+inline float CosS(short ang) {
+    return CosF(OSu16tof32((u16 *) &ang));
 }
 
 } // namespace math

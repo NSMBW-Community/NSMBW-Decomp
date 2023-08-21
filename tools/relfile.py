@@ -21,7 +21,7 @@ class RelRelocation:
             self.addend: int = 0
 
     def __repr__(self) -> str:
-        return f'<Relocation: offset={self.offset} reloc_type={self.reloc_type} section={self.section} addend={self.addend}>'
+        return f'<Relocation: offset={self.offset} reloc_type={self.reloc_type} section={self.section} addend={hex(self.addend)}>'
 
     @staticmethod
     def entry_size() -> int:

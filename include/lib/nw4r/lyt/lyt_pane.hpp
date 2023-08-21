@@ -65,6 +65,8 @@ private:
     u8 mField_b8;
     u8 mField_b9;
     u8 mOriginType;
+
+public:
     u8 mFlags;
 
     static int typeInfo;

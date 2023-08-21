@@ -24,8 +24,8 @@ mMtx_c::mMtx_c(float _00, float _01, float _02, float _03, float _10, float _11,
 }
 
 void mMtx_c::XrotS(mAng angle) {
-    float cos = getFloat(nw4r::math::CosIdx((s16)angle.mAngle));
-    float sin = getFloat(nw4r::math::SinIdx((s16)angle.mAngle));
+    float cos = angle.cos();
+    float sin = angle.sin();
 
     mData[0][0] = 1.0f;
     mData[0][1] = 0.0f;
@@ -50,8 +50,8 @@ void mMtx_c::XrotM(mAng angle) {
 }
 
 void mMtx_c::YrotS(mAng angle) {
-    float cos = getFloat(nw4r::math::CosIdx((s16)angle.mAngle));
-    float sin = getFloat(nw4r::math::SinIdx((s16)angle.mAngle));
+    float cos = angle.cos();
+    float sin = angle.sin();
 
     mData[0][0] = cos;
     mData[0][1] = 0.0f;
@@ -76,8 +76,8 @@ void mMtx_c::YrotM(mAng angle) {
 }
 
 void mMtx_c::ZrotS(mAng angle) {
-    float cos = getFloat(nw4r::math::CosIdx((s16)angle.mAngle));
-    float sin = getFloat(nw4r::math::SinIdx((s16)angle.mAngle));
+    float cos = angle.cos();
+    float sin = angle.sin();
 
     mData[0][0] = cos;
     mData[0][1] = -sin;

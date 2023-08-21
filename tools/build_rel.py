@@ -9,13 +9,16 @@ from elffile import *
 from elfconsts import *
 from relfile import Rel, RelRelocation, RelSection
 
+def add_symbol(module_classify: dict[int, list], i: int, reloc: ElfRela, sym: ElfSymbol) -> None:
+    if i not in module_classify:
+        module_classify[i] = []
+
+    module_classify[i].append((reloc, sym))
+
 def find_symbol(syms: ElfSymtab, i: int, name: str, module_classify: dict[int, list], reloc: ElfRela) -> bool:
     try_found = syms.get_symbols(name)
     if try_found and try_found[0].st_shndx != SHN.SHN_UNDEF.value:
-        if i not in module_classify:
-            module_classify[i] = []
-
-        module_classify[i].append((reloc, try_found[0]))
+        add_symbol(module_classify, i, reloc, try_found[0])
         return True
     return False
 
@@ -36,7 +39,7 @@ def convert_to_rel_relocations(elf_relocs: list[tuple[ElfRela, ElfSymbol]], sec_
             st_value = sym.addend
         elif type(sym) is ElfSymbol:
             st_shndx = sym.st_shndx
-            st_value = sym.st_value
+            st_value = sym.st_value + rel.r_addend
 
         assert rel.r_offset >= pos
         offset = rel.r_offset - pos
@@ -119,6 +122,11 @@ def process_file(modules: list[ElfFile], idx: int, filename: Path, alias_db: dic
             symbol = symbol_table.get_symbol(reloc.r_info_sym)
             sym_name = symbol.name
 
+            # Check if in same module
+            if symbol.st_shndx != SHN.SHN_UNDEF.value:
+                add_symbol(module_classify, idx, reloc, symbol)
+                continue
+
             # Try to look up symbol in alias database
             alias_symname = alias_db.get(f'{unit_name}: {sym_name}', alias_db.get(sym_name, ''))
             if alias_symname:
@@ -138,10 +146,6 @@ def process_file(modules: list[ElfFile], idx: int, filename: Path, alias_db: dic
 
                 sym = ElfSymbol('', st_shndx=int(m.group(2), 16), st_value=int(m.group(3), 16))
                 module_classify[mod_num].append((reloc, sym))
-                continue
-
-            # Search own module
-            if find_symbol(modules[idx].get_section('.symtab'), idx, sym_name, module_classify, reloc):
                 continue
 
             # Search other modules
@@ -233,7 +237,7 @@ def build_rel(elf_file: Path, plf_files: list[Path], alias_file: Path, fake_path
             for line in f:
                 from_sym, to_sym = line.split('=')
                 if from_sym not in alias_db:
-                    alias_db[from_sym] = to_sym
+                    alias_db[from_sym] = to_sym.upper()
 
     # Initialize str file
     str_file = []
