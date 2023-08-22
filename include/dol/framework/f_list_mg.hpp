@@ -8,7 +8,7 @@
 class fBase_c;
 
 /// @brief A base list, made of fLiNdBa_c nodes.
-/// @ingroup framework dol
+/// @ingroup framework
 /// @note The class name stands for "List Manager (with) Base".
 class fLiMgBa_c : public cListMg_c {
 public:

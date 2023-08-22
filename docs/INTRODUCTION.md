@@ -15,11 +15,11 @@ The final game only includes the PPC assembly code, and it's highly unlikely tha
 
 #### Physical Structure
 The game's code is physically divided into five files:
-- @ref dol "main.dol"
-- @ref profileNP "d_profileNP.rel.LZ"
-- @ref basesNP "d_basesNP.rel.LZ"
-- @ref enemiesNP "d_enemiesNP.rel.LZ"
-- @ref bossNP "d_en_bossNP.rel.LZ"
+- main.dol
+- d_profileNP.rel.LZ
+- d_basesNP.rel.LZ
+- d_enemiesNP.rel.LZ
+- d_en_bossNP.rel.LZ
 
 This division, while providing modularity during the development process, likely originates from a size limit for `main.dol`, imposed by Nintendo on all Wii game developers.
 
@@ -40,7 +40,7 @@ The game code can be logically divided into five major components, each comprisi
 #### Game-Specific Code Structure
 Thanks to the [symbols we have recovered](https://rootcubed.dev/nsmbw-symbols/), we can divide the @ref game "game-specific code" into several parts as follows:
 - @ref framework "The base game framework" (classes prefixed with `f`) is the core of the game engine. _If you want to learn how the game works, start from here._
-- The @ref slib "s" library is comprised of math utilities and, most importantly, the state system.
+- The @ref slib "s" library is comprised of various utilities and, most importantly, the state system.
 - The @ref mlib "m" library wraps the functionality of @ref egg, @ref nw4r and the @ref rvl to provide even higher level APIs.
 - The @ref snd library provides an application layer sound API.
 - @ref clib "Various utility classes" can be found under the `c` prefix.

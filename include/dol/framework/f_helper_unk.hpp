@@ -1,7 +1,7 @@
 #pragma once
 #include <types.h>
 
-/// @ingroup framework dol
+/// @ingroup framework
 /// @unused [A helper class for fBase_c with unknown purpose].
 /// @unofficial
 class fBaHelper_c {

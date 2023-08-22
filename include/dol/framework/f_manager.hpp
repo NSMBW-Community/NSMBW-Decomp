@@ -14,7 +14,7 @@ class fBase_c;
 
 /**
  * @brief Manages the execution of base operations.
- * @ingroup framework dol
+ * @ingroup framework
  * @details
  * ## Overview
  * fManager_c manages the execution of base operations (which Nintendo calls processes) both at a local

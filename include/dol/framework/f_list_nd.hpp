@@ -6,7 +6,7 @@ class fBase_c;
 
 /// @brief A base list node.
 /// @details Each node is owned by a @ref fBase_c "base" and represents it in the @ref fLiMgBa_c "list".
-/// @ingroup framework dol
+/// @ingroup framework
 /// @unofficial
 class fLiNdBa_c : public cListNd_c {
 public:

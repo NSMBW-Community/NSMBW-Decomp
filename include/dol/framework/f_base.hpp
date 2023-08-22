@@ -9,7 +9,7 @@
 
 /**
  * @brief The base class for all scenes, actors and various other processes.
- * @ingroup framework dol
+ * @ingroup framework
  * @details
  * ## Overview
  * fBase_c defines the core elements of a process, to provide common behaviour across all bases.
