@@ -63,10 +63,11 @@ STRIP_FROM_INC_PATH    = include
 # with the commands \{ and \} for these it is advised to use the version @{ and
 # @} or use a double escape (\\{ and \\})
 
-ALIASES                += unused="\xrefitem unused \"\" \"Unused Elements\" \brief [Unused]."
-ALIASES                += unofficial="\note Unofficial name."
+ALIASES                += unused="@xrefitem unused \"\" \"Unused Elements\" \brief [Unused]."
+ALIASES                += unofficial="<dl class=\"section invariant\"><dt><b>Unofficial name.</b></dt></dl>"
 ALIASES                += inlineimage="@image{inline} html"
 ALIASES                += imagecaption{1}="<div class=\"image caption\">\1</div>"
+ALIASES                += decompnote{1}="<dl class=\"section note\"><dt><b>Decompilation Note:</b></dt><dd>\1</dd></dl>"
 
 # The MARKDOWN_ID_STYLE tag can be used to specify the algorithm used to
 # generate identifiers for the Markdown headings. Note: Every identifier is

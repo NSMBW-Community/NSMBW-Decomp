@@ -7,7 +7,7 @@ class fTrNdBa_c;
 
 /// @brief A base tree, made of fTrNdBa_c nodes.
 /// @ingroup framework
-/// @note The class name stands for "Tree Manager (with) Base".
+/// @decompnote{The class name stands for "Tree Manager (with) Base".}
 class fTrMgBa_c : public cTreeMg_c {
 public:
 

@@ -4,6 +4,11 @@ html {
     --primary-dark-color: #af2828 !important;
     --primary-light-color: #e34141 !important;
 
+    /* Use todo color for invariant color */
+    --invariant-color: #e4f3ff !important;
+    --invariant-color-dark: #1879C4 !important;
+    --invariant-color-darker: #274a5c !important;
+
 	/* Use warning color for bug color */
     --bug-color: var(--warning-color) !important;
     --bug-color-dark: var(--warning-color-dark) !important;
@@ -18,6 +23,16 @@ html {
     --todo-color: var(--deprecated-color) !important;
     --todo-color-dark: var(--deprecated-color-dark) !important;
     --todo-color-darker: var(--deprecated-color-darker) !important;
+}
+
+@media (prefers-color-scheme: dark) {
+    html:not(.light-mode) {
+
+        /* Use todo color for invariant color (dark mode) */
+        --invariant-color: #163750 !important;
+        --invariant-color-dark: #1982D2 !important;
+        --invariant-color-darker: #dcf0fa !important;
+    }
 }
 
 /* Make links brighter  */

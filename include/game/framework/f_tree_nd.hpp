@@ -8,7 +8,7 @@ class fBase_c;
 /// @brief A base tree node.
 /// @details Each node is owned by a @ref fBase_c "base" and represents it in the @ref fTrMgBa_c "tree".
 /// @ingroup framework
-/// @note The class name stands for "Tree Node (with) Base".
+/// @decompnote{The class name stands for "Tree Node (with) Base".}
 class fTrNdBa_c : public cTreeNd_c {
 public:
 
