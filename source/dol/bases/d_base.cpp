@@ -76,8 +76,7 @@ int dBase_c::loadAsyncCallback() {
     return 2;
 }
 
-void dBase_c::unloadCallback() {
-}
+void dBase_c::unloadCallback() {}
 
 void dBase_c::initLoader() {
     fBase_c::sLoadAsyncCallback = &loadAsyncCallback;

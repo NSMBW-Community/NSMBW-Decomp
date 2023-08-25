@@ -17,11 +17,11 @@ public:
      * @param elCount The total number of array elements.
      * @param pDtor A pointer to the elements' default destructor, or @p nullptr .
      */
-    __partial_array_destructor::__partial_array_destructor(void *pArray, u32 elSize, u32 elCount, dtorPtr pDtor) {
-        mpArray = pArray;
-        mSize = elSize;
-        mCount = elCount;
-        mpDtor = pDtor;
+    __partial_array_destructor::__partial_array_destructor(void *pArray, u32 elSize, u32 elCount, dtorPtr pDtor) :
+        mpArray(pArray),
+        mSize(elSize),
+        mCount(elCount),
+        mpDtor(pDtor) {
         mCurrNum = mCount;
     }
 

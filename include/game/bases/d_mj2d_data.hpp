@@ -129,7 +129,7 @@ public:
     dMj2dGame_c();
 
     /// @brief Deletes the holder.
-    ~dMj2dGame_c() {};
+    ~dMj2dGame_c() {}
 
     void initialize(); ///< Initializes the slot data.
 
@@ -203,7 +203,7 @@ public:
     s8 getContinue(int player) const; ///< Gets @p player 's continue count.
 
     void setStockItem(int item, s8 count); ///< Sets the inventory amount for the given item.
-    inline s8 getStockItem(int item) { return mStockItemCount[item]; }; // [why was this inlined?]
+    inline s8 getStockItem(int item) { return mStockItemCount[item]; } // [why was this inlined?]
 
     /// @brief Checks if the completion flag(s) for the given world is set. See ::WORLD_COMPLETION_e.
     u8 isWorldDataFlag(int world, u8 flag) const;

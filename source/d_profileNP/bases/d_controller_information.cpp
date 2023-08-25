@@ -7,8 +7,7 @@
 
 BASE_PROFILE(CONTROLLER_INFORMATION, dControllerInformation_c);
 
-dControllerInformation_c::dControllerInformation_c() : mIsCreated(false) {
-}
+dControllerInformation_c::dControllerInformation_c() : mIsCreated(false) {}
 
 dControllerInformation_c::~dControllerInformation_c() {}
 

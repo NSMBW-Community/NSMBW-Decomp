@@ -8,7 +8,7 @@ class cM_rand_c {
 public:
 
     /// @brief Initializes the class with the given seed.
-    cM_rand_c(u32 seed) { mSeed = seed; };
+    cM_rand_c(u32 seed) : mSeed(seed) {}
 
     u32 ranqd1(u32 max); ///< Generates an integer between 0 and the given max.
     float ranqd2(); ///< Generates a floating point number between 0 and 1.

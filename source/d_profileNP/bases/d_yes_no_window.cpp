@@ -361,9 +361,7 @@ void dYesNoWindow_c::executeState_InitWait() {
     mStateMgr.changeState(StateID_OpenAnimeEndWait);
 }
 
-void dYesNoWindow_c::finalizeState_InitWait() {
-    return;
-}
+void dYesNoWindow_c::finalizeState_InitWait() {}
 
 // ------------------------
 // StateID_OpenAnimeEndWait
@@ -589,8 +587,6 @@ void dYesNoWindow_c::initializeState_HitAnimeAfterWait() {
     mHitButton = false;
 }
 
-void dYesNoWindow_c::executeState_HitAnimeAfterWait() {
-}
+void dYesNoWindow_c::executeState_HitAnimeAfterWait() {}
 
-void dYesNoWindow_c::finalizeState_HitAnimeAfterWait() {
-}
+void dYesNoWindow_c::finalizeState_HitAnimeAfterWait() {}

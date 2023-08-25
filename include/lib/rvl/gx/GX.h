@@ -425,7 +425,7 @@ void GXSetTexCoordGen2(GXTexCoordID, GXTexGenType, GXTexGenSrc, u8, u8, u32);
 void GXBegin(GXPrimitive, GXVtxFmtIdx, u16);
 void GXSetCullMode(int);
 
-inline static void GXEnd() { }
+inline static void GXEnd() {}
 
 void GXSetNumIndStages(u8);
 void __GXSetIndirectMask(u32);

@@ -1,7 +1,6 @@
 #include <game/cLib/c_owner_set.hpp>
 
-void UNK_80161880() {
-}
+void UNK_80161880() {}
 
 void cOwnerSetMg_c::add(cOwnerSetNd_c *nd, void *owner) {
     if (this == nullptr || nd == nullptr || owner == nullptr) {

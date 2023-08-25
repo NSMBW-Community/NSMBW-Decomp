@@ -8,7 +8,7 @@
 template<class T>
 class sFState_c : public sStateIf_c {
 public:
-    sFState_c(T &owner) : mpOwner(owner) { mpID = nullptr; }
+    sFState_c(T &owner) : mpOwner(owner), mpID(nullptr) {}
 
     enum STATE_ACTION_e {
         INITIALIZE,

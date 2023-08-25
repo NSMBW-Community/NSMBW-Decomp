@@ -27,7 +27,7 @@ public:
     cOwnerSetMg_c() : mpRoot(nullptr) {}
 
     /// @brief Destroys the set.
-    ~cOwnerSetMg_c() { clear(); };
+    ~cOwnerSetMg_c() { clear(); }
 
     /**
      * @brief Adds a node to the set.

@@ -104,7 +104,7 @@
  * profile system (more details here). These callbacks are set to empty placeholder functions
  * by dBase_c::initLoader. Judging by their names, they were supposed to be called after a profile module
  * would have been loaded/unloaded.
- * - Each base supports having its own @ref ::mpHeap "heap". The heap name, translated from Japanese,
+ * - Each base supports having its own @ref ::mHeap "heap". The heap name, translated from Japanese,
  * is <i>Heap that each process can have individually (fBase_c::mHeap)</i>. Two working methods for creating
  * this heap are still in the game (::entryFrmHeap, ::entryFrmHeapNonAdjust), but are unused. This per-base
  * allocation method was most likely discontinued in favour of mAllocator_c and its derivatives.
@@ -193,7 +193,8 @@ protected:
     fBaHelper_c *mpUnusedHelper; ///< @unused See [Unused Content](#unused-content).
     fLiMgBa_c mUnusedList; ///< @unused See [Unused Content](#unused-content).
 
-    EGG::FrmHeap *mpHeap; ///< @unused The base's dedicated heap.
+    // [No p because of the string "fBase_c::mHeap"]
+    EGG::FrmHeap *mHeap; ///< @unused The base's dedicated heap.
 
 public:
     fBase_c(); ///< Constructs a new base.

@@ -102,11 +102,9 @@ void dBaseActor_c::postDraw(fBase_c::MAIN_STATE_e status) {
     dBase_c::postDraw(status);
 }
 
-void dBaseActor_c::draw2D() {
-}
+void dBaseActor_c::draw2D() {}
 
-void dBaseActor_c::draw2D_lyt2() {
-}
+void dBaseActor_c::draw2D_lyt2() {}
 
 void dBaseActor_c::setTmpCtData(const mVec3_c *position, const mAng3_c *rotation) {
     m_tmpCtPosP = position;

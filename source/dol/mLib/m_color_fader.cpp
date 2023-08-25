@@ -6,8 +6,7 @@ mColorFader_c::mColorFader_c(mColor col, mFaderBase_c::EStatus status) : mFaderB
     mAspectRatio = SCGetAspectRatio();
 }
 
-mColorFader_c::~mColorFader_c() {
-}
+mColorFader_c::~mColorFader_c() {}
 
 void mColorFader_c::setStatus(EStatus status) {
     if (status == OPAQUE) {

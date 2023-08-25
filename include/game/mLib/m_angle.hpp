@@ -52,7 +52,6 @@ struct mAng {
     /// @brief Computes the cosine of the angle.
     float cos() const { return nw4r::math::CosS(mAngle); }
 
-
     s16 mAngle; ///< The rotation.
 };
 

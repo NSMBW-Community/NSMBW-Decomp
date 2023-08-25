@@ -6,8 +6,7 @@
 const u32 dMj2dGame_c::sDefaultCharacters[PLAYER_COUNT] = {PLAYER_MARIO, PLAYER_LUIGI, PLAYER_YELLOW_TOAD, PLAYER_BLUE_TOAD};
 char dMj2dHeader_c::sSaveMagic[4] = {'S', 'M', 'N', 'P'};
 
-dMj2dGame_c::dMj2dGame_c() {
-}
+dMj2dGame_c::dMj2dGame_c() {}
 
 void dMj2dGame_c::initialize() {
 

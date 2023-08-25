@@ -15,8 +15,7 @@ mFaderColor()
     }
 }
 
-mFaderBase_c::~mFaderBase_c() {
-}
+mFaderBase_c::~mFaderBase_c() {}
 
 void mFaderBase_c::setFrame(u16 duration) {
     mFrameCount = duration;
