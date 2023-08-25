@@ -1,4 +1,4 @@
-#include <dol/bases/d_res.hpp>
+#include <game/bases/d_res.hpp>
 #include <lib/MSL_C/string.h>
 #include <lib/rvl/cx/cx.h>
 

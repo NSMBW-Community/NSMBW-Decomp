@@ -1,4 +1,4 @@
-#include <dol/sLib/s_Phase.hpp>
+#include <game/sLib/s_Phase.hpp>
 
 sPhase_c::sPhase_c(phaseMethod **methodList, int count) {
     mpMethodList = methodList;

@@ -1,7 +1,7 @@
-#include <dol/bases/d_base_actor.hpp>
-#include <dol/bases/d_reset.hpp>
-#include <dol/bases/d_scene.hpp>
-#include <dol/cLib/c_math.hpp>
+#include <game/bases/d_base_actor.hpp>
+#include <game/bases/d_reset.hpp>
+#include <game/bases/d_scene.hpp>
+#include <game/cLib/c_math.hpp>
 #include <lib/nw4r/math/trigonometry.hpp>
 #include <lib/rvl/mtx/mtx.h>
 

@@ -1,12 +1,12 @@
-#include <d_profileNP/bases/d_yes_no_window.hpp>
-#include <dol/framework/f_profile.hpp>
-#include <dol/framework/f_profile_name.hpp>
-#include <dol/bases/d_audio.hpp>
-#include <dol/bases/d_game_com.hpp>
-#include <dol/bases/d_cursor_select.hpp>
-#include <dol/snd/snd_audio_mgr.hpp>
-#include <dol/bases/d_info.hpp>
-#include <dol/bases/d_s_world_map_static.hpp>
+#include <game/bases/d_yes_no_window.hpp>
+#include <game/framework/f_profile.hpp>
+#include <game/framework/f_profile_name.hpp>
+#include <game/bases/d_audio.hpp>
+#include <game/bases/d_game_com.hpp>
+#include <game/bases/d_cursor_select.hpp>
+#include <game/snd/snd_audio_mgr.hpp>
+#include <game/bases/d_info.hpp>
+#include <game/bases/d_s_world_map_static.hpp>
 #include <constants/message_list.h>
 #include <constants/game_constants.h>
 #include <constants/sound_list.h>
@@ -42,7 +42,7 @@ int dYesNoWindow_c::create() {
         "yesnoWindow_11_outBG.brlan",
         "yesnoWindow_11_outWindow.brlan"
     };
-    
+
     static const int groupIdxs[] = {0, 0, 1, 1, 2, 2, 2, 3, 3, 3, 4, 4, 4, 5, 5, 5, 5, 6, 6, 6, 7, 8, 9, 0};
     static const char *groupNames[] = {
         "A00_inWindow",
@@ -69,7 +69,7 @@ int dYesNoWindow_c::create() {
         "C00_BG_00",
         "A00_inWindow"
     };
-    
+
     static const int textBoxVals[] = {MSG_OK, MSG_OK, MSG_WATCH_HINT_MOVIE, MSG_WATCH_HINT_MOVIE};
     static const char *textBoxNames[] = {
         "T_center_00",
@@ -98,7 +98,7 @@ int dYesNoWindow_c::create() {
         "N_otehonText_00",
         "N_saveIcon_00"
     };
-    
+
     if (mHasLoadedLayout) {
         return SUCCEEDED;
     }
@@ -106,28 +106,28 @@ int dYesNoWindow_c::create() {
     if (!mLayout.ReadResource("yesnoWindow/yesnoWindow.arc", false)) {
         return NOT_READY;
     }
-    
+
     mLayout.build("yesnoWindow_11.brlyt", nullptr);
     mLayout.AnimeResRegister(animeNames, ARRAY_SIZE(animeNames));
     mLayout.GroupRegister(groupNames, groupIdxs, ARRAY_SIZE(groupNames));
     mLayout.TPaneNameRegister(textBoxNames, textBoxVals, BMG_CATEGORY_YES_NO_WINDOW, ARRAY_SIZE(textBoxNames));
-    
+
     mLayout.mDrawOrder = 143;
     mpRootPane = mLayout.getRootPane();
-    
+
     mLayout.PPaneRegister(pictureNames, &P_yesBase_00, ARRAY_SIZE(pictureNames));
     mLayout.TPaneRegister(textboxNames, &T_questionS_00, ARRAY_SIZE(textboxNames));
     mLayout.NPaneRegister(paneNames, &N_otehonText_00, ARRAY_SIZE(paneNames));
-    
+
     mIsActive = false;
     mHasLoadedLayout = true;
     mKeepOpen = false;
     mStarCoinsRequired = 0;
     mCancel = false;
     mHideBG = false;
-    
+
     mpRootPane->mFlags &= ~1;
-    
+
     mLayout.AllAnimeEndSetup();
     mLayout.ReverseAnimeStartSetup(ANIM_IN_BG, false);
     mLayout.AnimePlay();
@@ -426,7 +426,7 @@ void dYesNoWindow_c::initializeState_ButtonOnStageAnimeEndWait() {
     mIsAnimating = true;
     mLayout.AnimeStartSetup(ANIM_IN_YES, false);
     mLayout.AnimeStartSetup(ANIM_IN_NO, false);
-    mLayout.AnimeStartSetup(ANIM_IN_OK, false);    
+    mLayout.AnimeStartSetup(ANIM_IN_OK, false);
 }
 void dYesNoWindow_c::executeState_ButtonOnStageAnimeEndWait() {
     if (!mLayout.isAllAnime()) {
@@ -498,7 +498,7 @@ void dYesNoWindow_c::executeState_SelectWait() {
         mStateMgr.changeState(StateID_HitAnimeEndWait);
         return;
     }
-    
+
     if (mPrevCursorPos != mCursorPos) {
         // Cursor moved
 

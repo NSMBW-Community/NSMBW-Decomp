@@ -1,10 +1,9 @@
 #include <types.h>
-#include <utility_inlines.hpp>
 #include <lib/nw4r/math/arithmetic.hpp>
 #include <lib/nw4r/math/trigonometry.hpp>
 #include <lib/rvl/mtx/mtx.h>
-#include <dol/cLib/c_math.hpp>
-#include <dol/mLib/m_mtx.hpp>
+#include <game/cLib/c_math.hpp>
+#include <game/mLib/m_mtx.hpp>
 
 mMtx_c mMtx_c::Identity = mMtx_c(1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f);
 

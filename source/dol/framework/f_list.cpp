@@ -1,7 +1,7 @@
 #include <types.h>
-#include <dol/framework/f_list_mg.hpp>
-#include <dol/framework/f_list_mg_ptmf.hpp>
-#include <dol/framework/f_base.hpp>
+#include <game/framework/f_list_mg.hpp>
+#include <game/framework/f_list_mg_ptmf.hpp>
+#include <game/framework/f_base.hpp>
 
 bool fLiMgPTMF_c::addNode(fLiNdPrio_c *node) {
     fLiNdPrio_c *curr = getFirst();

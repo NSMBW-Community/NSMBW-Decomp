@@ -1,6 +1,6 @@
-#include <dol/bases/d_base.hpp>
-#include <dol/bases/d_game_com.hpp>
-#include <dol/framework/f_profile.hpp>
+#include <game/bases/d_base.hpp>
+#include <game/bases/d_game_com.hpp>
+#include <game/framework/f_profile.hpp>
 #include <constants/sjis_constants.h>
 /// @file
 

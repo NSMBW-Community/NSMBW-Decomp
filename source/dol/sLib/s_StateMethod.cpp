@@ -1,7 +1,7 @@
 #include <types.h>
-#include <dol/sLib/s_StateInterfaces.hpp>
-#include <dol/sLib/s_StateMethod.hpp>
-#include <dol/sLib/s_StateID.hpp>
+#include <game/sLib/s_StateInterfaces.hpp>
+#include <game/sLib/s_StateMethod.hpp>
+#include <game/sLib/s_StateID.hpp>
 
 sStateMethod_c::sStateMethod_c(sStateIDChkIf_c &checker, sStateFctIf_c &factory, const sStateIDIf_c &initialState) :
     mpStateChk(checker),

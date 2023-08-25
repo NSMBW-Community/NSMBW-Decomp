@@ -95,7 +95,7 @@ enum MESSAGE_e {
     MSG_SWITCH,
     MSG_PEACH_HINT,
     MSG_PEACH_HINT2,
-    
+
     // Group 0x68
     MSG_HOLD_WIIMOTE_SIDEWAYS = 8,
 

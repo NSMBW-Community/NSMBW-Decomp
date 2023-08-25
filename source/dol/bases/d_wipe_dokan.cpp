@@ -1,8 +1,8 @@
-#include <dol/bases/d_wipe_dokan.hpp>
-#include <dol/bases/d_base_actor.hpp>
-#include <dol/bases/d_game_com.hpp>
-#include <dol/bases/d_a_py_mng.hpp>
-#include <dol/bases/d_a_py_demo_mng.hpp>
+#include <game/bases/d_wipe_dokan.hpp>
+#include <game/bases/d_base_actor.hpp>
+#include <game/bases/d_game_com.hpp>
+#include <game/bases/d_a_py_mng.hpp>
+#include <game/bases/d_a_py_demo_mng.hpp>
 
 dWipeDokan_c *dWipeDokan_c::m_instance;
 

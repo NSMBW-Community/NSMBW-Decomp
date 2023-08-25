@@ -1,5 +1,5 @@
 #include <types.h>
-#include <dol/sLib/s_StateID.hpp>
+#include <game/sLib/s_StateID.hpp>
 
 sStateID_c::NumberMemo_c sStateID_c::sm_numberMemo;
 sStateID_c sStateID::null(nullptr);

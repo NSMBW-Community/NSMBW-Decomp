@@ -1,4 +1,4 @@
-#include <dol/mLib/m_wipe_fader.hpp>
+#include <game/mLib/m_wipe_fader.hpp>
 #include <lib/rvl/sc/SC.h>
 #include <lib/rvl/vi/VI.h>
 

@@ -1,14 +1,14 @@
-#include <dol/bases/d_scene.hpp>
-#include <dol/bases/d_audio.hpp>
-#include <dol/bases/d_actor.hpp>
-#include <dol/bases/d_effectmanager.hpp>
-#include <dol/bases/d_fader.hpp>
-#include <dol/bases/d_game_com.hpp>
-#include <dol/bases/d_reset.hpp>
-#include <dol/bases/d_s_restart_crsin.hpp>
-#include <dol/bases/d_s_stage.hpp>
-#include <dol/bases/d_WarningManager.hpp>
-#include <dol/mLib/m_fader.hpp>
+#include <game/bases/d_scene.hpp>
+#include <game/bases/d_audio.hpp>
+#include <game/bases/d_actor.hpp>
+#include <game/bases/d_effectmanager.hpp>
+#include <game/bases/d_fader.hpp>
+#include <game/bases/d_game_com.hpp>
+#include <game/bases/d_reset.hpp>
+#include <game/bases/d_s_restart_crsin.hpp>
+#include <game/bases/d_s_stage.hpp>
+#include <game/bases/d_WarningManager.hpp>
+#include <game/mLib/m_fader.hpp>
 
 u32 dScene_c::mPara;
 ProfileName dScene_c::m_nextScene = fProfile::INVALID;

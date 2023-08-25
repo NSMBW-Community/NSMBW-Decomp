@@ -1,4 +1,4 @@
-#include <dol/mLib/m_angle.hpp>
+#include <game/mLib/m_angle.hpp>
 
 mAng3_c mAng3_c::Zero = mAng3_c(0, 0, 0);
 

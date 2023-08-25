@@ -1,5 +1,5 @@
-#include <dol/framework/f_base.hpp>
-#include <dol/mLib/m_heap.hpp>
+#include <game/framework/f_base.hpp>
+#include <game/mLib/m_heap.hpp>
 #include <lib/MSL_C/string.h>
 #include <constants/sjis_constants.h>
 

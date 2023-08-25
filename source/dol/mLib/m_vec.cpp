@@ -1,6 +1,5 @@
-#include <utility_inlines.hpp>
-#include <dol/mLib/m_angle.hpp>
-#include <dol/mLib/m_vec.hpp>
+#include <game/mLib/m_angle.hpp>
+#include <game/mLib/m_vec.hpp>
 #include <lib/MSL_C/float.h>
 #include <lib/MSL_C/math.h>
 #include <lib/nw4r/math/trigonometry.hpp>

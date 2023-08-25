@@ -1,4 +1,4 @@
-#include <dol/bases/d_res_mng.hpp>
+#include <game/bases/d_res_mng.hpp>
 #include <lib/nw4r/g3d/res_file.h>
 
 dResMng_c *dResMng_c::m_instance;

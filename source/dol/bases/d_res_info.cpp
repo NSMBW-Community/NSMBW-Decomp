@@ -1,5 +1,5 @@
-#include <dol/bases/d_res.hpp>
-#include <dol/mLib/m_heap.hpp>
+#include <game/bases/d_res.hpp>
+#include <game/mLib/m_heap.hpp>
 #include <lib/rvl/vi/VI.h>
 #include <lib/rvl/os/OSCache.h>
 #include <lib/MSL_C/string.h>

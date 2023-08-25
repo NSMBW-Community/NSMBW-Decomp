@@ -1,7 +1,7 @@
 #include <types.h>
 #include <constants/game_constants.h>
 #include <lib/MSL_C/string.h>
-#include <dol/bases/d_mj2d_data.hpp>
+#include <game/bases/d_mj2d_data.hpp>
 
 const u32 dMj2dGame_c::sDefaultCharacters[PLAYER_COUNT] = {PLAYER_MARIO, PLAYER_LUIGI, PLAYER_YELLOW_TOAD, PLAYER_BLUE_TOAD};
 char dMj2dHeader_c::sSaveMagic[4] = {'S', 'M', 'N', 'P'};
