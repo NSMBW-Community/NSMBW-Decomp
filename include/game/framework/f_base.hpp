@@ -101,9 +101,9 @@
  *
  * ## Unused Content
  * - ::sLoadAsyncCallback and ::sUnloadCallback are presumably related to the scrapped relocatable
- * profile system (more details here). These callbacks are set to empty placeholder functions
- * by dBase_c::initLoader. Judging by their names, they were supposed to be called after a profile module
- * would have been loaded/unloaded.
+ * profile system (more details here). These callbacks are set to empty placeholder functions (which belong
+ * to dBase_c) by dBase_c::initLoader. Judging by their names, they were supposed to be called after a
+ * profile module would have been loaded/unloaded.
  * - Each base supports having its own @ref ::mHeap "heap". The heap name, translated from Japanese,
  * is <i>Heap that each process can have individually (fBase_c::mHeap)</i>. Two working methods for creating
  * this heap are still in the game (::entryFrmHeap, ::entryFrmHeapNonAdjust), but are unused. This per-base
