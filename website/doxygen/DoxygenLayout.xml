@@ -3,7 +3,7 @@
   <!-- Navigation index tabs for HTML output -->
   <navindex>
     <tab type="mainpage" visible="yes" title="Introduction"/>
-    <tab type="modules" visible="yes" title="Documentation" intro="Documentation by category."/>
+    <tab type="topics" visible="yes" title="Documentation" intro="Documentation by category."/>
     <tab type="usergroup" title="References" url="[none]">
       <tab type="namespacelist" visible="yes" title="Namespace Reference" intro=""/>
       <tab type="classlist" visible="yes" title="Class Reference" intro=""/>
