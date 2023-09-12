@@ -29,7 +29,7 @@ public:
 
     virtual ~mFaderBase_c(); ///< Destroys the fader.
 
-    virtual void setStatus(EStatus status) = 0; ///< @pure Sets the fader's status.
+    virtual void setStatus(EStatus status) = 0; ///< Sets the fader's status.
     virtual EStatus getStatus() const; ///< Gets the fader's status.
 
     /// @brief Initiates a fade in from pure blacked-out.
@@ -46,7 +46,7 @@ public:
     /// @return If the operation was successful.
     virtual int calc();
 
-    virtual void draw() = 0; ///< @pure Draws the fader.
+    virtual void draw() = 0; ///< Draws the fader.
 
     void setFrame(u16 duration); ///< Sets the duration of the fade. Duration must not be zero.
     void setColor(const mColor &color); ///< Sets the fader's color. Alpha is not modified.

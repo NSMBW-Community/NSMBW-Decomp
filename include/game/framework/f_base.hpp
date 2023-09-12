@@ -29,8 +29,9 @@
  * offer their own implementations of these functions with additional parameters available; their use
  * is recommended.
  *
- * Overloaded @ref ::operator new "new" and @ref ::operator delete "delete" operators are provided
- * for convenience.
+ * The overloaded @ref ::operator new() "new" operator ensures that bases are zero-initialized (therefore
+ * initializing fields to zero is not necessary), while the @ref ::operator delete "delete" operator is
+ * provided for convenience.
  *
  * ## Deleting Bases
  * Bases can be deleted by calling ::deleteRequest on them. A base will be informed of its impending

@@ -130,8 +130,8 @@ public:
     /**
      * @brief Registers an archive to be loaded next.
      *
-     * @param resName The name of the archive to load.
-     * @param filePath The path to the folder which the archive is in.
+     * @param arcName The name of the archive to load.
+     * @param containingFolder The path to the folder which the archive is in.
      * @param allocDir The allocation direction. 1: top-down, anything else: bottom-up.
      * @param heap The heap to load the archive into.
      * @return Whether the operation was successful.
