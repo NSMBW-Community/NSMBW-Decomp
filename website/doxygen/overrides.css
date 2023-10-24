@@ -73,11 +73,16 @@ td.mdescRight {
     border-bottom: 1px solid var(--separator-color);
 }
 
-/* Remove border radius on memItemLeft and right and use a less colorful background */
-td.memItemLeft, td.memItemRight {
+/* Remove border radius on definitions and use a less colorful background */
+td.memItemLeft, td.memItemRight, td.memTemplParams, td.memTemplItemLeft, td.memTemplItemRight {
     border-radius: 0px !important;
     padding-right: 0px !important;
     background-color: var(--code-background) !important;
+}
+
+/* Change template keyword color */
+td.memTemplParams, div.memtemplate {
+    color: var(--page-foreground-color) !important;
 }
 
 /* Remove table cell separator */
