@@ -1,8 +1,8 @@
 #include <game/bases/d_base_actor.hpp>
 #include <game/bases/d_reset.hpp>
 #include <game/bases/d_scene.hpp>
-#include <game/cLib/c_math.hpp>
 #include <lib/nw4r/math/trigonometry.hpp>
+#include <lib/nw4r/ut/inlines.hpp>
 #include <lib/rvl/mtx/mtx.h>
 
 const mVec3_c *dBaseActor_c::m_tmpCtPosP;
@@ -147,7 +147,7 @@ void dBaseActor_c::calcSpeed() {
     // Distribute mSpeedF on the X and Z axes according to the actor's rotation and use the regular Y speed
     // [Defining newZ is required for matching]
     float newZ = mSpeedF * cos;
-    mSpeed.y = cM::fmax(mSpeed.y + mAccelY, mMaxFallSpeed);
+    mSpeed.y = nw4r::ut::Max<float>(mSpeed.y + mAccelY, mMaxFallSpeed);
     mSpeed.x = mSpeedF * sin;
     mSpeed.z = newZ;
 }
@@ -210,9 +210,9 @@ void dBaseActor_c::calcSpeedF() {
     // If the speed hasn't exceeded the limit, increase it until the limit is reached
     // Else decrease it until the limit
     if (mSpeedF < mMaxSpeedF) {
-        mSpeedF = cM::fmin(mSpeedF + mAccelF, mMaxSpeedF);
+        mSpeedF = nw4r::ut::Min<float>(mSpeedF + mAccelF, mMaxSpeedF);
     } else if (mSpeedF > mMaxSpeedF) {
-        mSpeedF = cM::fmax(mSpeedF - mAccelF, mMaxSpeedF);
+        mSpeedF = nw4r::ut::Max<float>(mSpeedF - mAccelF, mMaxSpeedF);
     }
 }
 
@@ -220,9 +220,9 @@ void dBaseActor_c::calcFallSpeed() {
     // If the speed has exceeded the limit, decrease it until the limit is reached
     // Else increase it until the limit
     if (mSpeed.y < mMaxFallSpeed) {
-        mSpeed.y = cM::fmin(mSpeed.y - mAccelY, mMaxFallSpeed);
+        mSpeed.y = nw4r::ut::Min<float>(mSpeed.y - mAccelY, mMaxFallSpeed);
     } else if (mSpeed.y > mMaxFallSpeed) {
-        mSpeed.y = cM::fmax(mSpeed.y + mAccelY, mMaxFallSpeed);
+        mSpeed.y = nw4r::ut::Max<float>(mSpeed.y + mAccelY, mMaxFallSpeed);
     }
 }
 
