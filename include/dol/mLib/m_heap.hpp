@@ -4,6 +4,7 @@
 
 namespace mHeap {
     void restoreCurrentHeap();
+    EGG::Heap *setCurrentHeap(EGG::Heap *);
     void destroyFrmHeap(EGG::FrmHeap *);
     unsigned long adjustFrmHeap(EGG::FrmHeap *);
 

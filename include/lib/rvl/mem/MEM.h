@@ -28,6 +28,19 @@ typedef struct {
     OSMutex *mpMutex;
 } MEMiHeapHeader;
 
+struct _MEMAllocatorFuncs;
+typedef struct {
+    struct _MEMAllocatorFuncs *mpFuncs;
+    void *mpHeap;
+    u32 mHeapParam1;
+    u32 mHeapParam2;
+} MEMAllocator;
+
+typedef struct _MEMAllocatorFuncs {
+    void *(*alloc)(MEMAllocator *, size_t);
+    void (*free)(MEMAllocator *, void *);
+} MEMAllocatorFuncs;
+
 #ifdef __cplusplus
 }
 #endif

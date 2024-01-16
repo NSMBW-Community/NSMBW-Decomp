@@ -22,3 +22,8 @@ namespace EGG {
         MEMiHeapHeader *mpHeapHead;
     };
 }
+
+void *operator new(size_t, void *);
+void *operator new(size_t, EGG::Heap *, int);
+void *operator new[](size_t, void *);
+void *operator new[](size_t, EGG::Heap *, int);
