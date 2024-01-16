@@ -246,6 +246,12 @@
             }
         },
         {
+            "source": "dol/mLib/m_3d_proc.cpp",
+            "memoryRanges": {
+                ".text": "0x15e960-0x15ea90"
+            }
+        },
+        {
             "source": "dol/mLib/m_angle.cpp",
             "memoryRanges": {
                 ".text": "0x1643e0-0x164430",

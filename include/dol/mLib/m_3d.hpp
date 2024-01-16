@@ -7,6 +7,7 @@
 #include <lib/nw4r/g3d/anm_obj_chr.hpp>
 #include <lib/nw4r/g3d/scn_leaf.hpp>
 #include <lib/nw4r/g3d/scn_mdl_simple.hpp>
+#include <lib/nw4r/g3d/scn_proc.hpp>
 #include <lib/nw4r/g3d/scn_root.hpp>
 #include <lib/nw4r/g3d/res_anm.hpp>
 #include <lib/nw4r/g3d/world.hpp>
@@ -137,6 +138,8 @@ namespace m3d {
     //protected:
         banm_c *mpAnm;
     };
+
+    void proc_c_drawProc(nw4r::g3d::ScnProc *, bool);
 
     class proc_c : public scnLeaf_c {
     public:
