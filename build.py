@@ -58,7 +58,7 @@ for slice_file in slices:
             print_cmd(*cmd)
             out = subprocess.run(cmd)
             if out.returncode != 0:
-                sys.exit()
+                sys.exit(out.returncode)
     print_success(f'\nCompiled sources for {slice_file.meta.name}.')
 
 count_compiled_used = 0
@@ -146,7 +146,7 @@ for slice_file in slices:
     print_cmd(*cmd)
     out = subprocess.run(cmd)
     if out.returncode != 0:
-        sys.exit()
+        sys.exit(out.returncode)
 
 # Step 4: build main.dol
 build_dol(Path(f'{BUILDDIR}/wiimj2d.elf'))
