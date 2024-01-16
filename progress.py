@@ -122,12 +122,19 @@ def verify_obj(slice_files: list[SliceFile]) -> bool:
                 if not compiled_path.is_file():
                     errors.append(f'File {compiled_path} not found!')
                 else:
+                    elf = ElfFile.read(open(compiled_path, 'rb').read())
                     for slice_sec in slice.slice_secs:
-                        elf = ElfFile.read(open(compiled_path, 'rb').read())
                         sec_name = slice_sec.sec_name
                         elf_sec = elf.get_section(sec_name)
                         if elf_sec is None:
-                            warnings.append(f'Section {sec_name} not found!')
+                            # Check for $ section
+                            was_found = False
+                            for elf_sec in elf.sections:
+                                if elf_sec.name.split('$')[0] == sec_name:
+                                    was_found = True
+                                    break
+                            if not was_found:
+                                errors.append(f'Section {sec_name} not found!')
                         else:
                             al_start = align_addr(slice_sec.start_offs, slice_sec.alignment)
                             al_end = align_addr(slice_sec.end_offs, slice_sec.alignment)
@@ -138,6 +145,11 @@ def verify_obj(slice_files: list[SliceFile]) -> bool:
                                 if slice.deadstrip or slice.no_deadstrip:
                                     add_note = '\n  This is to be expected with classes that have deadstripped symbols.'
                                 warnings.append(f'Length of section {sec_name} not matching (expected {exp_len}, got {obj_len}){add_note}')
+                    for elf_sec in elf.sections:
+                        if elf_sec.name not in slice_file.meta.secs or slice_file.meta.secs[elf_sec.name].size == 0:
+                            continue
+                        if elf_sec.name not in [i.sec_name for i in slice.slice_secs]:
+                            errors.append(f'Section {elf_sec.name} not included in slice file!')
 
                 # Print result
                 print(print_name + ': ', end='')
