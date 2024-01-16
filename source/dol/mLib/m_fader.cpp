@@ -1,4 +1,4 @@
-#include <dol/mLib/m3d/m3d.hpp>
+#include <dol/mLib/m_3d.hpp>
 #include <lib/nw4r/g3d/state.hpp>
 #include <dol/mLib/m_fader.hpp>
 #include <dol/mLib/m_fader_base.hpp>
