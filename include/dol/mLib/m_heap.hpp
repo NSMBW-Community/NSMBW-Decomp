@@ -5,6 +5,7 @@
 namespace mHeap {
     void restoreCurrentHeap();
     EGG::Heap *setCurrentHeap(EGG::Heap *);
+    size_t frmHeapCost(size_t, size_t);
     void destroyFrmHeap(EGG::FrmHeap *);
     unsigned long adjustFrmHeap(EGG::FrmHeap *);
 
@@ -13,3 +14,7 @@ namespace mHeap {
 
     extern EGG::Heap *g_gameHeaps[3];
 };
+
+inline size_t align32Bit(size_t size) {
+    return (size + 0x1f) & ~0x1f;
+}

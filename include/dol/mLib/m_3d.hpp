@@ -225,8 +225,8 @@ namespace m3d {
     
         class child_c : public fanm_c {
         public:
-            virtual int getType( void ) const;// { return 2; };
-            virtual ~child_c();// {}
+            virtual int getType( void ) const { return 2; };
+            virtual ~child_c() {}
     
             static unsigned long heapCost( nw4r::g3d::ResMdl, nw4r::g3d::ResAnmClr, bool );
             bool create( nw4r::g3d::ResMdl, nw4r::g3d::ResAnmClr, mAllocator_c*, unsigned long* );

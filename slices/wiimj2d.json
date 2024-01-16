@@ -240,15 +240,30 @@
         {
             "source": "dol/mLib/m_3d.cpp",
             "memoryRanges": {
-                ".text": "0x15deb0-0x15e960",
+                ".text": "0x15deb0-0x15ea90",
                 ".sbss": "0x808-0x820",
                 ".sdata2": "0x2bd0-0x2bd8"
             }
         },
         {
-            "source": "dol/mLib/m_3d_proc.cpp",
+            "source": "dol/mLib/m3d/anm_chr.cpp",
             "memoryRanges": {
-                ".text": "0x15e960-0x15ea90"
+                ".text": "0x15ea90-0x15eee0",
+                ".sdata2": "0x2bd8-0x2be8"
+            }
+        },
+        {
+            "source": "dol/mLib/m3d/anm_chr_blend.cpp",
+            "memoryRanges": {
+                ".text": "0x15eee0-0x15f1e0"
+            }
+        },
+        {
+            "source": "dol/mLib/m3d/anm_mat_clr.cpp",
+            "memoryRanges": {
+                ".text": "0x15f1e0-0x15fde0",
+                ".data": "0x2b1c0-0x2b1f0",
+                ".sdata2": "0x2be8-0x2bf8"
             }
         },
         {

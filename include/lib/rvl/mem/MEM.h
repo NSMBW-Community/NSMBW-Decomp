@@ -41,6 +41,8 @@ typedef struct _MEMAllocatorFuncs {
     void (*free)(MEMAllocator *, void *);
 } MEMAllocatorFuncs;
 
+void *MEMAllocFromAllocator(MEMAllocator *, int);
+
 #ifdef __cplusplus
 }
 #endif
