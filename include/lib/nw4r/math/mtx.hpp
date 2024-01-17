@@ -5,7 +5,7 @@ namespace math {
 
 /// @brief A 3x4 matrix.
 struct MTX34 {
-    float mMtx[3][4];
+    float mData[3][4];
 };
 
 } // namespace math

@@ -11,7 +11,7 @@ namespace g3d {
 
 struct ChrAnmResult {
     u32 flags;
-    nw4r::math::VEC3 pos;
+    nw4r::math::VEC3 scale;
     char pad[0xc];
     Mtx mtx;
 };

@@ -200,7 +200,7 @@ typedef enum _GXAlphaOp {
 } GXAlphaOp;
 
 typedef struct _GXTexObj {
-    char data[28];
+    char data[32];
 } GXTexObj;
 
 typedef enum _GXTexFmt {
@@ -477,6 +477,7 @@ void GXSetBlendMode(GXBlendMode, GXBlendFactor, GXBlendFactor, GXLogicOp);
 
 void GXInvalidateVtxCache();
 
+int GXGetTexBufferSize(int width, int height, GXTexFmt fmt, bool, bool);
 void GXInitTexObjLOD(GXTexObj *, GXTexFilter, GXTexFilter, float, float, float, int, int, int);
 void GXSetCopyFilter(int, void *, int, void *);
 void GXSetTexCopySrc(int, int, int, int);

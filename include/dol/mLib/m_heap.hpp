@@ -11,6 +11,8 @@ namespace mHeap {
 
     /// @unofficial
     EGG::FrmHeap *makeFrmHeapAndUpdate(unsigned long size, EGG::Heap *parent, const char *name, u32 align, u32 opt);
+    /// @unofficial
+    EGG::FrmHeap *makeFrmHeap(unsigned long size, EGG::Heap *parent, const char *name, u32 align, u32 opt);
 
     extern EGG::Heap *g_gameHeaps[3];
 };

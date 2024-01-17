@@ -30,7 +30,7 @@ namespace m3d {
     class calcRatio_c {
     public:
         calcRatio_c();
-        virtual ~calcRatio_c() {} // change to {} later
+        virtual ~calcRatio_c() {}
 
         bool isEnd() const;
         void calc();
@@ -96,7 +96,7 @@ namespace m3d {
         virtual ~banm_c();
         virtual int getType() const = 0;
         virtual void remove();
-        virtual void play();
+        virtual void play() {}
     
         bool createAllocator(mAllocator_c *, unsigned long *);
         bool IsBound() const;
@@ -262,8 +262,8 @@ namespace m3d {
     
         class child_c : public fanm_c {
         public:
-            virtual int getType( void ) const;// { return 3; };
-            virtual ~child_c();// {}
+            virtual int getType( void ) const { return 3; };
+            virtual ~child_c() {}
     
             static unsigned long heapCost( nw4r::g3d::ResMdl, nw4r::g3d::ResAnmTexPat, bool );
             bool create( nw4r::g3d::ResMdl, nw4r::g3d::ResAnmTexPat, mAllocator_c*, unsigned long* );
@@ -299,8 +299,8 @@ namespace m3d {
     
         class child_c : public fanm_c {
         public:
-            virtual int getType( void ) const;// { return 4; };
-            virtual ~child_c();// {}
+            virtual int getType( void ) const { return 4; };
+            virtual ~child_c() {}
     
             static unsigned long heapCost( nw4r::g3d::ResMdl, nw4r::g3d::ResAnmTexSrt, bool );
             bool create( nw4r::g3d::ResMdl, nw4r::g3d::ResAnmTexSrt, mAllocator_c*, unsigned long* );

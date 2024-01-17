@@ -267,6 +267,92 @@
             }
         },
         {
+            "source": "dol/mLib/m3d/anm_tex_pat.cpp",
+            "memoryRanges": {
+                ".text": "0x15fde0-0x1609c0",
+                ".data": "0x2b1f0-0x2b220",
+                ".sdata2": "0x2bf8-0x2c08"
+            }
+        },
+        {
+            "source": "dol/mLib/m3d/anm_tex_srt.cpp",
+            "memoryRanges": {
+                ".text": "0x1609c0-0x161600",
+                ".data": "0x2b220-0x2b250",
+                ".sdata2": "0x2c08-0x2c18"
+            }
+        },
+        {
+            "source": "dol/mLib/m3d/anm_vis.cpp",
+            "memoryRanges": {
+                ".text": "0x161600-0x161880",
+                ".sdata2": "0x2c18-0x2c28"
+            }
+        },
+        {
+            "source": "dol/mLib/m3d/banm.cpp",
+            "deadstrip": ["play__Q23m3d6banm_cFv"],
+            "memoryRanges": {
+                ".text": "0x161880-0x161ac0",
+                ".data": "0x2b250-0x2b298",
+                ".sbss": "0x820-0x828"
+            }
+        },
+        {
+            "source": "dol/mLib/m3d/bmdl.cpp",
+            "deadstrip": ["play__Q23m3d6banm_cFv"],
+            "memoryRanges": {
+                ".text": "0x161ac0-0x162500",
+                ".data": "0x2b298-0x2b2b8"
+            }
+        },
+        {
+            "source": "dol/mLib/m3d/calc_ratio.cpp",
+            "memoryRanges": {
+                ".text": "0x162500-0x1626d0",
+                ".data": "0x2b2b8-0x2b2c8",
+                ".sdata2": "0x2c28-0x2c30"
+            }
+        },
+        {
+            "source": "dol/mLib/m3d/fanm.cpp",
+            "memoryRanges": {
+                ".text": "0x1626d0-0x162be0",
+                ".data": "0x2b2c8-0x2b2e0",
+                ".sdata2": "0x2c30-0x2c40"
+            }
+        },
+        {
+            "source": "dol/mLib/m3d/capture.cpp",
+            "memoryRanges": {
+                ".text": "0x162be0-0x162f20",
+                ".sdata2": "0x2c40-0x2c48"
+            }
+        },
+        {
+            "source": "dol/mLib/m3d/mdl.cpp",
+            "deadstrip": ["__dt__Q23m3d11calcRatio_cFv"],
+            "memoryRanges": {
+                ".text": "0x162f20-0x1639d0",
+                ".data": "0x2b2e0-0x2b318",
+                ".sdata2": "0x2c48-0x2c50"
+            }
+        },
+        {
+            "source": "dol/mLib/m3d/scn_leaf.cpp",
+            "memoryRanges": {
+                ".text": "0x1639d0-0x163cb0",
+                ".data": "0x2b318-0x2b330"
+            }
+        },
+        {
+            "source": "dol/mLib/m3d/smdl.cpp",
+            "memoryRanges": {
+                ".text": "0x163cb0-0x163e20",
+                ".data": "0x2b330-0x2b350"
+            }
+        },
+        {
             "source": "dol/mLib/m_angle.cpp",
             "memoryRanges": {
                 ".text": "0x1643e0-0x164430",
