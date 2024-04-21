@@ -11,9 +11,9 @@
  * represents a distinct unit of game behavior and encapsulates specific functionalities.
  *
  * Nintendo refers to these processes as bases. Each type of base is defined by a profile, which
- * determines its behaviour (is it a Goomba, or Mario, or the HUD, or the abstract concept of a world
- * map?) and establishes its priority relative to other base types. More details about profiles can be
- * found @ref profile "here".
+ * determines its behaviour (is it a Goomba, Mario, the HUD, or the abstract concept of a world map?) and
+ * establishes its priority relative to other base types. More details about profiles can be found
+ * @ref profile "here".
  *
  * Processes follow a hierarchical tree structure:
  * - Each process can have multiple siblings and children; this allows creating complex and intricate
@@ -24,22 +24,26 @@
  * @ref dScene_c "here".
  *
  * ## Base Implementation
- * All bases inherit from the fBase_c class, which defines the core elements of a process to provide
- * common behaviour across all bases. For more detailed information, please refer to the fBase_c
- * documentation.
+ * All bases are derived from the fBase_c class, which defines the core elements of a process to provide
+ * common behaviour across all bases (for more detailed information, please refer to the fBase_c
+ * documentation). Numerous subclasses supply additional features on top, allowing bases to implement
+ * complex behaviour relatively easily whilst avoiding duplicate code.
+ *
+ * @hint{When creating a base, consider researching the existing subclasses to avoid unnecessary
+ * reimplementations.}
  *
  * The lifecycle of a base consists of multiple operations, whose behaviour can be overridden at any
- * point. Each operation has an @ref fManager_c "associated linked list", containing all bases for which
- * said operation is scheduled for the current frame.
+ * point in the class hierarchy. Each operation has an @xlink{./classfManager__c.html#implementation,
+ * associated linked list}, containing all bases for which said operation is scheduled for the current
+ * frame.
  *
- * fBase_c defines five core operations:
+ * fBase_c defines four core operations:
  * - @p create runs immediately after construction (generally only once), and can be used to set up the
  * base or load resources for it.
  * - @p execute serves as the base's own main loop, running every frame.
  * - @p draw offers an alternative main loop specifically for rendering code. It also runs every frame.
  * - @p delete runs immediately before destruction (generally only once), and can be used to deallocate
  * resources or remove links to other bases.
- * - @p connect is an internal operation for process management. Bases should not override it.
  *
  * The fManager_c class is responsible for managing the execution cycle of each base. It also offers
  * various utilities for searching for bases meeting specific criteria.
@@ -65,18 +69,20 @@
  * form is also available, although unused.
  *
  * A @ref ProfileName "typedef" for profile names is provided to enhance code readability.
+ * @hint{The @ref fProfile::PROFILE_NAME_e "profile name list" can be used to look up a specific base, to
+ * see its components and aid in the implementation of custom bases.}
  *
  * ## Creating Profiles
  * Use the following macros to create a profile:
- * - Use ::BASE_PROFILE (or ::ACTOR_PROFILE) to use the priority values given by @ref ::PROFILE_NAME_e (execute order)
+ * - Use ::BASE_PROFILE (or ::ACTOR_PROFILE) to use the priority values given by ::PROFILE_NAME_e (execute order)
  * and @ref ::DRAW_ORDER::DRAW_ORDER_e "DRAW_ORDER_e" (draw order).
  * - Use ::CUSTOM_BASE_PROFILE (or ::CUSTOM_ACTOR_PROFILE) if custom priority values are required.
  *
- * Addition of the created profile and its name to the respective lists requires manual intervention.
+ * Addition of profiles (and their name) to the respective lists requires manual intervention.
  *
  * ## Unused Content
- * A profile name in string format can be obtained by calling ::dProf_getName. This has no practical
- * use (and is most likely a debug leftover), but it has greatly helped the research for official game
+ * A profile name in string form can be obtained by calling ::dProf_getName. This has no practical use
+ * (and is most likely a debug leftover), but it has greatly helped the research for official game
  * entity names.
  *
  * @todo Add a link to the profile name list when it gets decompiled.
