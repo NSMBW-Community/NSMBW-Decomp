@@ -30,8 +30,8 @@ public:
     void ZXYrotM(mAng xRot, mAng yRot, mAng zRot); ///< Rotates the matrix on the Y, X and Z axes by the given angles.
     void XYZrotM(mAng xRot, mAng yRot, mAng zRot); ///< Rotates the matrix on the Z, Y and X axes by the given angles.
 
-    void toRot(mAng3_c &out) const; ///< Converts the matrix to a rotation vector.
-    void multVecZero(nw4r::math::VEC3 &out) const; ///< Converts the matrix to a vector.
+    void toRot(mAng3_c &out) const; ///< Extracts the rotation vector from the matrix.
+    void multVecZero(nw4r::math::VEC3 &out) const; ///< Extracts the translation vector from the matrix.
     void zero(); ///< Zeroes out the matrix.
 
     float mData[3][4]; ///< The matrix components.
