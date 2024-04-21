@@ -32,15 +32,15 @@ The decompilation aims to provide matching C/C++ code for all of these files.
 #### Logical Structure
 The game code can be logically divided into five major components, each comprising multiple sub-components:
 - A @ref stdlib "PowerPC implementation" of the [C Standard Library](https://en.wikipedia.org/wiki/C_standard_library).
-- The @ref rvl, a framework providing a set of tools, libraries and APIs that game developers can use to interface with the Wii's hardware in a secure and controlled manner. It is written in C and is used in every Wii game.
-- @ref nw4r (NintendoWare 4 Revolution), a middleware library providing utilities for graphics, audio and text rendering, disc reading, debugging and more. It includes several proprietary file formats and associated export tools. NW4R is written in C++ and accessible to third-party developers upon request.
-- @ref egg, another middleware library providing higher-level utilities on top of the @ref rvl. It is written in C++ and is not available to third-party developers.
+- The @ref rvl, a framework providing a set of tools, libraries and APIs that game developers can use to interface with the Wii's hardware in a controlled manner. It is written in C and is used in every Wii game.
+- @ref nw4r (NintendoWare 4 Revolution), a middleware library providing utilities for graphics, audio and text rendering, disc reading, debugging and more. It includes several proprietary file formats and associated export tools. NW4R is written in C++ and could be used by third-party developers upon request.
+- @ref egg, another middleware library providing higher-level utilities on top of the @ref rvl. It is written in C++ and was not available to third-party developers.
 - Anything else not falling into the categories mentioned above constitutes [game-specific code](#game-specific-code-structure), although there are indications that parts of it belong to a makeshift game engine, extensively reused by Nintendo during that time period.
 
 #### Game-Specific Code Structure
 Thanks to the [symbols we have recovered](https://rootcubed.dev/nsmbw-symbols/), we can divide the @ref game "game-specific code" into several parts as follows:
-- @ref framework "The base game framework" (classes prefixed with `f`) is the core of the game engine. _If you want to learn how the game works, start from here._
-- The @ref slib "s" library is comprised of various utilities and, most importantly, the state system.
+- @ref framework "The base game framework" (classes prefixed with `f`) is the core of the game engine. *For a general introduction, start here.*
+- The @ref slib "s" library is comprised of various math utilities and, most importantly, the state system.
 - The @ref mlib "m" library wraps the functionality of @ref egg, @ref nw4r and the @ref rvl to provide even higher level APIs.
 - The @ref snd library provides an application layer sound API.
 - @ref clib "Various utility classes" can be found under the `c` prefix.

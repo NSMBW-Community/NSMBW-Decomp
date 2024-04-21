@@ -23,8 +23,9 @@ public:
         return (fLiNdBa_c *) cListNd_c::getNext();
     }
 
-    /// @brief Removes this node from the owner's @ref fBase_c::mUnusedList mUnusedList.
-    /// @unofficial Might not actually belong to this class (xor trick on hash).
+    /// @brief Removes this node from the owner's @ref fBase_c::mUnusedList "mUnusedList".
+    /// @unofficial
+    /// @decompnote{Might not actually belong to this class (XOR trick on hash).}
     void removeSelf();
 
     fBase_c *mpOwner; ///< The owner of this node.

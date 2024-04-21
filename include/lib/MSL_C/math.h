@@ -8,7 +8,7 @@ extern "C" {
 /// @addtogroup stdlib
 /// @{
 
-/// @brief Returns the floating-point remainder of @p numer/denom (rounded towards zero).
+/// @brief Returns the floating-point remainder of @p x/denom (rounded towards zero).
 double fmod(double x, double denom);
 
 /// @brief Returns the absolute value of x.

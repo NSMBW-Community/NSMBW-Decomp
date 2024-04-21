@@ -19,7 +19,7 @@ public:
 private:
     /// @brief Implementation of the @p ranqd1 algorithm.
     /// @bug The implementation is flawed.
-    /// <a href="https://roadrunnerwmc.github.io/blog/2020/05/08/nsmb-rng.html">This post explains why.</a>
+    /// @xlink{https://roadrunnerwmc.github.io/blog/2020/05/08/nsmb-rng.html, This post explains why}.
     inline u32 ranqdStep();
 
     static u32 mConst1; ///< Constant @p a from the @p ranqd1 algorithm.

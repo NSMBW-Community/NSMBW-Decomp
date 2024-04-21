@@ -774,7 +774,7 @@ namespace fProfile {
             YOSHI,
             WM_TEST,
             WM_TEST2,
-            // (No profile with draw order 6)
+            // [No profile with draw order 6, possibly removed later in development]
             AUTO_SELECT = 7,
             SELECT,
             WORLD_MAP,

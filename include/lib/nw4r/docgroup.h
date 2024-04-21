@@ -6,7 +6,7 @@ namespace nw4r {
 /// @addtogroup nw4r
 /// @{
 
-/// @brief 3D graphics drawing library
+/// @brief 3D graphics drawing library.
 namespace g3d {}
 
 /// @brief 2D graphics drawing library.
@@ -25,4 +25,4 @@ namespace ut {}
 /// @brief A middleware library providing utilities for graphics, audio and text rendering, disc reading,
 /// debugging and more.
 /// @details It includes several proprietary file formats and associated export tools. NW4R is written
-/// in C++ and accessible to third-party developers upon request.
+/// in C++ and could be used by third-party developers upon request.

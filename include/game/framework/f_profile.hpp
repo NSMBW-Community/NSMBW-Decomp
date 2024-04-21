@@ -41,8 +41,9 @@ char *dProf_getName(ProfileName profName);
 /// @}
 
 /// @brief For all profile related structures.
-/// @unofficial The compilation order suggests that this file might have been grouped together with the
-/// rest of @ref framework, so a similar naming scheme has been applied here.
+/// @unofficial
+/// @decompnote{The compilation order suggests that this file might have been grouped together with the
+/// rest of @ref framework, so a similar naming scheme has been applied here.}
 namespace fProfile {
 
     /// @addtogroup profile
