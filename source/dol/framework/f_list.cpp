@@ -46,6 +46,11 @@ bool fLiMgPTMF_c::walkPack() {
 }
 
 const fLiNdBa_c *fLiMgBa_c::searchNodeByID(fBaseID_e id) const {
+    // [Possible optimizations:
+    // - Cancel search if the null base ID is passed (it will never yield a result)
+    // - Since IDs are assigned through an incrementing counter and lists are ordered by
+    //   decreasing ID, the search can be ended early if the current ID is less than the
+    //   searched one]
     for (fLiNdBa_c *curr = (fLiNdBa_c *) mpFirst; curr != nullptr; curr = curr->getNext()) {
         if (curr->mpOwner->mUniqueID == id) {
             return curr;
