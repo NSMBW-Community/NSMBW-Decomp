@@ -16,17 +16,18 @@
  *
  * The most significant components are:
  * - ::mUniqueID, a unique identifier for every created base.
- * - ::mParam, a 32-bit value used to configure the base. For profiles representing Reggie sprites, this
- * field is equivalent to nybbles 5-12 of the Reggie sprite data.
+ * - ::mParam, a 32-bit value used to configure the base. For profiles representing level sprites, this
+ * field is equivalent to nybbles 5 to 12 of Reggie' sprite data. Classes that don't represent a specific
+ * profile should avoid using this value to determine their behaviour.
  * - ::mProfName, an identifier for the base's profile.
  * - ::mGroupType, which specifies the base's group type (see
  * [Inheritance and Group Types](#inheritance-and-group-types) for more details).
  * - The class embeds @ref ::mMng "an instance of fManager_c", which manages most of the base's lifecycle.
- * - The other fields are also related to the base's lifecycle or are entirely unused.
+ * - The remaining fields are also related to the base's lifecycle or are entirely unused.
  *
  * ## Creating Bases
- * A base can be created by calling the ::createRoot or the ::createChild functions. Derivative classes
- * offer their own implementations of these functions with additional parameters available; their use
+ * A base can be created by calling the ::createRoot or the ::createChild functions. Most subclasses
+ * provide their own implementations of these functions with additional parameters available; their use
  * is recommended.
  *
  * The overloaded @ref ::operator new() "new" operator ensures that bases are zero-initialized (therefore
@@ -44,47 +45,45 @@
  * - Use ::getConnectChild to get a base's first child.
  * - Use ::getConnectBrNext to get a base's next sibling.
  *
- * For conducting global base searches, please refer to fManager_c.
+ * For conducting searches across the entire base tree, please refer to
+ * @xlink{./classfManager__c.html#global-base-searching, fManager_c}.
  *
  * ## Inheritance and Group Types
  * The ::mGroupType field offers basic type information about a base:
- * - Bases with group type ::OTHER are generic processes, and inherit from dBase_c.
- * - Bases with group type ::SCENE are scene profiles, and inherit from dScene_c.
- * - Bases with group type ::ACTOR are game entities, and inherit from dBaseActor_c.
+ * - Bases with group type ::OTHER are generic processes, which inherit from dBase_c.
+ * - Bases with group type ::SCENE are scene profiles, which inherit from dScene_c.
+ * - Bases with group type ::ACTOR are game entities, which inherit from dBaseActor_c.
  *
- * No bases inherit fBase_c directly.
+ * No base inherits fBase_c directly.
  *
  * ## Base Lifecycle
- * The lifecycle of a base consists of multiple operations, whose behaviour can be overridden at any
- * point. Each operation has an @ref fManager_c "associated linked list", containing all bases for which
- * said operation is scheduled for the current frame. fBase_c (and fManager_c) manage operation scheduling
- * internally, therefore developer interaction is not required.
- *
- * Operations can be disabled globally by setting the @ref fManager_c::m_StopProcInf "m_StopProcInf"
- * flag in fManager_c.
+ * The lifecycle of a base consists of multiple operations, whose behaviour can be overridden by any of the
+ * subclasses. Each operation has an @xlink{./classfManager__c.html#implementation, associated linked list},
+ * containing all bases for which said operation is scheduled for the current frame. fBase_c (and
+ * fManager_c) manage operation scheduling internally, therefore developer interaction is not required.
  *
  * ### Operation Flow
  * Every operation is composed by three steps: @p pre , @p do and @p post (each with their own methods).
  * While the @p do method is generally reserved for profile-specific behaviour, the @p pre and @p post
  * methods are commonly used to supply shared behaviour in base classes.
  *
- * The @p pre and @p do steps return a ::PACK_RESULT_e value, which is converted to a ::MAIN_STATE_e value
- * to determine the result of the operation. Said value is then passed to the @p post method, which acts
- * accordingly.
+ * The @p pre and @p do steps return a ::PACK_RESULT_e value, which is converted to a ::MAIN_STATE_e
+ * value to determine the result of the operation. Said value is then passed to the @p post method,
+ * which acts accordingly.
  * @p pre step result | @p do step result | @p post argument
  * :-----------------: | :----------------: | :--------------:
- * ::NOT_READY | <i>N/A (not run)</i> | ::CANCELED
+ * ::NOT_READY | *N/A (not run)* | ::CANCELED
  * ::SUCCEEDED | ::NOT_READY | ::WAITING
  * ::SUCCEEDED | ::SUCCEEDED | ::SUCCESS
  * ::SUCCEEDED | ::FAILED | ::ERROR
  * Operations are carried out by the ::commonPack function.
  *
  * ### Core Operations
- * fBase_c defines five core operations:
+ * fBase_c defines four core operations:
  * - @p create runs immediately after construction, and can be used to set up the base or load resources
  * for it. The operation result leads to three possible outcomes:
  *  - If the operation result is ::SUCCESS, the base enters the main execution cycle.
- *  - If the operation result is ::CANCELED or ::WAITING, the operation is repeated the next frame.
+ *  - If the operation result is ::CANCELED or ::WAITING, the operation will be reattempted in the next frame.
  *  - If the operation result is ::ERROR, the base is deleted.
  *
  * - @p execute serves as the base's own main loop, running every frame. This operation can be skipped by
@@ -93,12 +92,14 @@
  * and can be skipped by enabling the relevant ::PROC_DISABLE_e flag.
  * - @p delete runs immediately before destruction, and can be used to deallocate resources or remove
  * links to other bases. This operation will not proceed until all the base's children are deleted.
- * - @p connect is an internal operation for process management that runs along the previous four;
- * bases should not override it. See ::connectProc for more information on the tasks carried out in this
- * operation.
  *
  * @inlineimage dol/framework/fBase_lifecycle.svg
  * @imagecaption{The lifecycle of a base.}
+ *
+ * ### Connect Operation
+ * @p connect is an internal operation for process management that runs every frame along the
+ * aforementioned four; bases should not override it. See ::connectProc for more information on the tasks
+ * carried out in this operation.
  *
  * ## Unused Content
  * - ::sLoadAsyncCallback and ::sUnloadCallback are presumably related to the scrapped relocatable
@@ -106,14 +107,14 @@
  * to dBase_c) by dBase_c::initLoader. Judging by their names, they were supposed to be called after a
  * profile module would have been loaded/unloaded.
  * - Each base supports having its own @ref ::mHeap "heap". The heap name, translated from Japanese,
- * is <i>Heap that each process can have individually (fBase_c::mHeap)</i>. Two working methods for creating
+ * is *Heap that each process can have individually (fBase_c::mHeap)*. Two working methods for creating
  * this heap are still in the game (::entryFrmHeap, ::entryFrmHeapNonAdjust), but are unused. This per-base
  * allocation method was most likely discontinued in favour of mAllocator_c and its derivatives.
  * - Two additional unused list-like structures are present in the class: ::mpUnusedHelper and
  * ::mUnusedList. Since the symbols for the related functions have not yet been cracked, it's difficult
  * to tell what their purpose might have been.
  *
- * @todo Link to unused relocation system article when it gets written.
+ * @todo Link to unused relocation system article and mAllocator_c when their page gets written.
  */
 class fBase_c {
 public:
@@ -156,16 +157,16 @@ public:
     };
 
     /// @brief The base's unique identifier.
-    /// @details This value is incremented for every created base. Should it max out, the game will
-    /// intentionally stall.
+    /// @details This value is incremented for every created base. Should it reach @ref fBaseID_e::BASE_ID_MAX,
+    /// the game will intentionally stall.
     fBaseID_e mUniqueID;
-    u32 mParam; ///< A bitfield that configures the base's behaviour. [Represents nybbles 5 to 12 of Reggie's spritedata].
+    u32 mParam; ///< A bitfield that configures the base's behaviour. Its usage varies from profile to profile.
     ProfileName mProfName; ///< The base's profile name.
 
 protected:
     u8 mLifecycleState; ///< The base's lifecycle state. Value is a ::LIFECYCLE_e.
 
-    /// @brief If deletion of the base was requested, but the corresponding operation has not been
+    /// @brief If deletion of the base was requested, but the @p delete operation has not been
     /// scheduled yet.
     bool mDeleteRequested;
 
@@ -311,7 +312,7 @@ private:
      * @brief Executes the @p connect operation.
      * @details This operation carries out the following tasks:
      * - Schedule the base (and its children) for deletion if deletion was requested (see ::mDeleteRequested)
-     * - Propagate updates to ::mProcControl on the root base.
+     * - Propagate updates to the root base's ::mProcControl field down the tree
      * - Update the base's position in the @p execute and @p draw lists on priority changes
      * - Process any deferred schedule requests (see ::mDeferExecute and ::mDeferRetryCreate)
      * @return The operation always returns ::SUCCEEDED.

@@ -17,7 +17,7 @@ class fBase_c;
  * @ingroup framework
  * @details
  * ## Overview
- * fManager_c manages the execution of base operations (which Nintendo calls processes) both at a local
+ * fManager_c manages the execution of base operations (called "processes" by Nintendo) both at a local
  * and a global scale. It also offers a small base search API.
  *
  * ## Global Base Searching
@@ -30,10 +30,12 @@ class fBase_c;
  * - The last two functions allow specifying a base to start the search from, in order to narrow
  * down its scope.
  *
- * See fBase_c for information on how to iterate the base tree manually.
+ * For iterating the base tree manually, please refer to @xlink{./classfBase__c.html#iterating-bases,
+ * fBase_c}.
  *
  * ## Operation Management
- * <i>For further details regarding operations, see fBase_c.</i>
+ * <i>For further details regarding operations, see @xlink{./classfBase__c.html#base-lifecycle,
+ * fBase_c}.</i>
  *
  * At a global scale, fManager_c handles operation execution through multiple linked lists. Each
  * list is dedicated to a specific operation, and contains all the bases for which the operation
@@ -63,7 +65,7 @@ class fBase_c;
  *
  * ## Unused Content
  * The aforementioned ::m_StopProcInf flag, while present and working, remains unchanged throughout
- * the whole game. Since its default value has no effects, it ultimately ends up unused.
+ * the whole game. Since its default value has no effects, it ultimately winds up unused.
  */
 class fManager_c {
 private:
