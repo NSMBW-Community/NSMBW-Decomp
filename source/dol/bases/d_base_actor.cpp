@@ -14,7 +14,7 @@ mLinkActor(this),
 mPos(),
 mLastPos(),
 mAngle(),
-mLastAngle()
+mAngle3D()
 {
     // Append the actor to the list
     m_actorManage.append(&mLinkActor);
@@ -27,7 +27,7 @@ mLastAngle()
 
     if (m_tmpCtAngleP != nullptr) {
         mAngle = *m_tmpCtAngleP;
-        mLastAngle = *m_tmpCtAngleP;
+        mAngle3D = *m_tmpCtAngleP;
     }
 
     // Initialize the rest
@@ -141,8 +141,8 @@ dBaseActor_c *dBaseActor_c::construct(ProfileName profName, dBase_c *parent, uns
 }
 
 void dBaseActor_c::calcSpeed() {
-    float sin = nw4r::math::SinS(mLastAngle.y);
-    float cos = nw4r::math::CosS(mLastAngle.y);
+    float sin = nw4r::math::SinS(mAngle3D.y);
+    float cos = nw4r::math::CosS(mAngle3D.y);
 
     // Distribute mSpeedF on the X and Z axes according to the actor's rotation and use the regular Y speed
     // [Defining newZ is required for matching]
@@ -197,7 +197,7 @@ void dBaseActor_c::calcSpeedX() {
 }
 
 void dBaseActor_c::calcSpeedY() {
-    // Note: All Y values are negative, so the comparison is the other way
+    // [Since Y values are assumed negative, the comparison is the other way]
     float newSpeed = mSpeed.y + mAccelY;
     if (newSpeed < mSpeedMax.y) {
         newSpeed = mSpeedMax.y;
