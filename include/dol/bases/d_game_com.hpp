@@ -9,6 +9,8 @@ namespace dGameCom {
     u32 getRandomSeed(); ///< Gets a seed used for randomness.
     void clearGameStop();
     float getDispCenterY();
+
+    bool isGameStop(unsigned long);
     
     /// @unofficial
     void updateSelectCursor(nw4r::lyt::Picture *pic, int index, bool useSpecialDraw);

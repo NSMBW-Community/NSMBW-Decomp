@@ -72,6 +72,18 @@
             }
         },
         {
+            "source": "dol/bases/d_md_actor.cpp",
+            "memoryRanges": {
+                ".text": "0xc7080-0xc73e0",
+                ".ctors": "0x128-0x12c",
+                ".data": "0x19568-0x195f0",
+                ".bss": "0x8600-0x8610",
+                ".sdata": "0x5e0-0x5f0",
+                ".sbss": "0x3e8-0x3f0",
+                ".sdata2": "0x1918-1930"
+            }
+        },
+        {
             "source": "dol/bases/d_mj2d_data.cpp",
             "memoryRanges": {
                 ".text": "0xc7830-0xc8070",
