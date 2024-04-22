@@ -15,8 +15,10 @@ public:
         u8 mWorld2;
         u8 mLevel2;
     };
-
-    char filler[0x3b4];
+    
+    char pad1[0x394];
+    bool field_394;
+    int pad2[7];
     int field_3b4;
 
     static dInfo_c *m_instance;

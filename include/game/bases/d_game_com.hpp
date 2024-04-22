@@ -10,6 +10,8 @@ namespace dGameCom {
     void clearGameStop();
     float getDispCenterY();
 
+    bool isGameStop(unsigned long);
+    
     /// @unofficial
     void updateSelectCursor(nw4r::lyt::Picture *pic, int index, bool useSpecialDraw);
 }
