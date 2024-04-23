@@ -12,8 +12,8 @@ void dMj2dGame_c::initialize() {
 
     // Clear slot and set version and completion
     memset(this, 0, sizeof(dMj2dGame_c));
-    mVersion[0] = SAVE_VERSION;
-    mVersion[1] = SAVE_SUB_VERSION;
+    mRevision[0] = SAVE_REVISION_MAJOR;
+    mRevision[1] = SAVE_REVISION_MINOR;
     mGameCompletion |= SAVE_EMPTY;
 
     // Unlock the rescue stage for each world
@@ -43,11 +43,11 @@ void dMj2dGame_c::initialize() {
 };
 
 void dMj2dGame_c::versionUpdate() {
-    if (mVersion[0] != SAVE_VERSION) {
+    if (mRevision[0] != SAVE_REVISION_MAJOR) {
         initialize();
     }
 
-    mVersion[0] = SAVE_VERSION;
+    mRevision[0] = SAVE_REVISION_MAJOR;
 }
 
 void dMj2dGame_c::setPlrID(int player, int character) {
@@ -277,42 +277,42 @@ void dMj2dHeader_c::initialize() {
     mMagic[2] = sSaveMagic[2];
     mMagic[3] = sSaveMagic[3];
 
-    mVersion[0] = SAVE_VERSION;
-    mVersion[1] = SAVE_SUB_VERSION;
+    mRevision[0] = SAVE_REVISION_MAJOR;
+    mRevision[1] = SAVE_REVISION_MINOR;
 }
 
 void dMj2dHeader_c::setSelectFileNo(s8 fileNum) {
     mLastSelectedFile = fileNum;
 }
 
-u16 dMj2dHeader_c::getFreeModePlayCount(int world, int level) const {
+u16 dMj2dHeader_c::getPlayCountFreeMode(int world, int level) const {
     return mFreeModePlayCount[world][level];
 }
 
-void dMj2dHeader_c::setFreeModePlayCount(int world, int level, u16 count) {
+void dMj2dHeader_c::setPlayCountFreeMode(int world, int level, int count) {
     mFreeModePlayCount[world][level] = count;
 }
 
-u16 dMj2dHeader_c::getCoinBattlePlayCount(int world, int level) const {
+u16 dMj2dHeader_c::getPlayCountCoinBattle(int world, int level) const {
     return mCoinBattlePlayCount[world][level];
 }
 
-void dMj2dHeader_c::setCoinBattlePlayCount(int world, int level, u16 count) {
+void dMj2dHeader_c::setPlayCountCoinBattle(int world, int level, int count) {
     mCoinBattlePlayCount[world][level] = count;
 }
 
-void dMj2dHeader_c::setMultiModeCompletion(int world) {
-    mExtraModesUnlockedWorlds |= 1 << world;
+void dMj2dHeader_c::onMultiWorldOpenFlag(int world) {
+    mMultiWorldOpenFlag |= 1 << world;
 }
 
-bool dMj2dHeader_c::getMultiModeCompletion(int world) const {
-    return mExtraModesUnlockedWorlds & (1 << world);
+bool dMj2dHeader_c::isMultiWorldOpenFlag(int world) const {
+    return mMultiWorldOpenFlag & (1 << world);
 }
 
 void dMj2dHeader_c::versionUpdate() {
-    if (mVersion[0] != SAVE_VERSION) {
+    if (mRevision[0] != SAVE_REVISION_MAJOR) {
         initialize();
     }
 
-    mVersion[0] = SAVE_VERSION;
+    mRevision[0] = SAVE_REVISION_MAJOR;
 }

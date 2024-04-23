@@ -3,8 +3,8 @@
 #include <constants/game_constants.h>
 /// @file
 
-#define SAVE_VERSION 14 ///< The current save version.
-#define SAVE_SUB_VERSION 0 ///< The current save subversion.
+#define SAVE_REVISION_MAJOR 14 ///< The major revision number.
+#define SAVE_REVISION_MINOR 0 ///< The minor revision number.
 
 class dSaveMng_c;
 
@@ -19,28 +19,19 @@ class dMj2dHeader_c {
         void initialize(); ///< Initializes the header data.
 
         /// @brief Gets the Free Mode play count for the given world/level. See ::mFreeModePlayCount.
-        /// @unofficial
-        u16 getFreeModePlayCount(int world, int level) const;
+        u16 getPlayCountFreeMode(int world, int level) const;
 
         /// @brief Sets the Free Mode play count for the given world/level. See ::mFreeModePlayCount.
-        /// @unofficial
-        void setFreeModePlayCount(int world, int level, u16 count);
+        void setPlayCountFreeMode(int world, int level, int count);
 
         /// @brief Gets the Coin Battle play count for the given world/level. See ::mCoinBattlePlayCount.
-        /// @unofficial
-        u16 getCoinBattlePlayCount(int world, int level) const;
+        u16 getPlayCountCoinBattle(int world, int level) const;
 
         /// @brief Sets the Coin Battle play count for the given world/level. See ::mCoinBattlePlayCount.
-        /// @unofficial
-        void setCoinBattlePlayCount(int world, int level, u16 count);
+        void setPlayCountCoinBattle(int world, int level, int count);
 
-        /// @brief Unlocks the given world in extra modes.
-        /// @unofficial
-        void setMultiModeCompletion(int world);
-
-        /// @brief Checks if the given world is unlocked in extra modes.
-        /// @unofficial
-        bool getMultiModeCompletion(int world) const;
+        void onMultiWorldOpenFlag(int world); ///< Unlocks the given world in extra modes.
+        bool isMultiWorldOpenFlag(int world) const; ///< Checks if the given world is unlocked in extra modes.
 
 private:
         /// @brief Checks that the save data version matches the current one and clears the slot if not.
@@ -48,29 +39,30 @@ private:
         void setSelectFileNo(s8 file); ///< Sets the last used save data slot.
 
         char mMagic[4]; ///< The savegame magic.
-        u8 mVersion[2]; ///< The save data version and subversion. See ::SAVE_VERSION and ::SAVE_SUB_VERSION.
+        u8 mRevision[2]; ///< The save data revision. See ::SAVE_REVISION_MAJOR and ::SAVE_REVISION_MINOR.
         u8 mLastSelectedFile; ///< The last selected save data slot.
         u8 mUnknown7; ///< @unused [Most likely declared as padding].
 
         /// @brief The play count of each level in Free Mode.
-        /// @details [Value is increased by 0x100 for every playthrough until 10000].
+        /// @details Value is increased by 0x100 for every playthrough until 10000.
         u16 mFreeModePlayCount[WORLD_COUNT][STAGE_COUNT];
 
         /// @brief The play count of each level in Coin Battle.
-        /// @details [Value is increased by 0x100 for every playthrough until 10000].
+        /// @details Value is increased by 0x100 for every playthrough until 10000.
         u16 mCoinBattlePlayCount[WORLD_COUNT][STAGE_COUNT];
 
         /// @brief The worlds unlocked in Extra Modes.
         /// @details Playing a world in extra modes requires said world to be unlocked in at least
         /// one save slot. Value is a bitfield.
-        u16 mExtraModesUnlockedWorlds;
+        u16 mMultiWorldOpenFlag;
         u16 mUnknown69A; ///< @unused [Most likely declared as padding].
 
         u32 mChecksum; ///< The CRC32 checksum of the above data (excluding ::mMagic).
 
         /// @brief The expected savegame magic.
-        /// @details Value is @p SMNP for PAL games.
-        /// @unofficial Is this even part of the class?
+        /// @details Value is @p SMNP for the PAL game.
+        /// @unofficial
+        /// @decompnote{Is this even part of the class?}
         static char sSaveMagic[4];
 
         friend class dSaveMng_c;
@@ -269,7 +261,7 @@ private:
     /// @brief Gets the death count for World 3-4 for the worldmap switch-enabled variant.
     int getSwitchDeathCount() const;
 
-    u8 mVersion[2]; ///< The save data version and subversion. See ::SAVE_VERSION and ::SAVE_SUB_VERSION.
+    u8 mRevision[2]; ///< The save data version and subversion. See ::SAVE_REVISION_MAJOR and ::SAVE_REVISION_MINOR.
 
     u8 mGameCompletion; ///< The overall completion of the save slot. See ::GAME_COMPLETION_e.
 
@@ -321,7 +313,8 @@ private:
     u32 mChecksum; ///< The CRC32 checksum of the above data.
 
     /// @brief The default character for each player.
-    /// @unofficial Should be part of the class in theory.
+    /// @unofficial
+    /// @decompnote{Should be part of the class in theory.}
     static const u32 sDefaultCharacters[4];
 
     friend class dSaveMng_c;
