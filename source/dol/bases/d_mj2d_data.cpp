@@ -1,10 +1,8 @@
 #include <types.h>
-#include <constants/game_constants.h>
 #include <lib/MSL_C/string.h>
 #include <game/bases/d_mj2d_data.hpp>
 
 const u32 dMj2dGame_c::sDefaultCharacters[PLAYER_COUNT] = {PLAYER_MARIO, PLAYER_LUIGI, PLAYER_YELLOW_TOAD, PLAYER_BLUE_TOAD};
-char dMj2dHeader_c::sSaveMagic[4] = {'S', 'M', 'N', 'P'};
 
 dMj2dGame_c::dMj2dGame_c() {}
 
@@ -272,10 +270,10 @@ dMj2dHeader_c::dMj2dHeader_c() {
 void dMj2dHeader_c::initialize() {
     memset(this, 0, sizeof(dMj2dHeader_c));
 
-    mMagic[0] = sSaveMagic[0];
-    mMagic[1] = sSaveMagic[1];
-    mMagic[2] = sSaveMagic[2];
-    mMagic[3] = sSaveMagic[3];
+    mMagic[0] = SAVE_MAGIC[0];
+    mMagic[1] = SAVE_MAGIC[1];
+    mMagic[2] = SAVE_MAGIC[2];
+    mMagic[3] = SAVE_MAGIC[3];
 
     mRevision[0] = SAVE_REVISION_MAJOR;
     mRevision[1] = SAVE_REVISION_MINOR;
@@ -286,19 +284,19 @@ void dMj2dHeader_c::setSelectFileNo(s8 fileNum) {
 }
 
 u16 dMj2dHeader_c::getPlayCountFreeMode(int world, int level) const {
-    return mFreeModePlayCount[world][level];
+    return mPlayCountFreeMode[world][level];
 }
 
 void dMj2dHeader_c::setPlayCountFreeMode(int world, int level, int count) {
-    mFreeModePlayCount[world][level] = count;
+    mPlayCountFreeMode[world][level] = count;
 }
 
 u16 dMj2dHeader_c::getPlayCountCoinBattle(int world, int level) const {
-    return mCoinBattlePlayCount[world][level];
+    return mPlayCountCoinBattle[world][level];
 }
 
 void dMj2dHeader_c::setPlayCountCoinBattle(int world, int level, int count) {
-    mCoinBattlePlayCount[world][level] = count;
+    mPlayCountCoinBattle[world][level] = count;
 }
 
 void dMj2dHeader_c::onMultiWorldOpenFlag(int world) {

@@ -1,71 +1,87 @@
 #pragma once
 #include <types.h>
 #include <constants/game_constants.h>
-/// @file
-
-#define SAVE_REVISION_MAJOR 14 ///< The major revision number.
-#define SAVE_REVISION_MINOR 0 ///< The minor revision number.
+#include <constants/system_constants.h>
 
 class dSaveMng_c;
 
-/// @brief Save data header holder.
-/// @details The data stored here is temporary, as it is discarded unless the game is saved.
-/// Size must be 32-byte aligned.
-/// @ingroup bases
+/**
+ * @brief Represents the header of the game's save file.
+ * @ingroup bases
+ * @details
+ * The save file header contains data that is not related to a specific save slot, along with basic
+ * information required to identify the data and preserve its integrity. For the slot-specific save data,
+ * refer to dMj2dGame_c.
+ *
+ * ## Contents
+ * The header is composed by the following fields:
+ * - A region-dependent @ref mMagic "magic value". A mismatch (for example, by importing a savefile from
+ * another region) will cause the save to be marked as corrupted.
+ * - A @ref mRevision "major and minor revision number":
+ *  - A different major revision number will cause the version to be updated silently
+ * (see ::versionUpdate for details).
+ *  - A different minor revision number will not trigger any action.
+ * - The @ref mLastSelectedFile "last selected file". It is updated automatically when loading a save slot.
+ * - The play count for each level in both @ref mPlayCountFreeMode "free mode" and
+ * @ref mPlayCountCoinBattle "coin battle". The values are incremented by 100 every time a level is played,
+ * up to a maximum of 10000. It is unknown why this specific convention was chosen.
+ * - The @ref mMultiWorldOpenFlag "unlocked worlds" in Extra Modes. This bitfield is determined by checking
+ * if each world is unlocked in at least one of the story mode files.
+ * - A @ref mChecksum "CRC32 checksum" of all the above data, minus the magic. A mismatch (for example, by
+ * hex editing the save file and forgetting to update this value) will cause the save to be marked as
+ * corrupted.
+ * @hint{User changes to the above structure must preserve the 32 byte alignment boundary. This is a
+ * NAND level restriction.}
+ *
+ * ### Modifying the Contents
+ * Read/write access to the fields related to Extra Modes is provided through dedicated functions. All other
+ * fields are handled automatically by the game, therefore developer interaction is not required.
+ * @note Changes to data stored in this class are temporary, unless the save is flushed to NAND. This can be
+ * achieved through the dSaveMng_c class.
+ *
+ * ### Resetting the Contents
+ * To reset the contents of the header, call the ::initialize function.
+ */
 class dMj2dHeader_c {
-    public:
-        dMj2dHeader_c(); ///< Constructs the holder.
+public:
+    dMj2dHeader_c(); ///< Constructs the holder.
 
-        void initialize(); ///< Initializes the header data.
+    void initialize(); ///< Initializes the header data.
 
-        /// @brief Gets the Free Mode play count for the given world/level. See ::mFreeModePlayCount.
-        u16 getPlayCountFreeMode(int world, int level) const;
+    /// @brief Gets the Free Mode play count for the given world/level. See ::mPlayCountFreeMode.
+    u16 getPlayCountFreeMode(int world, int level) const;
 
-        /// @brief Sets the Free Mode play count for the given world/level. See ::mFreeModePlayCount.
-        void setPlayCountFreeMode(int world, int level, int count);
+    /// @brief Sets the Free Mode play count for the given world/level. See ::mPlayCountFreeMode.
+    void setPlayCountFreeMode(int world, int level, int count);
 
-        /// @brief Gets the Coin Battle play count for the given world/level. See ::mCoinBattlePlayCount.
-        u16 getPlayCountCoinBattle(int world, int level) const;
+    /// @brief Gets the Coin Battle play count for the given world/level. See ::mPlayCountCoinBattle.
+    u16 getPlayCountCoinBattle(int world, int level) const;
 
-        /// @brief Sets the Coin Battle play count for the given world/level. See ::mCoinBattlePlayCount.
-        void setPlayCountCoinBattle(int world, int level, int count);
+    /// @brief Sets the Coin Battle play count for the given world/level. See ::mPlayCountCoinBattle.
+    void setPlayCountCoinBattle(int world, int level, int count);
 
-        void onMultiWorldOpenFlag(int world); ///< Unlocks the given world in extra modes.
-        bool isMultiWorldOpenFlag(int world) const; ///< Checks if the given world is unlocked in extra modes.
+    void onMultiWorldOpenFlag(int world); ///< Unlocks the given world in extra modes.
+    bool isMultiWorldOpenFlag(int world) const; ///< Checks if the given world is unlocked in extra modes.
 
 private:
-        /// @brief Checks that the save data version matches the current one and clears the slot if not.
-        void versionUpdate();
-        void setSelectFileNo(s8 file); ///< Sets the last used save data slot.
+    /// @brief Ensures that the save's major revision number matches the current one.
+    /// @details If the revision number does not match, the header data is reset.
+    void versionUpdate();
+    void setSelectFileNo(s8 file); ///< Sets the last used save data slot.
 
-        char mMagic[4]; ///< The savegame magic.
-        u8 mRevision[2]; ///< The save data revision. See ::SAVE_REVISION_MAJOR and ::SAVE_REVISION_MINOR.
-        u8 mLastSelectedFile; ///< The last selected save data slot.
-        u8 mUnknown7; ///< @unused [Most likely declared as padding].
+    char mMagic[4]; ///< The savegame magic. See ::SAVE_MAGIC.
+    u8 mRevision[2]; ///< The save revision numbers. See ::SAVE_REVISION_MAJOR and ::SAVE_REVISION_MINOR.
 
-        /// @brief The play count of each level in Free Mode.
-        /// @details Value is increased by 0x100 for every playthrough until 10000.
-        u16 mFreeModePlayCount[WORLD_COUNT][STAGE_COUNT];
+    u8 mLastSelectedFile; ///< The last selected save data slot.
+    u8 mUnknown7; ///< @unused Padding.
+    u16 mPlayCountFreeMode[WORLD_COUNT][STAGE_COUNT]; ///< The play count of each level in Free Mode.
+    u16 mPlayCountCoinBattle[WORLD_COUNT][STAGE_COUNT]; ///< The play count of each level in Coin Battle.
+    u16 mMultiWorldOpenFlag; ///< The worlds unlocked in Extra Modes.
+    u16 mUnknown69A; ///< @unused Padding.
 
-        /// @brief The play count of each level in Coin Battle.
-        /// @details Value is increased by 0x100 for every playthrough until 10000.
-        u16 mCoinBattlePlayCount[WORLD_COUNT][STAGE_COUNT];
+    u32 mChecksum; ///< The CRC32 checksum of the above data (excluding ::mMagic).
 
-        /// @brief The worlds unlocked in Extra Modes.
-        /// @details Playing a world in extra modes requires said world to be unlocked in at least
-        /// one save slot. Value is a bitfield.
-        u16 mMultiWorldOpenFlag;
-        u16 mUnknown69A; ///< @unused [Most likely declared as padding].
-
-        u32 mChecksum; ///< The CRC32 checksum of the above data (excluding ::mMagic).
-
-        /// @brief The expected savegame magic.
-        /// @details Value is @p SMNP for the PAL game.
-        /// @unofficial
-        /// @decompnote{Is this even part of the class?}
-        static char sSaveMagic[4];
-
-        friend class dSaveMng_c;
+    friend class dSaveMng_c;
 };
 
 /// @brief Save slot data holder.
