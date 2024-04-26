@@ -8,8 +8,8 @@ namespace EGG {
     class ColorFader : public Fader {
     public:
         enum ColorFaderFlag {
-            FLAG_1 = 1,
-            FLAG_2 = 2
+            FLAG_1 = BIT_FLAG(0),
+            FLAG_2 = BIT_FLAG(1)
         };
 
         ColorFader(float x, float y, float w, float h, nw4r::ut::Color color, EStatus initialStatus);

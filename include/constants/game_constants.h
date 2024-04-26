@@ -1,4 +1,6 @@
 #pragma once
+#include <types.h>
+
 /// @file
 // Please place the defines/enums in alphabetical order!
 
@@ -32,11 +34,11 @@ enum PLAYER_CHARACTER_e {
 
 /// @brief Various flags applied to the player on occasion.
 enum PLAYER_CREATE_ITEM_e {
-    CREATE_ITEM_NONE = 0x0,
-    CREATE_ITEM_STAR_POWER = 0x1, ///< Gives the player Star Power.
-    CREATE_ITEM_YOSHI = 0x2, ///< Spawns a Yoshi along with the player.
-    CREATE_ITEM_BUBBLE = 0x4, ///< Spawns the player inside a bubble.
-    CREATE_ITEM_RESCUE_TOAD = 0x8 ///< Spawns a Rescue Toad instead of the regular player character.
+    CREATE_ITEM_NONE        = BIT_FLAG(-1),
+    CREATE_ITEM_STAR_POWER  = BIT_FLAG(0), ///< Gives the player Star Power.
+    CREATE_ITEM_YOSHI       = BIT_FLAG(1), ///< Spawns a Yoshi along with the player.
+    CREATE_ITEM_BUBBLE      = BIT_FLAG(2), ///< Spawns the player inside a bubble.
+    CREATE_ITEM_RESCUE_TOAD = BIT_FLAG(3) ///< Spawns a Rescue Toad instead of the regular player character.
 };
 
 /// @brief The identifiers for each powerup.

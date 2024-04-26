@@ -18,8 +18,8 @@ public:
     /// @todo Figure out what these do.
     /// @unofficial
     enum FLAG_e {
-        FADE_IN_COMPLETE = 1,
-        FADE_OUT_COMPLETE = 2
+        FADE_IN_COMPLETE  = BIT_FLAG(0),
+        FADE_OUT_COMPLETE = BIT_FLAG(1)
     };
 
     /// @brief Constructs a new fader.

@@ -8,7 +8,7 @@
 #include <game/framework/f_tree_nd.hpp>
 #include <game/framework/f_profile.hpp>
 
-#define GET_PROC_FLAG(proc) (1 << (proc - 1))
+#define GET_PROC_FLAG(proc) BIT_FLAG((proc)-1)
 
 class fBase_c;
 
@@ -77,12 +77,12 @@ private:
 
     /// @brief The operation disable flags, induced from ::LOOP_PROC_e.
     enum PROC_FLAGS_e {
-        PROC_FLAG_NONE = 0,
+        PROC_FLAG_NONE    = GET_PROC_FLAG(NONE),
         PROC_FLAG_CONNECT = GET_PROC_FLAG(CONNECT),
-        PROC_FLAG_CREATE = GET_PROC_FLAG(CREATE),
+        PROC_FLAG_CREATE  = GET_PROC_FLAG(CREATE),
         PROC_FLAG_EXECUTE = GET_PROC_FLAG(EXECUTE),
-        PROC_FLAG_DELETE = GET_PROC_FLAG(DELETE),
-        PROC_FLAG_DRAW = GET_PROC_FLAG(DRAW)
+        PROC_FLAG_DELETE  = GET_PROC_FLAG(DELETE),
+        PROC_FLAG_DRAW    = GET_PROC_FLAG(DRAW)
     };
 
     /// @brief Constructs a new manager.

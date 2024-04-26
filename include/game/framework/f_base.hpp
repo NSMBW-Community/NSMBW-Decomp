@@ -150,10 +150,10 @@ public:
 
     /// @brief Controls if the @p execute and @p draw operations should be skipped.
     enum PROC_DISABLE_e {
-        ROOT_DISABLE_EXECUTE = 1, ///< Execution is disabled, and this is a root base.
-        DISABLE_EXECUTE = 2, ///< Execution is disabled.
-        ROOT_DISABLE_DRAW = 4, ///< Drawing is disabled, and this is a root base.
-        DISABLE_DRAW = 8 ///< Drawing is disabled.
+        ROOT_DISABLE_EXECUTE = BIT_FLAG(0), ///< Execution is disabled, and this is a root base.
+        DISABLE_EXECUTE      = BIT_FLAG(1), ///< Execution is disabled.
+        ROOT_DISABLE_DRAW    = BIT_FLAG(2), ///< Drawing is disabled, and this is a root base.
+        DISABLE_DRAW         = BIT_FLAG(3) ///< Drawing is disabled.
     };
 
     /// @brief The base's unique identifier.

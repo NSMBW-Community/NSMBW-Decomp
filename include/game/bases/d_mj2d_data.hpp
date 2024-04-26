@@ -93,32 +93,32 @@ public:
 
     /// @brief The completion status of each level.
     enum COURSE_COMPLETION_e {
-        COIN1_COLLECTED = 0x1, ///< The first Star Coin was obtained.
-        COIN2_COLLECTED = 0x2, ///< The second Star Coin was obtained.
-        COIN3_COLLECTED = 0x4, ///< The third Star Coin was obtained.
-        COIN_MASK = COIN1_COLLECTED | COIN2_COLLECTED | COIN3_COLLECTED,
-        GOAL_NORMAL = 0x10, ///< The regular exit was cleared.
-        GOAL_SECRET = 0x20, ///< The secret exit was cleared.
-        GOAL_MASK = GOAL_NORMAL | GOAL_SECRET,
-        SUPER_GUIDE_GOAL_NORMAL = 0x80, ///< The regular exit was cleared with the Super Guide.
-        SUPER_GUIDE_GOAL_SECRET = 0x100, ///< The secret exit was cleared with the Super Guide.
-        SUPER_GUIDE_GOAL_MASK = SUPER_GUIDE_GOAL_NORMAL | SUPER_GUIDE_GOAL_SECRET
+        COIN1_COLLECTED         = BIT_FLAG(0), ///< The first Star Coin was obtained.
+        COIN2_COLLECTED         = BIT_FLAG(1), ///< The second Star Coin was obtained.
+        COIN3_COLLECTED         = BIT_FLAG(2), ///< The third Star Coin was obtained.
+        COIN_MASK               = COIN1_COLLECTED | COIN2_COLLECTED | COIN3_COLLECTED,
+        GOAL_NORMAL             = BIT_FLAG(4), ///< The regular exit was cleared.
+        GOAL_SECRET             = BIT_FLAG(5), ///< The secret exit was cleared.
+        GOAL_MASK               = GOAL_NORMAL | GOAL_SECRET,
+        SUPER_GUIDE_GOAL_NORMAL = BIT_FLAG(7), ///< The regular exit was cleared with the Super Guide.
+        SUPER_GUIDE_GOAL_SECRET = BIT_FLAG(8), ///< The secret exit was cleared with the Super Guide.
+        SUPER_GUIDE_GOAL_MASK   = SUPER_GUIDE_GOAL_NORMAL | SUPER_GUIDE_GOAL_SECRET
     };
 
     /// @brief The completion status of each world.
     enum WORLD_COMPLETION_e {
-        WORLD_UNLOCKED = 0x1
+        WORLD_UNLOCKED = BIT_FLAG(0)
     };
 
     /// @brief The overall completion status of the save slot.
     enum GAME_COMPLETION_e {
-        SAVE_EMPTY = 0x1, ///< The save file is empty.
-        FINAL_BOSS_BEATEN = 0x2, ///< The final boss was beaten.
-        GOAL_ALL = 0x4, ///< All levels were completed.
-        COIN_ALL = 0x8, ///< All the Star Coins in the regular worlds were obtained.
-        COIN_ALL_SPECIAL = 0x10, ///< All the Star Coins in the special worlds were obtained.
-        GAME_COMPLETED = 0x20, ///< All the above objectives were completed.
-        SUPER_GUIDE_TRIGGERED = 0x40 ///< The player died at least ::SUPER_GUIDE_DEATH_COUNT times in a single stage.
+        SAVE_EMPTY            = BIT_FLAG(0), ///< The slot is empty.
+        FINAL_BOSS_BEATEN     = BIT_FLAG(1), ///< The final boss was beaten.
+        GOAL_ALL              = BIT_FLAG(2), ///< All levels were completed.
+        COIN_ALL              = BIT_FLAG(3), ///< All the Star Coins in the regular worlds were obtained.
+        COIN_ALL_SPECIAL      = BIT_FLAG(4), ///< All the Star Coins in the special worlds were obtained.
+        GAME_COMPLETED        = BIT_FLAG(5), ///< All the above objectives were completed.
+        SUPER_GUIDE_TRIGGERED = BIT_FLAG(6) ///< The player died at least ::SUPER_GUIDE_DEATH_COUNT times in a single stage.
     };
 
     /// @brief The Toad House types at the start node of each world.
