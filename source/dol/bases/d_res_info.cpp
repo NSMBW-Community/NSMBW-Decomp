@@ -76,13 +76,13 @@ bool dRes_c::info_c::set(const char *arcName, const char *containingFolder, u8 a
     return true;
 }
 
-int dRes_c::info_c::setRes(callback_c *callback) {
+dRes_c::info_c::LOAD_STATUS_e dRes_c::info_c::setRes(callback_c *callback) {
     if (mpArchive == nullptr) {
         if (mpDvdCmd == nullptr) {
-            return -1;
+            return LOAD_ERROR;
         }
         if (!mpDvdCmd->mDone) {
-            return 1;
+            return LOAD_IN_PROGRESS;
         }
 
         // Copy over the properties from the DVD command, then destroy it
@@ -94,22 +94,22 @@ int dRes_c::info_c::setRes(callback_c *callback) {
         mpDvdCmd = nullptr;
 
         if (mpArchive == nullptr) {
-            return -1;
+            return LOAD_ERROR;
         }
 
         // Prepare the heap for the archive data
         EGG::Heap *heap = (mpMountHeap != nullptr) ? mpMountHeap : mHeap::g_gameHeaps[0];
         mDataHeap = mHeap::makeFrmHeapAndUpdate(-1, heap, "dRes_c::info_c::mDataHeap", 0x20, 0);
         if (mDataHeap == nullptr) {
-            return -1;
+            return LOAD_ERROR;
         }
 
-        int resStatus = loadRes(callback);
+        LOAD_STATUS_e resStatus = loadRes(callback);
 
         // Restore the previous heap
         mHeap::restoreCurrentHeap();
         mHeap::adjustFrmHeap(mDataHeap);
-        if (resStatus == -1) {
+        if (resStatus == LOAD_ERROR) {
             return resStatus;
         }
 
@@ -117,7 +117,7 @@ int dRes_c::info_c::setRes(callback_c *callback) {
         DCStoreRangeNoSync(mDataHeap, (size_t) mDataHeap->mpHeapHead->mpHeapEnd - (size_t) mDataHeap);
     }
 
-    return 0;
+    return LOAD_SUCCESS;
 }
 
 void dRes_c::searchCallback_c::callback(void *file, const ARCDirEntry *dirEntry, const char *path) {
@@ -140,11 +140,11 @@ void dRes_c::searchCallback_c::callback(void *cbInfo, void *file, const ARCDirEn
     ((searchCallback_c *) cbInfo)->callback(file, dirEntry, path);
 }
 
-int dRes_c::info_c::loadRes(dRes_c::callback_c *callback) {
+dRes_c::info_c::LOAD_STATUS_e dRes_c::info_c::loadRes(dRes_c::callback_c *callback) {
     int numFiles = mpArchive->countFile();
     mpFiles = new u8 *[numFiles];
     if (mpFiles == nullptr) {
-        return -1;
+        return LOAD_ERROR;
     }
 
     // Prepare the file array
@@ -161,5 +161,5 @@ int dRes_c::info_c::loadRes(dRes_c::callback_c *callback) {
         // Simply populate ::mpFiles with the files
         mpArchive->getFileArray(mpFiles, numFiles);
     }
-    return 0;
+    return LOAD_SUCCESS;
 }

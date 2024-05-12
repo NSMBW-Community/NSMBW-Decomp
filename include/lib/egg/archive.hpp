@@ -1,11 +1,11 @@
 #pragma once
-#include <lib/rvl/mem/MEM.h>
 #include <lib/rvl/arc/ARC.h>
 
 namespace EGG {
     class Archive {
     public:
         struct FileInfo {
+            FileInfo() : mFileOffset(0), mFileSize(0) {}
             int mFileOffset;
             int mFileSize;
         };

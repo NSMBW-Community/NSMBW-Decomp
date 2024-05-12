@@ -17,17 +17,6 @@ typedef struct {
     u16 mOffset;
 } MEMList;
 
-struct OSMutex; // TODO: fill in struct
-
-typedef struct {
-    u32 mTag;
-    MEMLink mpLink;
-    MEMList mpList;
-    void *mpHeapStart;
-    void *mpHeapEnd;
-    OSMutex *mpMutex;
-} MEMiHeapHeader;
-
 #ifdef __cplusplus
 }
 #endif

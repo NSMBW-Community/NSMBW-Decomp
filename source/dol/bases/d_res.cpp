@@ -1,6 +1,6 @@
 #include <game/bases/d_res.hpp>
 #include <lib/MSL_C/string.h>
-#include <lib/rvl/cx/cx.h>
+#include <lib/rvl/cx/CXUncompression.h>
 
 void (*dRes_c::mSetCallback)(const char *arcName, EGG::Heap *heap);
 
@@ -76,7 +76,7 @@ void *dRes_c::getRes(const char *arcName, const char *resPath, unsigned long *si
     info_c *info = getResInfoLoaded(arcName);
     if (info != nullptr && info->getArchive() != nullptr) {
         EGG::Archive *archive = info->getArchive();
-        EGG::Archive::FileInfo fi = { 0, 0 };
+        EGG::Archive::FileInfo fi;
         data = archive->getFile(resPath, &fi);
         newSize = fi.mFileSize;
     }
@@ -93,12 +93,12 @@ void *dRes_c::getRes(const char *arcName, const char *resPath, unsigned long *si
         long entryID = archive->convertPathToEntryID(resPath);
         if (entryID >= 0) {
             // Resource exists
-            EGG::Archive::FileInfo fi = { 0, 0 };
+            EGG::Archive::FileInfo fi;
             data = archive->getFileFast(entryID, &fi);
 
             if (data != nullptr) {
                 if (compressionType != nullptr) {
-                    *compressionType = 0;
+                    *compressionType = CX_COMPRESSION_NONE;
                 }
                 if (size != nullptr) {
                     *size = fi.mFileSize;
@@ -132,7 +132,7 @@ void *dRes_c::getRes(const char *arcName, const char *resPath, unsigned long *si
 }
 
  void dRes_c::copyRes(const void *from, void *to, int size, int compressionType) {
-    if (compressionType == 0) {
+    if (compressionType == CX_COMPRESSION_NONE) {
         copyRes(from, to, size);
     } else {
         CXUncompressLZ(from, to);
@@ -167,7 +167,7 @@ void *dRes_c::getResSilently(const char *arcName, const char *resPath, unsigned 
 
         if (entryID >= 0) {
             // Resource exists, load it
-            EGG::Archive::FileInfo fi = { 0, 0 };
+            EGG::Archive::FileInfo fi;
             data = archive->getFileFast(entryID, &fi);
             newSize = fi.mFileSize;
         }
@@ -182,7 +182,7 @@ bool dRes_c::syncAllRes() {
     info_c *info = &mpArcInfos[0];
     for (int i = 0; i < mNumArcs; i++) {
         if (info->getDvdCmd() != nullptr) {
-            if (info->setRes(mpCallback) > 0) {
+            if (info->setRes(mpCallback) > info_c::LOAD_SUCCESS) {
                 return true;
             }
         }
