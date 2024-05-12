@@ -136,3 +136,13 @@ table.memberdecls .inherit_header td {
 table.memberdecls .groupheader {
     margin-bottom: var(--spacing-medium) !important;
 }
+
+/* Remove padding at the start of lists */
+div.contents > p, div.textblock p {
+  margin-bottom: 0px;
+}
+
+/* Remove padding at the start of lists */
+div.contents > ul, div.textblock ul {
+  margin-top: 0px;
+}
