@@ -35,7 +35,7 @@ int dWmActor_c::preExecute() {
         return NOT_READY;
     }
 
-    if (dInfo_c::m_instance->field_394) {
+    if (dInfo_c::m_instance->mDisable3DScenes) {
         if (mProfName != fProfile::WM_CS_SEQ_MNG
             && mProfName != fProfile::WM_ISLAND
             && mProfName != fProfile::WM_DIRECTOR) {
@@ -59,11 +59,11 @@ int dWmActor_c::preDraw() {
 
     mCullSphere.mPos = mPos;
     
-    if (!mCullSphere.isZero() && !dWCamera_c::m_instance->mUnk.intersectSphere(&mCullSphere)) {
+    if (!mCullSphere.isZero() && !dWCamera_c::m_instance->mViewClip.intersectSphere(&mCullSphere)) {
         return NOT_READY;
     }
     
-    if (dInfo_c::m_instance->field_394) {
+    if (dInfo_c::m_instance->mDisable3DScenes) {
         if (mProfName != fProfile::WM_CS_SEQ_MNG
             && mProfName != fProfile::WM_ISLAND
             && mProfName != fProfile::WM_DIRECTOR) {

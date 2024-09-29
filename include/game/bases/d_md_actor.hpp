@@ -22,6 +22,7 @@ class dMdActor_c : public dBaseActor_c {
 
     virtual int GetActorType();
 
+    /// @brief Creates a child cutscene actor with the given parent. See dBaseActor_c::construct.
     static dMdActor_c *construct(ProfileName profName, dBase_c *base, unsigned long param, const mVec3_c *position, const mAng3_c *rotation);
 
 private:

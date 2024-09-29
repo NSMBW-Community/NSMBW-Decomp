@@ -35,7 +35,7 @@ int dMdActor_c::preExecute() {
         return NOT_READY;
     }
 
-    if (dInfo_c::m_instance->field_394) {
+    if (dInfo_c::m_instance->mDisable3DScenes) {
         return NOT_READY;
     }
 
@@ -55,11 +55,11 @@ int dMdActor_c::preDraw() {
 
     mCullSphere.mPos = mPos;
     
-    if (!mCullSphere.isZero() && !dWCamera_c::m_instance->mUnk.intersectSphere(&mCullSphere)) {
+    if (!mCullSphere.isZero() && !dWCamera_c::m_instance->mViewClip.intersectSphere(&mCullSphere)) {
         return NOT_READY;
     }
     
-    if (dInfo_c::m_instance->field_394) {
+    if (dInfo_c::m_instance->mDisable3DScenes) {
         return NOT_READY;
     }
     

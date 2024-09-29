@@ -17,7 +17,11 @@ public:
     };
     
     char pad1[0x394];
-    bool field_394;
+    /**
+     * If this is true, 3D models in the cutscene view
+     * and world map view are not drawn. [Always set to false in the game].
+     */
+    bool mDisable3DScenes;
     int pad2[7];
     int field_3b4;
 
