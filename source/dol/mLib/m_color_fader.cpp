@@ -1,4 +1,4 @@
-#include <dol/mLib/m_color_fader.hpp>
+#include <game/mLib/m_color_fader.hpp>
 #include <lib/rvl/sc/SC.h>
 #include <lib/rvl/vi/VI.h>
 
@@ -6,8 +6,7 @@ mColorFader_c::mColorFader_c(mColor col, mFaderBase_c::EStatus status) : mFaderB
     mAspectRatio = SCGetAspectRatio();
 }
 
-mColorFader_c::~mColorFader_c() {
-}
+mColorFader_c::~mColorFader_c() {}
 
 void mColorFader_c::setStatus(EStatus status) {
     if (status == OPAQUE) {

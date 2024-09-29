@@ -8,6 +8,7 @@
 - Use `nullptr` instead of `0` when assigning / comparing a pointer (unless strictly necessary).
 - Use the `.cpp`/`.hpp` extension for C++ files, the `.c`/`.h` extension for C files and the `.s` extension for ASM files.
 - The preferred indentation style is [1TBS/OTBS](https://en.wikipedia.org/wiki/Indent_style#Variant:_1TBS_(OTBS)).
+- Empty code blocks should only take one line.
 
 ### Nonmatching Code
 
@@ -68,6 +69,7 @@
 ### Classes
 
 - When referencing a class member, do **not** use `this->` unless required for compilation.
+- Try to use constructor initializers as much as possible.
 - Class members must be placed in the following order:
   - Nested Classes/Structures/Enumerations
   - Functions (place static ones last)

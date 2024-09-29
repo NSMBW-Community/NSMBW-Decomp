@@ -1,20 +1,17 @@
 #include <types.h>
-#include <constants/game_constants.h>
 #include <lib/MSL_C/string.h>
-#include <dol/bases/d_mj2d_data.hpp>
+#include <game/bases/d_mj2d_data.hpp>
 
 const u32 dMj2dGame_c::sDefaultCharacters[PLAYER_COUNT] = {PLAYER_MARIO, PLAYER_LUIGI, PLAYER_YELLOW_TOAD, PLAYER_BLUE_TOAD};
-char dMj2dHeader_c::sSaveMagic[4] = {'S', 'M', 'N', 'P'};
 
-dMj2dGame_c::dMj2dGame_c() {
-}
+dMj2dGame_c::dMj2dGame_c() {}
 
 void dMj2dGame_c::initialize() {
 
     // Clear slot and set version and completion
     memset(this, 0, sizeof(dMj2dGame_c));
-    mVersion[0] = SAVE_VERSION;
-    mVersion[1] = SAVE_SUB_VERSION;
+    mRevision[0] = SAVE_REVISION_MAJOR;
+    mRevision[1] = SAVE_REVISION_MINOR;
     mGameCompletion |= SAVE_EMPTY;
 
     // Unlock the rescue stage for each world
@@ -44,11 +41,11 @@ void dMj2dGame_c::initialize() {
 };
 
 void dMj2dGame_c::versionUpdate() {
-    if (mVersion[0] != SAVE_VERSION) {
+    if (mRevision[0] != SAVE_REVISION_MAJOR) {
         initialize();
     }
 
-    mVersion[0] = SAVE_VERSION;
+    mRevision[0] = SAVE_REVISION_MAJOR;
 }
 
 void dMj2dGame_c::setPlrID(int player, int character) {
@@ -273,47 +270,47 @@ dMj2dHeader_c::dMj2dHeader_c() {
 void dMj2dHeader_c::initialize() {
     memset(this, 0, sizeof(dMj2dHeader_c));
 
-    mMagic[0] = sSaveMagic[0];
-    mMagic[1] = sSaveMagic[1];
-    mMagic[2] = sSaveMagic[2];
-    mMagic[3] = sSaveMagic[3];
+    mMagic[0] = SAVE_MAGIC[0];
+    mMagic[1] = SAVE_MAGIC[1];
+    mMagic[2] = SAVE_MAGIC[2];
+    mMagic[3] = SAVE_MAGIC[3];
 
-    mVersion[0] = SAVE_VERSION;
-    mVersion[1] = SAVE_SUB_VERSION;
+    mRevision[0] = SAVE_REVISION_MAJOR;
+    mRevision[1] = SAVE_REVISION_MINOR;
 }
 
 void dMj2dHeader_c::setSelectFileNo(s8 fileNum) {
     mLastSelectedFile = fileNum;
 }
 
-u16 dMj2dHeader_c::getFreeModePlayCount(int world, int level) const {
-    return mFreeModePlayCount[world][level];
+u16 dMj2dHeader_c::getPlayCountFreeMode(int world, int level) const {
+    return mPlayCountFreeMode[world][level];
 }
 
-void dMj2dHeader_c::setFreeModePlayCount(int world, int level, u16 count) {
-    mFreeModePlayCount[world][level] = count;
+void dMj2dHeader_c::setPlayCountFreeMode(int world, int level, int count) {
+    mPlayCountFreeMode[world][level] = count;
 }
 
-u16 dMj2dHeader_c::getCoinBattlePlayCount(int world, int level) const {
-    return mCoinBattlePlayCount[world][level];
+u16 dMj2dHeader_c::getPlayCountCoinBattle(int world, int level) const {
+    return mPlayCountCoinBattle[world][level];
 }
 
-void dMj2dHeader_c::setCoinBattlePlayCount(int world, int level, u16 count) {
-    mCoinBattlePlayCount[world][level] = count;
+void dMj2dHeader_c::setPlayCountCoinBattle(int world, int level, int count) {
+    mPlayCountCoinBattle[world][level] = count;
 }
 
-void dMj2dHeader_c::setMultiModeCompletion(int world) {
-    mExtraModesUnlockedWorlds |= 1 << world;
+void dMj2dHeader_c::onMultiWorldOpenFlag(int world) {
+    mMultiWorldOpenFlag |= 1 << world;
 }
 
-bool dMj2dHeader_c::getMultiModeCompletion(int world) const {
-    return mExtraModesUnlockedWorlds & (1 << world);
+bool dMj2dHeader_c::isMultiWorldOpenFlag(int world) const {
+    return mMultiWorldOpenFlag & (1 << world);
 }
 
 void dMj2dHeader_c::versionUpdate() {
-    if (mVersion[0] != SAVE_VERSION) {
+    if (mRevision[0] != SAVE_REVISION_MAJOR) {
         initialize();
     }
 
-    mVersion[0] = SAVE_VERSION;
+    mRevision[0] = SAVE_REVISION_MAJOR;
 }

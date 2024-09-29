@@ -24,7 +24,7 @@ inline float SinF(float ang) {
 }
 
 /// @brief Computes the cosine value.
-/// @param idx The angle measured in units of 1/65536th of a circle.
+/// @param ang The angle measured in units of 1/65536th of a circle.
 /// @return The cosine for idx.
 inline float CosF(float ang) {
     return CosFIdx(ang * (1.0f / 256.f));
@@ -38,7 +38,7 @@ inline float SinS(short ang) {
 }
 
 /// @brief Computes the cosine value.
-/// @param idx The angle measured in units of 1/65536th of a circle.
+/// @param ang The angle measured in units of 1/65536th of a circle.
 /// @return The cosine for idx.
 inline float CosS(short ang) {
     return CosF(OSu16tof32((u16 *) &ang));

@@ -147,5 +147,4 @@ void EGG::ColorFader::draw() {
     GXEnd();
 }
 
-EGG::ColorFader::~ColorFader() {
-}
+EGG::ColorFader::~ColorFader() {}

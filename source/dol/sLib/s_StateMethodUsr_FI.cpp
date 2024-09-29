@@ -1,5 +1,5 @@
 #include <types.h>
-#include <dol/sLib/s_StateMethodUsr_FI.hpp>
+#include <game/sLib/s_StateMethodUsr_FI.hpp>
 
 sStateMethodUsr_FI_c::sStateMethodUsr_FI_c(sStateIDChkIf_c &check, sStateFctIf_c &factory, const sStateIDIf_c &state) :
     sStateMethod_c(check, factory, state) {

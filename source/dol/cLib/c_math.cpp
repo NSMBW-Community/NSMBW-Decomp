@@ -2,7 +2,7 @@
 #include <lib/MSL_C/float.h>
 #include <lib/MSL_C/math.h>
 #include <lib/nw4r/math/constant.hpp>
-#include <dol/cLib/c_random.hpp>
+#include <game/cLib/c_random.hpp>
 /// @file
 
 static cM_rand_c s_rnd = cM_rand_c(100); ///< [Used for tile randomization, eye animations and a few more things].

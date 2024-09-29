@@ -1,4 +1,4 @@
-#include <dol/cLib/c_list.hpp>
+#include <game/cLib/c_list.hpp>
 #include <types.h>
 
 bool cListMg_c::insertAfter(cListNd_c *node, cListNd_c *prevNode) {

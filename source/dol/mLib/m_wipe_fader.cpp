@@ -1,4 +1,4 @@
-#include <dol/mLib/m_wipe_fader.hpp>
+#include <game/mLib/m_wipe_fader.hpp>
 #include <lib/rvl/sc/SC.h>
 #include <lib/rvl/vi/VI.h>
 
@@ -18,8 +18,7 @@ mWipeFader_c::mWipeFader_c(mColor col, mFaderBase_c::EStatus status) :
     }
 }
 
-mWipeFader_c::~mWipeFader_c() {
-}
+mWipeFader_c::~mWipeFader_c() {}
 
 void mWipeFader_c::setTexture(void *data, int width, int height) {
     mpTextureData = data;

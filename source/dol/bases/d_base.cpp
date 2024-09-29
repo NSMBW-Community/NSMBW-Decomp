@@ -1,12 +1,12 @@
-#include <dol/bases/d_base.hpp>
-#include <dol/bases/d_game_com.hpp>
-#include <dol/framework/f_profile.hpp>
+#include <game/bases/d_base.hpp>
+#include <game/bases/d_game_com.hpp>
+#include <game/framework/f_profile.hpp>
 #include <constants/sjis_constants.h>
 /// @file
 
-/// @unused [Random seed written to after dBase_c::preDraw].
-/// @details [Not part of the dBase_c class as its mangled hash is the same as its demangled hash].
+/// @unused Random seed written to after dBase_c::preDraw.
 /// @unofficial
+/// @decompnote{Not part of the dBase_c class as its mangled hash is the same as the demangled hash.}
 static u32 g_basesRandomSeed;
 
 dBase_c::dBase_c() :
@@ -73,11 +73,10 @@ const char *dBase_c::getKindString() const {
 }
 
 int dBase_c::loadAsyncCallback() {
-    return 2;
+    return FAILED;
 }
 
-void dBase_c::unloadCallback() {
-}
+void dBase_c::unloadCallback() {}
 
 void dBase_c::initLoader() {
     fBase_c::sLoadAsyncCallback = &loadAsyncCallback;

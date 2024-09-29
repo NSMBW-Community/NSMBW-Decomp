@@ -4,6 +4,11 @@ html {
     --primary-dark-color: #af2828 !important;
     --primary-light-color: #e34141 !important;
 
+    /* Use todo color for invariant color */
+    --invariant-color: #e4f3ff !important;
+    --invariant-color-dark: #1879C4 !important;
+    --invariant-color-darker: #274a5c !important;
+
 	/* Use warning color for bug color */
     --bug-color: var(--warning-color) !important;
     --bug-color-dark: var(--warning-color-dark) !important;
@@ -18,6 +23,16 @@ html {
     --todo-color: var(--deprecated-color) !important;
     --todo-color-dark: var(--deprecated-color-dark) !important;
     --todo-color-darker: var(--deprecated-color-darker) !important;
+}
+
+@media (prefers-color-scheme: dark) {
+    html:not(.light-mode) {
+
+        /* Use todo color for invariant color (dark mode) */
+        --invariant-color: #163750 !important;
+        --invariant-color-dark: #1982D2 !important;
+        --invariant-color-darker: #dcf0fa !important;
+    }
 }
 
 /* Make links brighter  */
@@ -58,11 +73,16 @@ td.mdescRight {
     border-bottom: 1px solid var(--separator-color);
 }
 
-/* Remove border radius on memItemLeft and right and use a less colorful background */
-td.memItemLeft, td.memItemRight {
+/* Remove border radius on definitions and use a less colorful background */
+td.memItemLeft, td.memItemRight, td.memTemplParams, td.memTemplItemLeft, td.memTemplItemRight {
     border-radius: 0px !important;
     padding-right: 0px !important;
     background-color: var(--code-background) !important;
+}
+
+/* Change template keyword color */
+td.memTemplParams, div.memtemplate {
+    color: var(--page-foreground-color) !important;
 }
 
 /* Remove table cell separator */
@@ -115,4 +135,44 @@ table.memberdecls .inherit_header td {
 /* Reduce bottom margin to counter the above padding */
 table.memberdecls .groupheader {
     margin-bottom: var(--spacing-medium) !important;
+}
+
+/* Remove padding at the start of lists */
+div.contents > p, div.textblock p {
+  margin-bottom: 0px;
+}
+
+/* Remove padding at the start of lists */
+div.contents > ul, div.textblock ul {
+  margin-top: 0px;
+}
+
+/* Remove unnecessary background on navtree arrow hover */
+a:hover > span.arrow {
+  background: none !important;
+}
+
+/* Remove unnecessary underline on navtree arrow hover */
+.item:hover > a[href="javascript:void(0)"] {
+  background: none !important;
+}
+
+/* Remove nav tree focus outline */
+#nav-tree a:focus {
+  outline-style: none !important;
+}
+
+/* Fix anchor link hover color */
+a.anchorlink:hover {
+  color: var(--page-foreground-color) !important;
+}
+
+/* Fix parameter name colors */
+.paramname em {
+  color: var(--primary-dark-color) !important;
+}
+
+/* Fix parameter ending brace color */
+.paramname {
+  color: var(--page-foreground-color) !important;
 }

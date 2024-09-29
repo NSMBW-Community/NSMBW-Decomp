@@ -1,7 +1,7 @@
 #include <types.h>
-#include <dol/framework/f_list_mg.hpp>
-#include <dol/framework/f_list_mg_ptmf.hpp>
-#include <dol/framework/f_base.hpp>
+#include <game/framework/f_list_mg.hpp>
+#include <game/framework/f_list_mg_ptmf.hpp>
+#include <game/framework/f_base.hpp>
 
 bool fLiMgPTMF_c::addNode(fLiNdPrio_c *node) {
     fLiNdPrio_c *curr = getFirst();
@@ -46,6 +46,11 @@ bool fLiMgPTMF_c::walkPack() {
 }
 
 const fLiNdBa_c *fLiMgBa_c::searchNodeByID(fBaseID_e id) const {
+    // [Possible optimizations:
+    // - Cancel search if the null base ID is passed (it will never yield a result)
+    // - Since IDs are assigned through an incrementing counter and lists are ordered by
+    //   decreasing ID, the search can be ended early if the current ID is less than the
+    //   searched one]
     for (fLiNdBa_c *curr = (fLiNdBa_c *) mpFirst; curr != nullptr; curr = curr->getNext()) {
         if (curr->mpOwner->mUniqueID == id) {
             return curr;

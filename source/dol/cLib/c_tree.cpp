@@ -1,4 +1,4 @@
-#include <dol/cLib/c_tree.hpp>
+#include <game/cLib/c_tree.hpp>
 #include <types.h>
 
 cTreeNd_c::cTreeNd_c() {

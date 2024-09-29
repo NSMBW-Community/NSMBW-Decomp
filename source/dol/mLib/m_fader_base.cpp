@@ -1,5 +1,5 @@
-#include <dol/mLib/m_fader_base.hpp>
-#include <dol/mLib/m_color.hpp>
+#include <game/mLib/m_fader_base.hpp>
+#include <game/mLib/m_color.hpp>
 
 mFaderBase_c::mFaderBase_c(const mColor &color, mFaderBase_c::EStatus status) :
 mFlag(0),
@@ -15,8 +15,7 @@ mFaderColor()
     }
 }
 
-mFaderBase_c::~mFaderBase_c() {
-}
+mFaderBase_c::~mFaderBase_c() {}
 
 void mFaderBase_c::setFrame(u16 duration) {
     mFrameCount = duration;

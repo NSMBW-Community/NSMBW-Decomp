@@ -1,4 +1,4 @@
-#include <d_profileNP/d_profile.hpp>
+#include <game/bases/d_profile.hpp>
 
 static const fProfile::fBaseProfile_c *profileList[] = {
     &g_profile_BOOT,

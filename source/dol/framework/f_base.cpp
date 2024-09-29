@@ -1,5 +1,5 @@
-#include <dol/framework/f_base.hpp>
-#include <dol/mLib/m_heap.hpp>
+#include <game/framework/f_base.hpp>
+#include <game/mLib/m_heap.hpp>
 #include <lib/MSL_C/string.h>
 #include <constants/sjis_constants.h>
 
@@ -147,8 +147,8 @@ void fBase_c::postDelete(MAIN_STATE_e state) {
         fManager_c::m_deleteManage.remove(&mMng.mMainNode);
 
         // Delete the heap
-        if (mpHeap != nullptr) {
-            mpHeap->destroy();
+        if (mHeap != nullptr) {
+            mHeap->destroy();
         }
 
         // Delete the unused helper
@@ -324,7 +324,7 @@ fBase_c *fBase_c::getConnectBrNext() const {
 bool fBase_c::entryFrmHeap(unsigned long size, EGG::Heap *parentHeap) {
 
     // Check if heap was already set
-    if (mpHeap != nullptr) {
+    if (mHeap != nullptr) {
         return true;
     }
 
@@ -345,7 +345,7 @@ bool fBase_c::entryFrmHeap(unsigned long size, EGG::Heap *parentHeap) {
             } else {
                 heapSize = mHeap::adjustFrmHeap(newHeap);
                 if (size == heapSize) {
-                    mpHeap = newHeap;
+                    mHeap = newHeap;
                     return true;
                 }
             }
@@ -384,7 +384,7 @@ bool fBase_c::entryFrmHeap(unsigned long size, EGG::Heap *parentHeap) {
                     mHeap::destroyFrmHeap(largerHeap);
                 } else {
                     mHeap::adjustFrmHeap(largerHeap);
-                    mpHeap = largerHeap;
+                    mHeap = largerHeap;
                     return true;
                 }
 
@@ -396,7 +396,7 @@ bool fBase_c::entryFrmHeap(unsigned long size, EGG::Heap *parentHeap) {
     }
 
     if (newHeap != nullptr) {
-        mpHeap = newHeap;
+        mHeap = newHeap;
         return true;
     }
 
@@ -408,7 +408,7 @@ bool fBase_c::entryFrmHeap(unsigned long size, EGG::Heap *parentHeap) {
 bool fBase_c::entryFrmHeapNonAdjust(unsigned long size, EGG::Heap *parentHeap) {
 
     // Check if heap was already set
-    if (mpHeap != nullptr) {
+    if (mHeap != nullptr) {
         return true;
     }
 
@@ -421,7 +421,7 @@ bool fBase_c::entryFrmHeapNonAdjust(unsigned long size, EGG::Heap *parentHeap) {
         if (!createSuccess) {
             mHeap::destroyFrmHeap(newHeap);
         } else {
-            mpHeap = newHeap;
+            mHeap = newHeap;
             return true;
         }
     }

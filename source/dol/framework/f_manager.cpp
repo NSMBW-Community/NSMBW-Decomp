@@ -1,5 +1,5 @@
-#include <dol/framework/f_manager.hpp>
-#include <dol/framework/f_base.hpp>
+#include <game/framework/f_manager.hpp>
+#include <game/framework/f_base.hpp>
 
 fTrMgPTMF_c fManager_c::m_connectManage(&fBase_c::connectProc);
 fLiMgPTMF_c fManager_c::m_createManage(&fBase_c::createPack);

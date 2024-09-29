@@ -1,7 +1,7 @@
-#include <dol/mLib/m3d/m3d.hpp>
+#include <game/mLib/m3d/m3d.hpp>
 #include <lib/nw4r/g3d/state.hpp>
-#include <dol/mLib/m_fader.hpp>
-#include <dol/mLib/m_fader_base.hpp>
+#include <game/mLib/m_fader.hpp>
+#include <game/mLib/m_fader_base.hpp>
 
 mFaderBase_c *mFader_c::mFader = nullptr;
 

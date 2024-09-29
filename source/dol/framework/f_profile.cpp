@@ -1,4 +1,4 @@
-#include <dol/framework/f_profile.hpp>
+#include <game/framework/f_profile.hpp>
 
 using namespace fProfile;
 

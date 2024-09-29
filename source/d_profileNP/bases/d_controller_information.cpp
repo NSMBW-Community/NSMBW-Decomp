@@ -1,14 +1,13 @@
-#include <d_profileNP/bases/d_controller_information.hpp>
+#include <game/bases/d_controller_information.hpp>
 #include <constants/message_list.h>
 #include <constants/sound_list.h>
-#include <dol/framework/f_profile.hpp>
-#include <dol/framework/f_profile_name.hpp>
-#include <dol/snd/snd_audio_mgr.hpp>
+#include <game/framework/f_profile.hpp>
+#include <game/framework/f_profile_name.hpp>
+#include <game/snd/snd_audio_mgr.hpp>
 
 BASE_PROFILE(CONTROLLER_INFORMATION, dControllerInformation_c);
 
-dControllerInformation_c::dControllerInformation_c() : mIsCreated(false) {
-}
+dControllerInformation_c::dControllerInformation_c() : mIsCreated(false) {}
 
 dControllerInformation_c::~dControllerInformation_c() {}
 
