@@ -11,8 +11,8 @@
             ".ctors":               { "index": 2,  "align": 4, "size": "0x4" },
             ".dtors":               { "index": 3,  "align": 4, "size": "0x4" },
             ".rodata":              { "index": 4,  "align": 8, "size": "0x1d8" },
-            ".data":                { "index": 5,  "align": 8, "size": "0x2cfc" },
-            ".bss":                 { "index": 6,  "align": 8, "size": "0x208" },
+            ".data":                { "index": 5,  "align": 8, "size": "0x15fc" },
+            ".bss":                 { "index": 6,  "align": 4, "size": "0x208" },
             ".rela.text":           { "index": 7,  "align": 4, "size": "0x0" },
             ".rela.ctors":          { "index": 8,  "align": 4, "size": "0x0" },
             ".rela.dtors":          { "index": 9,  "align": 4, "size": "0x0" },
@@ -39,7 +39,7 @@
             "memoryRanges": {
                 ".text": "0x70-0xf0",
                 ".dtors": "0x0-0x4",
-                ".bss": "0x0-0x10"
+                ".bss": "0x0-0x8"
             }
         },
         {
@@ -62,9 +62,9 @@
             "memoryRanges": {
                 ".text": "0x4e0-0x1fb8",
                 ".ctors": "0x0-0x4",
-                ".data": "0xd28-0x2cfc",
+                ".data": "0xd28-0x15fc",
                 ".rodata": "0x18-0x1d8",
-                ".bss": "0x10-0x208"
+                ".bss": "0x8-0x208"
             }
         }
     ]

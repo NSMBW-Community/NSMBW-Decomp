@@ -5,18 +5,18 @@
         "moduleNum": 0,
         "defaultCompilerFlags": "-proc gekko -fp hard -O4 -inline noauto -Cpp_exceptions off -enum int -RTTI off -ipa file",
         "sections": {
-            ".init":                { "index": 0,  "align": 16, "size": "0x26c0" },
-            ".text":                { "index": 1,  "align": 16, "size": "0x2e7560" },
-            ".ctors$10":            { "index": 9,  "align": 4, "size": "0x4" },
-            ".ctors":               { "index": 9,  "align": 4, "size": "0x2d0", "offset": "0x4" },
-            ".dtors":               { "index": 10, "align": 4, "size": "0x20" },
-            ".rodata":              { "index": 11, "align": 8, "size": "0x106c0" },
-            ".data":                { "index": 12, "align": 8, "size": "0x532e0" },
-            ".bss":                 { "index": -1, "align": 8, "size": "0xd6000" },
-            ".sdata":               { "index": 13, "align": 8, "size": "0x2520" },
-            ".sbss":                { "index": -1, "align": 8, "size": "0x14c0" },
-            ".sdata2":              { "index": 14, "align": 8, "size": "0x4b60" },
-            ".sbss2":               { "index": -1, "align": 8, "size": "0x5c" }
+            ".init":                { "index": 0,  "align": 16, "addr": "0x80004000", "size": "0x26c0" },
+            ".text":                { "index": 1,  "align": 16, "addr": "0x80006780", "size": "0x2e7560" },
+            ".ctors$10":            { "index": 9,  "align": 4,  "addr": "0x802edce0", "size": "0x4" },
+            ".ctors":               { "index": 9,  "align": 4,  "addr": "0x802edce0", "size": "0x2d0", "offset": "0x4" },
+            ".dtors":               { "index": 10, "align": 4,  "addr": "0x802edfc0", "size": "0x20" },
+            ".rodata":              { "index": 11, "align": 8,  "addr": "0x802edfe0", "size": "0x106c0" },
+            ".data":                { "index": 12, "align": 8,  "addr": "0x802fe6a0", "size": "0x532e0" },
+            ".bss":                 { "index": -1, "align": 8,  "addr": "0x80351980", "size": "0xd6000" },
+            ".sdata":               { "index": 13, "align": 8,  "addr": "0x80427980", "size": "0x2520" },
+            ".sbss":                { "index": -1, "align": 8,  "addr": "0x80429ea0", "size": "0x14c0" },
+            ".sdata2":              { "index": 14, "align": 8,  "addr": "0x8042b360", "size": "0x4b60" },
+            ".sbss2":               { "index": -1, "align": 8,  "addr": "0x8042fec0", "size": "0x5c" }
         }
     },
     "slices": [
