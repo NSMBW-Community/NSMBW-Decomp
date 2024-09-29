@@ -42,6 +42,19 @@ jobs:
       - name: Run progress script
         run: python progress.py --verify-obj --verify-bin --progress-summary
 
+      - name: Run DTK and objdiff to generate progress file for decomp.dev
+        run: |
+          pip install pyyaml
+          python prepare_objdiff.py
+          Invoke-WebRequest 'https://github.com/encounter/objdiff/releases/download/v2.1.0/objdiff-cli-windows-x86_64.exe' -OutFile objdiff-cli.exe
+          ./objdiff-cli.exe report generate | Out-File -Append -Encoding UTF8 ./bin/report.json
+
+      - name: Upload progress artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: SMNP01-report
+          path: ./bin/report.json
+
 
   generate_docs:
     runs-on: ubuntu-22.04

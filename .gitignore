@@ -21,3 +21,6 @@ __pycache__/
 
 # Doxygen generated files
 /doxygen
+
+# objdiff file
+objdiff.json

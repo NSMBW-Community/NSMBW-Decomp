@@ -27,24 +27,26 @@ class SliceSection:
 
 
 class Slice:
-    def __init__(self, slice_name: str, source: str, slice_secs: list[SliceSection], cc_flags: str, deadstrip: list[str], no_deadstrip: list[str]) -> None:
+    def __init__(self, slice_name: str, source: str, slice_secs: list[SliceSection], cc_flags: str, deadstrip: list[str], no_deadstrip: list[str], non_matching: bool) -> None:
         self.slice_name = slice_name
         self.slice_src = source
         self.slice_secs = slice_secs
         self.cc_flags = cc_flags.split(' ') if cc_flags else None
         self.deadstrip = deadstrip
         self.no_deadstrip = no_deadstrip
+        self.non_matching = non_matching
 
     def __repr__(self) -> str:
         return f'<Slice {self.slice_name}, {self.slice_secs}>'
 
 
 class SliceSectionInfo:
-    def __init__(self, index: int, align: int, size: int, offset: int) -> None:
+    def __init__(self, index: int, align: int, size: int, offset: int, addr: int) -> None:
         self.index = index
         self.align = align
         self.size = size
         self.offset = offset
+        self.addr = addr
 
 
 class SliceType(Enum):
@@ -67,7 +69,8 @@ class SliceMeta:
             sec_meta = meta['sections'][sec]
             s_size = int(sec_meta['size'], 16)
             s_offset = int(sec_meta['offset'], 16) if 'offset' in sec_meta else 0
-            secs[sec] = SliceSectionInfo(sec_meta['index'], sec_meta['align'], s_size, s_offset)
+            addr = int(sec_meta['addr'], 16) if 'addr' in sec_meta else 0
+            secs[sec] = SliceSectionInfo(sec_meta['index'], sec_meta['align'], s_size, s_offset, addr)
         sm = SliceMeta(secs)
         sm.type = SliceType.REL if meta['type'] == 'REL' else SliceType.DOL
         sm.name = meta['fileName']
@@ -90,12 +93,10 @@ def make_filler_slice(name: str, sec_range: dict[str, tuple[int, int]], slice_me
             continue
 
         sec_info = slice_meta.secs[sec_name]
-        start += sec_info.offset
-        end += sec_info.offset
         slice_sections.append(SliceSection(sec_name, sec_info.index, start, end, sec_info.align))
 
     if len(slice_sections) > 0:
-        return Slice(name, None, slice_sections, None, None, None)
+        return Slice(name, None, slice_sections, None, None, None, None)
 
 def load_slice_file(file: typing.TextIO) -> SliceFile:
     slice_json = json.load(file)
@@ -103,7 +104,7 @@ def load_slice_file(file: typing.TextIO) -> SliceFile:
     slices: list[Slice] = []
     slice: JSONSliceData
 
-    curr_sec_positions = {s: 0 for s in slice_meta.secs if slice_meta.secs[s].size != 0}
+    curr_sec_positions = {s: slice_meta.secs[s].offset for s in slice_meta.secs if slice_meta.secs[s].size != 0}
 
     filler_slice_idx = 0
     unnamed_slice_idx = 0
@@ -116,8 +117,7 @@ def load_slice_file(file: typing.TextIO) -> SliceFile:
 
         for sec_name in slice['memoryRanges']:
             range_str = slice['memoryRanges'][sec_name]
-            offs = slice_meta.secs[sec_name].offset # so that the slice range is relative to the entire section, not the subsection
-            begin, end = [int(x, 16) - offs for x in range_str.split('-')]
+            begin, end = [int(x, 16) for x in range_str.split('-')]
             sec_info = slice_meta.secs[sec_name]
             slice_sections.append(SliceSection(sec_name, sec_info.index, begin, end, sec_info.align))
 
@@ -128,6 +128,7 @@ def load_slice_file(file: typing.TextIO) -> SliceFile:
         flags = slice.get('compilerFlags', None)
         ds = slice.get('deadstrip', None)
         nds = slice.get('noDeadstrip', None)
+        nm = slice.get('nonMatching', False)
 
         # Generate filler slice
         filler_slice = make_filler_slice(f'filler_{filler_slice_idx}.o', filler_sec_range, slice_meta)
@@ -144,12 +145,13 @@ def load_slice_file(file: typing.TextIO) -> SliceFile:
             else:
                 final_slice_name = f"{src.split('.')[0].replace('/', '_')}.o"
 
-        slices.append(Slice(final_slice_name, src, slice_sections, flags, ds, nds))
+        slices.append(Slice(final_slice_name, src, slice_sections, flags, ds, nds, nm))
 
     # Ensure filler slices extend to the end
     filler_sec_range = {s: (0, 0) for s in curr_sec_positions}
     for sec_name in curr_sec_positions:
-        filler_sec_range[sec_name] = (curr_sec_positions[sec_name], slice_meta.secs[sec_name].size)
+        section_end = slice_meta.secs[sec_name].size + slice_meta.secs[sec_name].offset
+        filler_sec_range[sec_name] = (curr_sec_positions[sec_name], section_end)
 
     filler_slice = make_filler_slice(f'filler_{filler_slice_idx}.o', filler_sec_range, slice_meta)
     if filler_slice is not None:
