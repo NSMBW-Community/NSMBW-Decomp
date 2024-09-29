@@ -146,3 +146,33 @@ div.contents > p, div.textblock p {
 div.contents > ul, div.textblock ul {
   margin-top: 0px;
 }
+
+/* Remove unnecessary background on navtree arrow hover */
+a:hover > span.arrow {
+  background: none !important;
+}
+
+/* Remove unnecessary underline on navtree arrow hover */
+.item:hover > a[href="javascript:void(0)"] {
+  background: none !important;
+}
+
+/* Remove nav tree focus outline */
+#nav-tree a:focus {
+  outline-style: none !important;
+}
+
+/* Fix anchor link hover color */
+a.anchorlink:hover {
+  color: var(--page-foreground-color) !important;
+}
+
+/* Fix parameter name colors */
+.paramname em {
+  color: var(--primary-dark-color) !important;
+}
+
+/* Fix parameter ending brace color */
+.paramname {
+  color: var(--page-foreground-color) !important;
+}
