@@ -4,7 +4,7 @@
 
 #define MAX_NUM_RES 300 ///< The maximum number of resources that can be loaded at once.
 
-/// @brief A singleton class that manages loading resource files (files contained within a .arc file).
+/// @brief An archive resource management class.
 /// @ingroup bases
 class dResMng_c {
 private:

@@ -33,7 +33,7 @@ bool dRes_c::info_c::cleanup() {
         mpArchive = mpDvdCmd->mpArchive;
         mpArcBinary = mpDvdCmd->getArcBinary();
         mpMountHeap = mpDvdCmd->mpHeap;
-        mUnk = mpDvdCmd->mUnk;
+        mArchiveSize = mpDvdCmd->mArchiveSize;
         mpDvdCmd->destroy();
 
         mpDvdCmd = nullptr;
@@ -89,7 +89,7 @@ dRes_c::info_c::LOAD_STATUS_e dRes_c::info_c::setRes(callback_c *callback) {
         mpArchive = mpDvdCmd->mpArchive;
         mpArcBinary = mpDvdCmd->getArcBinary();
         mpMountHeap = mpDvdCmd->mpHeap;
-        mUnk = mpDvdCmd->mUnk;
+        mArchiveSize = mpDvdCmd->mArchiveSize;
         mpDvdCmd->destroy();
         mpDvdCmd = nullptr;
 

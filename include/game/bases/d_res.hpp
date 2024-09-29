@@ -16,14 +16,16 @@
  *
  * ## Path Notes
  * Resource paths are subject to the following restrictions:
- * - The @p \.arc extension is appended automatically to archive names and therefore must not be passed.
- * - Full paths to archive files (including the appended extension) cannot exceed 80 characters and must
- * not begin with a @p / character.
+ * - The @p \.arc extension is appended automatically to archive names and therefore must not be included.
+ * - The @p / character is prepended automatically to archive paths and therefore must not be included.
+ * - Archive names (excluding the file extension) cannot exceed 32 characters.
+ * - Full paths to archive files (including the appended extension and prepended slash) cannot exceed 80
+ * characters.
  * - Full paths to resources inside an archive should not exceed 250 characters.
  *
- * ## Loading Archives
- * Use the ::setRes function to schedule an archive for loading. For loading multiple archives
- * at once, see @ref dResMng_c::setRes "the dResMng_c equivalent".
+ * ## Opening Archives
+ * Use the ::setRes function to open an archive. For opening multiple archives at once, see
+ * @ref dResMng_c::setRes "the dResMng_c equivalent".
  *
  * @note Many kinds of assets are loaded automatically, therefore doing so manually is not necessary.
  * These include:
@@ -33,16 +35,21 @@
  * - Actor resources
  * - Worldmaps and their resources
  *
- * @hint{If it doesn't fall in any of the aforementioned cases, it is recommended to use this class to load
- * archives containing nw4r-based assets (such as @p \.brres files), as the game will automatically handle
- * the necessary initialization.
+ * ### Notes for BRRES Resources
+ * The game automatically handles the initialization of any BRRES files inside an archive, as long as the
+ * parent directory of the file is named @p g3d .
  *
+ * ### Notes for Layout Resources
  * For layout archives, it's recommended to use the
- * @ref LytBase_c::ReadResource3 "dedicated LytBase_c functions" instead.}
+ * @ref LytBase_c::ReadResource3 "dedicated LytBase_c functions" instead of this class.
  *
- * ## Getting Archive Contents
- * Use the ::getRes function to obtain a resource inside a specific archive. Overloads are provided to
- * obtain the size of the resource and optionally detect compression.
+ * ## Loading Archives
+ * Use the ::syncAllRes function to perform the actual archive file loading. The function will return
+ * @p true until all opened archives are loaded successfully.
+ *
+ * ## Getting Archive Resources
+ * Use the ::getRes function to obtain a resource inside a specific archive once it has been loaded.
+ * Overloads are provided to obtain the size of the resource and optionally detect compressed resources.
  *
  * If the file could not be found under the archive, a warning is printed to the console.
  * Use ::getResSilently if this behaviour is undesired (such as with an optional file).
@@ -53,18 +60,14 @@
  * While the @ref getRes(const char*, const char*, unsigned long*, int*) const "getRes" function can detect
  * compression and return the decompressed data size, it does not actually perform the decompression itself.
  * This can be achieved by calling the @ref copyRes(const void*, void*, int, int) "copyRes" function with
- * the compressed data and the compression type returned from the previous function, plus a buffer to store
+ * the compressed data and the compression type returned by the previous function, plus a buffer to store
  * the decompressed data into.
  *
- * @note Only LZ compression is supported.
+ * @note Only LZ77 compression is supported.
  *
  * ## Deleting Archives
  * Use the ::deleteRes function to mark an archive as no longer needed by the calling entity.
  * This ensures that archives no longer in use are properly disposed of.
- *
- * ## Reading Archive Files
- * Use the ::syncAllRes function to perform the actual archive file reading. The function will return
- * @p true until all files are loaded.
  *
  * ## Unused Content
  * - ::mSetCallback is an unused callback for when an archive is added to the class. It was probably
@@ -116,13 +119,35 @@ public:
         u32 mFolderSig; ///< The first 4 characters of the current folder.
     };
 
-    /// @brief A class that holds information about an archive.
+    /**
+     * @brief An archive holder.
+     * @details
+     * info_c is a high-level interface to resource archives ( @p \.arc files). It is generally not accessed
+     * directly, but is managed by the outer dRes_c class. It wraps the functionalities of
+     * mDvd_mountMemArchive_c and EGG::Archive to simplify the loading and iteration of resource archives.
+     *
+     * ## Loading an Archive
+     * Use the ::set function to manually schedule an archive for loading. If successful, a
+     * @ref mpDvdCmd "file loading command" is generated and queued to continue the loading process
+     * in the background.
+     *
+     * ## Checking Progress
+     * Use the ::setRes function to query the @ref LOAD_STATUS_e "archive's loading state". Once the
+     * loading process is completed, the @ref mpDvdCmd "command" is deleted and the
+     * @ref mpFiles "archive's resource list" is built using the provided callback.
+     *
+     * ## Archive Disposal
+     * Each archive holder features a @ref ::mRefCount "reference count", which acts as a garbage disposal
+     * mechanism: each time the archive is requested the count increases, while it decreases when its deletion
+     * is requested. When the counter reaches zero (or the holder is deleted), the archive is automatically
+     * @ref cleanup "disposed".
+     */
     class info_c {
     public:
 
         /// @brief The loading status of the archive.
         enum LOAD_STATUS_e {
-            LOAD_ERROR = -1, ///< An error occurred while loading.
+            LOAD_ERROR = -1, ///< An error occurred while loading the archive.
             LOAD_SUCCESS = 0, ///< The archive was loaded successfully.
             LOAD_IN_PROGRESS = 1, ///< The archive is currently being loaded.
         };
@@ -140,7 +165,7 @@ public:
          * @param arcName The name of the archive.
          * @param containingFolder The path to the folder which the archive is in.
          * @param allocDirection The allocation direction. See ::MEMExpHeapAllocDir.
-         * @param heap The heap to load the resources of the archive into.
+         * @param heap The heap to load the resources of the archive into, or @p nullptr to use the default heap.
          * @return Whether the archive was prepared successfully and will be loaded.
          */
         bool set(const char *arcName, const char *containingFolder, u8 allocDirection, EGG::Heap *heap);
@@ -148,14 +173,22 @@ public:
         /**
          * @brief Attempts to load the archive into memory and load the resources with a callback.
          *
-         * @param callback The callback for the resources.
+         * @param callback The resource loaded callback, or @p nullptr .
          * @return The result of the operation.
          */
         LOAD_STATUS_e setRes(callback_c *callback);
 
         const char *getName() const { return mName; }
         int getRefCount() const { return mRefCount; }
-        void *getDvdCmd() const { return mpDvdCmd; }
+
+        /// @brief Gets the file loading command.
+        /// @return The file loading command, or @p nullptr if the archive has already been loaded
+        /// or the holder is empty.
+        mDvd_mountMemArchive_c *getDvdCmd() const { return mpDvdCmd; }
+
+        /// @brief Gets the archive accessor.
+        /// @return The archive accessor, or @p nullptr if the archive has not yet been loaded
+        /// or the holder is empty.
         EGG::Archive *getArchive() const { return mpArchive; }
 
         void incRefCount() { mRefCount++; } ///< Increments the reference count.
@@ -164,10 +197,8 @@ public:
     private:
 
         /**
-         * @brief Executes a callback on each file and folder of the archive.
-         *
-         * @details If the callback is @p nullptr , the files will still be loaded and pointers to each file will be stored in ::mpFiles.
-         * @param callback The callback for this resource, or @p nullptr .
+         * @brief Builds the resource list and executes a callback on each file and directory.
+         * @param callback The resource loaded callback, or @p nullptr .
          * @return The result of the operation.
          */
         LOAD_STATUS_e loadRes(callback_c *callback);
@@ -175,11 +206,15 @@ public:
         char mName[0x20]; ///< The name of the archive.
         u16 mRefCount; ///< The number of references to this archive.
         mDvd_mountMemArchive_c *mpDvdCmd; ///< The DVD command for mounting the archive.
-        EGG::Archive *mpArchive; ///< An EGG::Archive instance for this archive.
+        EGG::Archive *mpArchive; ///< The accessor for this archive.
         EGG::Heap *mpMountHeap; ///< The heap used for mounting the archive.
         void *mpArcBinary; ///< The raw archive data.
-        int mUnk; ///< Unknown.
-        EGG::FrmHeap *mDataHeap; ///< The heap used for loading the resources of the archive. [No p because of the string "dRes_c::info_c::mDataHeap"]
+        int mArchiveSize; ///< The archive size.
+
+        /// @brief The heap used for loading the resources of the archive.
+        /// @decompnote{No p because of the string "dRes_c::info_c::mDataHeap"}
+        EGG::FrmHeap *mDataHeap;
+
         u8 **mpFiles; ///< An array of pointers to the data of each loaded resource.
     };
 
@@ -187,7 +222,7 @@ public:
     ~dRes_c(); ///< Destroys the manager.
 
     /**
-     * @brief Initializes the manager.
+     * @brief Initializes the manager by allocating the archive holders and setting the callback.
      *
      * @param maxCount The number of archive holders to allocate.
      * @param callback The resource loaded callback.
@@ -197,11 +232,10 @@ public:
 
     /**
      * @brief Schedules an archive for loading.
-     *
      * @param arcName The name of the archive to load. See the [path notes](#path-notes).
      * @param containingFolder The path to the folder the archive is in. See the [path notes](#path-notes).
      * @param allocDir The allocation direction. See ::MEMExpHeapAllocDir.
-     * @param heap The heap to load the archive into, or @p nullptr to use the default heap.
+     * @param heap The heap to load the archive into, or @p nullptr to use the default archive heap.
      * @return Whether the operation was successful.
      */
     bool setRes(const char *arcName, const char *containingFolder, u8 allocDir, EGG::Heap *heap);

@@ -11,7 +11,7 @@ public:
 
     void destroy();
 
-    int mUnk;
+    int mReadLength;
     bool mDone;
 };
 
@@ -26,5 +26,5 @@ public:
     int mEntryNum;
     EGG::Archive *mpArchive;
     EGG::Heap *mpHeap;
-    unsigned long mUnk;
+    unsigned long mArchiveSize;
 };
