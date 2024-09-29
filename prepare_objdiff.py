@@ -77,7 +77,7 @@ for slice_file in slices:
             continue
         if not '$' in secname:
             splits_file += f'\t{secname: <15} type:{SECTION_TYPES[secname.split("$")[0]]} align:{info.align}\n'
-        sec_origin[secname] = info.addr + info.offset
+        sec_origin[secname] = info.addr
         if secname == '.init':
             splits_file += f'\t{"extab": <15} type:rodata align:8\n'
             splits_file += f'\t{"extabindex": <15} type:rodata align:32\n'

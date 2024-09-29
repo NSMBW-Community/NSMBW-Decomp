@@ -93,8 +93,6 @@ def make_filler_slice(name: str, sec_range: dict[str, tuple[int, int]], slice_me
             continue
 
         sec_info = slice_meta.secs[sec_name]
-        start += sec_info.offset
-        end += sec_info.offset
         slice_sections.append(SliceSection(sec_name, sec_info.index, start, end, sec_info.align))
 
     if len(slice_sections) > 0:
@@ -106,7 +104,7 @@ def load_slice_file(file: typing.TextIO) -> SliceFile:
     slices: list[Slice] = []
     slice: JSONSliceData
 
-    curr_sec_positions = {s: 0 for s in slice_meta.secs if slice_meta.secs[s].size != 0}
+    curr_sec_positions = {s: slice_meta.secs[s].offset for s in slice_meta.secs if slice_meta.secs[s].size != 0}
 
     filler_slice_idx = 0
     unnamed_slice_idx = 0
@@ -119,8 +117,7 @@ def load_slice_file(file: typing.TextIO) -> SliceFile:
 
         for sec_name in slice['memoryRanges']:
             range_str = slice['memoryRanges'][sec_name]
-            offs = slice_meta.secs[sec_name].offset # so that the slice range is relative to the entire section, not the subsection
-            begin, end = [int(x, 16) - offs for x in range_str.split('-')]
+            begin, end = [int(x, 16) for x in range_str.split('-')]
             sec_info = slice_meta.secs[sec_name]
             slice_sections.append(SliceSection(sec_name, sec_info.index, begin, end, sec_info.align))
 
@@ -153,7 +150,8 @@ def load_slice_file(file: typing.TextIO) -> SliceFile:
     # Ensure filler slices extend to the end
     filler_sec_range = {s: (0, 0) for s in curr_sec_positions}
     for sec_name in curr_sec_positions:
-        filler_sec_range[sec_name] = (curr_sec_positions[sec_name], slice_meta.secs[sec_name].size)
+        section_end = slice_meta.secs[sec_name].size + slice_meta.secs[sec_name].offset
+        filler_sec_range[sec_name] = (curr_sec_positions[sec_name], section_end)
 
     filler_slice = make_filler_slice(f'filler_{filler_slice_idx}.o', filler_sec_range, slice_meta)
     if filler_slice is not None:
