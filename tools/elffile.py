@@ -456,8 +456,11 @@ class ElfFile:
         data = bytearray(b'\0'*ElfHeader._struct.size) # Filled out at the end
         for sec in self.sections:
             sec_data = bytes(sec)
+
             sec.header.sh_offset = len(data) if sec.header.sh_type != SHT.SHT_NULL else 0
             data.extend(sec_data)
+            while len(data) % 4:
+                data.append(0)
 
         self.header.e_shnum = len(self.sections)
         self.header.e_shoff = len(data)
