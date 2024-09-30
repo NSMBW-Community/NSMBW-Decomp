@@ -87,9 +87,10 @@ public:
          * @brief Executes the callback.
          * @param data The resource data.
          * @param folderSig The first 4 characters of the folder name.
+         * @param path The path to the current resource.
          * @return The resource data.
          */
-        virtual void *execute(void *data, u32 folderSig) = 0;
+        virtual void *execute(void *data, u32 folderSig, const char* path) = 0;
     };
 
     /// @brief A callback class for EGG::Archive::searchInside.

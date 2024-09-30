@@ -303,7 +303,7 @@ void dMj2dHeader_c::onMultiWorldOpenFlag(int world) {
     mMultiWorldOpenFlag |= 1 << world;
 }
 
-bool dMj2dHeader_c::isMultiWorldOpenFlag(int world) const {
+bool dMj2dHeader_c::isMultiWorldOpenFlag(int world) {
     return mMultiWorldOpenFlag & (1 << world);
 }
 

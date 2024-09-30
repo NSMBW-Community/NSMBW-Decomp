@@ -12,7 +12,7 @@ private:
     class resCallback_c : public dRes_c::callback_c {
     public:
         virtual void init(const char *name);
-        virtual void *execute(void *data, u32 folderSig);
+        virtual void *execute(void *data, u32 folderSig, const char* path);
     };
 
 public:
@@ -27,7 +27,7 @@ public:
      * @param count The number of archives in the array.
      * @param heap The heap to load the archives into.
      */
-    void setRes(const char *path, char **names, int count, EGG::Heap *heap);
+    void setRes(const char *path, const char **names, int count, EGG::Heap *heap);
 
     /**
      * @brief Registers a single archive to be loaded.
