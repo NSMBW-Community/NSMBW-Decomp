@@ -85,7 +85,7 @@ public:
 /// @brief A three-dimensional floating point vector.
 /// @ingroup mlib
 /// @todo Add EGG::vector3f operators.
-class mVec3_c {
+class mVec3_c : public nw4r::math::VEC3 {
 public:
 
     /// @brief Constructs an empty vector.
@@ -167,10 +167,6 @@ public:
 
     void rotX(mAng angle); ///< Rotates the vector on the X axis by the given angle.
     void rotY(mAng angle); ///< Rotates the vector on the Y axis by the given angle.
-
-    float x; ///< The coordinates on the X axis.
-    float y; ///< The coordinates on the Y axis.
-    float z; ///< The coordinates on the Z axis.
 
     static mVec3_c Zero; ///< The null vector.
     static mVec3_c Ex; ///< The unit vector for the X axis.
