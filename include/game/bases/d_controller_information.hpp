@@ -2,9 +2,13 @@
 #include <game/bases/d_base.hpp>
 #include <game/bases/d_lytbase.hpp>
 
-/// @brief Displays the controller information screen.
-/// @details This is the screen that reads "Hold the Wii Remote sideways".
-/// @ingroup bases
+/**
+ * @brief Displays the controller information screen.
+ * @ingroup bases
+ * @details This is the screen that reads "Hold the Wii Remote sideways". It's spawned automatically by
+ * the boot scene (dScBoot_c), which also performs the button input check and consequent
+ * @ref STATE_e "state change".
+ */
 class dControllerInformation_c : public dBase_c {
 public:
 
@@ -15,30 +19,30 @@ public:
         HIT2BTN ///< The button's hit animation.
     };
 
-    /// @brief The state that controls what the layout should be doing.
+    /// @brief The screen's current state.
     enum STATE_e {
         IDLE, ///< Initial state; waiting for layout creation.
-        SHOW_IN, ///< Play the button pop-out animation.
-        SHOW_LOOP, ///< Wait for the pop-out to finish.
-        WAITING_FOR_END, ///< Play the button animation while waiting for user input.
-        END ///< The button has been pressed, play the sound effect and the shrinking button animation.
+        SHOW_IN, ///< Playing the button pop-out animation.
+        SHOW_LOOP, ///< Waiting for the pop-out to finish.
+        WAITING_FOR_END, ///< Playing the button animation while waiting for user input.
+        END ///< Playing the button pressed sound effect and the button shrinking animation.
     };
 
-    dControllerInformation_c();
-    virtual ~dControllerInformation_c();
+    dControllerInformation_c(); ///< @copydoc fBase_c::fBase_c
+    virtual ~dControllerInformation_c(); ///< @copydoc fBase_c::~fBase_c
     virtual int create();
     virtual int doDelete();
     virtual int execute();
     virtual int draw();
 
-    /// @brief Loads the resources and creates the layout for the base.
-    /// @return If the creation was successful.
-    bool createLayout();
-
     void setVisible(bool visible) { mVisible = visible; }
     void setState(STATE_e state) { mState = state; }
 
+    /// @brief Loads the resources and creates the layout for the base.
+    /// @return If the creation was successful.
 private:
+    bool createLayout();
+
     LytBase_c mLayout; ///< The layout of the base.
     bool mIsCreated; ///< If the layout has been successfully created.
     bool mVisible; ///< If the layout should be rendered.
