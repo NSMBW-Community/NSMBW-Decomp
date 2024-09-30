@@ -15,13 +15,9 @@ public:
         u8 mWorld2;
         u8 mLevel2;
     };
-    
+
     char pad1[0x394];
-    /**
-     * If this is true, 3D models in the cutscene view
-     * and world map view are not drawn. [Always set to false in the game].
-     */
-    bool mDisable3DScenes;
+    bool mIsWorldSelect; ///< Whether the World Select Menu is being displayed.
     int pad2[7];
     int field_3b4;
 

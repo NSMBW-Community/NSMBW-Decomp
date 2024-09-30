@@ -35,7 +35,7 @@ int dWmActor_c::preExecute() {
         return NOT_READY;
     }
 
-    if (dInfo_c::m_instance->mDisable3DScenes) {
+    if (dInfo_c::m_instance->mIsWorldSelect) {
         if (mProfName != fProfile::WM_CS_SEQ_MNG
             && mProfName != fProfile::WM_ISLAND
             && mProfName != fProfile::WM_DIRECTOR) {
@@ -44,7 +44,7 @@ int dWmActor_c::preExecute() {
     }
 
     mCullSphere.mPos = mPos;
-    
+
     return SUCCEEDED;
 }
 
@@ -58,19 +58,19 @@ int dWmActor_c::preDraw() {
     }
 
     mCullSphere.mPos = mPos;
-    
+
     if (!mCullSphere.isZero() && !dWCamera_c::m_instance->mViewClip.intersectSphere(&mCullSphere)) {
         return NOT_READY;
     }
-    
-    if (dInfo_c::m_instance->mDisable3DScenes) {
+
+    if (dInfo_c::m_instance->mIsWorldSelect) {
         if (mProfName != fProfile::WM_CS_SEQ_MNG
             && mProfName != fProfile::WM_ISLAND
             && mProfName != fProfile::WM_DIRECTOR) {
             return NOT_READY;
         }
     }
-    
+
     return SUCCEEDED;
 }
 

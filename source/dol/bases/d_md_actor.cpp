@@ -35,12 +35,12 @@ int dMdActor_c::preExecute() {
         return NOT_READY;
     }
 
-    if (dInfo_c::m_instance->mDisable3DScenes) {
+    if (dInfo_c::m_instance->mIsWorldSelect) {
         return NOT_READY;
     }
 
     mCullSphere.mPos = mPos;
-    
+
     return SUCCEEDED;
 }
 
@@ -54,15 +54,15 @@ int dMdActor_c::preDraw() {
     }
 
     mCullSphere.mPos = mPos;
-    
+
     if (!mCullSphere.isZero() && !dWCamera_c::m_instance->mViewClip.intersectSphere(&mCullSphere)) {
         return NOT_READY;
     }
-    
-    if (dInfo_c::m_instance->mDisable3DScenes) {
+
+    if (dInfo_c::m_instance->mIsWorldSelect) {
         return NOT_READY;
     }
-    
+
     return SUCCEEDED;
 }
 

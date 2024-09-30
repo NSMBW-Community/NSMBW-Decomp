@@ -18,7 +18,7 @@ namespace dGameCom {
     void SetSoftLight_Enemy(m3d::bmdl_c&, int);
     void SetSoftLight_MapObj(m3d::bmdl_c&, int);
     void SetSoftLight_Item(m3d::bmdl_c&, int);
-    
+
     /// @unofficial
     void updateSelectCursor(nw4r::lyt::Picture *pic, int index, bool useSpecialDraw);
 }
