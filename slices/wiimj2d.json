@@ -72,6 +72,18 @@
             }
         },
         {
+            "source": "dol/bases/d_cc.cpp",
+            "deadstrip": ["__dt__Q23EGG8Vector2fFv"],
+            "memoryRanges": {
+                ".text": "0x85a80-0x87500",
+                ".ctors": "0xc0-c4",
+                ".rodata": "0x2408-0x2418",
+                ".data": "0x12a00-0x12a60",
+                ".sbss": "0x2a0-0x2b0",
+                ".sdata2": "0xf80-0xfa0"
+            }
+        },
+        {
             "source": "dol/bases/d_md_actor.cpp",
             "memoryRanges": {
                 ".text": "0xc7080-0xc73e0",
