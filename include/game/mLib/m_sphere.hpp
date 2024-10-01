@@ -10,6 +10,6 @@ public:
 
     bool isZero() { return fabsf(mRadius) <= FLT_EPSILON; }
 
-    mVec3_c mPos;
-    float mRadius;
+    mVec3_c mPos; ///< The sphere position.
+    float mRadius; ///< The sphere radius.
 };

@@ -264,7 +264,7 @@ public:
         ACTOR_GENERIC, ///< A generic non-map actor.
     };
 
-    dBaseActor_c(); ///< @copydoc fBase_c::fBase_c
+    dBaseActor_c(); ///< Constructs a new actor.
 
 protected:
     virtual int preCreate();
@@ -279,7 +279,7 @@ protected:
     virtual int preDraw();
     virtual void postDraw(fBase_c::MAIN_STATE_e status);
 
-    virtual ~dBaseActor_c(); ///< @copydoc fBase_c::~fBase_c
+    virtual ~dBaseActor_c(); ///< Destroys the actor.
 
     /// @brief Alternate drawing function used to draw 3D models in front of 2D graphics (first draw pass).
     /// @details This feature is not used in stages. See [here](#drawing-models-over-2d-layouts)
