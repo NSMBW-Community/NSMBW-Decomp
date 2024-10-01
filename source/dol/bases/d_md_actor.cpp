@@ -31,7 +31,7 @@ int dMdActor_c::preExecute() {
         return NOT_READY;
     }
 
-    if (dGameCom::isGameStop(-1)) {
+    if (dGameCom::isGameStop(dGameCom::GAME_STOP_ANY)) {
         return NOT_READY;
     }
 
