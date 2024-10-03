@@ -2,27 +2,42 @@
 #include <lib/nw4r/math/vec.hpp>
 #include <lib/rvl/mtx/vec.h>
 #include <game/mLib/m_angle.hpp>
+#include <lib/egg/math.hpp>
 
 /// @brief A two-dimensional floating point vector.
 /// @ingroup mlib
-/// @todo Add EGG::vector2f operators.
-class mVec2_c {
+class mVec2_c : public EGG::Vector2f {
 public:
 
     /// @brief Constructs an empty vector.
     mVec2_c() {}
 
+    ~mVec2_c() {}
+
     /// @brief Constructs a vector from a float array.
     mVec2_c(const f32 *p) { x = p[0]; y = p[1]; }
 
     /// @brief Constructs a vector from two floating point values.
-    mVec2_c(f32 fx, f32 fy) { x = fx; y = fy; }
+    mVec2_c(f32 fx, f32 fy) { set(fx, fy); }
 
-    /// @brief Constructs a new vector from an existing vector from the MTX library.
-    mVec2_c(const Vec2 &v) { x = v.x; y = v.y; }
+    /// @brief Copy constructor.
+    mVec2_c(const mVec2_c &v) { set(v.x, v.y); }
 
-    /// @brief Constructs a new vector from an existing vector from the nw4r::math library.
-    mVec2_c(const nw4r::math::VEC2 &v) { x = v.x; y = v.y; }
+    void set(float x, float y) {
+        this->x = x;
+        this->y = y;
+    }
+
+    /// @brief Increments the X coordinate.
+    /// @param x The value to increment by.
+    void incX(float x) { this->x += x; }
+
+    /// @brief Increments the Y coordinate.
+    /// @param y The value to increment by.
+    void incY(float y) { this->y += y; }
+
+    // mVec2_c &operator=(const mVec2_c &v) { set(v.x, v.y); return *this; }
+    mVec2_c &operator=(const mVec2_c &v) { x = v.x; y = v.y; return *this; }
 
     /// @brief Float cast operator.
     operator f32*() { return &x; }
@@ -77,9 +92,6 @@ public:
 
     /// @brief Inequality operator.
     bool operator!=(const mVec2_c &v) const { return x != v.x || y != v.y; }
-
-    float x; ///< The coordinates on the X axis.
-    float y; ///< The coordinates on the Y axis.
 };
 
 /// @brief A three-dimensional floating point vector.

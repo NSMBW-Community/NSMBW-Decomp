@@ -5,11 +5,11 @@
 /// @unofficial
 struct ForceListElement {
     int nodeWorld;
-    char *nodeName;
+    const char *nodeName;
     int world;
     int level;
     int entrance;
-    char *levelNode;
+    const char *levelNode;
     mVec3_c nodePos;
 
     ~ForceListElement();
