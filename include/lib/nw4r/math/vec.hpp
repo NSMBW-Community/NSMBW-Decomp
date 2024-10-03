@@ -12,12 +12,6 @@ struct VEC2 : public _VEC2 {
     VEC2() {}
     VEC2(float fx, float fy) { x = fx; y = fy; }
     VEC2(const VEC2 &v) { x = v.x; y = v.y; }
-    // VEC2(const VEC2 &v) { set(x, y); }
-
-    void set(float x, float y) {
-        this->x = x;
-        this->y = y;
-    }
 };
 
 struct _VEC3 {

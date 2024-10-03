@@ -31,9 +31,9 @@ namespace EGG {
         ~Vector2f() {}
 
         /// @brief Constructs a vector from two floating point values.
-        Vector2f(const f32 &fx, const f32 &fy) { set(fx, fy); }
+        Vector2f(f32 fx, f32 fy) { set(fx, fy); }
 
-        // Vector2f(const Vector2f &v) : nw4r::math::VEC2(v) { }
+        /// @brief Constructs a new vector from an existing vector.
         Vector2f(const Vector2f &v) { set(v.x, v.y); }
 
         void set(float x, float y) {
@@ -42,5 +42,8 @@ namespace EGG {
         }
 
         float normalise();
+
+        /// @brief Gets the length of the vector.
+        float getLength() const { return EGG::Mathf::sqrt(x * x + y * y); }
     };
 }

@@ -6,7 +6,6 @@
 
 /// @brief A two-dimensional floating point vector.
 /// @ingroup mlib
-/// @todo Add EGG::vector2f operators.
 class mVec2_c : public EGG::Vector2f {
 public:
 
@@ -19,16 +18,10 @@ public:
     mVec2_c(const f32 *p) { x = p[0]; y = p[1]; }
 
     /// @brief Constructs a vector from two floating point values.
-    mVec2_c(f32 fx, f32 fy) : EGG::Vector2f(fx, fy) { }
-    // mVec2_c(f32 fx, f32 fy) { x = fx; y = fy; }
-    // mVec2_c(f32 fx, f32 fy) { set(fx, fy); }
+    mVec2_c(f32 fx, f32 fy) { set(fx, fy); }
 
     /// @brief Copy constructor.
-    // mVec2_c(const mVec2_c &v) : EGG::Vector2f(v) { }
-    // mVec2_c(const mVec2_c &v) { x = v.x; y = v.y; }
     mVec2_c(const mVec2_c &v) { set(v.x, v.y); }
-
-    void set(const mVec2_c &v) { set(v.x, v.y); }
 
     void set(float x, float y) {
         this->x = x;
@@ -99,18 +92,6 @@ public:
 
     /// @brief Inequality operator.
     bool operator!=(const mVec2_c &v) const { return x != v.x || y != v.y; }
-
-    static float distance(mVec2_c &v1, mVec2_c &v2) {
-        v1 -= v2;
-        return v1.getLength();
-    }
-
-    float getLength() const {
-        return EGG::Mathf::sqrt(x * x + y * y);
-    }
-
-    // float x; ///< The coordinates on the X axis.
-    // float y; ///< The coordinates on the Y axis.
 };
 
 /// @brief A three-dimensional floating point vector.
