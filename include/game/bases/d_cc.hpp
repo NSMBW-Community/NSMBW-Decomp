@@ -116,7 +116,7 @@ public:
 private:
 
     // [Some unused class - but needed here because it has a static initializer.]
-    class InitializedThing {
+    class InitializedUnkClass {
     public:
         u32 a, b, c;
         bool d, e;
@@ -125,15 +125,15 @@ private:
         public:
             _init() {
                 if (!dCc_c::msIsInitialized) {
-                    dCc_c::msInitializedThing.b = 0xa000a0;
-                    dCc_c::msInitializedThing.c = 0xa00000a0;
+                    dCc_c::msInitializedUnkClass.b = 0xa000a0;
+                    dCc_c::msInitializedUnkClass.c = 0xa00000a0;
                     dCc_c::msIsInitialized = true;
                 }
             }
         } _initializer;
     };
     static char msIsInitialized; // [This might also be an auto-generated guard variable]
-    static InitializedThing msInitializedThing;
+    static InitializedUnkClass msInitializedUnkClass;
 
 public:
     dCc_c(); ///< Constructs a new collider.

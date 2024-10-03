@@ -8,9 +8,9 @@
 dCc_c *dCc_c::mEntryN;
 dCc_c *dCc_c::mEntryB;
 
-dCc_c::InitializedThing dCc_c::msInitializedThing = { 0, 0, 0, true, true };
+dCc_c::InitializedUnkClass dCc_c::msInitializedUnkClass = { 0, 0, 0, true, true };
 char dCc_c::msIsInitialized;
-dCc_c::InitializedThing::_init dCc_c::InitializedThing::_initializer;
+dCc_c::InitializedUnkClass::_init dCc_c::InitializedUnkClass::_initializer;
 
 // Note that for trapezoid checking, the second collider is always treated as a rectangular collider.
 dCc_c::hitCheck dCc_c::_hitCheck[4][4] = {
