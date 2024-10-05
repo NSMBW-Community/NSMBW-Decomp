@@ -142,8 +142,8 @@ def verify_obj(slice_files: list[SliceFile]) -> bool:
                             obj_len = align_addr(elf_sec.size(), slice_sec.alignment)
                             if obj_len != exp_len:
                                 add_note = ''
-                                if slice.deadstrip or slice.no_deadstrip:
-                                    add_note = '\n  This is to be expected with classes that have deadstripped symbols.'
+                                # if slice.deadstrip or slice.no_deadstrip:
+                                #     add_note = '\n  This is to be expected with classes that have deadstripped symbols.'
                                 warnings.append(f'Length of section {sec_name} not matching (expected {exp_len}, got {obj_len}){add_note}')
                     for elf_sec in elf.sections:
                         if elf_sec.name not in slice_file.meta.secs or slice_file.meta.secs[elf_sec.name].size == 0:

@@ -93,7 +93,6 @@ for slice_file in slices:
 
     # Select files
     file_names: list[str] = []
-    lcf_force_files: list[str] = []
     for slice in slice_file.slices:
         compiled_path = Path(f'{BUILDDIR}/compiled/{slice_name_stem}/{slice.slice_name}')
         sliced_path = Path(f'{BUILDDIR}/sliced/{slice_name_stem}/{slice.slice_name}')
@@ -108,8 +107,6 @@ for slice_file in slices:
 
         if use_file:
             file_names.append(use_file)
-            if not slice.deadstrip and not slice.no_deadstrip:
-                lcf_force_files.append(use_file)
 
     if slice_is_rel:
         file_names.append(Path(f'{BUILDDIR}/wiimj2d.elf'))
@@ -123,28 +120,35 @@ for slice_file in slices:
 
     with open(out_lcf_file, 'w') as f:
         f.write(base_lcf_contents)
-        
-        if not slice_is_rel:
-            f.write('FORCEFILES {\n\t')
-            f.write('\n\t'.join(['\\'.join(path.relative_to(PROJECTDIR).parts) for path in lcf_force_files])) # The linker requires backslashes
-            f.write('\n}\n')
 
+        if not slice_is_rel:
+            force_files = []
             force_actives = set()
             for slice in slice_file.slices:
-                if slice.no_deadstrip:
-                    # Simply add the symbols not to deadstrip to FORCEACTIVE
-                    force_actives.update(slice.no_deadstrip)
+                if not slice.slice_src or slice.non_matching:
+                    continue
 
-                if slice.deadstrip and slice.slice_src:
-                    # A bit more compilated; we need to add all symbols except for the ones
-                    # we don't want to deadstrip to the FORCEACTIVE directive.
-                    # We load the compiled ELF file and go through the symbols.
-                    elf_file = ElfFile.read(open(f'{BUILDDIR}/compiled/{slice_name_stem}/{slice.slice_name}', 'rb').read())
-                    symtab: ElfSymtab = elf_file.get_section('.symtab')
-                    for sym in [x for x in symtab.syms if x.name not in slice.deadstrip]:
-                        # Only certain types of symbols
-                        if sym.st_info_type in [STT.STT_FUNC, STT.STT_OBJECT] and sym.st_info_bind == STB.STB_GLOBAL:
-                            force_actives.add(sym.name)
+                # We load the compiled ELF file and go through the symbols to check if any of them
+                # are in the deadstrip list. If not, we add them to the FORCEACTIVE directive.
+                compiled_path = Path(f'{BUILDDIR}/compiled/{slice_name_stem}/{slice.slice_name}')
+                elf_file = ElfFile.read(open(compiled_path, 'rb').read())
+                symtab: ElfSymtab = elf_file.get_section('.symtab')
+                if not any([sym.name in slice_file.deadstrip for sym in symtab.syms]):
+                    # All symbols should be included in the output file
+                    force_files.append(compiled_path)
+                    continue
+
+                # A bit more compilated; we need to add all symbols except for the ones
+                # we want to deadstrip to the FORCEACTIVE directive.
+                for sym in symtab.syms:
+                    if sym.name in slice_file.deadstrip:
+                        continue
+                    if sym.st_info_type in [STT.STT_FUNC, STT.STT_OBJECT] and sym.st_info_bind == STB.STB_GLOBAL:
+                        force_actives.add(sym.name)
+
+            f.write('FORCEFILES {\n\t')
+            f.write('\n\t'.join(['\\'.join(path.relative_to(PROJECTDIR).parts) for path in force_files])) # The linker requires backslashes
+            f.write('\n}\n')
 
             f.write('FORCEACTIVE {\n\t')
             f.write('\n\t'.join(sorted(force_actives)))

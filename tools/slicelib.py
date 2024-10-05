@@ -27,13 +27,11 @@ class SliceSection:
 
 
 class Slice:
-    def __init__(self, slice_name: str, source: str, slice_secs: list[SliceSection], cc_flags: str, deadstrip: list[str], no_deadstrip: list[str], non_matching: bool) -> None:
+    def __init__(self, slice_name: str, source: str, slice_secs: list[SliceSection], cc_flags: str, non_matching: bool) -> None:
         self.slice_name = slice_name
         self.slice_src = source
         self.slice_secs = slice_secs
         self.cc_flags = cc_flags.split(' ') if cc_flags else None
-        self.deadstrip = deadstrip
-        self.no_deadstrip = no_deadstrip
         self.non_matching = non_matching
 
     def __repr__(self) -> str:
@@ -81,9 +79,10 @@ class SliceMeta:
 
 
 class SliceFile:
-    def __init__(self, slices: list[Slice], meta: SliceMeta) -> None:
+    def __init__(self, slices: list[Slice], meta: SliceMeta, deadstrip: list[str]) -> None:
         self.meta: SliceMeta = meta
         self.slices: list[Slice] = slices
+        self.deadstrip: list[str] = deadstrip
 
 def make_filler_slice(name: str, sec_range: dict[str, tuple[int, int]], slice_meta: SliceMeta) -> Slice:
     slice_sections: list[SliceSection] = []
@@ -96,7 +95,7 @@ def make_filler_slice(name: str, sec_range: dict[str, tuple[int, int]], slice_me
         slice_sections.append(SliceSection(sec_name, sec_info.index, start, end, sec_info.align))
 
     if len(slice_sections) > 0:
-        return Slice(name, None, slice_sections, None, None, None, None)
+        return Slice(name, None, slice_sections, None, None)
 
 def load_slice_file(file: typing.TextIO) -> SliceFile:
     slice_json = json.load(file)
@@ -126,8 +125,6 @@ def load_slice_file(file: typing.TextIO) -> SliceFile:
 
         src = slice.get('source', None)
         flags = slice.get('compilerFlags', None)
-        ds = slice.get('deadstrip', None)
-        nds = slice.get('noDeadstrip', None)
         nm = slice.get('nonMatching', False)
 
         # Generate filler slice
@@ -145,7 +142,7 @@ def load_slice_file(file: typing.TextIO) -> SliceFile:
             else:
                 final_slice_name = f"{src.split('.')[0].replace('/', '_')}.o"
 
-        slices.append(Slice(final_slice_name, src, slice_sections, flags, ds, nds, nm))
+        slices.append(Slice(final_slice_name, src, slice_sections, flags, nm))
 
     # Ensure filler slices extend to the end
     filler_sec_range = {s: (0, 0) for s in curr_sec_positions}
@@ -157,4 +154,6 @@ def load_slice_file(file: typing.TextIO) -> SliceFile:
     if filler_slice is not None:
         slices.append(filler_slice)
 
-    return SliceFile(slices, slice_meta)
+    deadstrip = slice_json.get('deadstrip', [])
+
+    return SliceFile(slices, slice_meta, deadstrip)

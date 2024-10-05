@@ -12,7 +12,7 @@
             ".dtors":               { "index": 3,  "align": 4, "size": "0x4" },
             ".rodata":              { "index": 4,  "align": 8, "size": "0x1d8" },
             ".data":                { "index": 5,  "align": 8, "size": "0x15fc" },
-            ".bss":                 { "index": 6,  "align": 4, "size": "0x208" },
+            ".bss":                 { "index": 6,  "align": 8, "size": "0x208" },
             ".rela.text":           { "index": 7,  "align": 4, "size": "0x0" },
             ".rela.ctors":          { "index": 8,  "align": 4, "size": "0x0" },
             ".rela.dtors":          { "index": 9,  "align": 4, "size": "0x0" },
