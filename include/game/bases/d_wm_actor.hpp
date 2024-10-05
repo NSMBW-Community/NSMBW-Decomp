@@ -8,9 +8,10 @@
  * @ingroup bases
  * @details
  * ## Overview
- * dWmActor_c serves as the base for all map actors. It is typically not used directly, unless the actor's sole purpose
- * is for background tasks or unconditional 3D model rendering. For more complex behaviors, it is recommended to use
- * dWmDemoActor_c and its sub-implementations, which enable the actor to respond to world map events and more.
+ * dWmActor_c serves as the base for all map actors (Wm stands for World Map). It is typically not used
+ * directly, unless the actor's sole purpose is for background tasks or unconditional 3D model rendering.
+ * For more complex behaviors, it is recommended to use dWmDemoActor_c and its sub-implementations, which
+ * enable the actor to respond to world map events and more.
  *
  * ## Creating Map Actors
  * Map actors can be created by calling one of the two ::construct methods, which define two
