@@ -11,8 +11,8 @@
  * @ingroup bases
  * @details
  * The dRes_c class manages resource archives ( @p \.arc files). It does so by storing multiple
- * @ref info_c "archive holders". The class is instantiated automatically by dResMng_c, which provides
- * higher level access.
+ * @ref info_c "archive holders". The class is instantiated automatically by dResMng_c, whose usage is
+ * recommended for basic resource loading.
  *
  * ## Path Notes
  * Resource paths are subject to the following restrictions:
@@ -25,7 +25,8 @@
  *
  * ## Opening Archives
  * Use the ::setRes function to open an archive. For opening multiple archives at once, see
- * @ref dResMng_c::setRes "the dResMng_c equivalent".
+ * @ref dResMng_c::setRes "the dResMng_c equivalent". Only up to ::mNumArcs archives can be open at the same
+ * time.
  *
  * @note Many kinds of assets are loaded automatically, therefore doing so manually is not necessary.
  * These include:
@@ -36,8 +37,8 @@
  * - Worldmaps and their resources
  *
  * ### Notes for BRRES Resources
- * The game automatically handles the initialization of any BRRES files inside an archive, as long as the
- * parent directory of the file is named @p g3d .
+ * The game automatically handles the initialization of any BRRES files within an archive, as long as their
+ * parent directory is named @p g3d .
  *
  * ### Notes for Layout Resources
  * For layout archives, it's recommended to use the
