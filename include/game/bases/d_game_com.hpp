@@ -2,6 +2,7 @@
 #include <types.h>
 #include <lib/nw4r/lyt/lyt_picture.hpp>
 #include <game/mLib/m_3d.hpp>
+#include <game/mLib/m_vec.hpp>
 
 /// @brief A collection of various functions used throughout the game.
 /// @details Name stands for Game Common.
@@ -46,6 +47,9 @@ namespace dGameCom {
     ////////////////
     // Other APIs //
     ////////////////
+
+    bool someCheck(mVec3_c *a, AreaBound *b);
+    void CreateSmallScore(const mVec3_c &, int, int, bool);
 
     /// @unofficial
     void updateSelectCursor(nw4r::lyt::Picture *pic, int index, bool useSpecialDraw);
