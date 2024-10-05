@@ -197,3 +197,43 @@ public:
     static mVec3_c Ey; ///< The unit vector for the Y axis.
     static mVec3_c Ez; ///< The unit vector for the Z axis.
 };
+
+
+struct AreaBound {
+    AreaBound() {
+    }
+    AreaBound(float x, float y, float w, float h) {
+        this->x = x;
+        this->y = y;
+        width = w;
+        height = h;
+    }
+    AreaBound(const AreaBound &other) {
+        set(other);
+    }
+    void set(float x, float y, float w, float h) {
+        this->x = x;
+        this->y = y;
+        width = w;
+        height = h;
+    }
+    void set(const AreaBound &other) {
+        x = other.x;
+        y = other.y;
+        width = other.width;
+        height = other.height;
+    }
+
+    mVec2_c withPos(const mVec3_c &pos) const {
+        mVec2_c res;
+        res.x = pos.x + x - width;
+        res.y = pos.y + y + height;
+        return res;
+    }
+
+    mVec2_c getSize() const {
+        return mVec2_c(width, height);
+    }
+
+    float x, y, width, height;
+};
