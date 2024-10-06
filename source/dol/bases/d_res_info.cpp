@@ -129,7 +129,7 @@ void dRes_c::searchCallback_c::callback(void *file, const ARCDirEntry *dirEntry,
         memcpy(&mFolderSig, name, (nameLen <= 4) ? nameLen : 4);
     } else {
         // Callback only called for files
-        u8 *cbRes = (u8 *) mpCallback->execute(file, mFolderSig);
+        u8 *cbRes = (u8 *) mpCallback->execute(file, mFolderSig, path);
         if (mFileIdx < mNumFiles) {
             mpFiles[mFileIdx++] = cbRes;
         }

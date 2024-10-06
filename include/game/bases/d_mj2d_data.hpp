@@ -61,7 +61,7 @@ public:
     void setPlayCountCoinBattle(int world, int level, int count);
 
     void onMultiWorldOpenFlag(int world); ///< Unlocks the given world in extra modes.
-    bool isMultiWorldOpenFlag(int world) const; ///< Checks if the given world is unlocked in extra modes.
+    bool isMultiWorldOpenFlag(int world); ///< Checks if the given world is unlocked in extra modes.
 
 private:
     /// @brief Ensures that the save's major revision number matches the current one.

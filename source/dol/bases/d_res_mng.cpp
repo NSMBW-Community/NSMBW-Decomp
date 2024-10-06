@@ -15,7 +15,7 @@ dResMng_c::~dResMng_c() {
 
 void dResMng_c::resCallback_c::init(const char *name) {}
 
-void *dResMng_c::resCallback_c::execute(void *data, u32 folderSig) {
+void *dResMng_c::resCallback_c::execute(void *data, u32 folderSig, const char* path) {
     if (folderSig == 'g3d ') {
         // If it's a g3d file, create a ResFile for it
         nw4r::g3d::ResFile resFile(data);
@@ -28,7 +28,7 @@ void *dResMng_c::resCallback_c::execute(void *data, u32 folderSig) {
     return data;
 }
 
-void dResMng_c::setRes(const char *path, char **names, int count, EGG::Heap *heap) {
+void dResMng_c::setRes(const char *path, const char **names, int count, EGG::Heap *heap) {
     for (int i = 0; i < count; i++) {
         mRes.setRes(names[i], path, MEM_EXPHEAP_ALLOC_DIR_FRONT, heap);
     }
