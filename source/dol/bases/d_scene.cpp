@@ -85,7 +85,7 @@ int dScene_c::preExecute() {
     }
 
     if (m_nextScene != fProfile::INVALID) {
-        // Prepare to go to next state
+        // Prepare to go to next scene
         if (mFader_c::isStatus(mFaderBase_c::HIDDEN)) {
             dFader_c::startFadeOut(m_fadeOutFrame); // Initiate fade out if not started yet
         } else if (mFader_c::isStatus(mFaderBase_c::OPAQUE)) {
