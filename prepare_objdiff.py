@@ -68,7 +68,7 @@ for slice_file in slices:
             'object': f'original/{slice_file.meta.name}',
             'splits': f'{BUILDDIR}/dtk/dtk_splits_{Path(slice_file.meta.name).stem}.txt'
         })
-    
+
     splits_file = 'Sections:\n'
 
     sec_origin = {}
@@ -131,7 +131,7 @@ def get_dtk(tag: str) -> str:
                 shutil.copyfileobj(response, f)
             st = os.stat(bin_path)
             os.chmod(bin_path, st.st_mode | stat.S_IEXEC)
-    
+
     return bin_path
 
 dtk_path = get_dtk('v0.9.6')
@@ -214,6 +214,20 @@ for module in objdiff_json['modules']:
 for module in objdiff_json['modules']:
     objdiff_json['units'].extend(module['units'])
 del objdiff_json['modules']
+
+# Preserve symbol mappings
+if Path('objdiff.json').exists():
+    objdiff_prev = json.load(open('objdiff.json'))
+    for unit in objdiff_prev['units']:
+        if 'symbol_mappings' not in unit:
+            continue
+        idx = None
+        for i, prev_unit in enumerate(objdiff_json['units']):
+            if prev_unit['name'] == unit['name']:
+                idx = i
+                break
+        if idx is not None:
+            objdiff_json['units'][idx]['symbol_mappings'] = unit['symbol_mappings']
 
 with open(f'objdiff.json', 'w') as f:
     f.write(json.dumps(objdiff_json, indent=2))
