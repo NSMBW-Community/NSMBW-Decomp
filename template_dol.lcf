@@ -11,7 +11,7 @@ SECTIONS {
         .ctors ALIGN(0x20):{}     // C++ constructors and Altivec vector constructors
         .dtors ALIGN(0x20):{}     // C++ destructors
         .rodata ALIGN(0x20):{}    // Initialized global constant data
-        .data ALIGN(0x20):{}      // Initialized global data
+        .data ALIGN(0x8):{}      // Initialized global data
         .bss ALIGN(0x4):{}        // Uninitialized global data
         .sdata ALIGN(0x8):{}      // Initialized global small data
         .sbss ALIGN(0x8):{}       // Uninitialized global small data
