@@ -17,22 +17,22 @@ dWipeDokan_c::~dWipeDokan_c() {
 }
 
 bool dWipeDokan_c::createLayout() {
-    static const char *animeNames[] = {
+    static const char *AnmNameTbl[] = {
         "wipeDokan_02_inBlackDown.brlan",
         "wipeDokan_02_outBlackUp.brlan",
         "wipeDokan_02_outBlackDown.brlan",
         "wipeDokan_02_inBlackUp.brlan"
     };
 
-    static const int groupIdxs[] = {0, 1, 2, 3};
-    static const char *groupNames[] = {
+    static const int ANIME_INDEX_TBL[] = {0, 1, 2, 3};
+    static const char *GROUP_NAME_DT[] = {
         "A00_wipeDokan",
         "A00_wipeDokan",
         "A00_wipeDokan",
         "A00_wipeDokan"
     };
 
-    static const char *picNames[] = {
+    static const char *PPANE_NAME_DT[] = {
         "P_baseBlack_00"
     };
 
@@ -46,10 +46,10 @@ bool dWipeDokan_c::createLayout() {
     }
 
     mLyt.build("wipeDokan_02.brlyt", 0);
-    mLyt.AnimeResRegister(animeNames, ARRAY_SIZE(animeNames));
-    mLyt.GroupRegister(groupNames, groupIdxs, ARRAY_SIZE(groupNames));
+    mLyt.AnimeResRegister(AnmNameTbl, ARRAY_SIZE(AnmNameTbl));
+    mLyt.GroupRegister(GROUP_NAME_DT, ANIME_INDEX_TBL, ARRAY_SIZE(GROUP_NAME_DT));
     mpRootPane = mLyt.getRootPane();
-    mLyt.PPaneRegister(picNames, mpPic, ARRAY_SIZE(mpPic));
+    mLyt.PPaneRegister(PPANE_NAME_DT, mpPic, ARRAY_SIZE(mpPic));
 
     mIsCreated = true;
 
