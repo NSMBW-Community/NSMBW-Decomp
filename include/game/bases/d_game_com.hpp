@@ -86,9 +86,14 @@ namespace dGameCom {
     void Player1upColor(LytTextBox_c *, int);
     void getGlbPosToLyt(mVec3_c &);
     bool someCheck(mVec3_c *a, mBoundBox *b); ///< @unofficial
+    void CreateSmallScore(const mVec3_c &, int, int, bool);
+    u8 GetAspectRatio();
+    bool PlayerEnterCheck(int);
 
     bool checkRectangleOverlap(mVec3_c *, mVec3_c *, mVec3_c *, mVec3_c *, float); ///< @unofficial
 
     void updateSelectCursor(nw4r::lyt::Picture *pic, int index, bool useSpecialDraw); ///< @unofficial
     float getDispCenterY();
+
+    void DispSizeScale(nw4r::math::VEC2 &scale);
 }
