@@ -52,7 +52,6 @@ public:
     void setVisible(bool visible) {
         mFlags = (mFlags & 0xfe) | visible;
     }
-
     void setScale(const math::VEC2 &scale) { mScale = scale; }
     void setAlpha(u8 alpha) { mAlpha = alpha; }
 
