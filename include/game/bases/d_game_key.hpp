@@ -1,17 +1,18 @@
 #pragma once
-#include <types.h>
 
-class dGameKeyCore_c {
+class Remocon {
 public:
-    enum EXTENSION_e {
+    virtual ~Remocon();
+
+    enum EXTENSION_TYPE_e {
         EXTENSION_NONE = 0,
-        EXTENSION_NUNCHUK = 1
+        EXTENSION_NUNCHUK = 1,
+        EXTENSION_TWO,
+        EXTENSION_THREE,
     };
 
-    virtual ~dGameKeyCore_c() {}
-
     int mIndex;
-    EXTENSION_e mAttachedExtension;
+    EXTENSION_TYPE_e mAttachedExtension;
     char mPad1[8];
     int mDownButtons; ///< The buttons currently pressed down.
     char mPad2[4];
@@ -24,7 +25,7 @@ class dGameKey_c {
 public:
     virtual ~dGameKey_c();
 
-    dGameKeyCore_c *keys[4];
+    Remocon *mRemocon[4];
 
     static dGameKey_c *m_instance;
 };
