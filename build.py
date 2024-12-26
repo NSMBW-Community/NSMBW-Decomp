@@ -88,7 +88,7 @@ for slice_file in slices:
 
     # Step 3: link object files
     ldflags_dol = '-proc gekko -fp hard'
-    ldflags_rel = '-proc gekko -fp hard -sdata 0 -sdata2 0 -m _prolog -opt_partial'
+    ldflags_rel = '-proc gekko -fp hard -sdata 0 -sdata2 0 -m _prolog -opt_partial -strip_partial'
     out_file = slice_name_stem + ('.plf' if slice_is_rel else '.elf')
 
     # Select files
@@ -107,10 +107,6 @@ for slice_file in slices:
 
         if use_file:
             file_names.append(use_file)
-
-    if slice_is_rel:
-        file_names.append(Path(f'{BUILDDIR}/wiimj2d.elf'))
-
 
     base_lcf_file: Path = LCF_TEMPLATE_REL if slice_is_rel else LCF_TEMPLATE_DOL
     out_lcf_file = f'{BUILDDIR}/{slice_name_stem}.lcf'
