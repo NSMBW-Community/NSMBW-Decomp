@@ -253,6 +253,13 @@
             }
         },
         {
+            "source": "dol/bases/d_wm_path.cpp",
+            "memoryRanges": {
+                ".text": "0xf73e0-0xf74c0",
+                ".data": "0x1de58-0x1de68"
+            }
+        },
+        {
             "source": "dol/bases/d_pausewindow.cpp",
             "memoryRanges": {
                 ".text": "0x153d00-0x1552f0",
