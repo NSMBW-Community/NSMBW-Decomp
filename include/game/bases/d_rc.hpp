@@ -14,6 +14,8 @@ public:
     void clrLink();
     void chkLink();
 
+    bool check2(unsigned long, unsigned long, unsigned long);
+
     void set(dActor_c *, u8);
 
     dActor_c *owner;

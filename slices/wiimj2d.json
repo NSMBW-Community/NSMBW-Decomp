@@ -39,7 +39,9 @@
         "getType__Q23m3d6bmdl_cCFv",
         "getType__Q23m3d13anmChrBlend_cCFv",
         "getType__Q23m3d8anmChr_cCFv",
-        "getType__Q23m3d8anmVis_cCFv"
+        "getType__Q23m3d8anmVis_cCFv",
+        "__dt__13dEnFumiNest_cFv",
+        "__vt__18sStateStateMgrIf_c"
     ],
     "keepWeak": ["__dt__7mVec3_cFv"],
     "slices": [
@@ -128,6 +130,17 @@
                 ".data": "0x12a00-0x12a60",
                 ".sbss": "0x2a0-0x2b0",
                 ".sdata2": "0xf80-0xfa0"
+            }
+        },
+        {
+            "source": "dol/bases/d_enemy.cpp",
+            "memoryRanges": {
+                ".text": "0x8e700-0x91bd0",
+                ".rodata": "0x27b0-0x27e0",
+                ".data": "0x13810-0x13be8",
+                ".bss": "0x5fb8-0x6028",
+                ".sbss": "0x340-0x348",
+                ".sdata2": "0x1120-0x11a8"
             }
         },
         {
