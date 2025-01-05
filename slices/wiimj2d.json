@@ -106,6 +106,15 @@
             }
         },
         {
+            "source": "dol/bases/d_actor_state.cpp",
+            "memoryRanges": {
+                ".text": "0x60830-0x618c0",
+                ".ctors": "0xa0-0xa4",
+                ".data": "0x10818-0x10c58",
+                ".bss": "0x47e8-0x4868"
+            }
+        },
+        {
             "source": "dol/bases/d_base.cpp",
             "memoryRanges": {
                 ".text": "0x65ca0-0x65f50",
