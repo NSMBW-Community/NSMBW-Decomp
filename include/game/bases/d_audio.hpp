@@ -55,6 +55,19 @@ namespace dAudio {
     extern SndObjctCmnEmy_c *g_pSndObjEmy;
     extern SndObjctCmnMap_c *g_pSndObjMap;
 
+    template<class T>
+    inline void playObjSound(T *obj, int i, const mVec3_c &pos, int playerNo) {
+        obj->startSound(i, cvtSndObjctPos(pos), playerNo);
+    }
+
+    inline void playEmySound(int i, const mVec3_c &pos, int playerNo) {
+        playObjSound(g_pSndObjEmy, i, pos, playerNo);
+    }
+
+    inline void playMapSound(int i, const mVec3_c &pos, int playerNo) {
+        playObjSound(g_pSndObjMap, i, pos, playerNo);
+    }
+
     /// @unofficial
     class ComboSELookup {
     public:

@@ -170,7 +170,7 @@ const float dActor_c::smc_CULL_YLIMIT = 256.0f;
 const float dActor_c::smc_CULL_AREA_XLIMIT = 128.0f;
 const float dActor_c::smc_CULL_AREA_YLIMIT = 128.0f;
 
-const u8 l_Ami_Line[] = { 1, 2, 0, 0, 0, 0, 0, 0 };
+const u8 l_Ami_Line[] = { 1, 2 };
 const float l_Ami_Zpos[] = { 1500.0f, -2500.0f };
 
 u32 dActor_c::m_relatedCreate1;
