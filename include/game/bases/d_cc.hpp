@@ -169,6 +169,10 @@ public:
     /// Sets a friend actor for this collider.
     void setFriendActor(dBaseActor_c *actor) { mFriendActor = actor; }
 
+    dBaseActor_c *getOwner() const { return mpOwner; } ///< Gets the owner actor of this collider.
+
+    float getCeil(float y) { return y + mCcData.mOffsetY - mCcData.mHeight; } ///< Gets the ceiling of the collider.
+
     /**
      * @brief Gets the result of a hit check.
      * @param mask The mask to check.

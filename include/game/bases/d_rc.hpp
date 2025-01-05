@@ -17,15 +17,18 @@ public:
     void clrLink();
     void chkLink();
 
-    dActor_c *mpOwner;
-    mVec3_c *mpOwnerPos;
-    dRc_c *mpNext;
-    dRide_ctr_c *mpRide[2];
+    bool check2(unsigned long, unsigned long, unsigned long);
+
+    dActor_c *owner;
+    mVec3_c *ownerPos;
+    dRc_c *next;
+    void *ride;
+    void *ride2;
     dBc_c *mpBc;
-    float m_1c[4];
-    short mRotation;
-    u8 mLineKind;
-    u8 mRideType;
+    float pad1[4];
+    short rotation;
+    bool chainlinkMode;
+    u8 rideType;
     u8 pad2[2];
     u8 mLayer;
 };
