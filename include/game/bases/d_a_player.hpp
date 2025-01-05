@@ -7,6 +7,11 @@ public:
     void getCcBounds(mBoundBox &bounds); ///< @unofficial
     void cancelCarry(dActor_c *carriedActor);
 
+    mVec3_c getCarryPos();
+    bool FUN_8012e540(dActor_c *, bool);
+
     char mPad[0x15e8];
     fBaseID_e mCarryActorID;
+
+    static const float msc_JUMP_SPEED;
 };
