@@ -55,7 +55,9 @@ def uncompressLZ(infile: Path, outfile: Path) -> None:
                 offset += 1
                 currPos += 2
                 pos = writeTo - offset
-                dst[writeTo:writeTo+duplLength] = dst[pos:pos+duplLength]
+
+                for i in range(duplLength):
+                    dst[writeTo + i] = dst[pos + i]
 
                 writeTo += duplLength
                 bytesWritten += duplLength
