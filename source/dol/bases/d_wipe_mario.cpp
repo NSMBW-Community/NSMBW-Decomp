@@ -17,18 +17,18 @@ dWipeMario_c::~dWipeMario_c() {
 }
 
 bool dWipeMario_c::createLayout() {
-    static const char *animeNames[] = {
+    static const char *AnmNameTbl[] = {
         "wipeMario_02_inWindow.brlan",
         "wipeMario_02_outWindow.brlan"
     };
 
-    static const int groupIdxs[] = {0, 1};
-    static const char *groupNames[] = {
+    static const int ANIME_INDEX_TBL[] = {0, 1};
+    static const char *GROUP_NAME_DT[] = {
         "A00_inWindow",
         "B00_outWindow"
     };
 
-    static const char *windowNames[] = {
+    static const char *WPANE_NAME_DT[] = {
         "W_Mario_00"
     };
 
@@ -42,10 +42,10 @@ bool dWipeMario_c::createLayout() {
     }
 
     mLyt.build("wipeMario_02.brlyt", 0);
-    mLyt.AnimeResRegister(animeNames, ARRAY_SIZE(animeNames));
-    mLyt.GroupRegister(groupNames, groupIdxs, ARRAY_SIZE(groupNames));
+    mLyt.AnimeResRegister(AnmNameTbl, ARRAY_SIZE(AnmNameTbl));
+    mLyt.GroupRegister(GROUP_NAME_DT, ANIME_INDEX_TBL, ARRAY_SIZE(GROUP_NAME_DT));
     mpRootPane = mLyt.getRootPane();
-    mLyt.WPaneRegister(windowNames, mpWnd, ARRAY_SIZE(mpWnd));
+    mLyt.WPaneRegister(WPANE_NAME_DT, mpWnd, ARRAY_SIZE(mpWnd));
 
     mIsCreated = true;
 

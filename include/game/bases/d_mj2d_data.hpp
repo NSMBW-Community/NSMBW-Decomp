@@ -330,7 +330,6 @@ private:
 
     /// @brief The default character for each player.
     /// @unofficial
-    /// @decompnote{Should be part of the class in theory.}
     static const u32 sDefaultCharacters[4];
 
     friend class dSaveMng_c;

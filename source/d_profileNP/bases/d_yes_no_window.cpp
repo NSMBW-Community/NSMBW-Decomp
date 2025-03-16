@@ -30,7 +30,7 @@ dYesNoWindow_c::dYesNoWindow_c() :
 dYesNoWindow_c::~dYesNoWindow_c() {}
 
 int dYesNoWindow_c::create() {
-    static const char *animeNames[] = {
+    static const char *AnmNameTbl[] = {
         "yesnoWindow_11_inWindow.brlan",
         "yesnoWindow_11_loopWindow.brlan",
         "yesnoWindow_11_inYesNoButton.brlan",
@@ -43,8 +43,8 @@ int dYesNoWindow_c::create() {
         "yesnoWindow_11_outWindow.brlan"
     };
 
-    static const int groupIdxs[] = {0, 0, 1, 1, 2, 2, 2, 3, 3, 3, 4, 4, 4, 5, 5, 5, 5, 6, 6, 6, 7, 8, 9, 0};
-    static const char *groupNames[] = {
+    static const int ANIME_INDEX_TBL[] = {0, 0, 1, 1, 2, 2, 2, 3, 3, 3, 4, 4, 4, 5, 5, 5, 5, 6, 6, 6, 7, 8, 9, 0};
+    static const char *GROUP_NAME_DT[] = {
         "A00_inWindow",
         "D00_save00",
         "A00_inWindow",
@@ -70,19 +70,19 @@ int dYesNoWindow_c::create() {
         "A00_inWindow"
     };
 
-    static const int textBoxVals[] = {MSG_OK, MSG_OK, MSG_WATCH_HINT_MOVIE, MSG_WATCH_HINT_MOVIE};
-    static const char *textBoxNames[] = {
+    static const int MESSAGE_DATA_TBL[] = {MSG_OK, MSG_OK, MSG_WATCH_HINT_MOVIE, MSG_WATCH_HINT_MOVIE};
+    static const char *T_PANE_FIXED_NAME_TBL[] = {
         "T_center_00",
         "T_center_01",
         "T_otehonTextS_00",
         "T_otehonText_00"
     };
-    static const char *pictureNames[] = {
+    static const char *PPANE_NAME_DT[] = {
         "P_yesBase_00",
         "P_noBase_00",
         "P_centerBase_00"
     };
-    static const char *textboxNames[] = {
+    static const char *T_PANE_NAME_TBL[] = {
         "T_questionS_00",
         "T_question_00",
         "T_otehonTextS_01",
@@ -94,7 +94,7 @@ int dYesNoWindow_c::create() {
         "T_no_00",
         "T_no_01"
     };
-    static const char *paneNames[] = {
+    static const char *NPANE_NAME_DT[] = {
         "N_otehonText_00",
         "N_saveIcon_00"
     };
@@ -108,16 +108,16 @@ int dYesNoWindow_c::create() {
     }
 
     mLayout.build("yesnoWindow_11.brlyt", nullptr);
-    mLayout.AnimeResRegister(animeNames, ARRAY_SIZE(animeNames));
-    mLayout.GroupRegister(groupNames, groupIdxs, ARRAY_SIZE(groupNames));
-    mLayout.TPaneNameRegister(textBoxNames, textBoxVals, BMG_CATEGORY_YES_NO_WINDOW, ARRAY_SIZE(textBoxNames));
+    mLayout.AnimeResRegister(AnmNameTbl, ARRAY_SIZE(AnmNameTbl));
+    mLayout.GroupRegister(GROUP_NAME_DT, ANIME_INDEX_TBL, ARRAY_SIZE(GROUP_NAME_DT));
+    mLayout.TPaneNameRegister(T_PANE_FIXED_NAME_TBL, MESSAGE_DATA_TBL, BMG_CATEGORY_YES_NO_WINDOW, ARRAY_SIZE(T_PANE_FIXED_NAME_TBL));
 
     mLayout.mDrawOrder = 143;
     mpRootPane = mLayout.getRootPane();
 
-    mLayout.PPaneRegister(pictureNames, &P_yesBase_00, ARRAY_SIZE(pictureNames));
-    mLayout.TPaneRegister(textboxNames, &T_questionS_00, ARRAY_SIZE(textboxNames));
-    mLayout.NPaneRegister(paneNames, &N_otehonText_00, ARRAY_SIZE(paneNames));
+    mLayout.PPaneRegister(PPANE_NAME_DT, &P_yesBase_00, ARRAY_SIZE(PPANE_NAME_DT));
+    mLayout.TPaneRegister(T_PANE_NAME_TBL, &T_questionS_00, ARRAY_SIZE(T_PANE_NAME_TBL));
+    mLayout.NPaneRegister(NPANE_NAME_DT, &N_otehonText_00, ARRAY_SIZE(NPANE_NAME_DT));
 
     mIsActive = false;
     mHasLoadedLayout = true;
