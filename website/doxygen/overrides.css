@@ -176,3 +176,18 @@ a.anchorlink:hover {
 .paramname {
   color: var(--page-foreground-color) !important;
 }
+
+/* Increase navigation arrow size */
+.arrow {
+  font-size: 100% !important;
+}
+
+/* Change color of copy to clipboard success button */
+doxygen-awesome-fragment-copy-button.success svg {
+    fill: rgb(168, 14, 14) !important;
+}
+
+/* Change color of copy to clipboard success button */
+doxygen-awesome-fragment-copy-button.success {
+    border-color: rgb(168, 14, 14) !important;
+}

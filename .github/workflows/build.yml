@@ -46,7 +46,7 @@ jobs:
         run: |
           pip install pyyaml
           python prepare_objdiff.py
-          Invoke-WebRequest 'https://github.com/encounter/objdiff/releases/download/v2.1.0/objdiff-cli-windows-x86_64.exe' -OutFile objdiff-cli.exe
+          Invoke-WebRequest 'https://github.com/encounter/objdiff/releases/download/v2.7.1/objdiff-cli-windows-x86_64.exe' -OutFile objdiff-cli.exe
           ./objdiff-cli.exe report generate | Out-File -Append -Encoding UTF8 ./bin/report.json
 
       - name: Upload progress artifacts
@@ -74,9 +74,9 @@ jobs:
       - name: Generate documentation
         run: |
           sudo apt-get install -y graphviz fonts-freefont-ttf
-          curl https://www.doxygen.nl/files/doxygen-1.12.0.linux.bin.tar.gz --output doxygen-1.12.0.linux.bin.tar.gz
-          tar xzf doxygen-1.12.0.linux.bin.tar.gz
-          cd doxygen-1.12.0
+          curl https://www.doxygen.nl/files/doxygen-1.13.2.linux.bin.tar.gz --output doxygen-1.13.2.linux.bin.tar.gz
+          tar xzf doxygen-1.13.2.linux.bin.tar.gz
+          cd doxygen-1.13.2
           sudo make install
           cd ..
           doxygen
