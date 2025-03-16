@@ -32,25 +32,25 @@ int dControllerInformation_c::create() {
 
 bool dControllerInformation_c::createLayout() {
 
-    static const char *animeNames[] = {
+    static const char *AnmNameTbl[] = {
         "ControllerInformation_07_in2btn.brlan",
         "ControllerInformation_07_loop2btn.brlan",
         "ControllerInformation_07_hit2btn.brlan"
     };
 
-    static const int groupIdxs[] = {0, 1, 2};
-    static const char *groupNames[] = {
+    static const int ANIME_INDEX_TBL[] = {0, 1, 2};
+    static const char *GROUP_NAME_DT[] = {
         "A00_2btn_00",
         "A00_2btn_00",
         "A00_2btn_00"
     };
 
-    static const int textBoxMsgs[] = {
+    static const int MESSAGE_DATA_TBL[] = {
         MSG_HOLD_WIIMOTE_SIDEWAYS,
         MSG_HOLD_WIIMOTE_SIDEWAYS,
     };
 
-    static const char *textBoxNames[] = {
+    static const char *T_PANE_FIXED_NAME_TBL[] = {
         "T_contInfo_00",
         "T_contInfo_01"
     };
@@ -61,9 +61,9 @@ bool dControllerInformation_c::createLayout() {
     }
 
     mLayout.build("ControllerInformation_07.brlyt", nullptr);
-    mLayout.AnimeResRegister(animeNames, ARRAY_SIZE(animeNames));
-    mLayout.GroupRegister(groupNames, groupIdxs, ARRAY_SIZE(groupNames));
-    mLayout.TPaneNameRegister(textBoxNames, textBoxMsgs, BMG_CATEGORY_CONTROLLER_INFORMATION, ARRAY_SIZE(textBoxNames));
+    mLayout.AnimeResRegister(AnmNameTbl, ARRAY_SIZE(AnmNameTbl));
+    mLayout.GroupRegister(GROUP_NAME_DT, ANIME_INDEX_TBL, ARRAY_SIZE(GROUP_NAME_DT));
+    mLayout.TPaneNameRegister(T_PANE_FIXED_NAME_TBL, MESSAGE_DATA_TBL, BMG_CATEGORY_CONTROLLER_INFORMATION, ARRAY_SIZE(T_PANE_FIXED_NAME_TBL));
 
     return true;
 }
