@@ -4,7 +4,7 @@
 #include <lib/egg/eggDisposer.hpp>
 
 /**
- * @brief A non-functional heap to be used when mAllocatorHeap_c
+ * @brief A non-functional heap to be used when mHeapAllocator_c
  * does not have a proper heap.
  */
 class mAllocatorDummyHeap_c : public EGG::Heap {
