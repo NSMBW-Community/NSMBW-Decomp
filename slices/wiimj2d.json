@@ -274,6 +274,15 @@
             }
         },
         {
+            "source": "dol/mLib/m_allocator.cpp",
+            "memoryRanges": {
+                ".text": "0x163e20-0x1643e0",
+                ".data": "0x2b350-0x2b3a8",
+                ".sbss": "0x828-0x830",
+                ".sdata2": "0x2c50-0x2c58"
+            }
+        },
+        {
             "source": "dol/mLib/m_angle.cpp",
             "memoryRanges": {
                 ".text": "0x1643e0-0x164430",
