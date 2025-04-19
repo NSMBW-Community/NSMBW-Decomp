@@ -30,14 +30,16 @@ class dSaveMng_c;
  * - A @ref mChecksum "CRC32 checksum" of all the above data, minus the magic. A mismatch (for example, by
  * hex editing the save file and forgetting to update this value) will cause the save to be marked as
  * corrupted.
- * @hint{User changes to the above structure must preserve the 32 byte alignment boundary. This is a
- * NAND level restriction.}
  *
  * ### Modifying the Contents
  * Read/write access to the fields related to Extra Modes is provided through dedicated functions. All other
  * fields are handled automatically by the game, therefore developer interaction is not required.
- * @note Changes to data stored in this class are temporary, unless the save is flushed to NAND. This can be
- * achieved through the dSaveMng_c class.
+ *
+ * @parblock @note Changes to data stored in this class are temporary, unless the save is flushed to NAND.
+ * This can be achieved through the dSaveMng_c class.
+ * @endparblock
+ *
+ * @note The save data structure must be 32-byte aligned to comply with NAND-level constraints.
  *
  * ### Resetting the Contents
  * To reset the contents of the header, call the ::initialize function.
@@ -84,10 +86,77 @@ private:
     friend class dSaveMng_c;
 };
 
-/// @brief Save slot data holder.
-/// @details The data stored here is temporary, as it is discarded unless the game is saved.
-/// Size must be 32-byte aligned.
-/// @ingroup bases
+/**
+ * @brief Represents the slot-specific save data for the game.
+ * @ingroup bases
+ * @details
+ * This class encapsulates the game state for an individual save file, along with basic
+ * information required to identify the data and preserve its integrity. For the slot-independent save data,
+ * refer to dMj2dHeader_c.
+ *
+ * ## Contents
+ * Each instance of this class represents a single save slot and its content can be divided in multiple categories.
+ *
+ * ### Player Statistics
+ * The following statistics are stored for each player:
+ * - @ref mPlayerCharacter "Selected character".
+ * - @ref mPlayerPowerup "Power-up state".
+ * - @ref mPlayerLife "Life count".
+ * - @ref mPlayerCoin "Coin count".
+ * - @ref mPlayerContinue "Continue count".
+ * - @ref mPlayerCreateItem "Star Power flag".
+ *
+ * ### Level Statistics
+ * The following statistics are stored for each level:
+ * - @ref mStageCompletion "Completion flags", including:
+ *   - @ref COURSE_COMPLETION_e "Star Coin collection".
+ *   - @ref COURSE_COMPLETION_e "Exit completion".
+ *   - @ref COURSE_COMPLETION_e "Super Guide usage".
+ * - @ref mDeathCount "Total death count", used for triggering the Super Guide when necessary.
+ * A @ref mDeathCountSwitch "separate counter" is used for the switch-activated variant of World 3-4.
+ *
+ * ### World Statistics
+ * The following statistics are stored for each world:
+ * - @ref mWorldCompletion "Completion flags", which only include @ref WORLD_COMPLETION_e "the unlock status".
+ * - @ref mStartKinokoType "Type of Toad House" spawned at the start of the world (if any).
+ * - @ref mKinopioCourseNo "Current Toad rescue level".
+ * - @ref mEnemyPosIndex "Current position", @ref mEnemyWalkDir "walk direction" and @ref mEnemyRevivalCount "revival counter"
+ * for each ambush enemy. A @ref mIbaraNow "dedicated timer" is used for the World 5 Bramble vines.
+ *
+ * Additional world statistics include:
+ * - Current @ref mCurrentWorld "world", @ref mCurrentSubWorld "sub-world" and @ref mCurrentPathNode "path node".
+ * - @ref mStockItemCount "Inventory counts" for each power-up.
+ * - @ref mSwitchOn "World map switch" status.
+ *
+ * ### Game Statistics
+ * The following game statistics are additionally stored:
+ * - @ref mGameCompletion "Overall completion flags".
+ * - @ref mScore "Total score" and @ref mStaffRollHighScore "high score" obtained in the staff credits sequence.
+ * - @ref mOtehonMenuOpen "Purchase status" of each hint movie.
+ *
+ * ### System Statistics
+ * The following data is for internal use only, with no developer interaction required:
+ * - A @ref mRevision "major and minor revision number":
+ *  - A different major revision number will cause the version to be updated silently
+ * (see ::versionUpdate for details).
+ *  - A different minor revision number will not trigger any action.
+ * - A @ref mChecksum "CRC32 checksum" of all the above data. A mismatch (for example, by
+ * hex editing the save file and forgetting to update this value) will cause the save to be marked as
+ * corrupted.
+ *
+ * ### Modifying the Contents
+ * Read/write access to most fields is provided through dedicated functions. System fields are handled automatically
+ * by the game, therefore developer interaction is not required.
+ *
+ * @parblock @note Changes to data stored in this class are temporary, unless the save is flushed to NAND.
+ * This can be achieved through the dSaveMng_c class.
+ * @endparblock
+ *
+ * @note The save data structure must be 32-byte aligned to comply with NAND-level constraints.
+ *
+ * ### Resetting the Contents
+ * To reset the contents of the save slot, call the ::initialize function.
+*/
 class dMj2dGame_c {
 public:
 
@@ -283,7 +352,7 @@ private:
 
     u8 mCurrentWorld; ///< The world the player is currently in.
     u8 mCurrentSubWorld; ///< The subworld the player is currently in.
-    u8 mCurrentPathNode; ///< The path node the player is currently on. @todo [Verify].
+    u8 mCurrentPathNode; ///< The path node the player is currently on.
 
     /// @brief The worldmap vine reshuffle counter.
     /// @details [Value decreases every time a level is played. If it reaches zero, the vines are moved].
