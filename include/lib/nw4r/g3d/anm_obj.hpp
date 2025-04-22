@@ -13,7 +13,7 @@ class ClrAnmResult;
 class AnmObj : public G3dObj {
 public:
     virtual ~AnmObj();
-    virtual void G3dProc(unsigned long, unsigned long, void*);
+    virtual void G3dProc(ulong proc, ulong param, void *info);
     virtual void SetFrame(float);
     virtual float GetFrame() const;
     virtual void UpdateFrame();

@@ -10,9 +10,9 @@ namespace m3d {
         class callback_c {
         public:
             virtual ~callback_c();
-            virtual void timingA(unsigned long, nw4r::g3d::ChrAnmResult *, nw4r::g3d::ResMdl );
-            virtual void timingB(unsigned long, nw4r::g3d::WorldMtxManip *, nw4r::g3d::ResMdl );
-            virtual void timingC(nw4r::math::MTX34 *, nw4r::g3d::ResMdl);
+            virtual void timingA(ulong nodeId, nw4r::g3d::ChrAnmResult *anmRes, nw4r::g3d::ResMdl resMdl);
+            virtual void timingB(ulong nodeId, nw4r::g3d::WorldMtxManip *manip, nw4r::g3d::ResMdl resMdl);
+            virtual void timingC(nw4r::math::MTX34 *mtx, nw4r::g3d::ResMdl resMdl);
         };
 
         class mdlCallback_c {

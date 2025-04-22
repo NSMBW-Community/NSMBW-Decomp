@@ -20,8 +20,8 @@ namespace m3d {
         virtual void remove();
         virtual void entry();
 
-        void setOption(unsigned long sel, unsigned long opt);
-        bool getOption(unsigned long sel, unsigned long *opt) const;
+        void setOption(ulong option, ulong value);
+        bool getOption(ulong option, ulong *value) const;
         void setScale(float x, float y, float z);
         void setScale(const nw4r::math::VEC3 &scale);
         void setLocalMtx(const nw4r::math::MTX34 *mtx);

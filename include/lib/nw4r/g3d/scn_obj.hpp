@@ -13,17 +13,30 @@ class ScnObj : public G3dObj {
 public:
     virtual ~ScnObj();
     virtual void ForEach(); // can't be bothered to enter the actual signature rn
-    virtual void SetScnObjOption(unsigned long, unsigned long);
-    virtual bool GetScnObjOption(unsigned long, unsigned long *) const;
+    virtual void SetScnObjOption(ulong option, ulong value);
+    virtual bool GetScnObjOption(ulong option, ulong *value) const;
     virtual float GetValueForSortOpa() const;
     virtual float GetValueForSortXlu() const;
-    void SetPriorityDrawOpa(int);
-    void SetPriorityDrawXlu(int);
+    void SetPriorityDrawOpa(int priority);
+    void SetPriorityDrawXlu(int priority);
 
     enum ScnObjMtxType {
         TYPE_LOCAL,
         TYPE_UNK,
         TYPE_VIEW
+    };
+
+    /// @brief Operation options for ScnObj.
+    enum OptID {
+        OPTID_DISABLE_GATHER_DRAW_SCNOBJ = 1, ///< Execution of ScnRoot::GatherDrawScnObj is skipped.
+        OPTID_DISABLE_CALC_WORLD, ///< Execution of ScnRoot::CalcWorld is skipped.
+        OPTID_DISABLE_CALC_MAT, ///< Execution of ScnRoot::CalcMaterial is skipped.
+        OPTID_DISABLE_CALC_VTX, ///< Execution of ScnRoot::CalcVtx is skipped.
+        OPTID_DISABLE_CALC_VIEW, ///< Execution of ScnRoot::CalcView is skipped.
+        OPTID_DISABLE_DRAW_OPA, ///< Execution of ScnRoot::DrawOpa is skipped.
+        OPTID_DISABLE_DRAW_XLU, ///< Execution of ScnRoot::DrawXlu is skipped.
+        OPTID_DISABLE_UPDATEFRAME, ///< Execution of ScnRoot::UpdateFrame is skipped.
+        OPTID_ENABLE_CULLING, ///< Enables culling based on the bounding volume (AABB).
     };
 
     enum Timing {

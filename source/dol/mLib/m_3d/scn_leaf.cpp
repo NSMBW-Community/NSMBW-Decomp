@@ -49,18 +49,18 @@ void m3d::scnLeaf_c::getViewMtx(nw4r::math::MTX34 *mtx) const {
 }
 
 void m3d::scnLeaf_c::calc(bool keepEnabledAfter) {
-    setOption(2, 0);
-    mpScn->G3dProc(1, 0, nullptr);
+    setOption(nw4r::g3d::ScnObj::OPTID_DISABLE_CALC_WORLD, 0);
+    mpScn->G3dProc(nw4r::g3d::G3dObj::G3DPROC_CALC_WORLD, 0, nullptr);
     if (!keepEnabledAfter) {
-        setOption(2, 1);
+        setOption(nw4r::g3d::ScnObj::OPTID_DISABLE_CALC_WORLD, 1);
     }
 }
 
 void m3d::scnLeaf_c::calcVtx(bool keepEnabledAfter) {
-    setOption(4, 0);
-    mpScn->G3dProc(3, 0, nullptr);
+    setOption(nw4r::g3d::ScnObj::OPTID_DISABLE_CALC_VTX, 0);
+    mpScn->G3dProc(nw4r::g3d::G3dObj::G3DPROC_CALC_VTX, 0, nullptr);
     if (!keepEnabledAfter) {
-        setOption(4, 1);
+        setOption(nw4r::g3d::ScnObj::OPTID_DISABLE_CALC_VTX, 1);
     }
 }
 
