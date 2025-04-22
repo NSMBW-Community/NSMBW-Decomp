@@ -22,29 +22,20 @@
     "deadstrip": [
         "__dt__Q23EGG8Vector2fFv",
         "__dt__Q23EGG8Vector3fFv",
-        "__dt__7mVec2_cFv",
-        "__dt__7mVec3_cFv",
-        "getPlrNo__8dActor_cFv",
-        "funsuiMoveX__8dActor_cFv",
-        "setCarryFall__8dActor_cFP8dActor_ci",
-        "isSpinLiftUpEnable__8dActor_cFv",
         "__vt__12sStateIDIf_c",
-        "vf68__8dActor_cFv",
-        "refreshStateMethod__14sStateMethod_cFv",
-        "getState__14sStateMethod_cCFv",
-        "getNewStateID__14sStateMethod_cCFv",
-        "getStateID__14sStateMethod_cCFv",
+        "__vt__18sStateStateMgrIf_c",
         "getOldStateID__14sStateMethod_cCFv",
-        "__dt__20sStateMethodUsr_FI_cFv",
-        "play__Q23m3d6banm_cFv",
-        "__dt__Q23m3d11calcRatio_cFv",
         "__dt__13cOwnerSetMg_cFv",
         "__vt__Q26dRes_c10callback_c",
         "List_Prepend__Q24nw4r2utFPQ34nw4r2ut4ListPv",
         "__vt__Q23EGG5Fader",
-        "getStatus__Q23EGG10ColorFaderCFv",
         "DUMMY_M_VEC__Fs",
-        "__destroy_global_chain_reference"
+        "__destroy_global_chain_reference",
+        "play__Q23m3d6banm_cFv",
+        "getType__Q23m3d6bmdl_cCFv",
+        "getType__Q23m3d13anmChrBlend_cCFv",
+        "getType__Q23m3d8anmChr_cCFv",
+        "getType__Q23m3d8anmVis_cCFv"
     ],
     "slices": [
         {
@@ -286,6 +277,118 @@
             "source": "dol/framework/f_tree.cpp",
             "memoryRanges": {
                 ".text": "0x15c9c0-0x15cb30"
+            }
+        },
+        {
+            "source": "dol/mLib/m_3d.cpp",
+            "memoryRanges": {
+                ".text": "0x15deb0-0x15ea90",
+                ".sbss": "0x808-0x820",
+                ".sdata2": "0x2bd0-0x2bd8"
+            }
+        },
+        {
+            "source": "dol/mLib/m_3d/anm_chr.cpp",
+            "memoryRanges": {
+                ".text": "0x15ea90-0x15eee0",
+                ".sdata2": "0x2bd8-0x2be8"
+            }
+        },
+        {
+            "source": "dol/mLib/m_3d/anm_chr_blend.cpp",
+            "memoryRanges": {
+                ".text": "0x15eee0-0x15f1e0"
+            }
+        },
+        {
+            "source": "dol/mLib/m_3d/anm_mat_clr.cpp",
+            "memoryRanges": {
+                ".text": "0x15f1e0-0x15fde0",
+                ".data": "0x2b1c0-0x2b1f0",
+                ".sdata2": "0x2be8-0x2bf8"
+            }
+        },
+        {
+            "source": "dol/mLib/m_3d/anm_tex_pat.cpp",
+            "memoryRanges": {
+                ".text": "0x15fde0-0x1609c0",
+                ".data": "0x2b1f0-0x2b220",
+                ".sdata2": "0x2bf8-0x2c08"
+            }
+        },
+        {
+            "source": "dol/mLib/m_3d/anm_tex_srt.cpp",
+            "memoryRanges": {
+                ".text": "0x1609c0-0x161600",
+                ".data": "0x2b220-0x2b250",
+                ".sdata2": "0x2c08-0x2c18"
+            }
+        },
+        {
+            "source": "dol/mLib/m_3d/anm_vis.cpp",
+            "memoryRanges": {
+                ".text": "0x161600-0x161880",
+                ".sdata2": "0x2c18-0x2c28"
+            }
+        },
+        {
+            "source": "dol/mLib/m_3d/banm.cpp",
+            "memoryRanges": {
+                ".text": "0x161880-0x161ac0",
+                ".data": "0x2b250-0x2b298",
+                ".sbss": "0x820-0x828"
+            }
+        },
+        {
+            "source": "dol/mLib/m_3d/bmdl.cpp",
+            "memoryRanges": {
+                ".text": "0x161ac0-0x162500",
+                ".data": "0x2b298-0x2b2b8"
+            }
+        },
+        {
+            "source": "dol/mLib/m_3d/calc_ratio.cpp",
+            "memoryRanges": {
+                ".text": "0x162500-0x1626d0",
+                ".data": "0x2b2b8-0x2b2c8",
+                ".sdata2": "0x2c28-0x2c30"
+            }
+        },
+        {
+            "source": "dol/mLib/m_3d/fanm.cpp",
+            "memoryRanges": {
+                ".text": "0x1626d0-0x162be0",
+                ".data": "0x2b2c8-0x2b2e0",
+                ".sdata2": "0x2c30-0x2c40"
+            }
+        },
+        {
+            "source": "dol/mLib/m_3d/m_3d_capture.cpp",
+            "memoryRanges": {
+                ".text": "0x162be0-0x162f20",
+                ".sdata2": "0x2c40-0x2c48"
+            }
+        },
+        {
+            "source": "dol/mLib/m_3d/mdl.cpp",
+            "memoryRanges": {
+                ".text": "0x162f20-0x1639d0",
+                ".data": "0x2b2e0-0x2b318",
+                ".sdata2": "0x2c48-0x2c50"
+            }
+        },
+        {
+            "source": "dol/mLib/m_3d/scn_leaf.cpp",
+            "memoryRanges": {
+                ".text": "0x1639d0-0x163cb0",
+                ".data": "0x2b318-0x2b330"
+            }
+        },
+        {
+            "source": "dol/mLib/m_3d/smdl.cpp",
+            "memoryRanges": {
+                ".text": "0x163cb0-0x163e20",
+                ".data": "0x2b330-0x2b350"
             }
         },
         {

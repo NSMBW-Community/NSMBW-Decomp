@@ -16,5 +16,11 @@ namespace ut {
         return (a < b) ? b : a;
     }
 
+    /// @brief Rounds @p x up to a multiple of @p base.
+    template <typename T>
+    inline T RoundUp(T x, u32 base = 0x20) {
+        return (T)((x + (base - 1)) & ~(base - 1));
+    }
+
 } // namespace ut
 } // namespace nw4r

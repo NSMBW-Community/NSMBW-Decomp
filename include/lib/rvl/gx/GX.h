@@ -104,6 +104,14 @@ typedef enum _GXTevStageID {
 
     GX_MAX_TEVSTAGE
 } GXTevStageID;
+typedef enum _GXTevKColorID {
+    GX_KCOLOR0,
+    GX_KCOLOR1,
+    GX_KCOLOR2,
+    GX_KCOLOR3,
+
+    GX_MAX_KCOLOR
+} GXTevKColorID;
 
 typedef enum _GXTevColorArg {
     GX_CC_CPREV,
@@ -192,7 +200,7 @@ typedef enum _GXAlphaOp {
 } GXAlphaOp;
 
 typedef struct _GXTexObj {
-    char data[28];
+    char data[32];
 } GXTexObj;
 
 typedef enum _GXTexFmt {
@@ -227,6 +235,14 @@ typedef enum _GXTexFmt {
 
     GX_TF_A8 = GX_CTF_YUVA8
 } GXTexFmt;
+
+typedef enum _GXTexFilter {
+
+} GXTexFilter;
+
+typedef enum _GXPixelFmt {
+
+} GXPixelFmt;
 
 typedef enum _GXTexWrapMode {
     GX_CLAMP,
@@ -388,6 +404,16 @@ typedef enum _GXLogicOp {
     GX_LO_SET
 } GXLogicOp;
 
+typedef struct _GXRenderModeObj {
+    char pad1[6];
+    u16 smth2;
+    u16 smth;
+    char pad2[15];
+    bool mAntialias;
+    u8 samplePattern[12][2];
+    u8 filterWeights[7];
+} GXRenderModeObj;
+
 typedef union _GXFifo {
     // 1-byte
     char c;
@@ -454,6 +480,14 @@ void GXSetChanCtrl(GXChannelID, u8, GXColorSrc, GXColorSrc, GXLightID, GXDiffuse
 void GXSetBlendMode(GXBlendMode, GXBlendFactor, GXBlendFactor, GXLogicOp);
 
 void GXInvalidateVtxCache();
+
+size_t GXGetTexBufferSize(int width, int height, GXTexFmt fmt, bool, bool);
+void GXInitTexObjLOD(GXTexObj *, GXTexFilter, GXTexFilter, float, float, float, int, int, int);
+void GXSetCopyFilter(int, void *, int, void *);
+void GXSetTexCopySrc(int, int, int, int);
+void GXSetTexCopyDst(int, int, GXTexFmt, u8);
+void GXCopyTex(void *, int);
+void GXSetTevDirect(int);
 
 static inline void GXPosition3f32(float x, float y, float z) {
     WGPIPE.f = x;
