@@ -78,5 +78,5 @@ void m3d::capture_c::captureEx(
     GXCopyTex(mTexBuffer, srcTexHalfSize);
 
     GXRenderModeObj &s = mVideo::m_video->mRenderModeObj;
-    GXSetCopyFilter(s.mAntialias, &s.samplePattern, 1, s.filterWeights);
+    GXSetCopyFilter(s.mAntialias, &s.mSamplePattern, 1, s.mFilterWeights);
 }

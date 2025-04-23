@@ -14,12 +14,12 @@ class AnmObj : public G3dObj {
 public:
     virtual ~AnmObj();
     virtual void G3dProc(ulong proc, ulong param, void *info);
-    virtual void SetFrame(float);
+    virtual void SetFrame(float frame);
     virtual float GetFrame() const;
     virtual void UpdateFrame();
-    virtual void SetUpdateRate(float);
+    virtual void SetUpdateRate(float rate);
     virtual float GetUpdateRate() const;
-    virtual bool Bind(nw4r::g3d::ResMdl);
+    virtual bool Bind(nw4r::g3d::ResMdl resMdl);
     virtual void Release();
     virtual int GetResult(nw4r::g3d::ClrAnmResult *, unsigned long);
     virtual void Attach(int, nw4r::g3d::AnmObj *);

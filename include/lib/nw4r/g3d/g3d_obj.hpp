@@ -3,9 +3,12 @@
 
 // See https://github.com/kiwi515/ogws/blob/3729af7dc7d92939be12b14f0af415b22ce5d0ee/include/nw4r/g3d/g3d_obj.h
 
-#define NW4R_G3D_TYPE_OBJ_DECL(VAL) static const nw4r::g3d::G3dObj::ResNameDataT<sizeof(#VAL)> TYPE_NAME; \
-static const TypeObj GetTypeObjStatic() { return TypeObj(TYPE_NAME); }
-#define NW4R_G3D_TYPE_OBJ_DEF(VAL) const nw4r::g3d::G3dObj::ResNameDataT<sizeof(#VAL)> VAL::TYPE_NAME = {sizeof(#VAL), #VAL}
+#define NW4R_G3D_TYPE_OBJ_DECL(className) \
+    static const nw4r::g3d::G3dObj::ResNameDataT<sizeof(#className)> TYPE_NAME; \
+    static const TypeObj GetTypeObjStatic() { return TypeObj(TYPE_NAME); }
+
+#define NW4R_G3D_TYPE_OBJ_DEF(className) \
+    const nw4r::g3d::G3dObj::ResNameDataT<sizeof(#className)> className::TYPE_NAME = {sizeof(#className), #className}
 
 namespace nw4r {
 namespace g3d {
@@ -30,10 +33,7 @@ public:
         template <u32 N>
         TypeObj(const ResNameDataT<N>& pRes) : mData((const TypeObjData *)&pRes) {}
 
-        const TypeObjData *GetTypeObj() const {
-            return mData;
-        }
-
+        const TypeObjData *GetTypeObj() const { return mData; }
         const TypeObjData *mData;
     };
 

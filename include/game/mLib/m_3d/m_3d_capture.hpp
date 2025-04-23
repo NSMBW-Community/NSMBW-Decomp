@@ -7,23 +7,14 @@ namespace m3d {
     public:
         virtual ~capture_c() {}
 
-        bool create(
-            EGG::Heap *heap,
-            u16 width, u16 height,
-            GXTexFmt texFmt, GXTexFilter texFilter,
-            bool texIsHalfSize
-        );
+        bool create(EGG::Heap *heap, u16 width, u16 height, GXTexFmt texFmt,
+                    GXTexFilter texFilter, bool texIsHalfSize);
+
         void remove();
 
         void capture(u16 width, u16 height, bool texIsHalfSize);
-        void captureEx(
-            u16 width, u16 height,
-            GXTexFmt texFmt, GXTexFmt tex2Fmt,
-            GXTexFilter texFilter,
-            bool texIsHalfSize,
-            u16 srcTexWidth, u16 srcTexHeight,
-            bool srcTexHalfSize
-        );
+        void captureEx(u16 width, u16 height, GXTexFmt texFmt, GXTexFmt tex2Fmt, GXTexFilter texFilter,
+                       bool texIsHalfSize, u16 srcTexWidth, u16 srcTexHeight, bool srcTexHalfSize);
 
         GXTexObj mTexObj;
         void *mTexBuffer;

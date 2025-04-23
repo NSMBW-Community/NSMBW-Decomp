@@ -104,6 +104,7 @@ typedef enum _GXTevStageID {
 
     GX_MAX_TEVSTAGE
 } GXTevStageID;
+
 typedef enum _GXTevKColorID {
     GX_KCOLOR0,
     GX_KCOLOR1,
@@ -405,13 +406,19 @@ typedef enum _GXLogicOp {
 } GXLogicOp;
 
 typedef struct _GXRenderModeObj {
-    char pad1[6];
-    u16 smth2;
-    u16 smth;
-    char pad2[15];
+    u32 mVITVMode;
+    u16 mFBWidth;
+    u16 mEFBHeight;
+    u16 mXFBHeight;
+    u16 mVIXOrigin;
+    u16 mVIYOrigin;
+    u16 mVIWidth;
+    u16 mVIHeight;
+    u32 mXFBMode;
+    bool mFieldRendering;
     bool mAntialias;
-    u8 samplePattern[12][2];
-    u8 filterWeights[7];
+    u8 mSamplePattern[12][2];
+    u8 mFilterWeights[7];
 } GXRenderModeObj;
 
 typedef union _GXFifo {

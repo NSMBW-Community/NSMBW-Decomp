@@ -79,6 +79,7 @@ bool m3d::create(EGG::Heap *heap, GXPixelFmt fmt, GXColor col, ulong maxChildren
     }
 
     // Clean up on failure
+    // [Oversight: both pointers can be null]
     delete[] internal::l_lightMgr_pp;
     internal::l_lightMgr_pp = nullptr;
     delete[] internal::l_fogMgr_pp;
@@ -109,7 +110,7 @@ bool m3d::createLightMgr(EGG::Heap *heap, u16 lmArg1, u16 lmArg2, u8 lmArg3, boo
         }
     }
 
-    // [Oversight: fm here can be null]
+    // [Oversight: lm here can be null]
     delete lm;
     return false;
 }
