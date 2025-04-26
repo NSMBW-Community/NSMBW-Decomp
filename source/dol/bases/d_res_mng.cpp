@@ -15,7 +15,7 @@ dResMng_c::~dResMng_c() {
 
 void dResMng_c::resCallback_c::init(const char *name) {}
 
-void *dResMng_c::resCallback_c::execute(void *data, u32 folderSig, const char* path) {
+void *dResMng_c::resCallback_c::execute(void *data, u32 folderSig, const char *path) {
     if (folderSig == 'g3d ') {
         // If it's a g3d file, create a ResFile for it
         nw4r::g3d::ResFile resFile(data);

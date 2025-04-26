@@ -102,7 +102,7 @@ void dMj2dGame_c::setStaffCreditHighScore(u16 score) {
     }
 }
 
-int dMj2dGame_c::getStaffCreditHighScore() const {
+int dMj2dGame_c::getStaffCreditHighScore() {
     return mStaffRollHighScore;
 }
 

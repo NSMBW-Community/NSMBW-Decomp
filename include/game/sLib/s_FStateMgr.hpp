@@ -3,6 +3,7 @@
 #include <game/sLib/s_StateMgr.hpp>
 #include <game/sLib/s_FState.hpp>
 #include <game/sLib/s_FStateFct.hpp>
+#include <game/sLib/s_StateIDChk.hpp>
 
 /// @brief A wrapper for sStateMgr_c that uses sFStateFct_c and sStateIDChk_c.
 /// @tparam T The class that this state belongs to.

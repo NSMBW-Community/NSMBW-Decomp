@@ -19,11 +19,11 @@ bool sStateID_c::isEqual(const sStateIDIf_c &other) const {
     return number() == other.number();
 }
 
-bool sStateID_c::operator==(const sStateIDIf_c &other) const {
+int sStateID_c::operator==(const sStateIDIf_c &other) const {
     return isEqual(other);
 }
 
-bool sStateID_c::operator!=(const sStateIDIf_c &other) const {
+int sStateID_c::operator!=(const sStateIDIf_c &other) const {
     return !isEqual(other);
 }
 

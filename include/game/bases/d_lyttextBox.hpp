@@ -7,5 +7,5 @@ public:
     void setMessage(MsgRes_c *bmg, unsigned long messageID, unsigned long messageGroup, long, ...);
 
     /// @unofficial
-    static void SetTextInt(int *value, int *fillLeft, LytTextBox_c *textBox, bool fullWidth);
+    static void SetTextInt(int *value, const int *fillLeft, LytTextBox_c *textBox, bool fullWidth);
 };

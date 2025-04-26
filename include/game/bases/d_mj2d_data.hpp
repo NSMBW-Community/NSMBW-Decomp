@@ -165,7 +165,7 @@ public:
     int getScore() const; ///< Gets the score.
 
     void setStaffCreditHighScore(u16 score); ///< Sets the staff credit high score.
-    int getStaffCreditHighScore() const; ///< Gets the staff credit high score.
+    int getStaffCreditHighScore(); ///< Gets the staff credit high score.
 
     /// @brief Sets the given hint movie as bought.
     void onOtehonMenuOpenFlag(int movie);
@@ -272,9 +272,11 @@ private:
     void versionUpdate();
 
     /// @brief Sets the death count for World 3-4 for the worldmap switch-enabled variant.
+    /// @unofficial
     void setSwitchDeathCount(u8 count);
 
     /// @brief Gets the death count for World 3-4 for the worldmap switch-enabled variant.
+    /// @unofficial
     int getSwitchDeathCount() const;
 
     u8 mRevision[2]; ///< The save data version and subversion. See ::SAVE_REVISION_MAJOR and ::SAVE_REVISION_MINOR.

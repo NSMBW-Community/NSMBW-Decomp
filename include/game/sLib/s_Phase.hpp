@@ -15,6 +15,7 @@ public:
 
     /**
      * @brief Constructs a new phase with a given method list.
+     * @unofficial
      *
      * @param methodList The list of methods in the phase.
      * @param count The length of the method list.
