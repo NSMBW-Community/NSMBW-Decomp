@@ -1,6 +1,6 @@
 #pragma once
 #include <game/bases/d_resource.hpp>
-#include <game/mLib/m2d/base.hpp>
+#include <game/mLib/m_2d/base.hpp>
 #include <lib/nw4r/lyt/lyt_layout.hpp>
 #include <lib/nw4r/lyt/lyt_resource.hpp>
 #include <lib/nw4r/lyt/lyt_draw_info.hpp>
