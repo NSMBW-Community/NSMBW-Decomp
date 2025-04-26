@@ -9,6 +9,7 @@ bool m3d::anmVis_c::create(nw4r::g3d::ResMdl mdl, nw4r::g3d::ResAnmVis anmVis, m
     if (objSize == nullptr) {
         objSize = &size;
     }
+
     nw4r::g3d::AnmObjVisRes::Construct(nullptr, objSize, anmVis, mdl);
     if (!createAllocator(allocator, objSize)) {
         return false;
@@ -27,7 +28,7 @@ void m3d::anmVis_c::setAnm(m3d::bmdl_c &mdl, nw4r::g3d::ResAnmVis anmVis, m3d::p
     nw4r::g3d::ScnMdlSimple::AnmObjType anmType = (nw4r::g3d::ScnMdlSimple::AnmObjType) getType();
     mdl.removeAnm(anmType);
     mpObj->Release();
-    mpHeap->free(3);
+    mpHeap->free(MEM_FRMHEAP_FREE_ALL);
 
     size_t size;
     mpObj = nw4r::g3d::AnmObjVisRes::Construct(&mAllocator, &size, anmVis, mdl.getResMdl());
@@ -37,7 +38,7 @@ void m3d::anmVis_c::setAnm(m3d::bmdl_c &mdl, nw4r::g3d::ResAnmVis anmVis, m3d::p
 
 void m3d::anmVis_c::setFrmCtrlDefault(nw4r::g3d::ResAnmVis &anmVis, m3d::playMode_e playMode) {
     if (playMode == PLAYMODE_INHERIT) {
-        playMode = (anmVis.p->mAnimateType == 0) ? FORWARD_ONCE : FORWARD_LOOP;
+        playMode = (anmVis.p->mAnimateType == nw4r::g3d::ANM_POLICY_ONCE) ? FORWARD_ONCE : FORWARD_LOOP;
     }
-    fanm_c::set(anmVis.getDuration(), playMode, 1, -1);
+    fanm_c::set(anmVis.getDuration(), playMode, 1.0f, -1.0f);
 }

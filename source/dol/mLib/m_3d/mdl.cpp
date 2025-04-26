@@ -193,7 +193,7 @@ void m3d::mdl_c::remove() {
 }
 
 void m3d::mdl_c::setAnm(m3d::banm_c &anm) {
-    setAnm(anm, 0);
+    setAnm(anm, 0.0f);
 }
 
 void m3d::mdl_c::play() {

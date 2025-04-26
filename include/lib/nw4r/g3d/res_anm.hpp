@@ -5,12 +5,17 @@
 namespace nw4r {
 namespace g3d {
 
+enum ResAnmPolicy {
+    ANM_POLICY_ONCE,
+    ANM_POLICY_LOOP,
+};
+
 class ResAnmVis {
 public:
 struct data {
     char pad[0x20];
     u16 mDuration;
-    int mAnimateType; ///< 0 = once, 1 = loop
+    ResAnmPolicy mAnimateType;
 };
 data *p;
 
@@ -22,7 +27,7 @@ public:
 struct data {
     char pad[0x20];
     u16 mDuration;
-    int mAnimateType; ///< 0 = once, 1 = loop
+    ResAnmPolicy mAnimateType;
 };
 data *p;
 
@@ -34,7 +39,7 @@ public:
 struct data {
     char pad[0x20];
     u16 mDuration;
-    int mAnimateType; ///< 0 = once, 1 = loop
+    ResAnmPolicy mAnimateType;
 };
 data *p;
 
@@ -47,7 +52,7 @@ struct data {
     char pad[0x30];
     u16 mDuration;
     int _;
-    int mAnimateType; ///< 0 = once, 1 = loop
+    ResAnmPolicy mAnimateType;
 };
 data *p;
 
@@ -60,7 +65,7 @@ struct data {
     char pad[0x20];
     u16 mDuration;
     int _;
-    int mAnimateType; ///< 0 = once, 1 = loop
+    ResAnmPolicy mAnimateType;
 };
 data *p;
 

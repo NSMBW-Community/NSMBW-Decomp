@@ -1,5 +1,4 @@
 #include <game/mLib/m_3d.hpp>
-
 #include <game/mLib/m_heap.hpp>
 #include <constants/sjis_constants.h>
 
@@ -15,6 +14,7 @@ void m3d::banm_c::remove() {
         mpObj->Destroy();
         mpObj = nullptr;
     }
+
     if (mpHeap != nullptr) {
         mHeap::destroyFrmHeap(mpHeap);
         mpHeap = nullptr;
@@ -22,13 +22,11 @@ void m3d::banm_c::remove() {
 }
 
 bool m3d::banm_c::createAllocator(mAllocator_c *allocator, size_t *size) {
-    size_t aligned = nw4r::ut::RoundUp(mHeap::frmHeapCost(*size, 0x20)) - mHeap::frmHeapCost(0, 0x20);
-    *size = nw4r::ut::RoundUp(mHeap::frmHeapCost(aligned, 0x20));
+    size_t aligned = nw4r::ut::RoundUp(mHeap::frmHeapCost(*size, 0x20), 0x20) - mHeap::frmHeapCost(0, 0x20);
+    *size = nw4r::ut::RoundUp(mHeap::frmHeapCost(aligned, 0x20), 0x20);
 
     mpHeap = mHeap::makeFrmHeap(aligned, allocator->mpHeap, M3D_BANM_HEAP_NAME, sHeapAlignment, 0);
-
     mAllocator.attach(mpHeap, 0x20);
-
     return true;
 }
 

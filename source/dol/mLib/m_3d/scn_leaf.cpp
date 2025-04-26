@@ -20,12 +20,12 @@ void m3d::scnLeaf_c::entry() {
     m3d::pushBack(mpScn);
 }
 
-void m3d::scnLeaf_c::setOption(unsigned long sel, unsigned long opt) {
-    mpScn->SetScnObjOption(sel, opt);
+void m3d::scnLeaf_c::setOption(ulong option, ulong value) {
+    mpScn->SetScnObjOption(option, value);
 }
 
-bool m3d::scnLeaf_c::getOption(unsigned long sel, unsigned long *opt) const {
-    return mpScn->GetScnObjOption(sel, opt);
+bool m3d::scnLeaf_c::getOption(ulong option, ulong *value) const {
+    return mpScn->GetScnObjOption(option, value);
 }
 
 void m3d::scnLeaf_c::setScale(float x, float y, float z) {

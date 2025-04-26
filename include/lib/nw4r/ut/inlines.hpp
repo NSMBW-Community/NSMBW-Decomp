@@ -18,7 +18,7 @@ namespace ut {
 
     /// @brief Rounds @p x up to a multiple of @p base.
     template <typename T>
-    inline T RoundUp(T x, u32 base = 0x20) {
+    inline T RoundUp(T x, u32 base) {
         return (T)((x + (base - 1)) & ~(base - 1));
     }
 

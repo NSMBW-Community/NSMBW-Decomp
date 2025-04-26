@@ -5,7 +5,7 @@ size_t m3d::anmMatClr_c::child_c::heapCost(nw4r::g3d::ResMdl mdl, nw4r::g3d::Res
     size_t size = 0;
     nw4r::g3d::AnmObjMatClrRes::Construct(nullptr, &size, anmClr, mdl, false);
     if (calcAligned) {
-        size = nw4r::ut::RoundUp(mHeap::frmHeapCost(size, 0x20));
+        size = nw4r::ut::RoundUp(mHeap::frmHeapCost(size, 0x20), 0x20);
     }
     return size;
 }
@@ -19,6 +19,7 @@ bool m3d::anmMatClr_c::child_c::create(nw4r::g3d::ResMdl mdl, nw4r::g3d::ResAnmC
     if (objSize == nullptr) {
         objSize = &size;
     }
+
     *objSize = heapCost(mdl, anmClr, false);
     if (!createAllocator(allocator, objSize)) {
         return false;
@@ -45,24 +46,24 @@ void m3d::anmMatClr_c::child_c::releaseAnm() {
         return;
     }
     mpObj->Release();
-    mpHeap->free(3);
+    mpHeap->free(MEM_FRMHEAP_FREE_ALL);
     mpObj = nullptr;
 }
 
 void m3d::anmMatClr_c::child_c::setFrmCtrlDefault(nw4r::g3d::ResAnmClr &anmClr, m3d::playMode_e playMode) {
     if (playMode == PLAYMODE_INHERIT) {
-        playMode = (anmClr.p->mAnimateType == 0) ? FORWARD_ONCE : FORWARD_LOOP;
+        playMode = (anmClr.p->mAnimateType == nw4r::g3d::ANM_POLICY_ONCE) ? FORWARD_ONCE : FORWARD_LOOP;
     }
-    fanm_c::set(anmClr.getDuration(), playMode, 1, -1);
+    fanm_c::set(anmClr.getDuration(), playMode, 1.0f, -1.0f);
 }
 
 size_t m3d::anmMatClr_c::heapCost(nw4r::g3d::ResMdl mdl, nw4r::g3d::ResAnmClr anmClr, long count, bool calcAligned) {
     size_t size = 0;
     nw4r::g3d::AnmObjMatClrOverride::Construct(nullptr, &size, mdl, count);
-    size += nw4r::ut::RoundUp(count * sizeof(child_c));
-    size += nw4r::ut::RoundUp(child_c::heapCost(mdl, anmClr, true)) * count;
+    size += nw4r::ut::RoundUp(count * sizeof(child_c), 0x20);
+    size += nw4r::ut::RoundUp(child_c::heapCost(mdl, anmClr, true), 0x20) * count;
     if (calcAligned) {
-        size = nw4r::ut::RoundUp(mHeap::frmHeapCost(size, 0x20));
+        size = nw4r::ut::RoundUp(mHeap::frmHeapCost(size, 0x20), 0x20);
     }
     return size;
 }
@@ -76,13 +77,14 @@ bool m3d::anmMatClr_c::create(nw4r::g3d::ResMdl mdl, nw4r::g3d::ResAnmClr anmClr
     if (objSize == nullptr) {
         objSize = &size;
     }
+
     *objSize = heapCost(mdl, anmClr, count, false);
     if (!createAllocator(allocator, objSize)) {
         return false;
     }
 
     mpObj = nw4r::g3d::AnmObjMatClrOverride::Construct(&mAllocator, nullptr, mdl, count);
-    children = (m3d::anmMatClr_c::child_c *) MEMAllocFromAllocator(&mAllocator, nw4r::ut::RoundUp(count * sizeof(child_c)));
+    children = (m3d::anmMatClr_c::child_c *) MEMAllocFromAllocator(&mAllocator, nw4r::ut::RoundUp(count * sizeof(child_c), 0x20));
 
     nw4r::g3d::AnmObjMatClrOverride *matClrOverride = nw4r::g3d::G3dObj::DynamicCast<nw4r::g3d::AnmObjMatClrOverride>(mpObj);
 

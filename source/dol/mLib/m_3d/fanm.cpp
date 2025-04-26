@@ -12,8 +12,7 @@ void m3d::fanm_c::play() {
     float frame = mpObj->GetFrame();
     float updateRate = mpObj->GetUpdateRate();
 
-    bool updateRateNegative = updateRate < 0;
-
+    bool updateRateNegative = updateRate < 0.0f;
     if (updateRateNegative) {
         updateRate *= -1.0f;
     }
@@ -39,7 +38,7 @@ void m3d::fanm_c::play() {
                 frame -= mFrameMax;
             }
         } else {
-            float endFrame = mFrameMax - 1;
+            float endFrame = mFrameMax - 1.0f;
             if (frame >= endFrame) {
                 frame = endFrame;
             }
@@ -51,22 +50,21 @@ void m3d::fanm_c::play() {
 
 void m3d::fanm_c::set(float duration, m3d::playMode_e playMode, float updateRate, float startFrame) {
     float frame = startFrame;
-    if (startFrame < 0) {
+    if (startFrame < 0.0f) {
         if (playMode == FORWARD_ONCE) {
-            frame = 0;
+            frame = 0.0f;
         } else {
-            frame = duration - 1;
+            frame = duration - 1.0f;
         }
     }
 
     mFrameMax = duration;
-    mFrameStart = 0;
+    mFrameStart = 0.0f;
 
     mpObj->SetFrame(frame);
     mpObj->SetUpdateRate(updateRate);
 
     mPlayMode = playMode;
-
     mCurrFrame = frame;
 }
 
@@ -80,10 +78,10 @@ bool m3d::fanm_c::isStop() const {
     float updateRate = mpObj->GetUpdateRate();
 
     // Only the "once" modes should ever be able to stop
-    if (updateRate < 0 || mPlayMode == REVERSE_ONCE) {
+    if (updateRate < 0.0f || mPlayMode == REVERSE_ONCE) {
         return frame <= mFrameStart;
     } else if (mPlayMode == FORWARD_ONCE) {
-        return frame >= mFrameMax - 1;
+        return frame >= mFrameMax - 1.0f;
     }
 
     return false;
@@ -97,7 +95,7 @@ bool m3d::fanm_c::checkFrame(float f) const {
 
     float updateRate = mpObj->GetUpdateRate();
 
-    if (updateRate < 0 || (mPlayMode & MASK_FORWARD) != 0) {
+    if (updateRate < 0.0f || (mPlayMode & MASK_FORWARD) != 0) {
         // Reverse animation
         if (mCurrFrame > objFrame) {
             if (mCurrFrame > f && objFrame <= f) {

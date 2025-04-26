@@ -5,7 +5,7 @@ size_t m3d::anmTexSrt_c::child_c::heapCost(nw4r::g3d::ResMdl mdl, nw4r::g3d::Res
     size_t size = 0;
     nw4r::g3d::AnmObjTexSrtRes::Construct(nullptr, &size, anmTexSrt, mdl, false);
     if (calcAligned) {
-        size = (mHeap::frmHeapCost(size, 0x20) + 0x1f) & 0xffffffe0;
+        size = nw4r::ut::RoundUp(mHeap::frmHeapCost(size, 0x20), 0x20);
     }
     return size;
 }
@@ -19,6 +19,7 @@ bool m3d::anmTexSrt_c::child_c::create(nw4r::g3d::ResMdl mdl, nw4r::g3d::ResAnmT
     if (objSize == nullptr) {
         objSize = &size;
     }
+
     *objSize = heapCost(mdl, anmTexSrt, false);
     if (!createAllocator(allocator, objSize)) {
         return false;
@@ -28,10 +29,12 @@ bool m3d::anmTexSrt_c::child_c::create(nw4r::g3d::ResMdl mdl, nw4r::g3d::ResAnmT
     if (mpObj == nullptr) {
         return false;
     }
+
     if (!mpObj->Bind(mdl)) {
         remove();
         return false;
     }
+
     setFrmCtrlDefault(anmTexSrt, PLAYMODE_INHERIT);
     return true;
 }
@@ -48,24 +51,24 @@ void m3d::anmTexSrt_c::child_c::releaseAnm() {
         return;
     }
     mpObj->Release();
-    mpHeap->free(3);
+    mpHeap->free(MEM_FRMHEAP_FREE_ALL);
     mpObj = nullptr;
 }
 
 void m3d::anmTexSrt_c::child_c::setFrmCtrlDefault(nw4r::g3d::ResAnmTexSrt &anmTexSrt, m3d::playMode_e playMode) {
     if (playMode == PLAYMODE_INHERIT) {
-        playMode = (anmTexSrt.p->mAnimateType == 0) ? FORWARD_ONCE : FORWARD_LOOP;
+        playMode = (anmTexSrt.p->mAnimateType == nw4r::g3d::ANM_POLICY_ONCE) ? FORWARD_ONCE : FORWARD_LOOP;
     }
-    fanm_c::set(anmTexSrt.getDuration(), playMode, 1, -1);
+    fanm_c::set(anmTexSrt.getDuration(), playMode, 1.0f, -1.0f);
 }
 
 size_t m3d::anmTexSrt_c::heapCost(nw4r::g3d::ResMdl mdl, nw4r::g3d::ResAnmTexSrt anmTexSrt, long count, bool calcAligned) {
     size_t size = 0;
     nw4r::g3d::AnmObjTexSrtOverride::Construct(nullptr, &size, mdl, count);
-    size += nw4r::ut::RoundUp(count * sizeof(child_c));
-    size += nw4r::ut::RoundUp(child_c::heapCost(mdl, anmTexSrt, true)) * count;
+    size += nw4r::ut::RoundUp(count * sizeof(child_c), 0x20);
+    size += nw4r::ut::RoundUp(child_c::heapCost(mdl, anmTexSrt, true), 0x20) * count;
     if (calcAligned) {
-        size = nw4r::ut::RoundUp(mHeap::frmHeapCost(size, 0x20));
+        size = nw4r::ut::RoundUp(mHeap::frmHeapCost(size, 0x20), 0x20);
     }
     return size;
 }
@@ -79,6 +82,7 @@ bool m3d::anmTexSrt_c::create(nw4r::g3d::ResMdl mdl, nw4r::g3d::ResAnmTexSrt anm
     if (objSize == nullptr) {
         objSize = &size;
     }
+
     *objSize = heapCost(mdl, anmTexSrt, count, false);
     if (!createAllocator(allocator, objSize)) {
         return false;
@@ -89,7 +93,7 @@ bool m3d::anmTexSrt_c::create(nw4r::g3d::ResMdl mdl, nw4r::g3d::ResAnmTexSrt anm
         return false;
     }
 
-    children = (m3d::anmTexSrt_c::child_c *) MEMAllocFromAllocator(&mAllocator, nw4r::ut::RoundUp(count * sizeof(child_c)));
+    children = (m3d::anmTexSrt_c::child_c *) MEMAllocFromAllocator(&mAllocator, nw4r::ut::RoundUp(count * sizeof(child_c), 0x20));
     if (children == nullptr) {
         remove();
         return false;

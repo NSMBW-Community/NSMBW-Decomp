@@ -1,4 +1,5 @@
 #include <game/mLib/m_3d.hpp>
+#include <game/mLib/m_heap.hpp>
 #include <lib/nw4r/g3d/anm_obj_chr.hpp>
 
 bool m3d::anmChr_c::create(nw4r::g3d::ResMdl mdl, nw4r::g3d::ResAnmChr anmChr, mAllocator_c *allocator, size_t *objSize) {
@@ -55,7 +56,7 @@ void m3d::anmChr_c::setAnmAfter(m3d::bmdl_c &mdl, nw4r::g3d::ResAnmChr anmChr, m
     }
 
     mpObj->Release();
-    mpHeap->free(3);
+    mpHeap->free(MEM_FRMHEAP_FREE_ALL);
 
     size_t size;
     mpObj = nw4r::g3d::AnmObjChrRes::Construct(&mAllocator, &size, anmChr, mdl.getResMdl(), false);
@@ -73,7 +74,7 @@ void m3d::anmChr_c::setAnmAfter(m3d::bmdl_c &mdl, nw4r::g3d::ResAnmChr anmChr, m
 
 void m3d::anmChr_c::setFrmCtrlDefault(nw4r::g3d::ResAnmChr &anmChr, m3d::playMode_e playMode) {
     if (playMode == PLAYMODE_INHERIT) {
-        playMode = (anmChr.p->mAnimateType == 0) ? FORWARD_ONCE : FORWARD_LOOP;
+        playMode = (anmChr.p->mAnimateType == nw4r::g3d::ANM_POLICY_ONCE) ? FORWARD_ONCE : FORWARD_LOOP;
     }
-    fanm_c::set(anmChr.getDuration(), playMode, 1, -1);
+    fanm_c::set(anmChr.getDuration(), playMode, 1.0f, -1.0f);
 }

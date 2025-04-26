@@ -5,7 +5,7 @@ size_t m3d::anmTexPat_c::child_c::heapCost(nw4r::g3d::ResMdl mdl, nw4r::g3d::Res
     size_t size = 0;
     nw4r::g3d::AnmObjTexPatRes::Construct(nullptr, &size, anmTexPat, mdl, false);
     if (calcAligned) {
-        size = (mHeap::frmHeapCost(size, 0x20) + 0x1f) & 0xffffffe0;
+        size = nw4r::ut::RoundUp(mHeap::frmHeapCost(size, 0x20), 0x20);
     }
     return size;
 }
@@ -19,6 +19,7 @@ bool m3d::anmTexPat_c::child_c::create(nw4r::g3d::ResMdl mdl, nw4r::g3d::ResAnmT
     if (objSize == nullptr) {
         objSize = &size;
     }
+
     *objSize = heapCost(mdl, anmTexPat, false);
     if (!createAllocator(allocator, objSize)) {
         return false;
@@ -29,6 +30,7 @@ bool m3d::anmTexPat_c::child_c::create(nw4r::g3d::ResMdl mdl, nw4r::g3d::ResAnmT
         remove();
         return false;
     }
+
     setFrmCtrlDefault(anmTexPat, PLAYMODE_INHERIT);
     return true;
 }
@@ -45,24 +47,24 @@ void m3d::anmTexPat_c::child_c::releaseAnm() {
         return;
     }
     mpObj->Release();
-    mpHeap->free(3);
+    mpHeap->free(MEM_FRMHEAP_FREE_ALL);
     mpObj = nullptr;
 }
 
 void m3d::anmTexPat_c::child_c::setFrmCtrlDefault(nw4r::g3d::ResAnmTexPat &anmTexPat, m3d::playMode_e playMode) {
     if (playMode == PLAYMODE_INHERIT) {
-        playMode = (anmTexPat.p->mAnimateType == 0) ? FORWARD_ONCE : FORWARD_LOOP;
+        playMode = (anmTexPat.p->mAnimateType == nw4r::g3d::ANM_POLICY_ONCE) ? FORWARD_ONCE : FORWARD_LOOP;
     }
-    fanm_c::set(anmTexPat.getDuration(), playMode, 1, -1);
+    fanm_c::set(anmTexPat.getDuration(), playMode, 1.0f, -1.0f);
 }
 
 size_t m3d::anmTexPat_c::heapCost(nw4r::g3d::ResMdl mdl, nw4r::g3d::ResAnmTexPat anmTexPat, long count, bool calcAligned) {
     size_t size = 0;
     nw4r::g3d::AnmObjTexPatOverride::Construct(nullptr, &size, mdl, count);
-    size += nw4r::ut::RoundUp(count * sizeof(child_c));
-    size += nw4r::ut::RoundUp(child_c::heapCost(mdl, anmTexPat, true)) * count;
+    size += nw4r::ut::RoundUp(count * sizeof(child_c), 0x20);
+    size += nw4r::ut::RoundUp(child_c::heapCost(mdl, anmTexPat, true), 0x20) * count;
     if (calcAligned) {
-        size = nw4r::ut::RoundUp(mHeap::frmHeapCost(size, 0x20));
+        size = nw4r::ut::RoundUp(mHeap::frmHeapCost(size, 0x20), 0x20);
     }
     return size;
 }
@@ -76,13 +78,14 @@ bool m3d::anmTexPat_c::create(nw4r::g3d::ResMdl mdl, nw4r::g3d::ResAnmTexPat anm
     if (objSize == nullptr) {
         objSize = &size;
     }
+
     *objSize = heapCost(mdl, anmTexPat, count, false);
     if (!createAllocator(allocator, objSize)) {
         return false;
     }
 
     mpObj = nw4r::g3d::AnmObjTexPatOverride::Construct(&mAllocator, nullptr, mdl, count);
-    children = (m3d::anmTexPat_c::child_c *) MEMAllocFromAllocator(&mAllocator, nw4r::ut::RoundUp(count * sizeof(child_c)));
+    children = (m3d::anmTexPat_c::child_c *) MEMAllocFromAllocator(&mAllocator, nw4r::ut::RoundUp(count * sizeof(child_c), 0x20));
 
     nw4r::g3d::AnmObjTexPatOverride *texPatOverride = nw4r::g3d::G3dObj::DynamicCast<nw4r::g3d::AnmObjTexPatOverride>(mpObj);
 

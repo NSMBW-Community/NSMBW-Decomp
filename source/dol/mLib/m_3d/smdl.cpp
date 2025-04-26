@@ -5,7 +5,7 @@ m3d::smdl_c::smdl_c() {}
 
 m3d::smdl_c::~smdl_c() {}
 
-bool m3d::smdl_c::create(nw4r::g3d::ResMdl resMdl, mAllocator_c *allocator, unsigned long bufferOption, int viewCount, size_t *objSize) {
+bool m3d::smdl_c::create(nw4r::g3d::ResMdl resMdl, mAllocator_c *allocator, ulong bufferOption, int viewCount, size_t *objSize) {
     if (allocator == nullptr) {
         allocator = internal::l_allocator_p;
     }
@@ -14,6 +14,7 @@ bool m3d::smdl_c::create(nw4r::g3d::ResMdl resMdl, mAllocator_c *allocator, unsi
     if (objSize == nullptr) {
         objSize = &size;
     }
+
     if (bufferOption != 0) {
         mpScn = nw4r::g3d::ScnMdl::Construct(allocator, objSize, resMdl, bufferOption, viewCount);
     } else {
