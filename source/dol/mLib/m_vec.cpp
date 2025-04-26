@@ -52,7 +52,7 @@ void mVec3_c::rotY(mAng angle) {
     this->z = -sin * x + cos * z;
 }
 
-mVec3_c mVec3_c::Zero = mVec3_c(0.0f, 0.0f, 0.0f);
-mVec3_c mVec3_c::Ex = mVec3_c(1.0f, 0.0f, 0.0f);
-mVec3_c mVec3_c::Ey = mVec3_c(0.0f, 1.0f, 0.0f);
-mVec3_c mVec3_c::Ez = mVec3_c(0.0f, 0.0f, 1.0f);
+mVec3_c mVec3_c::Zero(0.0f, 0.0f, 0.0f);
+mVec3_c mVec3_c::Ex(1.0f, 0.0f, 0.0f);
+mVec3_c mVec3_c::Ey(0.0f, 1.0f, 0.0f);
+mVec3_c mVec3_c::Ez(0.0f, 0.0f, 1.0f);

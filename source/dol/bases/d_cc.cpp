@@ -84,13 +84,13 @@ void dCc_c::release() {
     mIsLinked = false;
 }
 
-void dCc_c::registerCc(dActor_c *actor, CcData_s *collInfo) {
+void dCc_c::registerCc(dBaseActor_c *actor, CcData_s *collInfo) {
     mpOwner = actor;
     mCcData = *collInfo;
     mFlag = 0;
 }
 
-void dCc_c::registerCc(dActor_c *actor, CcData_s *collInfo, u8 nonCollideMask) {
+void dCc_c::registerCc(dBaseActor_c *actor, CcData_s *collInfo, u8 nonCollideMask) {
     registerCc(actor, collInfo);
     mNonCollideMask = nonCollideMask;
 }

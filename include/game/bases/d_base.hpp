@@ -73,10 +73,11 @@ public:
     /// @copydoc fBase_c::createRoot
     static dBase_c *createRoot(ProfileName profName, unsigned long param, u8 groupType);
 
-private:
+protected:
     const char* mpKindString; ///< @unused The base's kind string.
     const char* mpNameString; ///< @unused The base's profile name string.
 
+private:
     /// @unused Module loading callback for the scrapped relocatable profile system.
     /// @unofficial
     /// @return Always returns @ref fBase_c::PACK_RESULT_e::FAILED "FAILED".

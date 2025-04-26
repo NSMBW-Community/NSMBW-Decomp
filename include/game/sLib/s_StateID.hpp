@@ -22,8 +22,8 @@ public:
     virtual bool isNull() const;
     virtual bool isEqual(const sStateIDIf_c &other) const;
 
-    virtual bool operator==(const sStateIDIf_c &other) const;
-    virtual bool operator!=(const sStateIDIf_c &other) const;
+    virtual int operator==(const sStateIDIf_c &other) const;
+    virtual int operator!=(const sStateIDIf_c &other) const;
 
     virtual bool isSameName(const char *name) const;
     virtual const char *name() const;

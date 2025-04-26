@@ -52,17 +52,20 @@ public:
     void setVisible(bool visible) {
         mFlags = (mFlags & 0xfe) | visible;
     }
-    void setFieldB8(u8 value) { mField_b8 = value; }
 
-private:
+    void setScale(const math::VEC2 &scale) { mScale = scale; }
+    void setAlpha(u8 alpha) { mAlpha = alpha; }
+
+public:
     char mFill1[0x28]; // To be RE'd
-    math::VEC3 pos;
-    math::VEC3 rot;
-    math::VEC2 scale;
+    math::VEC3 mPos;
+    math::VEC3 mRot;
+    math::VEC2 mScale;
+private:
     float width;
     float height;
     char mFill2[0x64]; // To be RE'd
-    u8 mField_b8;
+    u8 mAlpha;
     u8 mField_b9;
     u8 mOriginType;
 

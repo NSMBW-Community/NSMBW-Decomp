@@ -36,5 +36,20 @@ public:
     void multVecZero(nw4r::math::VEC3 &out) const; ///< Extracts the translation vector from the matrix.
     void zero(); ///< Zeroes out the matrix.
 
+    mVec3_c getTranslation() const {
+        float x = mData[0][3];
+        float y = mData[1][3];
+        float z = mData[2][3];
+        return mVec3_c(x, y, z);
+    }
+
+    mMtx_c &concat(const mMtx_c &other) { PSMTXConcat(*this, other, *this); return *this; }
+    mMtx_c &trans(const mVec3_c &v) { PSMTXTrans(*this, v.x, v.y, v.z); return *this; }
+    mMtx_c &trans(float x, float y, float z) { PSMTXTrans(*this, x, y, z); return *this; }
+
+    float transX() const { return getTranslation().x; }
+    float transY() const { return getTranslation().y; }
+    float transZ() const { return getTranslation().z; }
+
     static mMtx_c Identity; ///< The identity matrix.
 };

@@ -13,7 +13,7 @@ namespace res {
     class Picture;
     class TextBox;
     class Window;
-};
+}
 
 class AnimTransformBasic;
 class AnimResource;

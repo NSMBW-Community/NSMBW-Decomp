@@ -1,6 +1,7 @@
 #pragma once
 #include <types.h>
-#include <game/bases/d_actor.hpp>
+#include <game/bases/d_base_actor.hpp>
+#include <game/mLib/m_vec.hpp>
 
 /**
  * @brief Collider ("Collision Check") class - handles collisions between actors.
@@ -65,6 +66,7 @@ public:
         ATTACK_YOSHI_EAT,
         ATTACK_YOSHI_MOUTH,
         ATTACK_CANNON,
+        ATTACK_SPIN_LIFT_UP,
         ATTACK_YOSHI_BULLET,
         ATTACK_YOSHI_FIRE,
         ATTACK_ICE_2,
@@ -115,7 +117,8 @@ public:
 
 private:
 
-    // [Some unused class - but needed here because it has a static initializer.]
+    /// [Some unused class - but needed here because it has a static initializer.]
+    /// @unofficial
     class InitializedUnkClass {
     public:
         u32 a, b, c;
@@ -132,7 +135,9 @@ private:
             }
         } _initializer;
     };
+    /// @unofficial
     static char msIsInitialized; // [This might also be an auto-generated guard variable]
+    /// @unofficial
     static InitializedUnkClass msInitializedUnkClass;
 
 public:
@@ -150,7 +155,7 @@ public:
      * @param actor The actor to register.
      * @param collInfo The collider data to set.
      */
-    void registerCc(dActor_c *actor, CcData_s *collInfo);
+    void registerCc(dBaseActor_c *actor, CcData_s *collInfo);
 
     /**
      * @brief Registers an owner actor to this collider and sets the collider data.
@@ -159,10 +164,10 @@ public:
      * @param collInfo The collider data to set.
      * @param nonCollideMask The non-collide mask to set.
      */
-    void registerCc(dActor_c *actor, CcData_s *collInfo, u8 nonCollideMask);
+    void registerCc(dBaseActor_c *actor, CcData_s *collInfo, u8 nonCollideMask);
 
     /// Sets a friend actor for this collider.
-    void setFriendActor(dActor_c *actor) { mFriendActor = actor; }
+    void setFriendActor(dBaseActor_c *actor) { mFriendActor = actor; }
 
     /**
      * @brief Gets the result of a hit check.
@@ -255,9 +260,9 @@ private:
     /// Check a trapezoid-shaped collider against a rectangular collider for collisions.
     static bool _hitCheckDaikeiLR(dCc_c *ccTrp, dCc_c *ccBox);
 
-private:
-    dActor_c *mpOwner; ///< The actor this collider belongs to.
-    dActor_c *mFriendActor; ///< A second actor that this collider will not collide with.
+public:
+    dBaseActor_c *mpOwner; ///< The actor this collider belongs to.
+    dBaseActor_c *mFriendActor; ///< A second actor that this collider will not collide with.
 
     u32 unk2; ///< [Unused (?)].
 
@@ -268,7 +273,6 @@ private:
 
     CcData_s mCcData; ///< The collision data of this collider.
 
-public:
     /**
      * @brief The X or Y offset of the four corners of a trapezoid-shaped collider.
      *
