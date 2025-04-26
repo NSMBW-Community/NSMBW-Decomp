@@ -141,6 +141,9 @@ for slice_file in slices:
                         continue
                     if sym.st_info_type in [STT.STT_FUNC, STT.STT_OBJECT] and sym.st_info_bind == STB.STB_GLOBAL:
                         force_actives.add(sym.name)
+                    elif sym.name in slice_file.keep_weak:
+                        # Some symbols might not be referenced yet, but we still want to keep them
+                        force_actives.add(sym.name)
 
             f.write('FORCEFILES {\n\t')
             f.write('\n\t'.join(['\\'.join(path.relative_to(PROJECTDIR).parts) for path in force_files])) # The linker requires backslashes
