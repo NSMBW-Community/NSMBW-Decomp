@@ -1,0 +1,24 @@
+/*!
+@defgroup nw4r NW4R
+@brief A middleware library providing utilities for graphics, audio and text rendering, disc reading,
+debugging and more.
+@details It includes several proprietary file formats and associated export tools. NW4R is written
+in C++ and could be used by third-party developers upon request.
+
+@addtogroup nw4r
+@{
+
+@namespace nw4r::g3d
+@brief 3D graphics drawing library.
+
+@namespace nw4r::lyt
+@brief 2D graphics drawing library.
+
+@namespace nw4r::math
+@brief Math library.
+
+@namespace nw4r::ut
+@brief Debugging library which includes various utilities used by the rest of nw4r.
+
+@}
+*/

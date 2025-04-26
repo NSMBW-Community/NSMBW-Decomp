@@ -1,0 +1,43 @@
+/*!
+@class dWmActor_c
+@details
+## Overview
+dWmActor_c serves as the base for all map actors (Wm stands for World Map). It is typically not used
+directly, unless the actor's sole purpose is for background tasks or unconditional 3D model rendering.
+For more complex behaviors, it is recommended to use dWmDemoActor_c and its sub-implementations, which
+enable the actor to respond to world map events and more.
+
+## Creating Map Actors
+Map actors can be created by calling one of the two ::construct methods, which define two
+additional arguments to provide the starting position and rotation. A parent base can optionally
+be provided.
+
+## Notable Operation Changes
+The following operation changes have been made:
+- The execute operation is not performed if the game @ref dGameCom::isGameStop "is stopped" for
+@ref dGameCom::GAME_STOP_e::GAME_STOP_ANY "any reason".
+- The draw operation is not performed if the actor is outside the camera view. See [here](#bounding-sphere)
+for details.
+- The execute and draw operations are also skipped if the World Select Menu is open.
+- This is done to ensure the blurring effect behind the menu works as intended: the game captures a screenshot of
+the map, displaying it instead of the active world, while all animations are paused to avoid abrupt transitions upon
+exiting the menu.
+- @p WM_CS_SEQ_MNG , @p WM_ISLAND and @p WM_DIRECTOR are the only actors allowed to keep running while the menu is
+open.
+
+## Bounding Sphere
+The game uses a @ref mCullSphere "bounding sphere" to perform
+@xlink{https://bruop.github.io/frustum_culling/,frustum culling} on the actor.
+
+If the actor's bounding sphere is not within the camera view, it will not be rendered. This behaviour can
+be controlled by setting the sphere's @ref mSphere_c::mRadius "radius" (which must be done manually).
+If the radius is set to @p 0.0f (the default value), the check is bypassed and the actor is always
+drawn. The sphere's @ref mSphere_c::mPos "position" is updated automatically.
+
+@hint{It is recommended to set the sphere radius in the ::create method.}
+
+## Lighting Adjustments
+Wrappers to adjust the model lighting are provided for convenience. See dGameCom for details.
+
+@todo Use proper class names for the mentioned actors once decompiled.
+*/

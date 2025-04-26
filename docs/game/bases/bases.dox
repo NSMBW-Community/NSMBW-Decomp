@@ -1,0 +1,5 @@
+/*!
+@ingroup game
+@defgroup bases Bases
+@brief Includes all game logic processes.
+*/

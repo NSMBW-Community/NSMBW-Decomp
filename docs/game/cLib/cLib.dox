@@ -1,0 +1,5 @@
+/*!
+@ingroup game
+@defgroup clib cLib
+@brief Provides common utilities.
+*/

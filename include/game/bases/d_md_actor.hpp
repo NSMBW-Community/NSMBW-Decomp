@@ -3,28 +3,8 @@
 #include <game/bases/d_base_actor.hpp>
 #include <game/mLib/m_sphere.hpp>
 
-/**
- * @brief The minimum required implementation for a cutscene actor.
- * @ingroup bases
- * @details
- * ## Overview
- * dMdActor_c serves as the base for all cutscene actors (Md stands for Movie Demo). It does not add any
- * particularly relevant components, but a few overloads are provided for convenience.
- *
- * ## Notable Operation Changes
- * The following operation changes have been made:
- * - The execute operation is not performed if the game @ref dGameCom::isGameStop "is stopped" for
- * @ref dGameCom::GAME_STOP_e::GAME_STOP_ANY "any reason".
- *
- * ## Unused Content
- * - The @ref mCullSphere "bounding sphere" mechanism from dWmActor_c is present in this class as well,
- * however no cutscene actors make use of it.
- * - Similarly, the World Select Menu check from the same class is also present, but it will never be
- * triggered since no cutscene actors are ever active on the world map.
- * - Due to the above, it is theorized that cutscene actors were likely intended to support more complex
- * behaviour similar to their world map counterparts, however this was scrapped in favour of a simpler
- * approach.
- */
+/// @brief The minimum required implementation for a cutscene actor.
+/// @ingroup bases
 class dMdActor_c : public dBaseActor_c {
     dMdActor_c(); ///< @copydoc dBaseActor_c::dBaseActor_c
 

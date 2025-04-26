@@ -1,0 +1,5 @@
+/*!
+@ingroup game
+@defgroup snd Snd
+@brief Application layer audio management API.
+*/
