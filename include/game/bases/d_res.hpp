@@ -4,7 +4,7 @@
 #include <lib/egg/heap/eggHeap.hpp>
 #include <lib/egg/heap/eggFrmHeap.hpp>
 #include <lib/egg/archive.hpp>
-#include <game/mLib/m_dvd.h>
+#include <game/mLib/m_dvd.hpp>
 
 /// @brief An archive resource management class.
 /// @ingroup bases

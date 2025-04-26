@@ -1,5 +1,5 @@
 #include <game/bases/d_res_mng.hpp>
-#include <lib/nw4r/g3d/res_file.h>
+#include <lib/nw4r/g3d/res_file.hpp>
 #include <lib/rvl/mem/MEMExpHeap.h>
 
 dResMng_c *dResMng_c::m_instance;
