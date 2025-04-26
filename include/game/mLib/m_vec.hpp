@@ -97,11 +97,13 @@ public:
 /// @brief A three-dimensional floating point vector.
 /// @ingroup mlib
 /// @todo Add EGG::vector3f operators.
-class mVec3_c : public nw4r::math::VEC3 {
+class mVec3_c : public EGG::Vector3f {
 public:
 
     /// @brief Constructs an empty vector.
     mVec3_c() {}
+
+    ~mVec3_c() {}
 
     /// @brief Constructs a vector from a float array.
     mVec3_c(const f32 *p) { x = p[0]; y = p[1]; z = p[2]; }
@@ -112,8 +114,18 @@ public:
     /// @brief Constructs a new vector from an existing vector from the MTX library.
     mVec3_c(const Vec &v) { x = v.x; y = v.y; z = v.z; }
 
-    /// @brief Constructs a new vector from an existing vector from the nw4r::math library.
+    /// @brief Constructs a new vector from an existing vector from the NW4R library.
     mVec3_c(const nw4r::math::VEC3 &v) { x = v.x; y = v.y; z = v.z; }
+
+    /// @brief Copy constructor.
+    mVec3_c(const mVec3_c &v) { set(v.x, v.y, v.z); }
+
+    /// @brief Copy constructor with a different Z value.
+    mVec3_c(const mVec3_c &v, float fz) { x = v.x; y = v.y; z = fz; }
+    mVec3_c(const mVec2_c &v, float fz) { x = v.x; y = v.y; z = fz; }
+
+    /// @brief Assignment operator.
+    mVec3_c &operator=(const mVec3_c &v) { x = v.x; y = v.y; z = v.z; return *this; }
 
     /// @brief Float cast operator.
     operator f32*() { return &x; }

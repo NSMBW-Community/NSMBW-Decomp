@@ -1,8 +1,8 @@
 #include <game/bases/d_wipe_dokan.hpp>
 #include <game/bases/d_base_actor.hpp>
 #include <game/bases/d_game_com.hpp>
-#include <game/bases/d_a_py_mng.hpp>
-#include <game/bases/d_a_py_demo_mng.hpp>
+#include <game/bases/d_a_player_manager.hpp>
+#include <game/bases/d_a_player_demo_manager.hpp>
 
 dWipeDokan_c *dWipeDokan_c::m_instance;
 
@@ -24,13 +24,13 @@ bool dWipeDokan_c::createLayout() {
         "wipeDokan_02_inBlackUp.brlan"
     };
 
-    static const int ANIME_INDEX_TBL[] = {0, 1, 2, 3};
     static const char *GROUP_NAME_DT[] = {
         "A00_wipeDokan",
         "A00_wipeDokan",
         "A00_wipeDokan",
         "A00_wipeDokan"
     };
+    static const int ANIME_INDEX_TBL[] = {0, 1, 2, 3};
 
     static const char *PPANE_NAME_DT[] = {
         "P_baseBlack_00"
@@ -116,7 +116,7 @@ bool dWipeDokan_c::MuKiDecision() {
     if (actPlayer < 0) {
         return false;
     }
-    dBaseActor_c *player = daPyMng_c::getPlayer(actPlayer);
+    dAcPy_c *player = daPyMng_c::getPlayer(actPlayer);
     if (player == nullptr) {
         return false;
     }
@@ -137,7 +137,7 @@ void dWipeDokan_c::setStatus(mFaderBase_c::EStatus stat) {
     if (stat == OPAQUE) {
         mStatus = OPAQUE;
 
-        mpPic[0]->setFieldB8(255);
+        mpPic[0]->setAlpha(255);
         mLyt.ReverseAnimeStartSetup(OUT_UP, false);
 
         mpRootPane->setVisible(true);
@@ -146,7 +146,7 @@ void dWipeDokan_c::setStatus(mFaderBase_c::EStatus stat) {
     } else if (stat == HIDDEN) {
         mStatus = HIDDEN;
 
-        mpPic[0]->setFieldB8(0);
+        mpPic[0]->setAlpha(0);
         mLyt.ReverseAnimeStartSetup(IN_DOWN, false);
 
         mpRootPane->setVisible(true);

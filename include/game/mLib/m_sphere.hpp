@@ -1,15 +1,13 @@
 #pragma once
 
 #include <game/mLib/m_vec.hpp>
+#include <lib/egg/math.hpp>
 #include <lib/MSL_C/float.h>
 #include <lib/MSL_C/math.h>
 
-class mSphere_c {
+class mSphere_c : public EGG::Sphere3f {
 public:
-    mSphere_c() : mPos(mVec3_c::Zero), mRadius(0.0) {}
+    mSphere_c() : EGG::Sphere3f(mVec3_c::Zero, 0.0f) {}
 
     bool isZero() { return fabsf(mRadius) <= FLT_EPSILON; }
-
-    mVec3_c mPos; ///< The sphere position.
-    float mRadius; ///< The sphere radius.
 };

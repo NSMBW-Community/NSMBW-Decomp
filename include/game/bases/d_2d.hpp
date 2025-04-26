@@ -1,12 +1,28 @@
 #pragma once
 #include <game/bases/d_resource.hpp>
-#include <game/mLib/m2d/base.hpp>
+#include <game/mLib/m_2d/base.hpp>
+#include <game/mLib/m_vec.hpp>
 #include <lib/nw4r/lyt/lyt_layout.hpp>
 #include <lib/nw4r/lyt/lyt_resource.hpp>
 #include <lib/nw4r/lyt/lyt_draw_info.hpp>
 #include <lib/nw4r/math/vec.hpp>
 
 namespace d2d {
+
+struct ClipSettings {
+    ClipSettings() : mPos(0.0f, 0.0f), mSize(0.0f, 0.0f), mEnabled(false) {}
+
+    ClipSettings &operator=(const ClipSettings &other) {
+        mPos = other.mPos;
+        mSize = other.mSize;
+        mEnabled = other.mEnabled;
+        return *this;
+    }
+
+    mVec2_c mPos;
+    mVec2_c mSize;
+    bool mEnabled;
+};
 
 class Multi_c : public m2d::Base_c {
 public:
@@ -23,12 +39,12 @@ private:
     nw4r::lyt::DrawInfo mDrawInfo;
     ResAccMult_c *mpResAccessor;
 
-    nw4r::math::VEC2 mPos;
+public:
+    mVec2_c mPos;
 
-    nw4r::math::VEC2 mClipPos;
-    nw4r::math::VEC2 mClipSize;
-    bool mClipEnabled;
+    ClipSettings mClipSettings;
 
+private:
     u32 mFlags;
     u32 mUnknown_98;
 };

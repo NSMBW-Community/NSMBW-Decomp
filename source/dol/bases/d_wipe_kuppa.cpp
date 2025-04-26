@@ -1,8 +1,8 @@
 #include <game/bases/d_wipe_kuppa.hpp>
 #include <game/bases/d_base_actor.hpp>
 #include <game/bases/d_game_com.hpp>
-#include <game/bases/d_a_py_mng.hpp>
-#include <game/bases/d_a_py_demo_mng.hpp>
+#include <game/bases/d_a_player_manager.hpp>
+#include <game/bases/d_a_player_demo_manager.hpp>
 
 dWipeKuppa_c *dWipeKuppa_c::m_instance;
 
@@ -22,11 +22,11 @@ bool dWipeKuppa_c::createLayout() {
         "wipeKuppa_05_outWindow.brlan"
     };
 
-    static const int ANIME_INDEX_TBL[] = {0, 1};
     static const char *GROUP_NAME_DT[] = {
         "A00_inWindow",
         "B00_outWindow"
     };
+    static const int ANIME_INDEX_TBL[] = {0, 1};
 
     static const char *WPANE_NAME_DT[] = {
         "W_kuppa_00"
@@ -113,7 +113,7 @@ void dWipeKuppa_c::setStatus(mFaderBase_c::EStatus stat) {
     if (stat == OPAQUE) {
         mStatus = OPAQUE;
 
-        mpWnd[0]->setFieldB8(255);
+        mpWnd[0]->setAlpha(255);
         mLyt.ReverseAnimeStartSetup(OUT, false);
 
         mpRootPane->setVisible(true);
@@ -122,7 +122,7 @@ void dWipeKuppa_c::setStatus(mFaderBase_c::EStatus stat) {
     } else if (stat == HIDDEN) {
         mStatus = HIDDEN;
 
-        mpWnd[0]->setFieldB8(0);
+        mpWnd[0]->setAlpha(0);
         mLyt.ReverseAnimeStartSetup(IN, false);
 
         mpRootPane->setVisible(true);

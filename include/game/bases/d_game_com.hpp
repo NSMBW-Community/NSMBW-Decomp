@@ -1,7 +1,7 @@
 #pragma once
 #include <types.h>
 #include <lib/nw4r/lyt/lyt_picture.hpp>
-#include <game/mLib/m3d/m3d.hpp>
+#include <game/mLib/m_3d.hpp>
 
 /// @brief A collection of various functions used throughout the game.
 /// @details Name stands for Game Common.

@@ -14,4 +14,8 @@ SECTIONS {
     } > text
 }
 
-EXCLUDEFILES { wiimj2d.elf }
+FORCEACTIVE {
+    _prolog
+    _epilog
+    _unresolved
+}
