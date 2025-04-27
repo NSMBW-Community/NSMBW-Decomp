@@ -81,7 +81,8 @@ private:
     /// located more efficiently.
     static fLiMgBa_c m_searchManage[8];
 
-    /// @unused The operations which should be globally skipped this frame.
+    /// @brief The operations which should be globally skipped this frame.
+    /// @unused
     /// @details Value is a combination of ::PROC_FLAGS_e.
     static u32 m_StopProcInf;
 

@@ -30,7 +30,8 @@ public:
     /// @copydoc fManager_c::searchBaseByProfName
     static dBase_c *searchBaseByProfName(ProfileName profile, const dBase_c* parent);
 
-    /// @unused Sets the callbacks for the scrapped relocatable profile system.
+    /// @brief Sets the callbacks for the scrapped relocatable profile system.
+    /// @unused
     static void initLoader();
 
     /// @copydoc fBase_c::createChild
@@ -40,16 +41,18 @@ public:
     static dBase_c *createRoot(ProfileName profName, unsigned long param, u8 groupType);
 
 protected:
-    const char* mpKindString; ///< @unused The base's kind string.
-    const char* mpNameString; ///< @unused The base's profile name string.
+    const char* mpKindString; ///< @brief The base's kind string. @unused
+    const char* mpNameString; ///< @brief The base's profile name string. @unused
 
 private:
-    /// @unused Module loading callback for the scrapped relocatable profile system.
+    /// @brief Module loading callback for the scrapped relocatable profile system.
     /// @unofficial
+    /// @unused
     /// @return Always returns @ref fBase_c::PACK_RESULT_e::FAILED "FAILED".
     static int loadAsyncCallback();
 
-    /// @unused Module unloading callback for the scrapped relocatable profile system.
+    /// @brief Module unloading callback for the scrapped relocatable profile system.
     /// @unofficial
+    /// @unused
     static void unloadCallback();
 };

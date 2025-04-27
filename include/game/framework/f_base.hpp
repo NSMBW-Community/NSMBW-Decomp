@@ -85,11 +85,11 @@ protected:
 
     fManager_c mMng; ///< The base's process manager.
 
-    fBaHelper_c *mpUnusedHelper; ///< @unused See [Unused Content](#unused-content).
-    fLiMgBa_c mUnusedList; ///< @unused See [Unused Content](#unused-content).
+    fBaHelper_c *mpUnusedHelper; ///< See [Unused Content](#unused-content). @unused
+    fLiMgBa_c mUnusedList; ///< See [Unused Content](#unused-content). @unused
 
     // [No p because of the string "fBase_c::mHeap"]
-    EGG::FrmHeap *mHeap; ///< @unused The base's dedicated heap.
+    EGG::FrmHeap *mHeap; ///< The base's dedicated heap. @unused
 
 public:
     fBase_c(); ///< Constructs a new base.
@@ -150,7 +150,8 @@ protected:
     virtual void deleteReady();
 
     /**
-     * @unused Creates a heap of the given size for the base.
+     * @brief Creates a heap of the given size for the base.
+     * @unused
      * @details If the requested heap space is not available, the heap is adjusted to allocate all the
      * available memory. If that also fails, the base is deleted.
      * @param size The heap's size, or @p -1 to allocate all available space.
@@ -160,7 +161,8 @@ protected:
     virtual bool entryFrmHeap(unsigned long size, EGG::Heap *parentHeap);
 
     /**
-     * @unused Creates a heap of the given size for the base.
+     * @brief Creates a heap of the given size for the base.
+     * @unused
      * @details Unlike ::entryFrmHeap, the base is immediately deleted if the requested space is not
      * available.
      * @param size The heap's size, or @p -1 to allocate all available space.
@@ -168,7 +170,7 @@ protected:
      * @return If the heap creation was successful.
      */
     virtual bool entryFrmHeapNonAdjust(unsigned long size, EGG::Heap *parentHeap);
-    virtual bool createHeap(); ///< @unused [Does nothing].
+    virtual bool createHeap(); ///< [Does nothing]. @unused
 
     virtual ~fBase_c(); ///< Destroys the base.
 
@@ -264,8 +266,8 @@ private:
     static fBase_c *fBase_make(ProfileName profName, fTrNdBa_c *connectParent, unsigned long param, u8 groupType);
 
 protected:
-    static int (*sLoadAsyncCallback)(); ///< @unused See [Unused Content](#unused-content).
-    static void (*sUnloadCallback)(); ///< @unused See [Unused Content](#unused-content).
+    static int (*sLoadAsyncCallback)(); ///< See [Unused Content](#unused-content). @unused
+    static void (*sUnloadCallback)(); ///< See [Unused Content](#unused-content). @unused
 
 private:
     static fBaseID_e m_rootUniqueID; ///< Unique ID counter for base construction. See ::mUniqueID.

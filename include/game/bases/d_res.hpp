@@ -242,6 +242,7 @@ private:
     u16 mNumArcs; ///< The number of archive holders.
     callback_c *mpCallback; ///< The callback for when a resource is loaded.
 
-    /// @unused The callback for when an archive is scheduled for loading.
+    /// @brief The callback for when an archive is scheduled for loading.
+    /// @unused
     static void (*mSetCallback)(const char *arcName, EGG::Heap *heap);
 };

@@ -32,7 +32,8 @@
 typedef u16 ProfileName;
 
 /**
- * @unused Obtains a string representing the profile name.
+ * @brief Obtains a string representing the profile name.
+ * @unused
  * @param profName The profile name to get the name string of.
  * @return The profile name in string form.
  */

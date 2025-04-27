@@ -23,8 +23,8 @@ namespace dReset {
 
         /// @brief The possible hard reset procedures.
         enum Exec_e {
-            RESTART_GAME, ///< @unused Reboots the game's DOL.
-            REBOOT_SYSTEM, ///< @unused Reboots the entire console.
+            RESTART_GAME, ///< @brief Reboots the game's DOL. @unused
+            REBOOT_SYSTEM, ///< @brief Reboots the entire console. @unused
             RETURN_WII_MENU, ///< Returns to the Wii Menu.
             RETURN_DATA_MANAGER, ///< Returns to the Wii Menu's Data Manager.
             POWER_OFF, ///< Turns off the console.

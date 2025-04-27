@@ -4,34 +4,18 @@ html {
     --primary-dark-color: #af2828 !important;
     --primary-light-color: #e34141 !important;
 
-    /* Use todo color for invariant color */
-    --invariant-color: #e4f3ff !important;
-    --invariant-color-dark: #1879C4 !important;
-    --invariant-color-darker: #274a5c !important;
-
-	/* Use warning color for bug color */
-    --bug-color: var(--warning-color) !important;
-    --bug-color-dark: var(--warning-color-dark) !important;
-    --bug-color-darker: var(--warning-color-darker) !important;
-
-	/* Use deprecated color for note color */
-    --note-color: var(--deprecated-color) !important;
-    --note-color-dark: var(--deprecated-color-dark) !important;
-    --note-color-darker: var(--deprecated-color-darker) !important;
-
-	/* Use deprecated color for todo color */
-    --todo-color: var(--deprecated-color) !important;
-    --todo-color-dark: var(--deprecated-color-dark) !important;
-    --todo-color-darker: var(--deprecated-color-darker) !important;
+    /* Replace note colors */
+    --warning-color-dark: #cd830d !important;
+    --invariant-color-dark: #238636 !important;
 }
 
 @media (prefers-color-scheme: dark) {
     html:not(.light-mode) {
 
-        /* Use todo color for invariant color (dark mode) */
-        --invariant-color: #163750 !important;
-        --invariant-color-dark: #1982D2 !important;
-        --invariant-color-darker: #dcf0fa !important;
+        /* Replace note colors */
+        --bug-color-dark: #e34141 !important;
+        --todo-color-dark: #9c88ff !important;
+        --invariant-color-dark: #238636 !important;
     }
 }
 
@@ -40,10 +24,9 @@ a:link, a:visited, a:hover, a:focus, a:active {
     color: var(--primary-light-color) !important;
 }
 
-/* Remove the ugly hover shadow on the bottom navigator and replace it with underline */
+/* Remove the ugly hover shadow on the bottom navigator */
 .navpath li.navelem a:hover {
     text-shadow: none !important;
-    text-decoration-line: underline !important;
 }
 
 /* Use darker primary color for hovered/active/focused top menu buttons */
@@ -139,47 +122,52 @@ table.memberdecls .groupheader {
 
 /* Remove padding at the start of lists */
 div.contents > p, div.textblock p {
-  margin-bottom: 0px;
+    margin-bottom: 0px;
 }
 
 /* Remove padding at the start of lists */
 div.contents > ul, div.textblock ul {
-  margin-top: 0px;
+    margin-top: 0px;
+}
+
+/* Reduce padding before bullet points */
+ul {
+    padding-left: 25px;
 }
 
 /* Remove unnecessary background on navtree arrow hover */
 a:hover > span.arrow {
-  background: none !important;
+    background: none !important;
 }
 
 /* Remove unnecessary underline on navtree arrow hover */
 .item:hover > a[href="javascript:void(0)"] {
-  background: none !important;
+    background: none !important;
 }
 
 /* Remove nav tree focus outline */
 #nav-tree a:focus {
-  outline-style: none !important;
+    outline-style: none !important;
 }
 
 /* Fix anchor link hover color */
 a.anchorlink:hover {
-  color: var(--page-foreground-color) !important;
+    color: var(--page-foreground-color) !important;
 }
 
 /* Fix parameter name colors */
 .paramname em {
-  color: var(--primary-dark-color) !important;
+    color: var(--primary-dark-color) !important;
 }
 
 /* Fix parameter ending brace color */
 .paramname {
-  color: var(--page-foreground-color) !important;
+    color: var(--page-foreground-color) !important;
 }
 
 /* Increase navigation arrow size */
 .arrow {
-  font-size: 100% !important;
+    font-size: 100% !important;
 }
 
 /* Change color of copy to clipboard success button */
@@ -190,4 +178,129 @@ doxygen-awesome-fragment-copy-button.success svg {
 /* Change color of copy to clipboard success button */
 doxygen-awesome-fragment-copy-button.success {
     border-color: rgb(168, 14, 14) !important;
+}
+
+/* Give custom color to custom bubbles */
+span.customlabel {
+    background-color: var(--deprecated-color-dark) !important;
+}
+
+/* Give custom notes the proper style */
+.markdown-alert {
+    padding: 0.5rem 1rem;
+    margin-bottom: 1rem;
+    margin-top: 0.5rem;
+    border-left: .35em solid;
+}
+
+.markdown-alert > :first-child {
+    margin-top: 0;
+    margin-bottom: 0;
+}
+
+.markdown-alert-title {
+    display: flex;
+    font-weight: 500;
+    align-items: center;
+}
+
+.markdown-alert-icon {
+    margin-right: 8px !important;
+    fill: currentColor;
+}
+
+.markdown-alert > :last-child {
+    margin-top: 5px;
+    margin-bottom: 0;
+}
+
+.markdown-alert.markdown-alert-todo {
+    border-left-color: var(--todo-color-dark);
+}
+
+.markdown-alert.markdown-alert-todo .markdown-alert-title {
+    color: var(--todo-color-dark);
+}
+
+.markdown-alert.markdown-alert-todo .markdown-alert-title a {
+    color: var(--todo-color-dark) !important;
+}
+
+.markdown-alert.markdown-alert-warning {
+    border-left-color: var(--warning-color-dark);
+}
+
+.markdown-alert.markdown-alert-warning .markdown-alert-title {
+    color: var(--warning-color-dark);
+}
+
+.markdown-alert.markdown-alert-bug {
+    border-left-color: var(--bug-color-dark);
+}
+
+.markdown-alert.markdown-alert-bug .markdown-alert-title {
+    color: var(--bug-color-dark);
+}
+
+.markdown-alert.markdown-alert-bug .markdown-alert-title a {
+    color: var(--bug-color-dark) !important;
+}
+
+.markdown-alert.markdown-alert-note {
+    border-left-color: var(--note-color-dark);
+}
+
+.markdown-alert.markdown-alert-note .markdown-alert-title {
+    color: var(--note-color-dark);
+}
+
+.markdown-alert.markdown-alert-hint {
+    border-left-color: var(--invariant-color-dark);
+}
+
+.markdown-alert.markdown-alert-hint .markdown-alert-title {
+    color: var(--invariant-color-dark);
+}
+
+.markdown-alert.markdown-alert-decompnote {
+    border-left-color: var(--deprecated-color-dark);
+}
+
+.markdown-alert.markdown-alert-decompnote .markdown-alert-title {
+    color: var(--deprecated-color-dark);
+}
+
+/* Remove border radius from various places */
+table.fieldtable,
+table.markdownTable tbody,
+table.doxtable tbody,
+div.memproto,
+h2.memtitle,
+div.memitem,
+dl.reflist,
+th[class^="markdownTableHead"]:first-child,
+th[class^="markdownTableHead"]:last-child,
+table.doxtable tr th:first-child,
+table.doxtable tr th:last-child,
+.fieldtable th {
+    border-radius: 0 !important;
+    border-top-left-radius: 0 !important;
+    border-top-right-radius: 0 !important;
+    border-bottom-right-radius: 0 !important;
+    border-bottom-left-radius: 0 !important;
+}
+
+/* Hide unnecessary template definition */
+.compoundTemplParams {
+    display: none;
+}
+
+/* Restore underline on link hover */
+a.el:hover, a.el:focus, a.el:active {
+    text-decoration: underline !important;
+}
+
+/* Fix overload font */
+.overload {
+    font-family: var(--font-family-monospace);
 }

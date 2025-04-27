@@ -20,8 +20,8 @@ public:
         ACTOR_MAP_OBJECT, ///< A map object (dWmObjActor_c).
         ACTOR_MAP_ENEMY, ///< A map enemy (dWmEnemy_c).
         ACTOR_MAP_PLAYER, ///< The worldmap player actor (dWmPlayer_c).
-        ACTOR_MAP_STOP, ///< @unused The unused map stop actor (daWmStop_c).
-        ACTOR_UNK_6, ///< @unused Not used anywhere.
+        ACTOR_MAP_STOP, ///< The unused map stop actor (daWmStop_c). @unused
+        ACTOR_UNK_6, ///< Not used anywhere. @unused
         ACTOR_MENU_PLAYER, ///< The menu player actor (da2DPlayer_c).
         ACTOR_GENERIC, ///< A generic non-map actor.
     };
