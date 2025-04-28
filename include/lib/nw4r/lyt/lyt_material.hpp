@@ -14,6 +14,12 @@ public:
     s16 a;
 
     GXColorS10(s16 r, s16 g, s16 b, s16 a) : r(r), g(g), b(b), a(a) { }
+    GXColorS10(const nw4r::ut::Color &color) {
+        r = color.r;
+        g = color.g;
+        b = color.b;
+        a = color.a;
+    }
 };
 
 class Material {
@@ -28,6 +34,10 @@ public:
     void * mpGXMem;
     char mName[21];
     bool mbUserAllocated;
+
+    void setTev(int index, GXColorS10 color) {
+        mTevCols[index] = color;
+    }
 
     char pad[2];
 };

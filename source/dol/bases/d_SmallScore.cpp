@@ -120,9 +120,7 @@ void dSmallScore_c::setPlayer100Color(int player_id) {
     };
 
     nw4r::lyt::Material* mat = T_100_00->GetMaterial();
-    // Doesn't match - conversion from nw4r::ut::Color to GXColorS10 is wrong...
-    nw4r::ut::Color c = COLOR_DATA_TBL[player_id];
-    mat->mTevCols[1] = nw4r::lyt::GXColorS10(c.r, c.g, c.b, c.a);
+    mat->setTev(1, nw4r::lyt::GXColorS10(COLOR_DATA_TBL[player_id]));
 }
 
 void dSmallScore_c::chgColor() {
