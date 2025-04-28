@@ -22,5 +22,6 @@ public:
     int field_3b4;
 
     static dInfo_c *m_instance;
+    static unsigned int mGameFlag;
     static StartGameInfo m_startGameInfo;
 };
