@@ -7,6 +7,7 @@
 #include <game/mLib/m_video.hpp>
 #include <game/mLib/m_vec.hpp>
 #include <game/bases/d_bg_parameter.hpp>
+#include <lib/egg/math.hpp>
 
 dSmallScore_c::dSmallScore_c() : mPos(0.0f, 0.0f), mScale(1.0f, 1.0f), _1a4(0.0f), _1a8(0.0f), mInitialized(false), _21c(0) {
     _208 = 0;
@@ -179,6 +180,7 @@ void dSmallScore_c::ScissorMaskSet() {
 
 void dSmallScore_c::BigSmallAnime() {
 
+    mVec2_c pad;
     mVec2_c delta;
     delta.x = 0.08f;
     delta.y = 0.08f;
@@ -186,9 +188,7 @@ void dSmallScore_c::BigSmallAnime() {
     LytTextBox_c * box = (&T_100_00)[_218];
     box->mScale = mScale + _1cc;
 
-    _214++;
-
-    if (_214 >= 10) {
+    if (++_214 >= 10) {
         _214 = 0;
 
         if (_220)
@@ -276,9 +276,7 @@ void dSmallScore_c::UpMove() {
 
     chgColor();
 
-    float x = _1a8;
-
-    if (x == 0.0f) {
+    if (_1a8 == EGG::Math<float>::zero()) {
         _1f8 = 2;
         if (_1fc >= 0x15)
             _204 = 30;
