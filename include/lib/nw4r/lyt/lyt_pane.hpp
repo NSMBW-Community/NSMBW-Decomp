@@ -32,7 +32,6 @@ public:
     virtual void UnbindAnimation(AnimTransform *, bool);
     virtual void UnbindAllAnimation(bool);
     virtual void UnbindAnimationSelf(AnimTransform *);
-    virtual void AddAnimationLink(AnimationLink *);
     virtual ut::LinkList<AnimationLink, 0> *FindAnimationLinkSelf(AnimTransform *);
     virtual ut::LinkList<AnimationLink, 0> *FindAnimationLinkSelf(const AnimResource &);
     virtual void SetAnimationEnable(AnimTransform *, bool, bool);
