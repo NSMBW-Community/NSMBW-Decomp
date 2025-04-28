@@ -168,7 +168,7 @@ void dSmallScore_c::ScissorMaskSet() {
     d2d::ClipSettings clip;
 
     if (dGameCom::GetAspectRatio() == 0) {
-        clip.mPos.y = mVideo::m_video->getSmth(mClipScale.y);
+        clip.mPos.y = (mVideo::m_video->mRenderModeObj.mEFBHeight - mClipScale.y) * 0.5f;
         clip.mSize = mClipScale;
         clip.mEnabled = 1;
     }
@@ -299,7 +299,7 @@ void dSmallScore_c::DispWait() {
     T_coinPoint_00->setVisible(false);
     N_coin_00->setVisible(false);
     _21f = 0;
-    (&T_100_00)[_218]->mScale = mScale;
+    getTextBox(_218)->setScale(mScale);
     _1f8 = 4;
 }
 

@@ -72,6 +72,9 @@ public:
     unsigned char _221;
     unsigned char u_222[2];
 
+    /// @brief Gets the n-th text box.
+    LytTextBox_c *getTextBox(int n) { return (&T_100_00)[n]; }
+
     static dSmallScore_c * m_instance;
 
 };
