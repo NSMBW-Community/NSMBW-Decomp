@@ -457,6 +457,12 @@
             }
         },
         {
+            "source": "dol/bases/d_small_score.cpp",
+            "memoryRanges": {
+                ".text": "0xe790-0xf5e0"
+            }
+        },
+        {
             "source": "lib/nw4hbm/ut/list.cpp",
             "compilerFlags": "-proc gekko -fp hard -O4 -Cpp_exceptions off -enum int -RTTI off",
             "memoryRanges": {
