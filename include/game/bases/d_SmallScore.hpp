@@ -45,7 +45,7 @@ public:
     float _1b8;
     mVec2_c mScale;
     mVec2_c mClipScale;
-    mVec2_c _1cc;
+    mVec2_c mAnimScale;
     nw4r::lyt::Pane * mpRootPane;
     LytTextBox_c * T_100_00;
     LytTextBox_c * T_1000_00;
@@ -62,13 +62,13 @@ public:
     int _208;
     int _20c;
     unsigned int _210;
-    int _214;
+    int mAnimCounter;
     unsigned int _218;
     unsigned char _21c;
     bool mInitialized;
     unsigned char _21e;
     unsigned char _21f;
-    bool _220;
+    bool mAnimIsShrinking;
     unsigned char _221;
     unsigned char u_222[2];
 
