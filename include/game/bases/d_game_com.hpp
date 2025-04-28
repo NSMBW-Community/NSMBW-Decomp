@@ -1,8 +1,9 @@
 #pragma once
 #include <types.h>
 #include <lib/nw4r/lyt/lyt_picture.hpp>
-#include <lib/nw4r/lyt/lyt_textBox.hpp>
 #include <game/mLib/m_3d.hpp>
+#include <game/mLib/m_vec.hpp>
+#include <game/bases/d_lyttextBox.hpp>
 
 /// @brief A collection of various functions used throughout the game.
 /// @details Name stands for Game Common.

@@ -39,6 +39,12 @@
     ],
     "slices": [
         {
+            "source": "dol/bases/d_SmallScore.cpp",
+            "memoryRanges": {
+                ".text": "0xe790-0xf5e0"
+            }
+        },
+        {
             "source": "dol/bases/d_wipe_dokan.cpp",
             "memoryRanges": {
                 ".text": "0x15410-0x159f0",
@@ -454,12 +460,6 @@
                 ".text": "0x16a610-0x16ad80",
                 ".data": "0x2b8d0-0x2b900",
                 ".sdata2": "0x2ce0-0x2d18"
-            }
-        },
-        {
-            "source": "dol/bases/d_small_score.cpp",
-            "memoryRanges": {
-                ".text": "0xe790-0xf5e0"
             }
         },
         {
