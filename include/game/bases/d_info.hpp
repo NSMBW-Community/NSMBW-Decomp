@@ -56,5 +56,6 @@ public:
     bool smth[4][0x16];
 
     static dInfo_c *m_instance;
+    static unsigned int mGameFlag;
     static StartGameInfo m_startGameInfo;
 };
