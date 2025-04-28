@@ -9,6 +9,7 @@ namespace d2d {
 class ResAccMult_c : public m2d::ResAccIf_c {
     class InternalAccessor : nw4r::lyt::ArcResourceAccessor {};
 
+public:
     ResAccMult_c();
 
     virtual void creater();
@@ -18,15 +19,18 @@ class ResAccMult_c : public m2d::ResAccIf_c {
 
 class ResAccMultLoader_c : public ResAccMult_c {
 public:
+    ResAccMultLoader_c();
+    ~ResAccMultLoader_c();
+
     bool create(EGG::Heap *, unsigned long);
-    void remove();
+    bool remove();
 
     bool requestEx(const char *, int);
     bool request(const char *);
 
 private:
     void *mpResource;
-    d2d::dDvd::loader_c mLoader;
+    dDvd::loader_c mLoader;
 };
 
 } // namespace d2d

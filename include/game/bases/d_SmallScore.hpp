@@ -53,7 +53,7 @@ public:
     bool createLayout(d2d::ResAccMultLoader_c *);
     void execute();
     void draw();
-    void doDelete();
+    bool doDelete();
 
     void setPlayer1upColor(int);
     void setPlayer1000Color(int);
@@ -73,6 +73,8 @@ public:
     void PositionSet();
     void CreateSmallScore(const mVec3_c &, int, int);
     void PosSet(const mVec3_c &);
+
+    void setClipScale(mVec2_c v) { mClipScale = v; }
 
     LytBase_c mLayout;
     mVec2_c mPos;

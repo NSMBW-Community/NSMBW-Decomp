@@ -19,6 +19,8 @@
 
 #define SAVE_SLOT_COUNT 3 ///< The total save slot count.
 
+#define SMALL_SCORE_COUNT 30 ///< The maximum number of small score popups visible simultaneously.
+
 #define STAR_COIN_COUNT 3 ///< The amount of Star Coins per level.
 
 #define STARTING_LIVES_COUNT 5 ///< The amount of starting lives.

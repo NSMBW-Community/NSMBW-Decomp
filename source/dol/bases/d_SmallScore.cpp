@@ -91,8 +91,8 @@ void dSmallScore_c::draw() {
     mLayout.entry();
 }
 
-void dSmallScore_c::doDelete() {
-    mLayout.doDelete();
+bool dSmallScore_c::doDelete() {
+    return mLayout.doDelete();
 }
 
 void dSmallScore_c::setPlayer1upColor(int player_id) {
