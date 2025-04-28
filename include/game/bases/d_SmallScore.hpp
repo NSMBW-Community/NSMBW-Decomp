@@ -72,6 +72,6 @@ public:
     unsigned char _221;
     unsigned char u_222[2];
 
-    static dSmallScore_c * mInstance;
+    static dSmallScore_c * m_instance;
 
 };

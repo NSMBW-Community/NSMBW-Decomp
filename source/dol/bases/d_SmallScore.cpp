@@ -1,4 +1,4 @@
-#include <game/bases/d_small_score.hpp>
+#include <game/bases/d_SmallScore.hpp>
 #include <constants/message_list.h>
 #include <game/bases/d_info.hpp>
 #include <game/bases/d_game_com.hpp>
@@ -14,7 +14,7 @@ dSmallScore_c::dSmallScore_c() : mPos(0.0f, 0.0f), mScale(1.0f, 1.0f), _1a4(0.0f
 }
 
 dSmallScore_c::~dSmallScore_c() {
-    dSmallScore_c::mInstance = nullptr;
+    dSmallScore_c::m_instance = nullptr;
 }
 
 bool dSmallScore_c::createLayout(d2d::ResAccMultLoader_c * res) {
