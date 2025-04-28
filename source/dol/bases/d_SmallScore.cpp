@@ -180,27 +180,23 @@ void dSmallScore_c::ScissorMaskSet() {
 
 void dSmallScore_c::BigSmallAnime() {
 
-    mVec2_c pad;
-    mVec2_c delta;
-    delta.x = 0.08f;
-    delta.y = 0.08f;
+    mVec2_c delta = mVec2_c(0.08f, 0.08f);
 
-    LytTextBox_c * box = (&T_100_00)[_218];
-    box->mScale = mScale + _1cc;
+    (&T_100_00)[_218]->mScale = mScale + mAnimScale;
 
-    if (++_214 >= 10) {
-        _214 = 0;
+    if (++mAnimCounter >= 10) {
+        mAnimCounter = 0;
 
-        if (_220)
-            _220 = false;
+        if (mAnimIsShrinking)
+            mAnimIsShrinking = false;
         else
-            _220 = true;
+            mAnimIsShrinking = true;
     }
 
-    if (_220) {
-        _1cc -= delta;
+    if (mAnimIsShrinking) {
+        mAnimScale -= delta;
     } else {
-        _1cc += delta;
+        mAnimScale += delta;
     }
 }
 
@@ -212,7 +208,7 @@ void dSmallScore_c::MakeStart() {
 
     int v0 = _1fc;
     _210 = _208;
-    if (v0 >= 0x15) {
+    if (v0 >= 21) {
         v0 = 5;
 
         T_coin_x_00->setVisible(true);
@@ -251,14 +247,14 @@ void dSmallScore_c::MakeStart() {
         _1b0 = 0.025f;
         _204 = 0;
         _200 = 0;
-        _214 = 0;
-        _220 = false;
-        _1cc.x = 0.0f;
-        _1cc.y = 0.0f;
+        mAnimCounter = 0;
+        mAnimIsShrinking = false;
+        mAnimScale.x = 0.0f;
+        mAnimScale.y = 0.0f;
         _1f8 = 1;
     }
 
-    if (_1fc == 0x14) {
+    if (_1fc == 20) {
         _21e = 1;
     } else {
         _21e = 0;
@@ -278,7 +274,7 @@ void dSmallScore_c::UpMove() {
 
     if (_1a8 == EGG::Math<float>::zero()) {
         _1f8 = 2;
-        if (_1fc >= 0x15)
+        if (_1fc >= 21)
             _204 = 30;
     }
 }
@@ -291,7 +287,7 @@ void dSmallScore_c::DispWait() {
 
     _200++;
     if (_208 == 4) {
-        if (_200 < 0x3c) return;
+        if (_200 < 60) return;
     } else if (_200 < _204)
         return;
 
@@ -314,17 +310,14 @@ void dSmallScore_c::GoalScoreDisp() {}
 void dSmallScore_c::PositionSet() {
     if (! (mpRootPane->mFlags & 1)) return;
 
-    mVec3_c v;
-    mVec2_c a;
-    float f1 = _1a8;
-
-    if (f1 <= 0.0f) {
+    if (_1a8 <= 0.0f) {
         _1a8 = 0.0f;
     } else {
-        _1b8 += f1;
-        _1a8 = f1 - _1b0;
+        _1b8 += _1a8;
+        _1a8 -= _1b0;
     }
 
+    mVec3_c v;
     v.x = mPos.x;
     v.y = mPos.y + _1b8;
 
@@ -333,6 +326,7 @@ void dSmallScore_c::PositionSet() {
 
     dGameCom::getGlbPosToLyt(v);
 
+    mVec2_c a;
     a.x = v.x;
     a.y = v.y;
     mpRootPane->mPos = mVec3_c(a.x, a.y, 0.0f);
