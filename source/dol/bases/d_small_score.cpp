@@ -335,7 +335,9 @@ void dSmallScore_c::PositionSet() {
 
     dGameCom::getGlbPosToLyt(v);
 
-    mpRootPane->mPos = mVec3_c(v, 0.0f);
+    a.x = v.x;
+    a.y = v.y;
+    mpRootPane->mPos = mVec3_c(a.x, a.y, 0.0f);
 }
 
 void dSmallScore_c::CreateSmallScore(const mVec3_c &v, int a, int b) {
