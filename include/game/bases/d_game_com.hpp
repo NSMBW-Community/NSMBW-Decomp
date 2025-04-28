@@ -52,6 +52,8 @@ namespace dGameCom {
     void CreateSmallScore(const mVec3_c &, int, int, bool);
     u8 GetAspectRatio();
     bool PlayerEnterCheck(int);
+    void Player1upColor(LytTextBox_c *, int);
+    void getGlbPosToLyt(mVec3_c &);
 
     /// @unofficial
     void updateSelectCursor(nw4r::lyt::Picture *pic, int index, bool useSpecialDraw);
