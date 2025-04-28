@@ -5,6 +5,7 @@ import argparse
 import subprocess
 import sys
 from pathlib import Path
+import re
 
 sys.path.append('tools')
 
@@ -14,7 +15,7 @@ from color_term import *
 from project_settings import *
 from slice_dol import slice_dol
 from slice_rel import slice_rel
-from slicelib import SliceFile, SliceType, load_slice_file
+from slicelib import SliceFile, Slice, SliceType, load_slice_file
 from elffile import ElfFile, ElfSymtab
 from elfconsts import STB, STT
 
@@ -28,6 +29,48 @@ parser = argparse.ArgumentParser(description='Builds the game executables.')
 parser.add_argument('-v', help='Prints commands for debugging', action='store_true')
 parser.add_argument('--objdiff-o', help='Object file to build for objdiff')
 args = parser.parse_args()
+
+def create_decomp_context(slice: Slice, out_path: Path):
+    context_headers = []
+    header_files = dict()
+
+    include_regex = re.compile(r'#include\s+["<](.*)[">]')
+    pragma_once_regex = re.compile(r'#pragma\s+once')
+
+    c_file = open(SRCDIR.joinpath(slice.slice_src), 'r').read()
+    context_headers = include_regex.findall(c_file)
+    # Expand headers until we no expansions are left
+    while True:
+        no_changes = True
+        for i in range(len(context_headers)):
+            h_name = context_headers[i]
+            if h_name in header_files:
+                continue
+
+            h_file = open(INCDIR.joinpath(h_name)).read()
+            header_files[h_name] = pragma_once_regex.sub('', include_regex.sub('', h_file))
+            referenced_h_files = [x for x in include_regex.findall(h_file) if x not in context_headers[:i]]
+            context_headers = \
+                context_headers[:i] + \
+                referenced_h_files + \
+                context_headers[i:]
+            no_changes = False
+
+            # Break since indices have changed and we need to start over
+            break
+
+        if no_changes:
+            break
+
+    # Only keep first instance of each header
+    deduped_headers = []
+    for h_name in context_headers:
+        if h_name not in deduped_headers:
+            deduped_headers.append(h_name)
+
+    open(out_path, 'w').write('\n'.join([header_files[x] for x in deduped_headers]))
+    print_success('Created decomp context for', slice.slice_src)
+
 
 slices: list[SliceFile] = []
 
@@ -49,8 +92,15 @@ for slice_file in slices:
         if slice.slice_src:
             o_file = Path(f'{BUILDDIR}/compiled/{unit_name}/{slice.slice_name}').with_suffix('.o')
             if args.objdiff_o:
-                if o_file != BUILDDIR.parent.joinpath(Path(args.objdiff_o)):
+                objdiff_o_path = BUILDDIR.parent.joinpath(Path(args.objdiff_o))
+                if objdiff_o_path.suffix == '.hpp':
+                    if o_file != objdiff_o_path.with_suffix(''):
+                        continue
+                    create_decomp_context(slice, objdiff_o_path)
+                    sys.exit()
+                elif objdiff_o_path.suffix != '.hpp' and o_file != objdiff_o_path:
                     continue
+                o_file = objdiff_o_path
                 print("Compiling", slice.slice_src + "...")
             ccflags = slice_file.meta.default_compiler_flags
             if slice.cc_flags:
@@ -59,7 +109,7 @@ for slice_file in slices:
             Path(o_file).parents[0].mkdir(parents=True, exist_ok=True)
 
             cmd = [] if sys.platform == 'win32' else ['wine']
-            cmd.extend([CC, '-c', *ccflags, f'{SRCDIR}/{slice.slice_src}'])
+            cmd.extend([CC, '-c', *ccflags, SRCDIR.joinpath(slice.slice_src).as_posix()])
             cmd.extend(['-o', o_file])
             cmd.extend(['-I-', '-i', f'{INCDIR}'])
             print_cmd(*cmd)
