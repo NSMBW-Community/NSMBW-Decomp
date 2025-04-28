@@ -9,11 +9,12 @@ public:
 
     int mActivatingPlayer;
     mVec3_c mPlayerSetPos;
-    u32 mUnk1;
+    u32 mIsAmbush;
     u8 mWorldNo;
     u8 mCourseNo;
-    u8 mUnk2;
-    u32 mUnk3;
+    u8 mAreaNo;
+    u8 mEntranceNo;
+    u32 mIsKinopioInChukan;
     int mCoinCollection[3];
     int mPlayerType[2];
 };
@@ -45,7 +46,8 @@ public:
 
     char pad1[0x8];
     dCyuukan_c mCyuukan;
-    char pad2[0x358];
+    char pad2[0x348];
+    int mCharIDs[4];
     bool mIsWorldSelect; ///< Whether the World Select Menu is being displayed.
     int pad3[7];
     int field_3b4;
