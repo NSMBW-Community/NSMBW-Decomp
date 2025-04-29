@@ -37,12 +37,9 @@ public:
 
     LytBase_c mLayout;
     mVec2_c mPos;
-    float _1a4; // mVec2 maybe
-    float _1a8;
-    unsigned char u_1ac[4];
-    float _1b0;
-    float _1b4;
-    float _1b8;
+    mVec2_c mPosDelta;
+    mVec2_c mPosDeceleration;
+    mVec2_c mPosOffset;
     mVec2_c mScale;
     mVec2_c mClipScale;
     mVec2_c mAnimScale;
@@ -54,23 +51,23 @@ public:
     LytTextBox_c * T_coin_x_00;
     LytTextBox_c * T_coinPoint_00;
     nw4r::lyt::Pane * N_coin_00;
-    float _1f4;
-    int _1f8;
-    int _1fc;
-    int _200;
-    int _204;
-    int _208;
-    int _20c;
-    unsigned int _210;
+    float mMaxHeight;
+    int mState; ///< Determines the state - 0=MakeStart / 1=UpMove / 2=DispWait / 3=GoalScoreDisp / 4=None
+    int mPopupType;
+    int mDispWaitCounter; ///< Counter that is incremented every frame while in the 'DispWait' state
+    int mDispWaitTime; ///< Number of frames to wait in 'DispWait' (unless mPlayerType is 4, in which case the default value is 60)
+    int mPlayerType;
+    int mChgColorCounter; ///< Counter that is incremented every call to dSmallScore_c::chgColor(), which ensures that the 1-up color is only set once every 10 calls.
+    unsigned int mPlayerColour;
     int mAnimCounter;
-    unsigned int _218;
-    unsigned char _21c;
+    unsigned int mCurTextbox;
+    bool mIsGoalScore;
     bool mInitialized;
-    unsigned char _21e;
-    unsigned char _21f;
+    bool mEnableColorChange;
+    bool mEnableBigSmallAnim;
     bool mAnimIsShrinking;
-    unsigned char _221;
-    unsigned char u_222[2];
+    bool mHasBlueColor;
+    // unsigned char padding[2];
 
     /// @brief Gets the n-th text box.
     LytTextBox_c *getTextBox(int n) { return (&T_100_00)[n]; }
