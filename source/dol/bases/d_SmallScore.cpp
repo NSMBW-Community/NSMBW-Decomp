@@ -192,7 +192,7 @@ void dSmallScore_c::ScissorMaskSet() {
 
 void dSmallScore_c::BigSmallAnime() {
     mVec2_c sum = mScale;
-    mVec2_c delta(0.008f, 0.008f);
+    mVec2_c delta(0.08f, 0.08f);
     sum += mAnimScale;
 
     getTextBox(mCurTextbox)->setScale(sum);
