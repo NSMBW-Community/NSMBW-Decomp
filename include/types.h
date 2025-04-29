@@ -33,7 +33,7 @@ typedef volatile f32 vf32;
 typedef volatile f64 vf64;
 
 // Macros
-#define ARRAY_SIZE(a) (sizeof(a) / sizeof(a[0]))
+#define ARRAY_SIZE(a) ((int) (sizeof(a) / sizeof(a[0])))
 #define BIT_FLAG(bit) ((bit) < 0 ? 0 : 1 << (bit))
 
 #ifdef __CWCC__

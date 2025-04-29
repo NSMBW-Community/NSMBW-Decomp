@@ -4,11 +4,22 @@
 class daPyMng_c {
 public:
     enum PyType {}; ///< @unofficial
+    enum PyScrollNum { ///< @unofficial
+        SCROLL_0 = 0
+    };
+
     static int getPlayerIndex(PyType); ///< @unofficial
     static dAcPy_c *getPlayer(int);
+    static mVec3_c getPlayerSetPos(u8, u8);
     static void addScore(int, int);
+    static u8 getActScrollInfo();
+    static PyScrollNum getScrollNum();
+
+    static bool isScrollMode1() { return getScrollNum() == 1; }
+
     static u8 mActPlayerInfo;
     static int mNum;
+    static int mCtrlPlrNo;
 
     static bool checkPlayer(u8 i) { return mActPlayerInfo & (1 << i); }
 
