@@ -30,6 +30,7 @@ namespace dAudio {
     void pauseOffGameWithReset(); ///< @unofficial
 
     int getRemotePlayer(int);
+    nw4r::math::VEC2 cvtSndObjctPos(const mVec2_c &);
     nw4r::math::VEC2 cvtSndObjctPos(const mVec3_c &);
 
     class SndObjctCmnEmy_c : SndObjctCmnEmy {
@@ -55,17 +56,29 @@ namespace dAudio {
     extern SndObjctCmnEmy_c *g_pSndObjEmy;
     extern SndObjctCmnMap_c *g_pSndObjMap;
 
-    template<class T>
-    inline void playObjSound(T *obj, int i, const mVec3_c &pos, int playerNo) {
+    template<class T, class V>
+    inline void playObjSound(T *obj, int i, const V &pos, int playerNo) {
         obj->startSound(i, cvtSndObjctPos(pos), playerNo);
     }
 
-    inline void playEmySound(int i, const mVec3_c &pos, int playerNo) {
+    template<class T>
+    inline void playObjSound(T *obj, int i, float x, float y, int playerNo) {
+        obj->startSound(i, cvtSndObjctPos(mVec2_c(x, y)), playerNo);
+    }
+
+    template<class V>
+    inline void playEmySound(int i, const V &pos, int playerNo) {
         playObjSound(g_pSndObjEmy, i, pos, playerNo);
     }
 
-    inline void playMapSound(int i, const mVec3_c &pos, int playerNo) {
+    template<class V>
+    inline void playMapSound(int i, const V &pos, int playerNo) {
         playObjSound(g_pSndObjMap, i, pos, playerNo);
+    }
+
+    inline void playMapSound(int i, float x, float y, int playerNo) {
+        dAudio::SndObjctCmnMap_c *m = dAudio::g_pSndObjMap;
+        playObjSound(m, i, x, y, playerNo);
     }
 
     /// @unofficial
