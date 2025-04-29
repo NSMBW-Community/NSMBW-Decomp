@@ -1,4 +1,5 @@
 #pragma once
+#include <lib/nw4r/lyt/lyt_types.hpp>
 #include <lib/nw4r/lyt/lyt_draw_info.hpp>
 #include <lib/nw4r/ut/color.hpp>
 #include <lib/nw4r/math/vec.hpp>
@@ -8,6 +9,9 @@ namespace nw4r {
 namespace lyt {
 
 class Pane {
+private:
+    enum FlagBit { BIT_VISIBLE, BIT_INFLUENCED_ALPHA, BIT_LOCATION_ADJUST };
+
 public:
 
     Pane(const res::Pane *);
@@ -49,7 +53,7 @@ public:
     void *FindExtUserDataByName(const char *);
 
     void setVisible(bool visible) {
-        mFlags = (mFlags & 0xfe) | visible;
+        detail::SetBit(&mFlags, BIT_VISIBLE, visible);
     }
 
     void setScale(const math::VEC2 &scale) { mScale = scale; }
