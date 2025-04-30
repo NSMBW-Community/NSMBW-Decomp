@@ -62,7 +62,7 @@ bool dSmallScore_c::createLayout(d2d::ResAccMultLoader_c * res) {
 
 void dSmallScore_c::execute() {
 
-    static void (dSmallScore_c::*Proc_tbl[])() = {
+    static const ProcFunc Proc_tbl[] = {
         &dSmallScore_c::MakeStart,
         &dSmallScore_c::UpMove,
         &dSmallScore_c::DispWait,
@@ -214,7 +214,7 @@ void dSmallScore_c::BigSmallAnime() {
 }
 
 void dSmallScore_c::MakeStart() {
-    static unsigned int SUB_ID_TBL[] = {
+    static const unsigned int SUB_ID_TBL[] = {
         0, 1, 2, 3, 4, 5, 6, 7, 9, 10, 11, 12, 13, 14, 15, 16,
         8, 17, 18, 19, 8, 51, 52, 53, 54, 55, 56, 0
     };

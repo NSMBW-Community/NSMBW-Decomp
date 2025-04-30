@@ -75,3 +75,5 @@ public:
     static dSmallScore_c * m_instance;
 
 };
+
+typedef void (dSmallScore_c::*ProcFunc)();
