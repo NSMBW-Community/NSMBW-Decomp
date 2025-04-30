@@ -7,6 +7,14 @@
 
 class dSmallScore_c {
 
+    enum STATE_e {
+        STATE_MAKE_START = 0,
+        STATE_UP_MOVE = 1,
+        STATE_DISP_WAIT = 2,
+        STATE_GOAL_DISP = 3,
+        STATE_NONE = 4
+    };
+
 public:
     dSmallScore_c();
     virtual ~dSmallScore_c();
