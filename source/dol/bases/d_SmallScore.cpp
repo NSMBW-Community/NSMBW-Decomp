@@ -51,7 +51,7 @@ bool dSmallScore_c::createLayout(d2d::ResAccMultLoader_c * res) {
     mpRootPane->setVisible(false);
 
     mLayout.mDrawOrder = 7;
-    mState = 4;
+    mState = dSmallScore_c::STATE_NONE;
     mInitialized = true;
     mEnableColorChange = false;
     mEnableBigSmallAnim = false;
@@ -69,7 +69,7 @@ void dSmallScore_c::execute() {
         &dSmallScore_c::GoalScoreDisp,
     };
 
-    if (mState == 4) {
+    if (mState == dSmallScore_c::STATE_NONE) {
         return;
     }
 
@@ -79,11 +79,11 @@ void dSmallScore_c::execute() {
 }
 
 void dSmallScore_c::draw() {
-    if (mState == 4) {
+    if (mState == dSmallScore_c::STATE_NONE) {
         return;
     }
 
-    if (mState <= 0) {
+    if (mState <= dSmallScore_c::STATE_MAKE_START) {
         return;
     }
 
@@ -254,7 +254,7 @@ void dSmallScore_c::MakeStart() {
     mpRootPane->setVisible(true);
 
     if (mIsGoalScore) {
-        mState = 3;
+        mState = dSmallScore_c::STATE_GOAL_DISP;
     } else {
         mPosDelta.y = 1.0f;
         mPosDeceleration.y = 0.025f;
@@ -264,7 +264,7 @@ void dSmallScore_c::MakeStart() {
         mAnimIsShrinking = false;
         mAnimScale.x = 0.0f;
         mAnimScale.y = 0.0f;
-        mState = 1;
+        mState = dSmallScore_c::STATE_UP_MOVE;
     }
 
     if (mPopupType == 20) {
@@ -286,7 +286,7 @@ void dSmallScore_c::UpMove() {
     chgColor();
 
     if (mPosDelta.y == EGG::Math<float>::zero()) {
-        mState = 2;
+        mState = dSmallScore_c::STATE_DISP_WAIT;
         if (mPopupType >= 21) {
             mDispWaitTime = 30;
         }
@@ -320,7 +320,7 @@ void dSmallScore_c::DispWait() {
     N_coin_00->setVisible(false);
     mEnableBigSmallAnim = false;
     getTextBox(mCurTextbox)->setScale(mScale);
-    mState = 4;
+    mState = dSmallScore_c::STATE_NONE;
 }
 
 void dSmallScore_c::GoalScoreDisp() {}
@@ -368,7 +368,7 @@ void dSmallScore_c::CreateSmallScore(const mVec3_c &pos, int popupType, int play
     mPosOffset.x = 0.0f;
     mPosOffset.y = 0.0f;
     mIsGoalScore = 0;
-    mState = 0;
+    mState = dSmallScore_c::STATE_MAKE_START;
 }
 
 void dSmallScore_c::PosSet(const mVec3_c &pos) {
