@@ -28,7 +28,7 @@ struct dBgThing_c {
     }
 
     short m_00;
-    u16 m_02;
+    short m_02;
     int m_04;
     int m_08;
     int m_0c;
