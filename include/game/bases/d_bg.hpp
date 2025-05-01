@@ -76,11 +76,11 @@ public:
 
 struct dBgSomeInfo_c {
     dBgSomeInfo_c() :
-        m_10(nullptr), m_14(nullptr), m_18(0), m_1c(0) {}
+        m_10(nullptr), m_14(nullptr), m_18(nullptr), m_1c(nullptr) {}
 
     dBgBound_c mBounds;
-    dAcPy_c *m_10, *m_14;
-    int m_18, m_1c, m_20, m_24, m_28, m_2c, m_30;
+    dAcPy_c *m_10, *m_14, *m_18, *m_1c;
+    int m_20, m_24, m_28, m_2c, m_30;
 };
 
 struct dBgSubstruct2_c {
@@ -173,7 +173,7 @@ public:
     static sScrollAreaData *dBg_getScrlAreaDataP(u8, u8);
     bool dBg_isFlyPlayer();
     int dBg_isCloudFlyPlayer();
-    bool dBg_isCloudFlyPlayerMulti(); // [Not static? bruh]
+    int dBg_isCloudFlyPlayerMulti(); // [Not static? bruh]
 
     float fn_80078860(float);
 
@@ -219,7 +219,7 @@ public:
     void fn_8007ca90(dBgSomeInfo_c *, int, int); ///< @unofficial
     void fn_8007cd70(dBgSomeInfo_c *, dBgSomeInfo_c *, int); ///< @unofficial
 
-    u8 freeUpScrollLimit(dBgScrollLimit_c *scrollLimit, int group, int area); ///< @unofficial
+    u8 freeUpScrollLimit(const dBgScrollLimit_c &scrollLimit, int group, int area); ///< @unofficial
     u8 freeUpScrollLimit2(dBgScrollLimit_c *scrollLimit, int group, int area); ///< @unofficial
 
     void setScrollLimit(dBgScrollLimit_c *scrollLimit, int areaNo, int type, int group); ///< @unofficial
@@ -235,6 +235,7 @@ public:
 
     float getScaleFactor() { return 1.0f / mDispScale; }
 
+    dBgScrollLimit_c *getScrLim(int area, int group, int idx) { return &mScrLimit[area][group][idx]; }
     dBgSubstruct2_c * getData2(int idx, int i) { return &mData2[idx][i]; }
 
     typedef void (dBg_c::*callbackFunc)(dBgSomeInfo_c *, int);

@@ -589,7 +589,7 @@ int dBg_c::dBg_isCloudFlyPlayer() {
     return res;
 }
 
-bool dBg_c::dBg_isCloudFlyPlayerMulti() {
+int dBg_c::dBg_isCloudFlyPlayerMulti() {
     bool res = false;
     u8 scrInfo = daPyMng_c::getActScrollInfo();
     for (int i = 0; i < 4; i++) {
@@ -1373,57 +1373,58 @@ void dBg_c::fn_8007ac40(dBgSomeInfo_c *info, int arg1) {
     } else {
         scale = 0.9f;
     }
-    b.mUp = tmpUp * scale;
+    float someTmp2 = tmpUp * scale;
     mVec2_c r = fn_8007bd40(info, zoom, scale, &mWaveRelated[0x4d]);
-    b.mRight = tmpRight;
+    float someTmp = tmpRight;
     if (mLimitRelated == 1) {
         r.x = r.y;
-        b.mRight = b.mUp;
+        someTmp = someTmp2;
     }
     if (mLimitRelated == 6 || mLimitRelated == 7) {
         r.y = r.x - 1.0f;
-        b.mUp = b.mRight;
+        someTmp2 = someTmp;
     }
     if (mLimitRelated == 2) {
         if ((mLimitRelated2 == 5 || mLimitRelated2 == 6) || (mLimitRelated2 == 1 || mLimitRelated2 == 2)) {
-            if (invScale < m_bg_p->getZoomTargetMax() && spL2 < b.mRight) {
-                b.mRight = spL2;
+            if (invScale < m_bg_p->getZoomTargetMax() && spL2 > someTmp) {
+                someTmp = spL2;
             }
-            if (!dBg_isFlyPlayer() && mU8s[2] == 0 && spL2 < b.mUp) {
-                b.mUp = spL2;
+            if (!dBg_isFlyPlayer() && mU8s[2] == 0 && spL2 > someTmp2) {
+                someTmp2 = spL2;
             }
         } else {
-            if (invScale <= m_bg_p->getZoomTargetMid() && spL < b.mRight) {
-                b.mRight = spL;
+            if (invScale <= m_bg_p->getZoomTargetMid() && spL > someTmp) {
+                someTmp = spL;
             }
-            if (!dBg_isFlyPlayer() && mU8s[2] == 0 && spL < b.mUp) {
-                b.mUp = spL;
+            if (!dBg_isFlyPlayer() && mU8s[2] == 0 && spL > someTmp2) {
+                someTmp2 = spL;
             }
         }
     }
     if (mLimitRelated == 0 && mLimitRelated2 == 10) {
-        if (dBg_isCloudFlyPlayerMulti() == 1) {
-            b.mRight = spL2 + 0.01f;
-        } else if (shL2 - 0.01 < b.mRight || m_9095b != 0) {
-            b.mRight = shL2 - 0.01f;
+        if (dBg_isCloudFlyPlayerMulti() != 1) {
+            someTmp = shL2 - 0.01f;
+            if (someTmp2 > someTmp || m_9095b != 0) {
+                someTmp = spL2 + 0.01f;
+            }
         }
-        b.mUp = b.mRight - 1.0f;
+        someTmp2 = someTmp - 1.0f;
     }
-    if (b.mUp < b.mRight) {
-        b.mUp = b.mRight;
+    if (someTmp2 > someTmp) {
+        someTmp2 = someTmp;
     }
     if ((daPyDemoMng_c::mspInstance->mFlags & 1) == 0) {
         if (m_90024 == 0) {
-            if (b.mUp <= spL) {
+            if (someTmp2 <= spL) {
                 mMoreFloats5[0] = tgMin;
             } else {
                 mMoreFloats5[0] = tgMid;
                 m_90024 = 1;
             }
         } else if (m_90024 == 1) {
-            if (b.mUp <= spL2) {
-                if (shL <= b.mUp) {
-                    if (spL <= b.mUp) {
+            if (someTmp2 <= spL2) {
+                if (shL <= someTmp2) {
+                    if (spL <= someTmp2) {
                         mMoreFloats5[0] = tgMid;
                     }
                 } else {
@@ -1438,8 +1439,8 @@ void dBg_c::fn_8007ac40(dBgSomeInfo_c *info, int arg1) {
                 m_90024 = 2;
             }
         } else if (m_90024 == 2) {
-            if (shL2 <= b.mUp) {
-                if (spL2 <= b.mUp) {
+            if (shL2 <= someTmp2) {
+                if (spL2 <= someTmp2) {
                     mMoreFloats5[0] = tgMax;
                 }
             } else {
@@ -1481,7 +1482,7 @@ void dBg_c::fn_8007ac40(dBgSomeInfo_c *info, int arg1) {
             scale = 1.0f;
         }
         if (m_9001c == 0) {
-            sLib::addCalc(&m_90018, fVar28, fVar25, scale * (b.mUp * b.mUp * b.mUp * 6.0f + 1.0f), calcArg);
+            sLib::addCalc(&m_90018, fVar28, fVar25, scale * (someTmp2 * someTmp2 * someTmp2 * 6.0f + 1.0f), calcArg);
         }
         fVar25 = m_90018;
         if (fVar25 < mMoreFloats5[1]) {
@@ -1502,7 +1503,7 @@ void dBg_c::fn_8007ac40(dBgSomeInfo_c *info, int arg1) {
             scale = 1.0f;
         }
         if (m_9001c == 0) {
-            sLib::addCalc(&m_90018, fVar28, fVar25, scale * (b.mUp * b.mUp * b.mUp * 6.0f + 1.0f), calcArg);
+            sLib::addCalc(&m_90018, fVar28, fVar25, scale * (someTmp2 * someTmp2 * someTmp2 * 6.0f + 1.0f), calcArg);
         }
         mMoreFloats5[1] = mMoreFloats5[2];
     }
@@ -1621,6 +1622,7 @@ void dBg_c::fn_8007ac40(dBgSomeInfo_c *info, int arg1) {
         info->mBounds.mDown = mPrevSomePos.y - mPrevSomeSize.y - 32.0f;
     }
     calcLookatOffsLimit();
+    // ...
 }
 
 void dBg_c::fn_8007ba70(dBgSomeInfo_c *info) {
@@ -2042,26 +2044,26 @@ void dBg_c::fn_8007ca90(dBgSomeInfo_c *info, int i1, int i2) {
             break;
         case 1:
             if (pls[0] != nullptr) {
-                info->m_14 = pl1;
+                info->m_18 = pl1;
                 info->mBounds.mUp = pl1->m_6c;
-                info->m_24 = pl1->mPlayerType;
+                info->m_28 = pl1->mPlayerType;
             }
             if (pls[i2 - 1] != nullptr) {
-                info->m_10 = pl2;
+                info->m_1c = pl2;
                 info->mBounds.mDown = pl2->m_6c;
-                info->m_20 = pl2->mPlayerType;
+                info->m_2c = pl2->mPlayerType;
             }
             break;
         case 3:
             if (pls[i2 - 1] != nullptr) {
-                info->m_14 = pl2;
+                info->m_18 = pl2;
                 info->mBounds.mUp = pl2->m_6c;
-                info->m_24 = pl2->mPlayerType;
+                info->m_28 = pl2->mPlayerType;
             }
             if (pls[0] != nullptr) {
-                info->m_10 = pl1;
+                info->m_1c = pl1;
                 info->mBounds.mDown = pl1->m_6c;
-                info->m_20 = pl1->mPlayerType;
+                info->m_2c = pl1->mPlayerType;
             }
             break;
     }
@@ -2230,51 +2232,46 @@ void dBg_c::fn_8007cd70(dBgSomeInfo_c *info1, dBgSomeInfo_c *info2, int i1) {
     }
 }
 
-u8 dBg_c::freeUpScrollLimit(dBgScrollLimit_c *scrollLimit, int group, int area) {
+u8 dBg_c::freeUpScrollLimit(const dBgScrollLimit_c &scrollLimit, int group, int area) {
+    dBgScrollLimit_c *base = getScrLim(area, group, 0);
     u8 idx = 0;
-    dBgScrollLimit_c *base = mScrLimit[area][group];
     for (; idx < 16; idx++) {
         // idx = i;
-        if (base[idx].mR2 >= scrollLimit->mR2) {
+        if (base[idx].mR2 >= scrollLimit.mR2) {
             break;
         }
     }
     if (idx >= 16) {
         idx = 0;
     }
-    dBgScrollLimit_c *curr;
-    if (idx != 15) {
-        u8 l = 15 - idx;
-        // u8 r = 15;
-        idx = 15;
-        while (l != 0) {
-            idx--;
-            curr = &base[l];
-            *curr = base[idx];
-            l--;
-        }
+    dBgScrollLimit_c *currSL, *prevSL;
+    u8 prev = 15;
+    for (u32 i = idx; i != 15; i++) {
+        prevSL = getScrLim(area, group, prev);
+        currSL = getScrLim(area, group, --prev);
+        *prevSL = *currSL;
     }
 
-    curr->mL = 0.0f;
-    curr->mR = 0.0f;
-    curr->mU = 0.0f;
-    curr->mD = 0.0f;
-    curr->mL2 = 0.0f;
-    curr->mR2 = 0.0f;
-    curr->mU2 = 0.0f;
-    curr->mD2 = 0.0f;
-    curr->mL3 = 0.0f;
-    curr->mR3 = 0.0f;
-    curr->mU3 = 0.0f;
-    curr->mD3 = 0.0f;
-    curr->mFlags = 0;
+    currSL->mL = 0.0f;
+    currSL->mR = 0.0f;
+    currSL->mU = 0.0f;
+    currSL->mD = 0.0f;
+    currSL->mL2 = 0.0f;
+    currSL->mR2 = 0.0f;
+    currSL->mU2 = 0.0f;
+    currSL->mD2 = 0.0f;
+    currSL->mL3 = 0.0f;
+    currSL->mR3 = 0.0f;
+    currSL->mU3 = 0.0f;
+    currSL->mD3 = 0.0f;
+    currSL->mFlags = 0;
 
-    return (int) idx;
+    return idx;
 }
 
 u8 dBg_c::freeUpScrollLimit2(dBgScrollLimit_c *scrollLimit, int group, int area) {
+    dBgScrollLimit_c *base = getScrLim(area, group, 0);
     u8 idx = 0;
-    dBgScrollLimit_c *base = mScrLimit[area][group];
     for (; idx < 16; idx++) {
         // idx = i;
         if (base[idx].mD3 >= scrollLimit->mD3) {
@@ -2284,32 +2281,27 @@ u8 dBg_c::freeUpScrollLimit2(dBgScrollLimit_c *scrollLimit, int group, int area)
     if (idx >= 16) {
         idx = 0;
     }
-    dBgScrollLimit_c *curr;
-    if (idx != 15) {
-        u8 l = 15 - idx;
-        // u8 r = 15;
-        idx = 15;
-        while (l != 0) {
-            idx--;
-            curr = &base[l];
-            *curr = base[idx];
-            l--;
-        }
+    dBgScrollLimit_c *currSL, *prevSL;
+    u8 prev = 15;
+    for (u32 i = idx; i != 15; i++) {
+        prevSL = getScrLim(area, group, prev);
+        currSL = getScrLim(area, group, --prev);
+        *prevSL = *currSL;
     }
 
-    curr->mL = 0.0f;
-    curr->mR = 0.0f;
-    curr->mU = 0.0f;
-    curr->mD = 0.0f;
-    curr->mL2 = 0.0f;
-    curr->mR2 = 0.0f;
-    curr->mU2 = 0.0f;
-    curr->mD2 = 0.0f;
-    curr->mL3 = 0.0f;
-    curr->mR3 = 0.0f;
-    curr->mU3 = 0.0f;
-    curr->mD3 = 0.0f;
-    curr->mFlags = 0;
+    currSL->mL = 0.0f;
+    currSL->mR = 0.0f;
+    currSL->mU = 0.0f;
+    currSL->mD = 0.0f;
+    currSL->mL2 = 0.0f;
+    currSL->mR2 = 0.0f;
+    currSL->mU2 = 0.0f;
+    currSL->mD2 = 0.0f;
+    currSL->mL3 = 0.0f;
+    currSL->mR3 = 0.0f;
+    currSL->mU3 = 0.0f;
+    currSL->mD3 = 0.0f;
+    currSL->mFlags = 0;
 
     return idx;
 }
@@ -2320,7 +2312,7 @@ void dBg_c::setScrollLimit(dBgScrollLimit_c *scrollLimit, int areaNo, int type, 
     switch (type) {
         case 0:
         case 3:
-            idx = freeUpScrollLimit(scrollLimit, group, areaNo);
+            idx = freeUpScrollLimit(*scrollLimit, group, areaNo);
             curr = &mScrLimit[areaNo][group][idx];
             curr->mL = scrollLimit->mL;
             curr->mR = scrollLimit->mR;
@@ -2348,7 +2340,7 @@ void dBg_c::setScrollLimit(dBgScrollLimit_c *scrollLimit, int areaNo, int type, 
                 }
             }
             if (idx >= 16) {
-                idx = freeUpScrollLimit(scrollLimit, group, areaNo);
+                idx = freeUpScrollLimit(*scrollLimit, group, areaNo);
             }
             curr = &mScrLimit[areaNo][group][idx];
             curr->mL = scrollLimit->mL;
@@ -2370,7 +2362,7 @@ void dBg_c::setScrollLimit(dBgScrollLimit_c *scrollLimit, int areaNo, int type, 
                 }
             }
             if (idx >= 16) {
-                idx = freeUpScrollLimit(scrollLimit, group, areaNo);
+                idx = freeUpScrollLimit(*scrollLimit, group, areaNo);
             }
             curr = &mScrLimit[areaNo][group][idx];
             curr->mR = 16 + (int) scrollLimit->mR;
