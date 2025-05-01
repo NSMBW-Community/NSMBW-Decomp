@@ -15,6 +15,7 @@
 #include <game/sLib/s_math.hpp>
 #include <constants/sound_list.h>
 #include <constants/game_constants.h>
+#include <lib/MSL/math.h>
 #include <lib/MSL/string.h>
 
 dHeapSize_c dBg_c::m_HeapSize(0x10000);
@@ -1061,13 +1062,14 @@ void dBg_c::calcAutoScroll() {
     if (stage->mCurrWorld == WORLD_2 && stage->mCurrCourse == STAGE_CASTLE && stage->mCurrFile == 0) {
         calcLoopAutoScroll();
     } else if ((dActor_c::mExecStop & 8) == 0 && m_9008c == 0) {
-        sBgData *base = &file->mpBg2Data[ri->mNodeIdx];
+        sBgThing *bgThings = mBgThings;
+        sBgThing *base = &bgThings[ri->mNodeIdx];
         if (m_9008d != 0) {
             for (int i = 0; i < 999; i++) {
                 int idx = m_9007c;
                 // dBgThing_c *tmp = &base[m_9007c];
                 if (m_90009 == 0) {
-                    if (mAutoscrolls[0].mPos.x > base[idx].mID) {
+                    if (mAutoscrolls[0].mPos.x > base[idx].m_00) {
                         m_9007c++;
                     } else {
                         break;
@@ -1083,22 +1085,27 @@ void dBg_c::calcAutoScroll() {
         rightLim = asPos.y;
         int tmp = m_9007c;
         if (m_90080 < 999) {
-            sBgData *base = &file->mpBg2Data[ri->mNodeIdx];
+            sBgThing *base = &bgThings[m_90080];
             mVec3_c bgThingVec;
-            bgThingVec.x = base->mID;
-            bgThingVec.y = base->m_04;
+            bgThingVec.x = base->m_00;
+            bgThingVec.y = -(float) base->m_02;
             bgThingVec.z = 0.0f;
-            mVec3_c asCopy = asPos;
+            mVec3_c asCopy;
             if (tmp > 0) {
-                asCopy.x = (base - 1)->mID;
-                asCopy.y = (base - 1)->m_04;
+                asCopy.x = (base - 1)->m_00;
+                asCopy.y = -(float) (base - 1)->m_02;
+                asCopy.z = 0.0f;
+            } else {
+                asCopy = asPos;
             }
-            mVec3_c someVec = bgThingVec - asCopy;
+            mVec3_c someVec = bgThingVec;
+            someVec -= asCopy;
             float calcArg = 0.0f;
             someVec.normalize();
-            mVec3_c someVec2 = asCopy - asPos;
+            mVec3_c someVec2 = asCopy;
+            someVec -= asPos;
             someVec2.normalize();
-            float len = someVec2.len();
+            float len = someVec2.xzLen();
             short ang1 = cM::atan2s(someVec2.y, len);
             short ang2 = cM::atan2s(someVec2.x, someVec2.z);
             if (m_90080 == 0 && m_9007c <= 1 || mAutoscrolls[0].m_15 != 0) {
@@ -1151,14 +1158,15 @@ void dBg_c::calcAutoScroll() {
                     return;
                 }
             }
-            if (mAutoscrolls[0].mPos.x < leftLim) {
-                leftLim = mAutoscrolls[0].mPos.x;
+            mVec3_c asPosCopy = mAutoscrolls[0].mPos;
+            if (asPosCopy.x < leftLim) {
+                leftLim = asPosCopy.x;
                 if (rightLim < leftLim) {
                     leftLim = leftLim;
                 }
             }
-            if (mAutoscrolls[0].mPos.y < downLim) {
-                downLim = mAutoscrolls[0].mPos.y;
+            if (asPosCopy.y < downLim) {
+                downLim = asPosCopy.y;
                 if (upLim < downLim) {
                     downLim = downLim;
                 }
@@ -1953,4 +1961,498 @@ void swap(dAcPy_c **pl1, dAcPy_c **pl2) {
     dAcPy_c *tmp = *pl1;
     *pl1 = *pl2;
     *pl2 = tmp;
+}
+
+void dBg_c::fn_8007ca90(dBgSomeInfo_c *info, int i1, int i2) {
+    static bool (*compareFuncs[4])(dAcPy_c *, dAcPy_c *) = {
+        isRightPlayer,
+        isLeftPlayer,
+        isUpPlayer,
+        isDownPlayer
+    };
+    dAcPy_c *pls[4];
+    int count2 = 0;
+    int count = 0;
+    for (int i = 0; i < 4; i++) {
+        dAcPy_c *pl = daPyMng_c::getPlayer(i);
+        pls[i] = pl;
+        if (pl != nullptr) {
+            if (pl->mPowerup == POWERUP_MUSHROOM) {
+                pls[i] = nullptr;
+            }
+            if (pl->mPowerup == POWERUP_MINI_MUSHROOM) {
+                count++;
+            }
+        }
+        if (pls[i] != nullptr) {
+            count2++;
+        }
+        if (m_90009 == 1 && pl != nullptr && pl->mPowerup == POWERUP_MINI_MUSHROOM) {
+            pls[i] = nullptr;
+        }
+    }
+    info->m_30 = count2;
+    if (count2 <= count) {
+        m_bg_p->m_9095a = 1;
+        return;
+    }
+
+    m_bg_p->m_9095a = 0;
+    // sort players
+    for (int i = 0; i < 3; i++) {
+        for (int j = i + 1; j < 4; j++) {
+            dAcPy_c *pl1 = pls[i];
+            dAcPy_c *pl2 = pls[j];
+            if (pls[j] != nullptr) {
+                if (pls[i] == nullptr) {
+                    swap(&pls[i], &pls[j]);
+                } else if (compareFuncs[i1 & 0xFF](pl1, pl2)) {
+                    swap(&pls[i], &pls[j]);
+                }
+            }
+        }
+    }
+    dAcPy_c *pl1, *pl2;
+    pl1 = pls[0];
+    pl2 = pls[i2 - 1];
+    switch (i1) {
+        case 0:
+            if (pls[0] != nullptr) {
+                info->m_14 = pl1;
+                info->mBounds.mRight = fn_8007c7d0(pl1->m_68);
+                info->m_24 = pl1->mPlayerType;
+            }
+            if (pls[i2 - 1] != nullptr) {
+                info->m_10 = pl2;
+                info->mBounds.mLeft = fn_8007c7d0(pl2->m_68);
+                info->m_20 = pl2->mPlayerType;
+            }
+            break;
+        case 2:
+            if (pls[i2 - 1] != nullptr) {
+                info->m_14 = pl2;
+                info->mBounds.mRight = fn_8007c7d0(pl2->m_68);
+                info->m_24 = pl2->mPlayerType;
+            }
+            if (pls[0] != nullptr) {
+                info->m_10 = pl1;
+                info->mBounds.mLeft = fn_8007c7d0(pl1->m_68);
+                info->m_20 = pl1->mPlayerType;
+            }
+            break;
+        case 1:
+            if (pls[0] != nullptr) {
+                info->m_14 = pl1;
+                info->mBounds.mUp = pl1->m_6c;
+                info->m_24 = pl1->mPlayerType;
+            }
+            if (pls[i2 - 1] != nullptr) {
+                info->m_10 = pl2;
+                info->mBounds.mDown = pl2->m_6c;
+                info->m_20 = pl2->mPlayerType;
+            }
+            break;
+        case 3:
+            if (pls[i2 - 1] != nullptr) {
+                info->m_14 = pl2;
+                info->mBounds.mUp = pl2->m_6c;
+                info->m_24 = pl2->mPlayerType;
+            }
+            if (pls[0] != nullptr) {
+                info->m_10 = pl1;
+                info->mBounds.mDown = pl1->m_6c;
+                info->m_20 = pl1->mPlayerType;
+            }
+            break;
+    }
+}
+
+void dBg_c::fn_8007cd70(dBgSomeInfo_c *info1, dBgSomeInfo_c *info2, int i1) {
+    mVec2_c p = dBgParameter_c::getInstance()->mPos;
+    mVec2_c s = dBgParameter_c::getInstance()->mSize;
+    bool cond = false;
+    if ((dActor_c::mExecStop & 2) != 0) {
+        return;
+    }
+    if (i1 != 0 || dScStage_c::m_exeFrame < 10) {
+        info1->m_20 = info2->m_20;
+        info1->m_24 = info2->m_24;
+        info1->m_28 = info2->m_28;
+        info1->m_2c = info2->m_2c;
+        info1->m_30 = info2->m_30;
+    }
+    if (
+        info1->m_30 != info2->m_30 &&
+        info1->m_20 != info2->m_20 ||
+        info1->m_24 != info2->m_24 ||
+        info1->m_28 != info2->m_28 ||
+        info1->m_2c != info2->m_2c
+    ) {
+        cond = true;
+    }
+    bool cond2 = false;
+    bool bVar14 = false;
+    dScStage_c *stage = dScStage_c::m_instance;
+    dBgParameter_c *bgParam = dBgParameter_c::getInstance();
+    info1->m_20 = info2->m_20;
+    info1->m_24 = info2->m_24;
+    info1->m_28 = info2->m_28;
+    info1->m_2c = info2->m_2c;
+    info1->m_30 = info2->m_30;
+    dBgBound_c b = info1->mBounds;
+    mVec2_c tmp((b.mLeft + b.mRight) * 0.5f, (b.mUp + b.mDown) * 0.5f);
+    float l = info2->mBounds.mLeft;
+    if (info2->mBounds.mLeft < p.x) {
+        l = p.x;
+    }
+    float r = info2->mBounds.mRight;
+    if (p.x + s.x < info2->mBounds.mRight) {
+        r = p.x + s.x;
+    }
+    float u = info2->mBounds.mUp;
+    if (info2->mBounds.mUp < p.y) {
+        u = p.y;
+    }
+    float d = info2->mBounds.mDown;
+    if (info2->mBounds.mDown < p.y + s.y) {
+        d = p.y + s.y;
+    }
+    float fVar4 = 32.0f;
+    if (dScStage_c::m_loopType == 2 || i1 == 1) {
+        info1->mBounds.mLeft = l;
+        info1->mBounds.mRight = r;
+        info1->mBounds.mUp = u + 8.0f;
+        info1->mBounds.mDown = d - 8.0f;
+    } else {
+        if (m_90009 == 3) {
+            fVar4 = 80.0f;
+        }
+        if (b.mUp < info2->mBounds.mUp && p.y - fVar4 < info2->mBounds.mUp ||
+            d < b.mDown && d < fVar4 + (p.y - s.y)
+        ) {
+            cond2 = true;
+        }
+        float w1 = (info1->mBounds.mRight - info1->mBounds.mLeft) * 0.5f;
+        float h1 = (info1->mBounds.mUp - info1->mBounds.mDown) * 0.5f;
+        float w2 = (info2->mBounds.mRight - info2->mBounds.mLeft) * 0.5f;
+        float h2 = (info2->mBounds.mUp - info2->mBounds.mDown) * 0.5f;
+        float dw = w2 - w1;
+        float dh = h2 - h1;
+        float len = sqrt(dw * dw + dh * dh);
+        if (len == 0.0f) {
+            dh = 1.0f;
+            dw = 1.0f;
+        } else {
+            dh /= len;
+            dw /= len;
+        }
+        float fVar5 = fabsf(dw);
+        float fVar6, fVar7;
+        float fVar12 = fVar5 * 6.0f;
+        float fVar13 = fabsf(dh) * 12.0f;
+        if (stage->mCurrWorld == WORLD_8 && stage->mCurrCourse == STAGE_7 || cond) {
+            fVar6 = 6.0f;
+            fVar7 = 0.5f;
+            fVar5 *= 6.0;
+        } else {
+            fVar6 = 2.0f;
+            fVar7 = 0.2f;
+        }
+        fVar6 *= fabsf(dh);
+
+        float calcArg1 = 0.1f;
+        float calcArg2 = 0.005f;
+        float calcArg3 = 0.0001f;
+        if (cond2) {
+            mIdkI = 120;
+            mIdkF[0] = 1.0f;
+            mIdkF[1] = 1.0f;
+            mIdkF[2] = 1.0f;
+            mIdkF[3] = 1.0f;
+        }
+        if (mIdkI != 0) {
+            mIdkI--;
+            fVar4 = 1.0f;
+        }
+
+        if (b.mLeft > l) {
+            sLib::addCalc(&mIdkF[0], 0.0f, calcArg1, calcArg2, calcArg3);
+        } else if (l > bgParam->mPos.x + bgParam->mSize.x * 0.5f) {
+            sLib::addCalc(&mIdkF[0], 0.0f, calcArg1, calcArg2, calcArg3);
+        } else {
+            sLib::addCalc(&mIdkF[0], fVar4, calcArg1, calcArg2, calcArg3);
+        }
+        sLib::addCalc(&b.mLeft, l, mIdkF[0] * (fVar7 - 0.5f) + 0.5f, fVar12 + mIdkF[0] * (fVar5 - fVar12), 0.1f);
+
+        if (r > b.mRight) {
+            sLib::addCalc(&mIdkF[1], 0.0f, calcArg1, calcArg2, calcArg3);
+        } else if (bgParam->mPos.x + bgParam->mSize.x * 0.5f > r) {
+            sLib::addCalc(&mIdkF[1], 0.0f, calcArg1, calcArg2, calcArg3);
+        } else {
+            sLib::addCalc(&mIdkF[1], fVar4, calcArg1, calcArg2, calcArg3);
+        }
+        sLib::addCalc(&b.mRight, l, mIdkF[1] * (fVar7 - 0.5f) + 0.5f, fVar12 + mIdkF[1] * (fVar5 - fVar12), 0.1f);
+
+        if (b.mUp > u) {
+            sLib::addCalc(&mIdkF[2], 0.0f, calcArg1, calcArg2, calcArg3);
+        } else if (u > bgParam->mPos.x + bgParam->mSize.x * 0.5f) {
+            sLib::addCalc(&mIdkF[2], 0.0f, calcArg1, calcArg2, calcArg3);
+        } else {
+            sLib::addCalc(&mIdkF[2], fVar4, calcArg1, calcArg2, calcArg3);
+        }
+        sLib::addCalc(&b.mUp, l, mIdkF[2] * (fVar7 - 0.5f) + 0.5f, fVar12 + mIdkF[2] * (fVar5 - fVar12), 0.1f);
+
+        if (d > b.mDown) {
+            sLib::addCalc(&mIdkF[3], 0.0f, calcArg1, calcArg2, calcArg3);
+        } else if (bgParam->mPos.x + bgParam->mSize.x * 0.5f > d) {
+            sLib::addCalc(&mIdkF[3], 0.0f, calcArg1, calcArg2, calcArg3);
+        } else {
+            sLib::addCalc(&mIdkF[3], fVar4, calcArg1, calcArg2, calcArg3);
+        }
+        sLib::addCalc(&b.mDown, l, mIdkF[3] * (fVar7 - 0.5f) + 0.5f, fVar12 + mIdkF[3] * (fVar5 - fVar12), 0.1f);
+
+        info1->mBounds = b;
+    }
+    float r2 = info1->mBounds.mRight;
+    float l2 = info1->mBounds.mLeft;
+    float u2 = info1->mBounds.mUp;
+    float d2 = info1->mBounds.mDown;
+    float ll = m_bg_p->getLeftLimit();
+    if (p.x > ll && m_bg_p->getRightLimit() > p.x + s.x) {
+        m_bg_p->m_900b8 = (l2 + r2) * 0.5f - tmp.x;
+    } else {
+        m_bg_p->m_900b8 = 0.0f;
+    }
+    if (m_bg_p->mULimit > p.y && p.y - s.y > m_bg_p->mDLimit) {
+        m_bg_p->m_900bc = (u2 + d2) * 0.5f - tmp.y;
+    } else {
+        m_bg_p->m_900bc = 0.0f;
+    }
+}
+
+u8 dBg_c::freeUpScrollLimit(dBgScrollLimit_c *scrollLimit, int group, int area) {
+    u8 idx = 0;
+    dBgScrollLimit_c *base = mScrLimit[area][group];
+    for (; idx < 16; idx++) {
+        // idx = i;
+        if (base[idx].mR2 >= scrollLimit->mR2) {
+            break;
+        }
+    }
+    if (idx >= 16) {
+        idx = 0;
+    }
+    dBgScrollLimit_c *curr;
+    if (idx != 15) {
+        u8 l = 15 - idx;
+        // u8 r = 15;
+        idx = 15;
+        while (l != 0) {
+            idx--;
+            curr = &base[l];
+            *curr = base[idx];
+            l--;
+        }
+    }
+
+    curr->mL = 0.0f;
+    curr->mR = 0.0f;
+    curr->mU = 0.0f;
+    curr->mD = 0.0f;
+    curr->mL2 = 0.0f;
+    curr->mR2 = 0.0f;
+    curr->mU2 = 0.0f;
+    curr->mD2 = 0.0f;
+    curr->mL3 = 0.0f;
+    curr->mR3 = 0.0f;
+    curr->mU3 = 0.0f;
+    curr->mD3 = 0.0f;
+    curr->mFlags = 0;
+
+    return (int) idx;
+}
+
+u8 dBg_c::freeUpScrollLimit2(dBgScrollLimit_c *scrollLimit, int group, int area) {
+    u8 idx = 0;
+    dBgScrollLimit_c *base = mScrLimit[area][group];
+    for (; idx < 16; idx++) {
+        // idx = i;
+        if (base[idx].mD3 >= scrollLimit->mD3) {
+            break;
+        }
+    }
+    if (idx >= 16) {
+        idx = 0;
+    }
+    dBgScrollLimit_c *curr;
+    if (idx != 15) {
+        u8 l = 15 - idx;
+        // u8 r = 15;
+        idx = 15;
+        while (l != 0) {
+            idx--;
+            curr = &base[l];
+            *curr = base[idx];
+            l--;
+        }
+    }
+
+    curr->mL = 0.0f;
+    curr->mR = 0.0f;
+    curr->mU = 0.0f;
+    curr->mD = 0.0f;
+    curr->mL2 = 0.0f;
+    curr->mR2 = 0.0f;
+    curr->mU2 = 0.0f;
+    curr->mD2 = 0.0f;
+    curr->mL3 = 0.0f;
+    curr->mR3 = 0.0f;
+    curr->mU3 = 0.0f;
+    curr->mD3 = 0.0f;
+    curr->mFlags = 0;
+
+    return idx;
+}
+
+void dBg_c::setScrollLimit(dBgScrollLimit_c *scrollLimit, int areaNo, int type, int group) {
+    u8 idx;
+    dBgScrollLimit_c *curr;
+    switch (type) {
+        case 0:
+        case 3:
+            idx = freeUpScrollLimit(scrollLimit, group, areaNo);
+            curr = &mScrLimit[areaNo][group][idx];
+            curr->mL = scrollLimit->mL;
+            curr->mR = scrollLimit->mR;
+            curr->mU = scrollLimit->mU;
+            curr->mD = scrollLimit->mD;
+            curr->mL2 = scrollLimit->mL2;
+            curr->mR2 = scrollLimit->mR2;
+            curr->mU2 = scrollLimit->mU2;
+            curr->mD2 = scrollLimit->mD2;
+            curr->mL3 = scrollLimit->mL3;
+            curr->mR3 = scrollLimit->mR3;
+            curr->mU3 = scrollLimit->mU3;
+            curr->mD3 = scrollLimit->mD3;
+            curr->mL4 = scrollLimit->mL4;
+            curr->mR4 = scrollLimit->mR4;
+            curr->mU4 = scrollLimit->mU4;
+            curr->mD4 = scrollLimit->mD4;
+            curr->mFlags = scrollLimit->mFlags | 3;
+            break;
+        case 1:
+            for (idx = 0; idx < 16; idx++) {
+                dBgScrollLimit_c *curr = &mScrLimit[areaNo][group][idx];
+                if ((curr->mFlags & 2) == 0 && curr->mR2 == scrollLimit->mR2) {
+                    break;
+                }
+            }
+            if (idx >= 16) {
+                idx = freeUpScrollLimit(scrollLimit, group, areaNo);
+            }
+            curr = &mScrLimit[areaNo][group][idx];
+            curr->mL = scrollLimit->mL;
+            curr->mU = scrollLimit->mU;
+            curr->mD = scrollLimit->mD;
+            curr->mL2 = scrollLimit->mL2;
+            curr->mR2 = scrollLimit->mR2;
+            curr->mL4 = scrollLimit->mL4;
+            curr->mR4 = scrollLimit->mR4;
+            curr->mU4 = scrollLimit->mU4;
+            curr->mD4 = scrollLimit->mD4;
+            curr->mFlags = curr->mFlags | scrollLimit->mFlags | 2;
+            break;
+        case 2:
+            for (idx = 0; idx < 16; idx++) {
+                dBgScrollLimit_c *curr = &mScrLimit[areaNo][group][idx];
+                if ((curr->mFlags & 1) == 0 && curr->mR2 == scrollLimit->mR2) {
+                    break;
+                }
+            }
+            if (idx >= 16) {
+                idx = freeUpScrollLimit(scrollLimit, group, areaNo);
+            }
+            curr = &mScrLimit[areaNo][group][idx];
+            curr->mR = 16 + (int) scrollLimit->mR;
+            curr->mU = scrollLimit->mU;
+            curr->mD = scrollLimit->mD;
+            curr->mL2 = scrollLimit->mL2;
+            curr->mR2 = scrollLimit->mR2;
+            curr->mL4 = scrollLimit->mL4;
+            curr->mR4 = scrollLimit->mR4;
+            curr->mU4 = scrollLimit->mU4;
+            curr->mD4 = scrollLimit->mD4;
+            curr->mFlags = curr->mFlags | scrollLimit->mFlags | 1;
+            break;
+        case 4:
+            for (idx = 0; idx < 16; idx++) {
+                dBgScrollLimit_c *curr = &mScrLimit[areaNo][group][idx];
+                if ((curr->mFlags & 2) == 0 && curr->mD3 == scrollLimit->mD3) {
+                    break;
+                }
+            }
+            if (idx >= 16) {
+                idx = freeUpScrollLimit2(scrollLimit, group, areaNo);
+            }
+            curr = &mScrLimit[areaNo][group][idx];
+            curr->mU2 = scrollLimit->mU2;
+            curr->mL3 = scrollLimit->mL3;
+            curr->mR3 = scrollLimit->mR3;
+            curr->mU3 = scrollLimit->mU3;
+            curr->mD3 = scrollLimit->mD3;
+            curr->mL4 = scrollLimit->mL4;
+            curr->mR4 = scrollLimit->mR4;
+            curr->mU4 = scrollLimit->mU4;
+            curr->mD4 = scrollLimit->mD4;
+            curr->mFlags = curr->mFlags | scrollLimit->mFlags | 2;
+            break;
+        case 5:
+            for (idx = 0; idx < 16; idx++) {
+                dBgScrollLimit_c *curr = &mScrLimit[areaNo][group][idx];
+                if ((curr->mFlags & 1) == 0 && curr->mD3 == scrollLimit->mD3) {
+                    break;
+                }
+            }
+            if (idx >= 16) {
+                idx = freeUpScrollLimit2(scrollLimit, group, areaNo);
+            }
+            curr = &mScrLimit[areaNo][group][idx];
+            curr->mD2 = 16 + (int) scrollLimit->mD2;
+            curr->mL3 = scrollLimit->mL3;
+            curr->mR3 = scrollLimit->mR3;
+            curr->mU3 = scrollLimit->mU3;
+            curr->mD3 = scrollLimit->mD3;
+            curr->mL4 = scrollLimit->mL4;
+            curr->mR4 = scrollLimit->mR4;
+            curr->mU4 = scrollLimit->mU4;
+            curr->mD4 = scrollLimit->mD4;
+            curr->mFlags = curr->mFlags | scrollLimit->mFlags | 1;
+            break;
+    }
+}
+
+void dBg_c::fn_8007E060(dBgSubstruct2_c *s, int idx) {
+    for (u8 i = 0; i < 20; i++) {
+        dBgSubstruct2_c *curr = &mData2[idx][i];
+        if (curr->mU8_1 >= 99) {
+            curr->mFloat1 = s->mFloat1;
+            curr->mFloat2 = s->mFloat2;
+            curr->mFloat3 = s->mFloat3;
+            curr->mFloat4 = s->mFloat4;
+            curr->mU8_1 = s->mU8_1;
+            curr->mU8_2 = s->mU8_2;
+            curr->mU8_3 = s->mU8_3;
+            return;
+        }
+    }
+}
+
+float dBg_c::getAreaUpLimitScroll() {
+    dBgParameter_c *bgParam = dBgParameter_c::getInstance();
+    float sizeY = bgParam->mSize.y;
+    float posY = bgParam->mPos.y;
+    float m = m_bg_p->getZoomTargetMin() * mVideo::getLayoutHeight();
+    float diff = posY - sizeY;
+    float res = mMoreFloats3[0] + diff + m;
+    return res;
 }

@@ -76,10 +76,11 @@ public:
 
 struct dBgSomeInfo_c {
     dBgSomeInfo_c() :
-        m_10(0), m_14(0), m_18(0), m_1c(0) {}
+        m_10(nullptr), m_14(nullptr), m_18(0), m_1c(0) {}
 
     dBgBound_c mBounds;
-    int m_10, m_14, m_18, m_1c, m_20, m_24, m_28, m_2c, m_30;
+    dAcPy_c *m_10, *m_14;
+    int m_18, m_1c, m_20, m_24, m_28, m_2c, m_30;
 };
 
 struct dBgSubstruct2_c {
@@ -88,6 +89,7 @@ public:
     u8 mU8_1;
     u8 mU8_2;
     u8 mU8_3;
+    u8 mU8_4;
 };
 
 struct dBgAnimObj_c {
@@ -203,19 +205,26 @@ public:
     void calcAutoScroll();
     void AutoScroll_start();
     void AutoScroll_stop();
-    void calcScroll( const mVec3_c&, int );
+    void calcScroll(const mVec3_c&, int);
     void calcMultiScroll( int );
     void initScroll();
 
-    void fn_8007ac40(dBgSomeInfo_c *, int);
-    void fn_8007ba70(dBgSomeInfo_c *);
-    float fn_8007bba0(dBgSomeInfo_c *);
-    float fn_8007bbf0(dBgSomeInfo_c *);
-    bool fn_8007bc40(dBgSomeInfo_c *, float);
-    mVec2_c fn_8007bd40(dBgSomeInfo_c *, float, float, float *);
-    float fn_8007c7d0(float);
-    void fn_8007ca90(dBgSomeInfo_c *, int, int);
-    void fn_8007cd70(dBgSomeInfo_c *, dBgSomeInfo_c *, int);
+    void fn_8007ac40(dBgSomeInfo_c *, int); ///< @unofficial
+    void fn_8007ba70(dBgSomeInfo_c *); ///< @unofficial
+    float fn_8007bba0(dBgSomeInfo_c *); ///< @unofficial
+    float fn_8007bbf0(dBgSomeInfo_c *); ///< @unofficial
+    bool fn_8007bc40(dBgSomeInfo_c *, float); ///< @unofficial
+    mVec2_c fn_8007bd40(dBgSomeInfo_c *, float, float, float *); ///< @unofficial
+    float fn_8007c7d0(float); ///< @unofficial
+    void fn_8007ca90(dBgSomeInfo_c *, int, int); ///< @unofficial
+    void fn_8007cd70(dBgSomeInfo_c *, dBgSomeInfo_c *, int); ///< @unofficial
+
+    u8 freeUpScrollLimit(dBgScrollLimit_c *scrollLimit, int group, int area); ///< @unofficial
+    u8 freeUpScrollLimit2(dBgScrollLimit_c *scrollLimit, int group, int area); ///< @unofficial
+
+    void setScrollLimit(dBgScrollLimit_c *scrollLimit, int areaNo, int type, int group); ///< @unofficial
+
+    void fn_8007E060(dBgSubstruct2_c *s, int idx);
 
     float getAreaUpLimitScroll();
 

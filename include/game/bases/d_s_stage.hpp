@@ -26,6 +26,8 @@ public:
     static int m_loopType;
     static int mCollectionCoin[STAR_COIN_COUNT];
 
+    static u32 m_exeFrame;
+
     static const char mCdArcName[];
 
     static bool m_isCourseOut; ///< Whether the game is transitioning from a stage scene to a non-stage scene.
