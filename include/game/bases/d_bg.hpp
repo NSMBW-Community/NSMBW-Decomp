@@ -235,6 +235,8 @@ public:
 
     float getScaleFactor() { return 1.0f / mDispScale; }
 
+    dBgSubstruct2_c * getData2(int idx, int i) { return &mData2[idx][i]; }
+
     typedef void (dBg_c::*callbackFunc)(dBgSomeInfo_c *, int);
 
     unsigned long long *mBgCheckBuffer;
