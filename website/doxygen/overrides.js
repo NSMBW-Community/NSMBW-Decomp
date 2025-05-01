@@ -191,3 +191,95 @@ document.querySelectorAll('tr.inherit_header').forEach((header, index, headers) 
         next.classList.add('inherit', pubTypesClass);
     }
 });
+
+(function generateTOC() {
+
+    // Find where to inject the TOC
+    const contentDiv = document.querySelector('div.textblock');
+    if (!contentDiv) {
+        return;
+    }
+
+    // Find all relevant headings
+    const headings = Array.from(document.querySelectorAll('h2, h3, h4, h5, h6')).filter(h => !h.classList.contains('memtitle'));
+    if (headings.length === 0) {
+        return;
+    }
+
+    // Create wrapper
+    const tocContainer = document.createElement('div');
+    tocContainer.className = 'toc interactive open';
+
+    // TOC title
+    const tocTitle = document.createElement('h3');
+    tocTitle.textContent = 'Table of Contents';
+    tocContainer.appendChild(tocTitle);
+
+    // Add event listener for mobile closing/opening (from interactive TOC script)
+    tocTitle.addEventListener("click", () => {
+        if (tocTitle.parentElement.classList.contains("open")) {
+            tocTitle.parentElement.classList.remove("open")
+        } else {
+            tocTitle.parentElement.classList.add("open")
+        }
+    });
+
+    // Create basic TOC contents
+    const topLevelUl = document.createElement('ul');
+    const topLi = document.createElement('li');
+    topLi.className = 'level1 empty';
+    const nestedUl = document.createElement('ul');
+    topLi.appendChild(nestedUl);
+    topLevelUl.appendChild(topLi);
+    tocContainer.appendChild(topLevelUl);
+
+    const currentParents = { 2: nestedUl };
+
+    headings.forEach(heading => {
+        const level = parseInt(heading.tagName[1]);
+        const anchor = heading.querySelector('a');
+        if (!anchor) {
+            return;
+        }
+
+        const href = anchor.getAttribute('id');
+        const text = heading.textContent.trim();
+
+        const link = document.createElement('a');
+        link.href = `#${href}`;
+        link.textContent = text;
+
+        const li = document.createElement('li');
+        li.className = `level${level}`;
+        li.appendChild(link);
+
+        // Ensure parent exists
+        if (!currentParents[level - 1]) {
+            currentParents[level - 1] = currentParents[level - 2] || nestedUl;
+        }
+
+        const parentUl = currentParents[level - 1];
+        if (!parentUl) {
+            return;
+        }
+
+        // Create and register child container
+        parentUl.appendChild(li);
+        const subUl = document.createElement('ul');
+        li.appendChild(subUl);
+        currentParents[level] = subUl;
+
+        // Clear deeper levels
+        for (let l = level + 1; l <= 6; l++) {
+            delete currentParents[l];
+        }
+    });
+
+    // Insert the TOC
+    contentDiv.insertBefore(tocContainer, contentDiv.firstChild);
+
+    // Add clearfix to ensure TOC does not oversize document
+    const clearfix = document.createElement('div');
+    clearfix.style.clear = 'both';
+    contentDiv.appendChild(clearfix);
+})();

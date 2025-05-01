@@ -59,8 +59,14 @@ td.mdescRight {
 /* Remove border radius on definitions and use a less colorful background */
 td.memItemLeft, td.memItemRight, td.memTemplParams, td.memTemplItemLeft, td.memTemplItemRight {
     border-radius: 0px !important;
-    padding-right: 0px !important;
     background-color: var(--code-background) !important;
+}
+
+/* Remove unnecessary padding on definitions in desktop mode */
+@media screen and (min-width: 767px) {
+    table.memberdecls .memItemLeft, table.memberdecls .memTemplItemLeft {
+        padding-right: 0px !important;
+    }
 }
 
 /* Change template keyword color */
@@ -157,12 +163,13 @@ a.anchorlink:hover {
 
 /* Fix parameter name colors */
 .paramname em {
-    color: var(--primary-dark-color) !important;
+    color: var(--page-foreground-color);
 }
 
 /* Fix parameter ending brace color */
 .paramname {
-    color: var(--page-foreground-color) !important;
+    color: var(--page-foreground-color);
+    font-weight: normal;
 }
 
 /* Increase navigation arrow size */
@@ -296,11 +303,38 @@ table.doxtable tr th:last-child,
 }
 
 /* Restore underline on link hover */
-a.el:hover, a.el:focus, a.el:active {
+a.el:hover, a.el:focus, a.el:active, .contents > p > a:hover, .contents > p > a:focus, .contents > p > a:active {
     text-decoration: underline !important;
 }
 
 /* Fix overload font */
 .overload {
     font-family: var(--font-family-monospace);
+}
+
+/* Fix permalink alignment */
+h2.memtitle > span.permalink > a {
+    margin-top: 0px;
+}
+
+/* Remove sticky TOC */
+div.contents .toc {
+    position: unset;
+    max-height: unset;
+}
+
+/* Remove summary */
+div.header .summary {
+    display: none;
+}
+
+/* Add margin to TOC for mobile and reduce border radius */
+@media screen and (max-width: 999px) {
+    div.contents .toc.interactive {
+        margin-top: 20px;
+    }
+
+    div.contents .toc {
+        border-radius: var(--border-radius-small);
+    }
 }
