@@ -11,6 +11,9 @@ extern "C" {
 /// @brief Returns the floating-point remainder of @p x/denom (rounded towards zero).
 double fmod(double x, double denom);
 
+double sqrt(double x);
+float sqrtf(float x);
+
 /// @brief Returns the absolute value of x.
 inline double fabs(double x) {
     return __fabs(x);
