@@ -194,6 +194,11 @@ public:
         return EGG::Mathf::sqrt(x * x + y * y + z * z);
     }
 
+    /// @brief Returns the length of the vector.
+    float xzLen() const {
+        return EGG::Mathf::sqrt(x * x + z * z);
+    }
+
     float distanceTo(const mVec3_c &other) const {
         return EGG::Mathf::sqrt(PSVECSquareDistance((const Vec *) this, (const Vec *) &other));
     }
