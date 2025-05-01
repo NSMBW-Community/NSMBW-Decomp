@@ -13,6 +13,7 @@ public:
 
     static float getLoopPosX(float x);
     static int m_loopType;
+    static u32 m_exeFrame;
 
     static bool m_isCourseOut; ///< Whether the game is transitioning from a stage scene to a non-stage scene.
 
