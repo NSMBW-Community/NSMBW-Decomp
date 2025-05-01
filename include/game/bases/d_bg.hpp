@@ -234,8 +234,9 @@ public:
     float getDispScale() { return mDispScale; }
     float getPrevDispScale() { return mMoreFloats3[1]; }
     float getScaleFactor() { return 1.0f / mDispScale; }
-
     float getLiquidHeight() const { return mMoreFloats7[5]; }
+
+    dBgSubstruct2_c * getData2(int idx, int i) { return &mData2[idx][i]; }
 
     typedef void (dBg_c::*callbackFunc)(dBgSomeInfo_c *, int);
 

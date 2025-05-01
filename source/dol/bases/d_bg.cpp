@@ -2433,7 +2433,7 @@ void dBg_c::setScrollLimit(dBgScrollLimit_c *scrollLimit, int areaNo, int type, 
 
 void dBg_c::fn_8007E060(dBgSubstruct2_c *s, int idx) {
     for (u8 i = 0; i < 20; i++) {
-        dBgSubstruct2_c *curr = &mData2[idx][i];
+        dBgSubstruct2_c *curr = getData2(idx, i);
         if (curr->mU8_1 >= 99) {
             curr->mFloat1 = s->mFloat1;
             curr->mFloat2 = s->mFloat2;
