@@ -1,9 +1,13 @@
+
+////////////////////////
+// Unofficial Bubbles //
+////////////////////////
+
 const createCustomBubble = (text) => Object.assign(document.createElement('span'), {
     className: 'mlabel customlabel',
     textContent: text
 });
 
-// Uses the "unofficial" class to inject a custom bubble for each item.
 document.querySelectorAll('div.unofficial').forEach(div => {
     const span = div.closest('.memitem')?.querySelector('.memproto table tr:first-child td:nth-child(2) span');
     if (span) {
@@ -12,7 +16,10 @@ document.querySelectorAll('div.unofficial').forEach(div => {
     div.remove();
 });
 
-// Uses the "unused" class to inject a custom bubble for each item.
+////////////////////
+// Unused Bubbles //
+////////////////////
+
 document.querySelectorAll('div.unused').forEach(div => {
     const parent = div.parentElement;
 
@@ -47,7 +54,10 @@ document.querySelectorAll('div.unused').forEach(div => {
     div.remove();
 });
 
-// Inject Github-style markdown alerts
+//////////////////////////////////
+// Github Style Markdown Alerts //
+//////////////////////////////////
+
 const alertIcons = {
     todo: `
         <svg class="markdown-alert-icon" viewBox="0 0 16 16" width="16" height="16" aria-hidden="true">
@@ -97,14 +107,20 @@ document.querySelectorAll('dl').forEach(dl => {
     dl.replaceWith(wrapper);
 });
 
-// Remove all "More..." links
+////////////////////////////
+// Remove "More..." Links //
+////////////////////////////
+
 document.querySelectorAll('a').forEach(link => {
     if (link.textContent.trim() === 'More...') {
         link.remove();
     }
 });
 
-// Turn all ugly default template parameters into a presentable table
+///////////////////////////////////////
+// Generate Template Parameter Table //
+///////////////////////////////////////
+
 document.querySelectorAll('dl.tparams').forEach(dl => {
     const dd = dl.querySelector('dd');
     const table = dd?.querySelector('table.tparams tbody');
@@ -173,7 +189,10 @@ document.querySelectorAll('dl.tparams').forEach(dl => {
     dl.remove();
 });
 
-// Fix inherited types not closing properly
+////////////////////////////////////////
+// Fix Inherited Types Ignoring Close //
+////////////////////////////////////////
+
 document.querySelectorAll('tr.inherit_header').forEach((header, index, headers) => {
     const classList = Array.from(header.classList);
     const pubTypesClass = classList.find(c => c.startsWith('pub_types_'));
@@ -192,7 +211,14 @@ document.querySelectorAll('tr.inherit_header').forEach((header, index, headers) 
     }
 });
 
+//////////////////////////////
+// Generate TOC Dynamically //
+//////////////////////////////
+
 (function generateTOC() {
+
+    // Remove all h1 headings
+    document.querySelectorAll('h1').forEach(heading => heading.remove());
 
     // Find where to inject the TOC
     const contentDiv = document.querySelector('div.textblock');
@@ -282,4 +308,80 @@ document.querySelectorAll('tr.inherit_header').forEach((header, index, headers) 
     const clearfix = document.createElement('div');
     clearfix.style.clear = 'both';
     contentDiv.appendChild(clearfix);
+})();
+
+///////////////////////////////////////////
+// Generate Footer Navigator Dynamically //
+///////////////////////////////////////////
+
+(function getPagePath() {
+    const navTree = document.getElementById('nav-tree');
+    if (!navTree) {
+        return;
+    }
+
+    let lastSelected = null;
+
+    const updatePath = () => {
+        const selected = document.querySelector('#nav-tree .selected');
+
+        // Skip if nothing selected or selection hasn't changed
+        if (!selected || selected === lastSelected) {
+            return;
+        }
+
+        // Set up loop
+        lastSelected = selected;
+        const pathParts = [];
+        let currentItem = selected;
+
+        while (true) {
+
+            // Add current text
+            const spanLink = currentItem.querySelector('span > a');
+            if (spanLink) {
+                pathParts.unshift(spanLink);
+            }
+
+            // Find the parent item
+            const ul = currentItem.parentElement.parentElement;
+            let prev = ul.previousElementSibling;
+
+            // Exit the loop if we reach the top of the tree
+            if (!prev || !prev.classList.contains('item')) {
+                break;
+            }
+
+            currentItem = prev;
+        }
+
+        // Remove the first element
+        pathParts.shift();
+
+        // Update the navpath bar
+        const navPath = document.querySelector('.navpath ul');
+        if (navPath) {
+
+            // Remove existing elements
+            navPath.querySelectorAll('li.navelem').forEach(li => li.remove());
+
+            // Add new path elements
+            pathParts.forEach(part => {
+                const li = document.createElement('li');
+                li.className = 'navelem';
+                const clone = part.cloneNode(true);
+                clone.className = 'el';
+                li.appendChild(clone);
+                navPath.appendChild(li);
+            });
+        }
+    };
+
+    // Wait for the navtree to change
+    const observer = new MutationObserver(updatePath);
+    observer.observe(navTree, {
+        childList: true,
+        attributeFilter: ['class'],
+        subtree: true,
+    });
 })();

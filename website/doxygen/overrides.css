@@ -12,6 +12,9 @@ html {
 @media (prefers-color-scheme: dark) {
     html:not(.light-mode) {
 
+        /* Replace fragment background with a less colorful version */
+        --fragment-background: var(--code-background) !important;
+
         /* Replace note colors */
         --bug-color-dark: #e34141 !important;
         --todo-color-dark: #9c88ff !important;
@@ -20,28 +23,32 @@ html {
 }
 
 /* Make links brighter  */
-a:link, a:visited, a:hover, a:focus, a:active {
+a:link,
+a:visited,
+a:hover,
+a:focus,
+a:active {
     color: var(--primary-light-color) !important;
 }
 
 /* Remove the ugly hover shadow on the bottom navigator */
 .navpath li.navelem a:hover {
-    text-shadow: none !important;
+    text-shadow: none;
 }
 
 /* Use darker primary color for hovered/active/focused top menu buttons */
-.sm-dox ul a:hover, .sm-dox ul a:active, .sm-dox ul a:focus, .sm-dox a:hover, .sm-dox a:active, .tablist li a:hover {
-    background-color: var(--primary-dark-color) !important;
+.sm-dox ul a:hover,
+.sm-dox ul a:active,
+.sm-dox ul a:focus,
+.sm-dox a:hover,
+.sm-dox a:active,
+.tablist li a:hover {
+    background-color: var(--primary-dark-color);
 }
 
 /* Change directory level numbers color */
 .directory .levels span {
-    color: var(--primary-light-color) !important;
-}
-
-/* Change prototype color */
-h2.memtitle, h2.memtitle:after, div.memproto {
-    background: var(--code-background) !important;
+    color: var(--primary-light-color);
 }
 
 /* Add border to cell descriptions (left) */
@@ -56,32 +63,23 @@ td.mdescRight {
     border-bottom: 1px solid var(--separator-color);
 }
 
-/* Remove border radius on definitions and use a less colorful background */
-td.memItemLeft, td.memItemRight, td.memTemplParams, td.memTemplItemLeft, td.memTemplItemRight {
-    border-radius: 0px !important;
-    background-color: var(--code-background) !important;
-}
-
 /* Remove unnecessary padding on definitions in desktop mode */
 @media screen and (min-width: 767px) {
-    table.memberdecls .memItemLeft, table.memberdecls .memTemplItemLeft {
-        padding-right: 0px !important;
+    table.memberdecls .memItemLeft,
+    table.memberdecls .memTemplItemLeft {
+        padding-right: 0px;
     }
 }
 
 /* Change template keyword color */
-td.memTemplParams, div.memtemplate {
+td.memTemplParams,
+div.memtemplate {
     color: var(--page-foreground-color) !important;
 }
 
-/* Remove table cell separator */
-td.memSeparator {
-    display: none;
-}
-
-/* Add short padding between table rows */
-tr[class*="memdesc"] {
-    transform: translateY(-4px) !important;
+/* Reduce padding between definitions */
+table.memberdecls .memSeparator {
+    height: var(--spacing-small);
 }
 
 /* Remove nav-sync button */
@@ -101,64 +99,43 @@ p.definition {
 }
 
 /* Remove padding in page title */
-div.headertitle {
-    margin-top: -20px;
-    margin-bottom: -10px;
+div.header .title {
+    padding: 0 var(--spacing-large);
 }
 
 /* Remove colors on dark mode directories/files */
-html.dark-mode .icondoc, html.dark-mode .iconfopen, html.dark-mode .iconfclosed {
+html.dark-mode .icondoc,
+html.dark-mode .iconfopen,
+html.dark-mode .iconfclosed {
     filter: saturate(0) !important;
 }
 
 /* Disable color inversion on menu arrows and restore it on light mode files */
-html.dark-mode img[src="closed.png"], html.dark-mode img[src="open.png"], .icondoc {
+html.dark-mode img[src="closed.png"],
+html.dark-mode img[src="open.png"],
+.icondoc {
     filter: none !important;
 }
 
-/* Restore padding on inherit dropdowns */
+/* Fix padding on inherit dropdowns */
 table.memberdecls .inherit_header td {
-    padding: 6px 0px 2px 5px !important;
-}
-
-/* Reduce bottom margin to counter the above padding */
-table.memberdecls .groupheader {
-    margin-bottom: var(--spacing-medium) !important;
+    padding: 0px 0px 0px var(--spacing-medium);
 }
 
 /* Remove padding at the start of lists */
-div.contents > p, div.textblock p {
+div.textblock p {
     margin-bottom: 0px;
 }
 
 /* Remove padding at the start of lists */
-div.contents > ul, div.textblock ul {
+div.contents > ul,
+div.textblock ul {
     margin-top: 0px;
 }
 
 /* Reduce padding before bullet points */
 ul {
     padding-left: 25px;
-}
-
-/* Remove unnecessary background on navtree arrow hover */
-a:hover > span.arrow {
-    background: none !important;
-}
-
-/* Remove unnecessary underline on navtree arrow hover */
-.item:hover > a[href="javascript:void(0)"] {
-    background: none !important;
-}
-
-/* Remove nav tree focus outline */
-#nav-tree a:focus {
-    outline-style: none !important;
-}
-
-/* Fix anchor link hover color */
-a.anchorlink:hover {
-    color: var(--page-foreground-color) !important;
 }
 
 /* Fix parameter name colors */
@@ -179,12 +156,12 @@ a.anchorlink:hover {
 
 /* Change color of copy to clipboard success button */
 doxygen-awesome-fragment-copy-button.success svg {
-    fill: rgb(168, 14, 14) !important;
+    fill: var(--primary-light-color) !important;
 }
 
 /* Change color of copy to clipboard success button */
 doxygen-awesome-fragment-copy-button.success {
-    border-color: rgb(168, 14, 14) !important;
+    border-color: var(--primary-light-color) !important;
 }
 
 /* Give custom color to custom bubbles */
@@ -289,7 +266,12 @@ th[class^="markdownTableHead"]:first-child,
 th[class^="markdownTableHead"]:last-child,
 table.doxtable tr th:first-child,
 table.doxtable tr th:last-child,
-.fieldtable th {
+.fieldtable th,
+td.memItemLeft,
+td.memItemRight,
+td.memTemplParams,
+td.memTemplItemLeft,
+td.memTemplItemRight {
     border-radius: 0 !important;
     border-top-left-radius: 0 !important;
     border-top-right-radius: 0 !important;
@@ -303,8 +285,10 @@ table.doxtable tr th:last-child,
 }
 
 /* Restore underline on link hover */
-a.el:hover, a.el:focus, a.el:active, .contents > p > a:hover, .contents > p > a:focus, .contents > p > a:active {
-    text-decoration: underline !important;
+a:hover,
+a:focus,
+a:active {
+    text-decoration: underline;
 }
 
 /* Fix overload font */
@@ -317,7 +301,7 @@ h2.memtitle > span.permalink > a {
     margin-top: 0px;
 }
 
-/* Remove sticky TOC */
+/* Disable sticky TOC */
 div.contents .toc {
     position: unset;
     max-height: unset;
@@ -337,4 +321,29 @@ div.header .summary {
     div.contents .toc {
         border-radius: var(--border-radius-small);
     }
+}
+
+/* Reduce border radius on search results window */
+#MSearchResultsWindow {
+    border-radius: var(--border-radius-small);
+}
+
+/* Fix search result font */
+.SRSymbol, a.SRScope {
+    font-family: inherit;
+}
+
+/* Fix unnecessary border on folder table */
+.directory td.desc {
+    border-left: none;
+}
+
+/* Fix selected arrow color */
+#nav-tree .selected .arrow {
+    color: inherit;
+}
+
+/* Fix navigation arrow alignment */
+#nav-tree .arrow {
+    vertical-align: unset;
 }
