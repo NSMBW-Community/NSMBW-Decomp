@@ -19,8 +19,8 @@ public:
 
 class ResAccMultLoader_c : public ResAccMult_c {
 public:
-    ResAccMultLoader_c() NOINLINE {}
-    ~ResAccMultLoader_c() NOINLINE {}
+    ResAccMultLoader_c();
+    ~ResAccMultLoader_c();
 
     bool create(EGG::Heap *, unsigned long);
     bool remove();
@@ -30,7 +30,7 @@ public:
 
 private:
     void *mpResource;
-    d2d::dDvd::loader_c mLoader;
+    dDvd::loader_c mLoader;
 };
 
 } // namespace d2d

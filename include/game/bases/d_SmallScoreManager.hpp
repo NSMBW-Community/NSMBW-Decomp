@@ -1,5 +1,6 @@
 #pragma once
 #include <game/bases/d_base.hpp>
+#include <game/bases/d_global.hpp>
 #include <game/bases/d_resource.hpp>
 #include <game/bases/d_SmallScore.hpp>
 
@@ -28,40 +29,19 @@ private:
     int mSmallScoresIdx;
     int m_4a14;
 
-    /// [Some unused class - but needed here because it has a static initializer.]
-    /// @unofficial
-    class InitializedUnkClass {
-        public:
-            u8 unk[12];
-            float a, b, c, d, e, f, g, h, i, j;
-
-            static class _init {
-                public:
-                    _init() {
-                        if (dSmallScoreManager_c::msIsInitialized) {
-                            return;
-                        }
-                        dSmallScoreManager_c::msInitializedUnkClass.a = dSmallScoreManager_c::c_SMALL_SCALE_X;
-                        dSmallScoreManager_c::msInitializedUnkClass.b = dSmallScoreManager_c::c_SMALL_SCALE_Y;
-                        dSmallScoreManager_c::msInitializedUnkClass.c = dSmallScoreManager_c::c_NORMAL_SCALE_X;
-                        dSmallScoreManager_c::msInitializedUnkClass.d = dSmallScoreManager_c::c_NORMAL_SCALE_Y;
-                        dSmallScoreManager_c::msInitializedUnkClass.e = dSmallScoreManager_c::c_SMALL_SCALE_2_X;
-                        dSmallScoreManager_c::msInitializedUnkClass.f = dSmallScoreManager_c::c_SMALL_SCALE_2_Y;
-                        dSmallScoreManager_c::msInitializedUnkClass.g = dSmallScoreManager_c::c_BIG_SCALE_X;
-                        dSmallScoreManager_c::msInitializedUnkClass.h = dSmallScoreManager_c::c_BIG_SCALE_Y;
-                        dSmallScoreManager_c::msInitializedUnkClass.i = dSmallScoreManager_c::c_SCISSOR_SIZE_X;
-                        dSmallScoreManager_c::msInitializedUnkClass.j = dSmallScoreManager_c::c_SCISSOR_SIZE_Y;
-                        dSmallScoreManager_c::msIsInitialized = 1;
-                    }
-                } _initializer;
-    };
-    /// @unofficial
-    static char msIsInitialized; // [This might also be an auto-generated guard variable]
-    /// @unofficial
-    static InitializedUnkClass msInitializedUnkClass;
 
 public:
     static dSmallScoreManager_c * m_instance;
+
+    /// @unofficial
+    struct GlobalData_s {
+        u8 mUnk[12];
+        float mSmallScaleX, mSmallScaleY;
+        float mNormalScaleX, mNormalScaleY;
+        float mSmallScale2X, mSmallScale2Y;
+        float mBigScaleX, mBigScaleY;
+        float mScissorSizeX, mScissorSizeY;
+    };
 
     static const float c_SMALL_SCALE_X; ///< @unofficial
     static const float c_SMALL_SCALE_Y; ///< @unofficial
@@ -74,4 +54,3 @@ public:
     static const float c_SCISSOR_SIZE_X;
     static const float c_SCISSOR_SIZE_Y;
 };
-

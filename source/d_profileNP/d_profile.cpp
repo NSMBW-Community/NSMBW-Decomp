@@ -1,6 +1,6 @@
 #include <game/bases/d_profile.hpp>
 
-fProfile::fProfilePtr_c profileList[] = {
+static fProfile::fProfilePtr_c profileList[] = {
     { .mBaseProfile  = &g_profile_BOOT },
     { .mBaseProfile  = &g_profile_AUTO_SELECT },
     { .mBaseProfile  = &g_profile_SELECT },

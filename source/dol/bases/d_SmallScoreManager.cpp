@@ -2,7 +2,19 @@
 #include <game/bases/d_game_com.hpp>
 #include <game/framework/f_profile.hpp>
 
-BASE_PROFILE(SMALL_SCORE_MANAGER, dSmallScoreManager_c)
+ACTOR_PROFILE(SMALL_SCORE_MANAGER, dSmallScoreManager_c, 0);
+
+dSmallScoreManager_c *dSmallScoreManager_c::m_instance = nullptr;
+
+template <>
+dSmallScoreManager_c::GlobalData_s dGlobalData_c<dSmallScoreManager_c>::data = {
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    dSmallScoreManager_c::c_SMALL_SCALE_X, dSmallScoreManager_c::c_SMALL_SCALE_Y,
+    dSmallScoreManager_c::c_NORMAL_SCALE_X, dSmallScoreManager_c::c_NORMAL_SCALE_Y,
+    dSmallScoreManager_c::c_SMALL_SCALE_2_X, dSmallScoreManager_c::c_SMALL_SCALE_2_Y,
+    dSmallScoreManager_c::c_BIG_SCALE_X, dSmallScoreManager_c::c_BIG_SCALE_Y,
+    dSmallScoreManager_c::c_SCISSOR_SIZE_X, dSmallScoreManager_c::c_SCISSOR_SIZE_Y
+};
 
 const float dSmallScoreManager_c::c_SMALL_SCALE_X = 0.8f;
 const float dSmallScoreManager_c::c_SMALL_SCALE_Y = 0.8f;
@@ -14,9 +26,6 @@ const float dSmallScoreManager_c::c_SMALL_SCALE_2_X = 0.8f;
 const float dSmallScoreManager_c::c_SMALL_SCALE_2_Y = 0.8f;
 const float dSmallScoreManager_c::c_SCISSOR_SIZE_X = 640.0f;
 const float dSmallScoreManager_c::c_SCISSOR_SIZE_Y = 352.0f;
-
-dSmallScoreManager_c * dSmallScoreManager_c::m_instance = nullptr;
-dSmallScoreManager_c::InitializedUnkClass::_init dSmallScoreManager_c::InitializedUnkClass::_initializer;
 
 dSmallScoreManager_c::dSmallScoreManager_c() {
     dSmallScoreManager_c::m_instance = this;
