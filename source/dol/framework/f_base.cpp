@@ -31,7 +31,7 @@ fBase_c::fBase_c() :
     fManager_c::m_searchManage[idx].prepend(&mMng.mSearchNode);
 
     // Try to get the profile and set the order fields
-    const fProfile::fBaseProfile_c *prof = (*fProfile::sProfileList)[mProfName];
+    const fProfile::fBaseProfile_c *prof = (*fProfile::sProfileList)[mProfName].mBaseProfile;
     if (prof != nullptr) {
         u16 executeOrder = prof->mExecuteOrder;
         mMng.mMainNode.mOrder = executeOrder;
@@ -490,13 +490,13 @@ void fBase_c::setTmpCtData(ProfileName profName, fTrNdBa_c *connectParent, unsig
 fBase_c *fBase_c::fBase_make(ProfileName profName, fTrNdBa_c *connectParent, unsigned long param, u8 groupType) {
 
     // Check if the profile exists
-    if ((*fProfile::sProfileList)[profName] == nullptr) {
+    if ((*fProfile::sProfileList)[profName].mBaseProfile == nullptr) {
         return nullptr;
     }
 
     // Construct the base
     setTmpCtData(profName, connectParent, param, groupType);
-    fBase_c *res = (fBase_c *) (*fProfile::sProfileList)[profName]->mpClassInit();
+    fBase_c *res = (fBase_c *) (*fProfile::sProfileList)[profName].mBaseProfile->mpClassInit();
 
     // Reset the temporary data
     setTmpCtData(0, nullptr, 0, 0);
