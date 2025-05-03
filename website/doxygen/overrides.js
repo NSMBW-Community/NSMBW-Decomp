@@ -227,8 +227,8 @@ document.querySelectorAll('tr.inherit_header').forEach((header, index, headers) 
     }
 
     // Find all relevant headings
-    const headings = Array.from(document.querySelectorAll('h2, h3, h4, h5, h6')).filter(h => !h.classList.contains('memtitle'));
-    if (headings.length === 0) {
+    const headings = Array.from(document.querySelectorAll('h2, h3, h4, h5, h6')).filter(h => !h.classList.contains('memtitle') && h.firstElementChild);
+    if (headings.length <= 1) {
         return;
     }
 

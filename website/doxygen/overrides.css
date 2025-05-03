@@ -5,20 +5,56 @@ html {
     --primary-light-color: #e34141 !important;
 
     /* Replace note colors */
-    --warning-color-dark: #cd830d !important;
-    --invariant-color-dark: #238636 !important;
+    --warning-color-dark: #cd830d;
+    --invariant-color-dark: #238636;
+
+    /* Replace source code colors */
+    --fragment-comment: #6c747f;
+    --fragment-keyword: #d12c37;
+    --fragment-keywordtype: #6b3fbc;
+    --fragment-keywordflow: #d12c37;
+    --fragment-preprocessor: var(--fragment-comment);
+    --fragment-link: #1d61b6;
+    --fragment-token: var(--page-foreground-color);
+}
+
+html.dark-mode {
+
+    /* Replace fragment background with a less colorful version */
+    --fragment-background: var(--code-background);
+
+    /* Replace note colors */
+    --bug-color-dark: #e34141;
+    --todo-color-dark: #9c88ff;
+    --invariant-color-dark: #238636;
+
+    /* Replace source code colors */
+    --fragment-keyword: #e87169;
+    --fragment-keywordtype: #c9a1f5;
+    --fragment-keywordflow: #e87169;
+    --fragment-preprocessor: var(--fragment-comment);
+    --fragment-link: #76bcf9;
+    --fragment-token: var(--page-foreground-color);
 }
 
 @media (prefers-color-scheme: dark) {
     html:not(.light-mode) {
 
         /* Replace fragment background with a less colorful version */
-        --fragment-background: var(--code-background) !important;
+        --fragment-background: var(--code-background);
 
         /* Replace note colors */
-        --bug-color-dark: #e34141 !important;
-        --todo-color-dark: #9c88ff !important;
-        --invariant-color-dark: #238636 !important;
+        --bug-color-dark: #e34141;
+        --todo-color-dark: #9c88ff;
+        --invariant-color-dark: #238636;
+
+        /* Replace source code colors */
+        --fragment-keyword: #e87169;
+        --fragment-keywordtype: #c9a1f5;
+        --fragment-keywordflow: #e87169;
+        --fragment-preprocessor: var(--fragment-comment);
+        --fragment-link: #76bcf9;
+        --fragment-token: var(--page-foreground-color);
     }
 }
 
@@ -89,8 +125,8 @@ table.memberdecls .memSeparator {
 
 /* Remove padding above paragraphs */
 h2.groupheader {
-    margin-top: 0px;
-    margin-bottom: 0px;
+    margin-top: 0px !important;
+    margin-bottom: var(--spacing-medium) !important;
 }
 
 /* Remove "Definition at line XXX" */
@@ -291,6 +327,11 @@ a:active {
     text-decoration: underline;
 }
 
+/* However keep it for code line numbers */
+div.fragment span.lineno a {
+    text-decoration: none;
+}
+
 /* Fix overload font */
 .overload {
     font-family: var(--font-family-monospace);
@@ -333,6 +374,14 @@ div.header .summary {
     font-family: inherit;
 }
 
+/* Fix search result font */
+.SRPage .SRStatus {
+    font-family: inherit;
+    font-size: 10pt;
+    font-style: unset;
+    padding: var(--spacing-small) var(--spacing-medium);
+}
+
 /* Fix unnecessary border on folder table */
 .directory td.desc {
     border-left: none;
@@ -346,4 +395,90 @@ div.header .summary {
 /* Fix navigation arrow alignment */
 #nav-tree .arrow {
     vertical-align: unset;
+}
+
+/* Improve code folding style */
+span.lineno {
+    background: none !important;
+    width: 48px !important;
+    margin-right: var(--spacing-medium) !important;
+}
+
+/* Hide nonfunctional fold-all */
+/* Yes i know it's bad, but using display: none breaks the first line */
+#fold_all {
+    background-image: none !important;
+}
+
+.foldopen span.fold[onclick] {
+    --open-svg: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2016%2016%22%20width%3D%2216%22%20height%3D%2216%22%3E%0A%20%20%3Cpath%20d%3D%22M12.78%205.22a.749.749%200%200%201%200%201.06l-4.25%204.25a.749.749%200%200%201-1.06%200L3.22%206.28a.749.749%200%201%201%201.06-1.06L8%208.939l3.72-3.719a.749.749%200%200%201%201.06%200Z%22%2F%3E%0A%3C%2Fsvg%3E");
+    background-image: none !important;
+    background-color: var(--page-foreground-color);
+    -webkit-mask: var(--open-svg) no-repeat center;
+    mask: var(--open-svg) no-repeat center;
+    -webkit-mask-size: contain;
+    mask-size: contain;
+}
+
+.foldclosed span.fold[onclick] {
+    --closed-svg: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2016%2016%22%20width%3D%2216%22%20height%3D%2216%22%3E%3Cpath%20d%3D%22M6.22%203.22a.75.75%200%200%201%201.06%200l4.25%204.25a.75.75%200%200%201%200%201.06l-4.25%204.25a.751.751%200%200%201-1.042-.018.751.751%200%200%201-.018-1.042L9.94%208%206.22%204.28a.75.75%200%200%201%200-1.06Z%22%3E%3C%2Fpath%3E%3C%2Fsvg%3E");
+    background-image: none !important;
+    background-color: var(--page-foreground-color);
+    -webkit-mask: var(--closed-svg) no-repeat center;
+    mask: var(--closed-svg) no-repeat center;
+    -webkit-mask-size: contain;
+    mask-size: contain;
+}
+
+/* Improve code tooltip style */
+#powerTip {
+    box-shadow: var(--box-shadow);
+    background-color: var(--side-nav-background);
+    border: 1px solid var(--separator-color);
+    opacity: 1;
+    color: var(--page-foreground-color);
+}
+
+#powerTip div {
+    font-family: var(--font-family);
+}
+
+#powerTip div.ttdoc {
+    color: var(--page-foreground-color);
+    font-style: unset;
+}
+
+#powerTip div.ttdeci {
+    color: var(--page-secondary-foreground-color);
+    font-style: italic;
+}
+
+#powerTip a {
+    font-weight: 500 !important;
+}
+
+#powerTip.n:after,  #powerTip.s:after,
+#powerTip.w:after,  #powerTip.e:after,
+#powerTip.nw:after, #powerTip.ne:after,
+#powerTip.sw:after, #powerTip.se:after,
+#powerTip.n:before,  #powerTip.s:before,
+#powerTip.w:before,  #powerTip.e:before,
+#powerTip.nw:before, #powerTip.ne:before,
+#powerTip.sw:before, #powerTip.se:before {
+	display: none;
+}
+
+/* Use a less jarring color for line highlight */
+div.line.glow {
+    background-color: var(--primary-dark-color);
+}
+
+/* Remove glow shadow */
+h1.glow, h2.glow, h3.glow, h4.glow, h5.glow, h6.glow {
+    text-shadow: none;
+}
+
+/* Make placeholder search bar text more visible */
+#MSearchField {
+    color: var(--page-foreground-color);
 }
