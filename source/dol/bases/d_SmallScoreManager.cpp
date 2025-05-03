@@ -4,6 +4,19 @@
 
 BASE_PROFILE(SMALL_SCORE_MANAGER, dSmallScoreManager_c)
 
+float dSmallScoreManager_c::c_SMALL_SCALE_X = 0.8f;
+float dSmallScoreManager_c::c_SMALL_SCALE_Y = 0.8f;
+float dSmallScoreManager_c::c_NORMAL_SCALE_X = 1.0f;
+float dSmallScoreManager_c::c_NORMAL_SCALE_Y = 1.0f;
+float dSmallScoreManager_c::c_SMALL_SCALE_2_X = 0.8f;
+float dSmallScoreManager_c::c_SMALL_SCALE_2_Y = 0.8f;
+float dSmallScoreManager_c::c_BIG_SCALE_X = 1.1f;
+float dSmallScoreManager_c::c_BIG_SCALE_Y = 1.1f;
+float dSmallScoreManager_c::c_SCISSOR_SIZE_X = 640.0f;
+float dSmallScoreManager_c::c_SCISSOR_SIZE_Y = 352.0f;
+
+dSmallScoreManager_c::InitializedUnkClass::_init dSmallScoreManager_c::InitializedUnkClass::_initializer;
+
 dSmallScoreManager_c::dSmallScoreManager_c() {
     dSmallScoreManager_c::m_instance = this;
 }
