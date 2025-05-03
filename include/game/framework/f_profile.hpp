@@ -14,7 +14,7 @@
 /// @brief Creates an actor profile with the given execute/draw order and actor property values.
 /// @hideinitializer
 #define CUSTOM_ACTOR_PROFILE(profName, className, executeOrder, drawOrder, properties) void *className##_classInit() { return new className(); } \
-    const fProfile::fActorProfile_c g_profile_##profName = { &className##_classInit, executeOrder, drawOrder, properties }
+    fProfile::fActorProfile_c g_profile_##profName = { &className##_classInit, executeOrder, drawOrder, properties }
 
 /// @brief Creates a basic profile, using the profile number as the execute and draw order value.
 /// @details The execution order is set to the profile number.
@@ -57,7 +57,10 @@ namespace fProfile {
     };
 
     /// @brief A set of basic information needed to construct an actor base.
-    struct fActorProfile_c : fBaseProfile_c {
+    struct fActorProfile_c {
+        void *(*mpClassInit)(); ///< The constructor function.
+        u16 mExecuteOrder; ///< The execution priority of the base. Lower values mean higher priority.
+        u16 mDrawOrder; ///< The draw priority of the base. Lower values mean higher priority.
 
         /// @brief Various actor-related properties.
         /// @details These properties will be copied @ref dBaseActor_c::mActorProperties "into the actor"
@@ -67,7 +70,12 @@ namespace fProfile {
         u32 mActorProperties;
     };
 
-    extern const fBaseProfile_c *(*sProfileList)[PROFILE_COUNT]; ///< A list of all profiles.
+    union fProfilePtr_c {
+        const fBaseProfile_c *mBaseProfile; ///< A base profile.
+        const fActorProfile_c *mActorProfile; ///< An actor profile.
+    };
+
+    extern const fProfilePtr_c (*sProfileList)[PROFILE_COUNT]; ///< A list of all profiles.
     /// @}
 
 } // namespace fProfile
