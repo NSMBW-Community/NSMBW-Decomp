@@ -63,15 +63,15 @@ private:
 public:
     static dSmallScoreManager_c * m_instance;
 
-    static float c_SMALL_SCALE_X; ///< @unofficial
-    static float c_SMALL_SCALE_Y; ///< @unofficial
-    static float c_NORMAL_SCALE_X; ///< @unofficial
-    static float c_NORMAL_SCALE_Y; ///< @unofficial
-    static float c_SMALL_SCALE_2_X; ///< @unofficial
-    static float c_SMALL_SCALE_2_Y; ///< @unofficial
-    static float c_BIG_SCALE_X; ///< @unofficial
-    static float c_BIG_SCALE_Y; ///< @unofficial
-    static float c_SCISSOR_SIZE_X;
-    static float c_SCISSOR_SIZE_Y;
+    static const float c_SMALL_SCALE_X; ///< @unofficial
+    static const float c_SMALL_SCALE_Y; ///< @unofficial
+    static const float c_NORMAL_SCALE_X; ///< @unofficial
+    static const float c_NORMAL_SCALE_Y; ///< @unofficial
+    static const float c_SMALL_SCALE_2_X; ///< @unofficial
+    static const float c_SMALL_SCALE_2_Y; ///< @unofficial
+    static const float c_BIG_SCALE_X; ///< @unofficial
+    static const float c_BIG_SCALE_Y; ///< @unofficial
+    static const float c_SCISSOR_SIZE_X;
+    static const float c_SCISSOR_SIZE_Y;
 };
 

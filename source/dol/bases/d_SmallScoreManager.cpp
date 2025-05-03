@@ -4,16 +4,16 @@
 
 BASE_PROFILE(SMALL_SCORE_MANAGER, dSmallScoreManager_c)
 
-float dSmallScoreManager_c::c_SMALL_SCALE_X = 0.8f;
-float dSmallScoreManager_c::c_SMALL_SCALE_Y = 0.8f;
-float dSmallScoreManager_c::c_NORMAL_SCALE_X = 1.0f;
-float dSmallScoreManager_c::c_NORMAL_SCALE_Y = 1.0f;
-float dSmallScoreManager_c::c_SMALL_SCALE_2_X = 0.8f;
-float dSmallScoreManager_c::c_SMALL_SCALE_2_Y = 0.8f;
-float dSmallScoreManager_c::c_BIG_SCALE_X = 1.1f;
-float dSmallScoreManager_c::c_BIG_SCALE_Y = 1.1f;
-float dSmallScoreManager_c::c_SCISSOR_SIZE_X = 640.0f;
-float dSmallScoreManager_c::c_SCISSOR_SIZE_Y = 352.0f;
+const float dSmallScoreManager_c::c_SMALL_SCALE_X = 0.8f;
+const float dSmallScoreManager_c::c_SMALL_SCALE_Y = 0.8f;
+const float dSmallScoreManager_c::c_NORMAL_SCALE_X = 1.0f;
+const float dSmallScoreManager_c::c_NORMAL_SCALE_Y = 1.0f;
+const float dSmallScoreManager_c::c_BIG_SCALE_X = 1.1f;
+const float dSmallScoreManager_c::c_BIG_SCALE_Y = 1.1f;
+const float dSmallScoreManager_c::c_SMALL_SCALE_2_X = 0.8f;
+const float dSmallScoreManager_c::c_SMALL_SCALE_2_Y = 0.8f;
+const float dSmallScoreManager_c::c_SCISSOR_SIZE_X = 640.0f;
+const float dSmallScoreManager_c::c_SCISSOR_SIZE_Y = 352.0f;
 
 dSmallScoreManager_c::InitializedUnkClass::_init dSmallScoreManager_c::InitializedUnkClass::_initializer;
 
@@ -149,8 +149,8 @@ void dSmallScoreManager_c::CreateGoalScore(const mVec3_c & pos, int popup_type, 
             mSmallScores2[i].mScale.x = 0.8f;
             mSmallScores2[i].mScale.y = 0.8f;
         } else {
-            mSmallScores2[i].mScale.x = 1.0f;
-            mSmallScores2[i].mScale.y = 1.0f;
+            mSmallScores2[i].mScale.x = 1.1f;
+            mSmallScores2[i].mScale.y = 1.1f;
         }
 
         break;
