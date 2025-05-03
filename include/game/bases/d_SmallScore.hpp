@@ -74,6 +74,8 @@ public:
     void CreateSmallScore(const mVec3_c &, int, int);
     void PosSet(const mVec3_c &);
 
+    void setClipScale(mVec2_c v) { mClipScale = v; }
+
     LytBase_c mLayout;
     mVec2_c mPos;
     mVec2_c mPosDelta;

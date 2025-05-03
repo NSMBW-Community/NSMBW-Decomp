@@ -26,7 +26,7 @@ public:
     dSmallScore_c mSmallScores[30];
     dSmallScore_c mSmallScores2[4];
     int mSmallScoresIdx;
-    u32 m_4a14;
+    int m_4a14;
 
 public:
     static dSmallScoreManager_c * m_instance;

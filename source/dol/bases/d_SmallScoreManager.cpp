@@ -32,11 +32,11 @@ int dSmallScoreManager_c::create() {
     mVec2_c clip = mVec2_c(640.0f, 352.0f);
 
     for (int i = 0; i < ARRAY_SIZE(mSmallScores); i++) {
-        mSmallScores[i].mClipScale = mVec2_c(clip.x, clip.y);
+        mSmallScores[i].setClipScale(clip);
     }
 
     for (int i = 0; i < ARRAY_SIZE(mSmallScores2); i++) {
-        mSmallScores2[i].mClipScale = mVec2_c(clip.x, clip.y);
+        mSmallScores2[i].setClipScale(clip);
     }
 
     mSmallScoresIdx = 0;
@@ -122,14 +122,10 @@ void dSmallScoreManager_c::CreateSmallScore(const mVec3_c &pos, int popup_type, 
 }
 
 void dSmallScoreManager_c::CreateGoalScore(const mVec3_c & pos, int popup_type, int player_type) {
-
-    while (true) {
+    while (m_4a14 < 4) {
         int i = m_4a14;
 
-        if (i >= 4)
-            break;
-
-        if (! mSmallScores2[i].mIsGoalScore) {
+        if (!mSmallScores2[i].mIsGoalScore) {
             mSmallScores2[i].CreateSmallScore(pos, popup_type, player_type);
             mSmallScores2[i].mIsGoalScore = true;
 
