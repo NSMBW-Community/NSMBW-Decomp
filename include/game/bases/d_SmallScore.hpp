@@ -53,7 +53,7 @@ public:
     bool createLayout(d2d::ResAccMultLoader_c *);
     void execute();
     void draw();
-    void doDelete();
+    bool doDelete();
 
     void setPlayer1upColor(int);
     void setPlayer1000Color(int);
