@@ -122,25 +122,25 @@ void dSmallScoreManager_c::CreateSmallScore(const mVec3_c &pos, int popup_type, 
 }
 
 void dSmallScoreManager_c::CreateGoalScore(const mVec3_c & pos, int popup_type, int player_type) {
-    while (m_4a14 < 4) {
+    for (; m_4a14 < 4; m_4a14++) {
         int i = m_4a14;
 
-        if (!mSmallScores2[i].mIsGoalScore) {
-            mSmallScores2[i].CreateSmallScore(pos, popup_type, player_type);
-            mSmallScores2[i].mIsGoalScore = true;
-
-            if (dGameCom::GetAspectRatio() == 0) {
-                mSmallScores2[i].mScale.x = 0.8f;
-                mSmallScores2[i].mScale.y = 0.8f;
-            } else {
-                mSmallScores2[i].mScale.x = 1.0f;
-                mSmallScores2[i].mScale.y = 1.0f;
-            }
-
-            break;
+        if (mSmallScores2[i].mIsGoalScore) {
+            continue;
         }
 
-        m_4a14++;
+        mSmallScores2[i].CreateSmallScore(pos, popup_type, player_type);
+        mSmallScores2[i].mIsGoalScore = true;
+
+        if (dGameCom::GetAspectRatio() == 0) {
+            mSmallScores2[i].mScale.x = 0.8f;
+            mSmallScores2[i].mScale.y = 0.8f;
+        } else {
+            mSmallScores2[i].mScale.x = 1.0f;
+            mSmallScores2[i].mScale.y = 1.0f;
+        }
+
+        break;
     }
 }
 
