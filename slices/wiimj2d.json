@@ -62,6 +62,15 @@
             }
         },
         {
+            "source": "dol/bases/d_SmallScoreManager.cpp",
+            "memoryRanges": {
+                ".text": "0x106360-0x106af0",
+                ".bss": "0x23800-0x23838",
+                ".data": "0x24478-0x244f8",
+                ".sbss": "0x710-0x718"
+            }
+        },
+        {
             "source": "dol/bases/d_wipe_dokan.cpp",
             "memoryRanges": {
                 ".text": "0x15410-0x159f0",
