@@ -9,7 +9,7 @@
 /// @brief Creates a basic profile with the given execute and draw order values.
 /// @hideinitializer
 #define CUSTOM_BASE_PROFILE(profName, className, executeOrder, drawOrder) void *className##_classInit() { return new className(); } \
-    fProfile::fBaseProfile_c g_profile_##profName = { &className##_classInit, executeOrder, drawOrder }
+    const fProfile::fBaseProfile_c g_profile_##profName = { &className##_classInit, executeOrder, drawOrder }
 
 /// @brief Creates an actor profile with the given execute/draw order and actor property values.
 /// @hideinitializer

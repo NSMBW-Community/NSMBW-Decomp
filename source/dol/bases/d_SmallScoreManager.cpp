@@ -15,6 +15,7 @@ const float dSmallScoreManager_c::c_SMALL_SCALE_2_Y = 0.8f;
 const float dSmallScoreManager_c::c_SCISSOR_SIZE_X = 640.0f;
 const float dSmallScoreManager_c::c_SCISSOR_SIZE_Y = 352.0f;
 
+dSmallScoreManager_c * dSmallScoreManager_c::m_instance = nullptr;
 dSmallScoreManager_c::InitializedUnkClass::_init dSmallScoreManager_c::InitializedUnkClass::_initializer;
 
 dSmallScoreManager_c::dSmallScoreManager_c() {
