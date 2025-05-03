@@ -2,4 +2,4 @@
 
 using namespace fProfile;
 
-const fBaseProfile_c *(*fProfile::sProfileList)[PROFILE_COUNT];
+const fProfile::fProfilePtr_c (*fProfile::sProfileList)[PROFILE_COUNT];
