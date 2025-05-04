@@ -1,0 +1,91 @@
+/*!
+@class dRes_c
+@details
+The dRes_c class manages resource archives ( @p \.arc files). It does so by storing multiple
+@ref info_c "archive holders". The class is instantiated automatically by dResMng_c, whose usage is
+recommended for basic resource loading.
+
+## Path Notes
+Resource paths are subject to the following restrictions:
+- The @p \.arc extension is appended automatically to archive names and therefore must not be included.
+- The @p / character is prepended automatically to archive paths and therefore must not be included.
+- Archive names (excluding the file extension) cannot exceed 32 characters.
+- Full paths to archive files (including the appended extension and prepended slash) cannot exceed 80
+characters.
+- Full paths to resources inside an archive should not exceed 250 characters.
+
+## Opening Archives
+Use the ::setRes function to open an archive. For opening multiple archives at once, see
+@ref dResMng_c::setRes "the dResMng_c equivalent". Only up to ::mNumArcs archives can be open at the same
+time.
+
+@note Many kinds of assets are loaded automatically, therefore doing so manually is not necessary.
+These include:
+- Stages
+- Tilesets
+- Backgrounds
+- Actor resources
+- Worldmaps and their resources
+
+### Notes for BRRES Resources
+The game automatically handles the initialization of any BRRES files within an archive, as long as their
+parent directory is named @p g3d .
+
+### Notes for Layout Resources
+For layout archives, it's recommended to use the
+@ref LytBase_c::ReadResource3 "dedicated LytBase_c functions" instead of this class.
+
+## Loading Archives
+Use the ::syncAllRes function to perform the actual archive file loading. The function will return
+@p true until all opened archives are loaded successfully.
+
+## Getting Archive Resources
+Use the ::getRes function to obtain a resource inside a specific archive once it has been loaded.
+Overloads are provided to obtain the size of the resource and optionally detect compressed resources.
+
+If the file could not be found under the archive, a warning is printed to the console.
+Use ::getResSilently if this behaviour is undesired (such as with an optional file).
+
+@note No overload for ::getResSilently with compression support is available.
+
+### Compressed Resources
+While the @ref getRes(const char*, const char*, unsigned long*, int*) const "getRes" function can detect
+compression and return the decompressed data size, it does not actually perform the decompression itself.
+This can be achieved by calling the @ref copyRes(const void*, void*, int, int) "copyRes" function with
+the compressed data and the compression type returned by the previous function, plus a buffer to store
+the decompressed data into.
+
+@note Only LZ77 compression is supported.
+
+## Deleting Archives
+Use the ::deleteRes function to mark an archive as no longer needed by the calling entity.
+This ensures that archives no longer in use are properly disposed of.
+
+## Unused Content
+- ::mSetCallback is an unused callback for when an archive is added to the class. It was probably
+used to debug resource loading.
+*/
+
+/*!
+@class dRes_c::info_c
+@details
+info_c is a high-level interface to resource archives ( @p \.arc files). It is generally not accessed
+directly, but is managed by the outer dRes_c class. It wraps the functionalities of
+mDvd_mountMemArchive_c and EGG::Archive to simplify the loading and iteration of resource archives.
+
+## Loading an Archive
+Use the ::set function to manually schedule an archive for loading. If successful, a
+@ref mpDvdCmd "file loading command" is generated and queued to continue the loading process
+in the background.
+
+## Checking Progress
+Use the ::setRes function to query the @ref LOAD_STATUS_e "archive's loading state". Once the
+loading process is completed, the @ref mpDvdCmd "command" is deleted and the
+@ref mpFiles "archive's resource list" is built using the provided callback.
+
+## Archive Disposal
+Each archive holder features a @ref ::mRefCount "reference count", which acts as a garbage disposal
+mechanism: each time the archive is requested the count increases, while it decreases when its deletion
+is requested. When the counter reaches zero (or the holder is deleted), the archive is automatically
+@ref cleanup "disposed".
+*/

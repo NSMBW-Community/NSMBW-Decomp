@@ -69,13 +69,15 @@ STRIP_FROM_INC_PATH    = include
 # with the commands \{ and \} for these it is advised to use the version @{ and
 # @} or use a double escape (\\{ and \\})
 
-ALIASES                += unused="@xrefitem unused \"\" \"Unused Elements\" \brief [Unused]."
-ALIASES                += unofficial="<dl class=\"section invariant\"><dt><b>Unofficial name.</b></dt></dl>"
+ALIASES                += unused="<div class=\"unused\"></div> @xrefitem unused \"\" \"Unused Elements\""
+ALIASES                += unused{1}="<div class=\"unused\">\1</div> @xrefitem unused \"\" \"Unused Elements\""
+ALIASES                += unofficial="<div class=\"unofficial\"></div>"
+ALIASES                += unofficial{1}="<div class=\"unofficial\">\1</div>"
 ALIASES                += inlineimage="@image{inline} html"
 ALIASES                += imagecaption{1}="<div class=\"image caption\">\1</div>"
-ALIASES                += decompnote{1}="<dl class=\"section note\"><dt><b>Decompilation Note</b></dt><dd>\1</dd></dl>"
-ALIASES                += hint{1}="<dl class=\"section note\"><dt><b>Hint</b></dt><dd>\1</dd></dl>"
-ALIASES                += xlink{2}="<a href=\"\1\">\2</a>"
+ALIASES                += decompnote{1}="<dl class=\"decompnote\"><dt>Decompilation Note</dt><dd>\1</dd></dl>"
+ALIASES                += hint{1}="<dl class=\"hint\"><dt>Hint</dt><dd>\1</dd></dl>"
+ALIASES                += xlink{2}="<a class=\"el\" href=\"\1\">\2</a>"
 
 # The MARKDOWN_ID_STYLE tag can be used to specify the algorithm used to
 # generate identifiers for the Markdown headings. Note: Every identifier is
@@ -198,7 +200,7 @@ RECURSIVE              = YES
 # that contain images that are to be included in the documentation (see the
 # \image command).
 
-IMAGE_PATH             = docs/img
+IMAGE_PATH             = docs
 
 # If the USE_MDFILE_AS_MAINPAGE tag refers to the name of a markdown file that
 # is part of the input, its contents will be placed on the main page
@@ -312,7 +314,7 @@ HTML_EXTRA_FILES       = website/doxygen/logo_big.png \
                          website/doxygen/doxygen-awesome-css/doxygen-awesome-darkmode-toggle.js \
                          website/doxygen/doxygen-awesome-css/doxygen-awesome-fragment-copy-button.js \
                          website/doxygen/doxygen-awesome-css/doxygen-awesome-paragraph-link.js \
-                         website/doxygen/doxygen-awesome-css/doxygen-awesome-interactive-toc.js
+                         website/doxygen/overrides.js
 
 # The HTML_COLORSTYLE tag can be used to specify if the generated HTML output
 # should be rendered with a dark or light theme.

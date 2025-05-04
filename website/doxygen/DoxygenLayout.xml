@@ -4,18 +4,18 @@
   <navindex>
     <tab type="mainpage" visible="yes" title="Introduction"/>
     <tab type="topics" visible="yes" title="Documentation" intro="Documentation by category."/>
-    <tab type="usergroup" title="References" url="[none]">
+    <tab type="usergroup" title="References" url="#">
       <tab type="namespacelist" visible="yes" title="Namespace Reference" intro=""/>
       <tab type="classlist" visible="yes" title="Class Reference" intro=""/>
       <tab type="filelist" visible="yes" title="File Reference" intro=""/>
     </tab>
-    <tab type="usergroup" title="Contributing" url="[none]">
+    <tab type="usergroup" title="Contributing" url="#">
       <tab type="user" title="Build System Overview" url="https://github.com/NSMBW-Community/NSMBW-Decomp/blob/master/README.md"/>
     	<tab type="user" title="Contribution Guidelines" url="@ref md_docs_2CONTRIBUTING"/>
       <tab type="user" title="Decompilation Progress" url="https://nsmbw-community.github.io/NSMBW-Decomp/#progress"/>
       <tab type="user" title="Todo List" url="@ref todo"/>
     </tab>
-    <tab type="usergroup" title="Other Pages" url="[none]">
+    <tab type="usergroup" title="Other Pages" url="#">
       <tab type="user" title="Game Bugs" url="@ref bug"/>
       <tab type="user" title="Unused Elements" url="@ref unused"/>
     </tab>

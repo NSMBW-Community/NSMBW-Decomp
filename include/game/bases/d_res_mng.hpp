@@ -5,18 +5,8 @@
 
 #define MAX_NUM_RES 300 ///< The maximum number of resources that can be loaded at once.
 
-/**
- * @brief A higher-level archive resource management class.
- * @ingroup bases
- * @details
- * ## Overview
- * The dResMng_c class wraps a dRes_c instance to provide higher-level access. For more information on
- * resource loading and management, see dRes_c.
- *
- * ## Bulk Resource Loading
- * Use the ::setRes function to open multiple archives at once. Only up to ::MAX_NUM_RES archives can be
- * open at the same time.
- */
+/// @brief A higher-level archive resource management class.
+/// @ingroup bases
 class dResMng_c {
 private:
     /// @brief A callback class for processing resources that handles loading g3d data.

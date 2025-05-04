@@ -1,0 +1,5 @@
+/*!
+@ingroup game
+@defgroup mlib mLib
+@brief Provides application layer bindings to @ref egg, @ref nw4r and the @ref rvl.
+*/

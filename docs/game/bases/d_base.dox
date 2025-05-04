@@ -1,0 +1,35 @@
+/*!
+@class dBase_c
+@details
+## Overview
+From a technical standpoint, dBase_c does not add any particularly relevant components, which is useful
+for bases that don't need any additional functionality. A few overloaded functions from the fManager_c
+search API (::searchBaseByProfName) and the fBase_c base creation API (::createBase, ::createRoot) are
+provided for convenience.
+
+## Unused Content
+### Base Linking
+The @ref cOwnerSetMg_c "inherited owner set" can be used by bases to link themselves to a specific base
+(called the owner base) anywhere in the @ref fManager_c::m_connectManage "connect tree", avoiding the
+parent/child relationship requirement. The owner base can then iterate through the set and interact with
+the linked bases. When the owner base is deleted, all the linked bases are unlinked automatically.
+
+Several bases use this method to link themselves to dBgGm_c, which however does not use the set at all,
+leaving the feature unused.
+
+### Debug Strings
+Bases store a pointer to a @ref mpKindString "kind string" (which roughly describes the
+@ref fBase_c::GROUP_TYPE_e "group type") and to a @ref mpNameString "profile name string". The former
+can be obtained by calling ::getKindString, while the latter can be obtained by calling ::dProf_getName
+with the profile name.
+
+The ::preExecute function gets the kind string every frame and discards the result immediately.
+
+### Random Seed
+The global variable ::g_basesRandomSeed stores the current random seed. Every base updates it every
+frame when its ::preDraw method is called, but no other code accesses it.
+
+### Callbacks
+The ::initLoader function sets two unused callbacks related to the scrapped relocatable profile system.
+See fBase_c for more details.
+*/

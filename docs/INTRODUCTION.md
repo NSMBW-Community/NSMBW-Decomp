@@ -4,8 +4,6 @@
 
 Welcome to the New Super Mario Bros. Wii decompilation project!
 
-[TOC]
-
 ### Introduction
 New Super Mario Bros. Wii was written in a mix of C and C++ and then compiled to PowerPC (PPC) [assembly code](https://en.wikipedia.org/wiki/Assembly_language) by the **Metrowerks CodeWarrior** compiler. While C/C++ code is not directly executable, PPC Assembly Code can be run directly on the Wii's hardware.
 

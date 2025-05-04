@@ -1,0 +1,4 @@
+/*!
+@defgroup game Game-specific
+@brief All game-specific code.
+*/

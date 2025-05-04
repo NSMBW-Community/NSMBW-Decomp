@@ -1,0 +1,5 @@
+/*!
+@ingroup game
+@defgroup constants Constants
+@brief A set of game constants provided for convenience.
+*/
