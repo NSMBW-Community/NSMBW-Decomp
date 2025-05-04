@@ -1,58 +1,76 @@
 
-////////////////////////
-// Unofficial Bubbles //
-////////////////////////
+////////////////////
+// Custom Bubbles //
+////////////////////
 
-const createCustomBubble = (text) => Object.assign(document.createElement('span'), {
-    className: 'mlabel customlabel',
-    textContent: text
-});
+function createCustomBubble(div, labelContent, shortText, extendedText) {
 
-document.querySelectorAll('div.unofficial').forEach(div => {
-    const span = div.closest('.memitem')?.querySelector('.memproto table tr:first-child td:nth-child(2) span');
-    if (span) {
-        span.parentNode.insertBefore(createCustomBubble('unofficial name'), span);
+    // Get inner text
+    if (div.innerHTML) {
+        extendedText += ' ' + div.innerHTML;
     }
-    div.remove();
-});
 
-////////////////////
-// Unused Bubbles //
-////////////////////
+    // For functions and members
+    if (div.parentElement.className === 'memdoc') {
+        const memproto = div.parentElement.closest('.memitem').querySelector('.memproto');
 
-document.querySelectorAll('div.unused').forEach(div => {
-    const parent = div.parentElement;
+        const label = document.createElement('span');
+        label.classList.add('mlabel', 'customlabel');
+        label.innerText = labelContent;
 
-    // If inside memdoc, inject the bubble in memproto
-    if (parent?.classList.contains('memdoc')) {
-        const span = parent.closest('.memitem')?.querySelector('.memproto table tr:first-child td:nth-child(2) span');
-        if (span) {
-            span.parentNode.insertBefore(createCustomBubble('unused'), span);
-        }
+        // We need to set up the label table if not present
+        if (memproto.firstElementChild.className === 'memname') {
+            const innerTable = memproto.firstElementChild;
+            const table = memproto.appendChild(document.createElement('table'));
+            table.className = 'mlabels';
 
-        // If the detail text is empty, fill it with a placeholder as well
-        if (!div.previousElementSibling) {
-            unusedText = document.createElement('p');
-            unusedText.textContent = 'Unused.';
-            parent.appendChild(unusedText);
-        }
+            const tbody = table.appendChild(document.createElement('tbody'));
+            const tr = tbody.appendChild(document.createElement('tr'));
 
-    // If inside a table cell, find the previous paragraph and append the raw text to it
-    // If the text does not exist, create it
-    } else {
-        const prevSibling = div.previousElementSibling;
-        if (prevSibling) {
-            prevSibling.textContent += 'Unused.';
+            const td1 = tr.appendChild(document.createElement('td'));
+            td1.className = 'mlabels-left';
+            td1.appendChild(innerTable);
+
+            const td2 = tr.appendChild(document.createElement('td'));
+            td2.className = 'mlabels-right';
+
+            const span = td2.appendChild(document.createElement('span'));
+            span.className = 'mlabels';
+            span.appendChild(label);
         } else {
-            unusedText = document.createElement('p');
-            unusedText.textContent = 'Unused.';
-            parent.appendChild(unusedText);
+            const span = memproto.querySelector('table tr:first-child td:nth-child(2) span');
+            if (span) {
+                span.insertBefore(label, span.firstChild);
+            }
+        }
+    }
+
+    // For class/namespace/struct descriptions
+    else if (div.parentElement.className === 'textblock') {
+        note = document.createElement('dl');
+        note.innerHTML = `<dl class="decompnote"><dt>Decompilation Note</dt><dd>${extendedText}</dd></dl>`;
+        div.parentElement.insertBefore(note, div.parentElement.firstChild)
+    }
+
+    // For enum fields
+    else if (div.parentElement.className === 'fielddoc') {
+
+        // If the detail text is empty, fill it with a placeholder
+        if (!div.previousElementSibling) {
+            const p = document.createElement('p');
+            p.textContent = shortText;
+            div.parentElement.appendChild(p);
+        } else {
+            div.previousElementSibling.textContent += ' ' + shortText;
         }
     }
 
     // Remove the div
     div.remove();
-});
+}
+
+document.querySelectorAll('div.unofficial').forEach(div => createCustomBubble(div, 'unofficial name', 'Unofficial name.', 'This element has an unofficial name.'));
+document.querySelectorAll('div.unused').forEach(div => createCustomBubble(div, 'unused', 'Unused.', 'This element is unused.'));
 
 //////////////////////////////////
 // Github Style Markdown Alerts //
@@ -242,11 +260,11 @@ document.querySelectorAll('tr.inherit_header').forEach((header, index, headers) 
     tocContainer.appendChild(tocTitle);
 
     // Add event listener for mobile closing/opening (from interactive TOC script)
-    tocTitle.addEventListener("click", () => {
-        if (tocTitle.parentElement.classList.contains("open")) {
-            tocTitle.parentElement.classList.remove("open")
+    tocTitle.addEventListener('click', () => {
+        if (tocTitle.parentElement.classList.contains('open')) {
+            tocTitle.parentElement.classList.remove('open')
         } else {
-            tocTitle.parentElement.classList.add("open")
+            tocTitle.parentElement.classList.add('open')
         }
     });
 

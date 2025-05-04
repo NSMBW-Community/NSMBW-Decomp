@@ -70,7 +70,9 @@ STRIP_FROM_INC_PATH    = include
 # @} or use a double escape (\\{ and \\})
 
 ALIASES                += unused="<div class=\"unused\"></div> @xrefitem unused \"\" \"Unused Elements\""
+ALIASES                += unused{1}="<div class=\"unused\">\1</div> @xrefitem unused \"\" \"Unused Elements\""
 ALIASES                += unofficial="<div class=\"unofficial\"></div>"
+ALIASES                += unofficial{1}="<div class=\"unofficial\">\1</div>"
 ALIASES                += inlineimage="@image{inline} html"
 ALIASES                += imagecaption{1}="<div class=\"image caption\">\1</div>"
 ALIASES                += decompnote{1}="<dl class=\"decompnote\"><dt>Decompilation Note</dt><dd>\1</dd></dl>"
