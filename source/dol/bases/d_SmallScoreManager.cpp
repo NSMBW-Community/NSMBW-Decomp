@@ -46,8 +46,8 @@ int dSmallScoreManager_c::create() {
         }
     }
 
-    for (int i = 0; i < (int)ARRAY_SIZE(mSmallScores2); i++) {
-        if (! mSmallScores2[i].createLayout(&mResLoader)) {
+    for (int i = 0; i < (int)ARRAY_SIZE(mGoalScores); i++) {
+        if (! mGoalScores[i].createLayout(&mResLoader)) {
             return fBase_c::NOT_READY;
         }
     }
@@ -58,12 +58,12 @@ int dSmallScoreManager_c::create() {
         mSmallScores[i].setClipScale(clip);
     }
 
-    for (int i = 0; i < ARRAY_SIZE(mSmallScores2); i++) {
-        mSmallScores2[i].setClipScale(clip);
+    for (int i = 0; i < ARRAY_SIZE(mGoalScores); i++) {
+        mGoalScores[i].setClipScale(clip);
     }
 
     mSmallScoresIdx = 0;
-    m_4a14 = 0;
+    mGoalScoresIdx = 0;
     return fBase_c::SUCCEEDED;
 }
 
@@ -76,11 +76,11 @@ int dSmallScoreManager_c::execute() {
         mSmallScores[i].execute();
     }
 
-    for (int i = 0; i < (int)ARRAY_SIZE(mSmallScores2); i++) {
-        mSmallScores2[i].execute();
+    for (int i = 0; i < (int)ARRAY_SIZE(mGoalScores); i++) {
+        mGoalScores[i].execute();
     }
 
-    m_4a14 = 0;
+    mGoalScoresIdx = 0;
     return fBase_c::SUCCEEDED;
 }
 
@@ -89,8 +89,8 @@ int dSmallScoreManager_c::draw() {
         mSmallScores[i].draw();
     }
 
-    for (int i = 0; i < (int)ARRAY_SIZE(mSmallScores2); i++) {
-        mSmallScores2[i].draw();
+    for (int i = 0; i < (int)ARRAY_SIZE(mGoalScores); i++) {
+        mGoalScores[i].draw();
     }
 
     return fBase_c::SUCCEEDED;
@@ -107,8 +107,8 @@ int dSmallScoreManager_c::doDelete() {
         }
     }
 
-    for (int i = 0; i < (int)ARRAY_SIZE(mSmallScores2); i++) {
-        if (! mSmallScores2[i].doDelete()) {
+    for (int i = 0; i < (int)ARRAY_SIZE(mGoalScores); i++) {
+        if (! mGoalScores[i].doDelete()) {
             return fBase_c::NOT_READY;
         }
     }
@@ -145,22 +145,22 @@ void dSmallScoreManager_c::CreateSmallScore(const mVec3_c &pos, int popup_type, 
 }
 
 void dSmallScoreManager_c::CreateGoalScore(const mVec3_c & pos, int popup_type, int player_type) {
-    for (; m_4a14 < 4; m_4a14++) {
-        int i = m_4a14;
+    for (; mGoalScoresIdx < 4; mGoalScoresIdx++) {
+        int i = mGoalScoresIdx;
 
-        if (mSmallScores2[i].mIsGoalScore) {
+        if (mGoalScores[i].mIsGoalScore) {
             continue;
         }
 
-        mSmallScores2[i].CreateSmallScore(pos, popup_type, player_type);
-        mSmallScores2[i].mIsGoalScore = true;
+        mGoalScores[i].CreateSmallScore(pos, popup_type, player_type);
+        mGoalScores[i].mIsGoalScore = true;
 
         if (dGameCom::GetAspectRatio() == 0) {
-            mSmallScores2[i].mScale.x = 0.8f;
-            mSmallScores2[i].mScale.y = 0.8f;
+            mGoalScores[i].mScale.x = 0.8f;
+            mGoalScores[i].mScale.y = 0.8f;
         } else {
-            mSmallScores2[i].mScale.x = 1.1f;
-            mSmallScores2[i].mScale.y = 1.1f;
+            mGoalScores[i].mScale.x = 1.1f;
+            mGoalScores[i].mScale.y = 1.1f;
         }
 
         break;
@@ -169,17 +169,14 @@ void dSmallScoreManager_c::CreateGoalScore(const mVec3_c & pos, int popup_type, 
 
 void dSmallScoreManager_c::GoalScoreExecute(const mVec3_c & pos, int player_type) {
     int i = 0;
-    if (mSmallScores2[0].mIsGoalScore && (player_type == mSmallScores2[0].mPlayerType)) {
-        i = 0;
-    } else if (mSmallScores2[1].mIsGoalScore && (player_type == mSmallScores2[1].mPlayerType)) {
-        i = 1;
-    } else if (mSmallScores2[2].mIsGoalScore && (player_type == mSmallScores2[2].mPlayerType)) {
-        i = 2;
-    } else if (mSmallScores2[3].mIsGoalScore && (player_type == mSmallScores2[3].mPlayerType)) {
-        i = 3;
+    for (int j = 0; j < ARRAY_SIZE(mGoalScores); j++) {
+        if (mGoalScores[j].mIsGoalScore && (player_type == mGoalScores[j].mPlayerType)) {
+            i = j;
+            break;
+        }
     }
 
-    if (mSmallScores2[i].mIsGoalScore) {
-        mSmallScores2[i].PosSet(pos);
+    if (mGoalScores[i].mIsGoalScore) {
+        mGoalScores[i].PosSet(pos);
     }
 }

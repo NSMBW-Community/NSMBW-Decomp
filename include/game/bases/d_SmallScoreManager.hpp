@@ -22,13 +22,12 @@ public:
     void GoalScoreExecute(const mVec3_c &, int);
 
 private:
-    u32 m_70;
+    u8 m_70[4]; // unused
     d2d::ResAccMultLoader_c mResLoader;
     dSmallScore_c mSmallScores[30];
-    dSmallScore_c mSmallScores2[4];
+    dSmallScore_c mGoalScores[4];
     int mSmallScoresIdx;
-    int m_4a14;
-
+    int mGoalScoresIdx;
 
 public:
     static dSmallScoreManager_c * m_instance;
