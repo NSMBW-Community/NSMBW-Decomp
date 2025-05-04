@@ -314,7 +314,6 @@ HTML_EXTRA_FILES       = website/doxygen/logo_big.png \
                          website/doxygen/doxygen-awesome-css/doxygen-awesome-darkmode-toggle.js \
                          website/doxygen/doxygen-awesome-css/doxygen-awesome-fragment-copy-button.js \
                          website/doxygen/doxygen-awesome-css/doxygen-awesome-paragraph-link.js \
-                         website/doxygen/doxygen-awesome-css/doxygen-awesome-interactive-toc.js \
                          website/doxygen/overrides.js
 
 # The HTML_COLORSTYLE tag can be used to specify if the generated HTML output
