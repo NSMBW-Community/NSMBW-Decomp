@@ -121,8 +121,7 @@ for slice_file in slices:
 if args.objdiff_o:
     sys.exit()
 
-count_compiled_used = 0
-count_sliced_used = 0
+unresolved_rel_symbols = set()
 
 for slice_file in slices:
 
@@ -136,30 +135,16 @@ for slice_file in slices:
         slice_dol(Path(f'{ORIGDIR}/{slice_file.meta.name}'), Path(f'{BUILDDIR}/sliced/{slice_name_stem}'))
     print_success('Sliced', slice_file.meta.name, end='.\n')
 
-    # Step 3: link object files
+    # Step 3: link object files (.preplf for RELs)
     ldflags_dol = '-proc gekko -fp hard'
-    ldflags_rel = '-proc gekko -fp hard -sdata 0 -sdata2 0 -m _prolog -opt_partial -strip_partial'
-    out_file = slice_name_stem + ('.plf' if slice_is_rel else '.elf')
+    ldflags_rel = '-proc gekko -fp hard -sdata 0 -sdata2 0 -m _prolog -r'
+    out_file = slice_name_stem + ('.preplf' if slice_is_rel else '.elf')
 
     # Select files
-    file_names: list[str] = []
-    for slice in slice_file.slices:
-        compiled_path = Path(f'{BUILDDIR}/compiled/{slice_name_stem}/{slice.slice_name}')
-        sliced_path = Path(f'{BUILDDIR}/sliced/{slice_name_stem}/{slice.slice_name}')
-
-        use_file: Path = None
-        if slice.slice_src and not slice.non_matching:
-            use_file = compiled_path
-            count_compiled_used += 1
-        else:
-            use_file = sliced_path
-            count_sliced_used += 1
-
-        if use_file:
-            file_names.append(use_file)
+    file_names = [BUILDDIR / o_file for o_file in slice_file.get_o_files()]
 
     base_lcf_file: Path = LCF_TEMPLATE_REL if slice_is_rel else LCF_TEMPLATE_DOL
-    out_lcf_file = f'{BUILDDIR}/{slice_name_stem}.lcf'
+    out_lcf_file = f'{BUILDDIR}/{slice_name_stem}' + ('_preplf.lcf' if slice_is_rel else '.lcf')
 
     with open(base_lcf_file) as f:
         base_lcf_contents = f.read()
@@ -211,6 +196,51 @@ for slice_file in slices:
     if out.returncode != 0:
         sys.exit(out.returncode)
 
+    if slice_is_rel:
+        # We need the unresolved symbols from all RELs so that the linker does not deadstrip them.
+        # We do this by checking the symbols in the .preplf with an undefined section index.
+        preplf_file: ElfFile = ElfFile.read(open(f'{BUILDDIR}/{out_file}', 'rb').read())
+        symtab: ElfSymtab = preplf_file.get_section('.symtab')
+        for sym in symtab.syms:
+            if sym.st_shndx == 0 and not re.match('R_([0-9a-fA-F]+)_([0-9a-fA-F]+)_([0-9a-fA-F]+)', sym.name):
+                unresolved_rel_symbols.add(sym.name)
+    print_success('Linked', slice_file.meta.name, end='.\n')
+
+# Step 3.5 (only RELs): Create final PLFs
+for slice_file in slices:
+    if slice_file.meta.type != SliceType.REL:
+        continue
+
+    slice_name_stem = Path(slice_file.meta.name).stem
+
+    file_names = [BUILDDIR / o_file for o_file in slice_file.get_o_files()]
+
+    base_lcf_file: Path = LCF_TEMPLATE_REL if slice_is_rel else LCF_TEMPLATE_DOL
+    out_lcf_file = f'{BUILDDIR}/{slice_name_stem}.lcf'
+
+    with open(base_lcf_file) as f:
+        base_lcf_contents = f.read()
+
+    unresolved_rel_symbols.add('_prolog')
+    unresolved_rel_symbols.add('_epilog')
+    unresolved_rel_symbols.add('_unresolved')
+
+    with open(out_lcf_file, 'w') as f:
+        f.write(base_lcf_contents)
+
+        f.write('FORCEACTIVE {\n\t')
+        f.write('\n\t'.join(sorted(unresolved_rel_symbols)))
+        f.write('\n}\n\n')
+
+    out_file = f'{BUILDDIR}/{slice_name_stem}.plf'
+    cmd = [] if sys.platform == 'win32' else ['wine']
+    ldflags = '-w off -proc gekko -fp hard -sdata 0 -sdata2 0 -m _prolog -r1 -strip_partial'
+    cmd.extend([LD, *ldflags.split(' '), *file_names, '-lcf', out_lcf_file, '-o', out_file])
+    print_cmd(*cmd)
+    out = subprocess.run(cmd)
+    if out.returncode != 0:
+        sys.exit(out.returncode)
+
 # Step 4: build main.dol
 build_dol(Path(f'{BUILDDIR}/wiimj2d.elf'))
 
@@ -221,6 +251,3 @@ build_rel(out_rel_names[0], out_rel_names[1:], ALIAS_FILE, fake_path)
 
 # Done!
 print_success('Successfully built binaries!')
-total_used = count_compiled_used + count_sliced_used
-perc = count_compiled_used / total_used
-print(total_used, 'object files used, of which', count_compiled_used, 'were compiled files.', f'({round(perc*100, 1)}% compiled files)')
