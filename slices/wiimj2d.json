@@ -233,6 +233,13 @@
             }
         },
         {
+            "source": "dol/bases/d_last_actor.cpp",
+            "memoryRanges": {
+                ".text": "0x11e5c0-0x11e730",
+                ".data": "0x26688-0x266d8"
+            }
+        },
+        {
             "source": "dol/sLib/s_Phase.cpp",
             "memoryRanges": {
                 ".text": "0x158fc0-0x159090"
