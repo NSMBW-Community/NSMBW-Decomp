@@ -8,7 +8,7 @@
 #include <game/framework/f_profile.hpp>
 #include <lib/egg/effectmanager.hpp>
 
-ACTOR_PROFILE(LASTACTOR, dLastActor_c, 0)
+BASE_PROFILE(LASTACTOR, dLastActor_c);
 
 int dLastActor_c::create() {
     return fBase_c::SUCCEEDED;
