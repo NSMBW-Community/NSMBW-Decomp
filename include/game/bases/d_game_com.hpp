@@ -49,7 +49,6 @@ namespace dGameCom {
     // Other APIs //
     ////////////////
 
-    bool someCheck(mVec3_c *a, AreaBound *b);
     void CreateSmallScore(const mVec3_c &, int, int, bool);
     u8 GetAspectRatio();
     bool PlayerEnterCheck(int);

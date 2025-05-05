@@ -51,7 +51,7 @@ public:
     char pad2[0x348];
     int mCharIDs[4];
     bool mIsWorldSelect; ///< Whether the World Select Menu is being displayed.
-    int pad2[7];
+    int pad3[7];
     int field_3b4;
 
     static dInfo_c *m_instance;
