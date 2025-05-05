@@ -399,6 +399,15 @@
             }
         },
         {
+            "source": "dol/bases/d_a_iceball.cpp",
+            "nonMatching": true,
+            "memoryRanges": {
+                ".text": "0x11cc70-0x11e5c0",
+                ".bss": "0x24428-0x24588",
+                ".data": "0x26408-0x26688"
+            }
+        },
+        {
             "source": "dol/bases/d_last_actor.cpp",
             "memoryRanges": {
                 ".text": "0x11e5c0-0x11e730",
