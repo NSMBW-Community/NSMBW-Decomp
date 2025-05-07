@@ -210,11 +210,11 @@ public:
     void initScroll();
 
     void fn_8007ac40(dBgSomeInfo_c *, int); ///< @unofficial
-    void fn_8007ba70(dBgSomeInfo_c *); ///< @unofficial
+    void fn_8007ba70(const dBgSomeInfo_c *); ///< @unofficial
     float fn_8007bba0(dBgSomeInfo_c *); ///< @unofficial
     float fn_8007bbf0(dBgSomeInfo_c *); ///< @unofficial
     bool fn_8007bc40(dBgSomeInfo_c *, float); ///< @unofficial
-    mVec2_c fn_8007bd40(dBgSomeInfo_c *, float, float, float *); ///< @unofficial
+    mVec2_c fn_8007bd40(dBgSomeInfo_c *, float, float); ///< @unofficial
     float fn_8007c7d0(float); ///< @unofficial
     void fn_8007ca90(dBgSomeInfo_c *, int, int); ///< @unofficial
     void fn_8007cd70(dBgSomeInfo_c *, dBgSomeInfo_c *, int); ///< @unofficial
