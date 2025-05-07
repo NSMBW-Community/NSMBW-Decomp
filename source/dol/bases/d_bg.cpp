@@ -1374,7 +1374,7 @@ void dBg_c::fn_8007ac40(dBgSomeInfo_c *info, int arg1) {
         scale = 0.9f;
     }
     float someTmp2 = tmpUp * scale;
-    mVec2_c r = fn_8007bd40(info, zoom, scale, &mWaveRelated[0x4d]);
+    mVec2_c r = fn_8007bd40(info, zoom, scale);
     float someTmp = tmpRight;
     if (mLimitRelated == 1) {
         r.x = r.y;
@@ -1385,7 +1385,7 @@ void dBg_c::fn_8007ac40(dBgSomeInfo_c *info, int arg1) {
         someTmp2 = someTmp;
     }
     if (mLimitRelated == 2) {
-        if ((mLimitRelated2 == 5 || mLimitRelated2 == 6) || (mLimitRelated2 == 1 || mLimitRelated2 == 2)) {
+        if (mLimitRelated2 == 5 || mLimitRelated2 == 6 || mLimitRelated2 == 1 || mLimitRelated2 == 2) {
             if (invScale < m_bg_p->getZoomTargetMax() && spL2 > someTmp) {
                 someTmp = spL2;
             }
@@ -1452,7 +1452,7 @@ void dBg_c::fn_8007ac40(dBgSomeInfo_c *info, int arg1) {
             }
         }
         if (mMoreFloats5[0] == tgMax) {
-            if (mMoreFloats5[2] != tgMid ) {
+            if (mMoreFloats5[2] != tgMid) {
                 b.mRight = m_90018;
                 if (mMoreFloats5[1] <= b.mRight) {
                     mMoreFloats5[1] = b.mRight;
@@ -1481,19 +1481,15 @@ void dBg_c::fn_8007ac40(dBgSomeInfo_c *info, int arg1) {
             calcArg = 0.1;
             scale = 1.0f;
         }
-        if (m_9001c == 0) {
-            sLib::addCalc(&m_90018, fVar28, fVar25, scale * (someTmp2 * someTmp2 * someTmp2 * 6.0f + 1.0f), calcArg);
-        }
+        sLib::addCalc(&m_90018, fVar28, fVar25, scale * (someTmp2 * someTmp2 * someTmp2 * 6.0f + 1.0f), calcArg);
         fVar25 = m_90018;
-        if (fVar25 < mMoreFloats5[1]) {
+        if (fVar25 > mMoreFloats5[1]) {
             if (std::fabs(fVar28 - fVar25) > 0.1f) {
                 m_9001c = 90;
             }
             m_90018 = mMoreFloats5[1];
         }
-    } else if (m_90018 <= mMoreFloats5[0]) {
-        mMoreFloats5[1] = mMoreFloats5[2];
-    } else {
+    } else if (mMoreFloats5[0] > m_90018) {
         fVar25 = 0.5f;
         float calcArg = 0.0015f;
         float scale = 0.003f;
@@ -1506,31 +1502,33 @@ void dBg_c::fn_8007ac40(dBgSomeInfo_c *info, int arg1) {
             sLib::addCalc(&m_90018, fVar28, fVar25, scale * (someTmp2 * someTmp2 * someTmp2 * 6.0f + 1.0f), calcArg);
         }
         mMoreFloats5[1] = mMoreFloats5[2];
+    } else {
+        mMoreFloats5[1] = mMoreFloats5[2];
     }
     if (m_9001c != 0) {
         m_9001c--;
     }
-    if (zoom < m_90018) {
+    if (m_90018 > zoom) {
         m_90018 = zoom;
     }
-    if (zoom > m_90018) {
+    if (m_90018 < zoom) {
         m_90018 = zoom;
-    } else if (tgMax < m_90018) {
+    } else if (m_90018 > tgMax) {
         m_90018 = tgMax;
     }
     float copy_90018 = m_90018;
     float val = -(mDLimit - mULimit);
-    if (val < m_90018 - mVideo::getLayoutHeight()) {
+    if (val < m_90018 * mVideo::getLayoutHeight()) {
         m_90018 = m_90018 / mVideo::getLayoutHeight();
     }
     if (getAreaUpLimitScroll() > -999999.0f) {
-        float upLimit = getAreaUpLimitScroll();
+        float divres = (mD - getAreaUpLimitScroll()) / mVideo::getLayoutHeight();
         if (mU8s[2] == 0) {
             m_90964 = 1.0f;
         } else {
             sLib::addCalc(&m_90964, 0.0f, 0.5f, 0.01f, 0.01f);
         }
-        copy_90018 += m_90964 * (val / fVar28 - copy_90018);
+        copy_90018 += m_90964 * (divres - copy_90018);
     }
     mPrevSomeSize.x = lWidth * copy_90018;
     mPrevSomeSize.y = lHeight * copy_90018;
@@ -1568,9 +1566,9 @@ void dBg_c::fn_8007ac40(dBgSomeInfo_c *info, int arg1) {
     if (dScStage_c::m_loopType != 2) {
         newW = getLeftLimit();
         float d = getRightLimit() - newW;
-        if (newW <= w) {
+        if (newW < w) {
             newW = w;
-            if (d < w) {
+            if (d > w) {
                 newW = d;
             }
         }
@@ -1578,11 +1576,11 @@ void dBg_c::fn_8007ac40(dBgSomeInfo_c *info, int arg1) {
     if (!check && dScStage_c::m_loopType != 1) {
         mPrevSomePos.x = newW;
     }
-    int iVar9 = 0;
+    u8 iVar9 = 0;
     float fnres = fn_8007bbf0(info);
     float fVar12 = 0.5f;
     if (fnres < mPrevSomePos.y && (m_90009 == 3 || m_9000a == 3)) {
-        iVar9 = 16;
+        iVar9 |= 0x10;
         fVar12 = fnres;
     }
     float fnres2 = fn_8007bba0(info);
@@ -1590,23 +1588,23 @@ void dBg_c::fn_8007ac40(dBgSomeInfo_c *info, int arg1) {
         if (m_90009 == 1 || m_9000a == 2) {
             iVar9 = 1;
             fVar12 = fnres2;
-        } else if (m_9000a == 3 && iVar9 == 0) {
+        } else if (m_9000a == 3 && (iVar9 & 0x10) == 0) {
             int rounded = fnres2 - mPrevSomePos.y;
             mBounds3[3] = rounded;
         }
     }
-    if (iVar9 != 0 && iVar9 == 17 && (m_90009 == 1 || m_9000a == 1)) {
+    if (iVar9 == 0 || iVar9 != 17 && (m_90009 == 1 || m_9000a == 1)) {
         fVar12 = fnres2;
     }
     if (iVar9 != 0) {
-        if (fVar12 < (int) mPrevSomePos.y) {
+        if ((int) fVar12 < (int) mPrevSomePos.y) {
             float diff = mPrevSomePos.y - fVar12;
             if (diff < 16.0f) {
                 mMoreFloats5[2] -= diff;
             } else {
                 mMoreFloats5[2] -= 16.0f;
             }
-        } else if ((int) mPrevSomePos.y < fVar12) {
+        } else if ((int) mPrevSomePos.y < (int) fVar12) {
             float diff = fVar12 - mPrevSomePos.y;
             if (diff < 16.0f) {
                 mMoreFloats5[2] += diff;
@@ -1621,36 +1619,95 @@ void dBg_c::fn_8007ac40(dBgSomeInfo_c *info, int arg1) {
     if (info->mBounds.mDown < mPrevSomePos.y - mPrevSomeSize.y - 32.0f) {
         info->mBounds.mDown = mPrevSomePos.y - mPrevSomeSize.y - 32.0f;
     }
+    float dVar12 = mMoreFloats5[4] + lHeight * 0.5f + (copy_90018 - 1.0f);
     calcLookatOffsLimit();
-    // ...
+
+    float fVar14 = mMoreFloats6[0];
+    if (getAreaUpLimitScroll() > -999999.0f) {
+        if (getAreaUpLimitScroll() < dBgParameter_c::ms_Instance_p->mPos.y) {
+            mU8s[2] = 1;
+        } else if (getAreaUpLimitScroll() < fVar14) {
+            if (!dBg_isFlyPlayer() && copy_90018 <= -(mD - getAreaUpLimitScroll()) / mVideo::getLayoutHeight()) {
+                fVar14 = getAreaUpLimitScroll();
+            }
+        }
+    }
+    float upperBound = mULimit;
+    float lowerBound = mDLimit + mPrevSomeSize.y;
+    float finalY     = fVar14;
+
+    if (finalY < upperBound) {
+        mMoreFloats5[4] += lowerBound - finalY;
+        finalY = lowerBound;
+    } else if (finalY > lowerBound) {
+        mMoreFloats5[4] -= upperBound - finalY;
+        finalY = upperBound;
+    }
+
+    if (mLimitRelated == 6) {
+        mMoreFloats5[4] = 0.0f;
+        finalY = lowerBound;
+    }
+
+    if (m_9095c == 0) {
+        if ((stage->mCurrCourse != STAGE_DOOMSHIP || stage->mCurrFile != 2) && stage->mCurrCourse != STAGE_CASTLE) {
+            mMoreFloats5[4] = m_90960 - dVar12;
+        }
+        m_9095c = 1;
+    }
+
+    if (arg1 != 0 || getAreaUpLimitScroll() <= -999999.0f) {
+        mPrevSomePos.y = finalY;
+    } else {
+        sLib::chase(&mPrevSomePos.y, finalY, 16.0f);
+    }
+
+    if (m_900a7 != 0) {
+        mPrevSomePos.x = m_900ac - 0.5f * mPrevSomeSize.x;
+        mPrevSomePos.y = m_900b0 + mPrevSomeSize.y;
+    }
+
+    // Auto-scroll backup
+    if (!mAutoscrolls[0].mActive) {
+        mAutoscrolls[0].mPos.x = mPrevSomePos.x;
+        mAutoscrolls[0].mPos.y = mPrevSomePos.y;
+    }
 }
 
-void dBg_c::fn_8007ba70(dBgSomeInfo_c *info) {
-    float fVar1 = info->mBounds.mLeft;
+struct stack_struct_s {
+    float x;
+    float padding[2];
+    float y;
+    float padding2;
+};
+
+void dBg_c::fn_8007ba70(const dBgSomeInfo_c *info) {
+    stack_struct_s thing;
+    thing.y = info->mBounds.mRight;
+    thing.x = info->mBounds.mLeft;
+    float smth = thing.y;
     float w = mPrevSomeSize.x;
     float fVar4;
     if (m_90009 == 2 || m_9000a == 2) {
         fVar4 = 112.0f - dBgParameter_c::getInstance()->m_78;
-        fVar1 = info->mBounds.mRight;
+        smth = thing.x;
     } else {
         fVar4 = w - (112.0f - dBgParameter_c::getInstance()->m_78);
     }
-    fVar1 -= fVar4;
-    if (fVar1 - mPrevSomePos.x > 6.0f) {
-        fVar1 = mPrevSomePos.x + 6.0f;
-    } else if (fVar1 - mPrevSomePos.x < -6.0f) {
-        fVar1 = mPrevSomePos.x - 6.0f;
+    float tmp = smth - fVar4;
+    if (tmp - mPrevSomePos.x > 6.0f) {
+        tmp = mPrevSomePos.x + 6.0f;
+    } else if (tmp - mPrevSomePos.x < -6.0f) {
+        tmp = mPrevSomePos.x - 6.0f;
     }
     float ll = getLeftLimit();
     float d = getRightLimit() - w;
-    float newW = fVar1;
+    float newW = tmp;
     if (dScStage_c::m_loopType != 2) {
-        newW = ll;
-        if (fVar1 < newW) {
-            newW = fVar1;
-            if (d > w) {
-                newW = d;
-            }
+        if (tmp < newW) {
+            newW = ll;
+        } else if (newW > d) {
+            newW = d;
         }
     }
     mPrevSomePos.x = newW;
@@ -1699,50 +1756,51 @@ bool dBg_c::fn_8007bc40(dBgSomeInfo_c *info, float f) {
     }
 }
 
-mVec2_c dBg_c::fn_8007bd40(dBgSomeInfo_c *info, float f1, float f2, float *f3) {
+mVec2_c dBg_c::fn_8007bd40(dBgSomeInfo_c *info, float f1, float f2) {
     mVec2_c result(0.0f, 0.0f);
 
-    float fVar1;
-    float fVar2;
-    float fVar3;
-    float fVar4;
-    float fVar5;
-    float fVar6;
-    float fVar7;
-    float fVar8;
-
-    fVar5 = mVideo::l_rayoutHeightF;
-    fVar4 = mVideo::l_rayoutWidthF;
-    fVar7 = getLeftLimit();
-    fVar8 = getRightLimit();
-    fVar1 = 112.0f;
-    fVar2 = mULimit;
-    fVar3 = mDLimit;
-    fVar6 = fVar1;
-    if (f3[0] - 112.0f < fVar7) {
-        fVar6 = f3[0] - fVar7;
+    float fVar4 = mVideo::getLayoutWidth();
+    float fVar5 = mVideo::getLayoutHeight();
+    float ll = getLeftLimit();
+    float rl = getRightLimit();
+    float uLim = mULimit;
+    float dLim = mDLimit;
+    float fVar1 = 112.0f;
+    float tmpLeft = info->mBounds.mLeft - 112.0f;
+    float fVar6 = 112.0f;
+    float tmpRight = info->mBounds.mRight + 112.0f;
+    if (tmpLeft < ll) {
+        fVar6 = info->mBounds.mLeft - ll;
     }
-    if (fVar8 < f3[1] + 112.0f) {
-        fVar1 = fVar8 - f3[1];
+    if (tmpRight > rl) {
+        fVar1 = rl - info->mBounds.mRight;
     }
-    fVar7 = 1.0f;
-    fVar4 = (fVar1 + fVar6 + (f3[1] - f3[0])) / fVar4;
-    if ((fVar4 >= 1.0f) && (fVar7 = fVar4, f1 < fVar4)) {
-        fVar7 = f1;
+    float resX = 1.0f;
+    float tmpX = (fVar1 + (info->mBounds.mRight - info->mBounds.mLeft) + fVar6) / fVar4;
+    if (tmpX < 1.0f) {
+        resX = tmpX;
+    } else if (tmpX > f1) {
+        resX = f1;
     }
     fVar1 = 88.0f;
     fVar4 = 80.0f;
-    if (fVar2 < f3[2] + 88.0f) {
-        fVar1 = fVar2 - f3[2];
+    float tmpUp = info->mBounds.mUp + 88.0f;
+    float tmpDown = info->mBounds.mDown - 80.0f;
+    if (tmpUp > uLim) {
+        fVar1 = uLim - info->mBounds.mUp;
     }
-    if (f3[3] - 80.0f < fVar3) {
-        fVar4 = f3[3] - fVar3;
+    if (tmpDown < dLim) {
+        fVar4 = info->mBounds.mDown - dLim;
     }
-    fVar2 = 1.0f;
-    fVar5 = ((fVar4 + fVar1 + (f3[2] - f3[3])) * f2) / fVar5;
-    if ((fVar5 >= 1.0f) && (fVar2 = fVar5, f1 < fVar5)) {
-        fVar2 = f1;
+    float resY = 1.0f;
+    float tmpY = ((fVar4 + (info->mBounds.mUp - info->mBounds.mDown) + fVar1) * f2) / fVar5;
+    if (tmpY < 1.0f) {
+        resY = tmpY;
+    } else if (tmpY > f1) {
+        resY = f1;
     }
+    result.x = resX;
+    result.y = resY;
 
     return result;
 }
@@ -2070,8 +2128,10 @@ void dBg_c::fn_8007ca90(dBgSomeInfo_c *info, int i1, int i2) {
 }
 
 void dBg_c::fn_8007cd70(dBgSomeInfo_c *info1, dBgSomeInfo_c *info2, int i1) {
-    mVec2_c p = dBgParameter_c::getInstance()->mPos;
-    mVec2_c s = dBgParameter_c::getInstance()->mSize;
+    float px = dBgParameter_c::getInstance()->mPos.x;
+    float py = dBgParameter_c::getInstance()->mPos.y;
+    float sx = dBgParameter_c::getInstance()->mSize.x;
+    float sy = dBgParameter_c::getInstance()->mSize.y;
     bool cond = false;
     if ((dActor_c::mExecStop & 2) != 0) {
         return;
@@ -2094,59 +2154,57 @@ void dBg_c::fn_8007cd70(dBgSomeInfo_c *info1, dBgSomeInfo_c *info2, int i1) {
     }
     bool cond2 = false;
     bool bVar14 = false;
-    dScStage_c *stage = dScStage_c::m_instance;
-    dBgParameter_c *bgParam = dBgParameter_c::getInstance();
     info1->m_20 = info2->m_20;
     info1->m_24 = info2->m_24;
     info1->m_28 = info2->m_28;
     info1->m_2c = info2->m_2c;
     info1->m_30 = info2->m_30;
+    dBgParameter_c *bgParam = dBgParameter_c::getInstance();
+    dScStage_c *stage = dScStage_c::m_instance;
     dBgBound_c b = info1->mBounds;
     mVec2_c tmp((b.mLeft + b.mRight) * 0.5f, (b.mUp + b.mDown) * 0.5f);
     float l = info2->mBounds.mLeft;
-    if (info2->mBounds.mLeft < p.x) {
-        l = p.x;
-    }
     float r = info2->mBounds.mRight;
-    if (p.x + s.x < info2->mBounds.mRight) {
-        r = p.x + s.x;
-    }
     float u = info2->mBounds.mUp;
-    if (info2->mBounds.mUp < p.y) {
-        u = p.y;
-    }
     float d = info2->mBounds.mDown;
-    if (info2->mBounds.mDown < p.y + s.y) {
-        d = p.y + s.y;
+    if (l < px) {
+        l = px;
+    }
+    if (r > px + sx) {
+        r = px + sx;
+    }
+    if (u > py) {
+        u = py;
+    }
+    if (d < py - sy) {
+        d = py - sy;
     }
     float fVar4 = 32.0f;
     if (dScStage_c::m_loopType == 2 || i1 == 1) {
-        info1->mBounds.mLeft = l;
         info1->mBounds.mRight = r;
+        info1->mBounds.mLeft = l;
         info1->mBounds.mUp = u + 8.0f;
-        info1->mBounds.mDown = d - 8.0f;
+        info1->mBounds.mDown = d;
     } else {
         if (m_90009 == 3) {
             fVar4 = 80.0f;
         }
-        if (b.mUp < info2->mBounds.mUp && p.y - fVar4 < info2->mBounds.mUp ||
-            d < b.mDown && d < fVar4 + (p.y - s.y)
-        ) {
+        if (b.mUp > u && py - fVar4 > u || d < b.mDown && d < fVar4 + (py - sy)) {
             cond2 = true;
         }
-        float w1 = (info1->mBounds.mRight - info1->mBounds.mLeft) * 0.5f;
-        float h1 = (info1->mBounds.mUp - info1->mBounds.mDown) * 0.5f;
-        float w2 = (info2->mBounds.mRight - info2->mBounds.mLeft) * 0.5f;
-        float h2 = (info2->mBounds.mUp - info2->mBounds.mDown) * 0.5f;
+        float w1 = (info1->mBounds.mRight + info1->mBounds.mLeft) * 0.5f;
+        float h1 = (info1->mBounds.mUp + info1->mBounds.mDown) * 0.5f;
+        float w2 = (info2->mBounds.mRight + info2->mBounds.mLeft) * 0.5f;
+        float h2 = (info2->mBounds.mUp + info2->mBounds.mDown) * 0.5f;
         float dw = w2 - w1;
         float dh = h2 - h1;
         float len = sqrt(dw * dw + dh * dh);
-        if (len == 0.0f) {
+        if (len != 0.0f) {
+            dw = (w2 - w1) / len;
+            dh = (h2 - h1) / len;
+        } else {
             dh = 1.0f;
             dw = 1.0f;
-        } else {
-            dh /= len;
-            dw /= len;
         }
         float fVar5 = fabsf(dw);
         float fVar6, fVar7;
@@ -2155,7 +2213,7 @@ void dBg_c::fn_8007cd70(dBgSomeInfo_c *info1, dBgSomeInfo_c *info2, int i1) {
         if (stage->mCurrWorld == WORLD_8 && stage->mCurrCourse == STAGE_7 || cond) {
             fVar6 = 6.0f;
             fVar7 = 0.5f;
-            fVar5 *= 6.0;
+            fVar5 *= 6.0f;
         } else {
             fVar6 = 2.0f;
             fVar7 = 0.2f;
@@ -2165,6 +2223,8 @@ void dBg_c::fn_8007cd70(dBgSomeInfo_c *info1, dBgSomeInfo_c *info2, int i1) {
         float calcArg1 = 0.1f;
         float calcArg2 = 0.005f;
         float calcArg3 = 0.0001f;
+        float calcScale = 0.5f;
+        float calcAdd = 0.5f;
         if (cond2) {
             mIdkI = 120;
             mIdkF[0] = 1.0f;
@@ -2177,41 +2237,51 @@ void dBg_c::fn_8007cd70(dBgSomeInfo_c *info1, dBgSomeInfo_c *info2, int i1) {
             fVar4 = 1.0f;
         }
 
-        if (b.mLeft > l) {
+        float tmp1, tmp2;
+
+        if (l < b.mLeft) {
             sLib::addCalc(&mIdkF[0], 0.0f, calcArg1, calcArg2, calcArg3);
-        } else if (l > bgParam->mPos.x + bgParam->mSize.x * 0.5f) {
+        } else if (l > bgParam->mPos.x + bgParam->mSize.x / 2.0f) {
             sLib::addCalc(&mIdkF[0], 0.0f, calcArg1, calcArg2, calcArg3);
         } else {
             sLib::addCalc(&mIdkF[0], fVar4, calcArg1, calcArg2, calcArg3);
         }
-        sLib::addCalc(&b.mLeft, l, mIdkF[0] * (fVar7 - 0.5f) + 0.5f, fVar12 + mIdkF[0] * (fVar5 - fVar12), 0.1f);
+        tmp1 = mIdkF[0] * (fVar7 - calcScale) + calcAdd;
+        tmp2 = fVar12 + mIdkF[0] * (fVar5 - fVar12);
+        sLib::addCalc(&b.mLeft, l, tmp1, tmp2, 0.1f);
 
         if (r > b.mRight) {
             sLib::addCalc(&mIdkF[1], 0.0f, calcArg1, calcArg2, calcArg3);
-        } else if (bgParam->mPos.x + bgParam->mSize.x * 0.5f > r) {
+        } else if (r < bgParam->mPos.x + bgParam->mSize.x / 2.0f) {
             sLib::addCalc(&mIdkF[1], 0.0f, calcArg1, calcArg2, calcArg3);
         } else {
             sLib::addCalc(&mIdkF[1], fVar4, calcArg1, calcArg2, calcArg3);
         }
-        sLib::addCalc(&b.mRight, l, mIdkF[1] * (fVar7 - 0.5f) + 0.5f, fVar12 + mIdkF[1] * (fVar5 - fVar12), 0.1f);
+        tmp1 = mIdkF[1] * (fVar7 - calcScale) + calcAdd;
+        tmp2 = fVar12 + mIdkF[1] * (fVar5 - fVar12);
+        sLib::addCalc(&b.mRight, l, tmp1, tmp2, 0.1f);
 
-        if (b.mUp > u) {
+        if (u > b.mUp) {
             sLib::addCalc(&mIdkF[2], 0.0f, calcArg1, calcArg2, calcArg3);
-        } else if (u > bgParam->mPos.x + bgParam->mSize.x * 0.5f) {
+        } else if (u < bgParam->mPos.y - bgParam->mSize.y / 2.0f) {
             sLib::addCalc(&mIdkF[2], 0.0f, calcArg1, calcArg2, calcArg3);
         } else {
             sLib::addCalc(&mIdkF[2], fVar4, calcArg1, calcArg2, calcArg3);
         }
-        sLib::addCalc(&b.mUp, l, mIdkF[2] * (fVar7 - 0.5f) + 0.5f, fVar12 + mIdkF[2] * (fVar5 - fVar12), 0.1f);
+        tmp1 = mIdkF[2] * (fVar7 - calcScale) + calcAdd;
+        tmp2 = fVar13 + mIdkF[2] * (fVar5 - fVar13);
+        sLib::addCalc(&b.mUp, l, tmp1, tmp2, 0.1f);
 
-        if (d > b.mDown) {
+        if (d < b.mDown) {
             sLib::addCalc(&mIdkF[3], 0.0f, calcArg1, calcArg2, calcArg3);
-        } else if (bgParam->mPos.x + bgParam->mSize.x * 0.5f > d) {
+        } else if (d > bgParam->mPos.y - bgParam->mSize.y / 2.0f) {
             sLib::addCalc(&mIdkF[3], 0.0f, calcArg1, calcArg2, calcArg3);
         } else {
             sLib::addCalc(&mIdkF[3], fVar4, calcArg1, calcArg2, calcArg3);
         }
-        sLib::addCalc(&b.mDown, l, mIdkF[3] * (fVar7 - 0.5f) + 0.5f, fVar12 + mIdkF[3] * (fVar5 - fVar12), 0.1f);
+        tmp1 = mIdkF[3] * (fVar7 - calcScale) + calcAdd;
+        tmp2 = fVar13 + mIdkF[3] * (fVar5 - fVar13);
+        sLib::addCalc(&b.mDown, l, tmp1, tmp2, 0.1f);
 
         info1->mBounds = b;
     }
@@ -2219,16 +2289,17 @@ void dBg_c::fn_8007cd70(dBgSomeInfo_c *info1, dBgSomeInfo_c *info2, int i1) {
     float l2 = info1->mBounds.mLeft;
     float u2 = info1->mBounds.mUp;
     float d2 = info1->mBounds.mDown;
-    float ll = m_bg_p->getLeftLimit();
-    if (p.x > ll && m_bg_p->getRightLimit() > p.x + s.x) {
-        m_bg_p->m_900b8 = (l2 + r2) * 0.5f - tmp.x;
-    } else {
+    float h_lr = (l2 + r2) * 0.5f;
+    float h_ud = (u2 + d2) * 0.5f;
+    if (m_bg_p->getLeftLimit() <= px || px + sx <= m_bg_p->getRightLimit()) {
         m_bg_p->m_900b8 = 0.0f;
-    }
-    if (m_bg_p->mULimit > p.y && p.y - s.y > m_bg_p->mDLimit) {
-        m_bg_p->m_900bc = (u2 + d2) * 0.5f - tmp.y;
     } else {
+        m_bg_p->m_900b8 = h_lr - tmp.x;
+    }
+    if (py >= m_bg_p->mULimit || py - sy <= m_bg_p->mDLimit) {
         m_bg_p->m_900bc = 0.0f;
+    } else {
+        m_bg_p->m_900bc = h_ud - tmp.y;
     }
 }
 
@@ -2443,8 +2514,6 @@ float dBg_c::getAreaUpLimitScroll() {
     dBgParameter_c *bgParam = dBgParameter_c::getInstance();
     float sizeY = bgParam->mSize.y;
     float posY = bgParam->mPos.y;
-    float m = m_bg_p->getZoomTargetMin() * mVideo::getLayoutHeight();
-    float diff = posY - sizeY;
-    float res = mMoreFloats3[0] + diff + m;
-    return res;
+    float m = m_bg_p->getZoomTargetMin() * mVideo::getLayoutHeight() + (posY - sizeY);
+    return mMoreFloats3[3] + m;
 }
