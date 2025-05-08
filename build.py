@@ -130,7 +130,7 @@ for slice_file in slices:
     slice_is_rel = slice_file.meta.type == SliceType.REL
 
     if slice_is_rel:
-        slice_rel(Path(f'{ORIGDIR}/{slice_file.meta.name}'), Path(f'{BUILDDIR}/sliced/{slice_name_stem}'))
+        slice_rel(Path(f'{ORIGDIR}/{slice_file.meta.name}'), Path(f'{BUILDDIR}/sliced/{slice_name_stem}'), ALIAS_FILE)
     else:
         slice_dol(Path(f'{ORIGDIR}/{slice_file.meta.name}'), Path(f'{BUILDDIR}/sliced/{slice_name_stem}'))
     print_success('Sliced', slice_file.meta.name, end='.\n')
