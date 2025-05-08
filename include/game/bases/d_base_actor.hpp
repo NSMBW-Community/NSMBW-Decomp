@@ -53,9 +53,9 @@ protected:
     /// for details.
     virtual void draw2D_lyt2();
 
-    virtual int GetActorType(); ///< Gets the actor kind. See ::ACTOR_KIND_e.
+    virtual int GetActorType() { return ACTOR_GENERIC; } ///< Gets the actor kind. See ::ACTOR_KIND_e.
 
-    virtual void finalUpdate(); ///< Code to be executed after all actors' @p execute operation has run.
+    virtual void finalUpdate() {} ///< Code to be executed after all actors' @p execute operation has run.
 
 public:
     /// @brief Updates the actor's speed (3D actors). See [here](#speed-and-acceleration) for details.
