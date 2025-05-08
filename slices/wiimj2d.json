@@ -400,11 +400,13 @@
         },
         {
             "source": "dol/bases/d_a_iceball.cpp",
-            "nonMatching": true,
             "memoryRanges": {
                 ".text": "0x11cc70-0x11e5c0",
+                ".ctors": "0x1e4-0x1e8",
+                ".rodata": "0x7020-0x7088",
+                ".data": "0x26408-0x26688",
                 ".bss": "0x24428-0x24588",
-                ".data": "0x26408-0x26688"
+                ".sdata2": "0x25f0-0x2660"
             }
         },
         {

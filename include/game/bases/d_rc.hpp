@@ -51,7 +51,7 @@ public:
     bool check2(unsigned long, unsigned long, unsigned long);
     bool isRideFlag(unsigned short);
 
-    const dRide_ctr_c *getRide();
+    const dRide_ctr_c *getRide() const;
 
     dActor_c *mpOwner;
     mVec3_c *mpOwnerPos;
