@@ -1,4 +1,5 @@
 #include <game/bases/d_actor.hpp>
+#include <game/bases/d_a_player_manager.hpp>
 #include <game/bases/d_audio.hpp>
 #include <game/bases/d_s_stage.hpp>
 #include <game/bases/d_game_com.hpp>
@@ -82,10 +83,6 @@ public:
     BoundingBox mDestroyBound;
 };
 
-class daPlBase_c : public dActor_c {
-    char pad[0x10fe];
-};
-
 class daYoshi_c : public daPlBase_c {
 public:
     u8 pad2[0xA0];
@@ -93,27 +90,6 @@ public:
 
     void getMouthMtx(mMtx_c *);
     void getTongueTipMtx(mMtx_c *);
-};
-
-class dAcPy_c : public daPlBase_c {
-public:
-    bool isDrawingCarryFukidashi();
-    void getCcBounds(AreaBound &);
-    void cancelCarry(dActor_c *);
-
-    char pad[0x15e8];
-    fBaseID_e carryActorID;
-};
-
-
-class daPyMng_c {
-public:
-    static void addScore(int, int);
-    static dAcPy_c *getPlayer(int);
-    static u8 mActPlayerInfo;
-    static int mNum;
-
-    static bool checkPlayer(u8 i) { return mActPlayerInfo & (1 << i); }
 };
 
 class dMultiMng_c {
