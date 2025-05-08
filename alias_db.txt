@@ -1,10 +1,7 @@
-R_2_1_F0     = finalizeProlog__Fv
-R_2_1_100    = finalizeEpilog__Fv
 R_3_1_F0     = finalizeProlog__Fv
 R_3_1_100    = finalizeEpilog__Fv
 R_4_1_F0     = finalizeProlog__Fv
 R_4_1_100    = finalizeEpilog__Fv
-R_2_1_70     = __register_global_object
 R_2_1_49500  = finalUpdate__12dBaseActor_cFv
 R_2_1_49510  = GetActorType__12dBaseActor_cFv
 R_2_1_49520  = funsuiMoveX__8dActor_cFv
