@@ -77,7 +77,9 @@ protected:
     /// @details If true, rescheduling will be deferred to the next @p connect operation.
     bool mDeferRetryCreate;
 
+public:
     u8 mGroupType; ///< The base's group type. Value is a ::GROUP_TYPE_e.
+protected:
     u8 mProcControl; ///< The operations to be skipped. Value is a ::PROC_DISABLE_e.
 
     /// @brief Checks if a flag is set in ::mProcControl.
