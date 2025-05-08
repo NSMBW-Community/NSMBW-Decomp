@@ -1,43 +1,54 @@
 #pragma once
 
 #include <game/bases/d_actor_state.hpp>
+#include <game/bases/d_circle_light_mask.hpp>
+#include <game/bases/d_heap_allocator.hpp>
 
-// TODO: Move this to another TU
-class dCircleLightMask_c {
-
+class daIceBall_c : public dActorState_c {
 public:
-    virtual u32 init(void*, u32);
-    virtual u32 execute();
-    virtual u32 draw();
+    daIceBall_c() {}
+    virtual ~daIceBall_c() {}
 
-    virtual ~dCircleLightMask_c();
+    virtual int create();
+    virtual int doDelete();
+    virtual int execute();
+    virtual int draw();
+    virtual void deleteReady();
+    virtual void setEatTongue(dActor_c *);
+    virtual void eatMove(dActor_c *);
 
-private:
-    mVec3_c mPos;
-    float mRadius;
-    void * mMask; // actually a dMask_c *
-    void * mQuad; // actually a quad_c *
-};
+    STATE_FUNC_DECLARE(daIceBall_c, EatIn);
+    STATE_FUNC_DECLARE(daIceBall_c, EatNow);
+    STATE_FUNC_DECLARE(daIceBall_c, FireMove);
+    STATE_FUNC_DECLARE(daIceBall_c, Kill);
+    STATE_FUNC_DECLARE(daIceBall_c, Move);
 
-class dHeapAllocator {
-    u8 pad[0x1c];
-};
+    bool checkInitLine(float &);
+    bool checkInitVanish();
+    void lightProc();
+    void setDeleteEffect();
+    bool bgCheck();
+    void chgZpos();
+    bool cullCheck();
+    bool checkDeleteBg();
+    bool waterlineCheck();
+    void waterSplash(float);
+    void yoganSplash(float);
+    void poisonSplash(float);
 
-class daIceBall_c : dActorState_c {
-
-    daIceBall_c();
+    static void ccCallback_Iceball(dCc_c *, dCc_c *);
+    static bool CheckIceballLimit(int, int);
 
     u32 m_3d0;
     u32 m_3d4;
     u8 m_unk_3d8[4];
-    u32 mLiquidType; // actually a dBc_c::LiquidType
+    dBc_c::WATER_TYPE_e mLiquidType;
     float mLiquidHeight;
-    mVec3_c mSomePos;
-    dHeapAllocator mAllocator;
+    mVec3_c mStartPos;
+    dHeapAllocator_c mAllocator;
     dCircleLightMask_c mLightMask;
     u8 m_unk_428[8];
 
-public:
     static int sm_IceBallCount[4];
     static int sm_IceBallAliveCount[4];
 };

@@ -209,7 +209,7 @@ public:
     /// @param destroyBound The actor's deletion bounding box.
     /// @param areaID The actor's zone ID (unused).
     /// @return Whether the actor should be culled.
-    static bool screenCullCheck(const mVec3_c &pos, const sRangeDataF &visibleBound, sRangeDataF destroyBound, u8 areaID);
+    static int screenCullCheck(const mVec3_c &pos, const sRangeDataF &visibleBound, sRangeDataF destroyBound, u8 areaID);
 
     /// @brief Returns whether the actor is colliding with any enabled collision sides.
     bool HasamareBgCheck();
