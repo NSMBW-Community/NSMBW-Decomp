@@ -1,0 +1,3 @@
+void finalizeProlog() {}
+
+void finalizeEpilog() {}
