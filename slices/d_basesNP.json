@@ -35,6 +35,21 @@
             }
         },
         {
+            "source": "runtime/global_destructor_chain.c",
+            "compilerFlags": "-c -Cpp_exceptions off -O4 -fp hard -sdata 0 -sdata2 0",
+            "memoryRanges": {
+                ".text": "0x70-0xf0",
+                ".dtors": "0x0-0x4",
+                ".bss": "0x0-0x8"
+            }
+        },
+        {
+            "source": "d_basesNP/d_bases.cpp",
+            "memoryRanges": {
+                ".text": "0xf0-0x110"
+            }
+        },
+        {
             "source": "d_basesNP/bases/da_remo_door.cpp",
             "memoryRanges": {
                 ".text": "0x128170-0x128b00",
