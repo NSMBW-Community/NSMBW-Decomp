@@ -3,18 +3,12 @@
 #include <game/bases/d_rc.hpp>
 
 class dBcSensor_c {
-    u32 mFlags;
-
 public:
-    dBcSensor_c(u32 f) : mFlags(f) {}
-};
-
-class dBcPointSensor_c : public dBcSensor_c {
+    u32 mFlags;
     int x;
     int y;
 
-public:
-    dBcPointSensor_c(u32 f, int x, int y) : dBcSensor_c(f), x(x), y(y) {}
+    // dBcSensor_c(u32 f, int x, int y) : mFlags(f), x(x), y(y) {}
 };
 
 class dBg_ctr_c;
