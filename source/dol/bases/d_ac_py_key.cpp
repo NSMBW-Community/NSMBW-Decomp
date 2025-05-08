@@ -34,8 +34,8 @@ void dAcPyKey_c::update() {
         mTriggeredButtons = 0;
     } else {
         dGameKey_c *gameKey = dGameKey_c::m_instance;
-        mDownButtons = gameKey->keys[mRemoconID]->mDownButtons;
-        mTriggeredButtons = gameKey->keys[mRemoconID]->mTriggeredButtons;
+        mDownButtons = gameKey->mRemocon[mRemoconID]->mDownButtons;
+        mTriggeredButtons = gameKey->mRemocon[mRemoconID]->mTriggeredButtons;
         if (mStatus & FLAG_DISABLE_LR) {
             clearCrossKey();
         }
@@ -55,7 +55,7 @@ void dAcPyKey_c::update() {
         if (mStatus & FLAG_DEMO) {
             mActiveShakeJump = mDemoDoShake;
             mTriggerShakeJump = mDemoDoShake;
-        } else if (mShakeCooldown == 0 && dGameKey_c::m_instance->keys[mRemoconID]->mIsShaking) {
+        } else if (mShakeCooldown == 0 && dGameKey_c::m_instance->mRemocon[mRemoconID]->mIsShaking) {
             mActiveShakeJump = 1;
             mTriggerShakeJump = 1;
         }
@@ -87,8 +87,8 @@ void dAcPyKey_c::updateEnd() {
     if (mStatus & FLAG_DEMO) {
         return;
     }
-    mDownButtons = dGameKey_c::m_instance->keys[mRemoconID]->mDownButtons;
-    mTriggeredButtons = dGameKey_c::m_instance->keys[mRemoconID]->mTriggeredButtons;
+    mDownButtons = dGameKey_c::m_instance->mRemocon[mRemoconID]->mDownButtons;
+    mTriggeredButtons = dGameKey_c::m_instance->mRemocon[mRemoconID]->mTriggeredButtons;
 }
 
 bool dAcPyKey_c::checkHipAttack() {
@@ -205,7 +205,7 @@ int dAcPyKey_c::buttonTwo() const {
 }
 
 int dAcPyKey_c::triggerOne() const {
-    if (dGameKey_c::m_instance->keys[mRemoconID]->mAttachedExtension == dGameKeyCore_c::EXTENSION_NUNCHUK) {
+    if (dGameKey_c::m_instance->mRemocon[mRemoconID]->mAttachedExtension == dGameKeyCore_c::EXTENSION_NUNCHUK) {
         return mTriggeredButtons & BUTTON_B;
     } else {
         return mTriggeredButtons & BUTTON_ONE;
@@ -213,7 +213,7 @@ int dAcPyKey_c::triggerOne() const {
 }
 
 int dAcPyKey_c::buttonOne() const {
-    if (dGameKey_c::m_instance->keys[mRemoconID]->mAttachedExtension == dGameKeyCore_c::EXTENSION_NUNCHUK) {
+    if (dGameKey_c::m_instance->mRemocon[mRemoconID]->mAttachedExtension == dGameKeyCore_c::EXTENSION_NUNCHUK) {
         return mDownButtons & BUTTON_B;
     } else {
         return mDownButtons & BUTTON_ONE;

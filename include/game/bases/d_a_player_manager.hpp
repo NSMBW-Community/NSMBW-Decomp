@@ -13,4 +13,6 @@ public:
     static u8 mActPlayerInfo;
     static int mPlayerType[4];
     static int mPlayerMode[4];
+    static int mRest[4];
+    static u32 mCtrlPlrNo;
 };
