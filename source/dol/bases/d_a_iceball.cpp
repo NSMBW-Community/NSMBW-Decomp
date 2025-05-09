@@ -11,7 +11,11 @@
 #include <game/framework/f_profile_name.hpp>
 
 
-BASE_PROFILE(EN_ICEBALL, daIceBall_c);
+BASE_PROFILE(ICEBALL, daIceBall_c);
+
+
+int daIceBall_c::sm_IceBallCount[4] = {0, 0, 0, 0};
+int daIceBall_c::sm_IceBallAliveCount[4] = {0, 0, 0, 0};
 
 const float lbl_802F5000[4] = {0.75f, 1.05f, 0.6f, 120.0f};
 
@@ -36,6 +40,9 @@ STATE_DEFINE(daIceBall_c, EatNow);
 STATE_DEFINE(daIceBall_c, FireMove);
 STATE_DEFINE(daIceBall_c, Kill);
 STATE_DEFINE(daIceBall_c, Move);
+
+daIceBall_c::daIceBall_c() { };
+daIceBall_c::~daIceBall_c() { };
 
 int daIceBall_c::create() {
 

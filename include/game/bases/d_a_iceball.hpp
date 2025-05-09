@@ -1,29 +1,14 @@
 #pragma once
 
 #include <game/bases/d_actor_state.hpp>
-
-// TODO: Move this to another TU
-class dCircleLightMask_c {
-
-public:
-    virtual u32 init(void*, u32);
-    virtual u32 execute();
-    virtual u32 draw();
-
-    virtual ~dCircleLightMask_c();
-
-    mVec3_c mPos;
-    float mRadius;
-    void * mMask; // actually a dMask_c *
-    void * mQuad; // actually a quad_c *
-};
+#include <game/bases/d_circle_light_mask.hpp>
 
 class dHeapAllocator {
     u8 pad[0x1c];
 };
 
-class daIceBall_c : dActorState_c {
-
+class daIceBall_c : public dActorState_c {
+public:
     daIceBall_c();
 
     virtual int create();
@@ -45,7 +30,6 @@ class daIceBall_c : dActorState_c {
     dCircleLightMask_c mLightMask;
     u8 m_unk_428[8];
 
-public:
     bool checkInitLine(float &);
     bool checkInitVanish();
     void lightProc();
