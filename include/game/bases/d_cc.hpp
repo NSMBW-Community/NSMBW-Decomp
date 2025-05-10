@@ -155,7 +155,7 @@ public:
      * @param actor The actor to register.
      * @param collInfo The collider data to set.
      */
-    void registerCc(dBaseActor_c *actor, CcData_s *collInfo);
+    void registerCc(dBaseActor_c *actor, const CcData_s *collInfo);
 
     /**
      * @brief Registers an owner actor to this collider and sets the collider data.
@@ -164,7 +164,7 @@ public:
      * @param collInfo The collider data to set.
      * @param nonCollideMask The non-collide mask to set.
      */
-    void registerCc(dBaseActor_c *actor, CcData_s *collInfo, u8 nonCollideMask);
+    void registerCc(dBaseActor_c *actor, const CcData_s *collInfo, u8 nonCollideMask);
 
     /// Sets a friend actor for this collider.
     void setFriendActor(dBaseActor_c *actor) { mFriendActor = actor; }

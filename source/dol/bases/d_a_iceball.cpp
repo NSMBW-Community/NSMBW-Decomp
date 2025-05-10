@@ -11,19 +11,18 @@
 #include <game/framework/f_profile_name.hpp>
 
 
-BASE_PROFILE(ICEBALL, daIceBall_c);
-
+ACTOR_PROFILE(ICEBALL, daIceBall_c, 2);
 
 int daIceBall_c::sm_IceBallCount[4] = {0, 0, 0, 0};
 int daIceBall_c::sm_IceBallAliveCount[4] = {0, 0, 0, 0};
 
 const float lbl_802F5000[4] = {0.75f, 1.05f, 0.6f, 120.0f};
 
-dBcPointSensor_c l_iceball_foot(0, 0, -0x3000);
-dBcPointSensor_c l_iceball_head(0, 0, 0x3000);
-dBcPointSensor_c l_iceball_wall(0, 0x3000, 0);
+const dBcSensor_c l_iceball_foot = { 0.0f, 0, -0x3000 };
+const dBcSensor_c l_iceball_head = { 0.0f, 0, 0x3000 };
+const dBcSensor_c l_iceball_wall = { 0.0f, 0x3000, 0 };
 
-dCc_c::CcData_s l_fball_cc_data = {
+const dCc_c::CcData_s l_fball_cc_data = {
     0.0f, 0.0f,
     6.0f, 6.0f,
     6, 2,
@@ -33,16 +32,13 @@ dCc_c::CcData_s l_fball_cc_data = {
     daIceBall_c::ccCallback_Iceball
 };
 
-AreaBound l_cull_data = AreaBound(0.0f, 0.0f, 8.0f, 8.0f);
+const float l_cull_data[4] = { 0.0f, 0.0f, 8.0f, 8.0f };
 
+STATE_DEFINE(daIceBall_c, FireMove);
+STATE_DEFINE(daIceBall_c, Move);
 STATE_DEFINE(daIceBall_c, EatIn);
 STATE_DEFINE(daIceBall_c, EatNow);
-STATE_DEFINE(daIceBall_c, FireMove);
 STATE_DEFINE(daIceBall_c, Kill);
-STATE_DEFINE(daIceBall_c, Move);
-
-daIceBall_c::daIceBall_c() { };
-daIceBall_c::~daIceBall_c() { };
 
 int daIceBall_c::create() {
 
@@ -79,14 +75,12 @@ int daIceBall_c::create() {
     if (checkInitVanish()) {
         setDeleteEffect();
 
-        dAudio::SndObjctCmnMap_c* x = dAudio::g_pSndObjMap;
-        nw4r::math::VEC2 y = dAudio::cvtSndObjctPos(mPos);
-        x->startSound(SE_OBJ_PNGN_ICEBALL_DISAPP, y, 0);
+        dAudio::playMapSound(SE_OBJ_PNGN_ICEBALL_DISAPP, mPos, 0);
         deleteRequest();
         return fBase_c::CANCELED;
     }
 
-    mCenterOffs = mVec3_c(0.0f, 0.0f, 0.0f);
+    mCenterOffs.set(0.0f, 0.0f, 0.0f);
     mEatSpitType = 5;
     mActorProperties |= 0x80;
     mAreaNo = dCd_c::m_instance->getFileP(dScStage_c::m_instance->currCourse)->getAreaNo(&mPos);
@@ -101,9 +95,8 @@ int daIceBall_c::create() {
     mVec3_c v3(mPos.x, mPos.y + 4.0f, mPos.z);
 
     if (dBc_c::findGround(&v3, &v2, mLayer, 1)) {
-        float v3 = v2 - 6.0f;
-        if (mPos.y > v3) {
-            mPos.y = v3;
+        if (mPos.y > v2 - 6.0f) {
+            mPos.y = v2 - 6.0f;
         }
     }
 
@@ -117,7 +110,7 @@ int daIceBall_c::create() {
 }
 
 int daIceBall_c::execute() {
-    if (m_3d4 && (! mStateMgr.getStateID()->operator==(StateID_Kill))) {
+    if (m_3d4 && !isState(StateID_Kill)) {
         mStateMgr.changeState(StateID_Kill);
     }
     mStateMgr.executeState();
@@ -151,8 +144,8 @@ bool daIceBall_c::checkInitVanish() {
     }
 
     dAcPy_c *player = daPyMng_c::getPlayer(mPlayerNo);
-    mVec3_c a = mPos;
-    mVec3_c b(player->mPos.x, mPos.y, mPos.z);
+    mVec3_c a(player->mPos.x, mPos.y, mPos.z);
+    mVec3_c b = mPos;
     float c = 0.0f;
 
     return dBc_c::findWall(&a, &b, &c, mLayer, 1, nullptr);
@@ -172,10 +165,7 @@ bool daIceBall_c::checkInitLine(float &a) {
 }
 
 void daIceBall_c::lightProc() {
-    mVec3_c v0 = mPos;
-    float v1 = lbl_802F5000[3];
-    mLightMask.mPos = v0;
-    mLightMask.mRadius = v1;
+    mLightMask.set(mPos, lbl_802F5000[3]);
     mLightMask.execute();
 }
 
@@ -219,7 +209,7 @@ void daIceBall_c::ccCallback_Iceball(dCc_c * self, dCc_c * other) {
                 return;
             }
 
-            if ((int)iceball->mStateMgr.getStateID()->operator==(daIceBall_c::StateID_FireMove)) {
+            if (iceball->isState(StateID_FireMove)) {
                 iceball->mStateMgr.changeState(daIceBall_c::StateID_Move);
                 return;
             }
@@ -329,7 +319,6 @@ bool daIceBall_c::waterlineCheck() {
 
 void daIceBall_c::waterSplash(float height) {
     mVec3_c pos(mPos.x, height, 6500.0f);
-    mVec3_c pos2;
     dAudio::SndObjctCmnMap_c *x = dAudio::g_pSndObjMap;
     x->startSound(SE_OBJ_FIREBALL_SPLASH, dAudio::cvtSndObjctPos(pos), 0);
 
@@ -342,11 +331,7 @@ void daIceBall_c::waterSplash(float height) {
 
     dEffActorMng_c * z = dEffActorMng_c::m_instance;
 
-    pos2.x = 1.0f;
-    pos2.y = 1.0f;
-    pos2.z = 1.0f;
-
-    z->createWaterSplashEff(pos, v0, -1, pos2);
+    z->createWaterSplashEff(pos, v0, -1, mVec3_c(1.0f, 1.0f, 1.0f));
     dBg_c::m_bg_p->setWaterInWave(pos.x, pos.y, 8);
 }
 
@@ -447,8 +432,8 @@ void daIceBall_c::finalizeState_FireMove() { }
 
 void daIceBall_c::initializeState_Move() {
 
-    static const float x_speed_a[] = {0.0f, 0.0f};
-    static const float x_speed_b[] = {0.0f, 0.0f};
+    static const float x_speed_a[] = {3.0f, -3.0f};
+    static const float x_speed_b[] = {1.5f, -1.5f};
 
     dAcPy_c * v0 = daPyMng_c::getPlayer(mPlayerNo);
     float v1 = v0->mSpeed.x;
@@ -456,17 +441,16 @@ void daIceBall_c::initializeState_Move() {
     float v2 = lbl_802F5000[0];
     float v3 = lbl_802F5000[1];
 
+    float resX;
     if (v1 > v2) {
-        v3 = (v3 * v2) + (v1 - v2) * lbl_802F5000[2];
+        resX = (v3 * v2) + (v1 - v2) * lbl_802F5000[2];
+    } else if (v1 < -v2) {
+        resX = (-v3 * v2) + (v1 + v2) * lbl_802F5000[2];
     } else {
-        if (v1 < -v2) {
-            v3 = (-v3 * v2) + (v1 + v2) * lbl_802F5000[2];
-        } else {
-            v3 = v3 * v1;
-        }
+        resX = v3 * v1;
     }
 
-    mSpeed.x = v3 + x_speed_b[mDirection];
+    mSpeed.x = resX + x_speed_b[mDirection];
     mSpeed.y = 3.7f;
     mSpeed.z = 0.0f;
     mAccelY = -0.15f;

@@ -2,21 +2,18 @@
 
 #include <game/bases/d_actor_state.hpp>
 #include <game/bases/d_circle_light_mask.hpp>
-
-class dHeapAllocator {
-    u8 pad[0x1c];
-};
+#include <game/bases/d_heap_allocator.hpp>
 
 class daIceBall_c : public dActorState_c {
 public:
-    daIceBall_c();
+    daIceBall_c() {}
+    virtual ~daIceBall_c() {}
 
     virtual int create();
     virtual int doDelete();
     virtual int execute();
     virtual int draw();
     virtual void deleteReady();
-    virtual ~daIceBall_c();
     virtual void setEatTongue(dActor_c *);
     virtual void eatMove(dActor_c *);
 
@@ -26,7 +23,7 @@ public:
     int mLiquidType; // actually a dBc_c::LiquidType
     float mLiquidHeight;
     mVec3_c mStartPos;
-    dHeapAllocator mAllocator;
+    dHeapAllocator_c mAllocator;
     dCircleLightMask_c mLightMask;
     u8 m_unk_428[8];
 
