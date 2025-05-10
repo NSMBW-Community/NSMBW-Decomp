@@ -37,9 +37,9 @@ public:
 private:
     nw4r::lyt::Layout mLayout;
     nw4r::lyt::DrawInfo mDrawInfo;
-    ResAccMult_c *mpResAccessor;
 
 public:
+    ResAccMult_c *mpResAccessor;
     mVec2_c mPos;
 
     ClipSettings mClipSettings;

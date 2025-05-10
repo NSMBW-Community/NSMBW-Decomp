@@ -8,6 +8,7 @@
 /// @todo Fill this.
 enum BMG_GROUPS_e {
     BMG_CATEGORY_YES_NO_WINDOW,
+    BMG_CATEGORY_SMALL_SCORE = 0x67,
     BMG_CATEGORY_CONTROLLER_INFORMATION = 0x68,
     BMG_CATEGORY_HINT_MOVIES = 0x12e
 };
@@ -98,6 +99,9 @@ enum MESSAGE_e {
 
     // Group 0x68
     MSG_HOLD_WIIMOTE_SIDEWAYS = 8,
+
+    // Group 0x67
+    MSG_COINS = 50,
 
     // Group 0x12e
     MSG_STAR_COINS_REQUIRED = 7,
