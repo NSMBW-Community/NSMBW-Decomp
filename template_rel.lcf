@@ -13,9 +13,3 @@ SECTIONS {
         .bss ALIGN(0x4):{}
     } > text
 }
-
-FORCEACTIVE {
-    _prolog
-    _epilog
-    _unresolved
-}

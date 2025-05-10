@@ -2,6 +2,7 @@
 # Slice definitions
 
 from enum import Enum
+from pathlib import Path
 import json
 import typing
 
@@ -79,10 +80,27 @@ class SliceMeta:
 
 
 class SliceFile:
-    def __init__(self, slices: list[Slice], meta: SliceMeta, deadstrip: list[str]) -> None:
+    def __init__(self, slices: list[Slice], meta: SliceMeta, deadstrip: list[str], keep_weak: list[str]) -> None:
         self.meta: SliceMeta = meta
         self.slices: list[Slice] = slices
         self.deadstrip: list[str] = deadstrip
+        self.keep_weak: list[str] = keep_weak
+
+    def get_o_files(self) -> list[str]:
+        slice_name_stem = Path(self.meta.name).stem
+        file_names: list[str] = []
+        for slice in self.slices:
+            compiled_path = f'compiled/{slice_name_stem}/{slice.slice_name}'
+            sliced_path = f'sliced/{slice_name_stem}/{slice.slice_name}'
+
+            if slice.slice_src and not slice.non_matching:
+                use_file = compiled_path
+            else:
+                use_file = sliced_path
+
+            if use_file:
+                file_names.append(use_file)
+        return file_names
 
 def make_filler_slice(name: str, sec_range: dict[str, tuple[int, int]], slice_meta: SliceMeta) -> Slice:
     slice_sections: list[SliceSection] = []
@@ -155,5 +173,6 @@ def load_slice_file(file: typing.TextIO) -> SliceFile:
         slices.append(filler_slice)
 
     deadstrip = slice_json.get('deadstrip', [])
+    keep_weak = slice_json.get('keepWeak', [])
 
-    return SliceFile(slices, slice_meta, deadstrip)
+    return SliceFile(slices, slice_meta, deadstrip, keep_weak)

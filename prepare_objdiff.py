@@ -194,6 +194,19 @@ for slice_file in slices:
             'source_path': f'source/{slice.slice_src}'
         }
 
+        # decomp.me scratch options
+        ctx_path = BUILDDIR.joinpath(f'compiled/{stem}/{slice.slice_name}.hpp')
+        c_flags = slice_file.meta.default_compiler_flags
+        if slice.cc_flags:
+            c_flags = slice.cc_flags
+        unit['scratch'] = {
+            'platform': 'gc_wii',
+            'compiler': 'mwcc_43_151',
+            'c_flags': ' '.join(c_flags) + ' -lang=c++',
+            'ctx_path': ctx_path.relative_to(PROJECTDIR).as_posix(),
+            'build_ctx': True
+        }
+
 
 def patch_unit(unit, progress_categories, module_name):
     if not 'metadata' in unit:

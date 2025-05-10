@@ -127,11 +127,6 @@ def process_file(modules: list[ElfFile], idx: int, filename: Path, alias_db: dic
                 add_symbol(module_classify, idx, reloc, symbol)
                 continue
 
-            # Try to look up symbol in alias database
-            alias_symname = alias_db.get(f'{unit_name}: {sym_name}', alias_db.get(sym_name, ''))
-            if alias_symname:
-                sym_name = alias_symname
-
             # TODO: nice hardcode lol
             if sym_name == '__destroy_global_chain':
                 print_warn('Warning: __destroy_global_chain not found, using hardcoded address.')
