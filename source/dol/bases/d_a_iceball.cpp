@@ -22,7 +22,7 @@ const dBcSensor_c l_iceball_foot = { 0.0f, 0, -0x3000 };
 const dBcSensor_c l_iceball_head = { 0.0f, 0, 0x3000 };
 const dBcSensor_c l_iceball_wall = { 0.0f, 0x3000, 0 };
 
-const dCc_c::CcData_s l_fball_cc_data = {
+const sCcDatNewF l_fball_cc_data = {
     0.0f, 0.0f,
     6.0f, 6.0f,
     6, 2,
@@ -85,7 +85,7 @@ int daIceBall_c::create() {
     mActorProperties |= 0x80;
     mAreaNo = dCd_c::m_instance->getFileP(dScStage_c::m_instance->currCourse)->getAreaNo(&mPos);
 
-    mCc.registerCc(this, &l_fball_cc_data);
+    mCc.set(this, (sCcDatNewF *) &l_fball_cc_data);
     mCc.mLayer = mLayer;
     mCc.entry();
 
