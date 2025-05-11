@@ -124,7 +124,7 @@ int daIceBall_c::draw() {
     return fBase_c::SUCCEEDED;
 }
 
-void daIceBall_c::deleteReady() { }
+void daIceBall_c::deleteReady() {}
 
 int daIceBall_c::doDelete() {
     if (sm_IceBallCount[mPlayerNo] > 0) {
@@ -386,6 +386,8 @@ void daIceBall_c::initializeState_FireMove() {
     mSpeed.z = 0.0f;
 }
 
+void daIceBall_c::finalizeState_FireMove() {}
+
 void daIceBall_c::executeState_FireMove() {
     EffectManager_c::SetIceBallEffect(&mPos);
 
@@ -424,8 +426,6 @@ void daIceBall_c::executeState_FireMove() {
     }
 }
 
-void daIceBall_c::finalizeState_FireMove() { }
-
 // ----------------
 // StateID_Move
 // ----------------
@@ -458,6 +458,8 @@ void daIceBall_c::initializeState_Move() {
     mMaxFallSpeed = -3.0f;
     mAccelF = 0.04f;
 }
+
+void daIceBall_c::finalizeState_Move() {}
 
 void daIceBall_c::executeState_Move() {
     EffectManager_c::SetIceBallEffect(&mPos);
@@ -503,13 +505,13 @@ void daIceBall_c::executeState_Move() {
     }
 }
 
-void daIceBall_c::finalizeState_Move() { }
-
 // ----------------
 // StateID_EatIn
 // ----------------
 
-void daIceBall_c::initializeState_EatIn() { }
+void daIceBall_c::initializeState_EatIn() {}
+
+void daIceBall_c::finalizeState_EatIn() {}
 
 void daIceBall_c::executeState_EatIn() {
     EffectManager_c::SetIceBallEffect(&mPos);
@@ -518,17 +520,15 @@ void daIceBall_c::executeState_EatIn() {
     }
 }
 
-void daIceBall_c::finalizeState_EatIn() { }
-
 // ----------------
 // StateID_EatNow
 // ----------------
 
-void daIceBall_c::initializeState_EatNow() { }
+void daIceBall_c::initializeState_EatNow() {}
 
-void daIceBall_c::executeState_EatNow() { }
+void daIceBall_c::finalizeState_EatNow() {}
 
-void daIceBall_c::finalizeState_EatNow() { }
+void daIceBall_c::executeState_EatNow() {}
 
 // ----------------
 // StateID_Kill
@@ -539,9 +539,9 @@ void daIceBall_c::initializeState_Kill() {
     deleteRequest();
 }
 
-void daIceBall_c::executeState_Kill() { }
+void daIceBall_c::finalizeState_Kill() {}
 
-void daIceBall_c::finalizeState_Kill() { }
+void daIceBall_c::executeState_Kill() {}
 
 // ----------------
 
