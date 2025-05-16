@@ -8,14 +8,14 @@ from dolfile import Dol
 from elffile import *
 from elfconsts import *
 from project_settings import *
-from slicelib import *
+from slicelibV2 import *
 
-def extract_slice(dol_file: Dol, slice: Slice, syms: dict[int, str]) -> ElfFile:
+def extract_slice(dol_file: Dol, slice: Slice, syms: dict[str, int]) -> ElfFile:
     elf_file = ElfFile(ET.ET_REL, EM.EM_PPC)
 
     symtab_sec = ElfSymtab('.symtab')
 
-    for sec in slice.slice_secs:
+    for sec in slice.sliceSecs:
         if sec.sec_name in ['.bss', '.sbss', '.sbss2']:
             elf_sec = ElfSection(sec.sec_name)
             elf_sec.header.sh_type = SHT.SHT_NOBITS
@@ -86,7 +86,7 @@ def slice_dol(dol_file: Path, out_path: Path) -> None:
         return
 
     # TODO: use an actual symbol map file
-    syms: dict[int, str] = {}
+    syms: dict[str, int] = {}
     with open(SYMBOL_FILE) as sym_file:
         for line in sym_file:
             if line != '\n':
@@ -97,17 +97,15 @@ def slice_dol(dol_file: Path, out_path: Path) -> None:
 
     # Read slices
     with open(dol_file, 'rb') as f:
-        with open(f'{SLICEDIR}/{dol_file.with_suffix(".json").name}') as sf:
-            slice_file: SliceFile = load_slice_file(sf)
-            print(f'Slicing module 0 ({f.name})...')
-            dol_file = Dol(file=f)
+        slice_file: SliceFile = load_slice_file((SLICEDIR / dol_file.stem).with_suffix('.json'))
+        dol = Dol(file=f)
 
-            for slice in slice_file.slices:
-                elf = extract_slice(dol_file, slice, syms)
-                out_filepath = out_path.joinpath(slice.slice_name)
-                out_filepath.parents[0].mkdir(parents=True, exist_ok=True)
-                with open(out_filepath, 'wb') as ef:
-                    ef.write(bytes(elf))
+        for slice in slice_file.parsed_slices:
+            elf = extract_slice(dol, slice, syms)
+            out_filepath = out_path / slice_file.meta.fileName.split('.')[0] / slice.sliceName
+            out_filepath.parent.mkdir(parents=True, exist_ok=True)
+            with open(out_filepath, 'wb') as ef:
+                ef.write(bytes(elf))
 
 
 if __name__ == '__main__':
@@ -116,6 +114,6 @@ if __name__ == '__main__':
     import argparse
     parser = argparse.ArgumentParser(description='Slices DOL files.')
     parser.add_argument('dol_file', type=Path, help='DOL file to be sliced.')
-    parser.add_argument('--out_path', '-o', default=Path('bin/sliced'), type=Path, help='Path the slices will be stored to.')
+    parser.add_argument('-o', '--output', default=Path('bin/sliced'), type=Path, help='Path the slices will be stored to.')
     args = parser.parse_args()
-    slice_dol(args.dol_file, args.out_path)
+    slice_dol(args.dol_file, args.output)

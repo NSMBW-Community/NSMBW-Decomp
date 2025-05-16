@@ -6,7 +6,7 @@ from dataclasses import dataclass, field
 from enum import Enum
 from pathlib import Path
 from typing import Optional
-from tools.utils.json_parser import from_json
+from utils.json_parser import from_json
 
 @dataclass
 class SliceData:
@@ -21,6 +21,7 @@ class SliceSectionInfo:
     index: int
     align: int
     size: int
+    secAlign: int = field(default=-1)
     offset: int = field(default='0x0')
     addr: int = field(default='0x0')
 
@@ -65,7 +66,7 @@ class Slice:
     sliceName: str
     source: str
     sliceSecs: list[SliceSection] = field(default_factory=list)
-    ccFlags: list[str] = field(default_factory=list)
+    ccFlags: str = field(default='')
     nonMatching: bool = field(default=False)
 
 
@@ -76,19 +77,6 @@ class SliceFile:
     deadstrip: list[str] = field(default_factory=list)
     keepWeak: list[str] = field(default_factory=list)
     parsed_slices: list[Slice] = field(init=False, default_factory=list)
-
-    def get_o_files(self) -> list[str]:
-        module_name = Path(self.meta.fileName).stem
-        file_names: list[str] = []
-
-        for slice in self.slices:
-            if slice.source and not slice.nonMatching:
-                source_file = f'compiled/{module_name}/{slice.source}'
-            else:
-                source_file = f'sliced/{module_name}/{slice.source}'
-
-            file_names.append(source_file)
-        return file_names
 
 
 def make_filler_slice(slice_name: str, sec_range: dict[str, tuple[int, int]], slice_meta: SliceMeta) -> Optional[Slice]:
@@ -118,8 +106,8 @@ def load_slice_file(src: Path) -> SliceFile:
 
         # Create parsed slice
         filler_sec_range = {section: (0, 0) for section in curr_sec_positions}
-        slice_name = '_'.join(Path(slice.source).with_suffix('.o').parts)
-        parsed_slice = Slice(slice_name, slice.source, ccFlags=slice.compilerFlags.split(), nonMatching=slice.nonMatching)
+        slice_name = str(Path(slice.source).with_suffix('.o'))
+        parsed_slice = Slice(slice_name, slice.source, ccFlags=slice.compilerFlags, nonMatching=slice.nonMatching)
 
         # Parse slice sections
         slice_sections = slice.memoryRanges

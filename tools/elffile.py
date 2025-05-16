@@ -381,6 +381,7 @@ class ElfFile:
             res_data = data[offs:offs+size]
         return (hdr, res_data)
 
+    @staticmethod
     def read(data: bytes) -> 'ElfFile':
         elf_file = ElfFile()
         elf_file.header = ElfHeader.read(data, 0)

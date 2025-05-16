@@ -6,7 +6,7 @@ from typing import get_origin, get_args, TypeVar
 from enum import Enum
 
 T = TypeVar('T')
-def from_json(cls: T, data: dict) -> T:
+def from_json(cls: type[T], data: dict) -> T:
 
     # Handle lists
     if isinstance(data, list):

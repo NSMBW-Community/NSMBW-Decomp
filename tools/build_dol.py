@@ -8,8 +8,7 @@ from dolfile import Dol, DolSection
 from elffile import ElfFile
 from elfconsts import SHF
 
-def process_file(elf_file: ElfFile, filename: Path) -> None:
-    outfile = filename.with_suffix('.dol')
+def process_file(elf_file: ElfFile, output_file: Path) -> None:
     dol_file = Dol()
 
     # Find executable sections
@@ -59,19 +58,17 @@ def process_file(elf_file: ElfFile, filename: Path) -> None:
     dol_file.entry = elf_file.header.e_entry
 
     # Write file
-    with open(outfile, 'wb') as f:
+    with open(output_file, 'wb') as f:
         dol_file.write(f)
 
 
-def build_dol(elf_file: Path) -> None:
+def build_dol(elf_file: Path, output_file: Path) -> None:
     if not elf_file.is_file():
         print_err('Fatal error: File', str(elf_file), 'not found!')
         return
 
-    with open(elf_file, 'rb') as ef:
-        elf = ElfFile.read(ef.read())
-        print('Building', elf_file.name, end='...\n')
-        process_file(elf, elf_file)
+    elf = ElfFile.read(elf_file.read_bytes())
+    process_file(elf, output_file)
 
 
 if __name__ == '__main__':
@@ -81,5 +78,6 @@ if __name__ == '__main__':
 
     parser = argparse.ArgumentParser(description='Compiles DOL files.')
     parser.add_argument('elf_file', type=Path, help='File to be compiled.')
+    parser.add_argument('-o', '--output', type=Path, help='Output file name.')
     args = parser.parse_args()
-    build_dol(args.elf_file)
+    build_dol(args.elf_file, args.output)
