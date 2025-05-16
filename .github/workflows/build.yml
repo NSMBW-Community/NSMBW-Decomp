@@ -18,6 +18,9 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
+          cache: 'pip'
+
+      - run: pip install ninja
 
       - name: Download and decrypt blob
         env:
@@ -37,7 +40,7 @@ jobs:
           Move-Item gh-actions-blob\original .
 
       - name: Build binaries
-        run: python build.py
+        run: python configure.py && ninja
 
       - name: Run progress script
         run: python progress.py --verify-obj --verify-bin --progress-summary
