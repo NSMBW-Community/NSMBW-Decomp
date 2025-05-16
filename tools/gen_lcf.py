@@ -2,6 +2,7 @@
 # Generates a linker script from a slice file.
 
 from pathlib import Path
+import re
 from typing import cast
 
 from color_term import print_err
@@ -10,7 +11,7 @@ from elfconsts import *
 from project_settings import *
 from slicelibV2 import *
 
-def make_force_directives(slice_file: SliceFile) -> list[str]:
+def make_elf_force_directives(slice_file: SliceFile) -> set[str]:
     unit_name = Path(slice_file.meta.fileName).stem
 
     force_actives = set()
@@ -35,10 +36,26 @@ def make_force_directives(slice_file: SliceFile) -> list[str]:
                 # Some symbols might not be referenced yet, but we still want to keep them
                 force_actives.add(sym.name)
 
-    return sorted(force_actives)
+    return force_actives
 
+def make_plf_force_directives(preplfs: list[Path]) -> set[str]:
+    force_actives = set()
+    # We need the unresolved symbols from all RELs so that the linker does not deadstrip them.
+    # We do this by checking the symbols in the .preplf with an undefined section index.
+    for preplf in preplfs:
+        preplf_file: ElfFile = ElfFile.read(preplf.read_bytes())
+        symtab = cast(ElfSymtab, preplf_file.get_section('.symtab'))
+        for sym in symtab.syms:
+            if sym.st_shndx == 0 and not re.match('R_([0-9a-fA-F]+)_([0-9a-fA-F]+)_([0-9a-fA-F]+)', sym.name):
+                force_actives.add(sym.name)
 
-def gen_lcf(slice_file_path: Path, out_path: Path) -> None:
+    force_actives.add('_prolog')
+    force_actives.add('_epilog')
+    force_actives.add('_unresolved')
+
+    return force_actives
+
+def gen_lcf(slice_file_path: Path, preplfs: list[Path], out_path: Path) -> None:
     if not slice_file_path.is_file():
         print_err('Fatal error: File', str(slice_file_path), 'not found!')
         return
@@ -66,11 +83,14 @@ def gen_lcf(slice_file_path: Path, out_path: Path) -> None:
 
     # FORCEACTIVE section
     if slice_file.meta.type == SliceType.DOL:
-        force_active = make_force_directives(slice_file)
-        lcf_file += 'FORCEACTIVE {\n'
-        for force_sym in force_active:
-            lcf_file += f'\t{force_sym}\n'
-        lcf_file += '}\n'
+        force_active = make_elf_force_directives(slice_file)
+    else:
+        force_active = make_plf_force_directives(preplfs)
+
+    lcf_file += 'FORCEACTIVE {\n'
+    for force_sym in sorted(force_active):
+        lcf_file += f'\t{force_sym}\n'
+    lcf_file += '}\n'
 
     out_path.write_text(lcf_file)
 
@@ -78,6 +98,7 @@ if __name__ == '__main__':
     import argparse
     parser = argparse.ArgumentParser(description='Generates a linker script from a slice file.')
     parser.add_argument('slice_file', type=Path, help='Slice file to generate the linker script from.')
+    parser.add_argument('preplf', nargs='*', type=Path, help='PREPLF files to generate the FORCEACTIVE section from.')
     parser.add_argument('-o', '--output', type=Path, help='Path the linker script will be stored to.')
     args = parser.parse_args()
-    gen_lcf(args.slice_file, args.output)
+    gen_lcf(args.slice_file, args.preplf, args.output)

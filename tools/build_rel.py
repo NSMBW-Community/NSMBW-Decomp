@@ -243,12 +243,9 @@ def build_rel(elf_file: Path, plf_files: list[Path], alias_file: Path, fake_path
 
     # Process them
     for idx in range(1, len(modules)):
-        print('Building', str(plf_files[idx-1].with_suffix('.rel')), end='...\n')
         unresolved_symbol_count = process_file(modules, idx, plf_files[idx-1], alias_db, fake_path, str_file)
         if unresolved_symbol_count > 0:
             print_warn('Processed', str(plf_files[idx-1]), 'with', unresolved_symbol_count, 'unresolved symbol(s).')
-        else:
-            print_success('Processed', str(plf_files[idx-1]), end='.\n')
 
     # Close them
     for file in files:
@@ -257,7 +254,6 @@ def build_rel(elf_file: Path, plf_files: list[Path], alias_file: Path, fake_path
     # Write str file
     with open(elf_file.with_suffix('.str'), 'w') as f:
         f.write('\0'.join(str_file))
-    print_success('Wrote', f.name, end='.\n')
 
 
 if __name__ == '__main__':
@@ -267,7 +263,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Compiles REL files.')
     parser.add_argument('elf_file', type=Path, help='DOL object file.')
     parser.add_argument('plf_files', type=Path, nargs='+', help='REL object file(s).')
-    parser.add_argument('--alias_file', type=Path, help='File that stores aliases for relocation symbols.')
+    parser.add_argument('--alias_file', '-a', type=Path, help='File that stores aliases for relocation symbols.')
     parser.add_argument('--fake_path', '-p', type=str, help='The fake directory name to be used for the .str file.')
     args = parser.parse_args()
     build_rel(args.elf_file, args.plf_files, args.alias_file, args.fake_path)

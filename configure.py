@@ -38,7 +38,7 @@ slices = sorted(slices, key=lambda x: x[1].meta.moduleNum)
 # Define CodeWarrior path
 writer.variable('cc', f'{sys.executable} {CW_WRAPPER} {CC}' if sys.platform != 'win32' else CC)
 writer.variable('ld', f'{sys.executable} {CW_WRAPPER} {LD}' if sys.platform != 'win32' else LD)
-writer.variable('python', 'python')
+writer.variable('python', sys.executable)
 writer.newline()
 
 # Define compilation rule
@@ -67,7 +67,13 @@ writer.rule('build_dol',
             command=f'$python tools/build_dol.py $in -o $out',
             description='Build $out')
 
+writer.rule('build_rel',
+            command=f'$python tools/build_rel.py $in -a $alias_file -p $fakepath',
+            description='Build $out')
+
 # Write build command for each source file
+dol_file = Path()
+rel_files: list[Path] = []
 for slice_file_path, slice_file in slices:
     sliced_files = []
     compiled_files = []
@@ -105,28 +111,53 @@ for slice_file_path, slice_file in slices:
                  implicit_inputs=[str(x) for x in compiled_files])
 
     if slice_file.meta.type == SliceType.DOL:
+        dol_file = BUILDDIR / f'{unit_name}.dol'
         writer.build('slice_dol',
                     sliced_files,
                     ORIGDIR / slice_file.meta.fileName)
         writer.build('link',
-                    f'{BUILDDIR}/{unit_name}.elf',
-                    ld_o_files,
-                    lcf=lcf_path,
-                    ldflags='-proc gekko -fp hard',
-                    implicit_inputs=[lcf_path])
-        writer.build('build_dol',
-                    f'{BUILDDIR}/{unit_name}.dol',
-                    f'{BUILDDIR}/{unit_name}.elf')
+                     dol_file.with_suffix('.elf'),
+                     ld_o_files,
+                     lcf=lcf_path,
+                     ldflags='-proc gekko -fp hard',
+                     implicit_inputs=[lcf_path])
     else:
+        rel_file = BUILDDIR / f'{unit_name}.rel'
+        rel_files.append(rel_file)
         writer.build('slice_rel',
-                    sliced_files,
-                    ORIGDIR / slice_file.meta.fileName)
+                     sliced_files,
+                     ORIGDIR / slice_file.meta.fileName)
         writer.build('link',
-                    f'{BUILDDIR}/{unit_name}.elf',
-                    ld_o_files,
-                    lcf=lcf_path,
-                    ldflags='-proc gekko -fp hard -sdata 0 -sdata2 0 -m _prolog -r',
-                    implicit_inputs=[lcf_path])
+                     rel_file.with_suffix('.preplf'),
+                     ld_o_files,
+                     lcf=lcf_path,
+                     ldflags='-proc gekko -fp hard -sdata 0 -sdata2 0 -m _prolog -r',
+                     implicit_inputs=[lcf_path])
+        writer.build('link',
+                     rel_file.with_suffix('.plf'),
+                     ld_o_files,
+                     lcf=BUILDDIR / 'modules.lcf',
+                     ldflags='-proc gekko -fp hard -sdata 0 -sdata2 0 -m _prolog -r1 -strip_partial -w off',
+                     implicit_inputs=[BUILDDIR / 'modules.lcf'])
 
+# RELs need to come together to create the common linker script for the final stripped modules
+# Pick the slice with the largest number of sections as the base
+rel_slices = [x for x in slices if x[1].meta.type == SliceType.REL]
+best_slice = max(rel_slices, key=lambda x: len(x[1].meta.sections))
+preplf_files = [x.with_suffix('.preplf') for x in rel_files]
+writer.build('gen_linkerscript',
+             BUILDDIR / 'modules.lcf',
+             [best_slice[0], *preplf_files])
+
+writer.build('build_dol',
+            dol_file,
+            dol_file.with_suffix('.elf'))
+
+plf_files = [x.with_suffix('.plf') for x in rel_files]
+writer.build('build_rel',
+            rel_files,
+            [dol_file.with_suffix('.elf'), *plf_files],
+            fakepath='d:\\home\\Project\\WIIMJ2D\\EU\\PRD\\RVL\\bin\\',
+            alias_file='alias_db.txt')
 
 writer.flush(Path('build.ninja'))
