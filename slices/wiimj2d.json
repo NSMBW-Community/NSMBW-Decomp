@@ -6,8 +6,8 @@
         "defaultCompilerFlags": "-proc gekko -fp hard -O4 -inline noauto -Cpp_exceptions off -enum int -RTTI off -ipa file",
         "sections": {
             ".init":                { "index": 0,  "align": 16, "addr": "0x80004000", "size": "0x26c0",   "secAlign": 32 },
-            "extab":                { "index": 7,  "align": 16, "addr": "0x800066c0", "size": "0x60",     "secAlign": 32 },
-            "extabindex":           { "index": 8,  "align": 16, "addr": "0x80006720", "size": "0x60",     "secAlign": 32 },
+            "extab":                { "index": 7,  "align": 16, "addr": "0x800066c0", "size": "0x48",     "secAlign": 32 },
+            "extabindex":           { "index": 8,  "align": 16, "addr": "0x80006720", "size": "0x5c",     "secAlign": 32 },
             ".text":                { "index": 1,  "align": 16, "addr": "0x80006780", "size": "0x2e7560", "secAlign": 32 },
             ".ctors$10":            { "index": 9,  "align": 4,  "addr": "0x802edce0", "size": "0x4",      "secAlign": 32 },
             ".ctors":               { "index": 9,  "align": 4,  "addr": "0x802edce0", "size": "0x2d0",    "secAlign": 32, "offset": "0x4" },
@@ -493,8 +493,8 @@
             "compilerFlags": "-proc gekko -fp hard -O4 -char signed -rtti off -enum int -func_align 4 -use_lmw_stmw on -Cpp_exceptions on",
             "memoryRanges": {
                 ".text": "0x2d6350-0x2d6700",
-                "extab": "0x0-0x60",
-                "extabindex": "0x0-0x60"
+                "extab": "0x0-0x48",
+                "extabindex": "0x0-0x5c"
             }
         },
         {
