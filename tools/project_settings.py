@@ -8,7 +8,7 @@ from pathlib import Path
 #######################
 
 # This project's directory
-PROJECTDIR = Path(__file__).absolute().parents[1]
+PROJECTDIR = Path()
 
 # Directory for decompiled code
 SRCDIR = PROJECTDIR.joinpath('source')
@@ -28,6 +28,9 @@ ORIGDIR = PROJECTDIR.joinpath('original')
 # Compiler directory
 COMPILERDIR = PROJECTDIR.joinpath('compilers')
 
+# Tool directory
+TOOLDIR = PROJECTDIR.joinpath('tools')
+
 #########
 # Files #
 #########
@@ -36,6 +39,9 @@ COMPILERDIR = PROJECTDIR.joinpath('compilers')
 CODEWARRIOR = COMPILERDIR.joinpath('Wii', '1.1')
 CC = CODEWARRIOR.joinpath('mwcceppc.exe')
 LD = CODEWARRIOR.joinpath('mwldeppc.exe')
+
+# Codewarrior wrapper scripts
+CW_WRAPPER = Path(TOOLDIR, 'mwcceppc_wine_wrapper.py')
 
 # LCF templates
 LCF_TEMPLATE_DOL = PROJECTDIR.joinpath('template_dol.lcf')
