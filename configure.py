@@ -5,6 +5,7 @@
 
 import sys
 from pathlib import PureWindowsPath
+from typing import NamedTuple
 
 sys.path.append('tools')
 
@@ -23,9 +24,16 @@ def unit_name(slice_file: SliceFile) -> str:
 def ld_o_files(slice_file: SliceFile) -> list[Path]:
     files = []
     for slice in slice_file.parsed_slices:
-        if slice.source:
+        if slice.source and not slice.nonMatching:
             files.append((BUILDDIR / 'compiled' / unit_name(slice_file) / slice.source).with_suffix('.o'))
         else:
+            files.append((BUILDDIR / 'sliced' / unit_name(slice_file) / slice.sliceName).with_suffix('.o'))
+    return files
+
+def sliced_o_files(slice_file: SliceFile) -> list[Path]:
+    files = []
+    for slice in slice_file.parsed_slices:
+        if not slice.source or slice.nonMatching:
             files.append((BUILDDIR / 'sliced' / unit_name(slice_file) / slice.sliceName).with_suffix('.o'))
     return files
 
@@ -67,6 +75,12 @@ def gen_dol_build_statements(writer: NinjaWriter, slices: list[tuple[Path, Slice
         if slice_file.meta.type != SliceType.DOL:
             continue
 
+        # Slice DOL
+        writer.build('slice_dol',
+                     sliced_o_files(slice_file),
+                     ORIGDIR / slice_file.meta.fileName,
+                     symbols=SYMBOL_FILE,
+                     implicit_inputs=[SYMBOL_FILE])
         # Linked ELF
         writer.build('link',
                      make_path(slice_file, '.elf'),
@@ -103,6 +117,12 @@ def gen_rel_build_statements(writer: NinjaWriter, slices: list[tuple[Path, Slice
     for _, slice_file in slices:
         if slice_file.meta.type != SliceType.REL:
             continue
+        # Slice REL
+        writer.build('slice_rel',
+                     sliced_o_files(slice_file),
+                     ORIGDIR / slice_file.meta.fileName,
+                     alias_file=ALIAS_FILE,
+                     implicit_inputs=[ALIAS_FILE])
         # Non-stripped partially-linked file
         writer.build('link',
                      make_path(slice_file, '.preplf'),
