@@ -146,8 +146,7 @@ with open(f'{BUILDDIR}/dtk/splits/config.json', 'r') as f:
     objdiff_json = json.load(f)
 
 objdiff_json['min_version'] = '2.0.0'
-objdiff_json['custom_make'] = 'python'
-objdiff_json['custom_args'] = ['build.py', '--objdiff-o']
+objdiff_json['custom_make'] = 'ninja'
 objdiff_json['watch_patterns'] = [
     '*.c', '*.cpp',
     '*.h', '*.hpp',
