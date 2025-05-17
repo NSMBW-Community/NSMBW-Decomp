@@ -106,7 +106,7 @@ def gen_rel_build_statements(writer: NinjaWriter, slices: list[tuple[Path, Slice
             rel_files.append(make_path(slice_file, '.rel'))
 
     common_lcf = BUILDDIR / 'modules.lcf'
-    fake_path = Path('d:/home/Project/WIIMJ2D/EU/PRD/RVL/bin') # Used for the .str file
+    fake_path = PureWindowsPath('d:/home/Project/WIIMJ2D/EU/PRD/RVL/bin') # Used for the .str file
     str_file = dol_file.with_suffix('.str')
 
     #################################
@@ -172,7 +172,7 @@ writer = NinjaWriter()
 writer.variable('builddir', BUILDDIR)
 writer.newline()
 writer.variable('cc', f'{sys.executable} {CW_WRAPPER} {CC}' if sys.platform != 'win32' else CC)
-writer.variable('ld', f'{sys.executable} {CW_WRAPPER} {LD}' if sys.platform != 'win32' else LD)
+writer.variable('ld', f'wine {LD}' if sys.platform != 'win32' else LD)
 writer.variable('python', f'"{sys.executable}"')
 writer.newline()
 
