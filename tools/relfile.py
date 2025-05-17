@@ -4,14 +4,14 @@
 
 from math import ceil
 import struct
-import typing
+from typing import BinaryIO, Optional
 
 from elfconsts import PPC_RELOC_TYPE
 
 class RelRelocation:
     struct = struct.Struct('>HBBI')
 
-    def __init__(self, file: bytearray = None, offset: int = 0) -> None:
+    def __init__(self, file: Optional[bytearray] = None, offset: int=0) -> None:
         if file:
             self._read(file, offset)
         else:
@@ -31,7 +31,7 @@ class RelRelocation:
         self.offset, _reloc_type, self.section, self.addend = self.struct.unpack(file[offset:offset+8])
         self.reloc_type = PPC_RELOC_TYPE(_reloc_type)
 
-    def write(self, file: typing.BinaryIO) -> None:
+    def write(self, file: BinaryIO) -> None:
         assert self.offset < 0x10000
         file.write(self.struct.pack(self.offset, self.reloc_type.value, self.section, self.addend))
 
@@ -39,7 +39,7 @@ class RelRelocation:
 class RelSection:
     struct = struct.Struct('>II')
 
-    def __init__(self, file: typing.BinaryIO = None, info_offset: int = 0) -> None:
+    def __init__(self, file: Optional[bytearray]=None, info_offset: int=0) -> None:
         self.is_bss: bool = False
 
         if file:
@@ -67,12 +67,12 @@ class RelSection:
     def header_size() -> int:
         return 8
 
-    def write_info(self, file: typing.BinaryIO, data_offs: int) -> None:
+    def write_info(self, file: BinaryIO, data_offs: int) -> None:
         assert data_offs % 4 == 0, 'Sections must be 4-byte aligned!'
         i_data = self.struct.pack(data_offs | self.executable if not self.is_bss else 0, self._sec_len)
         file.write(i_data)
 
-    def write_data(self, file: typing.BinaryIO) -> None:
+    def write_data(self, file: BinaryIO) -> None:
         if not self.is_bss:
             file.write(self._data)
 
@@ -91,7 +91,7 @@ class Rel:
     imp_struct = header2_struct = struct.Struct('>II')
     header_struct = struct.Struct('>12I4B3I')
 
-    def __init__(self, id: int, version: int = 3, align: int = 4, bss_align: int = 8, path_offset: int = 0, path_size: int = 0, file: typing.BinaryIO = None) -> None:
+    def __init__(self, id: int, version: int=3, align: int=4, bss_align: int=8, path_offset: int=0, path_size: int=0, file: Optional[BinaryIO]=None) -> None:
         self.index = id
         self.path_offset = path_offset
         self.path_size = path_size
@@ -126,7 +126,7 @@ class Rel:
     def __repr__(self) -> str:
         return str(vars(self))
 
-    def read(self, file: typing.BinaryIO) -> None:
+    def read(self, file: BinaryIO) -> None:
         bytes = bytearray(file.read())
         (
             self.index,
@@ -177,7 +177,7 @@ class Rel:
     def add_section(self, section: RelSection) -> None:
         self.sections.append(section)
 
-    def _write_header(self, file: typing.BinaryIO) -> None:
+    def _write_header(self, file: BinaryIO) -> None:
         header = self.header_struct.pack(
             self.index,
             0,
@@ -253,7 +253,7 @@ class Rel:
 
                 idx += 1
 
-    def write(self, file: typing.BinaryIO) -> None:
+    def write(self, file: BinaryIO) -> None:
         self.section_info_offset = self.header_size()
 
         section_data_locs = []

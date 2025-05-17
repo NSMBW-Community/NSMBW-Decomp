@@ -4,10 +4,10 @@
 
 import math
 import struct
-import typing
+from typing import BinaryIO, Optional
 
 class DolSection:
-    def __init__(self, file: typing.BinaryIO = None, info_offset: int = 0, unused: bool = False) -> None:
+    def __init__(self, file: Optional[bytearray]=None, info_offset: int=0, unused: bool=False) -> None:
         self.unused = unused
 
         if file:
@@ -34,7 +34,7 @@ class DolSection:
 
 
 class Dol:
-    def __init__(self, file: typing.BinaryIO = None) -> None:
+    def __init__(self, file: Optional[BinaryIO]=None) -> None:
         self.bss_addr: int = 0
         self.bss_len: int = 0
         self.entry: int = 0
@@ -43,7 +43,7 @@ class Dol:
         if file:
             self.read(file)
 
-    def read(self, file: typing.BinaryIO) -> None:
+    def read(self, file: BinaryIO) -> None:
         bytes = bytearray(file.read())
         for i in range(18):
             self.sections.append(DolSection(bytes, i * 4))
@@ -53,13 +53,12 @@ class Dol:
     def add_section(self, section: DolSection) -> None:
         self.sections.append(section)
 
-    def write(self, file: typing.BinaryIO) -> None:
+    def write(self, file: BinaryIO) -> None:
         assert len(self.sections) == 18
 
         section_data_locs: list[int] = []
         pos = 0x100
         for sec in self.sections:
-
             # Align to 0x20
             pos = math.ceil(pos / 0x20) * 0x20
             section_data_locs.append(pos if not sec.unused else 0)

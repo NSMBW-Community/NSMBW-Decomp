@@ -10,8 +10,8 @@ from pathlib import Path, PureWindowsPath
 PROJECT_DIR = Path(__file__).parents[1]
 
 def windows_to_unix(path: str) -> str:
-    path = PureWindowsPath(path.strip())
-    return path.as_posix().lstrip(path.anchor)
+    win_path = PureWindowsPath(path.strip())
+    return win_path.as_posix().lstrip(win_path.anchor)
 
 
 def fix_makefile(text: str) -> str:

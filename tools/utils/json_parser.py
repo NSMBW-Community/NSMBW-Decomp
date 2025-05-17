@@ -2,7 +2,7 @@
 # Basic JSON to dataclass parser
 
 from dataclasses import is_dataclass, fields, MISSING
-from typing import get_origin, get_args, TypeVar
+from typing import cast, get_origin, get_args, TypeVar
 from enum import Enum
 
 T = TypeVar('T')
@@ -10,13 +10,13 @@ def from_json(cls: type[T], data: dict) -> T:
 
     # Handle lists
     if isinstance(data, list):
-        return [from_json(cls.__args__[0], item) for item in data]
+        return cast(T, [from_json(get_args(cls)[0], item) for item in data])
 
     # Handle base types
     if not is_dataclass(cls):
         if isinstance(cls, type) and issubclass(cls, Enum):
             return cls[data] if isinstance(data, str) else cls(data)
-        return data
+        return cast(T, data)
 
     # Handle nested dataclasses
     kwargs = {}
@@ -38,7 +38,8 @@ def from_json(cls: type[T], data: dict) -> T:
                 kwargs[key] = field_.default
             elif field_.default_factory != MISSING:
                 kwargs[key] = field_.default_factory()
-            elif is_dataclass(field_type):
+            elif (field_type):
+                assert isinstance(field_type, type)
                 kwargs[key] = from_json(field_type, {})
             else:
                 kwargs[key] = None
@@ -55,6 +56,7 @@ def from_json(cls: type[T], data: dict) -> T:
 
         # Handle nested dataclasses
         elif is_dataclass(field_type):
+            assert isinstance(field_type, type)
             kwargs[key] = from_json(field_type, value)
 
         # Handle enums
