@@ -60,8 +60,7 @@ def convert_to_rel_relocations(elf_relocs: list[tuple[ElfRela, ElfSymbol]], sec_
         res_relocs.append(out_reloc)
     return res_relocs
 
-
-def process_file(modules: list[ElfFile], idx: int, filename: Path, str_file: Path) -> int:
+def process_file(module: ElfFile, symbols: list[ElfSymtab], module_index: int, filename: Path, str_file: Path) -> int:
     unresolved_symbol_count: int = 0
 
     strs = str_file.read_text()
@@ -73,11 +72,10 @@ def process_file(modules: list[ElfFile], idx: int, filename: Path, str_file: Pat
     outfile = filename.with_suffix('.rel')
 
     # Create REL
-    rel_file = Rel(idx, path_offset=str_file_offset, path_size=str_len)
-    elffile = modules[idx]
+    rel_file = Rel(module_index, path_offset=str_file_offset, path_size=str_len)
     module_relocations: dict[int, list[RelRelocation]] = {}
 
-    for sec_idx, section in enumerate(elffile.sections):
+    for sec_idx, section in enumerate(module.sections):
         sec_addr_align = section.header.sh_addralign
         if section.header.sh_type != SHT.SHT_PROGBITS or section.name == '.comment':
 
@@ -103,11 +101,11 @@ def process_file(modules: list[ElfFile], idx: int, filename: Path, str_file: Pat
             rel_file.align = sec_addr_align
         rel_file.add_section(rel_sec)
 
-        if not elffile.has_section('.rela' + section.name):
+        if not module.has_section('.rela' + section.name):
             continue
 
-        rela_sec = cast(ElfRelaSec, elffile.get_section('.rela' + section.name))
-        symbol_table = cast(ElfSymtab, elffile.sections[rela_sec.header.sh_link])
+        rela_sec = cast(ElfRelaSec, module.get_section('.rela' + section.name))
+        symbol_table = cast(ElfSymtab, module.sections[rela_sec.header.sh_link])
 
         # Group the relocations by destination module and store the corresponding symbol
         module_classify: dict[int, list[tuple[ElfRela, ElfSymbol]]] = {}
@@ -118,7 +116,7 @@ def process_file(modules: list[ElfFile], idx: int, filename: Path, str_file: Pat
 
             # Check if in same module
             if symbol.st_shndx != SHN.SHN_UNDEF.value:
-                add_symbol(module_classify, idx, reloc, symbol)
+                add_symbol(module_classify, module_index, reloc, symbol)
                 continue
 
             # TODO: nice hardcode lol
@@ -139,8 +137,8 @@ def process_file(modules: list[ElfFile], idx: int, filename: Path, str_file: Pat
 
             # Search other modules
             found_sym = False
-            for i, mod in enumerate(modules):
-                if i != idx and find_symbol(cast(ElfSymtab, mod.get_section('.symtab')), i, sym_name, module_classify, reloc):
+            for i, symtab in enumerate(symbols):
+                if i != module_index and find_symbol(symtab, i, sym_name, module_classify, reloc):
                     found_sym = True
                     break
             if found_sym:
@@ -167,7 +165,7 @@ def process_file(modules: list[ElfFile], idx: int, filename: Path, str_file: Pat
         rel_file.relocations[mod] = module_relocations[mod]
 
     # Generate prolog, epilog and unresolved
-    symtab = cast(ElfSymtab, elffile.get_section('.symtab'))
+    symtab = cast(ElfSymtab, module.get_section('.symtab'))
     prolog = symtab.get_symbols('_prolog')
     if prolog:
         rel_file.prolog_section = prolog[0].st_shndx
@@ -194,7 +192,7 @@ def process_file(modules: list[ElfFile], idx: int, filename: Path, str_file: Pat
         rel_file.unresolved = 0x60
 
     # PLFs usually contain this section and also .rela.mwcats.text, so add those as dummy sections
-    if not elffile.get_section('.mwcats.text'):
+    if not module.get_section('.mwcats.text'):
         rel_file.add_section(RelSection())
         rel_file.add_section(RelSection())
 
@@ -206,23 +204,25 @@ def process_file(modules: list[ElfFile], idx: int, filename: Path, str_file: Pat
     return unresolved_symbol_count
 
 
-def build_rel(elf_file: Path, plf_files: list[Path], output_file: Path, str_file: Path) -> None:
+def build_rel(elf_file: Path, plf_paths: list[Path], output_file: Path, str_file: Path) -> None:
     assert elf_file.is_file()
-    assert all(plf.is_file() for plf in plf_files)
+    assert all(plf.is_file() for plf in plf_paths)
 
     # Open files and parse them
-    files = [elf_file.read_bytes()] + [plf.read_bytes() for plf in plf_files]
-    modules = [ElfFile.read(f) for f in files]
+    files = [elf_file.read_bytes()] + [plf.read_bytes() for plf in plf_paths]
+    symbols = [ElfFile.read_symtab(f) for f in files]
 
     # Process them
-    for i in range(1, len(modules)):
-        plf_file = plf_files[i - 1]
-        if plf_file.name != output_file.with_suffix('.plf').name:
+    for i in range(1, len(files)):
+        plf_path = plf_paths[i - 1]
+        if plf_path.name != output_file.with_suffix('.plf').name:
             continue
 
-        unresolved_symbol_count = process_file(modules, i, plf_file, str_file)
+        plf = ElfFile.read(files[i])
+
+        unresolved_symbol_count = process_file(plf, symbols, i, plf_path, str_file)
         if unresolved_symbol_count > 0:
-            print_warn('Processed', str(plf_file), 'with', unresolved_symbol_count, 'unresolved symbol(s).')
+            print_warn('Processed', str(plf_path), 'with', unresolved_symbol_count, 'unresolved symbol(s).')
 
 
 if __name__ == '__main__':
