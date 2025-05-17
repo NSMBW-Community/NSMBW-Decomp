@@ -234,7 +234,5 @@ if __name__ == '__main__':
     parser.add_argument('str_file', type=Path, help='The STR file.')
     parser.add_argument('--output', '-o', type=Path, help='The REL file to output.', required=True)
     args = parser.parse_args()
-    # import cProfile
-    # cProfile.run('build_rel(args.elf_file, args.plf_files, args.output, args.str_file)', 'build_rel.prof')
     build_rel(args.elf_file, args.plf_files, args.output, args.str_file)
 
