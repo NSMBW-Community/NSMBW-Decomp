@@ -8,7 +8,7 @@ from elffile import *
 from elfconsts import *
 from project_settings import *
 from relfile import Rel
-from slicelibV2 import *
+from slicelib import *
 import re
 
 class RelocSym:

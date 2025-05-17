@@ -9,7 +9,7 @@ from color_term import print_err
 from elffile import *
 from elfconsts import *
 from project_settings import *
-from slicelibV2 import *
+from slicelib import *
 
 def make_elf_force_directives(slice_file: SliceFile) -> set[str]:
     unit_name = Path(slice_file.meta.fileName).stem

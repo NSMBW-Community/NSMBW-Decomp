@@ -8,7 +8,7 @@ from dolfile import Dol
 from elffile import *
 from elfconsts import *
 from project_settings import *
-from slicelibV2 import *
+from slicelib import *
 
 def extract_slice(dol_file: Dol, slice: Slice, syms: dict[str, int]) -> ElfFile:
     elf_file = ElfFile(ET.ET_REL, EM.EM_PPC)

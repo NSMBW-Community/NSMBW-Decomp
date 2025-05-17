@@ -18,7 +18,7 @@ sys.path.append('tools')
 
 from color_term import *
 from project_settings import *
-from slicelibV2 import SliceFile, SliceType, load_slice_file
+from slicelib import SliceFile, SliceType, load_slice_file
 
 parser = argparse.ArgumentParser(description='Sets up the project for use with objdiff.')
 parser.add_argument('-m', help='Path to a map file to use')

@@ -13,7 +13,7 @@ sys.path.append('tools')
 
 from color_term import *
 from project_settings import *
-from slicelibV2 import SliceFile, load_slice_file
+from slicelib import SliceFile, load_slice_file
 from elffile import ElfFile
 
 parser = argparse.ArgumentParser(description='Tool to verify built binaries and generate progress files for the website.\

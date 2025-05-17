@@ -8,7 +8,7 @@ import sys
 sys.path.append('tools')
 
 from project_settings import *
-from slicelibV2 import *
+from slicelib import *
 from utils.ninja_syntax_ex import Writer as NinjaWriter
 
 ###################
