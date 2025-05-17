@@ -4,6 +4,7 @@
 # Generates the Ninja build file.
 
 import sys
+from pathlib import PureWindowsPath
 
 sys.path.append('tools')
 
@@ -11,39 +12,153 @@ from project_settings import *
 from slicelib import *
 from utils.ninja_syntax_ex import Writer as NinjaWriter
 
-###################
-# Write Variables #
-###################
+# Helper functions
 
-writer = NinjaWriter()
-writer.variable('builddir', BUILDDIR)
-writer.newline()
+def make_path(slice_file: SliceFile, suffix: str) -> Path:
+    return (BUILDDIR / slice_file.meta.fileName).with_suffix(suffix)
 
-########################
-# Step 0: Slice Import #
-########################
+def unit_name(slice_file: SliceFile) -> str:
+    return Path(slice_file.meta.fileName).stem
 
-# Load slice files
-slices: list[tuple[Path, SliceFile]] = []
-for file in SLICEDIR.rglob('*.json'):
-    slices.append((file, load_slice_file(file)))
+def ld_o_files(slice_file: SliceFile) -> list[Path]:
+    files = []
+    for slice in slice_file.parsed_slices:
+        if slice.source:
+            files.append((BUILDDIR / 'compiled' / unit_name(slice_file) / slice.source).with_suffix('.o'))
+        else:
+            files.append((BUILDDIR / 'sliced' / unit_name(slice_file) / slice.sliceName).with_suffix('.o'))
+    return files
 
-# Ensure correct slice order
-slices = sorted(slices, key=lambda x: x[1].meta.moduleNum)
+def files_with_suffix(files: list[Path], suffix: str) -> list[Path]:
+    return [f.with_suffix(suffix) for f in files]
 
 ##############################
 # Step 1: Source Compilation #
 ##############################
+def gen_compile_build_statements(writer: NinjaWriter, slices: list[tuple[Path, SliceFile]]):
+    for slice_file_path, slice_file in slices:
+        compiled_files = []
 
-# Define CodeWarrior path
+        for slice in slice_file.parsed_slices:
+            compiled_o_file = (BUILDDIR / 'compiled' / unit_name(slice_file) / slice.source).with_suffix('.o')
+            if not slice.source:
+                continue
+
+            compiled_files.append(compiled_o_file)
+
+            ccflags = slice_file.meta.defaultCompilerFlags if slice.ccFlags == '' else slice.ccFlags
+
+            writer.build('cw',
+                         compiled_o_file,
+                         (SRCDIR / slice.source).as_posix(),
+                         ccflags=ccflags,
+                         depfile=compiled_o_file.with_suffix('.d'))
+
+        writer.build('gen_linkerscript',
+                     make_path(slice_file, '.lcf'),
+                     slice_file_path,
+                     implicit_inputs=[str(x) for x in compiled_files])
+
+###########################
+# Step 2: DOL build steps #
+###########################
+def gen_dol_build_statements(writer: NinjaWriter, slices: list[tuple[Path, SliceFile]]):
+    for _, slice_file in slices:
+        if slice_file.meta.type != SliceType.DOL:
+            continue
+
+        # Linked ELF
+        writer.build('link',
+                     make_path(slice_file, '.elf'),
+                     ld_o_files(slice_file),
+                     lcf=make_path(slice_file, '.lcf'),
+                     ldflags='-proc gekko -fp hard',
+                     implicit_inputs=[make_path(slice_file, '.lcf')])
+        # Build final DOL
+        writer.build('build_dol',
+                     make_path(slice_file, '.dol'),
+                     make_path(slice_file, '.elf'))
+
+###########################
+# Step 3: REL build steps #
+###########################
+def gen_rel_build_statements(writer: NinjaWriter, slices: list[tuple[Path, SliceFile]]):
+    dol_file = Path()
+    rel_files = []
+    for _, slice_file in slices:
+        if slice_file.meta.type == SliceType.DOL:
+            dol_file = make_path(slice_file, '.dol')
+        else:
+            rel_files.append(make_path(slice_file, '.rel'))
+
+    common_lcf = BUILDDIR / 'modules.lcf'
+    fake_path = Path('d:/home/Project/WIIMJ2D/EU/PRD/RVL/bin') # Used for the .str file
+    str_file = dol_file.with_suffix('.str')
+
+    #################################
+    # Step 3.1: Per-REL build steps #
+    #################################
+
+    fake_paths = []
+    for _, slice_file in slices:
+        if slice_file.meta.type != SliceType.REL:
+            continue
+        # Non-stripped partially-linked file
+        writer.build('link',
+                     make_path(slice_file, '.preplf'),
+                     ld_o_files(slice_file),
+                     lcf=make_path(slice_file, '.lcf'),
+                     ldflags='-proc gekko -fp hard -sdata 0 -sdata2 0 -m _prolog -r',
+                     implicit_inputs=[make_path(slice_file, '.lcf')])
+        # Stripped partially-linked file
+        writer.build('link',
+                     make_path(slice_file, '.plf'),
+                     ld_o_files(slice_file),
+                     lcf=common_lcf,
+                     ldflags='-proc gekko -fp hard -sdata 0 -sdata2 0 -m _prolog -r1 -strip_partial -w off',
+                     implicit_inputs=[common_lcf])
+        # Fake PLF for the .str file
+        fake_plf_path = PureWindowsPath(fake_path / slice_file.meta.fileName).with_suffix('.plf')
+        writer.build('phony', fake_plf_path, make_path(slice_file, '.plf'))
+        fake_paths.append(str(fake_plf_path))
+        # Build final REL
+        writer.build('build_rel',
+                     make_path(slice_file, '.rel'),
+                     [dol_file.with_suffix('.elf'), *files_with_suffix(rel_files, '.plf'), str_file])
+
+    ####################################
+    # Step 3.2: Common REL build steps #
+    ####################################
+
+    # Each REL file contains a pointer into a STR file, which contains the names of the modules.
+    writer.build('write_str',
+                 str_file,
+                 fake_paths)
+
+    # RELs need to come together to create the common linker script for the final stripped modules
+    # Pick the slice with the largest number of sections as the base
+    rel_slices = [x for x in slices if x[1].meta.type == SliceType.REL]
+    best_slice = max(rel_slices, key=lambda x: len(x[1].meta.sections))
+    writer.build('gen_linkerscript',
+                 common_lcf,
+                 [best_slice[0], *files_with_suffix(rel_files, '.preplf')])
+
+#############################
+# Set up ninja build script #
+#############################
+
+# Ninja build variables
+writer = NinjaWriter()
+writer.variable('builddir', BUILDDIR)
+writer.newline()
 writer.variable('cc', f'{sys.executable} {CW_WRAPPER} {CC}' if sys.platform != 'win32' else CC)
 writer.variable('ld', f'{sys.executable} {CW_WRAPPER} {LD}' if sys.platform != 'win32' else LD)
 writer.variable('python', f'"{sys.executable}"')
 writer.newline()
 
-# Define compilation rule
+# Ninja build rules
 writer.rule('cw',
-            command=f'$cc -c $cflags $in -o $out -MD -gccdep -I- -i {INCDIR}',
+            command=f'$cc -c $ccflags $in -o $out -MD -gccdep -I- -i {INCDIR}',
             deps='gcc',
             depfile='$depfile',
             description='Compile $in')
@@ -58,10 +173,11 @@ writer.rule('slice_rel',
 
 writer.rule('gen_linkerscript',
             command=f'$python tools/gen_lcf.py $in -o $out',
-            description='Generate linker script for $in')
+            description='Generate $out')
 
 writer.rule('link',
-            command=f'$ld $ldflags $in -lcf $lcf -o $out')
+            command=f'$ld $ldflags $in -lcf $lcf -o $out',
+            description='Link $out')
 
 writer.rule('build_dol',
             command=f'$python tools/build_dol.py $in -o $out',
@@ -75,108 +191,27 @@ writer.rule('build_rel',
             command=f'$python tools/build_rel.py $in -o $out',
             description='Build $out')
 
-# Write build command for each source file
-dol_file = Path()
-rel_files: list[Path] = []
-for slice_file_path, slice_file in slices:
-    sliced_files = []
-    compiled_files = []
-    ld_o_files = []
+writer.rule('configure',
+            command=f'$python {sys.argv[0]}',
+            generator=True,
+            description='Configure $out')
 
-    unit_name = Path(slice_file.meta.fileName).stem
+# Load slice files
+slices: list[tuple[Path, SliceFile]] = []
+for file in SLICEDIR.rglob('*.json'):
+    slices.append((file, load_slice_file(file)))
 
-    for slice in slice_file.parsed_slices:
-        sliced_o_file = (BUILDDIR / 'sliced' / unit_name / slice.sliceName).with_suffix('.o')
-        compiled_o_file = (BUILDDIR / 'compiled' / unit_name / slice.source).with_suffix('.o')
-        sliced_files.append(sliced_o_file)
-        if slice.source:
-            compiled_files.append(compiled_o_file)
+# Ensure correct slice order
+slices = sorted(slices, key=lambda x: x[1].meta.moduleNum)
 
-            ccflags = slice_file.meta.defaultCompilerFlags
-            if slice.ccFlags != '':
-                ccflags = slice.ccFlags
+# Generate build statements
+gen_compile_build_statements(writer, slices)
+gen_dol_build_statements(writer, slices)
+gen_rel_build_statements(writer, slices)
 
-            writer.build('cw',
-                         compiled_o_file,
-                         SRCDIR.joinpath(slice.source).as_posix(),
-                         cflags=ccflags,
-                         depfile=compiled_o_file.with_suffix('.d'))
-
-        if slice.source and not slice.nonMatching:
-            ld_o_files.append(compiled_o_file)
-        else:
-            ld_o_files.append(sliced_o_file)
-
-    lcf_path = (BUILDDIR / unit_name).with_suffix('.lcf')
-
-    writer.build('gen_linkerscript',
-                 lcf_path,
-                 slice_file_path,
-                 implicit_inputs=[str(x) for x in compiled_files])
-
-    if slice_file.meta.type == SliceType.DOL:
-        dol_file = BUILDDIR / f'{unit_name}.dol'
-        writer.build('slice_dol',
-                    sliced_files,
-                    ORIGDIR / slice_file.meta.fileName,
-                    symbols=SYMBOL_FILE,
-                    implicit_inputs=[SYMBOL_FILE])
-        writer.build('link',
-                     dol_file.with_suffix('.elf'),
-                     ld_o_files,
-                     lcf=lcf_path,
-                     ldflags='-proc gekko -fp hard',
-                     implicit_inputs=[lcf_path])
-        writer.build('build_dol',
-                    dol_file,
-                    dol_file.with_suffix('.elf'))
-    else:
-        rel_file = BUILDDIR / f'{unit_name}.rel'
-        rel_files.append(rel_file)
-        writer.build('slice_rel',
-                     sliced_files,
-                     ORIGDIR / slice_file.meta.fileName,
-                     alias_file=ALIAS_FILE,
-                     implicit_inputs=[ALIAS_FILE])
-        writer.build('link',
-                     rel_file.with_suffix('.preplf'),
-                     ld_o_files,
-                     lcf=lcf_path,
-                     ldflags='-proc gekko -fp hard -sdata 0 -sdata2 0 -m _prolog -r',
-                     implicit_inputs=[lcf_path])
-        writer.build('link',
-                     rel_file.with_suffix('.plf'),
-                     ld_o_files,
-                     lcf=BUILDDIR / 'modules.lcf',
-                     ldflags='-proc gekko -fp hard -sdata 0 -sdata2 0 -m _prolog -r1 -strip_partial -w off',
-                     implicit_inputs=[BUILDDIR / 'modules.lcf'])
-
-# RELs need to come together to create the common linker script for the final stripped modules
-# Pick the slice with the largest number of sections as the base
-rel_slices = [x for x in slices if x[1].meta.type == SliceType.REL]
-best_slice = max(rel_slices, key=lambda x: len(x[1].meta.sections))
-preplf_files = [x.with_suffix('.preplf') for x in rel_files]
-writer.build('gen_linkerscript',
-             BUILDDIR / 'modules.lcf',
-             [best_slice[0], *preplf_files])
-
-plf_files = [x.with_suffix('.plf') for x in rel_files]
-
-str_file = dol_file.with_suffix('.str')
-fake_path = 'd:\\home\\Project\\WIIMJ2D\\EU\\PRD\\RVL\\bin\\'
-fake_paths = []
-for r in plf_files:
-    writer.build('phony', fake_path + r.name, r)
-    fake_paths.append(fake_path + r.name)
-
-writer.build('write_str',
-             str_file,
-             fake_paths)
-
-for rel in rel_files:
-    plf_file = rel.with_suffix('.plf')
-    writer.build('build_rel',
-                 rel,
-                 [dol_file.with_suffix('.elf'), *plf_files, str_file])
+# Regenerate build.ninja on changes to the slices
+writer.build('configure',
+             'build.ninja',
+             [x[0] for x in slices])
 
 writer.flush(Path('build.ninja'))
