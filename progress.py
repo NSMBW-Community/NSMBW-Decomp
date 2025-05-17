@@ -126,8 +126,7 @@ def verify_obj(slice_files: list[SliceFile]) -> bool:
                     elf = ElfFile.read(open(compiled_path, 'rb').read())
                     for slice_sec in slice.sliceSecs:
                         sec_name = slice_sec.sec_name
-                        elf_sec = elf.get_section(sec_name)
-                        if elf_sec is None:
+                        if not elf.has_section(sec_name):
                             # Check for $ section
                             was_found = False
                             for elf_sec in elf.sections:
@@ -137,6 +136,7 @@ def verify_obj(slice_files: list[SliceFile]) -> bool:
                             if not was_found:
                                 errors.append(f'Section {sec_name} not found!')
                         else:
+                            elf_sec = elf.get_section(sec_name)
                             al_start = align_addr(slice_sec.start_offs, slice_sec.alignment)
                             al_end = align_addr(slice_sec.end_offs, slice_sec.alignment)
                             exp_len = al_end - al_start

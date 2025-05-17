@@ -145,6 +145,7 @@ if __name__ == '__main__':
     import argparse
     parser = argparse.ArgumentParser(description='Slices REL files.')
     parser.add_argument('rel_file', type=Path, help='REL file to be sliced.')
+    parser.add_argument('--alias_file', '-a', type=Path, help='File that stores aliases for relocation symbols.')
     parser.add_argument('-o', '--output', default=Path('bin/sliced'), type=Path, help='Path the slices will be stored to.')
     args = parser.parse_args()
-    slice_rel(args.rel_file, args.output, ALIAS_FILE)
+    slice_rel(args.rel_file, args.output, args.alias_file)

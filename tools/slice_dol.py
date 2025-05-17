@@ -80,20 +80,20 @@ def extract_slice(dol_file: Dol, slice: Slice, syms: dict[str, int]) -> ElfFile:
     return elf_file
 
 
-def slice_dol(dol_file: Path, out_path: Path) -> None:
+def slice_dol(dol_file: Path, out_path: Path, symbol_file: Path) -> None:
     if not dol_file.is_file():
         print_err('Fatal error: File', str(dol_file), 'not found!')
         return
 
     # TODO: use an actual symbol map file
     syms: dict[str, int] = {}
-    with open(SYMBOL_FILE) as sym_file:
-        for line in sym_file:
-            if line != '\n':
-                sym, addr = line.split('=')
-                if sym in syms:
-                    print_warn('Warning: symbol', sym, 'defined multiple times in', SYMBOL_FILE.name, end='!\n')
-                syms[sym] = int(addr, 16)
+
+    for line in symbol_file.read_text().splitlines():
+        if line != '\n':
+            sym, addr = line.split('=')
+            if sym in syms:
+                print_warn('Warning: symbol', sym, 'defined multiple times in', symbol_file.name, end='!\n')
+            syms[sym] = int(addr, 16)
 
     # Read slices
     with open(dol_file, 'rb') as f:
@@ -114,6 +114,7 @@ if __name__ == '__main__':
     import argparse
     parser = argparse.ArgumentParser(description='Slices DOL files.')
     parser.add_argument('dol_file', type=Path, help='DOL file to be sliced.')
+    parser.add_argument('-s', '--symbol_file', type=Path, help='Symbol file to be used.')
     parser.add_argument('-o', '--output', default=Path('bin/sliced'), type=Path, help='Path the slices will be stored to.')
     args = parser.parse_args()
-    slice_dol(args.dol_file, args.output)
+    slice_dol(args.dol_file, args.output, args.symbol_file)

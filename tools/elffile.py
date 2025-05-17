@@ -3,6 +3,7 @@
 
 import struct
 from functools import reduce
+from typing import Optional, cast
 
 from elfconsts import *
 
@@ -21,11 +22,11 @@ class ElfHeader:
         self.e_shentsize: int = 0x28
 
         # Set later
-        self.e_phoff: int = None
-        self.e_shoff: int = None
-        self.e_phnum: int = None
-        self.e_shnum: int = None
-        self.e_shstrndx: int = None
+        self.e_phoff: int = -1
+        self.e_shoff: int = -1
+        self.e_phnum: int = -1
+        self.e_shnum: int = -1
+        self.e_shstrndx: int = -1
 
     @staticmethod
     def read(data: bytes, offset: int) -> 'ElfHeader':
@@ -51,11 +52,11 @@ class ElfHeader:
         return eh_res
 
     def __bytes__(self) -> bytes:
-        assert self.e_phoff is not None
-        assert self.e_shoff is not None
-        assert self.e_phnum is not None
-        assert self.e_shnum is not None
-        assert self.e_shstrndx is not None
+        assert self.e_phoff != -1
+        assert self.e_shoff != -1
+        assert self.e_phnum != -1
+        assert self.e_shnum != -1
+        assert self.e_shstrndx != -1
 
         return bytes(ElfHeader._struct.pack(
             self.e_ident,
@@ -78,7 +79,7 @@ class ElfHeader:
 class ElfSectionHeader:
     _struct = struct.Struct('>10I')
 
-    def __init__(self, sh_type=SHT.SHT_NULL, sh_flags: set[SHF]=None, sh_addr=0, sh_link=0, sh_info=0, sh_addralign=0) -> None:
+    def __init__(self, sh_type=SHT.SHT_NULL, sh_flags: Optional[set[SHF]]=None, sh_addr=0, sh_link=0, sh_info=0, sh_addralign=0) -> None:
         self.sh_type: SHT = sh_type
         self.sh_flags: set[SHF] = sh_flags if sh_flags else set()
         self.sh_addr: int = sh_addr
@@ -87,10 +88,10 @@ class ElfSectionHeader:
         self.sh_addralign: int = sh_addralign
 
         # Set later
-        self.sh_name: int = None
-        self.sh_offset: int = None
-        self.sh_size: int = None
-        self.sh_entsize: int = None
+        self.sh_name: int = -1
+        self.sh_offset: int = -1
+        self.sh_size: int = -1
+        self.sh_entsize: int = -1
 
     @staticmethod
     def read(data: bytes, offset: int) -> 'ElfSectionHeader':
@@ -112,10 +113,10 @@ class ElfSectionHeader:
         return sh_res
 
     def __bytes__(self) -> bytes:
-        assert self.sh_name is not None
-        assert self.sh_offset is not None
-        assert self.sh_size is not None
-        assert self.sh_entsize is not None
+        assert self.sh_name != -1
+        assert self.sh_offset != -1
+        assert self.sh_size != -1
+        assert self.sh_entsize != -1
 
         return bytes(ElfSectionHeader._struct.pack(
             self.sh_name,
@@ -134,8 +135,8 @@ class ElfSectionHeader:
         return self.sh_type != SHT.SHT_NOBITS
 
 class ElfSection:
-    def __init__(self, name='', data: bytes=None, header: ElfSectionHeader=None) -> None:
-        if not header:
+    def __init__(self, name='', data: Optional[bytes]=None, header: Optional[ElfSectionHeader]=None) -> None:
+        if header is None:
             h_type, h_flags = SpecialSections.get(name)
             self.header = ElfSectionHeader(h_type, h_flags)
             self.header.sh_size = 0
@@ -143,11 +144,11 @@ class ElfSection:
         else:
             self.header = header
 
-        self.name: str = name
-        self.data: bytes = data
+        self.name = name
+        self.data = data if data else bytes()
 
         # Set later
-        self.header.sh_name: int = None
+        self.header.sh_name = -1
 
     @staticmethod
     def read(data: bytes, header: ElfSectionHeader) -> 'ElfSection':
@@ -178,7 +179,7 @@ class ElfSection:
 
 
 class ElfStrtab(ElfSection):
-    def __init__(self, name='.strtab', strs: list[str]=None) -> None:
+    def __init__(self, name='.strtab', strs: Optional[list[str]]=None) -> None:
         super().__init__(name)
         self.strs = strs if strs else []
 
@@ -239,7 +240,7 @@ class ElfSymbol:
         self.st_shndx: int = st_shndx
 
         # Set later
-        self.st_name: int = None
+        self.st_name: int = -1
 
     @staticmethod
     def read(data: bytes, offset: int, strtab: ElfStrtab) -> 'ElfSymbol':
@@ -259,7 +260,7 @@ class ElfSymbol:
         return sym
 
     def __bytes__(self) -> bytes:
-        assert self.st_name is not None
+        assert self.st_name != -1
 
         return bytes(ElfSymbol._struct.pack(
             self.st_name,
@@ -272,13 +273,15 @@ class ElfSymbol:
 
 
 class ElfSymtab(ElfSection):
-    def __init__(self, name='.symtab', syms: list[ElfSymbol]=None) -> None:
+    def __init__(self, name='.symtab', syms: Optional[list[ElfSymbol]]=None) -> None:
         super().__init__(name)
         self.syms = syms if syms else []
 
     @staticmethod
-    def read(data: bytes, strtab: ElfStrtab, header: ElfSectionHeader) -> 'ElfSymtab':
+    def read(data: bytes, header: ElfSectionHeader, strtab: Optional[ElfStrtab]=None) -> 'ElfSymtab':
         assert len(data) == header.sh_size
+        assert strtab is not None
+
         syms = []
         # Skip NULL symbol
         for i in range(ElfSymbol._struct.size, len(data), ElfSymbol._struct.size):
@@ -342,12 +345,12 @@ class ElfRela:
 
 
 class ElfRelaSec(ElfSection):
-    def __init__(self, name='.rela', relocs: list[ElfRela]=None) -> None:
+    def __init__(self, name='.rela', relocs: Optional[list[ElfRela]]=None) -> None:
         super().__init__(name)
         self.relocs = relocs if relocs else []
 
     @staticmethod
-    def read(data: bytes, header: ElfSectionHeader) -> None:
+    def read(data: bytes, header: ElfSectionHeader) -> 'ElfRelaSec':
         assert len(data) == header.sh_size
         relocs = []
         for i in range(0, len(data), ElfRela._struct.size):
@@ -374,7 +377,7 @@ class ElfFile:
         sec_hdr_offs = self.header.e_shoff
         sec_hdr_size = self.header.e_shentsize
         hdr = ElfSectionHeader.read(data, sec_hdr_offs + sec_index * sec_hdr_size)
-        res_data = None
+        res_data = bytes()
         if hdr.has_data():
             offs = hdr.sh_offset
             size = hdr.sh_size
@@ -407,7 +410,7 @@ class ElfFile:
             elif sec_hdr.sh_type == SHT.SHT_STRTAB:
                 elf_sec = ElfStrtab.read(sec_data, sec_hdr)
             elif sec_hdr.sh_type == SHT.SHT_SYMTAB:
-                elf_sec = ElfSymtab.read(sec_data, strtab, sec_hdr)
+                elf_sec = ElfSymtab.read(sec_data, sec_hdr, strtab)
             else:
                 elf_sec = ElfSection(sec_name, bytes(), sec_hdr)
 
@@ -423,15 +426,16 @@ class ElfFile:
         return bool([x for x in self.sections if x.name == name])
 
     def get_section(self, name: str) -> ElfSection:
-        if not self.has_section(name):
-            return None
-        return next((x for x in self.sections if x.name == name), None)
+        for s in self.sections:
+            if s.name == name:
+                return s
+        assert False, f'Section {name} not found in {self.sections}'
 
     def get_section_index(self, name: str) -> int:
         for i, sec in enumerate(self.sections):
             if sec.name == name:
                 return i
-        return None
+        return -1
 
     def __bytes__(self) -> bytes:
         if not self.has_section('.shstrtab'):
@@ -441,8 +445,8 @@ class ElfFile:
 
         shstrtabndx = self.get_section_index('.shstrtab')
         strtabndx = self.get_section_index('.strtab')
-        shstrtab: ElfStrtab = self.get_section('.shstrtab')
-        strtab: ElfStrtab = self.get_section('.strtab')
+        shstrtab = cast(ElfStrtab, self.get_section('.shstrtab'))
+        strtab = cast(ElfStrtab, self.get_section('.strtab'))
 
         shstrtab.clear()
         strtab.clear()

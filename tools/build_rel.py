@@ -3,6 +3,7 @@
 
 import re
 from pathlib import Path
+from typing import cast
 
 from color_term import *
 from elffile import *
@@ -34,12 +35,8 @@ def convert_to_rel_relocations(elf_relocs: list[tuple[ElfRela, ElfSymbol]], sec_
     pos = 0
 
     for rel, sym in elf_relocs:
-        if type(sym) is RelRelocation:
-            st_shndx = sym.section
-            st_value = sym.addend
-        elif type(sym) is ElfSymbol:
-            st_shndx = sym.st_shndx
-            st_value = sym.st_value + rel.r_addend
+        st_shndx = sym.st_shndx
+        st_value = sym.st_value + rel.r_addend
 
         assert rel.r_offset >= pos
         offset = rel.r_offset - pos
@@ -64,22 +61,19 @@ def convert_to_rel_relocations(elf_relocs: list[tuple[ElfRela, ElfSymbol]], sec_
     return res_relocs
 
 
-def process_file(modules: list[ElfFile], idx: int, filename: Path, alias_db: dict[str, str], fakedir: str, str_file: list) -> int:
+def process_file(modules: list[ElfFile], idx: int, filename: Path, str_file: Path) -> int:
     unresolved_symbol_count: int = 0
 
-    # Generate .str file and output filename
-    str_file_offset = sum(len(s) + 1 for s in str_file)
-    if fakedir:
-        path_str = f'{fakedir}{filename.name}'
-    else:
-        path_str = filename.resolve()
-    str_file.append(path_str)
+    strs = str_file.read_text()
+    str_file_offset = strs.find(filename.name)
+    while str_file_offset > 0 and strs[str_file_offset - 1] != '\0':
+        str_file_offset -= 1
+    str_len = len(strs[str_file_offset:].split('\0')[0]) + 1
 
     outfile = filename.with_suffix('.rel')
-    unit_name = filename.stem
 
     # Create REL
-    rel_file = Rel(idx, path_offset=str_file_offset, path_size=len(path_str) + 1)
+    rel_file = Rel(idx, path_offset=str_file_offset, path_size=str_len)
     elffile = modules[idx]
     module_relocations: dict[int, list[RelRelocation]] = {}
 
@@ -109,11 +103,11 @@ def process_file(modules: list[ElfFile], idx: int, filename: Path, alias_db: dic
             rel_file.align = sec_addr_align
         rel_file.add_section(rel_sec)
 
-        rela_sec: ElfRelaSec = elffile.get_section('.rela' + section.name)
-        if not rela_sec:
+        if not elffile.has_section('.rela' + section.name):
             continue
 
-        symbol_table: ElfSymtab = elffile.sections[rela_sec.header.sh_link]
+        rela_sec = cast(ElfRelaSec, elffile.get_section('.rela' + section.name))
+        symbol_table = cast(ElfSymtab, elffile.sections[rela_sec.header.sh_link])
 
         # Group the relocations by destination module and store the corresponding symbol
         module_classify: dict[int, list[tuple[ElfRela, ElfSymbol]]] = {}
@@ -146,7 +140,7 @@ def process_file(modules: list[ElfFile], idx: int, filename: Path, alias_db: dic
             # Search other modules
             found_sym = False
             for i, mod in enumerate(modules):
-                if i != idx and find_symbol(mod.get_section('.symtab'), i, sym_name, module_classify, reloc):
+                if i != idx and find_symbol(cast(ElfSymtab, mod.get_section('.symtab')), i, sym_name, module_classify, reloc):
                     found_sym = True
                     break
             if found_sym:
@@ -173,7 +167,7 @@ def process_file(modules: list[ElfFile], idx: int, filename: Path, alias_db: dic
         rel_file.relocations[mod] = module_relocations[mod]
 
     # Generate prolog, epilog and unresolved
-    symtab: ElfSymtab = elffile.get_section('.symtab')
+    symtab = cast(ElfSymtab, elffile.get_section('.symtab'))
     prolog = symtab.get_symbols('_prolog')
     if prolog:
         rel_file.prolog_section = prolog[0].st_shndx
@@ -212,58 +206,35 @@ def process_file(modules: list[ElfFile], idx: int, filename: Path, alias_db: dic
     return unresolved_symbol_count
 
 
-def build_rel(elf_file: Path, plf_files: list[Path], alias_file: Path, fake_path: str) -> None:
-
-    # Check if ELF file exists
-    if not elf_file.is_file():
-        print_err('Fatal error: File', str(elf_file), 'not found!')
-        return
-
-    # Check if PLF files exist
-    for plf in plf_files:
-        if not plf.is_file():
-            print_err('Fatal error: File', str(plf), 'not found!')
-            return
-
-    # Load aliases if present
-    alias_db: dict[str, str] = {}
-    if alias_file.is_file():
-        with open(alias_file) as f:
-            for line in f:
-                from_sym, to_sym = line.split('=')
-                if from_sym not in alias_db:
-                    alias_db[from_sym] = to_sym.upper()
-
-    # Initialize str file
-    str_file = []
+def build_rel(elf_file: Path, plf_files: list[Path], output_file: Path, str_file: Path) -> None:
+    assert elf_file.is_file()
+    assert all(plf.is_file() for plf in plf_files)
 
     # Open files and parse them
-    files = [open(elf_file, 'rb')] + [open(plf, 'rb') for plf in plf_files]
-    modules = [ElfFile.read(f.read()) for f in files]
+    files = [elf_file.read_bytes()] + [plf.read_bytes() for plf in plf_files]
+    modules = [ElfFile.read(f) for f in files]
 
     # Process them
-    for idx in range(1, len(modules)):
-        unresolved_symbol_count = process_file(modules, idx, plf_files[idx-1], alias_db, fake_path, str_file)
+    for i in range(1, len(modules)):
+        plf_file = plf_files[i - 1]
+        if plf_file.name != output_file.with_suffix('.plf').name:
+            continue
+
+        unresolved_symbol_count = process_file(modules, i, plf_file, str_file)
         if unresolved_symbol_count > 0:
-            print_warn('Processed', str(plf_files[idx-1]), 'with', unresolved_symbol_count, 'unresolved symbol(s).')
-
-    # Close them
-    for file in files:
-        file.close()
-
-    # Write str file
-    with open(elf_file.with_suffix('.str'), 'w') as f:
-        f.write('\0'.join(str_file))
+            print_warn('Processed', str(plf_file), 'with', unresolved_symbol_count, 'unresolved symbol(s).')
 
 
 if __name__ == '__main__':
-
     # Parse arguments separately so this file can be imported from other ones
     import argparse
-    parser = argparse.ArgumentParser(description='Compiles REL files.')
+    parser = argparse.ArgumentParser(description='Builds a REL file.')
     parser.add_argument('elf_file', type=Path, help='DOL object file.')
     parser.add_argument('plf_files', type=Path, nargs='+', help='REL object file(s).')
-    parser.add_argument('--alias_file', '-a', type=Path, help='File that stores aliases for relocation symbols.')
-    parser.add_argument('--fake_path', '-p', type=str, help='The fake directory name to be used for the .str file.')
+    parser.add_argument('str_file', type=Path, help='The STR file.')
+    parser.add_argument('--output', '-o', type=Path, help='The REL file to output.', required=True)
     args = parser.parse_args()
-    build_rel(args.elf_file, args.plf_files, args.alias_file, args.fake_path)
+    # import cProfile
+    # cProfile.run('build_rel(args.elf_file, args.plf_files, args.output, args.str_file)', 'build_rel.prof')
+    build_rel(args.elf_file, args.plf_files, args.output, args.str_file)
+

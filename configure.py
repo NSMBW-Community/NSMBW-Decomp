@@ -38,7 +38,7 @@ slices = sorted(slices, key=lambda x: x[1].meta.moduleNum)
 # Define CodeWarrior path
 writer.variable('cc', f'{sys.executable} {CW_WRAPPER} {CC}' if sys.platform != 'win32' else CC)
 writer.variable('ld', f'{sys.executable} {CW_WRAPPER} {LD}' if sys.platform != 'win32' else LD)
-writer.variable('python', sys.executable)
+writer.variable('python', f'"{sys.executable}"')
 writer.newline()
 
 # Define compilation rule
@@ -49,11 +49,11 @@ writer.rule('cw',
             description='Compile $in')
 
 writer.rule('slice_dol',
-            command=f'$python tools/slice_dol.py $in',
+            command=f'$python tools/slice_dol.py $in -s $symbols',
             description='Slice $in')
 
 writer.rule('slice_rel',
-            command=f'$python tools/slice_rel.py $in',
+            command=f'$python tools/slice_rel.py $in -a $alias_file',
             description='Slice $in')
 
 writer.rule('gen_linkerscript',
@@ -67,8 +67,12 @@ writer.rule('build_dol',
             command=f'$python tools/build_dol.py $in -o $out',
             description='Build $out')
 
+writer.rule('write_str',
+            command=f'''$python -c "import sys; open(sys.argv[1], 'w').write('\\0'.join(sys.argv[2:])+'\\0')" $out $in''',
+            description='Write $out')
+
 writer.rule('build_rel',
-            command=f'$python tools/build_rel.py $in -a $alias_file -p $fakepath',
+            command=f'$python tools/build_rel.py $in -o $out',
             description='Build $out')
 
 # Write build command for each source file
@@ -114,19 +118,26 @@ for slice_file_path, slice_file in slices:
         dol_file = BUILDDIR / f'{unit_name}.dol'
         writer.build('slice_dol',
                     sliced_files,
-                    ORIGDIR / slice_file.meta.fileName)
+                    ORIGDIR / slice_file.meta.fileName,
+                    symbols=SYMBOL_FILE,
+                    implicit_inputs=[SYMBOL_FILE])
         writer.build('link',
                      dol_file.with_suffix('.elf'),
                      ld_o_files,
                      lcf=lcf_path,
                      ldflags='-proc gekko -fp hard',
                      implicit_inputs=[lcf_path])
+        writer.build('build_dol',
+                    dol_file,
+                    dol_file.with_suffix('.elf'))
     else:
         rel_file = BUILDDIR / f'{unit_name}.rel'
         rel_files.append(rel_file)
         writer.build('slice_rel',
                      sliced_files,
-                     ORIGDIR / slice_file.meta.fileName)
+                     ORIGDIR / slice_file.meta.fileName,
+                     alias_file=ALIAS_FILE,
+                     implicit_inputs=[ALIAS_FILE])
         writer.build('link',
                      rel_file.with_suffix('.preplf'),
                      ld_o_files,
@@ -149,15 +160,23 @@ writer.build('gen_linkerscript',
              BUILDDIR / 'modules.lcf',
              [best_slice[0], *preplf_files])
 
-writer.build('build_dol',
-            dol_file,
-            dol_file.with_suffix('.elf'))
-
 plf_files = [x.with_suffix('.plf') for x in rel_files]
-writer.build('build_rel',
-            rel_files,
-            [dol_file.with_suffix('.elf'), *plf_files],
-            fakepath='d:\\home\\Project\\WIIMJ2D\\EU\\PRD\\RVL\\bin\\',
-            alias_file='alias_db.txt')
+
+str_file = dol_file.with_suffix('.str')
+fake_path = 'd:\\home\\Project\\WIIMJ2D\\EU\\PRD\\RVL\\bin\\'
+fake_paths = []
+for r in plf_files:
+    writer.build('phony', fake_path + r.name, r)
+    fake_paths.append(fake_path + r.name)
+
+writer.build('write_str',
+             str_file,
+             fake_paths)
+
+for rel in rel_files:
+    plf_file = rel.with_suffix('.plf')
+    writer.build('build_rel',
+                 rel,
+                 [dol_file.with_suffix('.elf'), *plf_files, str_file])
 
 writer.flush(Path('build.ninja'))
