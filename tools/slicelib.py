@@ -8,6 +8,11 @@ from pathlib import Path
 from typing import Optional
 from utils.json_parser import from_json
 
+def parse_int_str(value: str | int) -> int:
+    if isinstance(value, str):
+        return int(value, 16)
+    return value
+
 @dataclass
 class SliceData:
     source: str
@@ -22,13 +27,13 @@ class SliceSectionInfo:
     align: int
     size: int
     secAlign: int = field(default=-1)
-    offset: int = field(default='0x0')
-    addr: int = field(default='0x0')
+    offset: int = field(default=0)
+    addr: int = field(default=0)
 
     def __post_init__(self):
-        self.size = int(self.size, 16)
-        self.addr = int(self.addr, 16)
-        self.offset = int(self.offset, 16)
+        self.size = parse_int_str(self.size)
+        self.addr = parse_int_str(self.addr)
+        self.offset = parse_int_str(self.offset)
 
 
 class SliceType(Enum):
@@ -43,10 +48,10 @@ class SliceMeta:
     fileName: str
     moduleNum: int
     defaultCompilerFlags: str
-    baseAddr: int = field(default='0x0')
+    baseAddr: int = field(default=0)
 
     def __post_init__(self):
-        self.baseAddr = int(self.baseAddr, 16)
+        self.baseAddr = parse_int_str(self.baseAddr)
 
 
 @dataclass
