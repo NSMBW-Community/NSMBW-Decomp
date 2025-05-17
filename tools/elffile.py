@@ -46,7 +46,7 @@ class ElfHeader:
             eh_res.e_shentsize,
             eh_res.e_shnum,
             eh_res.e_shstrndx
-        ) = ElfHeader._struct.unpack(data[offset:offset+ElfHeader._struct.size])
+        ) = ElfHeader._struct.unpack_from(data, offset)
         eh_res.e_type = ET(e_type)
         eh_res.e_machine = EM(e_machine)
         return eh_res
@@ -107,7 +107,7 @@ class ElfSectionHeader:
             sh_res.sh_info,
             sh_res.sh_addralign,
             sh_res.sh_entsize
-        ) = ElfSectionHeader._struct.unpack(data[offset:offset+ElfSectionHeader._struct.size])
+        ) = ElfSectionHeader._struct.unpack_from(data, offset)
         sh_res.sh_flags = set([x for x in SHF if x.value & _sh_flags])
         sh_res.sh_type = SHT(sh_res.sh_type)
         return sh_res
@@ -252,7 +252,7 @@ class ElfSymbol:
             st_info,
             st_other,
             sym.st_shndx
-        ) = ElfSymbol._struct.unpack(data[offset:offset+ElfSymbol._struct.size])
+        ) = ElfSymbol._struct.unpack_from(data, offset)
         sym.name = strtab.get_at_offset(st_name)
         sym.st_info_bind = STB(st_info >> 4)
         sym.st_info_type = STT(st_info & 0xF)
@@ -282,10 +282,8 @@ class ElfSymtab(ElfSection):
         assert len(data) == header.sh_size
         assert strtab is not None
 
-        syms = []
         # Skip NULL symbol
-        for i in range(ElfSymbol._struct.size, len(data), ElfSymbol._struct.size):
-            syms.append(ElfSymbol.read(data, i, strtab))
+        syms = [ElfSymbol.read(data, i, strtab) for i in range(ElfSymbol._struct.size, len(data), ElfSymbol._struct.size)]
         sec = ElfSymtab('', syms)
         sec.header = header
         return sec
@@ -330,11 +328,10 @@ class ElfRela:
 
     @staticmethod
     def read(data: bytes, offset: int) -> 'ElfRela':
-        rela = ElfRela()
-        rela.r_offset, r_info, rela.r_addend = ElfRela._struct.unpack(data[offset:offset+ElfRela._struct.size])
-        rela.r_info_sym = r_info >> 8
-        rela.r_info_type = PPC_RELOC_TYPE(r_info & 0xFF)
-        return rela
+        r_offset, r_info, r_addend = ElfRela._struct.unpack_from(data, offset)
+        r_info_sym = r_info >> 8
+        r_info_type = PPC_RELOC_TYPE(r_info & 0xFF)
+        return ElfRela(r_offset, r_info_sym, r_info_type, r_addend)
 
     def __bytes__(self) -> bytes:
         return bytes(ElfRela._struct.pack(
@@ -352,9 +349,7 @@ class ElfRelaSec(ElfSection):
     @staticmethod
     def read(data: bytes, header: ElfSectionHeader) -> 'ElfRelaSec':
         assert len(data) == header.sh_size
-        relocs = []
-        for i in range(0, len(data), ElfRela._struct.size):
-            relocs.append(ElfRela.read(data, i))
+        relocs = [ElfRela.read(data, i) for i in range(0, len(data), ElfRela._struct.size)]
         sec = ElfRelaSec('', relocs)
         sec.header = header
         return sec
