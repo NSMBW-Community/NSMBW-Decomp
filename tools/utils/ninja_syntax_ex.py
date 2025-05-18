@@ -106,6 +106,11 @@ class Writer():
         self.newline()
         self.variable('depth', depth, indent)
 
+    def default(self, targets):
+        self.output.write('default ')
+        self.output.write(' '.join(targets))
+        self.newline()
+
     def flush(self, path):
         with open(path, 'w', encoding='utf-8') as f:
             f.write(self.output.getvalue())

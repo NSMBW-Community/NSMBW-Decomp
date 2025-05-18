@@ -184,7 +184,7 @@ for slice_file in slices:
                 print_err(f'Unit {slice.sliceName} not found in objdiff.json')
             continue
 
-        base_path = BUILDDIR.joinpath(f'compiled/{stem}/{slice.sliceName}')
+        base_path = BUILDDIR / 'compiled' / stem / slice.sliceName
         unit['base_path'] = base_path.relative_to(PROJECTDIR).as_posix()
         unit['metadata'] = {
             'complete': slice.source is not None,
@@ -192,14 +192,14 @@ for slice_file in slices:
         }
 
         # decomp.me scratch options
-        ctx_path = BUILDDIR.joinpath(f'compiled/{stem}/{slice.sliceName}.hpp')
+        ctx_path = (BUILDDIR / 'decompctx' / stem / slice.sliceName).with_suffix('.hpp')
         c_flags = slice_file.meta.defaultCompilerFlags
         if slice.ccFlags:
-            c_flags = ' '.join(slice.ccFlags)
+            c_flags = slice.ccFlags
         unit['scratch'] = {
             'platform': 'gc_wii',
             'compiler': 'mwcc_43_151',
-            'c_flags': ' '.join(c_flags) + ' -lang=c++',
+            'c_flags': c_flags + ' -lang=c++',
             'ctx_path': ctx_path.relative_to(PROJECTDIR).as_posix(),
             'build_ctx': True
         }

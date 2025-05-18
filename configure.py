@@ -216,6 +216,11 @@ writer.rule('configure',
             generator=True,
             description='Configure $out')
 
+writer.rule('decomp_context',
+            command=f'$python tools/decompctx.py $in -o $out',
+            depfile='$depfile',
+            description='Create decomp.me context for $in')
+
 # Load slice files
 slices: list[tuple[Path, SliceFile]] = []
 for file in SLICEDIR.rglob('*.json'):
@@ -229,9 +234,23 @@ gen_compile_build_statements(writer, slices)
 gen_dol_build_statements(writer, slices)
 gen_rel_build_statements(writer, slices)
 
+# Decomp.me context generation
+for _, slice_file in slices:
+    for slice in slice_file.parsed_slices:
+        if slice.source:
+            context_file = (BUILDDIR / 'decompctx' / unit_name(slice_file) / slice.source).with_suffix('.hpp')
+            d_path = (BUILDDIR / 'compiled' / unit_name(slice_file) / slice.source).with_suffix('.d')
+            writer.build('decomp_context',
+                         context_file,
+                         SRCDIR / slice.source,
+                         depfile=d_path)
+
 # Regenerate build.ninja on changes to the slices
 writer.build('configure',
              'build.ninja',
              [x[0] for x in slices])
+
+# Default targets (final DOL and RELs)
+writer.default([str(BUILDDIR / slice.meta.fileName) for _, slice in slices])
 
 writer.flush(Path('build.ninja'))
