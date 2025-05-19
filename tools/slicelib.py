@@ -13,6 +13,7 @@ def parse_int_str(value: str | int) -> int:
         return int(value, 16)
     return value
 
+
 @dataclass
 class SliceData:
     source: str
@@ -82,6 +83,10 @@ class SliceFile:
     deadstrip: list[str] = field(default_factory=list)
     keepWeak: list[str] = field(default_factory=list)
     parsed_slices: list[Slice] = field(init=False, default_factory=list)
+    path: Path = field(init=False, default=Path())
+
+    def unit_name(self) -> str:
+        return Path(self.meta.fileName).stem
 
 
 def make_filler_slice(slice_name: str, sec_range: dict[str, tuple[int, int]], slice_meta: SliceMeta) -> Optional[Slice]:
@@ -102,6 +107,7 @@ def load_slice_file(src: Path) -> SliceFile:
 
     # Load slice file
     slice_file = from_json(SliceFile, json.loads(src.read_text()))
+    slice_file.path = src
     slice_meta = slice_file.meta
 
     # Initialize loop

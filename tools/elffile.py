@@ -2,7 +2,6 @@
 # ELF definitions
 
 import struct
-from functools import reduce
 from typing import Optional
 
 from elfconsts import *
@@ -79,9 +78,9 @@ class ElfHeader:
 class ElfSectionHeader:
     _struct = struct.Struct('>10I')
 
-    def __init__(self, sh_type=SHT.SHT_NULL, sh_flags: Optional[set[SHF]]=None, sh_addr=0, sh_link=0, sh_info=0, sh_addralign=0) -> None:
+    def __init__(self, sh_type=SHT.SHT_NULL, sh_flags: SHF = SHF.SHF_NONE, sh_addr=0, sh_link=0, sh_info=0, sh_addralign=0) -> None:
         self.sh_type: SHT = sh_type
-        self.sh_flags: set[SHF] = sh_flags if sh_flags else set()
+        self.sh_flags: SHF = sh_flags
         self.sh_addr: int = sh_addr
         self.sh_link: int = sh_link
         self.sh_info: int = sh_info
@@ -99,7 +98,7 @@ class ElfSectionHeader:
         (
             sh_res.sh_name,
             sh_res.sh_type,
-            _sh_flags,
+            sh_res.sh_flags,
             sh_res.sh_addr,
             sh_res.sh_offset,
             sh_res.sh_size,
@@ -108,7 +107,7 @@ class ElfSectionHeader:
             sh_res.sh_addralign,
             sh_res.sh_entsize
         ) = ElfSectionHeader._struct.unpack_from(data, offset)
-        sh_res.sh_flags = set([x for x in SHF if x.value & _sh_flags])
+        sh_res.sh_flags = SHF(sh_res.sh_flags)
         sh_res.sh_type = SHT(sh_res.sh_type)
         return sh_res
 
@@ -121,7 +120,7 @@ class ElfSectionHeader:
         return bytes(ElfSectionHeader._struct.pack(
             self.sh_name,
             self.sh_type.value,
-            reduce(lambda a, b: a | b.value, self.sh_flags, 0),
+            self.sh_flags.value,
             self.sh_addr,
             self.sh_offset,
             self.sh_size,
@@ -212,6 +211,7 @@ class ElfStrtab(ElfSection):
         if index == 0:
             return ''
         return self.strs[index - 1]
+
     def get_at_offset(self, index: int) -> str:
         if index == 0:
             return ''
@@ -470,7 +470,7 @@ class ElfFile:
         for sec in self.sections:
             sec.link_strtab(self.shstrtab, self.strtab, self.strtabndx)
 
-        data = bytearray(b'\0'*ElfHeader._struct.size) # Filled out at the end
+        data = bytearray(b'\0' * ElfHeader._struct.size) # Filled out at the end
         for sec in self.sections:
             sec_data = bytes(sec)
 

@@ -125,7 +125,7 @@ def process_file(module: ElfFile, symbols: list[ElfSymtab], module_index: int, f
                 sym_name = f'R_{rel_file.index}_1_90'
 
             # First check if hardcoded
-            m = re.search('R_([0-9a-fA-F]+)_([0-9a-fA-F]+)_([0-9a-fA-F]+)', sym_name)
+            m = REL_SYM.search(sym_name)
             if m:
                 mod_num = int(m.group(1), 16)
                 if mod_num not in module_classify:

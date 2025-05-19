@@ -1,15 +1,15 @@
 #!/usr/bin/env python3
 # Slices a REL file into .o files
 
+import re
 from pathlib import Path
 
-from color_term import print_err
 from elffile import *
 from elfconsts import *
 from project_settings import *
 from relfile import Rel
 from slicelib import *
-import re
+
 
 class RelocSym:
     # Models a symbol referenced by a relocation entry
@@ -76,7 +76,7 @@ def extract_slice(rel_file: Rel, slice: Slice, alias_file: Path, module_relocs: 
     added_syms = dict()
     for sec in slice.sliceSecs:
         for sym in symbols:
-            m = re.search('R_([0-9a-fA-F]+)_([0-9a-fA-F]+)_([0-9a-fA-F]+)', sym)
+            m = REL_SYM.search(sym)
             assert m is not None, f'Invalid symbol name: {sym}'
             reloc_sym = RelocSym(int(m.group(1), 16), int(m.group(2), 16), int(m.group(3), 16))
             sym_name = symbols[sym]
@@ -119,9 +119,7 @@ def extract_slice(rel_file: Rel, slice: Slice, alias_file: Path, module_relocs: 
 
 
 def slice_rel(rel_file: Path, out_path: Path, alias_file: Path) -> None:
-    if not rel_file.is_file():
-        print_err('Fatal error: File', str(rel_file), 'not found!')
-        return
+    assert rel_file.is_file()
 
     reloc_syms: set[RelocSym] = set()
     module_relocs: dict[int, dict[RelocSym, tuple[RelocSym, PPC_RELOC_TYPE]]] = {}
@@ -134,18 +132,17 @@ def slice_rel(rel_file: Path, out_path: Path, alias_file: Path) -> None:
         read_reloc_refs(rel, mod_num, reloc_syms, module_relocs)
 
         for slice in slice_file.parsed_slices:
-            elf = extract_slice(rel, slice, alias_file, module_relocs)
-            out_filepath = out_path / slice_file.meta.fileName.split('.')[0] / slice.sliceName
-            out_filepath.parent.mkdir(parents=True, exist_ok=True)
-            with open(out_filepath, 'wb') as ef:
-                ef.write(bytes(elf))
+            if not slice.source or slice.nonMatching:
+                elf = extract_slice(rel, slice, alias_file, module_relocs)
+                out_filepath = out_path / slice_file.unit_name() / slice.sliceName
+                out_filepath.write_bytes(bytes(elf))
 
 
 if __name__ == '__main__':
     import argparse
     parser = argparse.ArgumentParser(description='Slices REL files.')
     parser.add_argument('rel_file', type=Path, help='REL file to be sliced.')
-    parser.add_argument('--alias_file', '-a', type=Path, help='File that stores aliases for relocation symbols.')
-    parser.add_argument('-o', '--output', default=Path('bin/sliced'), type=Path, help='Path the slices will be stored to.')
+    parser.add_argument('-a', '--alias_file', type=Path, required=True, help='File that stores aliases for relocation symbols.')
+    parser.add_argument('-o', '--output', type=Path, required=True, help='Path the slices will be stored to.')
     args = parser.parse_args()
     slice_rel(args.rel_file, args.output, args.alias_file)

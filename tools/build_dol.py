@@ -3,7 +3,6 @@
 
 from pathlib import Path
 
-from color_term import *
 from dolfile import Dol, DolSection
 from elffile import ElfFile
 from elfconsts import SHF
@@ -63,10 +62,7 @@ def process_file(elf_file: ElfFile, output_file: Path) -> None:
 
 
 def build_dol(elf_file: Path, output_file: Path) -> None:
-    if not elf_file.is_file():
-        print_err('Fatal error: File', str(elf_file), 'not found!')
-        return
-
+    assert elf_file.is_file()
     elf = ElfFile.read(elf_file.read_bytes())
     process_file(elf, output_file)
 
