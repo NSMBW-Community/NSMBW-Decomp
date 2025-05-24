@@ -108,7 +108,7 @@ class Writer():
 
     def default(self, targets):
         self.output.write('default ')
-        self.output.write(' '.join(targets))
+        self.output.write(' '.join(escape_path(str(x)) for x in as_list(targets)))
         self.newline()
 
     def flush(self, path):

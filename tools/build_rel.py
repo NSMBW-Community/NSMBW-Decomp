@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 # Reimplementation of makerel
 
-import re
 from pathlib import Path
 from typing import cast
 
@@ -16,12 +15,14 @@ def add_symbol(module_classify: dict[int, list], i: int, reloc: ElfRela, sym: El
 
     module_classify[i].append((reloc, sym))
 
+
 def find_symbol(syms: ElfSymtab, i: int, name: str, module_classify: dict[int, list], reloc: ElfRela) -> bool:
     try_found = syms.get_symbols(name)
     if try_found and try_found[0].st_shndx != SHN.SHN_UNDEF.value:
         add_symbol(module_classify, i, reloc, try_found[0])
         return True
     return False
+
 
 def convert_to_rel_relocations(elf_relocs: list[tuple[ElfRela, ElfSymbol]], sec_idx: int) -> list[RelRelocation]:
     res_relocs: list[RelRelocation] = []
@@ -60,15 +61,15 @@ def convert_to_rel_relocations(elf_relocs: list[tuple[ElfRela, ElfSymbol]], sec_
         res_relocs.append(out_reloc)
     return res_relocs
 
+
 def process_file(module: ElfFile, symbols: list[ElfSymtab], module_index: int, filename: Path, str_file: Path) -> int:
     unresolved_symbol_count: int = 0
 
+    # Read offset and length from .str file
     strs = str_file.read_text()
-    str_file_offset = strs.find(filename.name)
-    while str_file_offset > 0 and strs[str_file_offset - 1] != '\0':
-        str_file_offset -= 1
-    str_len = len(strs[str_file_offset:].split('\0')[0]) + 1
-
+    filename_offset = strs.find(filename.name)
+    str_file_offset = strs.rfind('\0', 0, filename_offset) + 1
+    str_len = filename_offset + len(filename.name) - str_file_offset + 1
     outfile = filename.with_suffix('.rel')
 
     # Create REL

@@ -1,12 +1,17 @@
 #!/usr/bin/env python3
+
+# relfile.py
 # REL definitions and helper functions
 # See https://wiki.tockdom.com/wiki/REL_(File_Format)
 
-from math import ceil
 import struct
 from typing import BinaryIO, Optional
 
 from elfconsts import PPC_RELOC_TYPE
+
+def align(value: int, alignment: int) -> int:
+    return (value + alignment - 1) & ~(alignment - 1)
+
 
 class RelRelocation:
     struct = struct.Struct('>HBBI')
@@ -21,14 +26,14 @@ class RelRelocation:
             self.addend: int = 0
 
     def __repr__(self) -> str:
-        return f'<Relocation: offset={self.offset} reloc_type={self.reloc_type} section={self.section} addend={hex(self.addend)}>'
+        return f'<Relocation: offset={self.offset:0x} reloc_type={self.reloc_type} section={self.section:0x} addend={self.addend:0x}>'
 
     @staticmethod
     def entry_size() -> int:
-        return 8
+        return RelRelocation.struct.size
 
     def _read(self, file: bytearray, offset: int) -> None:
-        self.offset, _reloc_type, self.section, self.addend = self.struct.unpack(file[offset:offset+8])
+        self.offset, _reloc_type, self.section, self.addend = self.struct.unpack_from(file, offset)
         self.reloc_type = PPC_RELOC_TYPE(_reloc_type)
 
     def write(self, file: BinaryIO) -> None:
@@ -51,7 +56,7 @@ class RelSection:
             self.alignment: int = 4 # Used for alignment of the section within the file, but not directly written to the file
 
     def __repr__(self) -> str:
-        return f'<Section: {"" if self.executable else "non-"}executable, length {self._sec_len}>'
+        return f'<Section: {"" if self.executable else "non-"}executable, length {self._sec_len:0x}>'
 
     def set_data(self, data: bytearray) -> None:
         self._data = data
@@ -65,7 +70,7 @@ class RelSection:
 
     @staticmethod
     def header_size() -> int:
-        return 8
+        return RelSection.struct.size
 
     def write_info(self, file: BinaryIO, data_offs: int) -> None:
         assert data_offs % 4 == 0, 'Sections must be 4-byte aligned!'
@@ -77,7 +82,7 @@ class RelSection:
             file.write(self._data)
 
     def _read(self, file: bytearray, info_offset: int) -> None:
-        data_offs_flags, self._sec_len = self.struct.unpack(file[info_offset:info_offset+8])
+        data_offs_flags, self._sec_len = self.struct.unpack_from(file, info_offset)
         self.executable = bool(data_offs_flags & 1)
         data_offs = data_offs_flags & ~0b11
         if data_offs != 0:
@@ -88,16 +93,17 @@ class RelSection:
 
 
 class Rel:
-    imp_struct = header2_struct = struct.Struct('>II')
     header_struct = struct.Struct('>12I4B3I')
+    imp_struct = header2_struct = struct.Struct('>II')
+    header3_struct = struct.Struct('>I')
 
     def __init__(self, id: int, version: int=3, align: int=4, bss_align: int=8, path_offset: int=0, path_size: int=0, file: Optional[BinaryIO]=None) -> None:
         self.index = id
         self.path_offset = path_offset
         self.path_size = path_size
         self.version = version if version in range(0, 4) else 3
-        self.align: int = align
-        self.bss_align: int = bss_align
+        self.align = align
+        self.bss_align = bss_align
 
         self.sections: list[RelSection] = []
         self.relocations: dict[int, list[RelRelocation]] = {}
@@ -148,21 +154,21 @@ class Rel:
             self.prolog,
             self.epilog,
             self.unresolved
-        ) = self.header_struct.unpack(bytes[0:0x40])
+        ) = self.header_struct.unpack_from(bytes, 0)
 
         if self.version >= 2:
-            self.align, self.bss_align = self.header2_struct.unpack(bytes[0x40:0x48])
+            self.align, self.bss_align = self.header2_struct.unpack_from(bytes, self.header_struct.size)
 
         if self.version >= 3:
-            self.fix_size = int.from_bytes(bytes[0x48:0x4c], 'big')
+            self.fix_size = self.header3_struct.unpack_from(bytes, self.header2_struct.size)[0]
 
         # Sections
         for i in range(section_count):
-            self.sections.append(RelSection(bytes, self.section_info_offset + i*8))
+            self.add_section(RelSection(bytes, self.section_info_offset + i * RelSection.header_size()))
 
         # Relocations
-        for i in range(0, self.imp_size, 8):
-            module_num, table_offs = self.imp_struct.unpack(bytes[self.imp_offset+i:self.imp_offset+i+8])
+        for i in range(0, self.imp_size, self.imp_struct.size):
+            module_num, table_offs = self.imp_struct.unpack_from(bytes, self.imp_offset+i)
             assert module_num not in self.relocations, 'Module numbers must be unique!'
 
             self.relocations[module_num] = []
@@ -170,7 +176,7 @@ class Rel:
             while pos < len(bytes):
                 reloc = RelRelocation(bytes, pos)
                 self.relocations[module_num].append(reloc)
-                pos += 8
+                pos += RelRelocation.entry_size()
                 if reloc.reloc_type == PPC_RELOC_TYPE.R_RVL_STOP:
                     break
 
@@ -205,11 +211,16 @@ class Rel:
             file.write(header)
 
         if self.version >= 3:
-            header = self.fix_size.to_bytes(4, 'big')
+            header = self.header3_struct.pack(self.fix_size)
             file.write(header)
 
     def header_size(self) -> int:
-        return 0x4c if self.version == 3 else 0x48 if self.version == 2 else 0x40
+        size = self.header_struct.size
+        if self.version >= 2:
+            size += self.header2_struct.size
+        if self.version >= 3:
+            size += self.header3_struct.size
+        return size
 
     def _try_relocate_rel24(self, section_data_locs: list[int]) -> None:
         for module in self.relocations:
@@ -247,7 +258,7 @@ class Rel:
                         old_offset = reloc.offset
                         curr_pos -= reloc.offset
                         self.relocations[module].remove(reloc)
-                        if self.relocations[module][idx].reloc_type.value < 201:
+                        if self.relocations[module][idx].reloc_type < PPC_RELOC_TYPE.R_RVL_NONE:
                             self.relocations[module][idx].offset += old_offset
                         idx -= 1
 
@@ -262,7 +273,7 @@ class Rel:
             if sec.data_length() == 0 or sec.is_bss:
                 section_data_locs.append(0)
             else:
-                pos = ceil(pos / sec.alignment) * sec.alignment
+                pos = align(pos, sec.alignment)
                 section_data_locs.append(pos)
                 pos += sec.data_length()
 
@@ -271,7 +282,7 @@ class Rel:
         self._try_relocate_rel24(section_data_locs)
 
         self.imp_offset = pos
-        self.imp_size = len(self.relocations) * 8
+        self.imp_size = len(self.relocations) * self.imp_struct.size
         pos += self.imp_size
         self.rel_offset = pos
 
@@ -287,7 +298,7 @@ class Rel:
             relocs_module_nums.append(0)
 
         for module_num in relocs_module_nums:
-            pos = ceil(pos / 4) * 4
+            pos = align(pos, 4)
             reloc_locs[module_num] = pos
             pos += len(self.relocations[module_num]) * RelRelocation.entry_size()
 

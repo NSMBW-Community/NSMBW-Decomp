@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+
+# build_dol.py
 # Reimplementation of makedol
 
 from pathlib import Path
@@ -14,27 +16,19 @@ def process_file(elf_file: ElfFile, output_file: Path) -> None:
     sec_count = 0
     for section in elf_file.sections:
         if SHF.SHF_EXECINSTR in section.header.sh_flags:
-            sec = DolSection()
-            sec.sec_len = section.size()
-            sec.virt_addr = section.header.sh_addr
-            sec.set_data(bytearray(section.data))
-            dol_file.sections.append(sec)
+            dol_file.add_section(DolSection.from_elf_section(section))
             sec_count += 1
 
-    # Fill up empty sections
+    # Fill up empty executable sections
     while sec_count < 7:
-        dol_file.sections.append(DolSection(unused=True))
+        dol_file.add_section(DolSection(unused=True))
         sec_count += 1
 
     # Find data sections
     for section in elf_file.sections:
         if (SHF.SHF_EXECINSTR not in section.header.sh_flags) and (SHF.SHF_ALLOC in section.header.sh_flags):
             if section.name not in ['.bss', '.sbss', '.sbss2', '.PPC.EMB.apuinfo']:
-                sec = DolSection()
-                sec.sec_len = section.size()
-                sec.virt_addr = section.header.sh_addr
-                sec.set_data(bytearray(section.data))
-                dol_file.sections.append(sec)
+                dol_file.add_section(DolSection.from_elf_section(section))
                 sec_count += 1
 
             if section.name == '.bss':
@@ -51,7 +45,7 @@ def process_file(elf_file: ElfFile, output_file: Path) -> None:
 
     # Fill up empty sections
     while sec_count < 18:
-        dol_file.sections.append(DolSection(unused=True))
+        dol_file.add_section(DolSection(unused=True))
         sec_count += 1
 
     dol_file.entry = elf_file.header.e_entry
