@@ -116,7 +116,7 @@ def load_slice_file(src: Path) -> SliceFile:
     for slice in slice_file.slices:
 
         # Create parsed slice
-        filler_sec_range = {section: (0, 0) for section in curr_sec_positions}
+        filler_sec_range: dict[str, tuple] = {section: (0, 0) for section in curr_sec_positions}
         slice_name = str(Path(slice.source).with_suffix('.o'))
         parsed_slice = Slice(slice_name, slice.source, ccFlags=slice.compilerFlags, nonMatching=slice.nonMatching)
 

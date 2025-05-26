@@ -27,7 +27,7 @@ class DolSection:
         self.sec_len = len(data)
 
     @staticmethod
-    def from_dol_file(file: bytearray, info_offset: int):
+    def from_dol_file(file: bytearray, info_offset: int) -> 'DolSection':
         sec = DolSection()
 
         data_offs = int.from_bytes(file[info_offset:info_offset+4], byteorder='big')
@@ -39,7 +39,7 @@ class DolSection:
         return sec
 
     @staticmethod
-    def from_elf_section(section: ElfSection):
+    def from_elf_section(section: ElfSection) -> 'DolSection':
         sec = DolSection()
         sec.virt_addr = section.header.sh_addr
         sec.set_data(bytearray(section.data))

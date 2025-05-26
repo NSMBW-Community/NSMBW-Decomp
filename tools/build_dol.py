@@ -68,6 +68,6 @@ if __name__ == '__main__':
 
     parser = argparse.ArgumentParser(description='Compiles DOL files.')
     parser.add_argument('elf_file', type=Path, help='File to be compiled.')
-    parser.add_argument('-o', '--output', type=Path, help='Output file name.')
+    parser.add_argument('-o', '--output', type=Path, required=True, help='Output file name.')
     args = parser.parse_args()
     build_dol(args.elf_file, args.output)
