@@ -76,11 +76,6 @@ namespace dAudio {
         playObjSound(g_pSndObjMap, i, pos, playerNo);
     }
 
-    inline void playMapSound(int i, float x, float y, int playerNo) {
-        dAudio::SndObjctCmnMap_c *m = dAudio::g_pSndObjMap;
-        playObjSound(m, i, x, y, playerNo);
-    }
-
     /// @unofficial
     class ComboSELookup {
     public:
