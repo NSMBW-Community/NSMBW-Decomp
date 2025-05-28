@@ -54,16 +54,12 @@ dBg_c::dBg_c() {
     mBounds3[1] = 0.0f;
     mBounds3[2] = 0.0f;
 
-    mMoreFloats[1] = 0.0f;
-    mMoreFloats[2] = 0.0f;
-    mMoreFloats[3] = 0.0f;
-    mMoreFloats[4] = 0.0f;
-    mMoreFloats[5] = 0.0f;
-    mMoreFloats[6] = 0.0f;
-    mMoreFloats[7] = 0.0f;
-    mMoreFloats[8] = 0.0f;
-    mMoreFloats[9] = 0.0f;
-    mMoreFloats[10] = 0.0f;
+    mSomeSize.set(0.0f, 0.0f);
+    mPrevSomeSize.set(0.0f, 0.0f);
+    mSomePos.set(0.0f, 0.0f);
+    mPrevSomePos.set(0.0f, 0.0f);
+    mMoreFloats6[0] = 0.0f;
+    mMoreFloats6[1] = 0.0f;
     mLoopOffsetX = 0.0f;
     mLoopOffsetY = 0.0f;
     mSomeParameterPos.set(0.0f, 0.0f);
@@ -211,12 +207,12 @@ u32 dBg_c::GetUnitKindInfo(u16 p1, u16 p2, u8 p3) {
 u16 fn_800834b0(u16);
 
 void dBg_c::CoinGetCommon(u16 p1, u16 p2, int p3, u16 *p4, u16 *p5, u16 *p6) {
-    int currCourse = dScStage_c::m_instance->mCurrCourse;
+    int file = dScStage_c::m_instance->mCurrFile;
     u16 var1 = (p2 & 0xf00) * 4;
     u16 var3 = p1 / 16 & 0x1f0;
     u8 var4 = p1 / 16;
     u8 var5 = p2 / 16 & 0xf;
-    *p4 = dBgParameter_c::ms_Instance_p->getOneGetBuff(currCourse, var1 + var3 + var5, p3);
+    *p4 = dBgParameter_c::ms_Instance_p->getOneGetBuff(file, var1 + var3 + var5, p3);
     *p5 = fn_800834b0(var4);
     *p6 = var1 + var3 + var5;
 }
@@ -1190,7 +1186,7 @@ void dBg_c::calcAutoScroll() {
                 for (int i = 0; i < 4; i++) {
                     dAcPy_c *pl = daPyMng_c::getPlayer(i);
                     if (pl != nullptr) {
-                        upLim = pl->m_68;
+                        upLim = pl->mBgRelatedPos.x;
                         if (upLim > rightLim) {
                             rightLim = upLim;
                         }
@@ -1221,40 +1217,42 @@ void dBg_c::AutoScroll_stop() {
 
 void dBg_c::calcScroll(const mVec3_c &pos, int param_2) {
     dBgParameter_c *bgParam = dBgParameter_c::getInstance();
-    float lWidth = mVideo::l_rayoutWidthF;
-    float lHeight = mVideo::l_rayoutHeightF;
+    float lWidth = mVideo::getLayoutWidth();
+    float lHeight = mVideo::getLayoutHeight();
     if (m_bg_p->m_9095a == 0) {
         m_bg_p->getZoomTargetMax(); // unused return value
-        if (mMoreFloats3[3] > 0.0f) {
+        float tmp1 = mMoreFloats3[0];
+        if (tmp1 > 0.0f) {
             float bgVal = dBgParameter_c::getInstance()->m_30.y;
-            float tmp2 = bgVal * (1.0f / mMoreFloats3[3] - 1.0f / m_bg_p->getZoomTargetMin());
-            mDispScale = tmp2 + 1.0f / m_bg_p->getZoomTargetMin();
+            mDispScale = m_bg_p->calcDispScale(bgVal, tmp1);
         }
         m_90018 = mDispScale;
         mMoreFloats5[1] = mDispScale;
-        lWidth *= 1.0f / mDispScale;
-        lHeight *= 1.0f / mDispScale;
-        mSomeSize.x = lWidth;
-        mSomeSize.y = lHeight;
+        float invDispScale = 1.0f / mDispScale;
+        mSomeSize.x = lWidth * invDispScale;
+        mSomeSize.y = lHeight * invDispScale;
+        float width = mSomeSize.x;
+        float halfWidth = width * 0.5f;
         float leftLimit = getLeftLimit();
-        float rightLimit = getRightLimit() - lWidth;
-        float upLimit = mULimit;
-        float downLimit = lHeight + mDLimit;
+        float rightLimit = getRightLimit() - width;
         bool cond1 = true;
         bool cond2 = true;
+        float upLimit = mULimit;
+        float downLimit = lHeight + mDLimit;
         float maxLeft = getMaxLeftPos();
         mSomeParameterPos = bgParam->mPos;
         mPlayerPosY = pos.y;
+        float height = mSomeSize.y;
+        float halfHeight = height * 0.5f;
         float bounds40 = mBounds4[0];
         float bounds41 = mBounds4[1];
-        float y = (pos.y + mSomeSize.y * 0.5f) - bounds41;
-        float x = (pos.x + bounds40) - lHeight * 0.5f;
-        float idkX = x;
+        float x = pos.x + bounds40 - halfWidth;
+        float y = pos.y + halfHeight - bounds41;
         if (dScStage_c::m_loopType != 2) {
-            if (y < idkX) {
-                idkX = leftLimit;
-            } else if (y > rightLimit) {
-                idkX = rightLimit;
+            if (x < leftLimit) {
+                x = leftLimit;
+            } else if (x > rightLimit) {
+                x = rightLimit;
             }
         } else {
             if (dScStage_c::m_instance->mCurrWorld == WORLD_2 &&
@@ -1262,18 +1260,17 @@ void dBg_c::calcScroll(const mVec3_c &pos, int param_2) {
                 dScStage_c::m_instance->mCurrFile == 0 &&
                 m_90958 == 0
             ) {
-                if (y < idkX) {
-                    idkX = leftLimit;
-                } else if (y > rightLimit) {
-                    idkX = rightLimit;
+                if (x < leftLimit) {
+                    x = leftLimit;
+                } else if (x > rightLimit) {
+                    x = rightLimit;
                 }
             }
         }
         if (y < downLimit) {
-            downLimit = y;
-            if (upLimit > y) {
-                downLimit = upLimit;
-            }
+            y = downLimit;
+        } else if (y > upLimit) {
+            y = upLimit;
         }
         if (mAutoscrolls[0].mActive) {
             switch (mAutoscrolls[0].m_18) {
@@ -1292,28 +1289,28 @@ void dBg_c::calcScroll(const mVec3_c &pos, int param_2) {
             }
         }
         if (cond1) {
-            mSomePos.x = idkX;
+            mSomePos.x = x;
         }
         if (cond2) {
             if (
                 getAreaUpLimitScroll() > -999999.0f &&
-                dBgParameter_c::getInstance()->mPos.y >= getAreaUpLimitScroll() &&
-                downLimit > getAreaUpLimitScroll() &&
+                dBgParameter_c::getInstance()->posY() <= getAreaUpLimitScroll() &&
+                y > getAreaUpLimitScroll() &&
                 dBg_isFlyPlayer() == 0
             ) {
-                downLimit = getAreaUpLimitScroll();
+                y = getAreaUpLimitScroll();
             }
             if (param_2 != 0 || getAreaUpLimitScroll() <= -999999.0f) {
-                mSomePos.y = downLimit;
+                mSomePos.y = y;
             } else {
-                sLib::chase(&mSomePos.y, downLimit, 16.0f);
+                sLib::chase(&mSomePos.y, y, 16.0f);
             }
         }
         if (mLimitRelated == 1 || mLimitRelated == 4) {
             mSomePos.x = maxLeft + mLoopOffsetX * 0.5f - mSomeSize.x * 0.5f;
         }
         if (mLimitRelated == 6) {
-            mSomePos.y = mD + mSomeSize.y;
+            mSomePos.y = mSomeSize.y + mD;
         }
         mBounds4[0] = bounds40;
         mBounds4[1] = bounds41;
@@ -1322,7 +1319,7 @@ void dBg_c::calcScroll(const mVec3_c &pos, int param_2) {
             mAutoscrolls[0].mPos.y = mSomePos.y;
         }
         if (m_900a7 != 0) {
-            mSomePos.x = m_900ac - mSomeSize.x * 0.5f;
+            mSomePos.x = m_900ac - mSomeSize.x / 2;
             mSomePos.y = m_900b0 + mSomeSize.y;
         }
     }
@@ -1385,7 +1382,7 @@ void dBg_c::fn_8007ac40(dBgSomeInfo_c *info, int arg1) {
         someTmp2 = someTmp;
     }
     if (mLimitRelated == 2) {
-        if (mLimitRelated2 == 5 || mLimitRelated2 == 6 || mLimitRelated2 == 1 || mLimitRelated2 == 2) {
+        if (mLimitRelated2 >= 5 && mLimitRelated2 <= 7 || mLimitRelated2 >= 1 && mLimitRelated2 <= 2) {
             if (invScale < m_bg_p->getZoomTargetMax() && spL2 > someTmp) {
                 someTmp = spL2;
             }
@@ -1863,10 +1860,8 @@ void dBg_c::initScroll() {
     mPrevSomeSize = mSomeSize;
     bgParam->mSize = mSomeSize;
 
-    float halfWidth = bgParam->mSize.x * 0.5f;
-    float halfHeight = bgParam->mSize.y * 0.5f;
-    bgParam->mCenter.x = bgParam->mPos.x + halfWidth;
-    bgParam->mCenter.y = bgParam->mPos.y - halfHeight;
+    bgParam->mCenter.x = bgParam->mPos.x + bgParam->mSize.x * 0.5f;
+    bgParam->mCenter.y = bgParam->mPos.y - bgParam->mSize.y * 0.5f;
 
     mU8s[3] = 0;
     mU8s[4] = 0;
@@ -2037,17 +2032,17 @@ void dBg_c::fn_8007ca90(dBgSomeInfo_c *info, int i1, int i2) {
         dAcPy_c *pl = daPyMng_c::getPlayer(i);
         pls[i] = pl;
         if (pl != nullptr) {
-            if (pl->mPowerup == POWERUP_MUSHROOM) {
+            if (pl->mScrollMode == 1) {
                 pls[i] = nullptr;
             }
-            if (pl->mPowerup == POWERUP_MINI_MUSHROOM) {
+            if (pl->mScrollMode == 3) {
                 count++;
             }
         }
         if (pls[i] != nullptr) {
             count2++;
         }
-        if (m_90009 == 1 && pl != nullptr && pl->mPowerup == POWERUP_MINI_MUSHROOM) {
+        if (m_90009 == 1 && pl != nullptr && pl->mScrollMode == 3) {
             pls[i] = nullptr;
         }
     }
@@ -2079,48 +2074,48 @@ void dBg_c::fn_8007ca90(dBgSomeInfo_c *info, int i1, int i2) {
         case 0:
             if (pls[0] != nullptr) {
                 info->m_14 = pl1;
-                info->mBounds.mRight = fn_8007c7d0(pl1->m_68);
+                info->mBounds.mRight = fn_8007c7d0(pl1->mBgRelatedPos.x);
                 info->m_24 = pl1->mPlayerType;
             }
             if (pls[i2 - 1] != nullptr) {
                 info->m_10 = pl2;
-                info->mBounds.mLeft = fn_8007c7d0(pl2->m_68);
+                info->mBounds.mLeft = fn_8007c7d0(pl2->mBgRelatedPos.x);
                 info->m_20 = pl2->mPlayerType;
             }
             break;
         case 2:
             if (pls[i2 - 1] != nullptr) {
                 info->m_14 = pl2;
-                info->mBounds.mRight = fn_8007c7d0(pl2->m_68);
+                info->mBounds.mRight = fn_8007c7d0(pl2->mBgRelatedPos.x);
                 info->m_24 = pl2->mPlayerType;
             }
             if (pls[0] != nullptr) {
                 info->m_10 = pl1;
-                info->mBounds.mLeft = fn_8007c7d0(pl1->m_68);
+                info->mBounds.mLeft = fn_8007c7d0(pl1->mBgRelatedPos.x);
                 info->m_20 = pl1->mPlayerType;
             }
             break;
         case 1:
             if (pls[0] != nullptr) {
                 info->m_18 = pl1;
-                info->mBounds.mUp = pl1->m_6c;
+                info->mBounds.mUp = pl1->mBgRelatedPos.y;
                 info->m_28 = pl1->mPlayerType;
             }
             if (pls[i2 - 1] != nullptr) {
                 info->m_1c = pl2;
-                info->mBounds.mDown = pl2->m_6c;
+                info->mBounds.mDown = pl2->mBgRelatedPos.y;
                 info->m_2c = pl2->mPlayerType;
             }
             break;
         case 3:
             if (pls[i2 - 1] != nullptr) {
                 info->m_18 = pl2;
-                info->mBounds.mUp = pl2->m_6c;
+                info->mBounds.mUp = pl2->mBgRelatedPos.y;
                 info->m_28 = pl2->mPlayerType;
             }
             if (pls[0] != nullptr) {
                 info->m_1c = pl1;
-                info->mBounds.mDown = pl1->m_6c;
+                info->mBounds.mDown = pl1->mBgRelatedPos.y;
                 info->m_2c = pl1->mPlayerType;
             }
             break;
