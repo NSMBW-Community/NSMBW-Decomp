@@ -19,6 +19,7 @@ public:
     u8 mCurrCourse;
     u8 mCurrArea;
     u8 mCurrWorld;
+    u8 m_1211;
 
     static float getLoopPosX(float x);
     static int m_loopType;
