@@ -21,7 +21,7 @@ from project_settings import *
 from slicelib import SliceFile, SliceType, load_slice_file
 
 parser = argparse.ArgumentParser(description='Sets up the project for use with objdiff.')
-parser.add_argument('-m', help='Path to a map file to use')
+parser.add_argument('--skip-download', action='store_true', help='Skip downloading symbols file')
 args = parser.parse_args()
 
 slices: list[SliceFile] = []
@@ -37,8 +37,14 @@ config_yaml = {
     'write_asm': False
 }
 
-if args.m:
-    config_yaml['symbols'] = args.m
+symbols_url = 'https://github.com/RootCubed/NSMBW-Maps/releases/download/v1.0/wiimj2d_symbols.txt'
+symbols_path = BUILDDIR / 'wiimj2d_symbols.txt'
+if not symbols_path.exists() or not args.skip_download:
+    print(f'Downloading symbols from {symbols_url}')
+    req = urllib.request.Request(symbols_url, headers={'User-Agent': 'Mozilla/5.0'})
+    with urllib.request.urlopen(req) as response:
+        symbols_path.write_text(response.read().decode('utf-8'))
+config_yaml['symbols'] = symbols_path.as_posix()
 
 SECTION_TYPES = {
     '.init': 'code',
