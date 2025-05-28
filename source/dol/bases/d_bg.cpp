@@ -499,13 +499,10 @@ void dBg_c::fn_80078300() {
         }
         fn_80077860(thing->m_00, thing->m_02, thing->m_04, thing->m_0c);
         mBgThingsRelated--;
-        float x = thing->m_00;
-        float y = -thing->m_02;
-        dAudio::playMapSound(SE_OBJ_COIN_APP, mVec2_c(x, y), 0);
-        // dAudio::playMapSound(SE_OBJ_COIN_APP, thing->m_00, -thing->m_02, 0);
-        // dAudio::SndObjctCmnMap_c *map = dAudio::g_pSndObjMap;
-        // nw4r::math::VEC2 pos = dAudio::cvtSndObjctPos(mVec2_c(thing->m_00, -thing->m_02));
-        // map->startSound(SE_OBJ_COIN_APP, pos, 0);
+        mVec2_c vec;
+        vec.x = thing->m_00;
+        vec.y = -thing->m_02;
+        dAudio::playMapSound(SE_OBJ_COIN_APP, vec, 0);
     }
 }
 
@@ -1018,7 +1015,7 @@ void dBg_c::calcLoopAutoScroll() {
         f2 = 4.8f;
     }
     if ((dActor_c::mExecStop & 8) == 0) {
-        if (f2 > 0.6f) {
+        if (f2 <= 0.6f) {
             sLib::addCalc(&mAutoscrolls[0].m_0c, f2, 0.02f, 0.03f, 0.001f);
         } else {
             sLib::addCalc(&mAutoscrolls[0].m_0c, f2, 0.01f, 0.01f, 0.0001f);
@@ -1339,16 +1336,16 @@ void dBg_c::calcMultiScroll(int arg1) {
 }
 
 void dBg_c::fn_8007ac40(dBgSomeInfo_c *info, int arg1) {
-    dBgBound_c b = info->mBounds;
+    // dBgBound_c b = info->mBounds;
 
-    float lWidth = mVideo::l_rayoutWidthF;
-    float lHeight = mVideo::l_rayoutHeightF;
+    float lWidth = mVideo::getLayoutWidth();
+    float lHeight = mVideo::getLayoutHeight();
 
     float invScale = 1.0f / mDispScale;
     float zoom = 1.0f / mZoomDenom;
 
-    float tmpUp = fabsf(b.mDown - b.mUp) / lHeight;
-    float tmpRight = fabsf(b.mLeft - b.mRight) / lWidth;
+    float tmpRight = fabsf(info->mBounds.mRight - info->mBounds.mLeft) / lWidth;
+    float tmpUp = fabsf(info->mBounds.mUp - info->mBounds.mDown) / lHeight;
 
     float spL = m_bg_p->getZoomSpreadLine();
     float spL2 = m_bg_p->getZoomSpreadLine2();
@@ -1448,9 +1445,9 @@ void dBg_c::fn_8007ac40(dBgSomeInfo_c *info, int arg1) {
         }
         if (mMoreFloats5[0] == tgMax) {
             if (mMoreFloats5[2] != tgMid) {
-                b.mRight = m_90018;
-                if (mMoreFloats5[1] <= b.mRight) {
-                    mMoreFloats5[1] = b.mRight;
+                info->mBounds.mRight = m_90018;
+                if (mMoreFloats5[1] <= info->mBounds.mRight) {
+                    mMoreFloats5[1] = info->mBounds.mRight;
                 }
                 mMoreFloats5[2] = tgMid;
             }

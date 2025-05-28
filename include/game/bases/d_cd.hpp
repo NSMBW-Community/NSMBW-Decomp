@@ -47,8 +47,8 @@ struct dBgThing_c {
         return mVec2_c(m_00, -m_02);
     }
 
-    short m_00;
-    short m_02;
+    u16 m_00;
+    u16 m_02;
     int m_04;
     int m_08;
     int m_0c;
