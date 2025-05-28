@@ -1341,16 +1341,16 @@ void dBg_c::calcMultiScroll(int arg1) {
 }
 
 void dBg_c::fn_8007ac40(dBgSomeInfo_c *info, int arg1) {
-    dBgBound_c b = info->mBounds;
+    // dBgBound_c b = info->mBounds;
 
-    float lWidth = mVideo::l_rayoutWidthF;
-    float lHeight = mVideo::l_rayoutHeightF;
+    float lWidth = mVideo::getLayoutWidth();
+    float lHeight = mVideo::getLayoutHeight();
 
     float invScale = 1.0f / mDispScale;
     float zoom = 1.0f / mZoomDenom;
 
-    float tmpUp = std::fabs(b.mDown - b.mUp) / lHeight;
-    float tmpRight = std::fabs(b.mLeft - b.mRight) / lWidth;
+    float tmpRight = std::fabs(info->mBounds.mRight - info->mBounds.mLeft) / lWidth;
+    float tmpUp = std::fabs(info->mBounds.mUp - info->mBounds.mDown) / lHeight;
 
     float spL = m_bg_p->getZoomSpreadLine();
     float spL2 = m_bg_p->getZoomSpreadLine2();
@@ -1450,9 +1450,9 @@ void dBg_c::fn_8007ac40(dBgSomeInfo_c *info, int arg1) {
         }
         if (mMoreFloats5[0] == tgMax) {
             if (mMoreFloats5[2] != tgMid) {
-                b.mRight = m_90018;
-                if (mMoreFloats5[1] <= b.mRight) {
-                    mMoreFloats5[1] = b.mRight;
+                info->mBounds.mRight = m_90018;
+                if (mMoreFloats5[1] <= info->mBounds.mRight) {
+                    mMoreFloats5[1] = info->mBounds.mRight;
                 }
                 mMoreFloats5[2] = tgMid;
             }
