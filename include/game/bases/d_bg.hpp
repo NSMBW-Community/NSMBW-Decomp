@@ -89,7 +89,6 @@ public:
     u8 mU8_1;
     u8 mU8_2;
     u8 mU8_3;
-    u8 mU8_4;
 };
 
 struct dBgAnimObj_c {
@@ -182,6 +181,10 @@ public:
     float getZoomTargetMax_Common();
     float getZoomTargetMax();
 
+    float calcDispScale(float bgVal, float tmp1) {
+        return (1.0f / getZoomTargetMin()) + bgVal * (1.0f / tmp1 - (1.0f / getZoomTargetMin()));
+    }
+
     float getZoomSpreadLine();
     float getZoomSpreadLine2();
     float getZoomShrinkLine();
@@ -260,7 +263,7 @@ public:
     float mWaveRelated[80];
     float mDispScale;
     float mMoreFloats3[4];
-    u8 mU8s[5];
+    u8 mU8s[6];
     float mZoomDenom;
     u8 m_8ffbc;
     float mLLimit, mRLimit, mULimit, mDLimit;
