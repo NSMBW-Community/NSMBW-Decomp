@@ -10,6 +10,7 @@ public:
     u8 currCourse;
     u8 mCurrArea;
     u8 currWorld;
+    u8 m_1211;
 
     static float getLoopPosX(float x);
     static int m_loopType;
