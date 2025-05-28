@@ -85,6 +85,12 @@
             }
         },
         {
+            "source": "dol/bases/d_ac_py_key.cpp",
+            "memoryRanges": {
+                ".text": "0x57850-0x58220"
+            }
+        },
+        {
             "source": "dol/bases/d_base.cpp",
             "memoryRanges": {
                 ".text": "0x65ca0-0x65f50",

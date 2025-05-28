@@ -378,3 +378,4 @@ ms_Instance_p__14dBgParameter_c=8042a0e0
 mGameFlag__7dInfo_c=8042A260
 Player1upColor__8dGameComFP12LytTextBox_ci=800B4780
 getGlbPosToLyt__8dGameComFR7mVec3_c=800B33D0
+m_instance__10dGameKey_c=8042a230
