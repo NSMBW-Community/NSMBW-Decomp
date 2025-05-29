@@ -17,7 +17,7 @@ dSmallScore_c::~dSmallScore_c() {
     dSmallScore_c::m_instance = nullptr;
 }
 
-bool dSmallScore_c::createLayout(d2d::ResAccMultLoader_c * res) {
+bool dSmallScore_c::createLayout(d2d::ResAccMultLoader_c *res) {
     static const char *T_PANE_NAME_TBL[] = {
         "T_100_00", "T_1000_00", "T_red2_00", "T_1UP_00", "T_coin_x_00",
         "T_coinPoint_00",
@@ -36,7 +36,7 @@ bool dSmallScore_c::createLayout(d2d::ResAccMultLoader_c * res) {
     mpRootPane = mLayout.getRootPane();
 
     mLayout.TPaneRegister(T_PANE_NAME_TBL, &T_100_00, ARRAY_SIZE(T_PANE_NAME_TBL));
-    T_coin_x_00->setMessage(dMessage_c::getMesRes(), BMG_CATEGORY_SMALL_SCORE, MSG_COINS, 0);
+    T_coin_x_00->setMessage(dMessage_c::getMesRes(), BMG_CATEGORY_SMALL_SCORE, MSG_LOWERCASE_X, 0);
 
     mLayout.NPaneRegister(N_PANE_NAME_TBL, &N_coin_00, ARRAY_SIZE(N_PANE_NAME_TBL));
 
@@ -128,12 +128,12 @@ void dSmallScore_c::setPlayer100Color(int playerType) {
         nw4r::ut::Color(250, 255, 255, 255), // #FFFFFF
     };
 
-    nw4r::lyt::Material* mat = T_100_00->GetMaterial();
+    nw4r::lyt::Material *mat = T_100_00->GetMaterial();
     mat->setTev(1, nw4r::lyt::GXColorS10(COLOR_DATA_TBL[playerType]));
 }
 
 void dSmallScore_c::chgColor() {
-    if (! mEnableColorChange) {
+    if (!mEnableColorChange) {
         return;
     }
     if (++mChgColorCounter < 10) {
@@ -141,7 +141,7 @@ void dSmallScore_c::chgColor() {
     }
     mChgColorCounter = 0;
 
-    int type = mPlayerColour;
+    int type = mPlayerColor;
 
     while (true) {
         if (++type >= 4) {
@@ -155,27 +155,27 @@ void dSmallScore_c::chgColor() {
     }
 
     setPlayer1upColor(type);
-    mPlayerColour = type;
+    mPlayerColor = type;
 }
 
 void dSmallScore_c::setNormalOrBlueColor() {
-    static const nw4r::ut::Color A[] = {
+    static const nw4r::ut::Color UP_COLOR_DATA_TBL[] = {
         nw4r::ut::Color(255, 10, 10, 255), // #FF0A0A
         nw4r::ut::Color(60, 120, 255, 255), // #3C78FF
     };
-    static const nw4r::ut::Color B[] = {
+    static const nw4r::ut::Color DOWN_COLOR_DATA_TBL[] = {
         nw4r::ut::Color(255, 150, 150, 255), // #FF9696
         nw4r::ut::Color(200, 240, 255, 255), // #C8F0FF
     };
 
-    int v0 = 0;
+    int colorIdx = 0;
     if (mHasBlueColor) {
         mHasBlueColor = false;
-        v0 = 1;
+        colorIdx = 1;
     }
 
-    T_red2_00->SetVtxColor(0, A[v0]);
-    T_red2_00->SetVtxColor(2, B[v0]);
+    T_red2_00->SetVtxColor(0, UP_COLOR_DATA_TBL[colorIdx]);
+    T_red2_00->SetVtxColor(2, DOWN_COLOR_DATA_TBL[colorIdx]);
 }
 
 void dSmallScore_c::ScissorMaskSet() {
@@ -214,42 +214,45 @@ void dSmallScore_c::BigSmallAnime() {
 }
 
 void dSmallScore_c::MakeStart() {
-    static const unsigned int SUB_ID_TBL[] = {
-        0, 1, 2, 3, 4, 5, 6, 7, 9, 10, 11, 12, 13, 14, 15, 16,
-        8, 17, 18, 19, 8, 51, 52, 53, 54, 55, 56, 0
+    static const u32 SUB_ID_TBL[] = {
+        MSG_100, MSG_200, MSG_400, MSG_800, MSG_1000, MSG_2000, MSG_4000,
+        MSG_8000, MSG_ONE, MSG_TWO, MSG_THREE, MSG_FOUR, MSG_FIVE, MSG_SIX,
+        MSG_SEVEN, MSG_EIGHT, MSG_1UP, MSG_2UP, MSG_3UP, MSG_4UP, MSG_1UP,
+        MSG_COIN_2, MSG_COIN_3, MSG_COIN_5, MSG_COIN_10, MSG_COIN_15,
+        MSG_COIN_20
     };
 
-    int v0 = mPopupType;
-    mPlayerColour = mPlayerType;
-    if (v0 >= 21) {
-        v0 = 5;
+    int temp = mPopupType;
+    mPlayerColor = mPlayerType;
+    if (temp >= 21) {
+        temp = 5;
 
         T_coin_x_00->setVisible(true);
         T_coinPoint_00->setVisible(true);
         N_coin_00->setVisible(true);
     } else {
-        if (v0 <= 3) {
+        if (temp <= 3) {
             setPlayer100Color(mPlayerType);
-            v0 = 0;
-        } else if (v0 <= 7) {
+            temp = 0;
+        } else if (temp <= 7) {
             setPlayer1000Color(mPlayerType);
-            v0 = 1;
-        } else if (v0 <= 15) {
+            temp = 1;
+        } else if (temp <= 15) {
             setNormalOrBlueColor();
-            v0 = 2;
+            temp = 2;
         } else {
             setPlayer1upColor(mPlayerType);
-            v0 = 3;
+            temp = 3;
         }
 
-        getTextBox(v0)->setVisible(true);
+        getTextBox(temp)->setVisible(true);
     }
 
-    MsgRes_c* bmg = dMessage_c::getMesRes();
+    MsgRes_c *bmg = dMessage_c::getMesRes();
 
-    getTextBox(v0)->setMessage(bmg, BMG_CATEGORY_SMALL_SCORE, SUB_ID_TBL[mPopupType], 0);
-    getTextBox(v0)->setScale(mScale);
-    mCurTextbox = v0;
+    getTextBox(temp)->setMessage(bmg, BMG_CATEGORY_SMALL_SCORE, SUB_ID_TBL[mPopupType], 0);
+    getTextBox(temp)->setScale(mScale);
+    mCurTextbox = temp;
     mMaxHeight = dBgParameter_c::ms_Instance_p->mPos.y - 20.0f;
     mpRootPane->setVisible(true);
 
@@ -326,7 +329,7 @@ void dSmallScore_c::DispWait() {
 void dSmallScore_c::GoalScoreDisp() {}
 
 void dSmallScore_c::PositionSet() {
-    if (! (mpRootPane->mFlags & 1)) {
+    if (!(mpRootPane->mFlags & 1)) {
         return;
     }
 
@@ -367,7 +370,7 @@ void dSmallScore_c::CreateSmallScore(const mVec3_c &pos, int popupType, int play
     mPosDelta.y = 0.0f;
     mPosOffset.x = 0.0f;
     mPosOffset.y = 0.0f;
-    mIsGoalScore = 0;
+    mIsGoalScore = false;
     mState = dSmallScore_c::STATE_MAKE_START;
 }
 
