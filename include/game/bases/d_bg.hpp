@@ -212,12 +212,12 @@ public:
     void calcMultiScroll( int );
     void initScroll();
 
-    void fn_8007ac40(dBgSomeInfo_c *, int); ///< @unofficial
+    void fn_8007ac40(const dBgSomeInfo_c *, int); ///< @unofficial
     void fn_8007ba70(const dBgSomeInfo_c *); ///< @unofficial
-    float fn_8007bba0(dBgSomeInfo_c *); ///< @unofficial
-    float fn_8007bbf0(dBgSomeInfo_c *); ///< @unofficial
-    bool fn_8007bc40(dBgSomeInfo_c *, float); ///< @unofficial
-    mVec2_c fn_8007bd40(dBgSomeInfo_c *, float, float); ///< @unofficial
+    float fn_8007bba0(const dBgSomeInfo_c *); ///< @unofficial
+    float fn_8007bbf0(const dBgSomeInfo_c *); ///< @unofficial
+    bool fn_8007bc40(const dBgSomeInfo_c *, float); ///< @unofficial
+    mVec2_c fn_8007bd40(const dBgSomeInfo_c *, float, float); ///< @unofficial
     float fn_8007c7d0(float); ///< @unofficial
     void fn_8007ca90(dBgSomeInfo_c *, int, int); ///< @unofficial
     void fn_8007cd70(dBgSomeInfo_c *, dBgSomeInfo_c *, int); ///< @unofficial
@@ -241,7 +241,7 @@ public:
     dBgScrollLimit_c *getScrLim(int area, int group, int idx) { return &mScrLimit[area][group][idx]; }
     dBgSubstruct2_c * getData2(int idx, int i) { return &mData2[idx][i]; }
 
-    typedef void (dBg_c::*callbackFunc)(dBgSomeInfo_c *, int);
+    typedef void (dBg_c::*callbackFunc)(const dBgSomeInfo_c *, int);
 
     unsigned long long *mBgCheckBuffer;
     int mBgThingsRelated;
