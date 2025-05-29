@@ -36,7 +36,7 @@ public:
         BUTTON_A = BIT_FLAG(11),
     };
 
-	int mRemoconID; ///< This remote's ID, -1 if invalid.
+    int mRemoconID; ///< This remote's ID, -1 if invalid.
     u16 mDownButtons; ///< The buttons currently pressed down.
     u16 mTriggeredButtons; ///< The buttons newly pressed down.
     u16 mPrevDownButtons; ///< The buttons pressed down in the last frame.
@@ -58,48 +58,56 @@ public:
     int mJumpTriggeredHistory[4][10]; ///< Stores the last 10 frames of jump events for each remote.
     int mJumpButtonHistory[4][10]; ///< Stores the last 10 frames of the jump button state for each remote.
 
-	dAcPyKey_c(); ///< Constructs a new controller manager.
+    dAcPyKey_c(); ///< Constructs a new controller manager.
     ~dAcPyKey_c(); ///< Destroys the controller manager.
 
     void init(); ///< Initialize the button manager.
     void update(); ///< Call each frame to process the inputs.
     void updateEnd(); ///< Get the new button states for the next frame.
-    bool checkHipAttack(); ///< Checks whether a hip attack should be performed this frame.
+
     void onStatus(u16 status); ///< Enables a status flag.
     void offStatus(u16 status); ///< Disables a status flag.
+
     void clearAllKey(); ///< Clears all input state.
     void clearCrossKey(); ///< Clears the left and right directional buttons.
-    int triggerA() const; ///< Returns whether A was pressed this frame.
+
     int buttonCross() const; ///< Returns whether a directional button is pressed down.
-    int triggerCross() const; ///< Returns whether a directional button was pressed this frame.
     int buttonUp() const; ///< Returns whether the up button is pressed down.
     int buttonDown() const; ///< Returns whether the down button is pressed down.
     int buttonLeft() const; ///< Returns whether the left button is pressed down.
     int buttonRight() const; ///< Returns whether the right button is pressed down.
+    int buttonTwo() const; ///< Returns whether the two button is pressed down.
+    int buttonOne() const; ///< Returns whether the one button is pressed down.
+    int buttonDush() const; ///< Returns whether the run button is pressed down.
+    int buttonCarry() const; ///< Returns whether the carry button (1 / B) is pressed down.
+    int buttonJump(); ///< Returns whether the jump button (2) is pressed down.
+    int buttonYoshiJump() const; ///< Returns whether the Yoshi jump button (2) is pressed down.
+    bool buttonWalk(int *direction) const; ///< Returns whether left / right is pressed down. Sets the direction to 0 for right and 1 for left.
+    int buttonCrouch() const; ///< Returns whether the crouch button (down) is pressed down.
+    int buttonHipAttack() const; ///< Returns whether the correct buttons (down, no other directions) for a hip attack is pressed down.
+    int buttonDoor() const; ///< Returns whether the correct buttons (up, no left or right) for a door open is pressed down.
+
+    int triggerA() const; ///< Returns whether A was pressed this frame.
+    int triggerCross() const; ///< Returns whether a directional button was pressed this frame.
     int triggerUp() const; ///< Returns whether the up button was pressed this frame.
     int triggerDown() const; ///< Returns whether the down button was pressed this frame.
     int triggerLeft() const; ///< Returns whether the left button was pressed this frame.
     int triggerRight() const; ///< Returns whether the right button was pressed this frame.
     int triggerTwo() const; ///< Returns whether the two button was pressed this frame.
-    int buttonTwo() const; ///< Returns whether the two button is pressed down.
     int triggerOne() const; ///< Returns whether the one button was pressed this frame.
-    int buttonOne() const; ///< Returns whether the one button is pressed down.
-    int buttonDush() const; ///< Returns whether the run button is pressed down.
     int triggerAttack() const; ///< Returns whether the attack button (1 / B) was pressed this frame.
     bool triggerEat(); ///< Returns whether the eat button (1 / B) was pressed this frame.
-    int buttonCarry() const; ///< Returns whether the carry button (1 / B) is pressed down.
     bool triggerFire(); ///< Returns whether the fire button was pressed this frame.
     int triggerJumpBase() const; ///< Returns whether the jump button (2) was pressed this frame.
     bool triggerJump(); ///< Returns whether the jump button (2) was pressed this frame.
-    int buttonJump(); ///< Returns whether the jump button (2) is pressed down.
-    int buttonYoshiJump() const; ///< Returns whether the Yoshi jump button (2) is pressed down.
+
+    bool checkHipAttack(); ///< Checks whether a hip attack should be performed this frame.
+
     u8 triggerShakeJump() const; ///< Returns whether a shake event was triggered this frame.
     void clearShakeJump(); ///< Clears the shake event state.
-    bool buttonWalk(int *direction) const; ///< Returns whether left / right is pressed down. Sets the direction to 0 for right and 1 for left.
-    int buttonCrouch() const; ///< Returns whether the crouch button (down) is pressed down.
-    int buttonHipAttack() const; ///< Returns whether the correct buttons (down, no other directions) for a hip attack is pressed down.
-    int buttonDoor() const; ///< Returns whether the correct buttons (up, no left or right) for a door open is pressed down.
+
     bool triggerJumpBuf(int n); ///< Returns whether a jump occurred in the last n frames.
+
     void onDemoButton(int); ///< Sets a button for demo mode to pressed down.
     void offDemoButton(int); ///< Sets a button for demo mode to not pressed down.
     void onDemoTrigger(int); ///< Sets a button for demo mode to pressed this frame.

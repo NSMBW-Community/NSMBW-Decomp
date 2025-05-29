@@ -1,13 +1,10 @@
 #include <game/bases/d_ac_py_key.hpp>
 #include <game/bases/d_game_key.hpp>
 
-dAcPyKey_c::dAcPyKey_c() {
-    mRemoconID = 0;
-    mDownButtons = 0;
-    mTriggeredButtons = 0;
-    mDownButtonsDemo = 0;
-    mTriggeredButtonsDemo = 0;
-    mDemoDoShake = 0;
+dAcPyKey_c::dAcPyKey_c() :
+    mRemoconID(0),
+    mDownButtons(0), mTriggeredButtons(0),
+    mDownButtonsDemo(0), mTriggeredButtonsDemo(0), mDemoDoShake(0) {
 }
 
 dAcPyKey_c::~dAcPyKey_c() {}
@@ -116,18 +113,23 @@ void dAcPyKey_c::onStatus(u16 status) {
         case STATUS_FORCE_JUMP:
             offStatus(STATUS_FORCE_NO_JUMP);
             break;
+
         case STATUS_FORCE_NO_JUMP:
             offStatus(STATUS_FORCE_JUMP);
             break;
+
         case STATUS_NO_INPUT:
         case STATUS_DEMO:
         case STATUS_FORCE_RIGHT:
             clearAllKey();
             break;
+
         case STATUS_DISABLE_LR:
             clearCrossKey();
             break;
-        default: break;
+
+        default:
+            break;
     }
     mStatus |= (1 << status);
 }
@@ -203,7 +205,7 @@ int dAcPyKey_c::buttonTwo() const {
 }
 
 int dAcPyKey_c::triggerOne() const {
-    if (dGameKey_c::m_instance->keys[mRemoconID]->mAttachedExtension == 1) {
+    if (dGameKey_c::m_instance->keys[mRemoconID]->mAttachedExtension == dGameKeyCore_c::EXTENSION_NUNCHUK) {
         return mTriggeredButtons & BUTTON_B;
     } else {
         return mTriggeredButtons & BUTTON_ONE;
@@ -211,7 +213,7 @@ int dAcPyKey_c::triggerOne() const {
 }
 
 int dAcPyKey_c::buttonOne() const {
-    if (dGameKey_c::m_instance->keys[mRemoconID]->mAttachedExtension == 1) {
+    if (dGameKey_c::m_instance->keys[mRemoconID]->mAttachedExtension == dGameKeyCore_c::EXTENSION_NUNCHUK) {
         return mDownButtons & BUTTON_B;
     } else {
         return mDownButtons & BUTTON_ONE;
@@ -330,21 +332,21 @@ bool dAcPyKey_c::triggerJumpBuf(int lastN) {
     return false;
 }
 
-void dAcPyKey_c::onDemoButton(int param) {
+void dAcPyKey_c::onDemoButton(int buttons) {
     if (mStatus & FLAG_DEMO) {
-        mDownButtonsDemo |= param;
+        mDownButtonsDemo |= buttons;
     }
 }
 
-void dAcPyKey_c::offDemoButton(int param) {
+void dAcPyKey_c::offDemoButton(int buttons) {
     if (mStatus & FLAG_DEMO) {
-        mDownButtonsDemo &= ~param;
+        mDownButtonsDemo &= ~buttons;
     }
 }
 
-void dAcPyKey_c::onDemoTrigger(int param) {
+void dAcPyKey_c::onDemoTrigger(int buttons) {
     if (mStatus & FLAG_DEMO) {
-        mTriggeredButtonsDemo |= param;
+        mTriggeredButtonsDemo |= buttons;
     }
 }
 

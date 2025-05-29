@@ -3,10 +3,15 @@
 
 class dGameKeyCore_c {
 public:
+    enum EXTENSION_e {
+        EXTENSION_NONE = 0,
+        EXTENSION_NUNCHUK = 1
+    };
+
     virtual ~dGameKeyCore_c() {}
 
     int mIndex;
-    int mAttachedExtension;
+    EXTENSION_e mAttachedExtension;
     char mPad1[8];
     int mDownButtons; ///< The buttons currently pressed down.
     char mPad2[4];
