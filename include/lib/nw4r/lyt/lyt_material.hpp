@@ -29,17 +29,15 @@ public:
     ut::detail::LinkListImpl mAnimList;
     GXColorS10 mTevCols[3];
     nw4r::ut::Color mTevKCols[4];
-    u32 mGXMemCap; // actually a bitfield
-    u32 mGXMemNum; // actually a bitfield
-    void * mpGXMem;
+    u32 mGXMemCap; // [actually a bitfield]
+    u32 mGXMemNum; // [actually a bitfield]
+    void *mpGXMem;
     char mName[21];
     bool mbUserAllocated;
 
     void setTev(int index, GXColorS10 color) {
         mTevCols[index] = color;
     }
-
-    char pad[2];
 };
 
 } // namespace lyt

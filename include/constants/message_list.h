@@ -125,9 +125,9 @@ enum MESSAGE_e {
     MSG_COIN_10,
     MSG_COIN_15,
     MSG_COIN_20,
-    MSG_COIN_LOWERCASE_X, ///< unused
-    MSG_COIN_1, ///< unused
-    MSG_COIN_10_2, ///< unused
+    MSG_COIN_LOWERCASE_X, ///< @unused
+    MSG_COIN_1, ///< @unused
+    MSG_COIN_10_2, ///< @unused
 
     // Group 0x68 [ BMG_CATEGORY_CONTROLLER_INFORMATION ]
     MSG_HOLD_WIIMOTE_SIDEWAYS = 8,
