@@ -15,6 +15,8 @@ class dSmallScore_c {
         STATE_NONE = 4
     };
 
+    typedef void (dSmallScore_c::*ProcFunc)();
+
 public:
     dSmallScore_c();
     virtual ~dSmallScore_c();
@@ -82,6 +84,3 @@ public:
     static dSmallScore_c *m_instance;
 
 };
-
-dSmallScore_c *dSmallScore_c::m_instance = nullptr;
-typedef void (dSmallScore_c::*ProcFunc)();

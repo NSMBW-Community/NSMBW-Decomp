@@ -9,6 +9,8 @@
 #include <game/bases/d_bg_parameter.hpp>
 #include <lib/egg/math.hpp>
 
+dSmallScore_c *dSmallScore_c::m_instance = nullptr;
+
 dSmallScore_c::dSmallScore_c() : mPos(0.0f, 0.0f), mScale(1.0f, 1.0f), mPosDelta(0.0f, 0.0f), mInitialized(false), mIsGoalScore(false) {
     mPlayerType = 0;
 }
