@@ -1,4 +1,17 @@
 #pragma once
+#include <types.h>
+#include <game/mLib/m_vec.hpp>
+
+struct AreaBoundU16 {
+    AreaBoundU16(u16 x, u16 y, u16 w, u16 h) {
+        this->x = x;
+        this->y = y;
+        width = w;
+        height = h;
+    }
+
+    u16 x, y, width, height;
+};
 
 class dCdArea_c {
 public:
@@ -29,9 +42,15 @@ struct dBgThing_c {
 
     u16 m_00;
     u16 m_02;
-    int m_04;
-    int m_08;
+    int m_04; // Sometimes a float? see calcAutoScroll()
+    int m_08; // Sometimes a float? see calcAutoScroll()
     int m_0c;
+};
+
+struct dBgThingCollection_c {
+    dBgThing_c mBgThings[10];
+
+    dBgThing_c *getThing(int i) { return &mBgThings[i]; }
 };
 
 class dCdFile_c {
@@ -40,10 +59,11 @@ public:
     dCdUnk_c *mpUnk;
     char pad2[0x1c];
     dCdArea_c *areas;
-    dBgThing_c (*mBgThings)[10];
-    char pad3[0x70];
+    char pad3[0xc];
+    dBgThingCollection_c *mBgThings;
+    char pad4[0x64];
     int mScrlAreaDataSize;
-    char pad4[0x308];
+    char pad5[0x308];
 
     u8 getAreaID(u8);
     u8 getAreaScroll(u8);
@@ -51,6 +71,8 @@ public:
     dScrollData_c *getScrlAreaDataP(u8 scrollID);
     dScrollData_c *getScrollDataP(u8 scrollID);
     dCdArea_c *getAreaP(u8 zoneID, AreaBound *bound);
+
+    dBgThingCollection_c *getBgThings() { return mBgThings; }
 };
 
 class dCd_c {

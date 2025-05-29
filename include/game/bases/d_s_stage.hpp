@@ -20,6 +20,7 @@ public:
 
     typedef void (*changePosFunc)(mVec3_c *);
     static void setChangePosFunc(int);
+    static dScStage_c *getInstance() { return m_instance; }
 
     static changePosFunc changePos;
     static dScStage_c *m_instance;

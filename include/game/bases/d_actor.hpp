@@ -68,17 +68,6 @@ public:
     mVec2_c begin, end;
 };
 
-struct AreaBoundU16 {
-    AreaBoundU16(u16 x, u16 y, u16 w, u16 h) {
-        this->x = x;
-        this->y = y;
-        width = w;
-        height = h;
-    }
-
-    u16 x, y, width, height;
-};
-
 class dAcPy_c;
 
 class dActor_c : public dBaseActor_c {
