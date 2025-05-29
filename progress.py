@@ -7,6 +7,7 @@ import math
 import subprocess
 import sys
 from pathlib import Path
+from typing import Any
 
 sys.path.append('tools')
 
@@ -58,22 +59,22 @@ def print_banner(title: str) -> None:
 def color_lerp(col_a: tuple[int, int, int], col_b: tuple[int, int, int], frac: float):
     return [a + (b - a) * frac for a, b in zip(col_a, col_b)]
 
-def get_git_commit_list() -> list[dict[str, any]]:
+def get_git_commit_list() -> list[dict[str, Any]]:
     out = subprocess.check_output(['git', '--no-pager', 'log', '--format=%H %at']).decode().strip().split('\n')
     return list(map(lambda x: { 'timestamp': int(x.split(' ')[1]), 'hash': x.split(' ')[0] }, out))
 
 def calculate_decompiled_bytes(slice_file: SliceFile, filter_sections: list[str]) -> tuple[int, int]:
     count_compiled_bytes = 0
     count_total_bytes = 0
-    for slice in slice_file.slices:
-        for slice_sec in [i for i in slice.slice_secs if i.sec_name in filter_sections]:
+    for slice in slice_file.parsed_slices:
+        for slice_sec in [i for i in slice.sliceSecs if i.sec_name in filter_sections]:
             byte_count = slice_sec.end_offs - slice_sec.start_offs
 
             count_total_bytes += byte_count
-            if slice.slice_src:
+            if slice.source:
                 count_compiled_bytes += byte_count
 
-    return [count_compiled_bytes, count_total_bytes]
+    return count_compiled_bytes, count_total_bytes
 
 ########################
 # Begin task functions #
@@ -83,13 +84,13 @@ def calculate_decompiled_bytes(slice_file: SliceFile, filter_sections: list[str]
 def verify_bin(slice_files: list[SliceFile]) -> bool:
     all_matching = True
     for slice_file in slice_files:
-        orig_file = Path(f'{ORIGDIR}/{slice_file.meta.name}')
-        built_file = Path(f'{BUILDDIR}/{slice_file.meta.name}')
+        orig_file = Path(f'{ORIGDIR}/{slice_file.meta.fileName}')
+        built_file = Path(f'{BUILDDIR}/{slice_file.meta.fileName}')
 
         md5orig = hashlib.md5(open(orig_file, 'rb').read()).hexdigest()
         md5built = hashlib.md5(open(built_file, 'rb').read()).hexdigest()
 
-        print(slice_file.meta.name + ': ', end='')
+        print(slice_file.meta.fileName + ': ', end='')
         if md5orig != md5built:
             all_matching = False
             print_err('Failed')
@@ -110,23 +111,22 @@ def align_addr(addr: int, align: int):
 def verify_obj(slice_files: list[SliceFile]) -> bool:
     no_errors = True
     for slice_file in slice_files:
-        for slice in slice_file.slices:
-            unit_name = Path(slice_file.meta.name).stem
-            print_name = f'{unit_name}/{slice.slice_name}'
-            if slice.slice_src:
+        for slice in slice_file.parsed_slices:
+            unit_name = Path(slice_file.meta.fileName).stem
+            print_name = f'{unit_name}/{slice.sliceName}'
+            if slice.source:
                 warnings = []
                 errors = []
 
-                compiled_path = Path(f'{BUILDDIR}/compiled/{unit_name}/{slice.slice_name}')
+                compiled_path = Path(f'{BUILDDIR}/compiled/{unit_name}/{slice.sliceName}')
 
                 if not compiled_path.is_file():
                     errors.append(f'File {compiled_path} not found!')
                 else:
                     elf = ElfFile.read(open(compiled_path, 'rb').read())
-                    for slice_sec in slice.slice_secs:
+                    for slice_sec in slice.sliceSecs:
                         sec_name = slice_sec.sec_name
-                        elf_sec = elf.get_section(sec_name)
-                        if elf_sec is None:
+                        if not elf.has_section(sec_name):
                             # Check for $ section
                             was_found = False
                             for elf_sec in elf.sections:
@@ -136,6 +136,7 @@ def verify_obj(slice_files: list[SliceFile]) -> bool:
                             if not was_found:
                                 errors.append(f'Section {sec_name} not found!')
                         else:
+                            elf_sec = elf.get_section(sec_name)
                             al_start = align_addr(slice_sec.start_offs, slice_sec.alignment)
                             al_end = align_addr(slice_sec.end_offs, slice_sec.alignment)
                             exp_len = al_end - al_start
@@ -146,9 +147,9 @@ def verify_obj(slice_files: list[SliceFile]) -> bool:
                                 #     add_note = '\n  This is to be expected with classes that have deadstripped symbols.'
                                 warnings.append(f'Length of section {sec_name} not matching (expected {exp_len}, got {obj_len}){add_note}')
                     for elf_sec in elf.sections:
-                        if elf_sec.name not in slice_file.meta.secs or slice_file.meta.secs[elf_sec.name].size == 0:
+                        if elf_sec.name not in slice_file.meta.sections or slice_file.meta.sections[elf_sec.name].size == 0:
                             continue
-                        if elf_sec.name not in [i.sec_name for i in slice.slice_secs]:
+                        if elf_sec.name not in [i.sec_name for i in slice.sliceSecs]:
                             errors.append(f'Section {elf_sec.name} not included in slice file!')
 
                 # Print result
@@ -169,7 +170,7 @@ def progress_summary(slice_files: list[SliceFile]) -> bool:
         count_compiled_bytes, count_total_bytes = calculate_decompiled_bytes(slice_file, ['.init', '.text'])
 
         perc = (count_compiled_bytes / count_total_bytes) * 100
-        print(f'{slice_file.meta.name}: Decompiled {count_compiled_bytes}/{count_total_bytes} code bytes ({perc:.3f}%)')
+        print(f'{slice_file.meta.fileName}: Decompiled {count_compiled_bytes}/{count_total_bytes} code bytes ({perc:.3f}%)')
 
         count_compiled_bytes_total += count_compiled_bytes
         count_total_bytes_total += count_total_bytes
@@ -182,7 +183,7 @@ def progress_summary(slice_files: list[SliceFile]) -> bool:
 slicefile_names = ['wiimj2d.dol', 'd_profileNP.rel', 'd_basesNP.rel', 'd_enemiesNP.rel', 'd_en_bossNP.rel']
 code_sec_names = ['.init', '.text']
 
-def read_progress_csv_line(line: str) -> dict[str, any]:
+def read_progress_csv_line(line: str) -> dict[str, Any]:
     splitted = line.split(',')
     return {
         'timestamp': int(splitted[0]),
@@ -190,7 +191,7 @@ def read_progress_csv_line(line: str) -> dict[str, any]:
         'progress_vals': [int(x) for x in splitted[2:]]
     }
 
-def get_historical_progress_data(commits, last_tracked) -> list[dict[str, any]]:
+def get_historical_progress_data(commits, last_tracked) -> list[dict[str, Any]]:
     # Get branch name for reverting back to it at the end
     branch_name = subprocess.check_output(['git', 'rev-parse', '--abbrev-ref', 'HEAD']).decode().strip().split('\n')[-1]
 
@@ -224,7 +225,7 @@ def progress_csv(slice_files: list[SliceFile]) -> bool:
 
     progress_list = []
     for slicefile_name in slicefile_names:
-        slice_file = next((i for i in slice_files if i.meta.name == slicefile_name))
+        slice_file = next((i for i in slice_files if i.meta.fileName == slicefile_name))
         progress_list.extend(calculate_decompiled_bytes(slice_file, code_sec_names))
 
     latest_csv = [timestamp, hash, *progress_list]
@@ -241,11 +242,11 @@ def progress_csv(slice_files: list[SliceFile]) -> bool:
             print_success('Progress detected! Going through previous commits and writing to file.')
 
             # Trim the list of commits to those which came after the last line in the progress csv
-            idx_last = next((i for i, x in enumerate(commits) if x['hash'] == last_line_data['hash']), None)
+            idx_last = next((i for i, x in enumerate(commits) if x['hash'] == last_line_data['hash']), 1e99)
 
             # Unfortunate hardcode; first revision where progress script implements correct functionality in all following revisions
             first_good_revision = '29b1a9bf5a11217cb2f60b74c3b4358290470209'
-            idx_first_good = next((i for i, x in enumerate(commits) if x['hash'] == first_good_revision), None)
+            idx_first_good = next((i for i, x in enumerate(commits) if x['hash'] == first_good_revision), 1e99)
 
             commits_to_track = commits[1:min(idx_last, idx_first_good)] # Skip HEAD too
 
@@ -276,7 +277,7 @@ def progress_csv(slice_files: list[SliceFile]) -> bool:
 
 def create_badges(slice_files: list[SliceFile]):
     for slicefile_name in slicefile_names:
-        slice_file = next((i for i in slice_files if i.meta.name == slicefile_name))
+        slice_file = next((i for i in slice_files if i.meta.fileName == slicefile_name))
         compiled, total = calculate_decompiled_bytes(slice_file, code_sec_names)
         perc = str(round(compiled / total * 100, 3))
         slice_stem = slicefile_name.split(".")[0]
@@ -297,11 +298,10 @@ def create_badges(slice_files: list[SliceFile]):
 slice_files: list[SliceFile] = []
 
 for file in SLICEDIR.glob('*.json'):
-    with open(file) as sf:
-        slice_files.append(load_slice_file(sf))
+    slice_files.append(load_slice_file(file))
 
 # Ensure correct order of slices
-slice_files = sorted(slice_files, key=lambda x: x.meta.mod_num)
+slice_files = sorted(slice_files, key=lambda x: x.meta.moduleNum)
 
 tasks = {
     'verify_obj': {

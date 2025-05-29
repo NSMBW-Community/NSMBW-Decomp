@@ -1,48 +1,62 @@
 #!/usr/bin/env python3
 # Project settings
 
+import shutil
 from pathlib import Path
 
 #######################
 # Project directories #
 #######################
 
-# This project's directory
-PROJECTDIR = Path(__file__).absolute().parents[1]
-
 # Directory for decompiled code
-SRCDIR = PROJECTDIR.joinpath('source')
+SRCDIR = Path('source')
 
 # Include directory
-INCDIR = PROJECTDIR.joinpath('include')
+INCDIR = Path('include')
 
 # Slice directory
-SLICEDIR = PROJECTDIR.joinpath('slices')
+SLICEDIR = Path('slices')
 
-# Build artifacts directory
-BUILDDIR = PROJECTDIR.joinpath('bin')
+# Build artifact directories
+BUILDDIR = Path('bin')
+BUILDDIR_COMPILED = Path(BUILDDIR, 'compiled')
+BUILDDIR_SLICED = Path(BUILDDIR, 'sliced')
+BUILDDIR_DECOMPCTX = Path(BUILDDIR, 'decompctx')
 
 # Original binaries directory
-ORIGDIR = PROJECTDIR.joinpath('original')
+ORIGDIR = Path('original')
 
 # Compiler directory
-COMPILERDIR = PROJECTDIR.joinpath('compilers')
+COMPILERDIR = Path('compilers')
+
+# Tool directory
+TOOLDIR = Path('tools')
 
 #########
 # Files #
 #########
 
 # Codewarrior
-CODEWARRIOR = COMPILERDIR.joinpath('Wii', '1.1')
-CC = CODEWARRIOR.joinpath('mwcceppc.exe')
-LD = CODEWARRIOR.joinpath('mwldeppc.exe')
+CODEWARRIOR = Path(COMPILERDIR, 'Wii', '1.1')
+CC = Path(CODEWARRIOR, 'mwcceppc.exe')
+LD = Path(CODEWARRIOR, 'mwldeppc.exe')
 
-# LCF templates
-LCF_TEMPLATE_DOL = PROJECTDIR.joinpath('template_dol.lcf')
-LCF_TEMPLATE_REL = PROJECTDIR.joinpath('template_rel.lcf')
+# Tools and scripts
+BUILD_DOL = Path(TOOLDIR, 'build_dol.py')
+BUILD_REL = Path(TOOLDIR, 'build_rel.py')
+CW_WRAPPER = Path(TOOLDIR, 'mwcceppc_wrapper.py')
+GEN_LCF = Path(TOOLDIR, 'gen_lcf.py')
+SLICE_DOL = Path(TOOLDIR, 'slice_dol.py')
+SLICE_REL = Path(TOOLDIR, 'slice_rel.py')
 
 # Relocation aliases
-ALIAS_FILE = PROJECTDIR.joinpath('alias_db.txt')
+ALIAS_FILE = Path('alias_db.txt')
 
 # Symbols
-SYMBOL_FILE = PROJECTDIR.joinpath('syms.txt')
+SYMBOL_FILE = Path('syms.txt')
+
+# Ninja build script
+NINJA_BUILD_FILE = Path('build.ninja')
+
+# Windows wrapper for non-Windows OSes
+WINDOWS_WRAPPER = 'wibo' if shutil.which('wibo') else 'wine'

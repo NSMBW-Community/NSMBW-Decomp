@@ -1,5 +1,6 @@
 # Output folder
 bin/
+*.ninja
 
 # Original files
 *.dol

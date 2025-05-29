@@ -21,28 +21,35 @@ from project_settings import *
 from slicelib import SliceFile, SliceType, load_slice_file
 
 parser = argparse.ArgumentParser(description='Sets up the project for use with objdiff.')
-parser.add_argument('-m', help='Path to a map file to use')
+parser.add_argument('--skip-download', action='store_true', help='Skip downloading symbols file')
 args = parser.parse_args()
 
 slices: list[SliceFile] = []
 
 for file in SLICEDIR.glob('*.json'):
-    with open(file) as sf:
-        slices.append(load_slice_file(sf))
+    slices.append(load_slice_file(file))
 
 # Ensure correct order of slices
-slices = sorted(slices, key=lambda x: x.meta.mod_num)
+slices = sorted(slices, key=lambda x: x.meta.moduleNum)
 
 config_yaml = {
     'modules': [],
     'write_asm': False
 }
 
-if args.m:
-    config_yaml['symbols'] = args.m
+symbols_url = 'https://github.com/RootCubed/NSMBW-Maps/releases/download/v1.0/wiimj2d_symbols.txt'
+symbols_path = BUILDDIR / 'wiimj2d_symbols.txt'
+if not symbols_path.exists() or not args.skip_download:
+    print(f'Downloading symbols from {symbols_url}')
+    req = urllib.request.Request(symbols_url, headers={'User-Agent': 'Mozilla/5.0'})
+    with urllib.request.urlopen(req) as response:
+        symbols_path.write_text(response.read().decode('utf-8'))
+config_yaml['symbols'] = symbols_path.as_posix()
 
 SECTION_TYPES = {
     '.init': 'code',
+    'extab': 'data',
+    'extabindex': 'data',
     '.text': 'code',
     '.ctors': 'rodata',
     '.dtors': 'rodata',
@@ -61,42 +68,39 @@ Path(f'{BUILDDIR}/dtk').mkdir(parents=True, exist_ok=True)
 
 for slice_file in slices:
     if slice_file.meta.type == SliceType.DOL:
-        config_yaml['object'] = f'original/{slice_file.meta.name}'
-        config_yaml['splits'] = f'{BUILDDIR}/dtk/dtk_splits_{Path(slice_file.meta.name).stem}.txt'
+        config_yaml['object'] = f'original/{slice_file.meta.fileName}'
+        config_yaml['splits'] = f'{BUILDDIR}/dtk/dtk_splits_{Path(slice_file.meta.fileName).stem}.txt'
     else:
         config_yaml['modules'].append({
-            'object': f'original/{slice_file.meta.name}',
-            'splits': f'{BUILDDIR}/dtk/dtk_splits_{Path(slice_file.meta.name).stem}.txt'
+            'object': f'original/{slice_file.meta.fileName}',
+            'splits': f'{BUILDDIR}/dtk/dtk_splits_{Path(slice_file.meta.fileName).stem}.txt'
         })
 
     splits_file = 'Sections:\n'
 
     sec_origin = {}
-    for secname, info in slice_file.meta.secs.items():
+    for secname, info in slice_file.meta.sections.items():
         if info.size == 0:
             continue
         if not '$' in secname:
             splits_file += f'\t{secname: <15} type:{SECTION_TYPES[secname.split("$")[0]]} align:{info.align}\n'
         sec_origin[secname] = info.addr
-        if secname == '.init':
-            splits_file += f'\t{"extab": <15} type:rodata align:8\n'
-            splits_file += f'\t{"extabindex": <15} type:rodata align:32\n'
 
     splits_file += '\n'
 
-    for slice in slice_file.slices:
-        if slice.slice_name.startswith('filler_'):
+    for slice in slice_file.parsed_slices:
+        if slice.sliceName.startswith('filler_'):
             continue
 
-        name = slice.slice_src if slice.slice_src else slice.slice_name
+        name = slice.source if slice.source else slice.sliceName
         splits_file += f'{name}:\n'
-        for slice_sec in slice.slice_secs:
+        for slice_sec in slice.sliceSecs:
             start = slice_sec.start_offs + sec_origin[slice_sec.sec_name]
             end = slice_sec.end_offs + sec_origin[slice_sec.sec_name]
             splits_file += f'\t{slice_sec.sec_name: <15} start:0x{start:08X} end:0x{end:08X}\n'
         splits_file += '\n'
 
-    with open(f'{BUILDDIR}/dtk/dtk_splits_{Path(slice_file.meta.name).stem}.txt', 'w') as f:
+    with open(f'{BUILDDIR}/dtk/dtk_splits_{Path(slice_file.meta.fileName).stem}.txt', 'w') as f:
         f.write(splits_file)
 
 
@@ -148,8 +152,7 @@ with open(f'{BUILDDIR}/dtk/splits/config.json', 'r') as f:
     objdiff_json = json.load(f)
 
 objdiff_json['min_version'] = '2.0.0'
-objdiff_json['custom_make'] = 'python'
-objdiff_json['custom_args'] = ['build.py', '--objdiff-o']
+objdiff_json['custom_make'] = 'ninja'
 objdiff_json['watch_patterns'] = [
     '*.c', '*.cpp',
     '*.h', '*.hpp',
@@ -173,37 +176,37 @@ del objdiff_json['entry']
 del objdiff_json['version']
 
 for slice_file in slices:
-    for slice in slice_file.slices:
-        stem = Path(slice_file.meta.name).stem
+    for slice in slice_file.parsed_slices:
+        stem = Path(slice_file.meta.fileName).stem
         if slice_file.meta.type == SliceType.DOL:
             loc = objdiff_json['units']
         else:
             loc = objdiff_json['modules']
             loc = next(x for x in loc if x['name'] == stem)['units']
 
-        unit = next((u for u in loc if u['name'] == slice.slice_src), None)
+        unit = next((u for u in loc if u['name'] == slice.source), None)
         if unit is None:
-            if slice.slice_src is not None:
-                print_err(f'Unit {slice.slice_name} not found in objdiff.json')
+            if slice.source != '':
+                print_err(f'Unit {slice.sliceName} not found in objdiff.json')
             continue
 
-        base_path = BUILDDIR.joinpath(f'compiled/{stem}/{slice.slice_name}')
-        unit['base_path'] = base_path.relative_to(PROJECTDIR).as_posix()
+        base_path = BUILDDIR / 'compiled' / stem / slice.sliceName
+        unit['base_path'] = base_path.as_posix()
         unit['metadata'] = {
-            'complete': slice.slice_src is not None,
-            'source_path': f'source/{slice.slice_src}'
+            'complete': slice.source is not None,
+            'source_path': f'source/{slice.source}'
         }
 
         # decomp.me scratch options
-        ctx_path = BUILDDIR.joinpath(f'compiled/{stem}/{slice.slice_name}.hpp')
-        c_flags = slice_file.meta.default_compiler_flags
-        if slice.cc_flags:
-            c_flags = slice.cc_flags
+        ctx_path = (BUILDDIR / 'decompctx' / stem / slice.sliceName).with_suffix('.hpp')
+        c_flags = slice_file.meta.defaultCompilerFlags
+        if slice.ccFlags:
+            c_flags = slice.ccFlags
         unit['scratch'] = {
             'platform': 'gc_wii',
             'compiler': 'mwcc_43_151',
-            'c_flags': ' '.join(c_flags) + ' -lang=c++',
-            'ctx_path': ctx_path.relative_to(PROJECTDIR).as_posix(),
+            'c_flags': c_flags + ' -lang=c++',
+            'ctx_path': ctx_path.as_posix(),
             'build_ctx': True
         }
 
@@ -215,7 +218,7 @@ def patch_unit(unit, progress_categories, module_name):
     del unit['autogenerated']
     unit['metadata']['progress_categories'] = progress_categories
     obj_path = Path(unit['object'])
-    unit['target_path'] = obj_path.relative_to(PROJECTDIR).as_posix()
+    unit['target_path'] = obj_path.as_posix()
     del unit['object']
 
 for unit in objdiff_json['units']:

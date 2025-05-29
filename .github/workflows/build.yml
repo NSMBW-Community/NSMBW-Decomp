@@ -19,6 +19,8 @@ jobs:
         with:
           python-version: '3.11'
 
+      - run: pip install ninja
+
       - name: Download and decrypt blob
         env:
           BLOB_PASSPHRASE: ${{ secrets.BLOB_PASSPHRASE }}
@@ -37,7 +39,7 @@ jobs:
           Move-Item gh-actions-blob\original .
 
       - name: Build binaries
-        run: python build.py
+        run: python configure.py && ninja
 
       - name: Run progress script
         run: python progress.py --verify-obj --verify-bin --progress-summary

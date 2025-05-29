@@ -1,51 +1,40 @@
 #!/usr/bin/env python3
 # Slice definitions
 
+import json
+from dataclasses import dataclass, field
 from enum import Enum
 from pathlib import Path
-import json
-import typing
+from typing import Optional
+from utils.json_parser import from_json
 
-class JSONSliceData(typing.TypedDict):
-    name: str
-    compilerFlags: str
+def parse_int_str(value: str | int) -> int:
+    if isinstance(value, str):
+        return int(value, 16)
+    return value
+
+
+@dataclass
+class SliceData:
+    source: str
     memoryRanges: dict[str, str]
+    compilerFlags: str = field(default='')
+    nonMatching: bool = field(default=False)
 
 
-class SliceSection:
-    def __init__(self, sec_name: str, sec_idx: int, start_offs: int, end_offs: int, alignment: int) -> None:
-        self.sec_name = sec_name
-        self.sec_idx = sec_idx
-        self.start_offs = start_offs
-        self.end_offs = end_offs
-        self.alignment = alignment
-
-    def __repr__(self) -> str:
-        return f'<SliceSection {self.sec_name} (#{self.sec_idx}) {self.start_offs:0x}-{self.end_offs:0x}, align={self.alignment}>'
-
-    def contains(self, section: int, addend: int) -> bool:
-        return section == self.sec_idx and self.start_offs <= addend < self.end_offs
-
-
-class Slice:
-    def __init__(self, slice_name: str, source: str, slice_secs: list[SliceSection], cc_flags: str, non_matching: bool) -> None:
-        self.slice_name = slice_name
-        self.slice_src = source
-        self.slice_secs = slice_secs
-        self.cc_flags = cc_flags.split(' ') if cc_flags else None
-        self.non_matching = non_matching
-
-    def __repr__(self) -> str:
-        return f'<Slice {self.slice_name}, {self.slice_secs}>'
-
-
+@dataclass
 class SliceSectionInfo:
-    def __init__(self, index: int, align: int, size: int, offset: int, addr: int) -> None:
-        self.index = index
-        self.align = align
-        self.size = size
-        self.offset = offset
-        self.addr = addr
+    index: int
+    align: int
+    size: int
+    secAlign: int = field(default=-1)
+    offset: int = field(default=0)
+    addr: int = field(default=0)
+
+    def __post_init__(self):
+        self.size = parse_int_str(self.size)
+        self.addr = parse_int_str(self.addr)
+        self.offset = parse_int_str(self.offset)
 
 
 class SliceType(Enum):
@@ -53,126 +42,116 @@ class SliceType(Enum):
     DOL = 1
 
 
+@dataclass
 class SliceMeta:
-    def __init__(self, secs: dict[str, SliceSectionInfo]) -> None:
-        self.secs = secs
-        self.type: str
-        self.name: str
-        self.mod_num: int
-        self.default_compiler_flags: list[str]
-        self.force_active: list[str]
+    sections: dict[str, SliceSectionInfo]
+    type: SliceType
+    fileName: str
+    moduleNum: int
+    defaultCompilerFlags: str
+    baseAddr: int = field(default=0)
 
-    def from_meta(meta: dict) -> 'SliceMeta':
-        secs: dict[str, SliceSectionInfo] = {}
-        for sec in meta['sections']:
-            sec_meta = meta['sections'][sec]
-            s_size = int(sec_meta['size'], 16)
-            s_offset = int(sec_meta['offset'], 16) if 'offset' in sec_meta else 0
-            addr = int(sec_meta['addr'], 16) if 'addr' in sec_meta else 0
-            secs[sec] = SliceSectionInfo(sec_meta['index'], sec_meta['align'], s_size, s_offset, addr)
-        sm = SliceMeta(secs)
-        sm.type = SliceType.REL if meta['type'] == 'REL' else SliceType.DOL
-        sm.name = meta['fileName']
-        sm.mod_num = meta['moduleNum']
-        dcf = meta.get('defaultCompilerFlags', None)
-        sm.default_compiler_flags = dcf.split(' ')
-        return sm
+    def __post_init__(self):
+        self.baseAddr = parse_int_str(self.baseAddr)
 
 
+@dataclass
+class SliceSection:
+    sec_name: str
+    sec_idx: int
+    start_offs: int
+    end_offs: int
+    alignment: int
+
+    def contains(self, section: int, addend: int) -> bool:
+        return section == self.sec_idx and self.start_offs <= addend < self.end_offs
+
+
+@dataclass
+class Slice:
+    sliceName: str
+    source: str
+    sliceSecs: list[SliceSection] = field(default_factory=list)
+    ccFlags: str = field(default='')
+    nonMatching: bool = field(default=False)
+
+
+@dataclass
 class SliceFile:
-    def __init__(self, slices: list[Slice], meta: SliceMeta, deadstrip: list[str], keep_weak: list[str]) -> None:
-        self.meta: SliceMeta = meta
-        self.slices: list[Slice] = slices
-        self.deadstrip: list[str] = deadstrip
-        self.keep_weak: list[str] = keep_weak
+    meta: SliceMeta
+    slices: list[SliceData]
+    deadstrip: list[str] = field(default_factory=list)
+    keepWeak: list[str] = field(default_factory=list)
+    parsed_slices: list[Slice] = field(init=False, default_factory=list)
+    path: Path = field(init=False, default=Path())
 
-    def get_o_files(self) -> list[str]:
-        slice_name_stem = Path(self.meta.name).stem
-        file_names: list[str] = []
-        for slice in self.slices:
-            compiled_path = f'compiled/{slice_name_stem}/{slice.slice_name}'
-            sliced_path = f'sliced/{slice_name_stem}/{slice.slice_name}'
+    def unit_name(self) -> str:
+        return Path(self.meta.fileName).stem
 
-            if slice.slice_src and not slice.non_matching:
-                use_file = compiled_path
-            else:
-                use_file = sliced_path
 
-            if use_file:
-                file_names.append(use_file)
-        return file_names
-
-def make_filler_slice(name: str, sec_range: dict[str, tuple[int, int]], slice_meta: SliceMeta) -> Slice:
+def make_filler_slice(slice_name: str, sec_range: dict[str, tuple[int, int]], slice_meta: SliceMeta) -> Optional[Slice]:
     slice_sections: list[SliceSection] = []
-    for sec_name in sec_range:
-        start, end = sec_range[sec_name]
+    for section_name, section in sec_range.items():
+        start, end = section
         if start == end:
             continue
 
-        sec_info = slice_meta.secs[sec_name]
-        slice_sections.append(SliceSection(sec_name, sec_info.index, start, end, sec_info.align))
+        section_info = slice_meta.sections[section_name]
+        slice_sections.append(SliceSection(section_name, section_info.index, start, end, section_info.align))
 
     if len(slice_sections) > 0:
-        return Slice(name, None, slice_sections, None, None)
+        return Slice(slice_name, '', slice_sections)
 
-def load_slice_file(file: typing.TextIO) -> SliceFile:
-    slice_json = json.load(file)
-    slice_meta = SliceMeta.from_meta(slice_json['meta'])
-    slices: list[Slice] = []
-    slice: JSONSliceData
 
-    curr_sec_positions = {s: slice_meta.secs[s].offset for s in slice_meta.secs if slice_meta.secs[s].size != 0}
+def load_slice_file(src: Path) -> SliceFile:
 
+    # Load slice file
+    slice_file = from_json(SliceFile, json.loads(src.read_text()))
+    slice_file.path = src
+    slice_meta = slice_file.meta
+
+    # Initialize loop
     filler_slice_idx = 0
-    unnamed_slice_idx = 0
+    curr_sec_positions = {name: section.offset for name, section in slice_meta.sections.items() if section.size != 0}
+    for slice in slice_file.slices:
 
-    for slice in slice_json['slices']:
-        slice_name = slice.get('name', None)
-        slice_sections: list[SliceSection] = []
+        # Create parsed slice
+        filler_sec_range: dict[str, tuple] = {section: (0, 0) for section in curr_sec_positions}
+        slice_name = str(Path(slice.source).with_suffix('.o'))
+        parsed_slice = Slice(slice_name, slice.source, ccFlags=slice.compilerFlags, nonMatching=slice.nonMatching)
 
-        filler_sec_range = {s: (0, 0) for s in curr_sec_positions}
+        # Parse slice sections
+        slice_sections = slice.memoryRanges
+        for section, addrRange in slice_sections.items():
 
-        for sec_name in slice['memoryRanges']:
-            range_str = slice['memoryRanges'][sec_name]
-            begin, end = [int(x, 16) for x in range_str.split('-')]
-            sec_info = slice_meta.secs[sec_name]
-            slice_sections.append(SliceSection(sec_name, sec_info.index, begin, end, sec_info.align))
+            # Create parsed section
+            section_info = slice_meta.sections[section]
+            begin, end = (int(x, 16) for x in addrRange.split('-'))
+            parsed_slice_section = SliceSection(section, section_info.index, begin, end, section_info.align)
+            parsed_slice.sliceSecs.append(parsed_slice_section)
 
-            filler_sec_range[sec_name] = (curr_sec_positions[sec_name], begin)
-            curr_sec_positions[sec_name] = end
+            # Set memory range of filler slice
+            filler_sec_range[section] = (curr_sec_positions[section], begin)
+            curr_sec_positions[section] = end
 
-        src = slice.get('source', None)
-        flags = slice.get('compilerFlags', None)
-        nm = slice.get('nonMatching', False)
-
-        # Generate filler slice
+        # Generate and add filler slice if applicable
         filler_slice = make_filler_slice(f'filler_{filler_slice_idx}.o', filler_sec_range, slice_meta)
         if filler_slice is not None:
-            slices.append(filler_slice)
+            slice_file.parsed_slices.append(filler_slice)
             filler_slice_idx += 1
 
-        # Add actual slice
-        final_slice_name = slice_name
-        if slice_name is None:
-            if src is None:
-                final_slice_name = f"unnamed_{unnamed_slice_idx}.o"
-                unnamed_slice_idx += 1
-            else:
-                final_slice_name = f"{src.split('.')[0].replace('/', '_')}.o"
+        # Add created slice
+        slice_file.parsed_slices.append(parsed_slice)
 
-        slices.append(Slice(final_slice_name, src, slice_sections, flags, nm))
-
-    # Ensure filler slices extend to the end
-    filler_sec_range = {s: (0, 0) for s in curr_sec_positions}
-    for sec_name in curr_sec_positions:
-        section_end = slice_meta.secs[sec_name].size + slice_meta.secs[sec_name].offset
-        filler_sec_range[sec_name] = (curr_sec_positions[sec_name], section_end)
+    # Add last slice which extends to the end of each section, if applicable
+    filler_sec_range = {section: (0, 0) for section in curr_sec_positions}
+    for name, offset in curr_sec_positions.items():
+        section_end = slice_meta.sections[name].size + slice_meta.sections[name].offset
+        filler_sec_range[name] = (offset, section_end)
 
     filler_slice = make_filler_slice(f'filler_{filler_slice_idx}.o', filler_sec_range, slice_meta)
     if filler_slice is not None:
-        slices.append(filler_slice)
+        slice_file.parsed_slices.append(filler_slice)
 
-    deadstrip = slice_json.get('deadstrip', [])
-    keep_weak = slice_json.get('keepWeak', [])
-
-    return SliceFile(slices, slice_meta, deadstrip, keep_weak)
+    # Return parsed data
+    return slice_file
