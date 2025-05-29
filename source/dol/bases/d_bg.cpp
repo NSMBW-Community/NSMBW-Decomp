@@ -1044,15 +1044,17 @@ void dBg_c::calcLoopAutoScroll() {
 }
 
 void dBg_c::calcAutoScroll() {
-    dScStage_c *stage = dScStage_c::m_instance;
-    mVec2_c bgSize = dBgParameter_c::getInstance()->mSize;
+    dBgParameter_c *bgParam = dBgParameter_c::ms_Instance_p;
+    float bgW = bgParam->mSize.x;
+    float bgH = bgParam->mSize.y;
     sRailInfoData *ri = dRail_c::getRailInfoP(mAutoscrolls[0].m_14);
+    dScStage_c *stage = dScStage_c::m_instance;
     dCdFile_c *file = dCd_c::m_instance->getFileP(stage->mCurrCourse);
 
     float leftLim = getLeftLimit();
-    float rightLim = getRightLimit() - bgSize.x;
+    float rightLim = getRightLimit() - bgW;
     float upLim = mULimit;
-    float downLim = bgSize.y - mDLimit;
+    float downLim = bgH + mDLimit;
     bool cond1 = true;
     bool cond2 = true;
     if (stage->mCurrWorld == WORLD_2 && stage->mCurrCourse == STAGE_CASTLE && stage->mCurrFile == 0) {
@@ -1065,7 +1067,7 @@ void dBg_c::calcAutoScroll() {
                 int idx = m_9007c;
                 // dBgThing_c *tmp = &base[m_9007c];
                 if (m_90009 == 0) {
-                    if (mAutoscrolls[0].mPos.x > base[idx].m_00) {
+                    if (mAutoscrolls[0].mPos.x > (short) base[idx].m_00) {
                         m_9007c++;
                     } else {
                         break;
@@ -1078,26 +1080,28 @@ void dBg_c::calcAutoScroll() {
         asPos.x = mAutoscrolls[0].mPos.x;
         asPos.y = mAutoscrolls[0].mPos.y;
         asPos.z = 0.0f;
-        rightLim = asPos.y;
+        // rightLim = asPos.y;
         int tmp = m_9007c;
         if (m_90080 < 999) {
             sBgThing *base = &bgThings[m_90080];
             mVec3_c bgThingVec;
-            bgThingVec.x = base->m_00;
-            bgThingVec.y = -(float) base->m_02;
+            bgThingVec.x = (short) base->m_00;
+            bgThingVec.y = -(float) (short) base->m_02;
             bgThingVec.z = 0.0f;
             mVec3_c asCopy;
             if (tmp > 0) {
-                asCopy.x = (base - 1)->m_00;
-                asCopy.y = -(float) (base - 1)->m_02;
+                asCopy.x = (short) (base - 1)->m_00;
+                asCopy.y = -(float) (short) (base - 1)->m_02;
                 asCopy.z = 0.0f;
             } else {
                 asCopy = asPos;
             }
             mVec3_c someVec = bgThingVec;
             someVec -= asCopy;
-            float calcArg = 0.0f;
+            mVec3_c tmpCopy = someVec;
             someVec.normalize();
+            float calcArg = *(float *) &base->m_04; // FIXME
+            float calcArg2 = *(float *) &base->m_08; // FIXME
             mVec3_c someVec2 = asCopy;
             someVec -= asPos;
             someVec2.normalize();
@@ -1115,7 +1119,7 @@ void dBg_c::calcAutoScroll() {
             idk.x = mAng(m_90088).cos() * mAng(m_9008a).sin();
             idk.y = mAng(m_90088).sin();
             idk.z = mAng(m_90088).cos() * mAng(m_9008a).cos();
-            sLib::addCalc(&mAutoscrolls[0].m_0c, asPos.y, 1.0f, calcArg, 0.0001f);
+            sLib::addCalc(&mAutoscrolls[0].m_0c, calcArg2, 1.0f, calcArg, 0.0001f);
             mAutoscrolls[0].mPos.z = 0.0f;
             mAutoscrolls[0].mPos.x += idk.y * mAutoscrolls[0].m_0c;
             mAutoscrolls[0].mPos.y += idk.z * mAutoscrolls[0].m_0c;
@@ -1154,18 +1158,20 @@ void dBg_c::calcAutoScroll() {
                     return;
                 }
             }
-            mVec3_c asPosCopy = mAutoscrolls[0].mPos;
+            mSomeParameterPos = bgParam->mPos;
+            mVec3_c asPosCopy;
+            asPosCopy.x = mAutoscrolls[0].mPos.x;
+            asPosCopy.y = mAutoscrolls[0].mPos.y;
+            asPosCopy.z = mAutoscrolls[0].mPos.z;
             if (asPosCopy.x < leftLim) {
-                leftLim = asPosCopy.x;
-                if (rightLim < leftLim) {
-                    leftLim = leftLim;
-                }
+                asPosCopy.x = leftLim;
+            } else if (asPosCopy.x > rightLim) {
+                asPosCopy.x = rightLim;
             }
             if (asPosCopy.y < downLim) {
-                downLim = asPosCopy.y;
-                if (upLim < downLim) {
-                    downLim = downLim;
-                }
+                asPosCopy.y = downLim;
+            } else if (asPosCopy.y > upLim) {
+                asPosCopy.y = upLim;
             }
             switch (mAutoscrolls[0].m_18) {
                 case 0:
@@ -1192,10 +1198,10 @@ void dBg_c::calcAutoScroll() {
                         }
                     }
                 }
-                mSomePos.x = leftLim;
+                mSomePos.x = asPosCopy.x;
             }
             if (cond2) {
-                mSomePos.y = downLim;
+                mSomePos.y = asPosCopy.y;
             }
 
             float lWidth = mVideo::l_rayoutWidthF;
