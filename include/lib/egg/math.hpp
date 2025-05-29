@@ -13,6 +13,8 @@ namespace EGG {
         static T abs(T v) {
             return v < 0 ? -v : v;
         }
+
+        static T zero() { return 0; }
     };
 
     template <>

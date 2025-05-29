@@ -8,6 +8,7 @@
 /// @todo Fill this.
 enum BMG_GROUPS_e {
     BMG_CATEGORY_YES_NO_WINDOW,
+    BMG_CATEGORY_SMALL_SCORE = 0x67,
     BMG_CATEGORY_CONTROLLER_INFORMATION = 0x68,
     BMG_CATEGORY_HINT_MOVIES = 0x12e
 };
@@ -96,10 +97,42 @@ enum MESSAGE_e {
     MSG_PEACH_HINT,
     MSG_PEACH_HINT2,
 
-    // Group 0x68
+    // Group 0x67 [ BMG_CATEGORY_SMALL_SCORE ]
+    MSG_100 = 0,
+    MSG_200,
+    MSG_400,
+    MSG_800,
+    MSG_1000,
+    MSG_2000,
+    MSG_4000,
+    MSG_8000,
+    MSG_1UP,
+    MSG_ONE,
+    MSG_TWO,
+    MSG_THREE,
+    MSG_FOUR,
+    MSG_FIVE,
+    MSG_SIX,
+    MSG_SEVEN,
+    MSG_EIGHT,
+    MSG_2UP,
+    MSG_3UP,
+    MSG_4UP,
+    MSG_LOWERCASE_X = 50,
+    MSG_COIN_2,
+    MSG_COIN_3,
+    MSG_COIN_5,
+    MSG_COIN_10,
+    MSG_COIN_15,
+    MSG_COIN_20,
+    MSG_COIN_LOWERCASE_X, ///< @unused
+    MSG_COIN_1, ///< @unused
+    MSG_COIN_10_2, ///< @unused
+
+    // Group 0x68 [ BMG_CATEGORY_CONTROLLER_INFORMATION ]
     MSG_HOLD_WIIMOTE_SIDEWAYS = 8,
 
-    // Group 0x12e
+    // Group 0x12e [ BMG_CATEGORY_HINT_MOVIES ]
     MSG_STAR_COINS_REQUIRED = 7,
     MSG_STAR_COINS_REQUIRED_X = 8,
 };

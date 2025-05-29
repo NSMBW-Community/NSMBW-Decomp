@@ -2,6 +2,8 @@
 #include <types.h>
 #include <lib/nw4r/lyt/lyt_picture.hpp>
 #include <game/mLib/m_3d.hpp>
+#include <game/mLib/m_vec.hpp>
+#include <game/bases/d_lyttextBox.hpp>
 
 /// @brief A collection of various functions used throughout the game.
 /// @details Name stands for Game Common.
@@ -46,6 +48,12 @@ namespace dGameCom {
     ////////////////
     // Other APIs //
     ////////////////
+
+    void CreateSmallScore(const mVec3_c &, int, int, bool);
+    u8 GetAspectRatio();
+    bool PlayerEnterCheck(int);
+    void Player1upColor(LytTextBox_c *, int);
+    void getGlbPosToLyt(mVec3_c &);
 
     /// @unofficial
     void updateSelectCursor(nw4r::lyt::Picture *pic, int index, bool useSpecialDraw);
