@@ -206,15 +206,16 @@ u32 dBg_c::GetUnitKindInfo(u16 p1, u16 p2, u8 p3) {
 
 u16 fn_800834b0(u16);
 
-void dBg_c::CoinGetCommon(u16 p1, u16 p2, int p3, u16 *p4, u16 *p5, u16 *p6) {
+void dBg_c::CoinGetCommon(u16 tileIndex, u16 cellIndex, int someCounter, u16* out1, u16* out2, u16* out3) {
     int file = dScStage_c::m_instance->mCurrFile;
-    u16 var1 = (p2 & 0xf00) * 4;
-    u16 var3 = p1 / 16 & 0x1f0;
-    u8 var4 = p1 / 16;
-    u8 var5 = p2 / 16 & 0xf;
-    *p4 = dBgParameter_c::ms_Instance_p->getOneGetBuff(file, var1 + var3 + var5, p3);
-    *p5 = fn_800834b0(var4);
-    *p6 = var1 + var3 + var5;
+
+    int tmp = (cellIndex & 0xF00) << 2;
+    tmp += (cellIndex >> 4) & 0xF;
+    tmp += ((tileIndex >> 4) & 0x1F0);
+
+    *out1 = dBgParameter_c::ms_Instance_p->getOneGetBuff(file, tmp, someCounter);
+    *out2 = fn_800834b0((tileIndex / 16) & 0x0F);
+    *out3 = tmp;
 }
 
 void dBg_c::CoinGetBitSet(u16 p1, u16 p2, int p3) {
@@ -392,7 +393,7 @@ bgTex_c *dBg_c::__createBgTex(int layer, u16 tw, u16 th, u16 w, u16 h, int i1, i
 
         for (u16 y = 0; y < tex->mCount; y++) {
             u16 x = 0;
-            if (tex->mSmth == 0) {
+            if (tex->m_30 == 0) {
                 continue;
             }
             unsigned int unitX, unitY;
@@ -1049,25 +1050,26 @@ void dBg_c::calcAutoScroll() {
     float bgH = bgParam->mSize.y;
     sRailInfoData *ri = dRail_c::getRailInfoP(mAutoscrolls[0].m_14);
     dScStage_c *stage = dScStage_c::m_instance;
-    dCdFile_c *file = dCd_c::m_instance->getFileP(stage->mCurrCourse);
+    dCdFile_c *file = dCd_c::m_instance->getFileP(stage->mCurrFile);
 
-    float leftLim = getLeftLimit();
-    float rightLim = getRightLimit() - bgW;
-    float upLim = mULimit;
-    float downLim = bgH + mDLimit;
+    float calcArg2, calcArg;
+    float leftLim, rightLim, upLim, downLim;
+    leftLim = getLeftLimit();
+    rightLim = getRightLimit() - bgW;
+    upLim = mULimit;
+    downLim = bgH + mDLimit;
     bool cond1 = true;
     bool cond2 = true;
     if (stage->mCurrWorld == WORLD_2 && stage->mCurrCourse == STAGE_CASTLE && stage->mCurrFile == 0) {
         calcLoopAutoScroll();
     } else if ((dActor_c::mExecStop & 8) == 0 && m_9008c == 0) {
-        sBgThing *bgThings = mBgThings;
-        sBgThing *base = &bgThings[ri->mNodeIdx];
+        sRailNodeData *base = &file->mpRailNodes[ri->mNodeIdx];
         if (m_9008d != 0) {
             for (int i = 0; i < 999; i++) {
                 int idx = m_9007c;
                 // dBgThing_c *tmp = &base[m_9007c];
                 if (m_90009 == 0) {
-                    if (mAutoscrolls[0].mPos.x > (short) base[idx].m_00) {
+                    if (mAutoscrolls[0].mPos.x > base[idx].mX) {
                         m_9007c++;
                     } else {
                         break;
@@ -1080,30 +1082,29 @@ void dBg_c::calcAutoScroll() {
         asPos.x = mAutoscrolls[0].mPos.x;
         asPos.y = mAutoscrolls[0].mPos.y;
         asPos.z = 0.0f;
-        // rightLim = asPos.y;
         int tmp = m_9007c;
-        if (m_90080 < 999) {
-            sBgThing *base = &bgThings[m_90080];
+        int offset = m_90080;
+        if (offset < 999) {
             mVec3_c bgThingVec;
-            bgThingVec.x = (short) base->m_00;
-            bgThingVec.y = -(float) (short) base->m_02;
-            bgThingVec.z = 0.0f;
             mVec3_c asCopy;
+            mVec3_c someVec2;
+            mVec3_c idk;
+            mVec3_c someVec;
+            bgThingVec.x = base[offset].mX;
+            bgThingVec.y = -(float) base[offset].mY;
+            bgThingVec.z = 0.0f;
             if (tmp > 0) {
-                asCopy.x = (short) (base - 1)->m_00;
-                asCopy.y = -(float) (short) (base - 1)->m_02;
+                asCopy.x = (&base[offset] - 1)->mX;
+                asCopy.y = -(float) (&base[offset] - 1)->mY;
                 asCopy.z = 0.0f;
             } else {
                 asCopy = asPos;
             }
-            mVec3_c someVec = bgThingVec;
-            someVec -= asCopy;
-            mVec3_c tmpCopy = someVec;
+            someVec = bgThingVec - asCopy;
             someVec.normalize();
-            float calcArg = *(float *) &base->m_04; // FIXME
-            float calcArg2 = *(float *) &base->m_08; // FIXME
-            mVec3_c someVec2 = asCopy;
-            someVec -= asPos;
+            calcArg = base[offset].mSpeed;
+            calcArg2 = base[offset].mAccel;
+            someVec2 = bgThingVec - asPos;
             someVec2.normalize();
             float len = someVec2.xzLen();
             short ang1 = cM::atan2s(someVec2.y, len);
@@ -1115,14 +1116,13 @@ void dBg_c::calcAutoScroll() {
                 sLib::addCalcAngle(&m_90088, ang1, 60, 250, 1);
                 sLib::addCalcAngle(&m_9008a, ang2, 60, 250, 1);
             }
-            mVec3_c idk;
             idk.x = mAng(m_90088).cos() * mAng(m_9008a).sin();
             idk.y = mAng(m_90088).sin();
             idk.z = mAng(m_90088).cos() * mAng(m_9008a).cos();
-            sLib::addCalc(&mAutoscrolls[0].m_0c, calcArg2, 1.0f, calcArg, 0.0001f);
+            sLib::addCalc(&mAutoscrolls[0].m_0c, calcArg, 1.0f, calcArg2, 0.0001f);
+            mAutoscrolls[0].mPos.x += idk.x * mAutoscrolls[0].m_0c;
+            mAutoscrolls[0].mPos.y += idk.y * mAutoscrolls[0].m_0c;
             mAutoscrolls[0].mPos.z = 0.0f;
-            mAutoscrolls[0].mPos.x += idk.y * mAutoscrolls[0].m_0c;
-            mAutoscrolls[0].mPos.y += idk.z * mAutoscrolls[0].m_0c;
             float dist = mAutoscrolls[0].mPos.distTo(bgThingVec);
             bool cond3 = false;
             bool cond4 = false;
@@ -1133,11 +1133,11 @@ void dBg_c::calcAutoScroll() {
             }
             if ((
                 cond4 || someVec.x == 0.0f ||
-                (someVec.x > 0.0f && bgThingVec.x <= mAutoscrolls[0].mPos.x) ||
+                (someVec.x > 0.0f && mAutoscrolls[0].mPos.x >= bgThingVec.x) ||
                 (someVec.x <= 0.0f && (mAutoscrolls[0].mPos.x <= bgThingVec.x))
             ) && (
                 cond3 || someVec.y == 0.0f ||
-                (someVec.y > 0.0f && bgThingVec.y <= mAutoscrolls[0].mPos.y) ||
+                (someVec.y > 0.0f && mAutoscrolls[0].mPos.y >= bgThingVec.y) ||
                 (someVec.y <= 0.0f && (mAutoscrolls[0].mPos.y <= bgThingVec.y))
             )) {
                 m_9007c++;
@@ -2437,7 +2437,7 @@ void dBg_c::setScrollLimit(dBgScrollLimit_c *scrollLimit, int areaNo, int type, 
                 idx = freeUpScrollLimit(*scrollLimit, group, areaNo);
             }
             curr = &mScrLimit[areaNo][group][idx];
-            curr->mR = 16 + (int) scrollLimit->mR;
+            curr->mR = (short) (scrollLimit->mR + 16.0f);
             curr->mU = scrollLimit->mU;
             curr->mD = scrollLimit->mD;
             curr->mL2 = scrollLimit->mL2;
@@ -2481,7 +2481,7 @@ void dBg_c::setScrollLimit(dBgScrollLimit_c *scrollLimit, int areaNo, int type, 
                 idx = freeUpScrollLimit2(scrollLimit, group, areaNo);
             }
             curr = &mScrLimit[areaNo][group][idx];
-            curr->mD2 = 16 + (int) scrollLimit->mD2;
+            curr->mD2 = (short) (scrollLimit->mD2 + 16.0f);
             curr->mL3 = scrollLimit->mL3;
             curr->mR3 = scrollLimit->mR3;
             curr->mU3 = scrollLimit->mU3;
