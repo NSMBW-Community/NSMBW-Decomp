@@ -2,7 +2,6 @@
 #include <lib/egg/core/eggHeap.h>
 
 class dPanelObjMgr_c {
-
 };
 
 class bgTex_c {
@@ -15,7 +14,9 @@ public:
 
     u16 mCount;
     u16 mSmth;
-    u8 mPad[0x30];
+    u8 mPad[0x28];
+    u16 m_30;
+    u8 mPad2[6];
     dPanelObjMgr_c mPanelObjMgr;
 };
 
