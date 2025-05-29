@@ -316,48 +316,48 @@ void dBg_c::DispScaleCalc() {
 void dBg_c::CreateBgTex() {
     mTexMng.create(mHeap::g_gameHeaps[2]);
 
-    u16 w = mL - mR;
+    u16 iMu, iMd, iw, ih;
+    u16 texWidthMaybe, texHeightMaybe;
 
-    u16 h = mU - mD;
+    texWidthMaybe = mL / 16.0f;
+    texHeightMaybe = -mU / 16.0f;
+    iMu = mU;
+    iMd = mD;
+    iw = mL - mR;
+    ih = mU - mD;
 
-    u16 texWidthMaybe = mL / 16;
-    u16 texHeightMaybe = -mU / 16;
-
-    u16 iMu = mU;
-    u16 iMd = mD;
-
-    if ((w & 0xf) != 0) {
-        w /= 16;
-        w++;
+    if ((iw & 0xF) != 0) {
+        iw /= 16;
+        iw++;
     } else {
-        w /= 16;
+        iw /= 16;
     }
 
-    if ((h & 0xf) != 0) {
-        h /= 16;
-        h++;
+    if ((ih & 0xF) != 0) {
+        ih /= 16;
+        ih++;
     } else {
-        h /= 16;
+        ih /= 16;
         if ((iMu & 0xF) != 0) {
-            h++;
+            ih++;
         }
         if ((iMd & 0xF) != 0) {
-            h++;
+            ih++;
         }
     }
 
     if (dScStage_c::m_loopType == 0) {
-        w += 2;
+        iw += 2;
         texWidthMaybe--;
     }
-    h += 2;
+    ih += 2;
     texHeightMaybe--;
-    mTex[0] = __createBgTex(0, texWidthMaybe, texHeightMaybe, w, h, 0, 4);
+    mTex[0] = __createBgTex(0, texWidthMaybe, texHeightMaybe, iw, ih, 0, 4);
     if (CheckExistLayer(1)) {
-        mTex[1] = __createBgTex(1, texWidthMaybe, texHeightMaybe, w, h, 127, 3);
+        mTex[1] = __createBgTex(1, texWidthMaybe, texHeightMaybe, iw, ih, 127, 3);
     }
     if (CheckExistLayer(2)) {
-        mTex[2] = __createBgTex(2, texWidthMaybe, texHeightMaybe, w, h, 3, -1);
+        mTex[2] = __createBgTex(2, texWidthMaybe, texHeightMaybe, iw, ih, 3, -1);
         mTexProc = new(m_FrmHeap_p, 4) dShareBgTexProc_c();
         mTexProc->create(mTex[2], m_FrmHeap_p);
     }
@@ -889,18 +889,19 @@ void dBg_c::calcLookatOffsLimit() {
 
 void dBg_c::calcLookatOffsX(dActor_c *actor) {
     float deltaX = actor->mPosDelta.x;
-    deltaX = 0.333f * deltaX;
+    deltaX = deltaX * 0.333f;
 
-    float smth = m_8fda8;
+    float tmp = m_8fda8;
 
     if (deltaX == 0.0f) {
         return;
     }
 
-    if (deltaX - smth > 0.04f) {
-        deltaX = smth + 0.04f;
-    } else if (deltaX - smth < -0.04f) {
-        deltaX = smth - 0.04f;
+    float diff = deltaX - tmp;
+    if (diff > 0.04f) {
+        deltaX = m_8fda8 + 0.04f;
+    } else if (diff < -0.04f) {
+        deltaX = m_8fda8 - 0.04f;
     }
 
     if (deltaX > 1.6f) {
@@ -911,12 +912,11 @@ void dBg_c::calcLookatOffsX(dActor_c *actor) {
 
     float b40 = mBounds4[0];
     float b42 = mBounds4[2];
-    float smth3 = b40 + deltaX;
-    mBounds4[0] = smth3;
-    if (smth3 > b42) {
+    mBounds4[0] = b40 + deltaX;
+    if (b40 + deltaX > b42) {
         deltaX = b42 - b40;
         mBounds4[0] = b42;
-    } else if (smth3 < -mBounds4[3]) {
+    } else if (b40 + deltaX < -mBounds4[3]) {
         mBounds4[0] = -mBounds4[3];
         deltaX = mBounds4[0] - b40;
     }
@@ -926,32 +926,33 @@ void dBg_c::calcLookatOffsX(dActor_c *actor) {
 
 void dBg_c::calcLookatOffsY(dActor_c *actor) {
     dAcPy_c *pl = (dAcPy_c *) actor;
-    float deltaY = pl->mBgRelatedPos.y - mPlayerPosY;
-    float halfHeight2 = mSomeSize.y / 2 - mBounds3[0];
-    float halfHeight = mSomeSize.y / 2 - mBounds3[1];
+
+    float h = mSomeSize.y;
+
+    float tmp2 = mPlayerPosY;
+    float tmp1 = pl->mBgRelatedPos.y;
+    float deltaY = tmp1 - tmp2;
+
+    float halfHeight2 = h * 0.5f - mBounds3[0];
+    float halfHeight = h * 0.5f - mBounds3[1];
+
     if (deltaY > 0.0f) {
-        deltaY += mBounds4[1];
-        mBounds4[1] = deltaY;
-        if (deltaY >= halfHeight2) {
+        mBounds4[1] += deltaY;
+        if (mBounds4[1] >= halfHeight2) {
             mBounds4[1] = halfHeight2;
         }
-        return;
-    }
-    if (deltaY < 0.0f) {
-        halfHeight = -halfHeight;
-        deltaY += mBounds4[1];
-        mBounds4[1] = deltaY;
-        if (halfHeight >= deltaY) {
-            mBounds4[1] = halfHeight;
+    } else if (deltaY < 0.0f) {
+        mBounds4[1] += deltaY;
+        if (mBounds4[1] <= -halfHeight) {
+            mBounds4[1] = -halfHeight;
         }
-        return;
-    }
-    if (mBounds4[1] >= halfHeight2) {
-        mBounds4[1] = halfHeight2;
-    }
-    halfHeight = -halfHeight;
-    if (mBounds4[1] <= halfHeight) {
-        mBounds4[1] = halfHeight;
+    } else {
+        if (mBounds4[1] >= halfHeight2) {
+            mBounds4[1] = halfHeight2;
+        }
+        if (mBounds4[1] <= -halfHeight) {
+            mBounds4[1] = -halfHeight;
+        }
     }
 }
 
