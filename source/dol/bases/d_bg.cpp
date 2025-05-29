@@ -1347,7 +1347,7 @@ void dBg_c::calcMultiScroll(int arg1) {
     }
 }
 
-void dBg_c::fn_8007ac40(dBgSomeInfo_c *info, int arg1) {
+void dBg_c::fn_8007ac40(const dBgSomeInfo_c *info, int arg1) {
     // dBgBound_c b = info->mBounds;
 
     float lWidth = mVideo::getLayoutWidth();
@@ -1457,7 +1457,7 @@ void dBg_c::fn_8007ac40(dBgSomeInfo_c *info, int arg1) {
         }
         if (mMoreFloats5[0] == tgMax) {
             if (mMoreFloats5[2] != tgMid) {
-                info->mBounds.mRight = m_90018;
+                // info->mBounds.mRight = m_90018;
                 if (mMoreFloats5[1] <= info->mBounds.mRight) {
                     mMoreFloats5[1] = info->mBounds.mRight;
                 }
@@ -1617,12 +1617,12 @@ void dBg_c::fn_8007ac40(dBgSomeInfo_c *info, int arg1) {
             }
         }
     }
-    if (mPrevSomePos.y + 32.0f < info->mBounds.mUp) {
-        info->mBounds.mUp = mPrevSomePos.y + 32.0f;
-    }
-    if (info->mBounds.mDown < mPrevSomePos.y - mPrevSomeSize.y - 32.0f) {
-        info->mBounds.mDown = mPrevSomePos.y - mPrevSomeSize.y - 32.0f;
-    }
+    // if (mPrevSomePos.y + 32.0f < info->mBounds.mUp) {
+    //     info->mBounds.mUp = mPrevSomePos.y + 32.0f;
+    // }
+    // if (info->mBounds.mDown < mPrevSomePos.y - mPrevSomeSize.y - 32.0f) {
+    //     info->mBounds.mDown = mPrevSomePos.y - mPrevSomeSize.y - 32.0f;
+    // }
     float dVar12 = mMoreFloats5[4] + lHeight * 0.5f + (copy_90018 - 1.0f);
     calcLookatOffsLimit();
 
@@ -1689,35 +1689,35 @@ void dBg_c::fn_8007ba70(const dBgSomeInfo_c *info) {
     stack_struct_s thing;
     thing.y = info->mBounds.mRight;
     thing.x = info->mBounds.mLeft;
+    float fVar4;
     float smth = thing.y;
     float w = mPrevSomeSize.x;
-    float fVar4;
     if (m_90009 == 2 || m_9000a == 2) {
-        fVar4 = 112.0f - dBgParameter_c::getInstance()->m_78;
+        fVar4 = 112.0f - dBgParameter_c::ms_Instance_p->getM78();
         smth = thing.x;
     } else {
-        fVar4 = w - (112.0f - dBgParameter_c::getInstance()->m_78);
+        fVar4 = w - (112.0f - dBgParameter_c::ms_Instance_p->getM78());
     }
     float tmp = smth - fVar4;
-    if (tmp - mPrevSomePos.x > 6.0f) {
+    float diff = tmp - mPrevSomePos.x;
+    if (diff > 6.0f) {
         tmp = mPrevSomePos.x + 6.0f;
-    } else if (tmp - mPrevSomePos.x < -6.0f) {
+    } else if (diff < -6.0f) {
         tmp = mPrevSomePos.x - 6.0f;
     }
     float ll = getLeftLimit();
     float d = getRightLimit() - w;
-    float newW = tmp;
     if (dScStage_c::m_loopType != 2) {
-        if (tmp < newW) {
-            newW = ll;
-        } else if (newW > d) {
-            newW = d;
+        if (tmp < ll) {
+            tmp = ll;
+        } else if (tmp > d) {
+            tmp = d;
         }
     }
-    mPrevSomePos.x = newW;
+    mPrevSomePos.x = tmp;
 }
 
-float dBg_c::fn_8007bba0(dBgSomeInfo_c *info) {
+float dBg_c::fn_8007bba0(const dBgSomeInfo_c *info) {
     float tmp = 64.0f + info->mBounds.mUp;
     if (tmp - mPrevSomePos.y < -6.0f) {
         tmp = mPrevSomePos.y - 6.0f;
@@ -1728,7 +1728,7 @@ float dBg_c::fn_8007bba0(dBgSomeInfo_c *info) {
     return mULimit;
 }
 
-float dBg_c::fn_8007bbf0(dBgSomeInfo_c *info) {
+float dBg_c::fn_8007bbf0(const dBgSomeInfo_c *info) {
     float sizeY = dBgParameter_c::getInstance()->mSize.y;
     float tmp = info->mBounds.mDown + (sizeY - 32.0f);
     if (tmp - mPrevSomePos.y > 6.0f) {
@@ -1740,7 +1740,7 @@ float dBg_c::fn_8007bbf0(dBgSomeInfo_c *info) {
     return mDLimit;
 }
 
-bool dBg_c::fn_8007bc40(dBgSomeInfo_c *info, float f) {
+bool dBg_c::fn_8007bc40(const dBgSomeInfo_c *info, float f) {
     float fVar1 = info->mBounds.mLeft;
     float fVar2 = info->mBounds.mRight;
     float ll = getLeftLimit();
@@ -1760,7 +1760,7 @@ bool dBg_c::fn_8007bc40(dBgSomeInfo_c *info, float f) {
     }
 }
 
-mVec2_c dBg_c::fn_8007bd40(dBgSomeInfo_c *info, float f1, float f2) {
+mVec2_c dBg_c::fn_8007bd40(const dBgSomeInfo_c *info, float f1, float f2) {
     mVec2_c result(0.0f, 0.0f);
 
     float fVar4 = mVideo::getLayoutWidth();
