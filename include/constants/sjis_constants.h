@@ -8,6 +8,9 @@
 // [Translation: Others (non-actors inheriting dBase_c)]
 #define D_BASE_KIND_STRING "その他(dBase_c継承の非アクター)"
 
+// [Translation: Actor]
+#define D_ACTOR_KIND_STRING "アクター"
+
 // [Translation: Animation switching allocator (m3d::banm_c::m_heap)]
 #define M3D_BANM_HEAP_NAME "アニメ切り替え用アロケータ(m3d::banm_c::m_heap)"
 
