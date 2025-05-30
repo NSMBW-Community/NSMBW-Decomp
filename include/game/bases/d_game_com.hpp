@@ -54,6 +54,7 @@ namespace dGameCom {
     bool PlayerEnterCheck(int);
     void Player1upColor(LytTextBox_c *, int);
     void getGlbPosToLyt(mVec3_c &);
+    bool someCheck(mVec3_c *a, mBoundBox *b); ///< @unofficial
 
     /// @unofficial
     void updateSelectCursor(nw4r::lyt::Picture *pic, int index, bool useSpecialDraw);

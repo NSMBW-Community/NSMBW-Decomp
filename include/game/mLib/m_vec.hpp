@@ -197,3 +197,35 @@ public:
     static mVec3_c Ey; ///< The unit vector for the Y axis.
     static mVec3_c Ez; ///< The unit vector for the Z axis.
 };
+
+/// @unofficial
+class mBoundBox {
+public:
+    mBoundBox() {}
+
+    mBoundBox(float t, float b, float l, float r) {
+        set(t, b, l, r);
+    }
+
+    mBoundBox(const mBoundBox &b) {
+        set(b.begin.x, b.begin.y, b.end.x, b.end.y);
+    }
+
+    void set(float t, float b, float l, float r) {
+        begin.set(t, b);
+        end.set(l, r);
+    }
+
+    mVec2_c withPos(const mVec3_c &pos) const {
+        mVec2_c res;
+        res.x = pos.x + begin.x - end.x;
+        res.y = pos.y + begin.y + end.y;
+        return res;
+    }
+
+    mVec2_c getSize() const {
+        return end;
+    }
+
+    mVec2_c begin, end;
+};
