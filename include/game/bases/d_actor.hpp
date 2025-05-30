@@ -10,6 +10,12 @@ class dAcPy_c;
 
 class dActor_c : public dBaseActor_c {
 public:
+    enum YOSHI_POINTS_e {
+        YOSHI_POINTS_200,
+        YOSHI_POINTS_1000,
+        YOSHI_POINTS_NONE
+    };
+
     dActor_c();
     ~dActor_c();
 
@@ -118,65 +124,61 @@ public:
     typedef dAcPy_c *(*searchNearPlayerFunc)(mVec2_c &, const mVec2_c &);
     typedef bool (*getTrgToSrcDirFunc)(float, float);
 
-    u8 _0;
+    u8 m_00;
     u32 mCarryingPlayerNo;
-    u32 carryingFlags;
-    u32 carryingDirection;
+    u32 mCarryingFlags;
+    u32 mCarryingDirection;
     u32 mComboCount;
-    u8 _10;
-    u32 _14;
-    float _18;
-    u32 _1c;
+    u8 m_10;
+    u32 m_14;
+    float m_18;
+    u32 m_1c;
 
     dCc_c mCc;
     dBc_c mBc;
     dRc_c mRc;
 
-    float _1e8;
-    float _1ec;
+    mVec2_c m_1e8;
 
     // TODO make these bounding boxes
-    mVec2_c visibleAreaSize;
-    mVec2_c visibleAreaOffset;
+    mVec2_c mVisibleAreaSize;
+    mVec2_c mVisibleAreaOffset;
     mVec2_c mMaxBound1;
     mVec2_c mMaxBound2;
     mBoundBox mDestroyBound;
-    bool isFacingLeft;
+    bool mDirection;
     u8 mAreaNo;
-    u8 mBgCollFlags;
+    u8 mBgCollFlags; // &1 = head, &2 = wallL, &4 = wallR, &8 = foot
 
-    u8* _224;
-    u16* _228;
-    u32 _22c;
-    u8 _230[2];
+    u8* m_224;
+    u16* m_228;
+    u32 m_22c;
+    u8 m_230[2];
 
-    u32 _234;
+    u32 m_234;
 
-    u32 _238;
-    u16 _23c;
-    u8 _23e;
+    u32 m_238;
+    u16 m_23c;
+    bool mBlockHit;
 
-    u32 eaterActorID;
-    u8 mNoDrawIf2;
-    u8 _245;
+    u32 mEatenByID;
+    u8 mEatState; // 0 = not eaten, 2 = eaten, 4 = spat out
+    u8 mEatSpitType;
     mVec3_c mPreEatScale;
 
-    int _254;
-    u32 _258;
-    u32 _25c;
+    YOSHI_POINTS_e mYoshiEatPoints;
+    u32 m_258;
+    u32 m_25c;
 
-    void* carryPropelActor;
+    void *mCarryPropelActor;
     u8 mKind;
     s8 mPlayerNo;
     u8 mStopMask;
     u8 mLayer;
-    bool mWasSquished;
-    bool mUnkBool; // enemy related
+    bool mNoRespawn;
+    bool m_269;
 
     mBoundBox getDestroyBound() { return mDestroyBound; }
-
-    static float getDefaultX() { return 80; }
-    static float getDefaultY() { return 256; }
 
     void setDefaultMaxBound() {
         mMaxBound1.set(smc_CULL_XLIMIT, smc_CULL_YLIMIT);
@@ -186,11 +188,12 @@ public:
     float getCenterX() { return getCenterPos().x; }
     float getCenterY() { return getCenterPos().y; }
 
+    u8 getKindMask() { return 1 << mKind; }
+
     static const float smc_CULL_XLIMIT;
     static const float smc_CULL_YLIMIT;
     static const float smc_CULL_AREA_XLIMIT;
     static const float smc_CULL_AREA_YLIMIT;
-    static mBoundBox bb;
     static const mVec2_c smc_FUKIDASHI_RANGE;
 
     static bool mExecStopReq;
@@ -206,8 +209,6 @@ public:
     static u32 m_relatedCreate3; ///< @unofficial
     static u32 m_relatedCreate4; ///< @unofficial
     static u8 m_relatedCreate5; ///< @unofficial
-
-    u8 getKindMask() { return 1 << mKind; }
 };
 
 extern const u8 l_Ami_Line[8];

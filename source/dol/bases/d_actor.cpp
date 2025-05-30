@@ -42,20 +42,20 @@ u32 dActor_c::m_relatedCreate3;
 u32 dActor_c::m_relatedCreate4;
 u8 dActor_c::m_relatedCreate5;
 
-dActor_c::dActor_c() : _0(0), mCarryingPlayerNo(-1), _14(0), _18(1.0f) {
-    visibleAreaSize.set(0.0f, 0.0f);
-    visibleAreaOffset.set(0.0f, 0.0f);
+dActor_c::dActor_c() : m_00(0), mCarryingPlayerNo(-1), m_14(0), m_18(1.0f) {
+    mVisibleAreaSize.set(0.0f, 0.0f);
+    mVisibleAreaOffset.set(0.0f, 0.0f);
     mMaxBound1.set(0.0f, 0.0f);
     mMaxBound2.set(0.0f, 0.0f);
 
-    _224 = nullptr;
-    _228 = nullptr;
-    eaterActorID = 0;
-    _245 = 2;
-    _258 = 0;
+    m_224 = nullptr;
+    m_228 = nullptr;
+    mEatenByID = 0;
+    mEatSpitType = 2;
+    m_258 = 0;
 
     mPlayerNo = -1;
-    mWasSquished = false;
+    mNoRespawn = false;
 
     setKind(0);
 
@@ -79,8 +79,8 @@ dActor_c::dActor_c() : _0(0), mCarryingPlayerNo(-1), _14(0), _18(1.0f) {
     mBc.mLayer = mLayer;
     mRc.mLayer = mLayer;
 
-    _254 = 0;
-    _23e = 0;
+    mYoshiEatPoints = YOSHI_POINTS_200;
+    mBlockHit = false;
 }
 
 dActor_c::~dActor_c() {
@@ -120,8 +120,8 @@ int dActor_c::preExecute() {
         return NOT_READY;
     }
     mRc.clrLink();
-    if (_23e == 1) {
-        _23e = 0;
+    if (mBlockHit == true) {
+        mBlockHit = false;
         block_hit_init();
     }
     return SUCCEEDED;
@@ -140,8 +140,7 @@ void dActor_c::postExecute(fBase_c::MAIN_STATE_e status) {
         if ((mActorProperties & 0x8) != 0) {
             dAttention_c::mspInstance->entry(mUniqueID);
         }
-        _1e8 = 0.0f;
-        _1ec = 0.0f;
+        m_1e8.set(0.0f, 0.0f);
     }
     dBaseActor_c::postExecute(status);
 }
@@ -150,7 +149,7 @@ int dActor_c::preDraw() {
     if (dBaseActor_c::preDraw() == NOT_READY || (mDrawStop & getKindMask()) != 0) {
         return NOT_READY;
     }
-    if (mNoDrawIf2 == 2) {
+    if (mEatState == 2) {
         return NOT_READY;
     }
     if ((mActorProperties & 2) != 0 && ActorDrawCullCheck() != 0) {
@@ -188,6 +187,7 @@ void dActor_c::setKind(u8 kind) {
 }
 
 void dActor_c::setSearchNearPlayerFunc(int loopType) {
+    /// @unofficial
     static const searchNearPlayerFunc funcs[3] = {
         searchNearPlayerNormal,
         searchNearPlayerLoop,
@@ -213,9 +213,11 @@ dAcPy_c *dActor_c::searchNearPlayerNormal(mVec2_c &delta, const mVec2_c &selfPos
         if (player == nullptr || !daPyMng_c::checkPlayer(i)) {
             continue;
         }
+
         float xDiff = player->mPos.x + player->mCenterOffs.x - selfPos.x;
         float yDiff = player->mPos.y + player->mCenterOffs.y - selfPos.y;
         float dist = xDiff * xDiff + yDiff * yDiff;
+
         if (closest > dist) {
             delta.set(xDiff, yDiff);
             closestPlayer = player;
@@ -228,12 +230,12 @@ dAcPy_c *dActor_c::searchNearPlayerNormal(mVec2_c &delta, const mVec2_c &selfPos
 dAcPy_c *dActor_c::searchNearPlayerLoop(mVec2_c &delta, const mVec2_c &selfPos) {
     dAcPy_c *closestPlayer = nullptr;
 
-    float bgSmth = dBg_c::m_bg_p->mLoopOffset;
+    float loopOffset = dBg_c::m_bg_p->mLoopOffset;
 
     mVec2_c loopSelfPos;
     loopSelfPos.x = dScStage_c::getLoopPosX(selfPos.x);
     loopSelfPos.y = selfPos.y;
-    float closestDist = 1e9;
+    float closest = 1e9;
 
     dAcPy_c *player;
     for (int i = 0; i < 4; i++) {
@@ -248,21 +250,21 @@ dAcPy_c *dActor_c::searchNearPlayerLoop(mVec2_c &delta, const mVec2_c &selfPos) 
         mVec2_c trueDelta;
         trueDelta.x = loopPlayerPos.x - loopSelfPos.x;
         if (trueDelta.x < 0.0f) {
-            if (trueDelta.x < -bgSmth / 2) {
-                trueDelta.x += bgSmth;
+            if (trueDelta.x < -loopOffset / 2) {
+                trueDelta.x += loopOffset;
             }
         } else {
-            if (trueDelta.x > bgSmth / 2) {
-                trueDelta.x -= bgSmth;
+            if (trueDelta.x > loopOffset / 2) {
+                trueDelta.x -= loopOffset;
             }
         }
         trueDelta.y = loopPlayerPos.y - loopSelfPos.y;
 
         float dist = trueDelta.x * trueDelta.x + trueDelta.y * trueDelta.y;
-        if (closestDist > dist) {
+        if (closest > dist) {
             delta.set(trueDelta.x, trueDelta.y);
             closestPlayer = player;
-            closestDist = dist;
+            closest = dist;
         }
     }
     return closestPlayer;
@@ -278,27 +280,28 @@ void dActor_c::setGetTrgToSrcDirFunc(int loopType) {
 }
 
 
-bool dActor_c::getTrgToSrcDir_Main(float f1, float f2) {
-    return mGetTrgToSrcDirFunc(f1, f2);
+bool dActor_c::getTrgToSrcDir_Main(float x1, float x2) {
+    return mGetTrgToSrcDirFunc(x1, x2);
 }
 
-bool dActor_c::getTrgToSrcDirNormal(float f1, float f2) {
-    return f1 < f2;
+bool dActor_c::getTrgToSrcDirNormal(float x1, float x2) {
+    return x1 < x2;
 }
 
-bool dActor_c::getTrgToSrcDirLoop(float f1, float f2) {
-    float loopPos1 = dScStage_c::getLoopPosX(f1);
-    float loopPos2 = dScStage_c::getLoopPosX(f2);
+bool dActor_c::getTrgToSrcDirLoop(float x1, float x2) {
+    float loopPos1 = dScStage_c::getLoopPosX(x1);
+    float loopPos2 = dScStage_c::getLoopPosX(x2);
     float diff = loopPos1 - loopPos2;
-    float bgLoop = dBg_c::m_bg_p->mLoopOffset / 2;
+
+    float loopOffset = dBg_c::m_bg_p->mLoopOffset / 2;
     if (diff < 0.0f) {
-        return !(diff < -bgLoop);
+        return !(diff < -loopOffset);
     } else {
-        return diff > bgLoop;
+        return diff > loopOffset;
     }
 }
 
-void dActor_c::changePosAngle(mVec3_c *pos, mAng3_c *ang, int unk) {
+void dActor_c::changePosAngle(mVec3_c *pos, mAng3_c *ang, int param3) {
     dScStage_c::changePos(pos);
 }
 
@@ -358,8 +361,8 @@ void dActor_c::setSoftLight_Item(m3d::bmdl_c &mdl) {
 void dActor_c::deleteActor(u8 param_1) {
     deleteRequest();
 
-    u8 *c224 = _224;
-    u16 *c228 = _228;
+    u8 *c224 = m_224;
+    u16 *c228 = m_228;
     if (c224 == nullptr || c228 == nullptr) {
         return;
     }
@@ -412,7 +415,7 @@ bool dActor_c::cullCheck(const mVec3_c &pos, const mBoundBox &bound, u8 areaID) 
 }
 
 bool dActor_c::ActorScrOutCheck(u16 someBitfield) {
-    if (mNoDrawIf2 == 2) {
+    if (mEatState == 2) {
         return false;
     }
     if ((someBitfield & 8) == 0 && mBc.checkRide()) {
@@ -420,10 +423,10 @@ bool dActor_c::ActorScrOutCheck(u16 someBitfield) {
     }
 
     mBoundBox bound;
-    bound.begin.x = visibleAreaOffset.x;
-    bound.begin.y = visibleAreaOffset.y;
-    bound.end.x = visibleAreaSize.x * 0.5f;
-    bound.end.y = visibleAreaSize.y * 0.5f;
+    bound.mOffset.x = mVisibleAreaOffset.x;
+    bound.mOffset.y = mVisibleAreaOffset.y;
+    bound.mSize.x = mVisibleAreaSize.x * 0.5f;
+    bound.mSize.y = mVisibleAreaSize.y * 0.5f;
 
     bool res = false;
     if (cullCheck(mPos, bound, mAreaNo)) {
@@ -434,7 +437,7 @@ bool dActor_c::ActorScrOutCheck(u16 someBitfield) {
         }
     }
     if (res && (someBitfield & 2) == 0) {
-        deleteActor(mWasSquished);
+        deleteActor(mNoRespawn);
     }
     return res;
 }
@@ -442,10 +445,10 @@ bool dActor_c::ActorScrOutCheck(u16 someBitfield) {
 
 bool dActor_c::ActorDrawCullCheck() {
     mBoundBox bound;
-    bound.begin.x = visibleAreaOffset.x;
-    bound.begin.y = visibleAreaOffset.y;
-    bound.end.x = visibleAreaSize.x * 0.5f;
-    bound.end.y = visibleAreaSize.y * 0.5f + 16.0f;
+    bound.mOffset.x = mVisibleAreaOffset.x;
+    bound.mOffset.y = mVisibleAreaOffset.y;
+    bound.mSize.x = mVisibleAreaSize.x * 0.5f;
+    bound.mSize.y = mVisibleAreaSize.y * 0.5f + 16.0f;
     mVec3_c pos = mPos;
     changePosAngle(&pos, nullptr, 1);
     return dGameCom::someCheck(&pos, &bound);
@@ -492,10 +495,10 @@ bool dActor_c::carryFukidashiCheck(int param_2, mVec2_c triggerSize) {
 
             mBoundBox b;
             player->getCcBounds(b);
-            mVec3_c newPos(dScStage_c::getLoopPosX(b.begin.x + player->mPos.x), b.begin.y + player->mPos.y, player->mPos.z);
+            mVec3_c newPos(dScStage_c::getLoopPosX(b.mOffset.x + player->mPos.x), b.mOffset.y + player->mPos.y, player->mPos.z);
 
-            mVec3_c v1(newPos.x - b.end.x - 2.0f, newPos.y - b.end.y, newPos.z);
-            mVec3_c v2(newPos.x + b.end.x + 2.0f, newPos.y + b.end.y, newPos.z);
+            mVec3_c v1(newPos.x - b.mSize.x - 2.0f, newPos.y - b.mSize.y, newPos.z);
+            mVec3_c v2(newPos.x + b.mSize.x + 2.0f, newPos.y + b.mSize.y, newPos.z);
 
             if (dfukidashiManager_c::m_instance->mSubstruct[mCarryingPlayerNo].smth == 0) {
                 FUN_800b3600(mCarryingPlayerNo, param_2);
@@ -513,10 +516,10 @@ bool dActor_c::carryFukidashiCheck(int param_2, mVec2_c triggerSize) {
 
             mBoundBox b;
             player->getCcBounds(b);
-            mVec3_c newPos(dScStage_c::getLoopPosX(b.begin.x + player->mPos.x), b.begin.y + player->mPos.y, player->mPos.z);
+            mVec3_c newPos(dScStage_c::getLoopPosX(b.mOffset.x + player->mPos.x), b.mOffset.y + player->mPos.y, player->mPos.z);
 
-            mVec3_c v1(newPos.x - b.end.x, newPos.y - b.end.y, newPos.z);
-            mVec3_c v2(newPos.x + b.end.x, newPos.y + b.end.y, newPos.z);
+            mVec3_c v1(newPos.x - b.mSize.x, newPos.y - b.mSize.y, newPos.z);
+            mVec3_c v2(newPos.x + b.mSize.x, newPos.y + b.mSize.y, newPos.z);
 
             bool smthOther = FUN_800b3100(&minPos, &maxPos, &v1, &v2, 0.0f);
             if (drawingCarryFukidashi && smthOther) {
@@ -577,7 +580,7 @@ void dActor_c::allEnemyDeathEffSet() {
 void dActor_c::touchFlagpole(s8 smth, int b) {
     mVec3_c oldPos(mPos);
     mVec3_c oldCenter(mCenterOffs);
-    mWasSquished = true;
+    mNoRespawn = true;
     for (int i = 0; i < daPyMng_c::mNum; i++) {
         dAcPy_c *player = daPyMng_c::getPlayer(i);
         if (player != nullptr && fManager_c::searchBaseByID(player->mCarryActorID) == this) {
@@ -614,13 +617,13 @@ bool dActor_c::setEatGlupDown(dActor_c *actor) {
     static const int yoshiEatPoints[] = { 1, 4 };
     static const int yoshiEatPoints2[] = { 200, 1000 };
 
-    if (_254 != 2) {
+    if (mYoshiEatPoints != YOSHI_POINTS_NONE) {
         mVec3_c adjPos = actor->mPos;
         adjPos.y += 40.0f;
         s8 plrNo = *actor->getPlrNo();
-        dGameCom::CreateSmallScore(adjPos, yoshiEatPoints[_254], plrNo, false);
+        dGameCom::CreateSmallScore(adjPos, yoshiEatPoints[mYoshiEatPoints], plrNo, false);
         if (plrNo != -1) {
-            daPyMng_c::addScore(yoshiEatPoints2[_254], plrNo);
+            daPyMng_c::addScore(yoshiEatPoints2[mYoshiEatPoints], plrNo);
             dMultiMng_c::mspInstance->incEnemyDown(plrNo);
         }
     }

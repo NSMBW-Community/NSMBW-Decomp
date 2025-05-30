@@ -208,24 +208,24 @@ public:
     }
 
     mBoundBox(const mBoundBox &b) {
-        set(b.begin.x, b.begin.y, b.end.x, b.end.y);
+        set(b.mOffset.x, b.mOffset.y, b.mSize.x, b.mSize.y);
     }
 
     void set(float t, float b, float l, float r) {
-        begin.set(t, b);
-        end.set(l, r);
+        mOffset.set(t, b);
+        mSize.set(l, r);
     }
 
     mVec2_c withPos(const mVec3_c &pos) const {
         mVec2_c res;
-        res.x = pos.x + begin.x - end.x;
-        res.y = pos.y + begin.y + end.y;
+        res.x = pos.x + mOffset.x - mSize.x;
+        res.y = pos.y + mOffset.y + mSize.y;
         return res;
     }
 
     mVec2_c getSize() const {
-        return end;
+        return mSize;
     }
 
-    mVec2_c begin, end;
+    mVec2_c mOffset, mSize;
 };
