@@ -18,7 +18,7 @@ struct AreaBoundU16 {
 class dCdUnk_c {
 public:
     char pad[8];
-    u16 m_08;
+    u16 mFlags;
 };
 
 class dCdFile_c {

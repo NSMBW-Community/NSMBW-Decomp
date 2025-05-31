@@ -56,6 +56,12 @@ namespace dGameCom {
     void getGlbPosToLyt(mVec3_c &);
     bool someCheck(mVec3_c *a, mBoundBox *b); ///< @unofficial
 
+    void FUN_800b3600(int, int); ///< @unofficial
+    bool isInside(mVec3_c *, mVec3_c *, mVec3_c *, mVec3_c *, float); ///< @unofficial
+    void FUN_800b3720(int, int, int); ///< @unofficial
+    void FUN_800b3780(int, int); ///< @unofficial
+    void FUN_800b3750(int, int, int); ///< @unofficial
+
     /// @unofficial
     void updateSelectCursor(nw4r::lyt::Picture *pic, int index, bool useSpecialDraw);
     float getDispCenterY();
