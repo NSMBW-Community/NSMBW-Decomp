@@ -1056,7 +1056,7 @@ void dBg_c::calcAutoScroll() {
     downLim = bgH + mDLimit;
     bool cond1 = true;
     bool cond2 = true;
-    if (stage->mCurrWorld == WORLD_2 && stage->mCurrCourse == STAGE_CASTLE && stage->mCurrCourse == 0) {
+    if (stage->m_120c == WORLD_2 && stage->m_120d == STAGE_CASTLE && stage->mCurrCourse == STAGE_1) {
         calcLoopAutoScroll();
     } else if ((dActor_c::mExecStop & 8) == 0 && m_9008c == 0) {
         dBgThingCollection_c *c = file->getBgThings();
@@ -1840,13 +1840,13 @@ void dBg_c::initScroll() {
     mIdkF[1] = 0.0f;
     mIdkF[2] = 0.0f;
     mIdkF[3] = 0.0f;
-    mVec3_c plPos = daPyMng_c::getPlayerSetPos(stage->mCurrCourse, stage->mCurrWorld);
+    mVec3_c plPos = daPyMng_c::getPlayerSetPos(stage->mCurrCourse, stage->m_1211);
     mPlayerPosY = plPos.y;
     mBounds3[0] = 80.0f;
     mBounds3[1] = 72.0f;
     mBounds3[3] = 0.0f;
     calcLookatOffs();
-    if (stage->mCurrWorld == WORLD_8 && stage->mCurrCourse == STAGE_7) {
+    if (stage->m_120c == WORLD_8 && stage->m_120d == STAGE_7) {
         mBounds4[1] += 4.0f;
     }
     calcScroll(plPos, 1);
@@ -2031,17 +2031,17 @@ void dBg_c::fn_8007ca90(dBgSomeInfo_c *info, int i1, int i2) {
         dAcPy_c *pl = daPyMng_c::getPlayer(i);
         pls[i] = pl;
         if (pl != nullptr) {
-            if (pl->mPowerup == POWERUP_MUSHROOM) {
+            if (pl->mScrollMode == 1) {
                 pls[i] = nullptr;
             }
-            if (pl->mPowerup == POWERUP_MINI_MUSHROOM) {
+            if (pl->mScrollMode == 3) {
                 count++;
             }
         }
         if (pls[i] != nullptr) {
             count2++;
         }
-        if (m_90009 == 1 && pl != nullptr && pl->mPowerup == POWERUP_MINI_MUSHROOM) {
+        if (m_90009 == 1 && pl != nullptr && pl->mScrollMode == 3) {
             pls[i] = nullptr;
         }
     }
@@ -2073,49 +2073,49 @@ void dBg_c::fn_8007ca90(dBgSomeInfo_c *info, int i1, int i2) {
         case 0:
             if (pls[0] != nullptr) {
                 info->m_14 = pl1;
-                info->mBounds.mRight = fn_8007c7d0(pl1->m_68);
-                info->m_24 = pl1->mPlayerType;
+                info->mBounds.mRight = fn_8007c7d0(pl1->mBgRelatedPos.x);
+                info->m_24 = pl1->m_50;
             }
             if (pls[i2 - 1] != nullptr) {
                 info->m_10 = pl2;
-                info->mBounds.mLeft = fn_8007c7d0(pl2->m_68);
-                info->m_20 = pl2->mPlayerType;
+                info->mBounds.mLeft = fn_8007c7d0(pl2->mBgRelatedPos.x);
+                info->m_20 = pl2->m_50;
             }
             break;
         case 2:
             if (pls[i2 - 1] != nullptr) {
                 info->m_14 = pl2;
-                info->mBounds.mRight = fn_8007c7d0(pl2->m_68);
-                info->m_24 = pl2->mPlayerType;
+                info->mBounds.mRight = fn_8007c7d0(pl2->mBgRelatedPos.x);
+                info->m_24 = pl2->m_50;
             }
             if (pls[0] != nullptr) {
                 info->m_10 = pl1;
-                info->mBounds.mLeft = fn_8007c7d0(pl1->m_68);
-                info->m_20 = pl1->mPlayerType;
+                info->mBounds.mLeft = fn_8007c7d0(pl1->mBgRelatedPos.x);
+                info->m_20 = pl1->m_50;
             }
             break;
         case 1:
             if (pls[0] != nullptr) {
                 info->m_18 = pl1;
-                info->mBounds.mUp = pl1->m_6c;
-                info->m_28 = pl1->mPlayerType;
+                info->mBounds.mUp = pl1->mBgRelatedPos.y;
+                info->m_28 = pl1->m_50;
             }
             if (pls[i2 - 1] != nullptr) {
                 info->m_1c = pl2;
-                info->mBounds.mDown = pl2->m_6c;
-                info->m_2c = pl2->mPlayerType;
+                info->mBounds.mDown = pl2->mBgRelatedPos.y;
+                info->m_2c = pl2->m_50;
             }
             break;
         case 3:
             if (pls[i2 - 1] != nullptr) {
                 info->m_18 = pl2;
-                info->mBounds.mUp = pl2->m_6c;
-                info->m_28 = pl2->mPlayerType;
+                info->mBounds.mUp = pl2->mBgRelatedPos.y;
+                info->m_28 = pl2->m_50;
             }
             if (pls[0] != nullptr) {
                 info->m_1c = pl1;
-                info->mBounds.mDown = pl1->m_6c;
-                info->m_2c = pl1->mPlayerType;
+                info->mBounds.mDown = pl1->mBgRelatedPos.y;
+                info->m_2c = pl1->m_50;
             }
             break;
     }
