@@ -123,6 +123,7 @@
         },
         {
             "source": "dol/bases/d_bg.cpp",
+            "nonMatching": true,
             "memoryRanges": {
                 ".text": "0x70850-0x77a00",
                 ".ctors": "0xb0-0xb4",
