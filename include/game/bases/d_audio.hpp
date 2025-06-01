@@ -2,15 +2,53 @@
 #include <game/framework/f_profile.hpp>
 #include <lib/nw4r/math/vec.hpp>
 #include <game/mLib/m_vec.hpp>
+#include <lib/nw4r/snd/snd_actor.hpp>
+#include <game/snd/snd_audio_mgr.hpp>
 
 /// @file
 
 /// @ingroup bases
 
-template<int T>
-class NMSndObject { // : NMSndObjectBase
+template <int T>
+class NMSndObjectBase : public nw4r::snd::SoundActor {
 public:
+    enum OBJ_TYPE {
+        OBJ_TYPE_0 = 0
+    };
+
+    NMSndObjectBase(OBJ_TYPE, nw4r::snd::SoundArchivePlayer &);
+    virtual ~NMSndObjectBase();
+
+    nw4r::snd::SoundArchivePlayer &mArcPlayer;
+    u8 mPad[0x50];
+    u32 mTotalCount;
+    u32 m_58;
+    OBJ_TYPE mObjType;
+};
+
+template<int T>
+class NMSndObject : public NMSndObjectBase<T> {
+    class SoundHandlePrm : public nw4r::snd::SoundHandle {};
+public:
+    NMSndObject<T>() :
+        NMSndObjectBase<T>(NMSndObjectBase<T>::OBJ_TYPE_0, SndAudioMgr::sInstance->mArcPlayer),
+        m_64(1.0f), m_68(0), m_6c(1.0f), m_70(1.0f)
+    {
+        SetPlayableSoundCount(0, T);
+        mTotalCount = 2 + T;
+        m_58 = 1;
+    }
+
     virtual void startSound(unsigned long, const nw4r::math::VEC2 &, unsigned long);
+
+    float m_64;
+    u32 m_68;
+    float m_6c;
+    float m_70;
+    SoundHandlePrm mParams[2 + T];
+};
+
+class SndObjctPly : public NMSndObject<4> {
 };
 
 class SndObjctCmnEmy : public NMSndObject<4> {
@@ -32,6 +70,9 @@ namespace dAudio {
 
     int getRemotePlayer(int);
     nw4r::math::VEC2 cvtSndObjctPos(const mVec3_c &);
+
+    class SndObjctPly_c : SndObjctPly {
+    };
 
     class SndObjctCmnEmy_c : SndObjctCmnEmy {
     public:
