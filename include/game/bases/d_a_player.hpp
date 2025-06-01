@@ -17,7 +17,13 @@ public:
 
     bool FUN_8012e540(dActor_c *, bool); ///< @unofficial
 
-    char mPad[0x15e8];
+    u8 mPad1[0x60];
+    float m_68;
+    u8 mPad2[0x38];
+    mVec3_c mBgRelatedPos;
+    u8 mPad3[0x4];
+    s8 mScrollMode;
+    u8 mPad4[0x1538];
     fBaseID_e mCarryActorID;
 
     static const float msc_JUMP_SPEED;

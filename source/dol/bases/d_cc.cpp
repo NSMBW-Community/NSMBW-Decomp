@@ -339,9 +339,9 @@ bool dCc_c::_hitCheckLoop(dCc_c *c1, dCc_c *c2) {
     }
 
     if (p1.x < p2.x) {
-        p1.incX(dBg_c::m_bg_p->mLoopOffset);
+        p1.incX(dBg_c::m_bg_p->mLoopOffsetX);
     } else {
-        p2.incX(dBg_c::m_bg_p->mLoopOffset);
+        p2.incX(dBg_c::m_bg_p->mLoopOffsetX);
     }
     if (_hitCheckSquare(c1, c2, p1, p2)) {
         return true;

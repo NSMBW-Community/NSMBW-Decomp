@@ -15,8 +15,12 @@ public:
         LOOP_COUNT,
     };
 
-    char pad[0x119a];
+    u8 mPad1[0x1198];
+    u8 mCurrWorld;
+    u8 mCurrCourse;
     u8 mCurrFile;
+    u8 mPad2[0x2];
+    u8 m_1211;
 
     static float getLoopPosX(float x);
     static int m_loopType;
