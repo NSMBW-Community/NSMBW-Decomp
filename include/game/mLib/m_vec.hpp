@@ -189,6 +189,15 @@ public:
     /// @return If the operation was successful.
     bool normalizeRS();
 
+    /// @brief Returns the length of the vector.
+    float len() const {
+        return EGG::Mathf::sqrt(x * x + y * y + z * z);
+    }
+
+    float distanceTo(const mVec3_c &other) const {
+        return EGG::Mathf::sqrt(PSVECSquareDistance((const Vec *) this, (const Vec *) &other));
+    }
+
     void rotX(mAng angle); ///< Rotates the vector on the X axis by the given angle.
     void rotY(mAng angle); ///< Rotates the vector on the Y axis by the given angle.
 
