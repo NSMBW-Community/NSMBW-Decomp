@@ -2,6 +2,7 @@
 #include <lib/egg/core/eggHeap.h>
 
 class dPanelObjMgr_c {
+    u8 mPad[12];
 };
 
 class bgTex_c {
