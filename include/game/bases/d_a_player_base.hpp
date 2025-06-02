@@ -13,6 +13,8 @@ public:
     virtual void setAnm(int, float, float, float);
     virtual void setFrame(float);
 
+    void getJointPos(mVec3_c *, int);
+
     u8 mPad1[0x24];
     m3d::anmChr_c mAnm;
     u8 mPad2[0x100];
@@ -38,12 +40,34 @@ public:
         DAMAGE_NONE = 0
     };
 
+    enum D88_TYPE_e {
+        T_0, T_1, T_2, T_3, T_4, T_5, T_6, T_7,
+        T_8, T_9, T_A, T_B, T_C
+    };
+
+    enum HipAction_e {
+        HIP_ACTION_READY,
+        HIP_ACTION_ATTACK_START,
+        HIP_ACTION_ATTACK_FALL,
+        HIP_ACTION_GROUND,
+        HIP_ACTION_STAND_NORMAL,
+        HIP_ACTION_STAND_NORMAL_END,
+        HIP_ACTION_TO_STOOP
+    };
+
     enum STATUS_e {
         STATUS_01 = 0x01,
         STATUS_03 = 0x03,
         STATUS_0A = 0x0a,
+        STATUS_14 = 0x14,
+        STATUS_15 = 0x15,
+        STATUS_16 = 0x16,
         STATUS_1A = 0x1a,
         STATUS_1B = 0x1b,
+        STATUS_1C = 0x1c,
+        STATUS_1D = 0x1d,
+        STATUS_1E = 0x1e,
+        STATUS_22 = 0x22,
         STATUS_2D = 0x2d,
         STATUS_2E = 0x2e,
         STATUS_30 = 0x30,
@@ -51,6 +75,7 @@ public:
         STATUS_40 = 0x40,
         STATUS_41 = 0x41,
         STATUS_42 = 0x42,
+        STATUS_45 = 0x45,
         STATUS_4D = 0x4d,
         STATUS_52 = 0x52,
         STATUS_59 = 0x59,
@@ -59,26 +84,36 @@ public:
         STATUS_61 = 0x61,
         STATUS_62 = 0x62,
         STATUS_6F = 0x6f,
+        STATUS_74 = 0x74,
+        STATUS_7A = 0x7a,
         STATUS_7D = 0x7d,
+        STATUS_7F = 0x7f,
         STATUS_82 = 0x82,
         STATUS_83 = 0x83,
         STATUS_84 = 0x84,
+        STATUS_86 = 0x86,
         STATUS_88 = 0x88,
         STATUS_89 = 0x89,
         STATUS_8B = 0x8b,
         STATUS_8C = 0x8c,
         STATUS_8D = 0x8d,
+        STATUS_91 = 0x91,
         STATUS_97 = 0x97,
         STATUS_98 = 0x98,
+        STATUS_9F = 0x9f,
         STATUS_A0 = 0xa0,
         STATUS_A4 = 0xa4,
         STATUS_A5 = 0xa5,
+        STATUS_A8 = 0xa8,
+        STATUS_AA = 0xaa,
         STATUS_AB = 0xab,
+        STATUS_AE = 0xae,
         STATUS_B5 = 0xb5,
         STATUS_B7 = 0xb7,
         STATUS_B9 = 0xb9,
         STATUS_BB = 0xbb,
         STATUS_BE = 0xbe,
+        STATUS_C4 = 0xc4,
     };
 
     daPlBase_c();
@@ -93,6 +128,11 @@ public:
     virtual int draw();
 
     virtual void executeMain() {}
+    virtual bool isItemKinopio();
+    virtual void changeState(const sStateIDIf_c &, void *);
+
+    virtual void initStampReduction();
+    virtual void calcJumpDaiReductionScale(int, int);
 
     virtual void *getHeadBgPointData() { return nullptr; };
     virtual float getStandHeadBgPointY() { return 0.0f; }
@@ -103,9 +143,23 @@ public:
     virtual void walkAction_Wait();
     virtual void vf384(int);
     virtual void walkAction_Move();
+    virtual bool checkCrouch();
     virtual void slipActionMove(int);
 
-    virtual void changeState(const sStateIDIf_c &, void *);
+    virtual void setHipAttack_AttackStart();
+
+    virtual void setSlipAction();
+    virtual float *getHeadTopPosP() { return nullptr; }
+    virtual float *getGravityData() { return mGravityData; }
+    virtual bool isCarry() const { return false; }
+
+    virtual u8 getTallType(s8);
+
+    virtual void vf3fc(float, float, int, int, int);
+
+    virtual bool setHipAttackOnEnemy(mVec3_c *);
+
+    virtual void setHipAttackEffect();
     virtual void setZPosition();
     virtual short getMukiAngle(u8 direction);
     virtual int turnAngle();
@@ -131,7 +185,6 @@ public:
     void calcAccOnIceLift();
     bool setCrouchJump();
     void setFallAction();
-    bool checkCrouch();
     bool setCancelCrouch();
     bool fn_80047ee0();
     bool fn_80047f10();
@@ -148,8 +201,37 @@ public:
     void setSlipActionViewLimitEnd();
     void setCcAtPenguinSlip();
     void setCcAtSlip();
+    void setCcAtHipAttack();
     bool checkSakaReverse();
     bool checkBGCrossWall(u8 direction);
+    bool checkTurn();
+    void setTurnEnd();
+    void setVsPlHipAttackEffect();
+    void setLandSmokeEffect(int);
+    void fn_80057e70(int soundID, bool);
+    void setHipAttackDropEffect();
+    void setHipBlockBreak();
+    void setHipAttack_Ready();
+    void setHipAttack_KinopioStart();
+    void setHipAttack_AttackFall();
+    void setHipAttack_StandNormal();
+    void setHipAttack_StandNormalEnd();
+    void setHipAttack_ToStoop();
+    void HipAction_Ready();
+    void HipAction_AttackStart();
+    void HipAction_AttackFall();
+    void HipAction_Ground();
+    void HipAction_StandNormal();
+    void HipAction_StandNormalEnd();
+    void HipAction_ToStoop();
+    bool isSlipSaka();
+    bool setJumpDaiRide();
+    bool setPlayerJumpDai(daPlBase_c *other);
+    void fn_80049d70();
+    void fn_800541e0(const daPlBase_c *, int);
+    bool isMameAction();
+    bool setFunsui();
+    bool isDemo();
 
     STATE_VIRTUAL_FUNC_DECLARE(daPlBase_c, None);
     STATE_VIRTUAL_FUNC_DECLARE(daPlBase_c, Walk);
@@ -199,7 +281,9 @@ public:
     s8 m_fc;
     dEf::followEffect_c mFollowEf;
     mEf::levelEffect_c mLevelEf1;
-    u8 mPad5[0x14];
+    u32 m_344;
+    mVec3_c m_348;
+    float m_354;
     u32 m_358;
     u32 m_35c;
     u32 m_360;
@@ -213,29 +297,39 @@ public:
     dAudio::SndObjctPly_c mSndObj;
     dAcPyKey_c mKey;
     fBaseID_e mRideActorID;
-    u8 mPad6[0x29];
+    u8 mPad6[0x24];
+    float m_c9c;
+    u8 mPad7[1];
     bool m_ca1;
     mVec3_c m_ca4;
     mVec3_c m_cb0;
-    u8 mPad7[0x40];
+    u8 mPad8[0x18];
+    float *mGravityData;
+    u8 mPad9[0x24];
     PLAYER_POWERUP_e mPowerup;
-    u8 mPad8[0x3e];
+    u8 mPad10[0x3e];
     u32 m_d40;
     u32 m_d44;
     u32 m_d48;
     u32 m_d4c;
-    u8 mPad9[0x46];
+    u8 mPad11[0x38];
+    D88_TYPE_e m_d88;
+    u8 mPad12[0xa];
     short m_d96, m_d98, m_d9a;
-    u8 mPad10[0x32];
+    u8 mPad13[0x32];
     dCc_c mCc1, mAttCc1, mAttCc2, mAttCc3;
-    u8 mPad11[0x24];
+    u8 mPad14[0x24];
     sFStateMgr_c<daPlBase_c, sStateMethodUsr_FI_c> mDemoStateMgr;
-    u8 mPad12[0x10];
+    u8 mPad15[0x10];
     sFStateMgr_c<daPlBase_c, sStateMethodUsr_FI_c> mStateMgr;
-    void *m_110c;
-    int m_1110, m_1114, m_1118;
-    u8 mPad13[0x10];
+    void *mStateChangeParam; ///< To be used as a kind of argument to the new state.
+    HipAction_e mHipActionType;
+    int m_1114, m_1118;
+    mVec2_c m_111c;
+    u8 mPad16[0x8];
     float m_112c;
-    u8 mPad14[4];
+    u8 mPad17[4];
     float m_1134, m_1138, m_113c;
+
+    static const float sc_DirSpeed[2];
 };

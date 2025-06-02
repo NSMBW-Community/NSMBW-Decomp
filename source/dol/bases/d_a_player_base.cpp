@@ -1,6 +1,8 @@
 #include <game/bases/d_a_player_base.hpp>
+#include <game/bases/d_a_player_manager.hpp>
 #include <game/bases/d_s_stage.hpp>
 #include <game/sLib/s_math.hpp>
+#include <constants/sound_list.h>
 
 daPlBase_c::daPlBase_c() :
     mpMdlMng(nullptr),
@@ -171,12 +173,12 @@ void daPlBase_c::changeState(const sStateIDIf_c &state, void *param) {
         return;
     }
     clearComboCount();
-    m_1110 = 0;
+    mHipActionType = HIP_ACTION_READY;
     m_1114 = 0;
     m_1118 = 0;
     offStatus(STATUS_97);
     offStatus(STATUS_98);
-    m_110c = param;
+    mStateChangeParam = param;
     mStateMgr.changeState(state);
 }
 
@@ -365,7 +367,7 @@ void daPlBase_c::initializeState_Fall() {
     if (m_358) {
         onStatus(STATUS_4D);
     }
-    if (!m_110c) {
+    if (!mStateChangeParam) {
         float f = ((float *) &dPyMdlMng_c::m_hio)[10];
         mpMdlMng->mpMdl->setAnm(6, f, 0.0f, 10.0f);
     }
@@ -451,7 +453,7 @@ void daPlBase_c::finalizeState_Crouch() {}
 void daPlBase_c::executeState_Crouch() {}
 
 void daPlBase_c::initializeState_Slip() {
-    m_1110 = 0;
+    mHipActionType = HIP_ACTION_READY;
     float f1 = ((float *) &dPyMdlMng_c::m_hio)[10];
     float f2 = ((float *) &dPyMdlMng_c::m_hio)[11];
     mpMdlMng->mpMdl->setAnm(21, f1, f2, 0.0f);
@@ -487,24 +489,26 @@ void daPlBase_c::executeState_Slip() {
         fn_800488f0(0);
         return;
     }
-    switch (m_1110) {
-        case 0:
+    switch (mHipActionType) {
+        case HIP_ACTION_READY:
             if ((m_d40 & 1) == 0 && (mKey.triggerJump() || mKey.triggerCross())) {
                 changeState(StateID_Fall, nullptr);
             } else {
                 slipActionMove(angle);
             }
             break;
-        case 1:
+        case HIP_ACTION_ATTACK_START:
             mMaxSpeedF = 0.0f;
             if (mpMdlMng->mpMdl->mAnm.isStop()) {
                 changeState(StateID_Crouch, (void *) 1);
             }
             break;
-        case 2:
+        case HIP_ACTION_ATTACK_FALL:
             if (mpMdlMng->mpMdl->mAnm.isStop()) {
                 fn_800488f0(1);
             }
+        default:
+            break;
     }
 }
 
@@ -516,7 +520,7 @@ void daPlBase_c::setSlipAction_ToStoop() {
     if (isStatus(STATUS_3C)) {
         offStatus(STATUS_3C);
     }
-    m_1110 = 1;
+    mHipActionType = HIP_ACTION_ATTACK_START;
     mpMdlMng->mpMdl->setAnm(24, ((float *) &dPyMdlMng_c::m_hio)[10], ((float *) &dPyMdlMng_c::m_hio)[11], 0.0f);
 }
 
@@ -528,7 +532,7 @@ void daPlBase_c::setSlipAction_ToEnd() {
     if (isStatus(STATUS_3C)) {
         offStatus(STATUS_3C);
     }
-    m_1110 = 2;
+    mHipActionType = HIP_ACTION_ATTACK_FALL;
     mSpeedF = 0.0f;
     mMaxSpeedF = 0.0f;
     mpMdlMng->mpMdl->setAnm(23, ((float *) &dPyMdlMng_c::m_hio)[10], ((float *) &dPyMdlMng_c::m_hio)[11], 0.0f);
@@ -611,6 +615,520 @@ void daPlBase_c::slipActionMove(int param) {
             offStatus(STATUS_98);
         }
     }
+}
+
+void daPlBase_c::fn_800488f0(int param) {
+    if (
+        (mKey.buttonLeft() && mDirection == 0 && mSpeedF > 0.0f) ||
+        (mKey.buttonRight() &&mDirection == 1 && mSpeedF < 0.0f)
+    ) {
+        mAngle.y = getMukiAngle(mDirection);
+        mDirection ^= 1;
+        changeState(StateID_Turn, nullptr);
+        return;
+    }
+    if (
+        (mKey.buttonLeft() && mDirection == 0 && mSpeedF < 0.0f) ||
+        (mKey.buttonRight() && mDirection == 1 && mSpeedF > 0.0f)
+    ) {
+        mAngle.y = getMukiAngle(mDirection);
+        mDirection ^= 1;
+    }
+    changeState(StateID_Walk, (void *) param);
+}
+
+bool daPlBase_c::checkTurn() {
+    if (!isCarry() && !isStatus(STATUS_74) && fabsf(mSpeedF) >= 2.5f) {
+        if ((m_d40 & 0x800000) != 0) {
+            if (
+                (mSpeedF < 0.0f && mKey.buttonRight() && mDirection == 0) ||
+                (mSpeedF > 0.0f && mKey.buttonLeft() && mDirection == 1)
+            ) {
+                changeState(StateID_Turn, nullptr);
+                return true;
+            }
+        } else {
+            changeState(StateID_Turn, nullptr);
+            return true;
+        }
+    }
+    return false;
+}
+
+void daPlBase_c::setTurnEnd() {
+    mAngle.y = getMukiAngle(mDirection);
+    changeState(StateID_Walk, nullptr);
+}
+
+void daPlBase_c::initializeState_Turn() {}
+void daPlBase_c::finalizeState_Turn() {}
+void daPlBase_c::executeState_Turn() {}
+
+bool daPlBase_c::setHipAttackOnEnemy(mVec3_c *) {
+    return 0;
+}
+
+void daPlBase_c::setVsPlHipAttackEffect() {
+    dEf::createPlayerEffect(mPlayerNo, "Wm_mr_misshit", 0, &mPos, nullptr, nullptr);
+}
+
+void daPlBase_c::setHipAttackEffect() {
+    if (mRideActorID) {
+        return;
+    }
+    if ((m_d40 & 0x18000000) == 0) {
+        setLandSmokeEffect(getTallType(-1));
+    }
+    if (m_d88 == T_5) {
+        fn_80057e70(SE_PLY_HPDP_SPLASH, false);
+    }
+    if (mPowerup == POWERUP_MINI_MUSHROOM) {
+        fn_80057e70(SE_PLY_HIP_ATTACK_M, false);
+        return;
+    }
+    if ((m_d88 < T_0 || m_d88 > T_6) && (m_d88 < T_8 || m_d88 > T_A)) {
+        switch (m_d88) {
+            case T_7:
+            case T_B:
+                fn_80057e70(SE_PLY_HIP_ATTACK_SOFT, false);
+                break;
+            case T_C:
+                fn_80057e70(SE_PLY_HIP_ATTACK, false);
+                break;
+            default:
+                break;
+        }
+    }
+}
+
+void daPlBase_c::setHipAttackDropEffect() {
+    static const float xOffsets[] = { 0.7f, 0.8f, 1.0f };
+    mVec3_c pos;
+    mpMdlMng->mpMdl->getJointPos(&pos, 1);
+    mVec3_c efPosOffset;
+    efPosOffset.x = xOffsets[getTallType(-1)];
+    efPosOffset.y = efPosOffset.x;
+    efPosOffset.z = efPosOffset.x;
+    dEf::createPlayerEffect(mPlayerNo, &mLevelEf1, "Wm_mr_drop", 0, &pos, nullptr, &efPosOffset);
+}
+
+void daPlBase_c::setHipBlockBreak() {
+    if (mPowerup == POWERUP_MINI_MUSHROOM || mPowerup == POWERUP_NONE) {
+        offStatus(STATUS_C4);
+    } else {
+        onStatus(STATUS_C4);
+    }
+}
+
+void daPlBase_c::setHipAttack_Ready() {
+    mHipActionType = HIP_ACTION_READY;
+    mpMdlMng->mpMdl->setAnm(16, ((float *) &dPyMdlMng_c::m_hio)[10], ((float *) &dPyMdlMng_c::m_hio)[11], 0.0f);
+    mSpeed.y = 1.0f;
+}
+
+void daPlBase_c::setHipAttack_KinopioStart() {
+    setHipAttack_AttackStart();
+    onStatus(STATUS_7F);
+    onStatus(STATUS_7A);
+    if (isItemKinopio()) {
+        fn_80057e70(SE_VOC_ITEM_KO_FOUND, false);
+    }
+}
+
+void daPlBase_c::setHipAttack_AttackStart() {
+    mHipActionType = HIP_ACTION_ATTACK_START;
+    mpMdlMng->mpMdl->setAnm(17, ((float *) &dPyMdlMng_c::m_hio)[10], ((float *) &dPyMdlMng_c::m_hio)[11], 0.0f);
+    m_1114 = 5;
+    mSpeed.y = 0.0f;
+}
+
+void daPlBase_c::setHipAttack_AttackFall() {
+    mHipActionType = HIP_ACTION_ATTACK_FALL;
+    mAccelF = 0.1f;
+    mMaxSpeedF = 0.0f;
+    mAccelY = *getGravityData();
+    mMaxFallSpeed = -6.0f;
+    if ((int) mStateChangeParam == 1) {
+        mSpeed.y = -2.0f;
+    } else {
+        mSpeed.y = -6.0f;
+    }
+    onStatus(STATUS_1C);
+    setHipBlockBreak();
+    m_1114 = 5;
+}
+
+void daPlBase_c::setHipAttack_StandNormal() {
+    m_1114 = 20;
+    mHipActionType = HIP_ACTION_STAND_NORMAL;
+    mpMdlMng->mpMdl->setAnm(18, ((float *) &dPyMdlMng_c::m_hio)[10], ((float *) &dPyMdlMng_c::m_hio)[11], 0.0f);
+    onStatus(STATUS_1E);
+    offStatus(STATUS_1C);
+    onStatus(STATUS_9F);
+    mAccelY = *getGravityData();
+    mMaxFallSpeed = -6.0f;
+    mSpeed.y = 0.0f;
+}
+
+void daPlBase_c::setHipAttack_StandNormalEnd() {
+    mHipActionType = HIP_ACTION_STAND_NORMAL_END;
+    mpMdlMng->mpMdl->setAnm(19, ((float *) &dPyMdlMng_c::m_hio)[10], ((float *) &dPyMdlMng_c::m_hio)[11], 0.0f);
+    offStatus(STATUS_1E);
+}
+
+void daPlBase_c::setHipAttack_ToStoop() {
+    mHipActionType = HIP_ACTION_TO_STOOP;
+    mpMdlMng->mpMdl->setAnm(20, ((float *) &dPyMdlMng_c::m_hio)[10], ((float *) &dPyMdlMng_c::m_hio)[11], 0.0f);
+    offStatus(STATUS_1E);
+}
+
+void daPlBase_c::HipAction_Ready() {
+    if (mpMdlMng->mpMdl->mAnm.isStop()) {
+        setHipAttack_AttackStart();
+    }
+}
+
+void daPlBase_c::HipAction_AttackStart() {
+    if (!m_1114) {
+        setHipAttack_AttackFall();
+    }
+}
+
+void daPlBase_c::HipAction_AttackFall() {
+    setHipAttackDropEffect();
+    if (m_1114 == 0 || m_d40 & 1) {
+        offStatus(STATUS_7F);
+        offStatus(STATUS_7A);
+    }
+    if ((m_d40 & 1) == 0) {
+        if (m_d40 & 0x4000) {
+            mMaxFallSpeed = -3.0f;
+        } else {
+            mMaxFallSpeed = -6.0f;
+        }
+        mAccelY = *getGravityData();
+        int dir;
+        if (mKey.buttonWalk(&dir)) {
+            mMaxSpeedF = sc_DirSpeed[dir] * 0.3f;
+        }
+        if (mKey.buttonDown() && mSpeed.y < 0.0f) {
+            setHipBlockBreak();
+        }
+        if (!isStatus(STATUS_22) && mKey.buttonUp()) {
+            changeState(StateID_Fall, nullptr);
+        }
+    } else {
+        if (!mKey.buttonDown()) {
+            offStatus(STATUS_C4);
+        }
+        setHipAttackEffect();
+        int quakeType = 0;
+        if (mPowerup == POWERUP_MINI_MUSHROOM) {
+            quakeType = 2;
+        }
+        daPyMng_c::setHipAttackQuake(quakeType, mPlayerNo);
+        onStatus(STATUS_1D);
+        offStatus(STATUS_91);
+        if (m_d44 & 0x100) {
+            changeState(StateID_Kani, (void *) 2);
+        } else if (isSlipSaka()) {
+            if ((m_d40 & 0x8000) == 0) {
+                if (mBc.getSakaType() >= 2) {
+                    mSpeedF = getSlipMaxSpeedF();
+                } else {
+                    mSpeedF = getSlipMaxSpeedF() * 0.5f;
+                }
+            }
+            setSlipAction();
+        } else {
+            mMaxSpeedF = 0.0f;
+            mSpeedF = 0.0f;
+            mSpeed.y = 0.0f;
+            mAccelY = 0.0f;
+            mHipActionType = HIP_ACTION_GROUND;
+        }
+    }
+}
+
+void daPlBase_c::HipAction_Ground() {
+    if (!mKey.buttonDown() && (m_d40 & 1) == 0) {
+        changeState(StateID_Fall, nullptr);
+    } else {
+        setHipAttack_StandNormal();
+    }
+}
+
+void daPlBase_c::HipAction_StandNormal() {
+    if (mpMdlMng->mpMdl->m_154 != 18) {
+        mpMdlMng->mpMdl->setAnm(18, ((float *) &dPyMdlMng_c::m_hio)[10], ((float *) &dPyMdlMng_c::m_hio)[11], 0.0f);
+    }
+    if (m_d40 & 1) {
+        if (mpMdlMng->mpMdl->mAnm.isStop()) {
+            if (!mKey.buttonDown()) {
+                offStatus(STATUS_AE);
+                setHipAttack_StandNormalEnd();
+            } else {
+                setHipBlockBreak();
+                if (m_344 == 0) {
+                    if (m_d44 & 0x400000) {
+                        m_1114 = 15;
+                    }
+                    if (dScStage_c::m_isStaffCredit && m_d40 & 1 && (m_d44 & 2) == 0) {
+                        m_344 = 1;
+                    }
+                }
+                if (m_1114 == 0) {
+                    offStatus(STATUS_AE);
+                    setHipAttack_ToStoop();
+                }
+            }
+        } else if (isSlipSaka()) {
+            mSpeedF = getSlipMaxSpeedF();
+            setSlipAction();
+        } else {
+            turnAngle();
+        }
+    } else {
+        if (mKey.buttonCrouch()) {
+            HipAction_AttackFall();
+        }
+    }
+}
+
+void daPlBase_c::HipAction_StandNormalEnd() {
+    if (!checkCrouch()) {
+        if (mpMdlMng->mpMdl->mAnm.isStop()) {
+            changeState(StateID_Walk, (void *) 1);
+        } else {
+            turnAngle();
+        }
+    }
+}
+
+void daPlBase_c::HipAction_ToStoop() {
+    if (mpMdlMng->mpMdl->mAnm.isStop()) {
+        changeState(StateID_Crouch, (void *) 1);
+    } else {
+        turnAngle();
+    }
+}
+
+void daPlBase_c::initializeState_HipAttack() {
+    mAngle.y = getMukiAngle(mDirection);
+    mSpeedF = 0.0f;
+    mMaxSpeedF = 0.0f;
+    mAccelY = 0.0f;
+    switch ((int) mStateChangeParam) {
+        case 0:
+            setHipAttack_Ready();
+            break;
+        case 1:
+            setHipAttack_KinopioStart();
+            break;
+    }
+    onStatus(STATUS_A8);
+    onStatus(STATUS_AA);
+    onStatus(STATUS_AE);
+}
+void daPlBase_c::finalizeState_HipAttack() {
+    mMaxFallSpeed = -4.0f;
+    offStatus(STATUS_1C);
+    offStatus(STATUS_A8);
+    offStatus(STATUS_AA);
+    offStatus(STATUS_C4);
+    offStatus(STATUS_22);
+    offStatus(STATUS_1D);
+    offStatus(STATUS_1E);
+    offStatus(STATUS_9F);
+    offStatus(STATUS_AE);
+    offStatus(STATUS_7F);
+    offStatus(STATUS_7A);
+    m_344 = 0;
+}
+void daPlBase_c::executeState_HipAttack() {
+    static void (daPlBase_c::*l_HipActionProc[])() = {
+        &daPlBase_c::HipAction_Ready,
+        &daPlBase_c::HipAction_AttackStart,
+        &daPlBase_c::HipAction_AttackFall,
+        &daPlBase_c::HipAction_Ground,
+        &daPlBase_c::HipAction_StandNormal,
+        &daPlBase_c::HipAction_StandNormalEnd,
+        &daPlBase_c::HipAction_ToStoop
+    };
+
+    offStatus(STATUS_1D);
+    if (isStatus(STATUS_1C)) {
+        setCcAtHipAttack();
+    }
+    if (m_d40 & 0x10000) {
+        offStatus(STATUS_AA);
+    }
+    if (mHipActionType < HIP_ACTION_STAND_NORMAL || !checkJumpTrigger()) {
+        (this->*l_HipActionProc[mHipActionType])();
+        if (isStatus(STATUS_22)) {
+            offStatus(STATUS_22);
+            mPos.x = m_111c.x;
+            mPos.y = m_111c.y;
+        }
+    }
+}
+
+void daPlBase_c::initializeState_Swim() {}
+void daPlBase_c::finalizeState_Swim() {}
+void daPlBase_c::executeState_Swim() {}
+
+bool daPlBase_c::setJumpDaiRide() {
+    if (isStatus(STATUS_45) || m_d40 & 2) {
+        return false;
+    }
+    changeState(StateID_JumpDai, nullptr);
+    return true;
+}
+
+void daPlBase_c::initializeState_JumpDai() {
+    onStatus(STATUS_15);
+    onStatus(STATUS_86);
+    onStatus(STATUS_14);
+    mKey.onStatus(dAcPyKey_c::STATUS_NO_INPUT);
+    mSpeed.y = 0.0f;
+    mSpeedF = 0.0f;
+    if (mpMdlMng->mpMdl->m_154 == 20) {
+        mHipActionType = HIP_ACTION_ATTACK_START;
+    } else {
+        mpMdlMng->mpMdl->setAnm(7, ((float *) &dPyMdlMng_c::m_hio)[10], ((float *) &dPyMdlMng_c::m_hio)[11], 0.0f);
+    }
+}
+void daPlBase_c::finalizeState_JumpDai() {
+    offStatus(STATUS_14);
+    offStatus(STATUS_15);
+    mKey.offStatus(dAcPyKey_c::STATUS_NO_INPUT);
+}
+void daPlBase_c::executeState_JumpDai() {
+    if (!isStatus(STATUS_86)) {
+        changeState(StateID_Fall, nullptr);
+    } else {
+        turnAngle();
+        if (mHipActionType == HIP_ACTION_READY && mpMdlMng->mpMdl->mAnm.isStop()) {
+            vf378(1);
+            mHipActionType = HIP_ACTION_ATTACK_START;
+        }
+    }
+}
+
+bool daPlBase_c::setPlayerJumpDai(daPlBase_c *other) {
+    if (mRideActorID == 0) {
+        float topPos = *(other->getHeadTopPosP() + 1) - 4.0f;
+        mVec3_c pos = mVec3_c(
+            mPos.x,
+            topPos,
+            mPos.z
+        );
+        float f;
+        if (mBc.checkRoofPlayer(&pos, &f) && f < topPos + m_c9c) {
+            return false;
+        }
+        mRideActorID = other->mUniqueID;
+        changeState(StateID_PlayerJumpDai, nullptr);
+        return true;
+    }
+    return false;
+}
+
+void daPlBase_c::fn_80049d70() {
+    daPlBase_c *rideActor = (daPlBase_c *) fManager_c::searchBaseByID(mRideActorID);
+    if (rideActor == nullptr) {
+        return;
+    }
+    mPos.set(
+        m_348.x + rideActor->mPos.x,
+        *(rideActor->getHeadTopPosP() + 1) - 4.0f,
+        m_348.z + rideActor->mPos.z
+    );
+}
+
+void daPlBase_c::initializeState_PlayerJumpDai() {
+    onStatus(STATUS_16);
+    onStatus(STATUS_14);
+    daPlBase_c *rideActor = (daPlBase_c *) fManager_c::searchBaseByID(mRideActorID);
+    if (rideActor != nullptr) {
+        rideActor->initStampReduction();
+        fn_800541e0(rideActor, 5);
+        m_348 = mPos - rideActor->mPos;
+    }
+    m_354 = mSpeedF;
+    mSpeedF = 0.0f;
+    mSpeed.y = 0.0f;
+    if (mpMdlMng->mpMdl->m_154 != 20) {
+        mpMdlMng->mpMdl->setAnm(7, ((float *) &dPyMdlMng_c::m_hio)[10], ((float *) &dPyMdlMng_c::m_hio)[11], 0.0f);
+    }
+    if (mKey.triggerJumpBuf(5)) {
+        mHipActionType = HIP_ACTION_ATTACK_START;
+    } else {
+        mHipActionType = HIP_ACTION_READY;
+    }
+    m_1118 = 0;
+}
+void daPlBase_c::finalizeState_PlayerJumpDai() {
+    offStatus(STATUS_16);
+    offStatus(STATUS_14);
+    mRideActorID = (fBaseID_e) 0;
+}
+void daPlBase_c::executeState_PlayerJumpDai() {
+    daPlBase_c *rideActor = (daPlBase_c *) fManager_c::searchBaseByID(mRideActorID);
+    if (rideActor == nullptr) {
+        changeState(StateID_Fall, nullptr);
+    } else if (m_d40 & 2) {
+        changeState(StateID_Fall, nullptr);
+        m_358 = 30;
+    } else {
+        fn_800541e0(rideActor, 5);
+        turnAngle();
+        if (mpMdlMng->mpMdl->m_154 == 7 && mpMdlMng->mpMdl->mAnm.isStop()) {
+            vf378(1);
+        }
+        switch (mHipActionType) {
+            case HIP_ACTION_READY:
+                if (m_1118 < 5) {
+                    if (mKey.triggerJump()) {
+                        mHipActionType = HIP_ACTION_ATTACK_START;
+                    }
+                } else if (isMameAction()) {
+                    vf3fc(3.278f, m_354, 1, 0, 0);
+                    return;
+                } else if (mKey.buttonJump()) {
+                    vf3fc(3.828f, m_354, 1, 0, 2);
+                    return;
+                } else {
+                    vf3fc(4.628f, m_354, 1, 2, 0);
+                    return;
+                }
+                break;
+            case HIP_ACTION_ATTACK_START:
+                if (m_1118 > 5) {
+                    float f = 4.428f;
+                    if (isMameAction()) {
+                        f = 3.828f;
+                    }
+                    vf3fc(f, 0.0f, 1, 1, 2);
+                    return;
+                }
+                break;
+            default:
+                break;
+        }
+        rideActor->calcJumpDaiReductionScale(m_1118, 5);
+        m_1118++;
+    }
+}
+
+bool daPlBase_c::setFunsui() {
+    if (isDemo()) {
+        return false;
+    }
+    if (!mStateMgr.getStateID()->isEqual(StateID_Funsui)) {
+        changeState(StateID_Funsui, nullptr);
+    }
+    return true;
 }
 
 STATE_BASE_VIRTUAL_DEFINE(daPlBase_c, DemoNone);

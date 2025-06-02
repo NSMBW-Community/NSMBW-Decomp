@@ -29,6 +29,7 @@ public:
     static void setChangePosFunc(int);
 
     static int m_gameMode;
+    static bool m_isStaffCredit;
     static changePosFunc changePos;
     static dScStage_c *m_instance;
 };

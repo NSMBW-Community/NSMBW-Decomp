@@ -25,9 +25,11 @@ public:
 
     static int checkWaterDepth(float, float, u8, u8, float *);
     static bool checkTenjou(const mVec3_c &, float &, u8, u8);
+    bool checkRoofPlayer(const mVec3_c *, float *);
 
     bool getSakaUpDown(u8 direction);
     short getSakaAngle(u8 direction);
+    int getSakaType();
 
     bool isHead()  { return mFlags & 0b00000000000000000000000000010101; }
     bool isWallL() { return mFlags & 0b00000000000000000000000000101010; }

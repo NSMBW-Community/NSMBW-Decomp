@@ -8,6 +8,7 @@ public:
     static int getPlayerIndex(PLAYER_CHARACTER_e); ///< @unofficial
     static dAcPy_c *getPlayer(int);
     static void addScore(int, int);
+    static void setHipAttackQuake(int, u8);
 
     static bool checkPlayer(u8 plrNo) { return mActPlayerInfo & (1 << plrNo); }
     static int getRest(PLAYER_CHARACTER_e plrNo) { return mRest[plrNo]; }
