@@ -16,12 +16,18 @@ public:
     u32 mFlags;
     char mPad3[0xc];
     u8 mOwningPlrNo;
-    char mPad4[0x4c];
-    u8 m_e5;
-    char mPad5[0x6];
+    char mPad4[0x40];
+    float mIceSpeed;
+    char mPad5[0x5];
+    u8 mLineKind;
+    char mPad6[0x6];
     u8 mLayer;
 
     static int checkWaterDepth(float, float, u8, u8, float *);
+    static bool checkTenjou(const mVec3_c &, float &, u8, u8);
+
+    bool getSakaUpDown(u8 direction);
+    short getSakaAngle(u8 direction);
 
     bool isHead()  { return mFlags & 0b00000000000000000000000000010101; }
     bool isWallL() { return mFlags & 0b00000000000000000000000000101010; }

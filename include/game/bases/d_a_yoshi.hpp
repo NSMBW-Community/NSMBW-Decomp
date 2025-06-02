@@ -3,7 +3,7 @@
 
 class daYoshi_c : public daPlBase_c {
 public:
-    u8 mPad[0x80];
+    u8 mPad[0x5c];
     int m_a0;
 
     void getTongueTipMtx(mMtx_c *mtx);

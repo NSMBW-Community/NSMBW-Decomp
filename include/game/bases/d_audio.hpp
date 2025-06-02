@@ -85,6 +85,8 @@ public:
     void calculate(const nw4r::math::VEC2 &pos) {
         NMSndObject<4>::calc(pos);
     }
+
+    void stopPlyJumpSound();
 };
 
 class SndObjctCmnEmy : public NMSndObject<4> {

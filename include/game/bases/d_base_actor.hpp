@@ -110,6 +110,10 @@ public:
      */
     static dBaseActor_c *construct(ProfileName profName, dBase_c *parent, unsigned long param, const mVec3_c *position, const mAng3_c *rotation);
 
+    // Getters / setters
+    float getAccelF() const { return mAccelF; }
+    void setAccelF(float accelF) { mAccelF = accelF; }
+
 private:
     /**
      * @brief Sets temporary data to be used for the next actor's construction.
