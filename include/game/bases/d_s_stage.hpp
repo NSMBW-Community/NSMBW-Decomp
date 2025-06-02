@@ -4,6 +4,15 @@
 
 class dScStage_c : public dScene_c {
 public:
+
+    /// @brief The possible stage loop types.
+    enum LOOP_TYPE_e {
+        LOOP_NONE, ///< No stage looping occurs.
+        LOOP_EDGES, ///< The stage loops around on the zone edges. Only works for specific zone sizes.
+        LOOP_SECTION, ///< The stage loops in specific sections.
+        LOOP_COUNT,
+    };
+
     char pad[0x119a];
     u8 mCurrCourse;
 

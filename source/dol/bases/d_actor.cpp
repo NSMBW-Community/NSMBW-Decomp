@@ -17,10 +17,10 @@
 #include <constants/sjis_constants.h>
 #include <constants/sound_list.h>
 
-bool dActor_c::mExecStopReq;
-bool dActor_c::mDrawStopReq;
-bool dActor_c::mExecStop;
-bool dActor_c::mDrawStop;
+u8 dActor_c::mExecStopReq;
+u8 dActor_c::mDrawStopReq;
+u8 dActor_c::mExecStop;
+u8 dActor_c::mDrawStop;
 dActor_c::searchNearPlayerFunc dActor_c::mSearchNearPlayerFunc;
 dActor_c::getTrgToSrcDirFunc dActor_c::mGetTrgToSrcDirFunc;
 
@@ -33,32 +33,31 @@ const mVec2_c dActor_c::smc_FUKIDASHI_RANGE = mVec2_c(9.0f, 12.0f);
 
 u8 dActor_c::m_tmpCtLayerNo;
 
-const u8 l_Ami_Line[] = { 1, 2, 0, 0, 0, 0, 0, 0 };
+const u8 l_Ami_Line[] = { 1, 2 };
 const float l_Ami_Zpos[] = { 1500.0f, -2500.0f };
 
-u32 dActor_c::m_relatedCreate1;
-u64 dActor_c::m_relatedCreate2;
-u32 dActor_c::m_relatedCreate3;
-u32 dActor_c::m_relatedCreate4;
-u8 dActor_c::m_relatedCreate5;
+u8* dActor_c::m_tmpCtSpawnFlags;
+u16 dActor_c::m_tmpCtEventNums;
+u64 dActor_c::m_tmpCtEventMask;
+u8 dActor_c::m_tmpCtSpriteLayerNo;
 
 dActor_c::dActor_c() :
     m_00(0), mCarryingPlayerNo(-1), m_17(0), m_1b(1.0f),
     mVisibleAreaSize(0.0f, 0.0f), mVisibleAreaOffset(0.0f, 0.0f),
     mMaxBound(0.0f, 0.0f, 0.0f, 0.0f) {
 
-    mpDeleteFlags = nullptr;
+    mpSpawnFlags = nullptr;
     mpDeleteVal = nullptr;
-    mEatenByID = 0;
-    mEatSpitType = 2;
+    mEatenByID = BASE_ID_NULL;
+    mEatBehaviour = EAT_TYPE_EAT_PERMANENT;
     m_25b = 0;
 
     mPlayerNo = -1;
     mNoRespawn = false;
 
-    setKind(0);
+    setKind(STAGE_ACTOR_GENERIC);
 
-    mStopMask = 1;
+    mExecStopMask = 1;
 
     setDefaultMaxBound();
     mDestroyBound = mBoundBox(256.0f, 256.0f, 80.0f, 80.0f);
@@ -71,14 +70,14 @@ dActor_c::dActor_c() :
     mRc.mpBc = &mBc;
 
     mBgCollFlags = 0;
-    mComboCount = 0;
+    mPointsCombo = 0;
 
     mLayer = m_tmpCtLayerNo;
     mCc.mLayer = mLayer;
     mBc.mLayer = mLayer;
     mRc.mLayer = mLayer;
 
-    mYoshiEatPoints = YOSHI_POINTS_200;
+    mEatPoints = EAT_POINTS_200;
     mBlockHit = false;
 }
 
@@ -113,7 +112,7 @@ int dActor_c::preExecute() {
     if (dGameCom::isGameStop(dGameCom::GAME_STOP_ANY)) {
         return NOT_READY;
     }
-    if (mExecStop & mStopMask) {
+    if (mExecStop & mExecStopMask) {
         return NOT_READY;
     }
     mRc.clrLink();
@@ -185,7 +184,7 @@ void dActor_c::setKind(u8 kind) {
 
 void dActor_c::setSearchNearPlayerFunc(int loopType) {
     /// @unofficial
-    static const searchNearPlayerFunc funcs[3] = {
+    static const searchNearPlayerFunc funcs[dScStage_c::LOOP_COUNT] = {
         searchNearPlayerNormal,
         searchNearPlayerLoop,
         searchNearPlayerLoop
@@ -193,16 +192,16 @@ void dActor_c::setSearchNearPlayerFunc(int loopType) {
     mSearchNearPlayerFunc = funcs[loopType];
 }
 
-dAcPy_c *dActor_c::searchNearPlayer(mVec2_c &pos) {
+dAcPy_c *dActor_c::searchNearPlayer(mVec2_c &delta) {
     mVec3_c centerPos = getCenterPos();
-    return searchNearPlayer_Main(pos, mVec2_c(centerPos.x, centerPos.y));
+    return searchNearPlayer_Main(delta, mVec2_c(centerPos.x, centerPos.y));
 }
 
-dAcPy_c *dActor_c::searchNearPlayer_Main(mVec2_c &delta, const mVec2_c &selfPos) {
-    return mSearchNearPlayerFunc(delta, selfPos);
+dAcPy_c *dActor_c::searchNearPlayer_Main(mVec2_c &delta, const mVec2_c &pos) {
+    return mSearchNearPlayerFunc(delta, pos);
 }
 
-dAcPy_c *dActor_c::searchNearPlayerNormal(mVec2_c &delta, const mVec2_c &selfPos) {
+dAcPy_c *dActor_c::searchNearPlayerNormal(mVec2_c &delta, const mVec2_c &pos) {
     dAcPy_c *closestPlayer = nullptr;
     float closest = 1e9;
     for (int i = 0; i < 4; i++) {
@@ -211,8 +210,8 @@ dAcPy_c *dActor_c::searchNearPlayerNormal(mVec2_c &delta, const mVec2_c &selfPos
             continue;
         }
 
-        float xDiff = player->mPos.x + player->mCenterOffs.x - selfPos.x;
-        float yDiff = player->mPos.y + player->mCenterOffs.y - selfPos.y;
+        float xDiff = player->mPos.x + player->mCenterOffs.x - pos.x;
+        float yDiff = player->mPos.y + player->mCenterOffs.y - pos.y;
         float dist = xDiff * xDiff + yDiff * yDiff;
 
         if (closest > dist) {
@@ -224,14 +223,14 @@ dAcPy_c *dActor_c::searchNearPlayerNormal(mVec2_c &delta, const mVec2_c &selfPos
     return closestPlayer;
 }
 
-dAcPy_c *dActor_c::searchNearPlayerLoop(mVec2_c &delta, const mVec2_c &selfPos) {
+dAcPy_c *dActor_c::searchNearPlayerLoop(mVec2_c &delta, const mVec2_c &pos) {
     dAcPy_c *closestPlayer = nullptr;
 
     float loopOffset = dBg_c::m_bg_p->mLoopOffset;
 
-    mVec2_c loopSelfPos;
-    loopSelfPos.x = dScStage_c::getLoopPosX(selfPos.x);
-    loopSelfPos.y = selfPos.y;
+    mVec2_c loopPos;
+    loopPos.x = dScStage_c::getLoopPosX(pos.x);
+    loopPos.y = pos.y;
     float closest = 1e9;
 
     dAcPy_c *player;
@@ -245,7 +244,7 @@ dAcPy_c *dActor_c::searchNearPlayerLoop(mVec2_c &delta, const mVec2_c &selfPos) 
         loopPlayerPos.y = player->getCenterY();
 
         mVec2_c adjDelta;
-        adjDelta.x = loopPlayerPos.x - loopSelfPos.x;
+        adjDelta.x = loopPlayerPos.x - loopPos.x;
 
         // Handle loop-over
         if (adjDelta.x < 0.0f) {
@@ -258,7 +257,7 @@ dAcPy_c *dActor_c::searchNearPlayerLoop(mVec2_c &delta, const mVec2_c &selfPos) 
             }
         }
 
-        adjDelta.y = loopPlayerPos.y - loopSelfPos.y;
+        adjDelta.y = loopPlayerPos.y - loopPos.y;
 
         float dist = adjDelta.x * adjDelta.x + adjDelta.y * adjDelta.y;
         if (closest > dist) {
@@ -271,7 +270,7 @@ dAcPy_c *dActor_c::searchNearPlayerLoop(mVec2_c &delta, const mVec2_c &selfPos) 
 }
 
 void dActor_c::setGetTrgToSrcDirFunc(int loopType) {
-    static const getTrgToSrcDirFunc funcs[3] = {
+    static const getTrgToSrcDirFunc funcs[dScStage_c::LOOP_COUNT] = {
         getTrgToSrcDirNormal,
         getTrgToSrcDirLoop,
         getTrgToSrcDirLoop
@@ -279,19 +278,18 @@ void dActor_c::setGetTrgToSrcDirFunc(int loopType) {
     mGetTrgToSrcDirFunc = funcs[loopType];
 }
 
-
-bool dActor_c::getTrgToSrcDir_Main(float x1, float x2) {
-    return mGetTrgToSrcDirFunc(x1, x2);
+bool dActor_c::getTrgToSrcDir_Main(float trgX, float srcX) {
+    return mGetTrgToSrcDirFunc(trgX, srcX);
 }
 
-bool dActor_c::getTrgToSrcDirNormal(float x1, float x2) {
-    return x1 < x2;
+bool dActor_c::getTrgToSrcDirNormal(float trgX, float srcX) {
+    return trgX < srcX;
 }
 
-bool dActor_c::getTrgToSrcDirLoop(float x1, float x2) {
-    float adjX1 = dScStage_c::getLoopPosX(x1);
-    float adjX2 = dScStage_c::getLoopPosX(x2);
-    float diffX = adjX1 - adjX2;
+bool dActor_c::getTrgToSrcDirLoop(float trgX, float srcX) {
+    float loopTrgX = dScStage_c::getLoopPosX(trgX);
+    float loopSrcX = dScStage_c::getLoopPosX(srcX);
+    float diffX = loopTrgX - loopSrcX;
 
     float loopOffset = dBg_c::m_bg_p->mLoopOffset / 2;
     if (diffX < 0.0f) {
@@ -359,22 +357,22 @@ void dActor_c::setSoftLight_Item(m3d::bmdl_c &mdl) {
     }
 }
 
-void dActor_c::deleteActor(u8 param_1) {
+void dActor_c::deleteActor(u8 deleteForever) {
     deleteRequest();
 
-    u8 *flags = mpDeleteFlags;
+    u8 *flags = mpSpawnFlags;
     u16 *val = mpDeleteVal;
     if (flags == nullptr || val == nullptr) {
         return;
     }
 
-    if (param_1 == 0) {
+    if (deleteForever == 0) {
         if (flags != nullptr) {
-            *flags = *flags & 0xfe;
+            *flags = *flags & ~ACTOR_SPAWNED;
         }
     } else {
         if (flags != nullptr) {
-            *flags = *flags | 8;
+            *flags = *flags | ACTOR_NO_RESPAWN;
         }
         if (val != nullptr) {
             *val = 300;
@@ -403,7 +401,7 @@ bool dActor_c::cullCheck(const mVec3_c &pos, const mBoundBox &bound, u8 areaID) 
 
     mVec2_c maxBoundSize = mMaxBound.getSize();
 
-    if ((course->mpUnk->mFlags & 1) == 0) {
+    if ((course->mpCourseSettings->mFlags & dCdCourseSettings_c::WRAP_AROUND_EDGES) == 0) {
         if (b.x + doubleBoundSize.x < -maxBoundSize.x || b.x > area->width + maxBoundSize.x) {
             return true;
         }
@@ -588,8 +586,8 @@ void dActor_c::allEnemyDeathEffSet() {
 }
 
 void dActor_c::touchFlagpole(s8 scoreSetType, int noScore) {
-    mVec3_c oldPos = mPos;
-    mVec3_c oldCenter = mCenterOffs;
+    mVec3_c effPos = mPos;
+    mVec3_c centerOffs = mCenterOffs;
 
     mNoRespawn = true;
     for (int i = 0; i < daPyMng_c::mNum; i++) {
@@ -599,8 +597,8 @@ void dActor_c::touchFlagpole(s8 scoreSetType, int noScore) {
         }
     }
 
-    oldPos += oldCenter;
-    mEf::createEffect("Wm_en_burst_s", 0, &oldPos, nullptr, nullptr);
+    effPos += centerOffs;
+    mEf::createEffect("Wm_en_burst_s", 0, &effPos, nullptr, nullptr);
     deleteActor(1);
 
     if (!noScore) {
@@ -630,15 +628,15 @@ bool dActor_c::setEatGlupDown(dActor_c *actor) {
     static const int yoshiEatPoints[] = { 1, 4 };
     static const int yoshiEatPoints2[] = { 200, 1000 };
 
-    if (mYoshiEatPoints != YOSHI_POINTS_NONE) {
+    if (mEatPoints != EAT_POINTS_NONE) {
         mVec3_c adjPos = actor->mPos;
         adjPos.y += 40.0f;
 
         s8 plrNo = *actor->getPlrNo();
-        dGameCom::CreateSmallScore(adjPos, yoshiEatPoints[mYoshiEatPoints], plrNo, false);
+        dGameCom::CreateSmallScore(adjPos, yoshiEatPoints[mEatPoints], plrNo, false);
 
         if (plrNo != -1) {
-            daPyMng_c::addScore(yoshiEatPoints2[mYoshiEatPoints], plrNo);
+            daPyMng_c::addScore(yoshiEatPoints2[mEatPoints], plrNo);
             dMultiMng_c::mspInstance->incEnemyDown(plrNo);
         }
     }
@@ -728,7 +726,7 @@ void dActor_c::slideComboSE(int count, bool clapType) {
 }
 
 void dActor_c::clrComboCnt() {
-    mComboCount = 0;
+    mPointsCombo = 0;
 }
 
 void dActor_c::waterSplashEffect(const mVec3_c &pos, float size) {
@@ -784,18 +782,18 @@ void dActor_c::poisonSplashEffect(const mVec3_c &pos, float size) {
     }
 }
 
-bool dActor_c::checkCarried(int *res) {
+bool dActor_c::checkCarried(int *playerNum) {
     for (int i = 0; i < 4; i++) {
         dAcPy_c *player = daPyMng_c::getPlayer(i);
         if (player != nullptr && fManager_c::searchBaseByID(player->mCarryActorID) == this) {
-            if (res != nullptr) {
-                *res = *player->getPlrNo();
+            if (playerNum != nullptr) {
+                *playerNum = *player->getPlrNo();
             }
             return true;
         }
     }
-    if (res != nullptr) {
-        *res = -1;
+    if (playerNum != nullptr) {
+        *playerNum = -1;
     }
     return false;
 }

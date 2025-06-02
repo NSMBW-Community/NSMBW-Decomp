@@ -15,8 +15,13 @@ struct AreaBoundU16 {
 };
 
 /// @unofficial
-class dCdUnk_c {
+class dCdCourseSettings_c {
 public:
+
+    enum FLAG_e {
+        WRAP_AROUND_EDGES = BIT_FLAG(0),
+    };
+
     char pad[8];
     u16 mFlags;
 };
@@ -24,7 +29,7 @@ public:
 class dCdFile_c {
 public:
     char pad[0xc];
-    dCdUnk_c *mpUnk;
+    dCdCourseSettings_c *mpCourseSettings;
     char pad2[0x1c];
     AreaBoundU16 *mpAreas;
     char pad3[0x380];
