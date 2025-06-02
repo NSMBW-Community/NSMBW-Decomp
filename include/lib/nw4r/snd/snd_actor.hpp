@@ -12,12 +12,13 @@ namespace BasicSound {
 
 class SoundHandle {
 public:
-    SoundHandle() {}
-    virtual ~SoundHandle() { nw4r::snd::SoundHandle::DetachSound();}
+    SoundHandle() : m_00(0), m_04(0.0f) {}
+    ~SoundHandle() { nw4r::snd::SoundHandle::DetachSound();}
 
     void DetachSound();
 
-    u8 mPad[4];
+    u32 m_00;
+    float m_04;
 };
 
 namespace SoundStartable {
@@ -36,6 +37,7 @@ public:
     virtual void SetupSound(nw4r::snd::SoundHandle *, unsigned long, const nw4r::snd::SoundStartable::StartInfo *, void *);
     virtual void detail_SetupSoundWithAmbientInfo(nw4r::snd::SoundHandle *, unsigned long, const nw4r::snd::SoundStartable::StartInfo *, nw4r::snd::detail::BasicSound::AmbientInfo *, void *);
 
+    int GetPlayingSoundCount(int) const;
     void SetPlayableSoundCount(int, int);
 };
 

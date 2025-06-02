@@ -7,6 +7,6 @@ public:
     void getCcBounds(mBoundBox &bounds); ///< @unofficial
     void cancelCarry(dActor_c *carriedActor);
 
-    char mPad[0x15e8];
+    char mPad[0x15c8];
     fBaseID_e mCarryActorID;
 };

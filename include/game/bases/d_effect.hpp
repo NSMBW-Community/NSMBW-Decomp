@@ -7,7 +7,7 @@ class followEffect_c : public mEf::effect_c {
 public:
     followEffect_c() {}
 
-    u8 mPad[8];
+    u8 mPad[0x8];
 };
 
 } // namespace dEf

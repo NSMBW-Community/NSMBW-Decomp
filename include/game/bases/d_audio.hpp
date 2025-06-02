@@ -9,7 +9,11 @@
 
 /// @ingroup bases
 
-template <int T>
+class Snd2DCalc {
+public:
+    void fn_8019ee20(float &, nw4r::math::VEC2 &, unsigned long);
+};
+
 class NMSndObjectBase : public nw4r::snd::SoundActor {
 public:
     enum OBJ_TYPE {
@@ -20,23 +24,47 @@ public:
     virtual ~NMSndObjectBase();
 
     nw4r::snd::SoundArchivePlayer &mArcPlayer;
-    u8 mPad[0x50];
+    u8 mPad[0x4c];
     u32 mTotalCount;
     u32 m_58;
+    Snd2DCalc *mpSnd2dCalc;
     OBJ_TYPE mObjType;
 };
 
 template<int T>
-class NMSndObject : public NMSndObjectBase<T> {
+class NMSndObject : public NMSndObjectBase {
     class SoundHandlePrm : public nw4r::snd::SoundHandle {};
 public:
-    NMSndObject<T>() :
-        NMSndObjectBase<T>(NMSndObjectBase<T>::OBJ_TYPE_0, SndAudioMgr::sInstance->mArcPlayer),
-        m_64(1.0f), m_68(0), m_6c(1.0f), m_70(1.0f)
+
+    NMSndObject() :
+        NMSndObjectBase(NMSndObjectBase::OBJ_TYPE_0, SndAudioMgr::sInstance->mArcPlayer),
+        m_64(1.0f), m_68(0), m_6c(1.0f), m_70(0.0f)
     {
         SetPlayableSoundCount(0, T);
-        mTotalCount = 2 + T;
+        mTotalCount = T + 2;
         m_58 = 1;
+        m_ac = T + 1;
+        m_b0 = T + 2;
+        m_b4 = 0;
+    }
+
+    virtual void calc(const nw4r::math::VEC2 &) {
+        for (int i = 0; i < T; i++) {
+            if (GetPlayingSoundCount(i) > 0) {
+                mpSnd2dCalc->fn_8019ee20(m_64, mPos, 0);
+                for (int sndIdx = 0; sndIdx < mTotalCount; sndIdx++) {
+                    if (mParams[0].m_00 == 0) {
+                        continue;
+                    }
+                    int idx = (mParams[0].m_00 == 0) ? -1 : mParams[0].m_00;
+                    u32 flag = SndAudioMgr::sInstance->get3DCtrlFlag(idx);
+                    if ((~flag & 1) == 0) {
+
+                    }
+                }
+                return;
+            }
+        }
     }
 
     virtual void startSound(unsigned long, const nw4r::math::VEC2 &, unsigned long);
@@ -45,10 +73,18 @@ public:
     u32 m_68;
     float m_6c;
     float m_70;
-    SoundHandlePrm mParams[2 + T];
+    SoundHandlePrm mParams[T + 2];
+    nw4r::math::VEC2 mPos;
+    u32 m_ac;
+    u32 m_b0;
+    u8 m_b4;
 };
 
 class SndObjctPly : public NMSndObject<4> {
+public:
+    void calculate(const nw4r::math::VEC2 &pos) {
+        NMSndObject<4>::calc(pos);
+    }
 };
 
 class SndObjctCmnEmy : public NMSndObject<4> {
@@ -71,7 +107,10 @@ namespace dAudio {
     int getRemotePlayer(int);
     nw4r::math::VEC2 cvtSndObjctPos(const mVec3_c &);
 
-    class SndObjctPly_c : SndObjctPly {
+    class SndObjctPlyBase_c : public SndObjctPly {
+    };
+
+    class SndObjctPly_c : public SndObjctPlyBase_c {
     };
 
     class SndObjctCmnEmy_c : SndObjctCmnEmy {

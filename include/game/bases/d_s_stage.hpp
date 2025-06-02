@@ -15,6 +15,8 @@ public:
 
     char pad[0x119a];
     u8 mCurrCourse;
+    u8 mCurrAreaNo;
+    u8 mCurrLayer;
 
     static float getLoopPosX(float x);
     static int m_loopType;
@@ -24,6 +26,7 @@ public:
     typedef void (*changePosFunc)(mVec3_c *);
     static void setChangePosFunc(int);
 
+    static int m_gameMode;
     static changePosFunc changePos;
     static dScStage_c *m_instance;
 };

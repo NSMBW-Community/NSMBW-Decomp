@@ -47,6 +47,7 @@ public:
     virtual void getRootEmitter() const;
     virtual void reset();
 
+    u8 mPad[0x7c];
 };
 
 } // namespace EGG

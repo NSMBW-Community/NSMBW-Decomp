@@ -14,9 +14,11 @@ public:
     dRc_c *mpRc;
     char mPad2[0x34];
     u32 mFlags;
-    char mPad3[0x59];
-    u8 mLineKind;
-    char mPad4[0x6];
+    char mPad3[0xc];
+    u8 mOwningPlrNo;
+    char mPad4[0x4c];
+    u8 m_e5;
+    char mPad5[0x6];
     u8 mLayer;
 
     static int checkWaterDepth(float, float, u8, u8, float *);
