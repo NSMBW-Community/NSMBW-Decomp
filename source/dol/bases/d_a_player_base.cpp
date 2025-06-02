@@ -396,7 +396,7 @@ void daPlBase_c::finalizeState_Land() {}
 void daPlBase_c::executeState_Land() {}
 
 bool daPlBase_c::checkCrouch() {
-    return true;
+    return false;
 }
 
 bool daPlBase_c::setCancelCrouch() {
@@ -1130,6 +1130,37 @@ bool daPlBase_c::setFunsui() {
     }
     return true;
 }
+
+bool daPlBase_c::updateFunsuiPos(float x, float y) {
+    if (mStateMgr.getStateID()->isEqual(StateID_Funsui)) {
+        mPos.x = x;
+        mPos.y = y;
+        return true;
+    }
+    return false;
+}
+
+bool daPlBase_c::releaseFunsui(float f) {
+    if (mStateMgr.getStateID()->isEqual(StateID_Funsui)) {
+        mSpeed.y = f;
+        mHipActionType = HIP_ACTION_ATTACK_START;
+        mKey.onStatus(dAcPyKey_c::STATUS_FORCE_NO_JUMP);
+        offStatus(STATUS_7F);
+    }
+    return true;
+}
+
+void daPlBase_c::releaseFunsuiAction() {
+    changeState(StateID_Fall, nullptr);
+}
+
+void daPlBase_c::initializeState_Funsui() { /* ... */ }
+void daPlBase_c::finalizeState_Funsui() { /* ... */ }
+void daPlBase_c::executeState_Funsui() { /* ... */ }
+
+void daPlBase_c::initializeState_Kani() {}
+void daPlBase_c::finalizeState_Kani() {}
+void daPlBase_c::executeState_Kani() {}
 
 STATE_BASE_VIRTUAL_DEFINE(daPlBase_c, DemoNone);
 STATE_BASE_VIRTUAL_DEFINE(daPlBase_c, DemoStartWait);

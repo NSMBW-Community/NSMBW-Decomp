@@ -17,7 +17,7 @@ public:
 
     u8 mPad1[0x24];
     m3d::anmChr_c mAnm;
-    u8 mPad2[0x100];
+    u8 mPad2[0xf4];
     int m_154;
 
     static const float scWaterCrouchAnmSpeed;
@@ -128,15 +128,106 @@ public:
     virtual int draw();
 
     virtual void executeMain() {}
+    virtual void executeLastPlayer() {}
+    virtual void executeLastAll() {}
     virtual bool isItemKinopio();
-    virtual void changeState(const sStateIDIf_c &, void *);
-
+    virtual void vfe4();
+    virtual u8 getTallType(s8);
+    virtual void *getHeadBgPointData() { return nullptr; };
+    virtual void *getWallBgPointData() { return nullptr; };
+    virtual void *getFootBgPointData() { return nullptr; };
+    virtual float getStandHeadBgPointY() { return 0.0f; }
+    virtual void checkBgCrossSub() {}
+    virtual void postBgCross();
+    virtual float getSandSinkRate() { return 0.0f; }
+    virtual void setReductionScale();
     virtual void initStampReduction();
     virtual void calcJumpDaiReductionScale(int, int);
+    virtual void setReductionBoyon();
+    virtual void setPressBgDamage(int, int);
+    virtual void setBalloonInDispOut(int);
+    virtual bool isChange() { return false; }
+    virtual void changeNextScene(int);
+    virtual bool isEnableDokanInStatus(void);
+    virtual void setHideNotGoalPlayer();
+    virtual void vf130();
+    virtual bool setDemoCannonWarp(int, short, short) { return false; }
 
-    virtual void *getHeadBgPointData() { return nullptr; };
-    virtual float getStandHeadBgPointY() { return 0.0f; }
+    STATE_VIRTUAL_FUNC_DECLARE(daPlBase_c, DemoNone);
+    STATE_VIRTUAL_FUNC_DECLARE(daPlBase_c, DemoStartWait);
+    STATE_VIRTUAL_FUNC_DECLARE(daPlBase_c, DemoWait);
+    STATE_VIRTUAL_FUNC_DECLARE(daPlBase_c, DemoInDokanU);
+    STATE_VIRTUAL_FUNC_DECLARE(daPlBase_c, DemoInDokanD);
+    STATE_VIRTUAL_FUNC_DECLARE(daPlBase_c, DemoInDokanR);
+    STATE_VIRTUAL_FUNC_DECLARE(daPlBase_c, DemoInDokanL);
+    STATE_VIRTUAL_FUNC_DECLARE(daPlBase_c, DemoOutDokanU);
+    STATE_VIRTUAL_FUNC_DECLARE(daPlBase_c, DemoOutDokanD);
+    STATE_VIRTUAL_FUNC_DECLARE(daPlBase_c, DemoOutDokanR);
+    STATE_VIRTUAL_FUNC_DECLARE(daPlBase_c, DemoOutDokanL);
+    STATE_VIRTUAL_FUNC_DECLARE(daPlBase_c, DemoOutDokanRoll);
+    STATE_VIRTUAL_FUNC_DECLARE(daPlBase_c, DemoInWaterTank);
+    STATE_VIRTUAL_FUNC_DECLARE(daPlBase_c, DemoOutWaterTank);
+    STATE_VIRTUAL_FUNC_DECLARE(daPlBase_c, DemoRailDokan);
+    STATE_VIRTUAL_FUNC_DECLARE(daPlBase_c, DemoDown);
+    STATE_VIRTUAL_FUNC_DECLARE(daPlBase_c, DemoNextGotoBlock);
+    STATE_VIRTUAL_FUNC_DECLARE(daPlBase_c, DemoGoal);
+    STATE_VIRTUAL_FUNC_DECLARE(daPlBase_c, DemoControl);
 
+    virtual void initialDokanUnder();
+    virtual void initialDokanUper();
+    virtual void initialDokanRight();
+    virtual void initialDokanLeft();
+    virtual void initialDokanUnderM();
+    virtual void initialDokanUperM();
+    virtual void initialDokanRightM();
+    virtual void initialDokanLeftM();
+    virtual void initialDokanDepth();
+    virtual void initialDoor();
+    virtual void initialFall();
+    virtual void initialVine();
+    virtual void initialJumpRight();
+    virtual void initialJumpLeft();
+    virtual void initialHipAttack();
+    virtual void initialSlip();
+    virtual void initialSwim();
+    virtual void initialBlockJump();
+    virtual void initialBlockJumpBelow();
+    virtual void initialTorideBoss();
+    virtual void initialNormal();
+
+    virtual void setCreateAction(int);
+    virtual void setTimeOverDemo();
+    virtual void setFallDownDemo();
+    virtual void setDokanIn();
+    virtual void initDemoOutDokan();
+    virtual void vf284();
+    virtual void initDemoGoalBase();
+    virtual void executeDemoGoal_Run();
+    virtual void initializeDemoControl();
+
+    virtual void changeState(const sStateIDIf_c &, void *);
+
+    STATE_VIRTUAL_FUNC_DECLARE(daPlBase_c, None);
+    STATE_VIRTUAL_FUNC_DECLARE(daPlBase_c, Walk);
+    STATE_VIRTUAL_FUNC_DECLARE(daPlBase_c, Jump);
+    STATE_VIRTUAL_FUNC_DECLARE(daPlBase_c, SitJump);
+    STATE_VIRTUAL_FUNC_DECLARE(daPlBase_c, Fall);
+    STATE_VIRTUAL_FUNC_DECLARE(daPlBase_c, Land);
+    STATE_VIRTUAL_FUNC_DECLARE(daPlBase_c, Crouch);
+    STATE_VIRTUAL_FUNC_DECLARE(daPlBase_c, Slip);
+    STATE_VIRTUAL_FUNC_DECLARE(daPlBase_c, Turn);
+    STATE_VIRTUAL_FUNC_DECLARE(daPlBase_c, HipAttack);
+    STATE_VIRTUAL_FUNC_DECLARE(daPlBase_c, Swim);
+    STATE_VIRTUAL_FUNC_DECLARE(daPlBase_c, JumpDai);
+    STATE_VIRTUAL_FUNC_DECLARE(daPlBase_c, PlayerJumpDai);
+    STATE_VIRTUAL_FUNC_DECLARE(daPlBase_c, Funsui);
+    STATE_VIRTUAL_FUNC_DECLARE(daPlBase_c, Kani);
+    STATE_VIRTUAL_FUNC_DECLARE(daPlBase_c, Cloud);
+    STATE_VIRTUAL_FUNC_DECLARE(daPlBase_c, AnimePlay);
+    STATE_VIRTUAL_FUNC_DECLARE(daPlBase_c, WaitJump);
+
+    virtual bool isWaitFrameCountMax() { return false; }
+    virtual bool checkWalkNextAction() { return false; }
     virtual void vf378(int);
     virtual void vf37c(int);
     virtual void vf380(int);
@@ -144,26 +235,69 @@ public:
     virtual void vf384(int);
     virtual void walkAction_Move();
     virtual bool checkCrouch();
+    virtual bool setCancelCrouch();
+    virtual void setSlipAction();
     virtual void slipActionMove(int);
-
+    virtual void setFallAction();
     virtual void setHipAttack_AttackStart();
 
-    virtual void setSlipAction();
+    virtual void releaseFunsuiAction();
+
+    virtual float getCloudOffsetY() { return 0.0f; }
+    virtual bool setRideJrCrown(const dActor_c *) { return false; }
+    virtual bool isRideJrCrownOwn(const dActor_c *) { return false; }
+    virtual void setRideJrCrownMtx(const mMtx_c *) {}
+    virtual void setRideJrCrownAnm(int) {}
+
     virtual float *getHeadTopPosP() { return nullptr; }
     virtual float *getGravityData() { return mGravityData; }
     virtual bool isCarry() const { return false; }
+    virtual bool isLiftUp();
 
-    virtual u8 getTallType(s8);
+    virtual void vf3d0();
+    virtual bool isStar() const;
+    virtual void setStar();
+    virtual void endStar();
+    virtual void setVirusStar(daPlBase_c *) {}
+    virtual void clearStarCount();
+    virtual int getStarCount();
+    virtual int calcStarCount();
+
+    virtual bool isNoDamage();
+    virtual void setDamage();
+    virtual void setForcedDamage();
 
     virtual void vf3fc(float, float, int, int, int);
+    virtual void vf400();
+    virtual void setWaitJump(float);
 
     virtual bool setHipAttackOnEnemy(mVec3_c *);
 
+    virtual void clearJumpActionInfo();
+    virtual void setSwimSpeed();
+    virtual void setLandSE();
+
+    virtual void set1UpKinokoEffect() {}
+    virtual void setFlagGetEffect() {}
     virtual void setHipAttackEffect();
+
     virtual void setZPosition();
+    virtual void setZPosition(float);
+    virtual void setZPositionDirect(float);
+    virtual void offZPosSetNone();
+
+    virtual void vf434();
+    virtual void vf438();
+
+    virtual void startQuakeShock();
+    virtual void startPatternRumble();
+
     virtual short getMukiAngle(u8 direction);
     virtual int turnAngle();
     virtual void maxFallSpeedSet();
+
+    virtual void setDamage2();
+
     void executeState();
     void changeDemoState(const sStateIDIf_c &, int);
 
@@ -184,8 +318,6 @@ public:
     void calcSpeedOnIceLift();
     void calcAccOnIceLift();
     bool setCrouchJump();
-    void setFallAction();
-    bool setCancelCrouch();
     bool fn_80047ee0();
     bool fn_80047f10();
     float getSlipMaxSpeedF();
@@ -230,46 +362,11 @@ public:
     void fn_80049d70();
     void fn_800541e0(const daPlBase_c *, int);
     bool isMameAction();
-    bool setFunsui();
     bool isDemo();
 
-    STATE_VIRTUAL_FUNC_DECLARE(daPlBase_c, None);
-    STATE_VIRTUAL_FUNC_DECLARE(daPlBase_c, Walk);
-    STATE_VIRTUAL_FUNC_DECLARE(daPlBase_c, Jump);
-    STATE_VIRTUAL_FUNC_DECLARE(daPlBase_c, SitJump);
-    STATE_VIRTUAL_FUNC_DECLARE(daPlBase_c, Fall);
-    STATE_VIRTUAL_FUNC_DECLARE(daPlBase_c, Land);
-    STATE_VIRTUAL_FUNC_DECLARE(daPlBase_c, Crouch);
-    STATE_VIRTUAL_FUNC_DECLARE(daPlBase_c, Slip);
-    STATE_VIRTUAL_FUNC_DECLARE(daPlBase_c, Turn);
-    STATE_VIRTUAL_FUNC_DECLARE(daPlBase_c, HipAttack);
-    STATE_VIRTUAL_FUNC_DECLARE(daPlBase_c, Swim);
-    STATE_VIRTUAL_FUNC_DECLARE(daPlBase_c, JumpDai);
-    STATE_VIRTUAL_FUNC_DECLARE(daPlBase_c, PlayerJumpDai);
-    STATE_VIRTUAL_FUNC_DECLARE(daPlBase_c, Funsui);
-    STATE_VIRTUAL_FUNC_DECLARE(daPlBase_c, Kani);
-    STATE_VIRTUAL_FUNC_DECLARE(daPlBase_c, Cloud);
-    STATE_VIRTUAL_FUNC_DECLARE(daPlBase_c, AnimePlay);
-    STATE_VIRTUAL_FUNC_DECLARE(daPlBase_c, WaitJump);
-    STATE_VIRTUAL_FUNC_DECLARE(daPlBase_c, DemoNone);
-    STATE_VIRTUAL_FUNC_DECLARE(daPlBase_c, DemoStartWait);
-    STATE_VIRTUAL_FUNC_DECLARE(daPlBase_c, DemoWait);
-    STATE_VIRTUAL_FUNC_DECLARE(daPlBase_c, DemoInDokanU);
-    STATE_VIRTUAL_FUNC_DECLARE(daPlBase_c, DemoInDokanD);
-    STATE_VIRTUAL_FUNC_DECLARE(daPlBase_c, DemoInDokanR);
-    STATE_VIRTUAL_FUNC_DECLARE(daPlBase_c, DemoInDokanL);
-    STATE_VIRTUAL_FUNC_DECLARE(daPlBase_c, DemoOutDokanU);
-    STATE_VIRTUAL_FUNC_DECLARE(daPlBase_c, DemoOutDokanD);
-    STATE_VIRTUAL_FUNC_DECLARE(daPlBase_c, DemoOutDokanR);
-    STATE_VIRTUAL_FUNC_DECLARE(daPlBase_c, DemoOutDokanL);
-    STATE_VIRTUAL_FUNC_DECLARE(daPlBase_c, DemoOutDokanRoll);
-    STATE_VIRTUAL_FUNC_DECLARE(daPlBase_c, DemoInWaterTank);
-    STATE_VIRTUAL_FUNC_DECLARE(daPlBase_c, DemoOutWaterTank);
-    STATE_VIRTUAL_FUNC_DECLARE(daPlBase_c, DemoRailDokan);
-    STATE_VIRTUAL_FUNC_DECLARE(daPlBase_c, DemoDown);
-    STATE_VIRTUAL_FUNC_DECLARE(daPlBase_c, DemoNextGotoBlock);
-    STATE_VIRTUAL_FUNC_DECLARE(daPlBase_c, DemoGoal);
-    STATE_VIRTUAL_FUNC_DECLARE(daPlBase_c, DemoControl);
+    bool setFunsui();
+    bool updateFunsuiPos(float, float);
+    bool releaseFunsui(float);
 
     u8 mPad1[0x20];
     u32 m_20;
