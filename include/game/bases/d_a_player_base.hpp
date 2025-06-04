@@ -17,7 +17,9 @@ public:
 
     u8 mPad1[0x24];
     m3d::anmChr_c mAnm;
-    u8 mPad2[0xf4];
+    u8 mPad2[0x6c];
+    mVec3_c m_cc;
+    u8 mPad3[0x7c];
     int m_154;
 
     static const float scWaterCrouchAnmSpeed;
@@ -45,7 +47,13 @@ public:
         T_8, T_9, T_A, T_B, T_C
     };
 
-    enum HipAction_e {
+    enum SlipSubstate_e {
+        SLIP_ACTION_NONE,
+        SLIP_ACTION_STOOP,
+        SLIP_ACTION_END
+    };
+
+    enum HipSubstate_e {
         HIP_ACTION_READY,
         HIP_ACTION_ATTACK_START,
         HIP_ACTION_ATTACK_FALL,
@@ -55,10 +63,33 @@ public:
         HIP_ACTION_TO_STOOP
     };
 
+    enum JumpDaiSubstate_e {
+        JUMP_DAI_ACTION_0,
+        JUMP_DAI_ACTION_1,
+    };
+
+    enum FunsuiSubstate_e {
+        FUNSUI_ACTION_NONE,
+        FUNSUI_ACTION_START
+    };
+
+    enum AnimePlaySubstate_e {
+        ANIME_PLAY_ACTION_0,
+        ANIME_PLAY_ACTION_1,
+        ANIME_PLAY_ACTION_2
+    };
+
+    enum PowerChangeType_e {
+        POWER_CHANGE_0 = 0,
+        POWER_CHANGE_1 = 1,
+        POWER_CHANGE_2 = 2
+    };
+
     enum STATUS_e {
         STATUS_01 = 0x01,
         STATUS_03 = 0x03,
         STATUS_0A = 0x0a,
+        STATUS_12 = 0x12,
         STATUS_14 = 0x14,
         STATUS_15 = 0x15,
         STATUS_16 = 0x16,
@@ -68,15 +99,21 @@ public:
         STATUS_1D = 0x1d,
         STATUS_1E = 0x1e,
         STATUS_22 = 0x22,
+        STATUS_24 = 0x24,
+        STATUS_2B = 0x2b,
         STATUS_2D = 0x2d,
         STATUS_2E = 0x2e,
         STATUS_30 = 0x30,
+        STATUS_31 = 0x31,
+        STATUS_33 = 0x33,
         STATUS_3C = 0x3c,
         STATUS_40 = 0x40,
         STATUS_41 = 0x41,
         STATUS_42 = 0x42,
         STATUS_45 = 0x45,
         STATUS_4D = 0x4d,
+        STATUS_4E = 0x4e,
+        STATUS_51 = 0x51,
         STATUS_52 = 0x52,
         STATUS_59 = 0x59,
         STATUS_5B = 0x5b,
@@ -87,6 +124,7 @@ public:
         STATUS_74 = 0x74,
         STATUS_7A = 0x7a,
         STATUS_7D = 0x7d,
+        STATUS_7E = 0x7e,
         STATUS_7F = 0x7f,
         STATUS_82 = 0x82,
         STATUS_83 = 0x83,
@@ -98,6 +136,7 @@ public:
         STATUS_8C = 0x8c,
         STATUS_8D = 0x8d,
         STATUS_91 = 0x91,
+        STATUS_96 = 0x96,
         STATUS_97 = 0x97,
         STATUS_98 = 0x98,
         STATUS_9F = 0x9f,
@@ -107,6 +146,7 @@ public:
         STATUS_A8 = 0xa8,
         STATUS_AA = 0xaa,
         STATUS_AB = 0xab,
+        STATUS_AD = 0xad,
         STATUS_AE = 0xae,
         STATUS_B5 = 0xb5,
         STATUS_B7 = 0xb7,
@@ -115,6 +155,18 @@ public:
         STATUS_BE = 0xbe,
         STATUS_C4 = 0xc4,
     };
+
+    struct SpeedData_t {
+        float data[9];
+
+        SpeedData_t *operator=(const SpeedData_t &other) {
+            for (int i = 0; i < 9; ++i) {
+                data[i] = other.data[i];
+            }
+            return this;
+        }
+    };
+    // typedef float SpeedData_t[9];
 
     daPlBase_c();
     virtual ~daPlBase_c();
@@ -200,7 +252,7 @@ public:
     virtual void setFallDownDemo();
     virtual void setDokanIn();
     virtual void initDemoOutDokan();
-    virtual void vf284();
+    virtual bool vf284(int);
     virtual void initDemoGoalBase();
     virtual void executeDemoGoal_Run();
     virtual void initializeDemoControl();
@@ -243,7 +295,7 @@ public:
 
     virtual void releaseFunsuiAction();
 
-    virtual float getCloudOffsetY() { return 0.0f; }
+    virtual float getCloudOffsetY();
     virtual bool setRideJrCrown(const dActor_c *) { return false; }
     virtual bool isRideJrCrownOwn(const dActor_c *) { return false; }
     virtual void setRideJrCrownMtx(const mMtx_c *) {}
@@ -255,7 +307,7 @@ public:
     virtual bool isLiftUp();
 
     virtual void vf3d0();
-    virtual bool isStar() const;
+    virtual int isStar() const;
     virtual void setStar();
     virtual void endStar();
     virtual void setVirusStar(daPlBase_c *) {}
@@ -286,10 +338,10 @@ public:
     virtual void setZPositionDirect(float);
     virtual void offZPosSetNone();
 
-    virtual void vf434();
+    virtual void vf434(int, int);
     virtual void vf438();
 
-    virtual void startQuakeShock();
+    virtual void startQuakeShock(int);
     virtual void startPatternRumble();
 
     virtual short getMukiAngle(u8 direction);
@@ -320,12 +372,10 @@ public:
     bool setCrouchJump();
     bool fn_80047ee0();
     bool fn_80047f10();
-    float getSlipMaxSpeedF();
     void gravitySet();
     void moveSpeedSet();
     void powerSet();
     bool checkJumpTrigger();
-    bool checkSlipEndKey();
     void fn_800488f0(int);
     void setSlipAction_ToStoop();
     void setSlipAction_ToEnd();
@@ -357,16 +407,59 @@ public:
     void HipAction_StandNormalEnd();
     void HipAction_ToStoop();
     bool isSlipSaka();
+    bool isSaka();
     bool setJumpDaiRide();
     bool setPlayerJumpDai(daPlBase_c *other);
     void fn_80049d70();
     void fn_800541e0(const daPlBase_c *, int);
     bool isMameAction();
     bool isDemo();
+    void setControlDemoWait();
+    void initDemoKimePose();
+    void fn_80051d00(int);
+    void airPowerSet();
+    bool checkSlip();
+    bool checkCrouchSlip();
+    bool checkSlipEndKey();
+    float getSlipMaxSpeedF();
+    float getSakaMaxSpeedRatio(u8 direction);
+    float getSakaStopAccele(u8 direction);
+    float getSakaMoveAccele(u8 direction);
+    float fn_8004b5e0();
+    PowerChangeType_e getPowerChangeType(bool);
+    float *getSpeedData();
+
+    bool setSandMoveSpeed();
 
     bool setFunsui();
     bool updateFunsuiPos(float, float);
     bool releaseFunsui(float);
+
+    bool setCloudOn(dActor_c *cloudActor);
+    void cancelCloudOn();
+    mVec3_c getCloudPos();
+    bool updateCloudMove();
+
+    void DemoAnmNormal();
+    void DemoAnmBossSetUp();
+    void DemoAnmBossGlad();
+    void DemoAnmBossAttention();
+    void DemoAnmBossKeyGet();
+
+    void simpleMoveSpeedSet();
+    void grandPowerSet(); // (misspelling of "ground")
+    void slipPowerSet(int);
+
+    void icePowerChange(int);
+    void normalPowerSet();
+    void fn_8004bf80(SpeedData_t *data);
+
+    void setJumpGravity();
+    void setButtonJumpGravity();
+    void setNormalJumpGravity();
+
+    float calcStarAccel(float f) { return 3.0f * f; }
+    float calcIdkAccel(float f) { return 0.375f * f; }
 
     u8 mPad1[0x20];
     u32 m_20;
@@ -382,7 +475,7 @@ public:
     mVec3_c m_348;
     float m_354;
     u32 m_358;
-    u32 m_35c;
+    int m_35c;
     u32 m_360;
     mEf::levelEffect_c mLevelEfs2;
     mEf::levelEffect_c mLevelEfs3;
@@ -402,7 +495,8 @@ public:
     mVec3_c m_cb0;
     u8 mPad8[0x18];
     float *mGravityData;
-    u8 mPad9[0x24];
+    u32 m_cd8;
+    u8 mPad9[0x20];
     PLAYER_POWERUP_e mPowerup;
     u8 mPad10[0x3e];
     u32 m_d40;
@@ -411,8 +505,8 @@ public:
     u32 m_d4c;
     u8 mPad11[0x38];
     D88_TYPE_e m_d88;
-    u8 mPad12[0xa];
-    short m_d96, m_d98, m_d9a;
+    u8 mPad12[0x8];
+    short m_d94, m_d96, m_d98, m_d9a;
     u8 mPad13[0x32];
     dCc_c mCc1, mAttCc1, mAttCc2, mAttCc3;
     u8 mPad14[0x24];
@@ -420,8 +514,9 @@ public:
     u8 mPad15[0x10];
     sFStateMgr_c<daPlBase_c, sStateMethodUsr_FI_c> mStateMgr;
     void *mStateChangeParam; ///< To be used as a kind of argument to the new state.
-    HipAction_e mHipActionType;
-    int m_1114, m_1118;
+    int mSubstate; ///< States can use this as a kind of sub-state variable (cast to some enum)
+    int m_1114;
+    int m_1118;
     mVec2_c m_111c;
     u8 mPad16[0x8];
     float m_112c;
