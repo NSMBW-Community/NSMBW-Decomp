@@ -12,6 +12,7 @@ class dPyMdlBase_c {
 public:
     virtual void setAnm(int, float, float, float);
     virtual void setFrame(float);
+    bool isFootStepTiming();
 
     void getJointPos(mVec3_c *, int);
 
@@ -89,6 +90,7 @@ public:
         STATUS_01 = 0x01,
         STATUS_03 = 0x03,
         STATUS_0A = 0x0a,
+        STATUS_0E = 0x0e,
         STATUS_12 = 0x12,
         STATUS_14 = 0x14,
         STATUS_15 = 0x15,
@@ -110,7 +112,9 @@ public:
         STATUS_40 = 0x40,
         STATUS_41 = 0x41,
         STATUS_42 = 0x42,
+        STATUS_43 = 0x43,
         STATUS_45 = 0x45,
+        STATUS_4B = 0x4b,
         STATUS_4D = 0x4d,
         STATUS_4E = 0x4e,
         STATUS_51 = 0x51,
@@ -166,7 +170,8 @@ public:
             return this;
         }
     };
-    // typedef float SpeedData_t[9];
+
+    typedef void (daPlBase_c::*ProcFunc)();
 
     daPlBase_c();
     virtual ~daPlBase_c();
@@ -390,6 +395,8 @@ public:
     void setTurnEnd();
     void setVsPlHipAttackEffect();
     void setLandSmokeEffect(int);
+    void fn_80057f60(int soundID, bool);
+    void fn_80057fd0(int soundID, short, bool);
     void fn_80057e70(int soundID, bool);
     void setHipAttackDropEffect();
     void setHipBlockBreak();
@@ -428,6 +435,22 @@ public:
     float fn_8004b5e0();
     PowerChangeType_e getPowerChangeType(bool);
     float *getSpeedData();
+    void calcWindSpeed();
+    void startFootSoundPlayer(unsigned long);
+    void setSlipSE();
+    bool setSandFunsuiLandEffect();
+    void setLandSmokeEffectLight();
+    void setStartJumpEffect(int);
+    bool setSandJumpEffect();
+    void setLandJumpEffect(int);
+    void setSlipOnWaterEffect(mEf::levelEffect_c *effect);
+    void setSlipSmokeEffect();
+    void setBrakeSmokeEffect(mVec3_c &offset);
+    void setTurnSmokeEffect();
+    void fadeOutTurnEffect();
+    void setSandEffect();
+    void setSoundPlyMode();
+    void setFootSound();
 
     bool setSandMoveSpeed();
 
@@ -490,37 +513,47 @@ public:
     u8 mPad6[0x24];
     float m_c9c;
     u8 mPad7[1];
-    bool m_ca1;
+    u8 m_ca1;
     mVec3_c m_ca4;
     mVec3_c m_cb0;
-    u8 mPad8[0x18];
+    u8 mPad8[0x4];
+    float m_cc0;
+    float m_cc4;
+    float m_cc8;
+    u8 mPad9[0x8];
     float *mGravityData;
     u32 m_cd8;
-    u8 mPad9[0x20];
+    u8 mPad10[0x20];
     PLAYER_POWERUP_e mPowerup;
-    u8 mPad10[0x3e];
+    u8 mPad11[0x3e];
     u32 m_d40;
     u32 m_d44;
     u32 m_d48;
     u32 m_d4c;
-    u8 mPad11[0x38];
+    u8 mPad12[0x38];
     D88_TYPE_e m_d88;
-    u8 mPad12[0x8];
+    u8 mPad13[0x8];
     short m_d94, m_d96, m_d98, m_d9a;
-    u8 mPad13[0x32];
+    u8 mPad14[0x6];
+    float m_da4;
+    float m_da8;
+    float m_dac;
+    float m_db0;
+    u8 mPad15[0x1c];
     dCc_c mCc1, mAttCc1, mAttCc2, mAttCc3;
-    u8 mPad14[0x24];
+    u8 mPad16[0x24];
     sFStateMgr_c<daPlBase_c, sStateMethodUsr_FI_c> mDemoStateMgr;
-    u8 mPad15[0x10];
+    u8 mPad17[0x10];
     sFStateMgr_c<daPlBase_c, sStateMethodUsr_FI_c> mStateMgr;
     void *mStateChangeParam; ///< To be used as a kind of argument to the new state.
     int mSubstate; ///< States can use this as a kind of sub-state variable (cast to some enum)
     int m_1114;
     int m_1118;
     mVec2_c m_111c;
-    u8 mPad16[0x8];
+    u8 mPad18[0x4];
+    int m_1128;
     float m_112c;
-    u8 mPad17[4];
+    u8 mPad19[4];
     float m_1134, m_1138, m_113c;
 
     static const float sc_DirSpeed[2];

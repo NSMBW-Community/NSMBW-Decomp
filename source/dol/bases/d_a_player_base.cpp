@@ -2,6 +2,7 @@
 #include <game/bases/d_a_player_manager.hpp>
 #include <game/bases/d_s_stage.hpp>
 #include <game/bases/d_attention.hpp>
+#include <game/bases/d_mask_manager.hpp>
 #include <game/bases/d_quake.hpp>
 #include <game/sLib/s_math.hpp>
 #include <constants/sound_list.h>
@@ -948,7 +949,7 @@ void daPlBase_c::finalizeState_HipAttack() {
     m_344 = 0;
 }
 void daPlBase_c::executeState_HipAttack() {
-    static void (daPlBase_c::*l_HipActionProc[])() = {
+    static ProcFunc l_HipActionProc[] = {
         &daPlBase_c::HipAction_Ready,
         &daPlBase_c::HipAction_AttackStart,
         &daPlBase_c::HipAction_AttackFall,
@@ -1288,7 +1289,7 @@ void daPlBase_c::finalizeState_AnimePlay() {
 }
 
 void daPlBase_c::executeState_AnimePlay() {
-    static void (daPlBase_c::*scDemoAnmFunc[])() = {
+    static const ProcFunc scDemoAnmFunc[] = {
         &daPlBase_c::DemoAnmNormal,
         &daPlBase_c::DemoAnmBossSetUp,
         &daPlBase_c::DemoAnmBossGlad,
@@ -1904,6 +1905,430 @@ float fn_8004c700(float v) {
     }
     v *= 1.11111f;
     return v;
+}
+
+class daTagWind_c : public dActor_c {
+public:
+    float m_00;
+};
+
+void daPlBase_c::calcWindSpeed() {
+    daTagWind_c *windActor = (daTagWind_c *) fManager_c::searchBaseByProfName(fProfile::TAG_WIND, nullptr);
+    if (windActor == nullptr) {
+        m_112c = 0.0f;
+        return;
+    }
+    if (isStatus(STATUS_A0) && (m_d40 & 0x18000000) == 0) {
+        float tmp = fn_8004c700(windActor->m_00);
+        float halfTmp = tmp * 0.5f;
+        tmp = fabs(tmp);
+        tmp = tmp * 3.0f;
+        if (m_112c > 0.0f && m_d40 & 0x40 || m_112c < 0.0f && m_d40 & 0x20) {
+            m_112c = 0.0f;
+        }
+        if (m_d40 & 1) {
+            if (isStatus(STATUS_43)) {
+                offStatus(STATUS_43);
+                mSpeedF += m_112c;
+                m_112c = 0.0f;
+            }
+            float scale;
+            if (isStatus(STATUS_5B)) {
+                tmp = 0.45f * tmp;
+            } else {
+                tmp = 0.55f * tmp;
+            }
+            m_1128 = 3;
+            m_112c += halfTmp;
+        } else {
+            if (!isStatus(STATUS_43)) {
+                onStatus(STATUS_43);
+            }
+            if (m_1128) {
+                m_1128--;
+            } else if (mSpeedF * m_112c < 0.0f) {
+                mSpeedF += halfTmp;
+            } else {
+                m_112c += halfTmp;
+            }
+        }
+        if (m_112c > tmp) {
+            m_112c = tmp;
+        } else if (m_112c < -tmp) {
+            m_112c = -tmp;
+        }
+    } else {
+        m_112c = 0.0f;
+        return;
+    }
+}
+
+void daPlBase_c::setLandSE() {
+    if (mPowerup == POWERUP_PENGUIN_SUIT) {
+        startFootSoundPlayer(SE_PLY_LAND_PNGN);
+        return;
+    }
+    static const dAudio::SoundEffectID_t scLandSeID[] = {
+        SE_PLY_LAND_ROCK,
+        SE_PLY_LAND_SNOW,
+        SE_PLY_LAND_SAND,
+        SE_PLY_LAND_ROCK,
+        SE_PLY_LAND_DIRT,
+        SE_PLY_LAND_WATER,
+        SE_PLY_LAND_CLOUD,
+        SE_PLY_LAND_BLOWSAND,
+        SE_PLY_LAND_MANTA,
+        SE_PLY_LAND_SAND,
+        SE_PLY_LAND_ROCK,
+        SE_PLY_LAND_LEAF,
+        SE_PLY_LAND_ROCK
+    };
+    startFootSoundPlayer(scLandSeID[m_d88]);
+}
+
+void daPlBase_c::setSlipSE() {
+    if (m_d88 == POWERUP_PENGUIN_SUIT) {
+        fn_80057fd0(SE_PLY_PNGN_SLIP_SEA, (short) fabsf(mSpeedF), false);
+        return;
+    }
+    static const dAudio::SoundEffectID_t scSlipSeID[] = {
+        SE_PLY_SLIP,
+        SE_PLY_SLIP_SNOW,
+        SE_PLY_SLIP_SAND,
+        SE_PLY_SLIP_ICE,
+        SE_PLY_SLIP,
+        SE_PLY_SLIP,
+        SE_PLY_SLIP,
+        SE_PLY_SLIP_SAND,
+        SE_PLY_SLIP,
+        SE_PLY_SLIP_SAND,
+        SE_PLY_SLIP,
+        SE_PLY_SLIP,
+        SE_PLY_SLIP
+    };
+    fn_80057f60(scSlipSeID[m_d88], false);
+}
+
+void daPlBase_c::setLandSmokeEffect(int param1) {
+    static const char *csLandLookup[][3] = {
+        {"Wm_mr_landsmoke_ss", "Wm_mr_landsmoke_s", "Wm_mr_landsmoke" },
+        {"Wm_mr_landsmoke_ss", "Wm_mr_landsmoke_s", "Wm_mr_landsmoke" },
+        {"Wm_mr_sndlandsmk_ss", "Wm_mr_sndlandsmk_s", "Wm_mr_sndlandsmk" },
+        {"Wm_mr_landsmoke_ss", "Wm_mr_landsmoke_s", "Wm_mr_landsmoke" },
+        {"Wm_mr_landsmoke_ss", "Wm_mr_landsmoke_s", "Wm_mr_landsmoke" },
+        {"Wm_mr_watersplash", "Wm_mr_watersplash", "Wm_mr_watersplash" },
+        {"Wm_mr_landsmoke_ss", "Wm_mr_landsmoke_s", "Wm_mr_landsmoke" },
+        {"Wm_mr_sndlandsmk_ss", "Wm_mr_sndlandsmk_s", "Wm_mr_sndlandsmk" },
+        {"Wm_mr_landsmoke_ss", "Wm_mr_landsmoke_s", "Wm_mr_landsmoke" },
+        {"Wm_mr_beachlandsmk_ss", "Wm_mr_beachlandsmk_s", "Wm_mr_beachlandsmk" },
+        {"Wm_mr_landsmoke_ss", "Wm_mr_landsmoke_s", "Wm_mr_landsmoke" },
+        {"Wm_mr_landsmoke_ss", "Wm_mr_landsmoke_s", "Wm_mr_landsmoke" },
+        {"Wm_mr_landsmoke_ss", "Wm_mr_landsmoke_s", "Wm_mr_landsmoke" }
+    };
+    if (m_d88 == 7) {
+        setSandFunsuiLandEffect();
+    } else if (m_d88 == 5) {
+        PLAYER_POWERUP_e powerup = mPowerup;
+        float sz = 1.0f;
+        if (powerup == POWERUP_MINI_MUSHROOM) {
+            sz = 0.6f;
+        } else if (powerup == POWERUP_NONE) {
+            sz = 0.8f;
+        }
+        mVec3_c size(sz, sz, sz);
+        dEf::createPlayerEffect(mPlayerNo, csLandLookup[m_d88][param1], 0, &mPos, nullptr, &size);
+    } else {
+        dEf::createPlayerEffect_change(mPlayerNo, csLandLookup[m_d88][param1], 0, &mPos, nullptr, nullptr);
+    }
+}
+
+void daPlBase_c::setLandSmokeEffectLight() {
+    mVec3_c pos = mPos;
+    if (dMaskMng::isCaveMask() && mLayer == 0) {
+        if (m_ca1 == 1) {
+            pos.z = 3700.0f;
+        }
+    }
+    float sz = ((float *) &dPyMdlMng_c::m_hio)[mpMdlMng->mpMdl->m_154];
+    mVec3_c size(sz, sz, sz);
+    if (m_d40 & 0x4000000) {
+        if (m_d88 == 7) {
+            setSandFunsuiLandEffect();
+        } else if ((m_d40 & 0x18000000) == 0) {
+            dEf::createPlayerEffect(mPlayerNo, "Wm_mr_cmnsndlandsmk", 0, &pos, nullptr, &size);
+        }
+    } else {
+        dEf::createPlayerEffect(mPlayerNo, "Wm_mr_cmnlandsmoke", 0, &pos, nullptr, &size);
+    }
+}
+
+bool daPlBase_c::setSandFunsuiLandEffect() {
+    if (m_d88 == 7) {
+        dEf::createPlayerEffect(mPlayerNo, "Wm_mr_spsmoke", 0, &mPos, nullptr, nullptr);
+        return true;
+    }
+    return false;
+}
+
+void daPlBase_c::setStartJumpEffect(int param1) {
+    if (m_d40 & 1) {
+        if (m_d40 & 0x18000000) {
+            setSandJumpEffect();
+            onStatus(STATUS_0E);
+        } else if (!setSandFunsuiLandEffect() && param1 == 1) {
+            setLandSmokeEffectLight();
+        }
+    }
+}
+
+void daPlBase_c::setLandJumpEffect(int param1) {
+    setLandSE();
+    if (!setSandFunsuiLandEffect() && param1 == 1) {
+        setLandSmokeEffectLight();
+    }
+}
+
+void daPlBase_c::setSlipOnWaterEffect(mEf::levelEffect_c *effect) {
+    static const float scEffectScale[] = { 0.5f, 0.8f, 1.0f };
+    float sz = scEffectScale[getTallType(-1)];
+    mVec3_c size(sz, sz, sz);
+    mVec3_c pos(
+        mPos.x,
+        mPos.y + sz * 10.0f,
+        mPos.z
+    );
+    dEf::createPlayerEffect(mPlayerNo, effect, "Wm_mr_foot_water", 0, &pos, nullptr, &size);
+}
+
+void daPlBase_c::setSlipSmokeEffect() {
+    static const char *csSlipSmokeEffectNames[][2] = {
+        { "Wm_mr_slipsmoke_ss", "Wm_mr_slipsmoke" },
+        { "Wm_mr_slipsmoke_ss", "Wm_mr_slipsmoke" },
+        { "Wm_mr_sndslipsmk_ss", "Wm_mr_sndslipsmk" },
+        { "Wm_mr_iceslipsmk_ss", "Wm_mr_iceslipsmk" },
+        { "Wm_mr_slipsmoke_ss", "Wm_mr_slipsmoke" },
+        { "Wm_mr_slipsmoke_ss", "Wm_mr_slipsmoke" },
+        { "Wm_mr_slipsmoke_ss", "Wm_mr_slipsmoke" },
+        { "Wm_mr_slipsmoke_ss", "Wm_mr_slipsmoke" },
+        { "Wm_mr_slipsmoke_ss", "Wm_mr_slipsmoke" },
+        { "Wm_mr_beachslipsmk_ss", "Wm_mr_beachslipsmk" },
+        { "Wm_mr_slipsmoke_ss", "Wm_mr_slipsmoke" },
+        { "Wm_mr_slipsmoke_ss", "Wm_mr_slipsmoke" },
+        { "Wm_mr_slipsmoke_ss", "Wm_mr_slipsmoke" }
+    };
+
+    if (m_d88 == 5) {
+        setSlipOnWaterEffect(&mLevelEfs3);
+        return;
+    }
+    mVec3_c pos;
+    mpMdlMng->mpMdl->getJointPos(&pos, 1);
+    int idx = 0;
+    if (mPowerup != POWERUP_MINI_MUSHROOM) {
+        idx = 1;
+    }
+    dEf::createPlayerEffect_change(mPlayerNo, &mLevelEfs3, csSlipSmokeEffectNames[m_d88][idx], 0, &pos, nullptr, nullptr);
+}
+
+void daPlBase_c::setBrakeSmokeEffect(mVec3_c &offset) {
+    static const char *csBrakeSmokeEffectNames[][2] = {
+        { "Wm_mr_brakesmoke_ss", "Wm_mr_brakesmoke" },
+        { "Wm_mr_brakesmoke_ss", "Wm_mr_brakesmoke" },
+        { "Wm_mr_sndbrakesmk_ss", "Wm_mr_sndbrakesmk" },
+        { "Wm_mr_icebrakesmk_ss", "Wm_mr_icebrakesmk" },
+        { "Wm_mr_brakesmoke_ss", "Wm_mr_brakesmoke" },
+        { "Wm_mr_brakesmoke_ss", "Wm_mr_brakesmoke" },
+        { "Wm_mr_brakesmoke_ss", "Wm_mr_brakesmoke" },
+        { "Wm_mr_brakesmoke_ss", "Wm_mr_brakesmoke" },
+        { "Wm_mr_brakesmoke_ss", "Wm_mr_brakesmoke" },
+        { "Wm_mr_beachbrakesmk_ss", "Wm_mr_beachbrakesmk" },
+        { "Wm_mr_brakesmoke_ss", "Wm_mr_brakesmoke" },
+        { "Wm_mr_brakesmoke_ss", "Wm_mr_brakesmoke" },
+        { "Wm_mr_brakesmoke_ss", "Wm_mr_brakesmoke" }
+    };
+
+    if (m_d88 == 5) {
+        setSlipOnWaterEffect(&mLevelEfs4);
+        return;
+    }
+    int idx = 0;
+    if (mPowerup != POWERUP_MINI_MUSHROOM) {
+        idx = 1;
+    }
+    dEf::createPlayerEffect_change(mPlayerNo, &mLevelEfs4, csBrakeSmokeEffectNames[m_d88][idx], 0, &offset, nullptr, nullptr);
+}
+
+void daPlBase_c::setTurnSmokeEffect() {
+    if (mSpeedF) {
+        static const dAudio::SoundEffectID_t scTurnSeID[] = {
+            SE_PLY_BRAKE,
+            SE_PLY_BRAKE_SNOW,
+            SE_PLY_BRAKE_SAND,
+            SE_PLY_BRAKE_ICE,
+            SE_PLY_BRAKE,
+            SE_PLY_BRAKE_WATER,
+            SE_PLY_BRAKE,
+            SE_PLY_BRAKE_SAND,
+            SE_PLY_BRAKE,
+            SE_PLY_BRAKE_SAND,
+            SE_PLY_BRAKE,
+            SE_PLY_BRAKE,
+            SE_PLY_BRAKE
+        };
+        fn_80057f60(scTurnSeID[m_d88], 0);
+    }
+    static const char *scTurnSmokeNames[][2] = {
+        { "Wm_mr_turn_usual_r", "Wm_mr_turn_usual_l" },
+        { "Wm_mr_turn_snow_r", "Wm_mr_turn_snow_l" },
+        { "Wm_mr_turn_sand_r", "Wm_mr_turn_sand_l" },
+        { "Wm_mr_turn_ice_r", "Wm_mr_turn_ice_l" },
+        { "Wm_mr_turn_usual_r", "Wm_mr_turn_usual_l" },
+        { "Wm_mr_turn_water_r", "Wm_mr_turn_water_l" },
+        { "Wm_mr_turn_usual_r", "Wm_mr_turn_usual_l" },
+        { "Wm_mr_turn_sand_r", "Wm_mr_turn_sand_l" },
+        { "Wm_mr_turn_usual_r", "Wm_mr_turn_usual_l" },
+        { "Wm_mr_turn_beach_r", "Wm_mr_turn_beach_l" },
+        { "Wm_mr_turn_usual_r", "Wm_mr_turn_usual_l" },
+        { "Wm_mr_turn_usual_r", "Wm_mr_turn_usual_l" },
+        { "Wm_mr_turn_usual_r", "Wm_mr_turn_usual_l" }
+    };
+    static const float scEffectScale[] = { 0.5f, 0.8f, 1.0f };
+    mVec3_c pos;
+    mpMdlMng->mpMdl->getJointPos(&pos, 1);
+    if (m_d88 == 5) {
+        if (mPos.y < m_da4 - 4.0f) {
+            fadeOutTurnEffect();
+            return;
+        }
+        pos.y = m_da4;
+    }
+    float sz = scEffectScale[getTallType(-1)];
+    mVec3_c size(sz, sz, sz);
+    if (mFollowEf.m_118 == 1 && mFollowEf.m_114 == m_d88) {
+        mFollowEf.follow(&pos, 0, 0);
+    } else {
+        dEf::createPlayerEffect(mPlayerNo, &mFollowEf, scTurnSmokeNames[m_d88][mDirection], 0, &pos, nullptr, &size);
+        mFollowEf.m_114 = m_d88;
+        mFollowEf.m_118 = 1;
+    }
+}
+
+void daPlBase_c::fadeOutTurnEffect() {
+    if (mFollowEf.m_118 != 1) {
+        return;
+    }
+    mFollowEf.followFade();
+    mFollowEf.m_118 = 0;
+}
+
+void daPlBase_c::setRunFootEffect() {
+    static const char *scRunEffectNames[] = {
+        nullptr,
+        "Wm_mr_foot_snow",
+        "Wm_mr_foot_sand",
+        "Wm_mr_foot_ice",
+        nullptr,
+        "Wm_mr_foot_water",
+        nullptr,
+        "Wm_mr_foot_sand",
+        nullptr,
+        "Wm_mr_foot_beach"
+    };
+    if ((m_d40 & 0x18000000) == 0 && isStatus(STATUS_62)) {
+        switch (m_d88) {
+            default:
+                break;
+            case T_1:
+            case T_2:
+            case T_3:
+            case T_5:
+            case T_7:
+            case T_9:
+                mVec3_c pos;
+                mpMdlMng->mpMdl->getJointPos(&pos, 1);
+                static const float scEffectScale[] = { 0.5f, 0.8f, 1.0f };
+                float sz = scEffectScale[getTallType(-1)];
+                mVec3_c size(sz, sz, sz);
+                dEf::createPlayerEffect(mPlayerNo, &mLevelEfs5, scRunEffectNames[m_d88], 0, &pos, nullptr, &size);
+                break;
+        }
+    }
+}
+
+void daPlBase_c::setSandEffect() {
+    if (isStatus(STATUS_4E) || isStatus(STATUS_4B)) {
+        return;
+    }
+    if (m_d40 & 0x18000000 && (m_d40 & 0x20000000) == 0 || isStatus(STATUS_0E)) {
+        mVec3_c pos;
+        mpMdlMng->mpMdl->getJointPos(&pos, 8);
+        dEf::createPlayerEffect(mPlayerNo, &mLevelEfs6, "Wm_mr_sandsplash", 0, &pos, nullptr, nullptr);
+    }
+    if (m_d40 & 0x10000000) {
+        mVec3_c pos = getCenterPos();
+        dEf::createPlayerEffect(mPlayerNo, &mLevelEfs7, "Wm_mr_quicksand", 0, &pos, nullptr, nullptr);
+    }
+    if (m_d40 & 0x18000000 && (m_d48 & 0x18000000) == 0) {
+        if (mPos.y > m_db0 - 8.0f && m_cc0 < 0.0f) {
+            int idx = 2;
+            if ((m_cc0 < -4.0f || m_cc8 > m_db0 + 58.0f) && mPowerup != POWERUP_MINI_MUSHROOM) {
+                mSpeedF = 0.0f;
+                idx = (mPowerup == POWERUP_NONE);
+            }
+            mVec3_c pos(
+                mPos.x,
+                m_db0,
+                mPos.z
+            );
+            static const char *scSandJumpEffectNames[] = {
+                "Wm_mr_sandjump_ss",
+                "Wm_mr_sandjump_s",
+                "Wm_mr_sandjump"
+            };
+            dEf::createPlayerEffect(mPlayerNo, scSandJumpEffectNames[idx], 0, &pos, nullptr, nullptr);
+        }
+    }
+}
+
+bool daPlBase_c::setSandJumpEffect() {
+    if (m_d40 & 0x18000000 && m_c9c + mPos.y + 16.0f > m_db0) {
+        mVec3_c pos(mPos.x, m_db0, mPos.z);
+        dEf::createPlayerEffect(mPlayerNo, "Wm_mr_sanddive", 0, &pos, nullptr, nullptr);
+        return true;
+    }
+    return false;
+}
+
+void daPlBase_c::setSoundPlyMode() {
+    static const int csSoundPlyMode[] = {
+        0, 1, 2, 3, 4, 1
+    };
+    mSndObj.m_b0 = csSoundPlyMode[mPowerup];
+}
+
+void daPlBase_c::setFootSound() {
+    if ((isDemo() || (m_d40 & 1)) && dScStage_c::m_gameMode != 2 && mpMdlMng->mpMdl->isFootStepTiming()) {
+        if (mPowerup == POWERUP_PENGUIN_SUIT) {
+            startFootSoundPlayer(SE_PLY_FOOTNOTE_PNGN);
+            return;
+        }
+        static const dAudio::SoundEffectID_t scFootSoundID[] = {
+            SE_PLY_FOOTNOTE_ROCK,
+            SE_PLY_FOOTNOTE_SNOW,
+            SE_PLY_FOOTNOTE_SAND,
+            SE_PLY_FOOTNOTE_ROCK,
+            SE_PLY_FOOTNOTE_DIRT,
+            SE_PLY_FOOTNOTE_WATER,
+            SE_PLY_FOOTNOTE_CLOUD,
+            SE_PLY_FOOTNOTE_BLOWSAND,
+            SE_PLY_FOOTNOTE_MANTA,
+            SE_PLY_FOOTNOTE_SAND,
+            SE_PLY_FOOTNOTE_CARPET,
+            SE_PLY_FOOTNOTE_LEAF,
+            SE_PLY_FOOTNOTE_WOOD
+        };
+        startFootSoundPlayer(scFootSoundID[m_d88]);
+    }
 }
 
 STATE_BASE_VIRTUAL_DEFINE(daPlBase_c, DemoNone);

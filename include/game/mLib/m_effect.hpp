@@ -8,6 +8,8 @@ class effect_c : public EGG::Effect {
 public:
     effect_c() {}
 
+    virtual void follow(const mVec3_c *, const mAng3_c *, const mVec3_c *);
+
     u8 mPad[0x94];
 };
 
