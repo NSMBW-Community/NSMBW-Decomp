@@ -699,7 +699,7 @@ void dActor_c::cancelFunsuiActSide(int) {}
 void dActor_c::cancelFunsuiActVanish() {}
 
 void dActor_c::slideComboSE(int count, bool clapType) {
-    const static dAudio::ComboSELookup cs_combo_se(
+    static const dAudio::SoundEffectID_t cs_combo_se[] = {
         SE_EMY_KAME_HIT_1,
         SE_EMY_KAME_HIT_2,
         SE_EMY_KAME_HIT_3,
@@ -709,19 +709,19 @@ void dActor_c::slideComboSE(int count, bool clapType) {
         SE_EMY_KAME_HIT_7,
         SE_EMY_KAME_HIT_7,
         SE_EMY_KAME_HIT_7
-    );
+    };
 
     if ((u8) mPlayerNo <= 3) {
         int a = count;
-        if (count >= cs_combo_se.size()) {
-            a = 8;
-        };
+        if (a >= ARRAY_SIZE(cs_combo_se)) {
+            a = ARRAY_SIZE(cs_combo_se) - 1;
+        }
         int countNeededForClaps = clapType ? 4 : 7;
         if (a >= countNeededForClaps) {
             dMultiMng_c::mspInstance->setClapSE();
         }
 
-        cs_combo_se.playEmySound(a, getCenterPos(), dAudio::getRemotePlayer(mPlayerNo));
+        cs_combo_se[a].playEmySound(getCenterPos(), dAudio::getRemotePlayer(mPlayerNo));
     }
 }
 

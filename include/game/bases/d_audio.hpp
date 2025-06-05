@@ -57,35 +57,28 @@ namespace dAudio {
     extern SndObjctCmnMap_c *g_pSndObjMap;
 
     /// @unofficial
-    class ComboSELookup {
+    class SoundEffectID_t {
     public:
-        ComboSELookup(u32 v0, u32 v1, u32 v2, u32 v3, u32 v4, u32 v5, u32 v6, u32 v7, u32 v8) {
-            lookup[0] = v0;
-            lookup[1] = v1;
-            lookup[2] = v2;
-            lookup[3] = v3;
-            lookup[4] = v4;
-            lookup[5] = v5;
-            lookup[6] = v6;
-            lookup[7] = v7;
-            lookup[8] = v8;
+        SoundEffectID_t(u32 soundID) : id(soundID) {}
+
+        operator u32() const {
+            return id;
         }
 
         template<class T>
-        void playObjSound(T *obj, int i, const mVec3_c &pos, int playerNo) const {
-            obj->startSound(lookup[i], dAudio::cvtSndObjctPos(pos), playerNo);
+        void playObjSound(T *obj, const mVec3_c &pos, int playerNo) const {
+            obj->startSound(id, dAudio::cvtSndObjctPos(pos), playerNo);
         }
 
-        void playEmySound(int i, const mVec3_c &pos, int playerNo) const {
-            playObjSound(dAudio::g_pSndObjEmy, i, pos, playerNo);
+        void playEmySound(const mVec3_c &pos, int playerNo) const {
+            playObjSound(dAudio::g_pSndObjEmy, pos, playerNo);
         }
 
-        void playMapSound(int i, const mVec3_c &pos, int playerNo) const {
-            playObjSound(dAudio::g_pSndObjMap, i, pos, playerNo);
+        void playMapSound(const mVec3_c &pos, int playerNo) const {
+            playObjSound(dAudio::g_pSndObjMap, pos, playerNo);
         }
 
-        u32 size() const { return 9; }
-
-        u32 lookup[9];
+    private:
+        u32 id;
     };
 };
