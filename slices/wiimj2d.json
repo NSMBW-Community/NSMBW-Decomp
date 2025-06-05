@@ -91,6 +91,19 @@
             }
         },
         {
+            "source": "dol/bases/d_actor.cpp",
+            "memoryRanges": {
+                ".text": "0x5d990-0x5f940",
+                ".ctors": "0x98-0x9c",
+                ".bss": "0x47c0-0x47e8",
+                ".data": "0xbbb0-0xbca0",
+                ".rodata": "0x1648-0x1660",
+                ".sdata": "0x290-0x2a0",
+                ".sbss": "0x138-0x170",
+                ".sdata2": "0xa88-0xb10"
+            }
+        },
+        {
             "source": "dol/bases/d_base.cpp",
             "memoryRanges": {
                 ".text": "0x65ca0-0x65f50",
