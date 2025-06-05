@@ -80,15 +80,25 @@ public:
         ANIME_PLAY_ACTION_2
     };
 
+    enum DemoInDokanSubstate_e {
+        DEMO_IN_DOKAN_ACTION_0,
+        DEMO_IN_DOKAN_ACTION_1,
+        DEMO_IN_DOKAN_ACTION_2,
+        DEMO_IN_DOKAN_ACTION_3
+    };
+
     enum PowerChangeType_e {
         POWER_CHANGE_0 = 0,
         POWER_CHANGE_1 = 1,
         POWER_CHANGE_2 = 2
     };
 
-    enum STATUS_e {
+    enum Status_e {
         STATUS_01 = 0x01,
         STATUS_03 = 0x03,
+        STATUS_04 = 0x04,
+        STATUS_06 = 0x06,
+        STATUS_08 = 0x08,
         STATUS_0A = 0x0a,
         STATUS_0E = 0x0e,
         STATUS_12 = 0x12,
@@ -102,6 +112,7 @@ public:
         STATUS_1E = 0x1e,
         STATUS_22 = 0x22,
         STATUS_24 = 0x24,
+        STATUS_2A = 0x2a,
         STATUS_2B = 0x2b,
         STATUS_2D = 0x2d,
         STATUS_2E = 0x2e,
@@ -109,6 +120,8 @@ public:
         STATUS_31 = 0x31,
         STATUS_33 = 0x33,
         STATUS_3C = 0x3c,
+        STATUS_3A = 0x3a,
+        STATUS_3E = 0x3e,
         STATUS_40 = 0x40,
         STATUS_41 = 0x41,
         STATUS_42 = 0x42,
@@ -119,13 +132,21 @@ public:
         STATUS_4E = 0x4e,
         STATUS_51 = 0x51,
         STATUS_52 = 0x52,
+        STATUS_53 = 0x53,
         STATUS_59 = 0x59,
         STATUS_5B = 0x5b,
         STATUS_5C = 0x5c,
+        STATUS_5E = 0x5e,
         STATUS_61 = 0x61,
         STATUS_62 = 0x62,
+        STATUS_64 = 0x64,
         STATUS_6F = 0x6f,
+        STATUS_71 = 0x71,
+        STATUS_72 = 0x72,
         STATUS_74 = 0x74,
+        STATUS_76 = 0x76,
+        STATUS_77 = 0x77,
+        STATUS_79 = 0x79,
         STATUS_7A = 0x7a,
         STATUS_7D = 0x7d,
         STATUS_7E = 0x7e,
@@ -157,7 +178,18 @@ public:
         STATUS_B9 = 0xb9,
         STATUS_BB = 0xbb,
         STATUS_BE = 0xbe,
+        STATUS_C1 = 0xc1,
         STATUS_C4 = 0xc4,
+    };
+
+    enum DemoType_e {
+        DEMO_0,
+        DEMO_1,
+        DEMO_2,
+        DEMO_3,
+        DEMO_4,
+        DEMO_5,
+        DEMO_6
     };
 
     struct SpeedData_t {
@@ -253,9 +285,9 @@ public:
     virtual void initialNormal();
 
     virtual void setCreateAction(int);
-    virtual void setTimeOverDemo();
+    virtual bool setTimeOverDemo() { return false; }
     virtual void setFallDownDemo();
-    virtual void setDokanIn();
+    virtual bool setDokanIn(int);
     virtual void initDemoOutDokan();
     virtual bool vf284(int);
     virtual void initDemoGoalBase();
@@ -432,7 +464,7 @@ public:
     float getSakaMaxSpeedRatio(u8 direction);
     float getSakaStopAccele(u8 direction);
     float getSakaMoveAccele(u8 direction);
-    float fn_8004b5e0();
+    float getIceSakaSlipOffSpeed();
     PowerChangeType_e getPowerChangeType(bool);
     float *getSpeedData();
     void calcWindSpeed();
@@ -451,6 +483,29 @@ public:
     void setSandEffect();
     void setSoundPlyMode();
     void setFootSound();
+    void bgCheck(int);
+    void startControlDemo();
+    bool isDemoType(DemoType_e);
+    bool isDemoMode() const;
+    bool isControlDemoAll();
+    bool isDemoAll();
+    void onDemo();
+    void offDemo();
+    bool isPlayerGameStop();
+    void stopOther();
+    void playOther();
+    void changeNormalAction();
+    bool checkTimeOut();
+    bool executeDemoState();
+    void initDemoInDokanUD(u8);
+    void initDemoInDokanLR(u8);
+    void endDemoInDokan();
+    void executeDemoInDokan(u8);
+    void executeDemoOutDokan();
+    float getWaterDokanCenterOffset(float);
+    void initDemoInDokan();
+    bool demo_dokan_move_x(float, float);
+    bool demo_dokan_move_y(float, float);
 
     bool setSandMoveSpeed();
 
@@ -488,7 +543,14 @@ public:
     u32 m_20;
     u8 mPad2[0x34];
     float m_58;
-    u8 mPad3[0x98];
+    u8 mPad3[0x4];
+    u8 m_60;
+    u8 mPad4[0x4];
+    mVec3_c m_68;
+    u8 mPad5[0x18];
+    u8 m_8c;
+    u8 m_8d;
+    u8 mPad6[0x64];
     u32 m_f4;
     u32 m_f8;
     s8 m_fc;
@@ -510,40 +572,46 @@ public:
     dAudio::SndObjctPly_c mSndObj;
     dAcPyKey_c mKey;
     fBaseID_e mRideActorID;
-    u8 mPad6[0x24];
+    u8 mPad7[0x24];
     float m_c9c;
-    u8 mPad7[1];
+    u8 mPad8[1];
     u8 m_ca1;
     mVec3_c m_ca4;
     mVec3_c m_cb0;
-    u8 mPad8[0x4];
+    u8 mPad9[0x4];
     float m_cc0;
     float m_cc4;
     float m_cc8;
-    u8 mPad9[0x8];
+    u8 mPad10[0x8];
     float *mGravityData;
     u32 m_cd8;
-    u8 mPad10[0x20];
+    u32 m_cdc;
+    u32 m_ce0;
+    u32 m_ce4;
+    u8 mPad11[0x14];
     PLAYER_POWERUP_e mPowerup;
-    u8 mPad11[0x3e];
+    u8 mPad12[0x3e];
     u32 m_d40;
     u32 m_d44;
     u32 m_d48;
     u32 m_d4c;
-    u8 mPad12[0x38];
+    u8 mPad13[0x38];
     D88_TYPE_e m_d88;
-    u8 mPad13[0x8];
+    u8 mPad14[0x8];
     short m_d94, m_d96, m_d98, m_d9a;
-    u8 mPad14[0x6];
+    u8 mPad15[0x6];
     float m_da4;
     float m_da8;
     float m_dac;
     float m_db0;
-    u8 mPad15[0x1c];
+    u8 mPad16[0x1c];
     dCc_c mCc1, mAttCc1, mAttCc2, mAttCc3;
-    u8 mPad16[0x24];
+    u8 mPad17[0x24];
     sFStateMgr_c<daPlBase_c, sStateMethodUsr_FI_c> mDemoStateMgr;
-    u8 mPad17[0x10];
+    void *mDemoStateChangeParam; ///< To be used as a kind of argument to the new demo state.
+    int mDemoSubstate; ///< Demo states can use this as a kind of sub-state variable (cast to some enum)
+    int m_10c8;
+    u8 mDemoMode;
     sFStateMgr_c<daPlBase_c, sStateMethodUsr_FI_c> mStateMgr;
     void *mStateChangeParam; ///< To be used as a kind of argument to the new state.
     int mSubstate; ///< States can use this as a kind of sub-state variable (cast to some enum)
@@ -555,6 +623,7 @@ public:
     float m_112c;
     u8 mPad19[4];
     float m_1134, m_1138, m_113c;
+    int m_1140;
 
     static const float sc_DirSpeed[2];
 };

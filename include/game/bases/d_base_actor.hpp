@@ -116,6 +116,8 @@ public:
     float absSpeedF() { return fabs(mSpeedF); }
     float absMaxSpeedF() { return fabs(mMaxSpeedF); }
 
+    float getYCenter() const { return mPos.y + mCenterOffs.y; }
+
 private:
     /**
      * @brief Sets temporary data to be used for the next actor's construction.

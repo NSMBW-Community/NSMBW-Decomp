@@ -25,6 +25,7 @@ public:
     char mPad7[0x6];
     u8 mLayer;
 
+    static int checkWater(float, float, u8, float *);
     static int checkWaterDepth(float, float, u8, u8, float *);
     static bool checkTenjou(const mVec3_c &, float &, u8, u8);
     bool checkRoofPlayer(const mVec3_c *, float *);
