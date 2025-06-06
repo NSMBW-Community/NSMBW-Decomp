@@ -5,6 +5,7 @@ class dScoreMng_c {
 public:
     void ScoreSet(dActor_c *, unsigned long, int, float, float);
     void UnKnownScoreSet(dActor_c *, unsigned long, float, float);
+    void fn_800e25a0(int, int, int); ///< @unofficial
 
     static float smc_SCORE_X; ///< The score's horizontal offset from the actor position.
     static float smc_SCORE_Y; ///< The score's vertical offset from the actor position.

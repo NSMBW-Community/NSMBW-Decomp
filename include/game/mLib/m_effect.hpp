@@ -10,7 +10,8 @@ public:
 
     virtual void follow(const mVec3_c *, const mAng3_c *, const mVec3_c *);
 
-    u8 mPad[0x94];
+    u8 mPad[0x92];
+    mAng mAng;
 };
 
 class levelEffect_c : public effect_c {

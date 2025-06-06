@@ -26,6 +26,16 @@ public:
     u16 mFlags;
 };
 
+class dNextGoto_c {
+public:
+    u8 mPad1[0xb];
+    u8 m_0b;
+    u8 mPad2[2];
+    u8 mLayer;
+    u8 m_0f;
+    u16 mFlags;
+};
+
 class dCdFile_c {
 public:
     char pad[0xc];
@@ -36,6 +46,7 @@ public:
 
     u8 getAreaNo(mVec3_c *);
     AreaBoundU16 *getAreaP(u8 zoneID, mBoundBox *bound); ///< @unofficial
+    dNextGoto_c *getNextGotoP(u8);
 };
 
 class dCd_c {

@@ -189,6 +189,8 @@ public:
         return EGG::Mathf::sqrt(PSVECSquareDistance((const Vec*) this, (const Vec*) &other));
     }
 
+    bool lt1() const { return PSVECMag((const Vec *) this) <= 1.0f; }
+
     /// @brief Normalizes the vector.
     /// @return The vector's magnitude.
     float normalize();

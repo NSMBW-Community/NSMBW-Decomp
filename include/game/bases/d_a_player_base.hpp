@@ -84,7 +84,8 @@ public:
         DEMO_IN_DOKAN_ACTION_0,
         DEMO_IN_DOKAN_ACTION_1,
         DEMO_IN_DOKAN_ACTION_2,
-        DEMO_IN_DOKAN_ACTION_3
+        DEMO_IN_DOKAN_ACTION_3,
+        DEMO_IN_DOKAN_ACTION_4
     };
 
     enum PowerChangeType_e {
@@ -105,6 +106,7 @@ public:
         STATUS_14 = 0x14,
         STATUS_15 = 0x15,
         STATUS_16 = 0x16,
+        STATUS_17 = 0x17,
         STATUS_1A = 0x1a,
         STATUS_1B = 0x1b,
         STATUS_1C = 0x1c,
@@ -140,6 +142,16 @@ public:
         STATUS_61 = 0x61,
         STATUS_62 = 0x62,
         STATUS_64 = 0x64,
+        STATUS_65 = 0x65,
+        STATUS_66 = 0x66,
+        STATUS_67 = 0x67,
+        STATUS_68 = 0x68,
+        STATUS_69 = 0x69,
+        STATUS_6A = 0x6a,
+        STATUS_6B = 0x6b,
+        STATUS_6C = 0x6c,
+        STATUS_6D = 0x6d,
+        STATUS_6E = 0x6e,
         STATUS_6F = 0x6f,
         STATUS_71 = 0x71,
         STATUS_72 = 0x72,
@@ -192,6 +204,13 @@ public:
         DEMO_6
     };
 
+    enum DokanDir_e {
+        DOKAN_U,
+        DOKAN_D,
+        DOKAN_L,
+        DOKAN_R
+    };
+
     struct SpeedData_t {
         float data[9];
 
@@ -238,8 +257,8 @@ public:
     virtual bool isChange() { return false; }
     virtual void changeNextScene(int);
     virtual bool isEnableDokanInStatus(void);
-    virtual void setHideNotGoalPlayer();
-    virtual void vf130();
+    virtual bool setHideNotGoalPlayer();
+    virtual int vf130(float f, mVec2_c *v, int param3);
     virtual bool setDemoCannonWarp(int, short, short) { return false; }
 
     STATE_VIRTUAL_FUNC_DECLARE(daPlBase_c, DemoNone);
@@ -346,7 +365,7 @@ public:
     virtual void vf3d0();
     virtual int isStar() const;
     virtual void setStar();
-    virtual void endStar();
+    virtual void endStar() {}
     virtual void setVirusStar(daPlBase_c *) {}
     virtual void clearStarCount();
     virtual int getStarCount();
@@ -362,7 +381,7 @@ public:
 
     virtual bool setHipAttackOnEnemy(mVec3_c *);
 
-    virtual void clearJumpActionInfo();
+    virtual void clearJumpActionInfo(int) {}
     virtual void setSwimSpeed();
     virtual void setLandSE();
 
@@ -506,6 +525,26 @@ public:
     void initDemoInDokan();
     bool demo_dokan_move_x(float, float);
     bool demo_dokan_move_y(float, float);
+    bool setDokanIn(DokanDir_e dir);
+    bool setDemoOutDokanAction(int, DokanDir_e dir);
+    void endDemoOutDokan();
+    void initDemoOutDokanUD(u8);
+    void executeDemoOutDokanUD();
+    void initDemoOutDokanLR(u8);
+    void executeDemoOutDokanLR();
+    void checkWater();
+    void setExitRailDokan();
+    void stopGoalOther();
+    void playGoalOther();
+    void setDemoGoalMode(int, int);
+    void finalizeDemoGoalBase();
+    float getDemoGoalLandPos();
+    void setDemoGoal_MultiJump();
+    void initGoalJump(mVec3_c &, float);
+    void executeDemoGoal_Pole();
+    bool calcGoalJump();
+    void executeDemoGoal_Wait();
+    void executeDemoGoal_KimePose();
 
     bool setSandMoveSpeed();
 
@@ -543,14 +582,23 @@ public:
     u32 m_20;
     u8 mPad2[0x34];
     float m_58;
-    u8 mPad3[0x4];
-    u8 m_60;
-    u8 mPad4[0x4];
+    int m_5c;
+    s8 m_60;
+    int mDokanRelated;
     mVec3_c m_68;
-    u8 mPad5[0x18];
+    mVec3_c m_74;
+    int m_80;
+    u8 m_84;
+    dBg_ctr_c *mpBgCtr;
     u8 m_8c;
     u8 m_8d;
-    u8 mPad6[0x64];
+    float m_90;
+    float m_94;
+    u8 mPad7[4];
+    int m_9c;
+    int m_a0;
+    float m_a4;
+    u8 mPad8[0x4c];
     u32 m_f4;
     u32 m_f8;
     s8 m_fc;
@@ -572,41 +620,41 @@ public:
     dAudio::SndObjctPly_c mSndObj;
     dAcPyKey_c mKey;
     fBaseID_e mRideActorID;
-    u8 mPad7[0x24];
+    u8 mPad9[0x24];
     float m_c9c;
-    u8 mPad8[1];
+    u8 mPad10[1];
     u8 m_ca1;
     mVec3_c m_ca4;
     mVec3_c m_cb0;
-    u8 mPad9[0x4];
+    u8 mPad11[0x4];
     float m_cc0;
     float m_cc4;
     float m_cc8;
-    u8 mPad10[0x8];
+    u8 mPad12[0x8];
     float *mGravityData;
     u32 m_cd8;
     u32 m_cdc;
     u32 m_ce0;
     u32 m_ce4;
-    u8 mPad11[0x14];
+    u8 mPad13[0x14];
     PLAYER_POWERUP_e mPowerup;
-    u8 mPad12[0x3e];
+    u8 mPad14[0x3e];
     u32 m_d40;
     u32 m_d44;
     u32 m_d48;
     u32 m_d4c;
-    u8 mPad13[0x38];
+    u8 mPad15[0x38];
     D88_TYPE_e m_d88;
-    u8 mPad14[0x8];
+    u8 mPad16[0x8];
     short m_d94, m_d96, m_d98, m_d9a;
-    u8 mPad15[0x6];
+    u8 mPad17[0x6];
     float m_da4;
     float m_da8;
     float m_dac;
     float m_db0;
-    u8 mPad16[0x1c];
+    u8 mPad18[0x1c];
     dCc_c mCc1, mAttCc1, mAttCc2, mAttCc3;
-    u8 mPad17[0x24];
+    u8 mPad19[0x24];
     sFStateMgr_c<daPlBase_c, sStateMethodUsr_FI_c> mDemoStateMgr;
     void *mDemoStateChangeParam; ///< To be used as a kind of argument to the new demo state.
     int mDemoSubstate; ///< Demo states can use this as a kind of sub-state variable (cast to some enum)
@@ -618,10 +666,10 @@ public:
     int m_1114;
     int m_1118;
     mVec2_c m_111c;
-    u8 mPad18[0x4];
+    u8 mPad20[0x4];
     int m_1128;
     float m_112c;
-    u8 mPad19[4];
+    u8 mPad21[4];
     float m_1134, m_1138, m_113c;
     int m_1140;
 

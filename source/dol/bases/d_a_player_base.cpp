@@ -1,13 +1,18 @@
+#include "game/bases/d_game_com.hpp"
 #include <game/bases/d_a_player_base.hpp>
 #include <game/bases/d_a_player_demo_manager.hpp>
 #include <game/bases/d_a_player_manager.hpp>
+#include <game/bases/d_cd.hpp>
 #include <game/bases/d_info.hpp>
 #include <game/bases/d_next.hpp>
 #include <game/bases/d_s_stage.hpp>
 #include <game/bases/d_stage_timer.hpp>
+#include <game/bases/d_score_manager.hpp>
 #include <game/bases/d_attention.hpp>
 #include <game/bases/d_mask_manager.hpp>
+#include <game/bases/d_multi_manager.hpp>
 #include <game/bases/d_quake.hpp>
+#include <game/bases/d_rail.hpp>
 #include <game/mLib/m_fader.hpp>
 #include <game/sLib/s_math.hpp>
 #include <constants/sound_list.h>
@@ -42,7 +47,7 @@ namespace {
         { 0.4f, -0.4f, 0.0f },
     };
 
-    float scDokanChaseArg = 2048.0f;
+    const float scDokanOutTurnSpeed = 2048.0f;
 }
 
 daPlBase_c::daPlBase_c() :
@@ -2887,7 +2892,7 @@ void daPlBase_c::executeDemoInDokan(u8 dir) {
             break;
         case DEMO_IN_DOKAN_ACTION_3:
             if (!mKey.buttonWalk(nullptr)) {
-                if (!sLib::chase(&mAngle.y.mAngle, getMukiAngle(mDirection), scDokanChaseArg)) {
+                if (!sLib::chase(&mAngle.y.mAngle, getMukiAngle(mDirection), scDokanOutTurnSpeed)) {
                     break;
                 }
             }
@@ -2900,8 +2905,8 @@ void daPlBase_c::executeDemoInDokan(u8 dir) {
 }
 
 void daPlBase_c::initDemoInDokanUD(u8 dir) {
-    static float tmps[] = { 34.0f, 36.0f, 38.0f, 38.0f };
-    static float tmps_big[] = { 40.0f, 42.0f, 44.0f, 44.0f };
+    static const float tmps[] = { 34.0f, 36.0f, 38.0f, 38.0f };
+    static const float tmps_big[] = { 40.0f, 42.0f, 44.0f, 44.0f };
     mpMdlMng->mpMdl->setAnm(0, ((float *) &dPyMdlMng_c::m_hio)[10], ((float *) &dPyMdlMng_c::m_hio)[11], 0.0f);
     m_68 = mPos;
     if (dir == 1) {
@@ -2962,7 +2967,7 @@ void daPlBase_c::initDemoInDokanUD(u8 dir) {
 }
 
 void daPlBase_c::initDemoInDokanLR(u8 dir) {
-    static float tmps[] = { 32.0f, 32.0f, 20.0f };
+    static const float tmps[] = { 32.0f, 32.0f, 20.0f };
     mpMdlMng->mpMdl->setAnm(131, ((float *) &dPyMdlMng_c::m_hio)[10], ((float *) &dPyMdlMng_c::m_hio)[11], 0.0f);
     onStatus(STATUS_2A);
     if (dir == 3) {
@@ -3024,6 +3029,264 @@ bool daPlBase_c::isEnableDokanInStatus() {
     return true;
 }
 
+bool daPlBase_c::setDokanIn(DokanDir_e dir) {
+    if (isStatus(STATUS_7E)) {
+        return false;
+    }
+    int res = false;
+    int res2;
+    switch (dir) {
+        case DOKAN_D:
+            if (mKey.buttonDown()) {
+                res = mBc.checkDokanDown(&m_68, &res2);
+            }
+            break;
+        case DOKAN_U:
+            if (mKey.buttonUp()) {
+                res = mBc.checkDokanUp(&m_68, &res2);
+            }
+            break;
+        case DOKAN_L:
+        case DOKAN_R:
+            float x = 0.0f;
+            float y = x;
+            if (isStatus(STATUS_3A)) {
+                x = 2.0f;
+                y = -2.0f;
+            } else {
+                if (isStatus(STATUS_17)) {
+                    x = 8.0f;
+                    y = 8.0f;
+                }
+            }
+            res = mBc.checkDokanLR(&m_68, mDirection, &res2, x, y);
+            break;
+    }
+    if (res == 1 && setDemoOutDokanAction(res2, dir)) {
+        return true;
+    }
+    return false;
+}
+
+bool daPlBase_c::setDemoOutDokanAction(int param1, DokanDir_e dir) {
+    mDokanRelated = param1;
+    dCdFile_c *cdFile = dCd_c::m_instance->getFileP(dScStage_c::m_instance->mCurrCourse);
+    dNextGoto_c *nextGoto = cdFile->getNextGotoP(mDokanRelated);
+    m_80 = 1;
+    if (nextGoto->mFlags & 8) {
+        m_80 = 2;
+    } else if (nextGoto->mFlags & 4) {
+        m_80 = 3;
+    }
+    static sFStateVirtualID_c<daPlBase_c> *stateIDs[] = {
+        &StateID_DemoOutDokanU,
+        &StateID_DemoOutDokanD,
+        &StateID_DemoOutDokanL,
+        &StateID_DemoOutDokanR
+    };
+    switch (m_80) {
+        case 1:
+            if (dNext_c::m_instance->fn_800cfed0(dScStage_c::m_instance->mCurrCourse, mDokanRelated)) {
+                return false;
+            }
+            if (daPyDemoMng_c::mspInstance->m_5c) {
+                return false;
+            }
+            dNext_c::m_instance->setChangeSceneNextDat(dScStage_c::m_instance->mCurrCourse, mDokanRelated, dFader_c::FADER_CIRCLE_TARGET);
+            if (nextGoto->m_0b == 22) {
+                changeDemoState(StateID_DemoOutWaterTank, 0);
+            } else {
+                changeDemoState(*stateIDs[dir], 0);
+            }
+            return true;
+        case 2:
+            dRail_c::getRailInfoP(nextGoto->m_0f);
+            changeDemoState(*stateIDs[dir], 0);
+            return true;
+        case 3:
+            if (nextGoto->m_0b == 22) {
+                changeDemoState(StateID_DemoOutWaterTank, dir);
+            } else {
+                changeDemoState(*stateIDs[dir], 0);
+            }
+            return true;
+    }
+    return false;
+}
+
+void daPlBase_c::initDemoOutDokan() {
+    mSpeedF = 0.0f;
+    mMaxSpeedF = 0.0f;
+    mSpeed.set(0.0f, 0.0f, 0.0f);
+    mAngle.x = 0.0f;
+    setZPosition(-1800.0f);
+    if (m_d40 & 0x4000) {
+        fn_80057e70(SE_PLY_WATER_DOKAN_IN_OUT, false);
+    } else {
+        fn_80057e70(SE_PLY_DOKAN_IN_OUT, false);
+    }
+}
+
+void daPlBase_c::endDemoOutDokan() {
+    offStatus(STATUS_2A);
+    offStatus(STATUS_5E);
+}
+
+void daPlBase_c::initDemoOutDokanUD(u8 dir) {
+    m_84 = dir;
+    changeState(StateID_Walk, nullptr);
+    mpMdlMng->mpMdl->setAnm(0, ((float *) &dPyMdlMng_c::m_hio)[10], ((float *) &dPyMdlMng_c::m_hio)[11], 0.0f);
+    if (m_80 == 2) {
+        if (dir == 0) {
+            m_90 = 0.0f;
+        } else {
+            m_90 = -34.0f;
+        }
+    } else if (dir == 0) {
+        m_90 = 2.0f;
+    } else if (mKind == 2) {
+        m_90 = -16.0f;
+    } else {
+        m_90 = -10.0f;
+    }
+    m_94 = 0.0f;
+    if (m_80 == 1 && daPyMng_c::mNum == 1) {
+        stopOther();
+    }
+    initDemoOutDokan();
+}
+
+void daPlBase_c::executeDemoOutDokanUD() {
+    switch ((DemoInDokanSubstate_e) mDemoSubstate) {
+        case DEMO_IN_DOKAN_ACTION_0: {
+            int cond = 0;
+            if (mKind == 2) {
+                if (sLib::chase(&mAngle.y.mAngle, 0, scDokanOutTurnSpeed)) {
+                    cond = 1;
+                }
+            } else {
+                if (sLib::chase(&mAngle.y.mAngle, getMukiAngle(mDirection), 0x2000)) {
+                    cond = 1;
+                }
+            }
+            if (demo_dokan_move_x(1.0f, m_94) && cond == 1) {
+                mDemoSubstate = DEMO_IN_DOKAN_ACTION_1;
+                m_10c8 = 10;
+            }
+            break;
+        }
+        case DEMO_IN_DOKAN_ACTION_1:
+            if (demo_dokan_move_y(0.75f, m_90)) {
+                onStatus(STATUS_5E);
+                switch (m_80) {
+                    case 2:
+                        changeDemoState(StateID_DemoRailDokan, 0);
+                        break;
+                    case 3:
+                        onStatus(STATUS_BB);
+                        mLayer = 0;
+                        if (m_84 == 0) {
+                            m_68.y = mPos.y + 80.0f;
+                        } else {
+                            m_68.y = mPos.y - 80.0f;
+                        }
+                        mDemoSubstate = DEMO_IN_DOKAN_ACTION_2;
+                        break;
+                    default:
+                        changeNextScene(1);
+                        mDemoSubstate = DEMO_IN_DOKAN_ACTION_3;
+                        break;
+                }
+            }
+            break;
+        case DEMO_IN_DOKAN_ACTION_2:
+            if (sLib::chase(&mPos.y, m_68.y, 1.0f)) {
+                changeState(StateID_Walk, nullptr);
+                changeDemoState(StateID_DemoInWaterTank, 1);
+            }
+            break;
+        case DEMO_IN_DOKAN_ACTION_3:
+            break;
+    }
+}
+
+void daPlBase_c::initDemoOutDokanLR(u8 dir) {
+    m_84 = dir;
+    if (isStatus(STATUS_3A)) {
+        mpMdlMng->mpMdl->setAnm(132, ((float *) &dPyMdlMng_c::m_hio)[10], ((float *) &dPyMdlMng_c::m_hio)[11], 0.0f);
+    } else {
+        mpMdlMng->mpMdl->setAnm(130, ((float *) &dPyMdlMng_c::m_hio)[10], ((float *) &dPyMdlMng_c::m_hio)[11], 0.0f);
+    }
+    onStatus(STATUS_2A);
+    if (m_80 == 1 && daPyMng_c::mNum == 1) {
+        stopOther();
+    }
+    if (isStatus(STATUS_3A) || mKind == 2) {
+        if (dir == 3) {
+            m_68.x += 8.0f;
+        } else {
+            m_68.x -= 8.0f;
+        }
+    }
+    initDemoOutDokan();
+}
+
+void daPlBase_c::executeDemoOutDokanLR() {
+    if (mpMdlMng->mpMdl->mAnm.isStop()) {
+        mpMdlMng->mpMdl->setAnm(131, ((float *) &dPyMdlMng_c::m_hio)[10], ((float *) &dPyMdlMng_c::m_hio)[11], 0.0f);
+    }
+    switch ((DemoInDokanSubstate_e) mDemoSubstate) {
+        case DEMO_IN_DOKAN_ACTION_0: {
+            int cond = 0;
+            if (!addCalcAngleY(getMukiAngle(mDirection), 10)) {
+                float tmp = 0.0f;
+                if (isStatus(STATUS_3A)) {
+                    tmp = getWaterDokanCenterOffset(m_68.y) - m_68.y;
+                }
+                if (demo_dokan_move_y(0.75f, tmp)) {
+                    cond = 1;
+                }
+            }
+            if (cond && demo_dokan_move_x(0.75f, 0.0f)) {
+                onStatus(STATUS_5E);
+                switch (m_80) {
+                    case 2:
+                        changeDemoState(StateID_DemoRailDokan, 0);
+                        break;
+                    case 3:
+                        onStatus(STATUS_BB);
+                        mLayer = 0;
+                        m_68.x = mPos.x + sc_DirSpeed[mDirection] * 48.0f;
+                        mDemoSubstate = DEMO_IN_DOKAN_ACTION_1;
+                        break;
+                    default:
+                        changeNextScene(1);
+                        break;
+                }
+            }
+            break;
+        }
+        case DEMO_IN_DOKAN_ACTION_1:
+            if (sLib::chase(&mPos.x, m_68.x, 1.0f)) {
+                m_68.y -= 16.0f;
+                mDemoSubstate = DEMO_IN_DOKAN_ACTION_2;
+            }
+            break;
+        case DEMO_IN_DOKAN_ACTION_2:
+            if (sLib::chase(&mPos.y, m_68.y, 1.0f)) {
+                m_68.x = mPos.x + sc_DirSpeed[mDirection] * 32.0f;
+                mDemoSubstate = DEMO_IN_DOKAN_ACTION_3;
+            }
+            break;
+        case DEMO_IN_DOKAN_ACTION_3:
+            if (sLib::chase(&mPos.x, m_68.x, 1.0f)) {
+                changeState(StateID_Walk, nullptr);
+                changeDemoState(StateID_DemoInWaterTank, 1);
+            }
+            break;
+    }
+}
+
 void daPlBase_c::initializeState_DemoOutDokanU() { initDemoInDokanUD(0); }
 void daPlBase_c::finalizeState_DemoOutDokanU() { endDemoInDokan(); }
 void daPlBase_c::executeState_DemoOutDokanU() { executeDemoOutDokan(); }
@@ -3040,29 +3303,535 @@ void daPlBase_c::initializeState_DemoOutDokanR() { initDemoInDokanLR(3); }
 void daPlBase_c::finalizeState_DemoOutDokanR() { endDemoInDokan(); }
 void daPlBase_c::executeState_DemoOutDokanR() { executeDemoOutDokan(); }
 
-void daPlBase_c::initializeState_DemoOutDokanRoll() {}
+void daPlBase_c::initializeState_DemoOutDokanRoll() {
+    initDemoOutDokanUD(4);
+    m_80 = 1;
+    m_74.x = 0.0f;
+    m_74.y = 0.0f;
+    mBc.setRideOnObjBg(mpBgCtr, mPos);
+    mpBgCtr->addDokanMoveDiff(&m_68);
+}
+
 void daPlBase_c::finalizeState_DemoOutDokanRoll() {}
-void daPlBase_c::executeState_DemoOutDokanRoll() {}
 
-void daPlBase_c::initializeState_DemoInWaterTank() {}
+void daPlBase_c::executeState_DemoOutDokanRoll() {
+    mBc.setRideOnObjBg(mpBgCtr, mPos);
+    mpBgCtr->addDokanMoveDiff(&m_68);
+    mVec3_c delta(m_68.x, m_68.y, mPos.z);
+    switch ((DemoInDokanSubstate_e) mDemoSubstate) {
+        case DEMO_IN_DOKAN_ACTION_0: {
+            int cond = 0;
+            if (mKind == 2) {
+                if (sLib::chase(&mAngle.y.mAngle, 0, scDokanOutTurnSpeed)) {
+                    cond = 1;
+                }
+            } else {
+                if (sLib::chase(&mAngle.y.mAngle, getMukiAngle(mDirection), 0x2000)) {
+                    cond = 1;
+                }
+            }
+            mVec3_c tmp = delta - mPos;
+            tmp.normalize();
+            mVec3_c tmp2 = tmp * 1.0f;
+            mPos += tmp2;
+            if (!(mPos - delta).lt1() || cond != 1) {
+                break;
+            }
+            mPos = delta;
+            mDemoSubstate = DEMO_IN_DOKAN_ACTION_1;
+            break;
+        }
+        case DEMO_IN_DOKAN_ACTION_1: {
+            mAng v = mFollowEf.mAng;
+            if (mDirection == 1) {
+                v = -v;
+            }
+            sLib::addCalcAngle(&mAngle.x.mAngle, v.mAngle, 4, 0x1000, 0x100);
+            float tmp = m_90 - 32.0f;
+            sLib::chase(&m_74.y, tmp, 0.75f);
+            mMtx_c m1, m2;
+            m1.trans(delta);
+            m1.ZrotM(mFollowEf.mAng);
+            m2.trans(0.0f, m_74.y, 0.0f);
+            m1.concat(m2);
+            m2.multVecZero(mPos);
+            if (m_74.y <= tmp) {
+                changeNextScene(1);
+                mDemoSubstate = DEMO_IN_DOKAN_ACTION_3;
+                onStatus(STATUS_BB);
+            }
+            break;
+        }
+        default:
+            break;
+    }
+}
+
+void daPlBase_c::initializeState_DemoInWaterTank() {
+    onStatus(STATUS_BB);
+    mDirection = (u8) (int) mDemoStateChangeParam;
+    mpMdlMng->mpMdl->setAnm(131, ((float *) &dPyMdlMng_c::m_hio)[10], ((float *) &dPyMdlMng_c::m_hio)[11], 0.0f);
+    mAngle.y = 0;
+    if ((int) mDemoStateChangeParam == 1) {
+        m_ce0 = 0;
+        mLayer = 0;
+        setZPosition(3000.0f);
+    } else {
+        m_ce0 = 35;
+        if (daPyDemoMng_c::mspInstance->checkDemoNo(mPlayerNo)) {
+            stopOther();
+        }
+    }
+    mDemoSubstate = DEMO_IN_DOKAN_ACTION_0;
+}
+
 void daPlBase_c::finalizeState_DemoInWaterTank() {}
-void daPlBase_c::executeState_DemoInWaterTank() {}
 
-void daPlBase_c::initializeState_DemoOutWaterTank() {}
+void daPlBase_c::executeState_DemoInWaterTank() {
+    switch ((DemoInDokanSubstate_e) mDemoSubstate) {
+        case DEMO_IN_DOKAN_ACTION_0:
+            if (!mFader_c::mFader->isStatus(mFaderBase_c::HIDDEN)) {
+                break;
+            }
+            if (!daPyDemoMng_c::mspInstance->checkDemoNo(mPlayerNo)) {
+                break;
+            }
+            offStatus(STATUS_BB);
+            mDemoSubstate = DEMO_IN_DOKAN_ACTION_1;
+            m_10c8 = 60;
+            m_d44 = 0;
+            m_d40 = 0;
+            checkWater();
+            if (m_d40 & 0x4000) {
+                mpMdlMng->mpMdl->setAnm(132, ((float *) &dPyMdlMng_c::m_hio)[10], ((float *) &dPyMdlMng_c::m_hio)[11], 0.0f);
+                mPos.y = getWaterDokanCenterOffset(mPos.y);
+                fn_80057e70(SE_PLY_WATER_DOKAN_IN_OUT, false);
+            } else {
+                fn_80057e70(SE_PLY_DOKAN_IN_OUT, false);
+            }
+            break;
+        case DEMO_IN_DOKAN_ACTION_1:
+            if (m_10c8 == 0) {
+                changeNormalAction();
+            }
+            break;
+        default:
+            break;
+    }
+}
+
+void daPlBase_c::initializeState_DemoOutWaterTank() {
+    mpMdlMng->mpMdl->setAnm(0, ((float *) &dPyMdlMng_c::m_hio)[10], ((float *) &dPyMdlMng_c::m_hio)[11], 0.0f);
+    mSpeedF = 0.0f;
+    mMaxSpeedF = 0.0f;
+    mSpeed.set(0.0f, 0.0f, 0.0f);
+    mAngle.x = 0.0f;
+    mAngle.y = -0x8000;
+}
+
 void daPlBase_c::finalizeState_DemoOutWaterTank() {}
-void daPlBase_c::executeState_DemoOutWaterTank() {}
 
-void daPlBase_c::initializeState_DemoRailDokan() {}
-void daPlBase_c::finalizeState_DemoRailDokan() {}
+void daPlBase_c::executeState_DemoOutWaterTank() {
+    switch ((DemoInDokanSubstate_e) mDemoSubstate) {
+        case DEMO_IN_DOKAN_ACTION_0:
+            if (sLib::chase(&mPos.x, m_68.x, 1.0f)) {
+                mpMdlMng->mpMdl->setAnm(132, ((float *) &dPyMdlMng_c::m_hio)[10], ((float *) &dPyMdlMng_c::m_hio)[11], 0.0f);
+                fn_80057e70(SE_PLY_DOKAN_IN_OUT, false);
+                m_10c8 = 60;
+                mDemoSubstate = DEMO_IN_DOKAN_ACTION_1;
+            }
+            break;
+        case DEMO_IN_DOKAN_ACTION_1:
+            if (mpMdlMng->mpMdl->mAnm.isStop()) {
+                mpMdlMng->mpMdl->setAnm(131, ((float *) &dPyMdlMng_c::m_hio)[10], ((float *) &dPyMdlMng_c::m_hio)[11], 0.0f);
+            }
+            if (m_10c8 == 0) {
+                onStatus(STATUS_BB);
+                if (m_80 == 3) {
+                    setZPosition(-1800.0f);
+                    if ((int) mDemoStateChangeParam <= 1) {
+                        m_68.x = mPos.x + sc_DirSpeed[(int) mDemoStateChangeParam] * 32.0f;
+                        mDemoSubstate = DEMO_IN_DOKAN_ACTION_2;
+                    } else {
+                        m_68.y = mPos.y - sc_DirSpeed[(int) mDemoStateChangeParam & 1] * 80.0f;
+                        mDemoSubstate = DEMO_IN_DOKAN_ACTION_4;
+                    }
+                } else {
+                    changeNextScene(1);
+                }
+                break;
+            }
+            break;
+        case DEMO_IN_DOKAN_ACTION_2:
+            if (sLib::chase(&mPos.x, m_68.x, 1.0f)) {
+                m_68.y = getWaterDokanCenterOffset(m_68.y + 16.0f);
+                mDemoSubstate = DEMO_IN_DOKAN_ACTION_3;
+            }
+            break;
+        case DEMO_IN_DOKAN_ACTION_3:
+            if (sLib::chase(&mPos.y, m_68.y, 1.0f)) {
+                m_68.x = mPos.x + sc_DirSpeed[(int) mDemoStateChangeParam] * 48.0f;
+                mDemoSubstate = DEMO_IN_DOKAN_ACTION_4;
+            }
+            break;
+        case DEMO_IN_DOKAN_ACTION_4:
+            if (sLib::chase(&mPos.x, m_68.x, 1.0f) && sLib::chase(&mPos.y, m_68.y, 1.0f)) {
+                mLayer = 1;
+                mAngle.y = 0;
+                switch ((int) mDemoStateChangeParam) {
+                    case 0:
+                        changeDemoState(StateID_DemoInDokanL, 1);
+                        break;
+                    case 1:
+                        changeDemoState(StateID_DemoInDokanR, 1);
+                        break;
+                    case 2:
+                        changeDemoState(StateID_DemoInDokanU, 1);
+                        break;
+                    case 3:
+                        changeDemoState(StateID_DemoInDokanD, 1);
+                        break;
+                }
+                setZPosition(-1800.0f);
+            }
+            break;
+    }
+}
+
+void daPlBase_c::initializeState_DemoRailDokan() {
+    onStatus(STATUS_BB);
+    dCdFile_c *cdFile = dCd_c::m_instance->getFileP(dScStage_c::m_instance->mCurrCourse);
+    dNextGoto_c *nextGoto = cdFile->getNextGotoP(mDokanRelated);
+    void *rail = dRail_c::getRailInfoP(nextGoto->m_0f);
+    dCdFile_c *cdFile2 = dCd_c::m_instance->getFileP(dScStage_c::m_instance->mCurrCourse);
+}
+
+void daPlBase_c::finalizeState_DemoRailDokan() {
+    offStatus(STATUS_BB);
+}
+
+void daPlBase_c::setExitRailDokan() {
+    dCdFile_c *cdFile = dCd_c::m_instance->getFileP(dScStage_c::m_instance->mCurrCourse);
+    dNextGoto_c *nextGoto = cdFile->getNextGotoP(mDokanRelated);
+    mLayer = nextGoto->mLayer;
+    switch (nextGoto->m_0b) {
+        case 3:
+            changeDemoState(StateID_DemoInDokanU, 1);
+            break;
+        case 4:
+            changeDemoState(StateID_DemoInDokanU, 1);
+            break;
+        case 5:
+            changeDemoState(StateID_DemoInDokanR, 1);
+            break;
+        case 6:
+            changeDemoState(StateID_DemoInDokanL, 1);
+            break;
+    }
+}
+
 void daPlBase_c::executeState_DemoRailDokan() {}
 
 void daPlBase_c::initializeState_DemoDown() {}
 void daPlBase_c::finalizeState_DemoDown() {}
 void daPlBase_c::executeState_DemoDown() {}
 
-void daPlBase_c::initializeState_DemoGoal() {}
-void daPlBase_c::finalizeState_DemoGoal() {}
-void daPlBase_c::executeState_DemoGoal() {}
+int daPlBase_c::vf130(float f, mVec2_c *v, int param3) {
+    if (daPyDemoMng_c::mspInstance->mFlags & 4) {
+        return -1;
+    }
+    mPos.x = v->x;
+    changeState(StateID_None, nullptr);
+    changeDemoState(StateID_DemoGoal, 0);
+    m_68.x = f;
+    m_68.y = v->y;
+    m_68.z = v->x + 80.0f;
+    m_9c = daPyDemoMng_c::mspInstance->setGoalDemoList(mPlayerNo);
+    if (m_9c == 0) {
+        daPyDemoMng_c::mspInstance->setDemoMode(daPyDemoMng_c::MODE_1, 0);
+        daPyDemoMng_c::mspInstance->m_14 = param3;
+        daPyDemoMng_c::mspInstance->mPlNo = mPlayerNo;
+        mVec3_c pos(f - 112.0f, v->y, 5500.0f);
+        float tmp;
+        if (dBc_c::checkGround(&pos, &tmp, mLayer, 1, -1)) {
+            pos.y = tmp + 112.0f;
+        }
+        daPyDemoMng_c::mspInstance->mFireworkPos = pos;
+    }
+    bool cond = false;
+    daPlBase_c *pl = daPyMng_c::getPlayer(mPlayerNo);
+    if (pl != nullptr && pl->isItemKinopio()) {
+        cond = true;
+    }
+    if (!cond) {
+        if (m_9c != 0 && m_9c + 1 == daPyMng_c::getNumInGame()) {
+            dMultiMng_c::mspInstance->setClapSE();
+        }
+    } else {
+        daPyDemoMng_c::mspInstance->m_42 = 1;
+        dGameCom::hideFukidashiForSession(mPlayerNo, 8);
+    }
+    int sum = daPyMng_c::getItemKinopioNum() + daPyMng_c::getNumInGame();
+    if (sum == m_9c + 1) {
+        daPyDemoMng_c::mspInstance->stopBgmGoalDemo();
+    }
+    return -1;
+}
+
+bool daPlBase_c::setHideNotGoalPlayer() {
+    if (!isStatus(STATUS_65)) {
+        mSpeedF = 0.0f;
+        mSpeed.y = 0.0f;
+        onStatus(STATUS_6F);
+        setFallAction();
+        return true;
+    }
+    return false;
+}
+
+void daPlBase_c::stopGoalOther() {
+    if (!isPlayerGameStop()) {
+        return;
+    }
+    dActor_c::mExecStopReq |= 0xf;
+    for (int i = 0; i < PLAYER_COUNT; i++) {
+        daPlBase_c *ctrlPl = daPyMng_c::getCtrlPlayer(i);
+        if (ctrlPl == nullptr || !ctrlPl->isStatus(STATUS_65)) {
+            continue;
+        }
+
+        daPlBase_c *pl = daPyMng_c::getPlayer(i);
+        if (pl != nullptr) {
+            pl->mExecStopMask &= ~2;
+        }
+        daPlBase_c *yoshi = daPyMng_c::getYoshi(i);
+        if (yoshi != nullptr) {
+            yoshi->mExecStopMask &= ~2;
+        }
+    }
+}
+
+void daPlBase_c::playGoalOther() {
+    dActor_c::mExecStopReq &= ~0xf;
+    for (int i = 0; i < PLAYER_COUNT; i++) {
+        daPlBase_c *ctrlPl = daPyMng_c::getCtrlPlayer(i);
+        if (ctrlPl == nullptr || ctrlPl->isStatus(STATUS_65)) {
+            continue;
+        }
+
+        daPlBase_c *pl = daPyMng_c::getPlayer(i);
+        if (pl != nullptr) {
+            pl->mExecStopMask |= 2;
+        }
+        daPlBase_c *yoshi = daPyMng_c::getYoshi(i);
+        if (yoshi != nullptr) {
+            yoshi->mExecStopMask |= 2;
+        }
+    }
+}
+
+void daPlBase_c::initDemoGoalBase() {
+    onStatus(STATUS_65);
+    if ((int) mDemoStateChangeParam == 0) {
+        vf434(31, 0);
+        onStatus(STATUS_7E);
+    }
+    clearJumpActionInfo(0);
+    endStar();
+    setDemoGoalMode(0, 0);
+    mpMdlMng->mpMdl->setAnm(85, ((float *) &dPyMdlMng_c::m_hio)[10], ((float *) &dPyMdlMng_c::m_hio)[11], 0.0f);
+    mAngle.x = 0;
+    setZPositionDirect(3000.0f);
+    mSpeed.x = 0.0f;
+    mSpeedF = 0.0f;
+    mSpeed.y = 0.0f;
+    mAccelY = 0.0f;
+    mMaxFallSpeed = -4.0f;
+}
+
+void daPlBase_c::finalizeDemoGoalBase() {
+    offStatus(STATUS_65);
+    offStatus(STATUS_66);
+    offStatus(STATUS_68);
+    offStatus(STATUS_69);
+    offStatus(STATUS_6A);
+    offStatus(STATUS_6C);
+    offStatus(STATUS_6D);
+    offStatus(STATUS_6E);
+    offStatus(STATUS_7E);
+}
+
+void daPlBase_c::initializeState_DemoGoal() { initDemoGoalBase(); }
+void daPlBase_c::finalizeState_DemoGoal() { finalizeDemoGoalBase(); }
+
+float daPlBase_c::getDemoGoalLandPos() {
+    float pos = m_68.z + daPyDemoMng_c::mspInstance->m_1c * 16.0f;
+    if (daPyDemoMng_c::mspInstance->m_1c > 1) {
+        pos -= m_a0 * 32.0f;
+    }
+    return pos;
+}
+
+void daPlBase_c::setDemoGoal_MultiJump() {
+    offStatus(STATUS_7E);
+    mVec3_c pos(
+        getDemoGoalLandPos(),
+        mPos.y,
+        mPos.z
+    );
+    dBc_c::checkGround(&pos, &pos.y, mLayer, 1, -1);
+    mAngle.y = 0x4000;
+    m_60 = 4;
+    mpMdlMng->mpMdl->setAnm(88, ((float *) &dPyMdlMng_c::m_hio)[10], ((float *) &dPyMdlMng_c::m_hio)[11], 0.0f);
+    if (daPyDemoMng_c::mspInstance->m_1c > 1) {
+        initGoalJump(pos, 5.128f);
+    } else {
+        initGoalJump(pos, 4.928f);
+    }
+}
+
+void daPlBase_c::executeDemoGoal_Pole() {
+    switch (m_60) {
+        case 0:
+            if (!addCalcAngleY(-0x4000, 10) && mpMdlMng->mpMdl->mAnm.isStop()) {
+                m_60 = 1;
+                mpMdlMng->mpMdl->setAnm(86, ((float *) &dPyMdlMng_c::m_hio)[10], ((float *) &dPyMdlMng_c::m_hio)[11], 0.0f);
+                onStatus(STATUS_66);
+            }
+            break;
+        case 1:
+            if (isStatus(STATUS_67)) {
+                int polePlayer = daPyDemoMng_c::mspInstance->getPoleBelowPlayer(mPlayerNo);
+                if (polePlayer != -1) {
+                    daPlBase_c *ctrlPl = daPyMng_c::getCtrlPlayer(polePlayer);
+                    if (ctrlPl != nullptr) {
+                        if (0.7f * ctrlPl->m_c9c + ctrlPl->mPos.y < mPos.y) {
+                            if (!ctrlPl->isStatus(STATUS_68)) {
+                                break;
+                            }
+                        }
+                    }
+                }
+                m_60 = 2;
+                offStatus(STATUS_66);
+                daPyDemoMng_c::mspInstance->mFlags |= 1;
+                mSpeed.y = -1.9f;
+            }
+            break;
+        case 2: {
+            float tmp = m_a4;
+            mPos.y += mSpeed.y;
+            if (mPos.y < m_a4) {
+                mPos.y = m_a4;
+                onStatus(STATUS_68);
+                mSpeed.y = 0.0f;
+                m_60 = 3;
+                mpMdlMng->mpMdl->setAnm(87, ((float *) &dPyMdlMng_c::m_hio)[10], ((float *) &dPyMdlMng_c::m_hio)[11], 0.0f);
+            }
+            break;
+        }
+        case 3:
+            if (isStatus(STATUS_69)) {
+                setDemoGoal_MultiJump();
+            }
+            break;
+        case 4:
+            if (calcGoalJump()) {
+                m_60 = 5;
+                mpMdlMng->mpMdl->setAnm(89, ((float *) &dPyMdlMng_c::m_hio)[10], ((float *) &dPyMdlMng_c::m_hio)[11], 0.0f);
+                setLandSE();
+            }
+            break;
+        case 5:
+            if (mpMdlMng->mpMdl->mAnm.isStop()) {
+                mpMdlMng->mpMdl->setAnm(143, ((float *) &dPyMdlMng_c::m_hio)[10], ((float *) &dPyMdlMng_c::m_hio)[11], 0.0f);
+                m_60 = 6;
+                m_10c8 = 5;
+            }
+            break;
+        case 6:
+            if (m_10c8 == 0) {
+                onStatus(STATUS_6A);
+                m_60 = 7;
+            }
+            break;
+        case 7:
+            if (daPyDemoMng_c::mspInstance->mFlags & 8 && !addCalcAngleY(0, 10)) {
+                m_10c8 = 7;
+                m_60 = 8;
+            }
+            break;
+        case 8:
+            if (m_10c8 == 0) {
+                setDemoGoalMode(1, 0);
+            }
+            break;
+    }
+}
+
+void daPlBase_c::executeDemoGoal_Wait() {
+    if (isStatus(STATUS_6B)) {
+        offStatus(STATUS_6B);
+        onStatus(STATUS_6C);
+        setDemoGoalMode(2, 0);
+    }
+    if (isStatus(STATUS_6D)) {
+        setDemoGoalMode(3, 0);
+    }
+}
+
+void daPlBase_c::executeDemoGoal_KimePose() {
+    if (m_5c && mpMdlMng->mpMdl->mAnm.checkFrame(107.0f)) {
+        daPlBase_c *pl = daPyMng_c::getPlayer(mPlayerNo);
+        if (pl != nullptr) {
+            if (pl->isItemKinopio()) {
+                if (m_5c == 2 || m_5c == 3) {
+                    if (pl->mPowerup == POWERUP_NONE) {
+                        dScoreMng_c::m_instance->fn_800e25a0(8, mPlayerNo, 1);
+                    } else {
+                        dScoreMng_c::m_instance->fn_800e25a0(9, mPlayerNo, 1);
+                    }
+                }
+            } else {
+                if (dInfo_c::mGameFlag & 0x10 && dInfo_c::mGameFlag & 0x40) {
+                    if (m_9c == 0) {
+                        SndAudioMgr::sInstance->startSystemSe(SE_OBJ_GOAL_GET_COIN_BONUS, 1);
+                    }
+                    static const int coinBonus[] = {20, 15, 10, 5 };
+                    dMultiMng_c::mspInstance->setBattleCoin(mPlayerNo, coinBonus[m_a0]);
+                }
+            }
+        }
+    }
+    if (vf284(0)) {
+        setDemoGoalMode(1, 0);
+    }
+}
+
+void daPlBase_c::executeDemoGoal_Run() {}
+
+void daPlBase_c::setDemoGoalMode(int mode, int param) {
+    mDemoSubstate = mode;
+    m_60 = param;
+}
+
+void daPlBase_c::executeState_DemoGoal() {
+    switch (mDemoSubstate) {
+        case 0:
+            executeDemoGoal_Pole();
+            break;
+        case 1:
+            executeDemoGoal_Wait();
+            break;
+        case 2:
+            executeDemoGoal_KimePose();
+            break;
+        case 3:
+            executeDemoGoal_Run();
+            break;
+    }
+    bgCheck(0);
+}
 
 void daPlBase_c::initializeState_DemoControl() {}
 void daPlBase_c::finalizeState_DemoControl() {}
