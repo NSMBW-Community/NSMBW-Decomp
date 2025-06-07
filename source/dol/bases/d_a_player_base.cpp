@@ -2321,7 +2321,7 @@ bool daPlBase_c::setSandJumpEffect() {
 
 void daPlBase_c::setSoundPlyMode() {
     static const int csSoundPlyMode[] = {
-        0, 1, 2, 3, 4, 1
+        0, 1, 2, 3, 4, 5, 1
     };
     mSndObj.m_b0 = csSoundPlyMode[mPowerup];
 }
@@ -4611,4 +4611,125 @@ void daPlBase_c::clearCcPlayerRev() {
     m_1068 = 0.0f;
     m_1070 = false;
     m_1071 = false;
+}
+
+bool daPlBase_c::calcCcPlayerRev(float *f) {
+    if (m_1070) {
+        float tmp = m_106c;
+        if (isStatus(STATUS_2C) || m_1074) {
+            tmp = 0.0f;
+        }
+        if (isDemoType(DEMO_4) && m_d40 & 1) {
+            tmp = 0.0f;
+        }
+        float prev_1064 = m_1064;
+        m_1064 = 0.0f;
+        if (prev_1064) {
+            float m = prev_1064 * tmp;
+            float tmp2 = 3.0f;
+            if (m > 3.0f) {
+                m = 3.0f;
+            } else if (m < -3.0f) {
+                m = -3.0f;
+            }
+            if (mSpeedF * prev_1064 <= 0.0f) {
+                *f = m;
+                if (isDemoType(DEMO_4) || isStatus(STATUS_5F)) {
+                    return false;
+                }
+                float f1 = m_1060;
+                float f2 = mSpeedF;
+                if (f2 * f1 <= 0.0f && fabsf(f2) + fabsf(f1) > 2.5f) {
+                    mSpeedF = f1 * 0.4f;
+                    return true;
+                }
+                if (fabsf(mSpeedF) > fabsf(m_1060) && mSpeedF > 1.5f) {
+                    mSpeedF = 0.0f;
+                    return true;
+                }
+            }
+        }
+    }
+    return false;
+}
+
+bool daPlBase_c::isEnableStampPlayerJump(dCc_c *cc1, dCc_c *cc2) {
+    daPlBase_c *other = (daPlBase_c *) cc2->mpOwner;
+    if (m_d40 & 1) {
+        return false;
+    }
+    if (mSpeed.y >= 0.0f) {
+        return false;
+    }
+    if (isStatus(STATUS_1C) || isStatus(STATUS_1F)) {
+        return false;
+    }
+    if (other->isLiftUp() || other->m_10) {
+        return false;
+    }
+    if (isDemoType(DEMO_4) || other->isDemoType(DEMO_4)) {
+        return false;
+    }
+    float topPos = cc2->getTopPos() - 16.0f;
+    if (topPos < cc2->getCenterPosY()) {
+        topPos = cc2->getCenterPosY();
+    }
+    if (cc1->getUnderPos() > topPos) {
+        return true;
+    }
+    return false;
+}
+
+void daPlBase_c::setStampReduction() {
+    if (!isStatus(STATUS_3A)) {
+        if (mSpeed.y > 0.0f) {
+            mSpeed.y = 0.0f;
+        }
+        setReductionScale();
+    } else {
+        mSpeed.y = -1.0f;
+    }
+}
+
+void daPlBase_c::setStampPlayerJump(bool b, float f) {
+    if (!isStatus(STATUS_3A)) {
+        float scale = 3.628f;
+        if (isMameAction()) {
+            scale = 3.278f;
+        }
+        if (b) {
+            dQuake_c::m_instance->shockMotor(mPlayerNo, 7, 0, 0);
+            if (mKey.buttonJump()) {
+                scale = 4.128f;
+            }
+            vf3fc(scale, mSpeedF, 1, 1, 0);
+        } else {
+            vf3fc(scale, mSpeedF, 1, 0, 0);
+        }
+        mPos.y += f;
+    } else {
+        mSpeed.y = 1.0f;
+    }
+}
+
+void daPlBase_c::setReductionScale() {
+    setReductionBoyon();
+    initStampReduction();
+}
+
+void daPlBase_c::initStampReduction() {
+    if (!isStatus(STATUS_0A) || m_04 == 0) {
+        m_0c = 4;
+    }
+    m_10 = 10;
+    vf434(52, 0);
+    dQuake_c::m_instance->shockMotor(mPlayerNo, 7, 0, 0);
+}
+
+void daPlBase_c::calcJumpDaiReductionScale(int i1, int i2) {
+    if (i1 > i2) {
+        i1 = i2;
+    }
+    m_00 = 1;
+    m_08 = (0.6f * i1) / i2;
 }

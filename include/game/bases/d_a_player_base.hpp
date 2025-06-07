@@ -112,10 +112,12 @@ public:
         STATUS_1C = 0x1c,
         STATUS_1D = 0x1d,
         STATUS_1E = 0x1e,
+        STATUS_1F = 0x1f,
         STATUS_22 = 0x22,
         STATUS_24 = 0x24,
         STATUS_2A = 0x2a,
         STATUS_2B = 0x2b,
+        STATUS_2C = 0x2c,
         STATUS_2D = 0x2d,
         STATUS_2E = 0x2e,
         STATUS_30 = 0x30,
@@ -371,7 +373,7 @@ public:
     virtual float *getHeadTopPosP() { return nullptr; }
     virtual float *getGravityData() { return mGravityData; }
     virtual bool isCarry() const { return false; }
-    virtual bool isLiftUp();
+    virtual bool isLiftUp() { return false; }
 
     virtual void vf3d0();
     virtual int isStar() const;
@@ -585,6 +587,10 @@ public:
     void entryCollision();
     bool isActionRevisionY();
     void setCcPlayerRev(dCc_c *, dCc_c *, float, int);
+    bool calcCcPlayerRev(float *);
+    bool isEnableStampPlayerJump(dCc_c *, dCc_c *);
+    void setStampReduction();
+    void setStampPlayerJump(bool b, float f);
 
     bool setSandMoveSpeed();
 
@@ -618,9 +624,14 @@ public:
     float calcStarAccel(float f) { return 3.0f * f; }
     float calcIdkAccel(float f) { return 0.375f * f; }
 
-    u8 mPad1[0x20];
+    int m_00;
+    int m_04;
+    float m_08;
+    int m_0c;
+    u32 m_10;
+    u8 mPad3[0xc];
     u32 m_20;
-    u8 mPad2[0x34];
+    u8 mPad4[0x34];
     float m_58;
     int m_5c;
     s8 m_60;
@@ -712,7 +723,8 @@ public:
     float m_106c;
     bool m_1070;
     bool m_1071;
-    u8 mPad22[0x10];
+    int m_1074;
+    u8 mPad22[0xc];
     sFStateMgr_c<daPlBase_c, sStateMethodUsr_FI_c> mDemoStateMgr;
     void *mDemoStateChangeParam; ///< To be used as a kind of argument to the new demo state.
     int mDemoSubstate; ///< Demo states can use this as a kind of sub-state variable (cast to some enum)
