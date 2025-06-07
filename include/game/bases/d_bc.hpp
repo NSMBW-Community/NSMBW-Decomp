@@ -4,7 +4,8 @@
 
 class dBg_ctr_c {
 public:
-    u8 mPad1[0xbc];
+    dActor_c *mpActor;
+    u8 mPad1[0xb8];
     short *m_bc;
 
     void addDokanMoveDiff(mVec3_c *);
@@ -20,7 +21,11 @@ public:
 
     char mPad1[0x4c];
     dRc_c *mpRc;
-    char mPad3[0x34];
+    dActor_c *mpActor;
+    dBg_ctr_c *mpCtrHead;
+    dBg_ctr_c *mpCtrFoot;
+    dBg_ctr_c *mpCtrWall;
+    char mPad3[0x24];
     u32 mFlags;
     char mPad4[0xc];
     u8 mOwningPlrNo;

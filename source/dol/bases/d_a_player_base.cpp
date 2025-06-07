@@ -2,7 +2,9 @@
 #include <game/bases/d_a_player_base.hpp>
 #include <game/bases/d_a_player_demo_manager.hpp>
 #include <game/bases/d_a_player_manager.hpp>
+#include <game/bases/d_bg_parameter.hpp>
 #include <game/bases/d_cd.hpp>
+#include <game/bases/d_game_key.hpp>
 #include <game/bases/d_info.hpp>
 #include <game/bases/d_next.hpp>
 #include <game/bases/d_s_stage.hpp>
@@ -47,7 +49,7 @@ namespace {
         { 0.4f, -0.4f, 0.0f },
     };
 
-    const float scDokanOutTurnSpeed = 2048.0f;
+    const float scDokanOutTurnSpeed[] = { 2048.0f };
 }
 
 daPlBase_c::daPlBase_c() :
@@ -2892,7 +2894,7 @@ void daPlBase_c::executeDemoInDokan(u8 dir) {
             break;
         case DEMO_IN_DOKAN_ACTION_3:
             if (!mKey.buttonWalk(nullptr)) {
-                if (!sLib::chase(&mAngle.y.mAngle, getMukiAngle(mDirection), scDokanOutTurnSpeed)) {
+                if (!sLib::chase(&mAngle.y.mAngle, getMukiAngle(mDirection), scDokanOutTurnSpeed[0])) {
                     break;
                 }
             }
@@ -3161,7 +3163,7 @@ void daPlBase_c::executeDemoOutDokanUD() {
         case DEMO_IN_DOKAN_ACTION_0: {
             int cond = 0;
             if (mKind == 2) {
-                if (sLib::chase(&mAngle.y.mAngle, 0, scDokanOutTurnSpeed)) {
+                if (sLib::chase(&mAngle.y.mAngle, 0, scDokanOutTurnSpeed[0])) {
                     cond = 1;
                 }
             } else {
@@ -3322,7 +3324,7 @@ void daPlBase_c::executeState_DemoOutDokanRoll() {
         case DEMO_IN_DOKAN_ACTION_0: {
             int cond = 0;
             if (mKind == 2) {
-                if (sLib::chase(&mAngle.y.mAngle, 0, scDokanOutTurnSpeed)) {
+                if (sLib::chase(&mAngle.y.mAngle, 0, scDokanOutTurnSpeed[0])) {
                     cond = 1;
                 }
             } else {
@@ -4300,8 +4302,313 @@ void daPlBase_c::executeState_DemoNextGotoBlock() {
         if (upper == 3) {
             f = dFader_c::FADER_CIRCLE_TARGET;
         }
-        dNext_c::m_instance->setChangeSceneNextDat(dScStage_c::m_instance->mCurrFile, lower, f);
+        dNext_c::m_instance->setChangeSceneNextDat(dScStage_c::m_instance->mCurrCourse, lower, f);
         changeNextScene(0);
         mDemoSubstate = DEMO_IN_DOKAN_ACTION_1;
     }
+}
+
+void daPlBase_c::updateEndingDance() {
+    offStatus(STATUS_75);
+    if (!dScStage_c::m_isStaffCredit || isDemoType(DEMO_4)) {
+        return;
+    }
+    int cond = 0;
+    dGameKeyCore_c **keys = dGameKey_c::m_instance->mRemocon;
+    dGameKeyCore_c *key = keys[mPlayerNo];
+    if (key->mDownButtons != 0 || key->mIsShaking != 0) {
+        cond = 1;
+    }
+    if (!isDemoType(DEMO_6)) {
+        if (cond == 1) {
+            m_f4 = 0;
+        } else {
+            m_f4++;
+            if (m_f4 >= 180) {
+                setControlDemoEndingDance();
+                m_f4 = 0;
+            }
+        }
+    } else if (cond == 1) {
+        endControlDemo(0);
+    } else if (isStatus(STATUS_45)) {
+        for (int i = 0; i < ARRAY_SIZE(m_d8); i++) {
+            m_d8[i] = 0;
+        }
+    } else {
+        onStatus(STATUS_75);
+        if (dAudio::isBgmAccentSign(2)) {
+            mDirection = 0;
+        } else if (dAudio::isBgmAccentSign(4)) {
+            mDirection = 1;
+        } else if (dAudio::isBgmAccentSign(8)) {
+            mKey.onDemoButton(dAcPyKey_c::BUTTON_DOWN);
+            m_d8[2] = 6;
+        } else if (dAudio::isBgmAccentSign(16)) {
+            mKey.onDemoTrigger(dAcPyKey_c::BUTTON_TWO);
+            mKey.onDemoButton(dAcPyKey_c::BUTTON_TWO);
+            m_d8[3] = 5;
+        } else if (dAudio::isBgmAccentSign(32)) {
+            mKey.onDemoTrigger(dAcPyKey_c::BUTTON_TWO);
+            mKey.onDemoButton(dAcPyKey_c::BUTTON_TWO);
+            m_d8[4] = 30;
+        } else if (dAudio::isBgmAccentSign(64)) {
+            mKey.onDemoShake();
+        } else if (dAudio::isBgmAccentSign(128)) {
+            if (dBgParameter_c::ms_Instance_p->m_48 > mPos.x) {
+                mDirection = 0;
+            } else {
+                mDirection = 1;
+            }
+        }
+
+        for (int i = 0; i < 5; i++) {
+            if (m_d8[i] != 0 && --m_d8[i] == 0) {
+                switch (i) {
+                    case 2:
+                        mKey.offDemoButton(dAcPyKey_c::BUTTON_DOWN);
+                        break;
+                    case 3:
+                    case 4:
+                        mKey.offDemoButton(dAcPyKey_c::BUTTON_TWO);
+                        break;
+                }
+            }
+        }
+    }
+}
+
+bool daPlBase_c::setEnemyStageClearDemo() {
+    if (isStatus(STATUS_60)) {
+        if (m_d44 & 2 &&
+            mBc.mpCtrHead != nullptr &&
+            mBc.mpCtrHead->mpActor != nullptr &&
+            mBc.mpCtrHead->mpActor->mProfName == fProfile::EN_CHIKUWA_BLOCK
+        ) {
+            return false;
+        }
+        if (!isDemoType(DEMO_4)) {
+            changeDemoState(StateID_DemoControl, 0);
+        }
+        mSpeed.y = 0.0f;
+        mSpeedF = 0.0f;
+        return true;
+    }
+    return false;
+}
+
+int daPlBase_c::getCcLineKind() {
+    if (m_d44 & 0x180000) {
+        return m_ca1;
+    }
+    return 3;
+}
+
+void daPlBase_c::initCollision(sCcDatNewF *dat1, sCcDatNewF *dat2) {
+    mCc.registerCc(this, dat1);
+    mCc1.registerCc(this, dat1);
+    mAttCc1.registerCc(this, dat2);
+    mAttCc2.registerCc(this, dat2);
+    mAttCc3.registerCc(this, dat2);
+}
+
+void daPlBase_c::releaseCcData() {
+    u32 categoryInteract =
+        BIT_FLAG(dCc_c::CAT_PLAYER_GENERIC) |
+        BIT_FLAG(dCc_c::CAT_PLAYER_ATTACK) |
+        BIT_FLAG(dCc_c::CAT_YOSHI) |
+        BIT_FLAG(dCc_c::CAT_ENTITY) |
+        BIT_FLAG(dCc_c::CAT_BALLOON) |
+        BIT_FLAG(dCc_c::CAT_ITEM) |
+        BIT_FLAG(dCc_c::CAT_PROJECTILE) |
+        BIT_FLAG(dCc_c::CAT_CANNON) |
+        BIT_FLAG(dCc_c::CAT_GOAL_POLE);
+
+    u32 categoryForAtt =
+        BIT_FLAG(dCc_c::CAT_PLAYER_GENERIC) |
+        BIT_FLAG(dCc_c::CAT_YOSHI) |
+        BIT_FLAG(dCc_c::CAT_ENTITY) |
+        BIT_FLAG(dCc_c::CAT_BALLOON) |
+        BIT_FLAG(dCc_c::CAT_ITEM) |
+        BIT_FLAG(dCc_c::CAT_CANNON);
+
+    u32 attackCategoryInteract =
+        dCc_c::ATTACK_ALL &
+        ~BIT_FLAG(dCc_c::ATTACK_UNK0) &
+        ~BIT_FLAG(dCc_c::ATTACK_YOSHI_MOUTH) &
+        ~BIT_FLAG(dCc_c::ATTACK_SAND_PILLAR);
+
+    mCc.release();
+    mCc.mCcData.mCategoryInteract = categoryInteract;
+    mCc.mCcData.mAttackCategory = 0;
+    mCc.mCcData.mAttackCategoryInteract = attackCategoryInteract;
+
+    mCc1.release();
+    mCc1.mCcData.mCategoryInteract = categoryInteract;
+    mCc1.mCcData.mAttackCategory = 0;
+    mCc1.mCcData.mAttackCategoryInteract = attackCategoryInteract;
+
+    mAttCc1.release();
+    mAttCc1.mCcData.mCategoryInteract = categoryForAtt;
+    mAttCc1.mCcData.mAttackCategory = 0;
+    mAttCc1.mCcData.mAttackCategoryInteract = 0;
+
+    mAttCc2.release();
+    mAttCc2.mCcData.mCategoryInteract = categoryForAtt;
+    mAttCc2.mCcData.mAttackCategory = 0;
+    mAttCc2.mCcData.mAttackCategoryInteract = 0;
+
+    mAttCc3.release();
+    mAttCc3.mCcData.mCategoryInteract = categoryForAtt;
+    mAttCc3.mCcData.mAttackCategory = 0;
+    mAttCc3.mCcData.mAttackCategoryInteract = 0;
+}
+
+void daPlBase_c::clearCcData() {
+    mCc.clear();
+    mCc1.clear();
+    mAttCc1.clear();
+    mAttCc2.clear();
+    mAttCc3.clear();
+}
+
+void daPlBase_c::setCcAtBody(int attackCategory) {
+    mAttCc2.mCcData.mOffsetX = mCc.mCcData.mOffsetX;
+    mAttCc2.mCcData.mOffsetY = mCc.mCcData.mOffsetY;
+    mAttCc2.mCcData.mWidth = mCc.mCcData.mWidth;
+    mAttCc2.mCcData.mHeight = mCc.mCcData.mHeight;
+    mAttCc2.mCcData.mAttackCategory = attackCategory;
+    mAttCc2.mCcData.mCategoryInteract =
+        BIT_FLAG(dCc_c::ATTACK_UNK0) |
+        BIT_FLAG(dCc_c::ATTACK_FIRE) |
+        BIT_FLAG(dCc_c::ATTACK_ICE);
+
+    mAttCc1.mCcData.mOffsetX = mCc.mCcData.mOffsetX;
+    mAttCc1.mCcData.mOffsetY = mCc.mCcData.mOffsetY;
+    mAttCc1.mCcData.mWidth = mCc.mCcData.mWidth;
+    mAttCc1.mCcData.mHeight = mCc.mCcData.mHeight;
+    mAttCc1.mCcData.mAttackCategory = attackCategory;
+    mAttCc1.mCcData.mCategoryInteract = mCc.mCcData.mCategoryInteract & ~7;
+}
+
+void daPlBase_c::setCcAtSlip() {
+    setCcAtBody(dCc_c::ATTACK_SLIP);
+}
+
+void daPlBase_c::setCcAtPenguinSlip() {
+    if (isStatus(STATUS_3C)) {
+        setCcAtBody(dCc_c::ATTACK_PENGUIN_SLIDE);
+        mAttCc2.mCcData.mAttackCategoryInteract = BIT_FLAG(dCc_c::ATTACK_PENGUIN_SLIDE);
+        mAttCc1.mCcData.mAttackCategoryInteract = BIT_FLAG(dCc_c::ATTACK_PENGUIN_SLIDE);
+    }
+}
+
+void daPlBase_c::setCcAtHipAttack() {
+    setCcAtBody(dCc_c::ATTACK_HIP_ATTK);
+    mAttCc2.mCcData.mAttackCategoryInteract = 0;
+    mAttCc1.mCcData.mAttackCategoryInteract = 0;
+}
+
+void daPlBase_c::setCcAtStar() {
+    mCc.mCcData.mAttackCategory = dCc_c::ATTACK_STAR;
+    if ((mAttCc2.mCcData.mCategoryInteract & 7) == 0) {
+        mCc1.mCcData.mAttackCategory = dCc_c::ATTACK_STAR;
+    }
+    if (mAttCc1.mCcData.mAttackCategory != dCc_c::ATTACK_UNK0 &&
+        mAttCc1.mCcData.mAttackCategory != dCc_c::ATTACK_YOSHI_EAT
+    ) {
+        mAttCc3.mCcData.mOffsetX = mAttCc1.mCcData.mOffsetX;
+        mAttCc3.mCcData.mOffsetY = mAttCc1.mCcData.mOffsetY;
+        mAttCc3.mCcData.mWidth = mAttCc1.mCcData.mWidth;
+        mAttCc3.mCcData.mHeight = mAttCc1.mCcData.mHeight;
+        mAttCc3.mCcData.mAttackCategory = dCc_c::ATTACK_STAR;
+    }
+    onStatus(STATUS_84);
+}
+
+void daPlBase_c::setCcAtCannon() {
+    setCcAtBody(dCc_c::ATTACK_CANNON);
+}
+
+void daPlBase_c::entryCollision() {
+    if (!isStatus(STATUS_04) && !isStatus(STATUS_06)) {
+        int lineKind = getCcLineKind();
+        mCc.mNonCollideMask = lineKind;
+        if (mAttCc1.mCcData.mAttackCategory == dCc_c::ATTACK_WIRE_NET) {
+            lineKind ^= 3;
+        }
+        mAttCc1.mNonCollideMask = lineKind;
+        mAttCc3.mNonCollideMask = lineKind;
+        mCc.mLayer = mLayer;
+        mAttCc1.mLayer = mLayer;
+        mAttCc3.mLayer = mLayer;
+        if (isStatus(STATUS_74)) {
+            mCc.mCcData.mFlag |= 1;
+        } else {
+            mCc.mCcData.mFlag &= ~1;
+        }
+        if (!isStatus(STATUS_7A)) {
+            mCc.entry();
+            if (isStatus(STATUS_78)) {
+                mCc1.entry();
+            }
+        }
+        if (mAttCc1.mCcData.mAttackCategory != 0) {
+            mAttCc1.entry();
+        }
+        if (mAttCc2.mCcData.mAttackCategory != 0) {
+            mAttCc2.entry();
+        }
+        if (mAttCc3.mCcData.mAttackCategory != 0) {
+            mAttCc3.entry();
+        }
+    }
+}
+
+bool daPlBase_c::isActionRevisionY() {
+    if (isStatus(STATUS_35) || isStatus(STATUS_36)) {
+        return true;
+    }
+    return false;
+}
+
+void daPlBase_c::setCcPlayerRev(dCc_c *cc1, dCc_c *cc2, float f, int idx) {
+    daPlBase_c *other = (daPlBase_c *) cc2->mpOwner;
+    float speedF = other->mSpeedF;
+    float offsX = cc1->mCollOffsetX[idx];
+    float offsY = cc1->mCollOffsetY[idx];
+    if (isActionRevisionY()) {
+        if (other->isActionRevisionY()) {
+            if (m_1071) {
+                m_1068 = offsY + m_1068;
+            } else {
+                m_1071 = true;
+                m_1068 = offsY * f;
+            }
+        }
+    } else if (!(fabsf(offsY) < 1.0f || other->isActionRevisionY())) {
+        if (m_1070) {
+            float tmp1 = offsX * f;
+            float tmp2 = m_106c * m_1064;
+            if (fabsf(tmp1) < fabsf(tmp2)) {
+                m_1060 = speedF;
+            }
+            m_106c = 1.0f;
+            m_1064 = tmp1 + tmp2;
+        } else {
+            m_106c = f;
+            m_1060 = speedF;
+            m_1064 = offsX;
+            m_1070 = true;
+        }
+    }
+}
+
+void daPlBase_c::clearCcPlayerRev() {
+    m_106c = 0.0f;
+    m_1060 = 0.0f;
+    m_1064 = 0.0f;
+    m_1068 = 0.0f;
+    m_1070 = false;
+    m_1071 = false;
 }

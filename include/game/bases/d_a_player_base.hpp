@@ -121,6 +121,8 @@ public:
         STATUS_30 = 0x30,
         STATUS_31 = 0x31,
         STATUS_33 = 0x33,
+        STATUS_35 = 0x35,
+        STATUS_36 = 0x36,
         STATUS_3C = 0x3c,
         STATUS_3A = 0x3a,
         STATUS_3E = 0x3e,
@@ -140,6 +142,7 @@ public:
         STATUS_5C = 0x5c,
         STATUS_5E = 0x5e,
         STATUS_5F = 0x5f,
+        STATUS_60 = 0x60,
         STATUS_61 = 0x61,
         STATUS_62 = 0x62,
         STATUS_63 = 0x63,
@@ -159,8 +162,10 @@ public:
         STATUS_72 = 0x72,
         STATUS_73 = 0x73,
         STATUS_74 = 0x74,
+        STATUS_75 = 0x75,
         STATUS_76 = 0x76,
         STATUS_77 = 0x77,
+        STATUS_78 = 0x78,
         STATUS_79 = 0x79,
         STATUS_7A = 0x7a,
         STATUS_7D = 0x7d,
@@ -418,10 +423,8 @@ public:
     void onStatus(int);
     void offStatus(int);
     bool isStatus(int);
-    void releaseCcData();
     void clearFollowMameKuribo();
     void clearCcPlayerRev();
-    void clearCcData();
     void clearComboCount();
     void updateEndingDance();
     int addCalcAngleY(short, short);
@@ -443,9 +446,6 @@ public:
     void setSlipAction_ToEnd();
     void setSlipActionEnd();
     void setSlipActionViewLimitEnd();
-    void setCcAtPenguinSlip();
-    void setCcAtSlip();
-    void setCcAtHipAttack();
     bool checkSakaReverse();
     bool checkBGCrossWall(u8 direction);
     bool checkTurn();
@@ -570,6 +570,21 @@ public:
     bool isHitWallKinopioWalk(int);
     bool checkKinopioWaitBG(int);
     void fn_80052ef0(int, int, int);
+    bool setEnemyStageClearDemo();
+
+    int getCcLineKind();
+    void initCollision(sCcDatNewF *dat1, sCcDatNewF *dat2);
+    void releaseCcData();
+    void clearCcData();
+    void setCcAtBody(int);
+    void setCcAtSlip();
+    void setCcAtPenguinSlip();
+    void setCcAtHipAttack();
+    void setCcAtStar();
+    void setCcAtCannon();
+    void entryCollision();
+    bool isActionRevisionY();
+    void setCcPlayerRev(dCc_c *, dCc_c *, float, int);
 
     bool setSandMoveSpeed();
 
@@ -633,7 +648,9 @@ public:
     int m_cc;
     int m_d0;
     int m_d4;
-    u8 mPad11[0x1c];
+    int m_d8[5];
+    int m_ec;
+    u8 mPad11[0x4];
     u32 m_f4;
     u32 m_f8;
     s8 m_fc;
@@ -689,7 +706,13 @@ public:
     float m_db0;
     u8 mPad21[0x1c];
     dCc_c mCc1, mAttCc1, mAttCc2, mAttCc3;
-    u8 mPad22[0x24];
+    float m_1060;
+    float m_1064;
+    float m_1068;
+    float m_106c;
+    bool m_1070;
+    bool m_1071;
+    u8 mPad22[0x10];
     sFStateMgr_c<daPlBase_c, sStateMethodUsr_FI_c> mDemoStateMgr;
     void *mDemoStateChangeParam; ///< To be used as a kind of argument to the new demo state.
     int mDemoSubstate; ///< Demo states can use this as a kind of sub-state variable (cast to some enum)
@@ -701,10 +724,10 @@ public:
     int m_1114;
     int m_1118;
     mVec2_c m_111c;
-    u8 mPad23[0x4];
+    u8 mPad24[0x4];
     int m_1128;
     float m_112c;
-    u8 mPad24[4];
+    u8 mPad25[4];
     float m_1134, m_1138, m_113c;
     int m_1140;
 

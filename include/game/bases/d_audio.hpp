@@ -105,6 +105,7 @@ namespace dAudio {
     void destroySceneSnd(); ///< @unofficial
     void setNextScene(ProfileName prof, unsigned long bgmIndex);
     void pauseOffGameWithReset(); ///< @unofficial
+    bool isBgmAccentSign(u8);
 
     int getRemotePlayer(int);
     nw4r::math::VEC2 cvtSndObjctPos(const mVec3_c &);
