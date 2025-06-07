@@ -84,13 +84,13 @@ void dCc_c::release() {
     mIsLinked = false;
 }
 
-void dCc_c::registerCc(dBaseActor_c *actor, CcData_s *collInfo) {
+void dCc_c::registerCc(dBaseActor_c *actor, sCcDatNewF *collInfo) {
     mpOwner = actor;
     mCcData = *collInfo;
     mFlag = 0;
 }
 
-void dCc_c::registerCc(dBaseActor_c *actor, CcData_s *collInfo, u8 nonCollideMask) {
+void dCc_c::registerCc(dBaseActor_c *actor, sCcDatNewF *collInfo, u8 nonCollideMask) {
     registerCc(actor, collInfo);
     mNonCollideMask = nonCollideMask;
 }
@@ -187,11 +187,11 @@ bool dCc_c::checkCollision(dCc_c *c1, dCc_c *c2, int active) {
         return false;
     }
 
-    CcData_s collInfo1 = c1->mCcData;
+    sCcDatNewF collInfo1 = c1->mCcData;
     u32 catInteract1 = collInfo1.mCategoryInteract;
     u32 catMask1 = 1 << collInfo1.mCategory;
 
-    CcData_s collInfo2 = c2->mCcData;
+    sCcDatNewF collInfo2 = c2->mCcData;
     u32 catInteract2 = collInfo2.mCategoryInteract;
     u32 catMask2 = 1 << collInfo2.mCategory;
 
@@ -266,8 +266,8 @@ void dCc_c::execute() {
 }
 
 bool dCc_c::_hitCheckSquare(dCc_c *c1, dCc_c *c2, mVec2_c pos1, mVec2_c pos2) {
-    CcData_s &ci1 = c1->mCcData;
-    CcData_s &ci2 = c2->mCcData;
+    sCcDatNewF &ci1 = c1->mCcData;
+    sCcDatNewF &ci2 = c2->mCcData;
 
     // Compute the distance between the two colliders and the maximum distances for a collision
     float xDist = pos1.x - pos2.x;

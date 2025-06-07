@@ -17,10 +17,10 @@ struct mAng {
     mAng(u16 x) { mAngle = x; }
 
     /// @brief Short cast operator.
-    operator u16*() { return &mAngle; }
+    // operator u16*() { return &mAngle; }
 
     /// @brief Const short cast operator.
-    operator const u16*() const { return &mAngle; }
+    // operator const u16*() const { return &mAngle; }
 
     /// @brief Augmented addition operator.
     mAng &operator+=(const mAng &v) { mAngle += v.mAngle; return *this; }
@@ -52,7 +52,7 @@ struct mAng {
     /// @brief Computes the cosine of the angle.
     float cos() const { return nw4r::math::CosS(mAngle); }
 
-    u16 mAngle; ///< The rotation.
+    s16 mAngle; ///< The rotation.
 };
 
 /// @brief A three-dimensional short angle vector.
