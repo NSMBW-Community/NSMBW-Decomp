@@ -4036,11 +4036,272 @@ void daPlBase_c::setControlDemoEndingDance() {
     }
 }
 
+bool daPlBase_c::isBossDemoLand() {
+    if ((m_d40 & 1) == 0) {
+        return false;
+    }
+    if (isStatus(STATUS_14) || isStatus(STATUS_4E) || (m_d40 & 0x18000000) || m_d4) {
+        return false;
+    }
+    return true;
+}
 
-void daPlBase_c::initializeState_DemoControl() {}
-void daPlBase_c::finalizeState_DemoControl() {}
-void daPlBase_c::executeState_DemoControl() {}
+bool daPlBase_c::fn_80052500(int p, float f, int) {
+    mVec3_c tmp = mPos;
+    float tmpf = f * 1.2f;
+    tmp.x += f + sc_DirSpeed[p];
+    float a = 4.0f;
+    if (tmpf < 4.0f) {
+        a = tmpf;
+    }
+    tmp.y = mPos.y + a;
+    float y;
+    if (mBc.checkGround(&tmp, &y, mLayer, m_ca1, -1)) {
+        float mpy = mPos.y;
+        if (fabsf(y - mpy) < a) {
+            if (p == 1) {
+                tmp.y = mpy - 4.0f;
+                float y2;
+                if (dBc_c::checkWater(tmp.x, tmp.y, mLayer, &y2) &&
+                    m_ca4.y >= 0.0f &&
+                    y <= y2 &&
+                    mPos.y <= y2 - 4.0f
+                ) {
+                    return false;
+                }
+            }
+        }
+    } else {
+        return false;
+    }
+    return true;
+}
 
-void daPlBase_c::initializeState_DemoNextGotoBlock() {}
-void daPlBase_c::finalizeState_DemoNextGotoBlock() {}
-void daPlBase_c::executeState_DemoNextGotoBlock() {}
+bool daPlBase_c::isHitWallKinopioWalk(int dir) {
+    static const int sc_DirFlag[] = { 0x100000, 0x80000 };
+    if (checkBGCrossWall(dir) || sc_DirFlag[dir] & m_d40) {
+        return true;
+    }
+    return false;
+}
+
+bool daPlBase_c::checkKinopioWaitBG(int dir) {
+    if (isHitWallKinopioWalk(dir)) {
+        return true;
+    }
+    return !fn_80052500(dir, 10.0, 0);
+}
+
+void daPlBase_c::initializeState_DemoControl() {
+    if (isStatus(STATUS_5F)) {
+        offStatus(STATUS_5F);
+    }
+    mKey.onStatus(dAcPyKey_c::STATUS_DEMO);
+    onStatus(STATUS_72);
+    onStatus(STATUS_71);
+    mDemoMode = 0;
+    initializeDemoControl();
+    m_60 = (u8) mDemoStateChangeParam;
+    switch (m_60) {
+        case DEMO_4:
+            m_10c8 = 60;
+            onStatus(STATUS_7A);
+            break;
+        case DEMO_5:
+            m_bc = mPos.x;
+            m_c8 = 0.9f;
+            m_cc = mDirection;
+            m_d0 = 150;
+            if (!fn_80052500(mDirection, 8.0f, 1)) {
+                m_cc ^= 1;
+            }
+            break;
+        case DEMO_6:
+            if (mSpeedF > 0.0f) {
+                m_cc = 0;
+            } else {
+                m_cc = 1;
+            }
+            break;
+        default:
+            break;
+    }
+}
+
+void daPlBase_c::finalizeState_DemoControl() {
+    mKey.offStatus(dAcPyKey_c::STATUS_DEMO);
+    offStatus(STATUS_72);
+    offStatus(STATUS_74);
+    offStatus(STATUS_63);
+    offStatus(STATUS_73);
+    if (m_60 == DEMO_4) {
+        offStatus(STATUS_7A);
+    }
+}
+
+void daPlBase_c::executeState_DemoControl() {
+    offStatus(STATUS_74);
+    if (isStatus(STATUS_73)) {
+        if (m_d40 & 1) {
+            offStatus(STATUS_73);
+        } else {
+            mSpeedF *= 0.98f;
+        }
+    }
+
+    switch (m_60) {
+        case 1: {
+            onStatus(STATUS_74);
+            if (m_d40 & 1) {
+                if (!mStateMgr.getStateID()->isEqual(StateID_Walk) && !mStateMgr.getStateID()->isEqual(StateID_Turn)) {
+                    changeState(StateID_Walk, (void*)1);
+                }
+            } else {
+                if (!mStateMgr.getStateID()->isEqual(StateID_Fall)) {
+                    changeState(StateID_Fall, 0);
+                }
+            }
+            if (fabsf(mPos.x - m_bc) < m_c8) {
+                m_60 = 0;
+                mSpeedF = 0.0f;
+                mPos.x = m_bc;
+                break;
+            }
+            if (mPos.x < m_bc) {
+                mKey.onDemoTrigger(dAcPyKey_c::BUTTON_RIGHT);
+                mSpeedF = m_c8;
+                break;
+            }
+            mKey.onDemoTrigger(dAcPyKey_c::BUTTON_LEFT);
+            mSpeedF = -m_c8;
+                break;
+        }
+        case 4: {
+            if (m_10c8 == 0) {
+                changeDemoState(StateID_DemoNone, 0);
+            }
+            break;
+        }
+        case 5: {
+            if ((m_d40 & 1) == 0 ||
+                !mStateMgr.getStateID()->isEqual(StateID_Walk) && !mStateMgr.getStateID()->isEqual(StateID_Turn)
+            ) {
+                m_60 = 0;
+                break;
+            }
+            onStatus(STATUS_74);
+            if ((m_d40 & 0x18000000) || (checkKinopioWaitBG(0) && checkKinopioWaitBG(1))) {
+                m_60 = 7;
+                m_c8 = 0.0f;
+                mSpeedF = 0.0f;
+                break;
+            }
+            int prevM_cc = (int) (short) m_cc;
+            sLib::calcTimer(&m_d0);
+            if (isHitWallKinopioWalk(m_cc) || m_d0 == 0) {
+                m_cc ^= 1;
+                m_bc = mPos.x + sc_DirSpeed[m_cc] * 24.0f;
+            } else if (!fn_80052500(m_cc, 4.0f, 1) && !fn_80052500(m_cc, 8.0f, 1)) {
+                m_cc ^= 1;
+                m_bc = mPos.x + sc_DirSpeed[m_cc] * 24.0f;
+            }
+            float tmp = m_bc + sc_DirSpeed[m_cc] * 24.0f;
+            if (mPos.x < tmp) {
+                mKey.onDemoTrigger(dAcPyKey_c::BUTTON_RIGHT);
+                mSpeedF = m_c8;
+                m_cc = 0;
+            } else {
+                mKey.onDemoTrigger(dAcPyKey_c::BUTTON_LEFT);
+                m_cc = 1;
+                mSpeedF = -m_c8;
+            }
+            if (prevM_cc != m_cc) {
+                m_d0 = 180;
+            }
+            break;
+        }
+        case 6: {
+            if (!mStateMgr.getStateID()->isEqual(StateID_Swim)) {
+                m_60 = 0;
+                break;
+            }
+            onStatus(STATUS_74);
+            if ((m_d40 & 1) && isHitWallKinopioWalk(m_cc)) {
+                m_cc ^= 1;
+            }
+            if (m_cc == 0) {
+                mKey.onDemoTrigger(dAcPyKey_c::BUTTON_RIGHT);
+                sLib::chase(&mSpeedF, 0.5625f, 0.1f);
+            } else {
+                mKey.onDemoTrigger(dAcPyKey_c::BUTTON_LEFT);
+                sLib::chase(&mSpeedF, -0.5625f, 0.1f);
+            }
+            break;
+        }
+        case 7: {
+            if ((m_d40 & 1) == 0 ||
+                !mStateMgr.getStateID()->isEqual(StateID_Walk) && !mStateMgr.getStateID()->isEqual(StateID_Turn)
+            ) {
+                m_60 = 0;
+                break;
+            }
+            onStatus(STATUS_74);
+            onStatus(STATUS_63);
+            if (!checkKinopioWaitBG(0) || !checkKinopioWaitBG(1)) {
+                setControlDemoKinopioWalk();
+            }
+            break;
+        }
+        default:
+            break;
+    }
+}
+
+void daPlBase_c::fn_80052ef0(int p2, int p3, int p4) {
+    if (mDemoStateMgr.getStateID()->isEqual(StateID_DemoNextGotoBlock)) {
+        return;
+    }
+    changeDemoState(StateID_DemoNextGotoBlock, p2 | ((p4 & 0xFF) << 8));
+    m_10c8 = p3;
+    switch (p4) {
+        case 3:
+            fn_80057e70(SE_PLY_DOKAN_IN_OUT, false);
+            break;
+        case 1:
+            mDemoMode = 0;
+            if (!isStatus(STATUS_3C)) {
+                changeState(StateID_Fall, nullptr);
+            }
+            break;
+        default:
+            break;
+    }
+}
+
+void daPlBase_c::initializeState_DemoNextGotoBlock() {
+    mKey.onStatus(dAcPyKey_c::STATUS_DEMO);
+    onStatus(STATUS_76);
+    onStatus(STATUS_7A);
+    initializeDemoControl();
+}
+
+void daPlBase_c::finalizeState_DemoNextGotoBlock() {
+    mKey.offStatus(dAcPyKey_c::STATUS_DEMO);
+    offStatus(STATUS_76);
+    offStatus(STATUS_7A);
+}
+
+void daPlBase_c::executeState_DemoNextGotoBlock() {
+    if (mDemoSubstate == DEMO_IN_DOKAN_ACTION_0 && m_10c8 == 0) {
+        dFader_c::fader_type_e f = dFader_c::FADER_DRIP_DOWN;
+        int param = (int) mDemoStateChangeParam;
+        int lower = (param & 0xff);
+        int upper = (param >> 8) & 0xff;
+        if (upper == 3) {
+            f = dFader_c::FADER_CIRCLE_TARGET;
+        }
+        dNext_c::m_instance->setChangeSceneNextDat(dScStage_c::m_instance->mCurrFile, lower, f);
+        changeNextScene(0);
+        mDemoSubstate = DEMO_IN_DOKAN_ACTION_1;
+    }
+}

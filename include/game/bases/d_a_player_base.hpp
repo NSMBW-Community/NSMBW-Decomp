@@ -139,8 +139,10 @@ public:
         STATUS_5B = 0x5b,
         STATUS_5C = 0x5c,
         STATUS_5E = 0x5e,
+        STATUS_5F = 0x5f,
         STATUS_61 = 0x61,
         STATUS_62 = 0x62,
+        STATUS_63 = 0x63,
         STATUS_64 = 0x64,
         STATUS_65 = 0x65,
         STATUS_66 = 0x66,
@@ -155,6 +157,7 @@ public:
         STATUS_6F = 0x6f,
         STATUS_71 = 0x71,
         STATUS_72 = 0x72,
+        STATUS_73 = 0x73,
         STATUS_74 = 0x74,
         STATUS_76 = 0x76,
         STATUS_77 = 0x77,
@@ -314,7 +317,7 @@ public:
     virtual bool vf284(int);
     virtual void initDemoGoalBase();
     virtual void executeDemoGoal_Run();
-    virtual void initializeDemoControl();
+    virtual void initializeDemoControl() {}
 
     virtual void changeState(const sStateIDIf_c &, void *);
 
@@ -562,6 +565,11 @@ public:
     void setControlDemoKinopioWalk();
     void setControlDemoKinopioSwim();
     void setControlDemoEndingDance();
+    bool isBossDemoLand();
+    bool fn_80052500(int, float, int);
+    bool isHitWallKinopioWalk(int);
+    bool checkKinopioWaitBG(int);
+    void fn_80052ef0(int, int, int);
 
     bool setSandMoveSpeed();
 
@@ -622,7 +630,10 @@ public:
     float m_bc;
     u8 mPad9[0x8];
     float m_c8;
-    u8 mPad10[0x28];
+    int m_cc;
+    int m_d0;
+    int m_d4;
+    u8 mPad11[0x1c];
     u32 m_f4;
     u32 m_f8;
     s8 m_fc;
@@ -644,41 +655,41 @@ public:
     dAudio::SndObjctPly_c mSndObj;
     dAcPyKey_c mKey;
     fBaseID_e mRideActorID;
-    u8 mPad11[0x24];
+    u8 mPad12[0x24];
     float m_c9c;
-    u8 mPad12[1];
+    u8 mPad13[1];
     u8 m_ca1;
     mVec3_c m_ca4;
     mVec3_c m_cb0;
-    u8 mPad13[0x4];
+    u8 mPad14[0x4];
     float m_cc0;
     float m_cc4;
     float m_cc8;
-    u8 mPad14[0x8];
+    u8 mPad15[0x8];
     float *mGravityData;
     u32 m_cd8;
     u32 m_cdc;
     u32 m_ce0;
     u32 m_ce4;
-    u8 mPad15[0x14];
+    u8 mPad16[0x14];
     PLAYER_POWERUP_e mPowerup;
-    u8 mPad16[0x3e];
+    u8 mPad17[0x3e];
     u32 m_d40;
     u32 m_d44;
     u32 m_d48;
     u32 m_d4c;
-    u8 mPad17[0x38];
+    u8 mPad18[0x38];
     D88_TYPE_e m_d88;
-    u8 mPad18[0x8];
+    u8 mPad19[0x8];
     short m_d94, m_d96, m_d98, m_d9a;
-    u8 mPad19[0x6];
+    u8 mPad20[0x6];
     float m_da4;
     float m_da8;
     float m_dac;
     float m_db0;
-    u8 mPad20[0x1c];
+    u8 mPad21[0x1c];
     dCc_c mCc1, mAttCc1, mAttCc2, mAttCc3;
-    u8 mPad21[0x24];
+    u8 mPad22[0x24];
     sFStateMgr_c<daPlBase_c, sStateMethodUsr_FI_c> mDemoStateMgr;
     void *mDemoStateChangeParam; ///< To be used as a kind of argument to the new demo state.
     int mDemoSubstate; ///< Demo states can use this as a kind of sub-state variable (cast to some enum)
@@ -690,10 +701,10 @@ public:
     int m_1114;
     int m_1118;
     mVec2_c m_111c;
-    u8 mPad22[0x4];
+    u8 mPad23[0x4];
     int m_1128;
     float m_112c;
-    u8 mPad23[4];
+    u8 mPad24[4];
     float m_1134, m_1138, m_113c;
     int m_1140;
 
