@@ -4,6 +4,9 @@
 
 class dBg_ctr_c {
 public:
+    u8 mPad1[0xbc];
+    short *m_bc;
+
     void addDokanMoveDiff(mVec3_c *);
 };
 

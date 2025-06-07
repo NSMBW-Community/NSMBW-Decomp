@@ -1902,19 +1902,19 @@ float fn_8004c700(float v) {
         v = -v;
         isNeg = true;
     }
-    for (int i = 0; i < 2; i++) {
-        if (v < 0.1f) {
-            v = 0.0f;
-        } else {
-            v = (v - 0.1f) / 0.9f;
-        }
+    if (v < 0.1f) {
+        v = 0.0f;
+    } else {
+        v = (v - 0.1f) / 0.9f;
     }
-    // if (v < 0.1f) {
-    //     v = 0.0f;
-    // } else {
-    //     v -= 0.1f;
-    //     v /= 0.9f;
-    // }
+    float tmp;
+    float lim2 = 0.1f;
+    if (v < lim2) {
+        v = 0.0f;
+    } else {
+        tmp = 1.0f;
+        v = (v - 0.1f) / (tmp - 0.1f);
+    }
     if (isNeg == true) {
         v = -v;
     }
@@ -3532,6 +3532,26 @@ void daPlBase_c::setExitRailDokan() {
 
 void daPlBase_c::executeState_DemoRailDokan() {}
 
+void daPlBase_c::setObjDokanIn(dBg_ctr_c *bgCtr, mVec3_c &pos, int param3) {
+    mpBgCtr = bgCtr;
+    m_68.set(pos.x, pos.y, mPos.z);
+    m_7c = *bgCtr->m_bc;
+    setDemoOutDokanAction(param3, DOKAN_ROLL);
+}
+
+bool daPlBase_c::isDispOutCheckOn() {
+    if (isStatus(STATUS_04) ||
+        isStatus(STATUS_06) ||
+        isStatus(STATUS_53) ||
+        isStatus(STATUS_6F) ||
+        isStatus(STATUS_76) ||
+        isStatus(STATUS_8D)
+    ) {
+        return false;
+    }
+    return true;
+}
+
 void daPlBase_c::initializeState_DemoDown() {}
 void daPlBase_c::finalizeState_DemoDown() {}
 void daPlBase_c::executeState_DemoDown() {}
@@ -3832,6 +3852,190 @@ void daPlBase_c::executeState_DemoGoal() {
     }
     bgCheck(0);
 }
+
+void daPlBase_c::initGoalJump(mVec3_c &pos, float ySpeed) {
+    mSpeed.y = ySpeed;
+    int count = 0;
+    float yPos = mPos.y;
+    while (true) {
+        mAccelY = -0.28f;
+        mSpeed.y += mAccelY;
+        if (mSpeed.y < -4.0f) {
+            mSpeed.y = -4.0f;
+        }
+        yPos += mSpeed.y;
+        if (mSpeed.y < 0.0f && yPos <= pos.y) {
+            break;
+        }
+        count++;
+    }
+    m_ac = pos;
+    m_b8 = count;
+    mSpeed.y = ySpeed;
+}
+
+bool daPlBase_c::calcGoalJump() {
+    if (m_b8 != 0) {
+        sLib::chase(&mPos.x, m_ac.x, (m_ac.x - mPos.x) / m_b8);
+        m_b8--;
+    }
+    mAccelY = -0.28f;
+    mSpeed.y += mAccelY;
+    if (mSpeed.y < -4.0f) {
+        mSpeed.y = -4.0f;
+    }
+    mPos.y += mSpeed.y;
+    if (mSpeed.y < 0.0f && m_d40 & 1) {
+        mPos = m_ac;
+        return true;
+    }
+    return false;
+}
+
+void daPlBase_c::initDemoKimePose() {
+    onStatus(STATUS_6C);
+    m_5c = 0;
+}
+
+bool daPlBase_c::vf284(int) {
+    return false;
+}
+
+void daPlBase_c::fn_80051cf0(int p) {
+    int iVar1;
+    if (p == 0) {
+        iVar1 = daPyDemoMng_c::mspInstance->m_1c;
+    } else {
+        iVar1 = daPyDemoMng_c::mspInstance->getControlDemoPlayerNum();
+    }
+    if (dInfo_c::m_startGameInfo.mScreenType == 1) {
+        if (iVar1 >= 2) {
+            vf434(59, 0);
+        } else {
+            vf434(60, 0);
+        }
+    } else if (p == 2) {
+        vf434(62, 0);
+    } else if (iVar1 >= 2) {
+        vf434(59, 0);
+    } else if (p == 0) {
+        if (daPyDemoMng_c::mspInstance->m_14 == 0) {
+            vf434(57, 0);
+        } else {
+            vf434(58, 0);
+        }
+    } else {
+        vf434(61, 0);
+    }
+}
+
+bool daPlBase_c::startControlDemo() {
+    if (isDemoType(DEMO_4)) {
+        return true;
+    } else if (isDemoType(DEMO_6)) {
+        changeDemoState(StateID_DemoControl, 0);
+        return true;
+    } else {
+        onStatus(STATUS_71);
+        return false;
+    }
+}
+
+void daPlBase_c::endControlDemo(int p) {
+    if (isStatus(STATUS_72)) {
+        changeNormalAction();
+    }
+}
+
+void daPlBase_c::setControlDemoDir(u8 dir) {
+    if (isStatus(STATUS_72)) {
+        mDirection = dir;
+        if (!mStateMgr.getStateID()->isEqual(StateID_Walk)) {
+            changeState(StateID_Walk, (void *) 1);
+        }
+    }
+}
+
+void daPlBase_c::setControlDemoWait() {
+    if (isStatus(STATUS_72)) {
+        m_60 = 0;
+        changeState(StateID_Walk, (void *) 1);
+    }
+}
+
+bool daPlBase_c::isControlDemoWait() {
+    if (isStatus(STATUS_72)) {
+        if (m_60 == 0) {
+            return true;
+        }
+    }
+    return false;
+}
+
+void daPlBase_c::setControlDemoWalk(const float &f1, const float &f2) {
+    if (isStatus(STATUS_72)) {
+        m_bc = f1;
+        m_60 = 1;
+        m_c8 = fabs(f2);
+        if (m_c8 > *(getSpeedData() + 2)) {
+            m_c8 = *(getSpeedData() + 2);
+        }
+    }
+}
+
+bool daPlBase_c::isControlDemoWalk() {
+    if (isStatus(STATUS_72)) {
+        if (m_60 == 1) {
+            return true;
+        }
+    }
+    return false;
+}
+
+void daPlBase_c::setControlDemoAnm(int anmNo) {
+    if (isStatus(STATUS_72)) {
+        m_60 = 2;
+        changeState(StateID_AnimePlay, nullptr);
+        int idx = anmNo * 3;
+        float f1 = ((float *) &dPyMdlMng_c::m_hio)[idx];
+        float f2 = ((float *) &dPyMdlMng_c::m_hio)[1 + idx];
+        mpMdlMng->mpMdl->setAnm(anmNo, f1, f2, 0.0f);
+    }
+}
+bool daPlBase_c::isControlDemoAnm(int anmNo) {
+    if (isStatus(STATUS_72)) {
+        if (m_60 == 2 && anmNo == *(int*) &mpMdlMng->mpMdl->mAnm.mFrameStart) {
+            return true;
+        }
+    }
+    return false;
+}
+
+void daPlBase_c::fn_80052290(int param) {
+    if (isStatus(STATUS_72)) {
+        m_60 = 3;
+        changeState(StateID_AnimePlay, (void *) param);
+    }
+}
+
+void daPlBase_c::setControlDemoKinopioWalk() {
+    if (mDemoStateMgr.getStateID()->isEqual(StateID_DemoNone) || (isDemoType(DEMO_5) && m_60 != 5)) {
+        changeDemoState(StateID_DemoControl, DEMO_5);
+    }
+}
+
+void daPlBase_c::setControlDemoKinopioSwim() {
+    if (mDemoStateMgr.getStateID()->isEqual(StateID_DemoNone) || (isDemoType(DEMO_5) && m_60 != 6)) {
+        changeDemoState(StateID_DemoControl, DEMO_6);
+    }
+}
+
+void daPlBase_c::setControlDemoEndingDance() {
+    if (!isControlDemoAll()) {
+        changeDemoState(StateID_DemoControl, DEMO_8);
+    }
+}
+
 
 void daPlBase_c::initializeState_DemoControl() {}
 void daPlBase_c::finalizeState_DemoControl() {}

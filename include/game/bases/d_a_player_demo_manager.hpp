@@ -17,17 +17,18 @@ public:
     void setDemoMode(daPyDemoMng_c::Mode_e, int);
     void stopBgmGoalDemo();
     int getPoleBelowPlayer(int playerNo);
+    int getControlDemoPlayerNum();
 
     char mPad1[0x10];
     u32 mFlags;
     u32 m_14;
     char mPad2[0x4];
     int m_1c;
-    char mPad3[0x2a];
+    char mPad3[0x22];
     bool m_42;
     char mPad4[0x2];
     mVec3_c mFireworkPos;
-    char mPad5[0x8];
+    char mPad5[0x10];
     int m_5c;
     char mPad6[0x8];
     int m_70;
