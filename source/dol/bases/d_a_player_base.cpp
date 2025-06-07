@@ -1100,7 +1100,7 @@ void daPlBase_c::initializeState_PlayerJumpDai() {
     daPlBase_c *rideActor = (daPlBase_c *) fManager_c::searchBaseByID(mRideActorID);
     if (rideActor != nullptr) {
         rideActor->initStampReduction();
-        fn_800541e0(rideActor, 5);
+        setNoHitPlayer(rideActor, 5);
         m_348 = mPos - rideActor->mPos;
     }
     m_354 = mSpeedF;
@@ -1129,7 +1129,7 @@ void daPlBase_c::executeState_PlayerJumpDai() {
         changeState(StateID_Fall, nullptr);
         m_358 = 30;
     } else {
-        fn_800541e0(rideActor, 5);
+        setNoHitPlayer(rideActor, 5);
         turnAngle();
         if (mpMdlMng->mpMdl->m_154 == 7 && mpMdlMng->mpMdl->mAnm.isStop()) {
             vf378(1);
@@ -4732,4 +4732,452 @@ void daPlBase_c::calcJumpDaiReductionScale(int i1, int i2) {
     }
     m_00 = 1;
     m_08 = (0.6f * i1) / i2;
+}
+
+void daPlBase_c::setReductionBoyon() {
+    m_00 = 3;
+    m_04 = 4;
+}
+
+void daPlBase_c::calcReductionScale() {
+    switch (m_00) {
+        case 1:
+            m_00 = 2;
+            break;
+        case 2:
+            setReductionBoyon();
+            break;
+        case 3:
+            if (m_04) {
+                int idx = m_04 - 1;
+                static const float floats[] = { 0.0f, 0.2f, 0.0f, 0.4f };
+                static const float floats2[] = { 0.02f, 0.025f, 0.04f, 0.06f };
+                if (sLib::chase(&m_08, floats[idx], floats2[idx])) {
+                    m_04--;
+                }
+            }
+            if (m_04 == 0) {
+                m_00 = 0;
+            }
+            break;
+    }
+}
+
+mVec3_c daPlBase_c::getReductionModelScale() {
+    return mVec3_c(
+        1.0f + m_08,
+        1.0f - m_08,
+        1.0f + m_08
+    );
+}
+
+void daPlBase_c::setNoHitPlayer(const daPlBase_c *player, int i) {
+    mpNoHitPlayer = player;
+    m_18 = i;
+}
+
+void daPlBase_c::updateNoHitPlayer() {
+    if (m_18 != 0) {
+        m_18--;
+    }
+    if (m_18 == 0) {
+        mpNoHitPlayer = nullptr;
+    }
+}
+
+daPlBase_c *daPlBase_c::getHipAttackDamagePlayer() {
+    return (daPlBase_c *) fManager_c::searchBaseByID(mHipAttackPlayerID);
+}
+
+void daPlBase_c::setHipAttackDamagePlayer(daPlBase_c *player) {
+    onStatus(STATUS_23);
+    mHipAttackPlayerID = player->mUniqueID;
+}
+
+void daPlBase_c::clearHipAttackDamagePlayer() {
+    offStatus(STATUS_23);
+    mHipAttackPlayerID = (fBaseID_e) 0;
+}
+
+void daPlBase_c::setNoHitObjBg(dActor_c *obj, int duration) {
+    mBc.mpNoHitActor = obj;
+    mNoHitObjTimer = duration;
+}
+
+void daPlBase_c::calcNoHitObjBgTimer() {
+    if (mNoHitObjTimer == 0) {
+        return;
+    }
+    if (--mNoHitObjTimer == 0) {
+        mBc.mpNoHitActor = nullptr;
+    }
+}
+
+void daPlBase_c::setOldBGCross() {
+    m_d48 = m_d40;
+    m_d4c = m_d44;
+    for (int i = 9; i > 0; i--) {
+        m_d50[i] = m_d50[i - 1];
+    }
+    m_d50[0] = m_d40 & 1;
+}
+
+void daPlBase_c::clearBgCheckInfo() {
+    setOldBGCross();
+    m_d44 = 0;
+    m_d40 = 0;
+    m_d7c = m_d78;
+    m_d78 = 0;
+    m_d30 = 0.0f;
+    m_d34 = 0.0f;
+    m_d38 = 0.0f;
+    m_d3c = 0.0f;
+    m_d88 = T_0;
+    m_dac = 0;
+    m_d80.x = 0.0f;
+    m_d80.y = 0.0f;
+}
+
+void daPlBase_c::bgCheck(int i) {
+    offStatus(STATUS_87);
+    offStatus(STATUS_86);
+    offStatus(STATUS_2C);
+    offStatus(STATUS_5D);
+    if (m_d40 & 1) {
+        m_d8c = mPos.y;
+    }
+    clearBgCheckInfo();
+    sLib::calcTimer(&m_da0);
+    if (i == 1) {
+        checkSideViewLemit();
+    }
+    if (!isStatus(STATUS_7E)) {
+        checkBgCross();
+        checkBgCrossSub();
+    }
+    checkWater();
+    if (!isStatus(STATUS_7E)) {
+        checkDamageBg();
+    }
+    postBgCross();
+}
+
+void daPlBase_c::checkBgCross() {
+    if (mPowerup == POWERUP_MINI_MUSHROOM && (m_d48 & 0x60) == 0) {
+        float dir = 1.0f;
+        if (mLastPos.x > mPos.x) {
+            dir = -1.0f;
+        }
+        void *wallData = getWallBgPointData();
+        int wallSize = *((int *)((char *)wallData + 4)) + *((int *)((char *)wallData + 8));
+        float offset = ((float) wallSize / 4096.0f) / 2.0f;
+        mVec3_c p1(
+            mLastPos.x - dir * 3.0f,
+            mLastPos.y + offset,
+            mLastPos.z
+        );
+        mVec3_c p2(
+            mPos.x + dir * 3.0f,
+            mPos.y + offset,
+            mPos.z
+        );
+        float outX;
+        if (mBc.checkWallPlayer(&p1, &p2, &outX) && outX != p1.x) {
+            mPos.x = outX - dir * 3.0f;
+        }
+    }
+
+    onStatus(STATUS_80);
+    u32 bgFlags = mBc.checkBgPlr(this);
+    offStatus(STATUS_80);
+
+    if (isStatus(STATUS_7F)) {
+        return;
+    }
+    m_d96 = m_d94;
+    m_d9a = m_d98;
+    m_d98 = 0;
+    m_d94 = 0;
+    m_d78 = mBc.mLastUnitType;
+
+    if ((bgFlags & 0x3c000000) != 0) {
+        m_d40 |= 2;
+        if (bgFlags & 0x4000000) {
+            m_d44 |= 0x800000;
+        }
+        if (bgFlags & 0x40000000) {
+            m_d44 |= 0x80000000;
+        }
+        if (bgFlags & 0x80000000) {
+            m_d44 |= 0x200000;
+        }
+        u16 headAttr = mBc.getHeadAttr();
+        if (headAttr == 6) {
+            m_d44 |= 4;
+        }
+        if (bgFlags & 0x20000000) {
+            m_d44 |= 0x1000000;
+            switch (mBc.m_c4) {
+                case 1:
+                    m_d44 |= 0x4000000;
+                    break;
+                case 2:
+                    m_d44 |= 0x2000000;
+                    break;
+            }
+            if (mBc.mpCtrFoot != nullptr &&
+                mBc.mpCtrFoot->mpActor != nullptr &&
+                !(mBc.mpCtrFoot->mpActor->mProfName != fProfile::EN_HATENA_BLOCK_LINE &&
+                mBc.mpCtrFoot->mpActor->mProfName != fProfile::EN_RENGA_BLOCK_LINE)
+            ) {
+                m_d44 |= 0x8000000;
+            }
+        }
+    }
+
+    if ((bgFlags & 0x1fe000)) {
+        m_d94 = mBc.getSakaAngleBySpeed(mSpeedF);
+        m_d98 = mBc.getSakaAngle(0);
+        if (bgFlags & 0x4000) {
+            m_d44 |= 0x80;
+        }
+        if (bgFlags & 0x400000) {
+            m_d44 |= 0x40000000;
+        }
+        if (bgFlags & 0x800000) {
+            m_d44 |= 0x400000;
+        }
+        if (bgFlags & 0x1000000) {
+            m_d44 |= 0x10;
+        }
+        if (m_d94 > 0 && (m_d40 & 2)) {
+            m_d40 |= 0x2000000;
+            mSpeedF = 0.0f;
+        }
+        u16 footAttr = mBc.getFootAttr();
+        switch (footAttr) {
+            case 3:
+                m_d40 |= 0x8000000;
+                break;
+            case 7:
+                m_d44 |= 8;
+                break;
+            case 4:
+                m_d40 |= 0x80000000;
+                break;
+            case 5:
+                m_d40 |= 0x40000000;
+                break;
+        }
+        if (mSpeed.y <= 0.0f) {
+            m_d40 |= 1;
+            if (bgFlags & 0x200000) {
+                m_d44 |= 1;
+            }
+            if (bgFlags & 0x18000) {
+                m_d44 |= 2;
+            }
+            if (mPos.y > mLastPos.y && !(m_d44 & 0x80)) {
+                m_d44 |= 0x20;
+            }
+            switch (footAttr) {
+                case 2:
+                    m_d40 |= 0x400000;
+                    m_d88 = T_1;
+                    break;
+                case 3:
+                case 12:
+                    m_d40 |= 0x4000000;
+                    if (m_d44 & 2) {
+                        m_d88 = T_7;
+                    } else {
+                        m_d88 = T_2;
+                    }
+                    break;
+                case 15:
+                    m_d40 |= 0x4000000;
+                    m_d88 = T_9;
+                    break;
+                case 13:
+                    m_d88 = T_4;
+                    break;
+                case 1:
+                    m_d88 = T_3;
+                    if (bgFlags & 0x2000000) {
+                        m_d40 |= 0x1000000;
+                    } else {
+                        m_d40 |= 0x800000;
+                    }
+                    break;
+                case 8:
+                    if (isStatus(STATUS_3C)) {
+                        mVec3_c tmp(
+                            mPos.x,
+                            mPos.y + 4.0f,
+                            mPos.z
+                        );
+                        float outCheckGround;
+                        if (dBc_c::checkGround(&tmp, &outCheckGround, mLayer, m_ca1, 8) && fabsf(outCheckGround - mPos.y) < 2.0f) {
+                            m_d44 |= 0x100;
+                        }
+                    } else {
+                        m_d44 |= 0x100;
+                    }
+                    break;
+                case 14:
+                    m_d88 = T_6;
+                    break;
+                case 11:
+                    m_d88 = T_A;
+                    break;
+            }
+            if (m_d44 & 2) {
+                if (bgFlags & 0x40000) {
+                    m_d88 = T_8;
+                }
+                if (bgFlags & 0x80000) {
+                    m_d88 = T_B;
+                }
+                if (bgFlags & 0x100000) {
+                    m_d88 = T_C;
+                }
+            }
+        }
+    } else {
+        if (isStatus(0x58)) {
+            mPos.y = m_dcc;
+            m_d94 = 0;
+            m_d40 |= 1;
+        }
+        float s = m_c9c + mPos.y;
+        mVec3_c checkPos(mPos.x, s + 8.0f, mPos.z);
+        float groundY;
+        int groundType;
+        if (dBc_c::checkGround(&checkPos, &groundY, &groundType, mLayer, m_ca1, 8)) {
+            if (checkPos.y >= groundY && s <= groundY) {
+                if (groundType == 2) {
+                    m_d44 |= 0x400;
+                } else {
+                    m_d44 |= 0x200;
+                }
+                m_dc8 = groundY;
+            }
+        }
+    }
+
+    if (mSpeed.y < 0.0f && (isStatus(0x14) || isStatus(0x4e))) {
+        m_d44 |= 0x42;
+        m_d40 |= 1;
+    }
+
+    if (bgFlags & 0x1fe000) {
+        m_d44 |= 0x40;
+    } else {
+        float groundY3;
+        if (dBc_c::checkGroundHalf(&mPos, &groundY3, mLayer, m_ca1) && (mPos.y - 16.0f < groundY3)) {
+            m_d44 |= 0x40;
+        }
+    }
+
+    if (bgFlags & 0x100) {
+        m_d44 |= 0x20000000;
+    }
+    if ((bgFlags & 8) || isStatus(0x1a)) {
+        m_d40 |= 0x20;
+    }
+    if ((bgFlags & 4) || isStatus(0x1b)) {
+        m_d40 |= 0x40;
+    }
+
+    if (m_d40 & 0x60) {
+        float sx = mSpeed.x;
+        m_d9c = mBc.mAdjacentSlopeAngle;
+        if (sx < 0.0f) {
+            if (m_d40 & 0x20) {
+                m_d40 |= 4;
+            }
+        } else if (sx > 0.0f) {
+            if (m_d40 & 0x40) {
+                m_d40 |= 4;
+            }
+        } else {
+            static int flags[] = { 0x1, 0x2 };
+            if (bgFlags & flags[mDirection]) {
+                m_d40 |= 4;
+            }
+        }
+    }
+
+    if (bgFlags & 0xc0) {
+        dBg_ctr_c *ctrWall = mBc.mpCtrWall;
+        if (ctrWall) {
+            if (ctrWall->m_d0 & 0x800000) {
+                m_d40 |= 0x800;
+            }
+            if (ctrWall->m_c8 == 0 && *ctrWall->m_bc != 0) {
+                m_d40 |= 0x800;
+            }
+        }
+        if (bgFlags & 0x80) {
+            m_d40 |= 0x80;
+            if (isCarryObjBgCarried(1)) m_d40 |= 0x200;
+        }
+        if (bgFlags & 0x40) {
+            m_d40 |= 0x100;
+            if (isCarryObjBgCarried(0)) m_d40 |= 0x400;
+        }
+    }
+
+    if (bgFlags & 0x2a) {
+        m_d40 |= 8;
+    }
+    if (bgFlags & 0x15) {
+        m_d40 |= 0x10;
+    }
+    if (bgFlags & 0x800) {
+        m_d40 |= 0x1000;
+    }
+    if (bgFlags & 0x1000) {
+        m_d40 |= 0x2000;
+    }
+
+    if (m_d40 & 0x8000000) {
+        checkSinkSand();
+    }
+
+    if ((m_d40 & 1) == 0) {
+        if (m_cc4 < mPos.y) {
+            m_cc4 = mPos.y;
+        }
+        m_cc8 = m_cc4;
+    } else {
+        m_cc4 = mPos.y;
+    }
+
+    if ((m_d40 & 2) && (m_d44 & 0x800000) && !(m_d44 & 0x80000000)) {
+        fn_80056370(nullptr, 10);
+    }
+    if ((m_d40 & 1) && !(m_d44 & 2)) {
+        fn_80056370(nullptr, 9);
+    }
+    if ((m_d40 & 0x20) && !(m_d40 & 0x80)) {
+        fn_80056370(nullptr, 12);
+    }
+    if ((m_d40 & 0x40) && !(m_d40 & 0x100)) {
+        fn_80056370(nullptr, 11);
+    }
+}
+
+bool daPlBase_c::isCarryObjBgCarried(u8 i) {
+    if (mBc.mpCtrWalls[i] != nullptr) {
+        ((float *) &m_d30)[i] = mBc.mpCtrWalls[i]->m_a0.x - mBc.mpCtrWalls[i]->m_ac.x;
+        if (mBc.mpCtrWalls[i]->mFlags & 0x800) {
+            dActor_c* carriedActor = mBc.mpCtrWalls[i]->mpActor;
+            if (carriedActor != nullptr && carriedActor->checkCarried(0)) {
+                return true;
+            }
+        }
+    }
+
+    return false;
 }

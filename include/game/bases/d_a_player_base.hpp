@@ -114,6 +114,7 @@ public:
         STATUS_1E = 0x1e,
         STATUS_1F = 0x1f,
         STATUS_22 = 0x22,
+        STATUS_23 = 0x23,
         STATUS_24 = 0x24,
         STATUS_2A = 0x2a,
         STATUS_2B = 0x2b,
@@ -142,6 +143,7 @@ public:
         STATUS_59 = 0x59,
         STATUS_5B = 0x5b,
         STATUS_5C = 0x5c,
+        STATUS_5D = 0x5d,
         STATUS_5E = 0x5e,
         STATUS_5F = 0x5f,
         STATUS_60 = 0x60,
@@ -173,10 +175,12 @@ public:
         STATUS_7D = 0x7d,
         STATUS_7E = 0x7e,
         STATUS_7F = 0x7f,
+        STATUS_80 = 0x80,
         STATUS_82 = 0x82,
         STATUS_83 = 0x83,
         STATUS_84 = 0x84,
         STATUS_86 = 0x86,
+        STATUS_87 = 0x87,
         STATUS_88 = 0x88,
         STATUS_89 = 0x89,
         STATUS_8B = 0x8b,
@@ -477,7 +481,8 @@ public:
     bool setJumpDaiRide();
     bool setPlayerJumpDai(daPlBase_c *other);
     void fn_80049d70();
-    void fn_800541e0(const daPlBase_c *, int);
+    void setNoHitPlayer(const daPlBase_c *, int);
+    void updateNoHitPlayer();
     bool isMameAction();
     bool isDemo();
     void setControlDemoWait();
@@ -591,6 +596,24 @@ public:
     bool isEnableStampPlayerJump(dCc_c *, dCc_c *);
     void setStampReduction();
     void setStampPlayerJump(bool b, float f);
+    void calcReductionScale();
+    mVec3_c getReductionModelScale();
+    void checkSideViewLemit();
+    bool checkSinkSand();
+    void fn_80056370(int *, int);
+    bool isCarryObjBgCarried(u8);
+
+    daPlBase_c *getHipAttackDamagePlayer();
+    void setHipAttackDamagePlayer(daPlBase_c *player);
+    void clearHipAttackDamagePlayer();
+
+    void setNoHitObjBg(dActor_c *, int);
+    void calcNoHitObjBgTimer();
+
+    void setOldBGCross();
+    void clearBgCheckInfo();
+    void checkBgCross();
+    void checkDamageBg();
 
     bool setSandMoveSpeed();
 
@@ -629,7 +652,9 @@ public:
     float m_08;
     int m_0c;
     u32 m_10;
-    u8 mPad3[0xc];
+    const daPlBase_c *mpNoHitPlayer;
+    int m_18;
+    u8 mPad3[0x4];
     u32 m_20;
     u8 mPad4[0x34];
     float m_58;
@@ -654,7 +679,8 @@ public:
     mVec3_c m_ac;
     int m_b8;
     float m_bc;
-    u8 mPad9[0x8];
+    u8 mPad9[0x4];
+    int m_c4;
     float m_c8;
     int m_cc;
     int m_d0;
@@ -683,39 +709,49 @@ public:
     dAudio::SndObjctPly_c mSndObj;
     dAcPyKey_c mKey;
     fBaseID_e mRideActorID;
-    u8 mPad12[0x24];
+    u8 mPad12[0x4];
+    fBaseID_e mHipAttackPlayerID;
+    u8 mPad13[0x1c];
     float m_c9c;
-    u8 mPad13[1];
+    u8 mPad14[1];
     u8 m_ca1;
     mVec3_c m_ca4;
     mVec3_c m_cb0;
-    u8 mPad14[0x4];
+    u8 mPad15[0x4];
     float m_cc0;
     float m_cc4;
     float m_cc8;
-    u8 mPad15[0x8];
+    u8 mPad16[0x8];
     float *mGravityData;
     u32 m_cd8;
     u32 m_cdc;
     u32 m_ce0;
     u32 m_ce4;
-    u8 mPad16[0x14];
+    u8 mPad17[0x14];
     PLAYER_POWERUP_e mPowerup;
-    u8 mPad17[0x3e];
+    u8 mPad18[0x2e];
+    float m_d30, m_d34, m_d38, m_d3c;
     u32 m_d40;
     u32 m_d44;
     u32 m_d48;
     u32 m_d4c;
-    u8 mPad18[0x38];
+    u32 m_d50[9];
+    u8 mPad19[0x4];
+    u32 m_d78;
+    u32 m_d7c;
+    mVec2_c m_d80;
     D88_TYPE_e m_d88;
-    u8 mPad19[0x8];
-    short m_d94, m_d96, m_d98, m_d9a;
-    u8 mPad20[0x6];
+    float m_d8c;
+    int mNoHitObjTimer;
+    short m_d94, m_d96, m_d98, m_d9a, m_d9c;
+    int m_da0;
     float m_da4;
     float m_da8;
-    float m_dac;
+    u32 m_dac;
     float m_db0;
-    u8 mPad21[0x1c];
+    u8 mPad22[0x14];
+    float m_dc8;
+    float m_dcc;
     dCc_c mCc1, mAttCc1, mAttCc2, mAttCc3;
     float m_1060;
     float m_1064;
@@ -724,7 +760,7 @@ public:
     bool m_1070;
     bool m_1071;
     int m_1074;
-    u8 mPad22[0xc];
+    u8 mPad23[0xc];
     sFStateMgr_c<daPlBase_c, sStateMethodUsr_FI_c> mDemoStateMgr;
     void *mDemoStateChangeParam; ///< To be used as a kind of argument to the new demo state.
     int mDemoSubstate; ///< Demo states can use this as a kind of sub-state variable (cast to some enum)
