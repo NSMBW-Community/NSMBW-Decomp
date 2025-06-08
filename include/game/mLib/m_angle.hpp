@@ -127,11 +127,19 @@ public:
     /// @brief Copy constructor.
     mAng3_c(const mAng3_c &v) : x(v.x), y(v.y), z(v.z) {}
 
-    mAng3_c *operator=(const mAng3_c &v) {
+    mAng3_c *operator=(mAng3_c v) {
         x = v.x;
         y = v.y;
         z = v.z;
         return this;
+    }
+
+    void set(const mAng3_c &v) { x = v.x; y = v.y; z = v.z; }
+
+    void set(s16 fx, s16 fy, s16 fz) {
+        x = fx;
+        y = fy;
+        z = fz;
     }
 
     /// @brief Augmented addition operator.

@@ -451,7 +451,7 @@ bool daPlBase_c::checkCrouch() {
 }
 
 bool daPlBase_c::setCancelCrouch() {
-    if (fn_80047ee0()) {
+    if (checkStandUpRoofOnLift()) {
         return false;
     }
     if (mpMdlMng->mpMdl->m_154 != 21) {
@@ -469,14 +469,14 @@ bool daPlBase_c::setCancelCrouch() {
     return true;
 }
 
-bool daPlBase_c::fn_80047ee0() {
+bool daPlBase_c::checkStandUpRoofOnLift() {
     if ((m_d40 & 1) != 0 && (m_d44 & 2) == 0) {
         return false;
     }
-    return fn_80047f10();
+    return checkStandUpRoof();
 }
 
-bool daPlBase_c::fn_80047f10() {
+bool daPlBase_c::checkStandUpRoof() {
     void *headBgP = getHeadBgPointData();
     if (headBgP == nullptr) {
         return false;
@@ -563,7 +563,7 @@ void daPlBase_c::executeState_Slip() {
 }
 
 void daPlBase_c::setSlipAction_ToStoop() {
-    if (fn_80047ee0()) {
+    if (checkStandUpRoofOnLift()) {
         return;
     }
     offStatus(STATUS_30);
@@ -575,7 +575,7 @@ void daPlBase_c::setSlipAction_ToStoop() {
 }
 
 void daPlBase_c::setSlipAction_ToEnd() {
-    if (fn_80047ee0()) {
+    if (checkStandUpRoofOnLift()) {
         return;
     }
     offStatus(STATUS_30);
@@ -5633,4 +5633,116 @@ mVec3_c daPlBase_c::getAnkleCenterPos() {
     mpMdlMng->mpMdl->getJointPos(&joint7Pos, 7);
 
     return (joint4Pos + joint7Pos) / 2.0f;
+}
+
+void daPlBase_c::calcHeadAttentionAngle() {
+    if (isStatus(STATUS_02)) {
+        return;
+    }
+
+    mAng3_c angle = mAng3_c(
+        0,
+        mpMdlMng->mpMdl->getAng().y,
+        mpMdlMng->mpMdl->getAng().z
+    );
+
+    if (!isLiftUp() && !isStatus(STATUS_94) && !isStatus(STATUS_2E)) {
+        if ((mpMdlMng->mpMdl->mFlags & 0x80) || (mpMdlMng->mpMdl->mFlags & 0x100)) {
+            mAng r31 = mAngle.y;
+            mAng r30 = 0;
+            bool cond = false;
+            daPlBase_c *pdVar10 = nullptr;
+
+            if (mpMdlMng->mpMdl->mFlags & 0x100) {
+                if (isStatus(STATUS_95)) {
+                    pdVar10 = (daPlBase_c *) dAttention_c::mspInstance->searchPlayer(this, getHatPos());
+                }
+            } else {
+                pdVar10 = (daPlBase_c *) dAttention_c::mspInstance->search(getHatPos());
+            }
+
+            if (pdVar10 != nullptr) {
+                mVec3_c hatPos = getHatPos();
+                mVec3_c _60 = mVec3_c(
+                    pdVar10->getLookatPos().x - hatPos.x,
+                    pdVar10->getLookatPos().y - hatPos.y,
+                    8.0f
+                );
+
+                int tmp = cM::atan2s(_60.y, _60.xzLen());
+                short r27 = -tmp;
+                short r4 = 0x2000;
+
+                if (pdVar10->mAttentionFlags & 2) {
+                    r4 = 0xC00;
+                }
+
+                if (r27 > r4) {
+                    r27 = r4;
+                }
+
+                int neg = -r4;
+                if (r27 < neg) {
+                    r27 = neg;
+                }
+
+                int temp = cM::atan2s(_60.x, _60.z);
+                short iVar2 = (temp - mAngle.y.mAngle);
+
+                if (pdVar10->mAttentionMode == 3) {
+                    mpMdlMng->mpMdl->m_204 = 2;
+
+                    mAng r30_tmp = 0x5000;
+                    int r29 = mpMdlMng->mpMdl->mFlags & 0x100;
+                    if (r29) {
+                        r30_tmp = 0x2000;
+                    }
+
+                    int r3 = abs(iVar2);
+
+                    if (r3 > r30_tmp.mAngle) {
+                        if (iVar2 > 0) {
+                            temp = (r30_tmp + mAngle.y).mAngle;
+                        } else {
+                            temp = (mAngle.y - r30_tmp).mAngle;
+                        }
+                    }
+
+                    r31 = temp;
+
+                    if (r29) {
+                        r30 = r27;
+                    } else {
+                        float tmpf = fabs(mAng(r3 / 2.0f).cos());
+                        r30 = r27 * tmpf;
+                    }
+                    cond = true;
+                } else if (abs(iVar2) < 0x4000) {
+                    mpMdlMng->mpMdl->m_204 = 1;
+                    r30 = r27;
+                    cond = true;
+                }
+            }
+
+            sLib::addCalcAngle(&angle.y.mAngle, r31.mAngle, 8, 0x400, 0x40);
+            if (pdVar10 != nullptr && (pdVar10->mAttentionFlags & 1)) {
+                sLib::addCalcAngle(&angle.z.mAngle, r30.mAngle, 8, 0x180, 0x40);
+            } else {
+                sLib::addCalcAngle(&angle.z.mAngle, r30.mAngle, 8, 0x400, 0x40);
+            }
+
+            mpMdlMng->mpMdl->setAng(angle);
+
+            if (!cond && angle.z == 0 && abs(angle.y.mAngle - mAngle.y.mAngle) < 0x100) {
+                mpMdlMng->mpMdl->m_204 = 0;
+            }
+
+            return;
+        }
+    }
+
+    angle.y = 0;
+    angle.z = 0;
+    mpMdlMng->mpMdl->setAng(angle);
+    mpMdlMng->mpMdl->m_204 = 0;
 }

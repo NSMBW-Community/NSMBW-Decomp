@@ -16,6 +16,10 @@ public:
 
     void getJointPos(mVec3_c *, int);
 
+    const mVec3_c &getHatPos() const { return mHatPosMaybe; }
+    void setAng(mAng3_c ang) { m_1fe = ang; }
+    mAng3_c getAng() const { return m_1fe; }
+
     u8 mPad1[0x24];
     m3d::anmChr_c mAnm;
     u8 mPad2[0x6c];
@@ -26,7 +30,6 @@ public:
     u32 mFlags;
     u8 mPad5[0x98];
     mAng3_c m_1fe;
-    u8 mPad6[4];
     u32 m_204;
     u32 m_208;
 
@@ -459,8 +462,8 @@ public:
     void calcSpeedOnIceLift();
     void calcAccOnIceLift();
     bool setCrouchJump();
-    bool fn_80047ee0();
-    bool fn_80047f10();
+    bool checkStandUpRoofOnLift();
+    bool checkStandUpRoof();
     void gravitySet();
     void moveSpeedSet();
     void powerSet();
@@ -679,6 +682,9 @@ public:
     float calcStarAccel(float f) { return 3.0f * f; }
     float calcIdkAccel(float f) { return 0.375f * f; }
     void set_m_d80(int i, float f) { m_d80[i] = f; }
+    dPyMdlBase_c *getModel() const { return mpMdlMng->mpMdl; }
+    dPyMdlMng_c *getModelMng() const { return mpMdlMng; }
+    const mVec3_c &getHatPos() const { return getModelMng()->mpMdl->getHatPos(); }
 
     mVec3_c getAnkleCenterPos();
 
