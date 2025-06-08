@@ -6,6 +6,7 @@
 #include <game/bases/d_effect.hpp>
 #include <game/sLib/s_State.hpp>
 #include <game/mLib/m_3d.hpp>
+#include <game/bases/d_quake.hpp>
 #include <constants/game_constants.h>
 
 class dPyMdlBase_c {
@@ -249,6 +250,10 @@ public:
         DOKAN_ROLL
     };
 
+    enum StarSet_e {
+        STARSET_0, // idk - there are probably more values
+    };
+
     struct SpeedData_t {
         float data[9];
 
@@ -402,12 +407,12 @@ public:
 
     virtual void vf3d0();
     virtual int isStar() const;
-    virtual void setStar();
+    virtual void setStar(daPlBase_c::StarSet_e, int);
     virtual void endStar() {}
     virtual void setVirusStar(daPlBase_c *) {}
     virtual void clearStarCount();
     virtual int getStarCount();
-    virtual int calcStarCount();
+    virtual s8 calcStarCount(int);
 
     virtual bool isNoDamage();
     virtual void setDamage();
@@ -433,9 +438,9 @@ public:
     virtual void offZPosSetNone();
 
     virtual void vf434(int, int);
-    virtual void vf438();
+    virtual void vf438(int, int);
 
-    virtual void startQuakeShock(int);
+    virtual void startQuakeShock(dQuake_c::TYPE_SHOCK_e);
     virtual void startPatternRumble(const char *pattern);
 
     virtual short getMukiAngle(u8 direction);
@@ -462,8 +467,8 @@ public:
     void calcSpeedOnIceLift();
     void calcAccOnIceLift();
     bool setCrouchJump();
-    bool checkStandUpRoofOnLift();
-    bool checkStandUpRoof();
+    bool fn_80047ee0();
+    bool fn_80047f10();
     void gravitySet();
     void moveSpeedSet();
     void powerSet();
@@ -481,7 +486,7 @@ public:
     void setLandSmokeEffect(int);
     void fn_80057f60(int soundID, bool);
     void fn_80057fd0(int soundID, short, bool);
-    void fn_80057e70(int soundID, bool);
+    void fn_80057e70(ulong soundID, bool);
     void fn_80057ee0(int soundID, bool, bool);
     void setHipAttackDropEffect();
     void setHipBlockBreak();
@@ -686,6 +691,11 @@ public:
     dPyMdlMng_c *getModelMng() const { return mpMdlMng; }
     const mVec3_c &getHatPos() const { return getModelMng()->mpMdl->getHatPos(); }
 
+    bool fn_80057E00(int);
+    void setItemCompleteVoice();
+    void clearTreadCount();
+    s8 calcTreadCount(int);
+    s8 calcComboCount(int);
     mVec3_c getAnkleCenterPos();
 
     int m_00;
@@ -768,7 +778,11 @@ public:
     u32 m_cdc;
     u32 m_ce0;
     u32 m_ce4;
-    u8 mPad17[0x14];
+    u8 mPad16_5[4];
+    s8 mTreadCount;
+    s8 mStarCount;
+    s8 mPlComboCount;
+    u8 mPad17[0xD];
     PLAYER_POWERUP_e mPowerup;
     u8 mPad18[0x2e];
     mVec3_c m_d30;

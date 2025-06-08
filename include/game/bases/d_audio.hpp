@@ -22,6 +22,7 @@ public:
 
     NMSndObjectBase(OBJ_TYPE, nw4r::snd::SoundArchivePlayer &);
     virtual ~NMSndObjectBase();
+    virtual u8 vf1C(ulong, int);
 
     nw4r::snd::SoundArchivePlayer &mArcPlayer;
     u8 mPad[0x4c];
@@ -67,7 +68,13 @@ public:
         }
     }
 
+    virtual void startSound(unsigned long, unsigned long);
+    virtual void holdSound(unsigned long, unsigned long);
+    virtual void prepareSound(unsigned long, unsigned long);
+    virtual void startSound(unsigned long, short, unsigned long);
+    virtual void holdSound(unsigned long, short, unsigned long);
     virtual void startSound(unsigned long, const nw4r::math::VEC2 &, unsigned long);
+    virtual void holdSound(unsigned long, const nw4r::math::VEC2 &, unsigned long);
 
     float m_64;
     u32 m_68;
@@ -114,6 +121,10 @@ namespace dAudio {
     };
 
     class SndObjctPly_c : public SndObjctPlyBase_c {
+    public:
+        void startFootSound(ulong, float, ulong);
+        void fn_8019AAB0(ulong, int);
+        void fn_8019ABB0(ulong, int);
     };
 
     class SndObjctCmnEmy_c : SndObjctCmnEmy {

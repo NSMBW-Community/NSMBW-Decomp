@@ -451,7 +451,7 @@ bool daPlBase_c::checkCrouch() {
 }
 
 bool daPlBase_c::setCancelCrouch() {
-    if (checkStandUpRoofOnLift()) {
+    if (fn_80047ee0()) {
         return false;
     }
     if (mpMdlMng->mpMdl->m_154 != 21) {
@@ -469,14 +469,14 @@ bool daPlBase_c::setCancelCrouch() {
     return true;
 }
 
-bool daPlBase_c::checkStandUpRoofOnLift() {
+bool daPlBase_c::fn_80047ee0() {
     if ((m_d40 & 1) != 0 && (m_d44 & 2) == 0) {
         return false;
     }
-    return checkStandUpRoof();
+    return fn_80047f10();
 }
 
-bool daPlBase_c::checkStandUpRoof() {
+bool daPlBase_c::fn_80047f10() {
     void *headBgP = getHeadBgPointData();
     if (headBgP == nullptr) {
         return false;
@@ -563,7 +563,7 @@ void daPlBase_c::executeState_Slip() {
 }
 
 void daPlBase_c::setSlipAction_ToStoop() {
-    if (checkStandUpRoofOnLift()) {
+    if (fn_80047ee0()) {
         return;
     }
     offStatus(STATUS_30);
@@ -575,7 +575,7 @@ void daPlBase_c::setSlipAction_ToStoop() {
 }
 
 void daPlBase_c::setSlipAction_ToEnd() {
-    if (checkStandUpRoofOnLift()) {
+    if (fn_80047ee0()) {
         return;
     }
     offStatus(STATUS_30);
@@ -1211,7 +1211,7 @@ void daPlBase_c::initializeState_Funsui() {
     mpMdlMng->mpMdl->setAnm(138, ((float *) &dPyMdlMng_c::m_hio)[10], ((float *) &dPyMdlMng_c::m_hio)[11], 0.0f);
     if (mPlayerNo >= 0) {
         vf434(50, 0);
-        dQuake_c::m_instance->shockMotor(mPlayerNo, 7, 0, 0);
+        dQuake_c::m_instance->shockMotor(mPlayerNo, dQuake_c::TYPE_7, 0, 0);
         m_1114 = 8;
     }
 }
@@ -1224,7 +1224,7 @@ void daPlBase_c::executeState_Funsui() {
         dEf::createPlayerEffect(mPlayerNo, &mLevelEfs2, "Wm_mr_sprisesmoke", 0, &mPos, nullptr, nullptr);
         if (m_1114 == 0) {
             m_1114 = 8;
-            dQuake_c::m_instance->shockMotor(mPlayerNo, 8, 0, 0);
+            dQuake_c::m_instance->shockMotor(mPlayerNo, dQuake_c::TYPE_8, 0, 0);
         }
     }
     turnAngle();
@@ -1453,7 +1453,7 @@ void daPlBase_c::DemoAnmBossKeyGet() {
 }
 
 void daPlBase_c::initializeState_WaitJump() {
-    startQuakeShock(5);
+    startQuakeShock(dQuake_c::TYPE_5);
     onStatus(STATUS_12);
     mKey.onStatus(dAcPyKey_c::STATUS_FORCE_NO_JUMP);
     mSpeedF = 0.0f;
@@ -4700,7 +4700,7 @@ void daPlBase_c::setStampPlayerJump(bool b, float f) {
             scale = 3.278f;
         }
         if (b) {
-            dQuake_c::m_instance->shockMotor(mPlayerNo, 7, 0, 0);
+            dQuake_c::m_instance->shockMotor(mPlayerNo, dQuake_c::TYPE_7, 0, 0);
             if (mKey.buttonJump()) {
                 scale = 4.128f;
             }
@@ -4725,7 +4725,7 @@ void daPlBase_c::initStampReduction() {
     }
     m_10 = 10;
     vf434(52, 0);
-    dQuake_c::m_instance->shockMotor(mPlayerNo, 7, 0, 0);
+    dQuake_c::m_instance->shockMotor(mPlayerNo, dQuake_c::TYPE_7, 0, 0);
 }
 
 void daPlBase_c::calcJumpDaiReductionScale(int i1, int i2) {
@@ -5612,11 +5612,92 @@ bool daPlBase_c::setPressBgDamage(int i1, int i2) {
     } else {
         if (setDamage2(nullptr, DAMAGE_NONE)) {
             mBc.clearBgcSaveAll();
-            dQuake_c::m_instance->shockMotor(mPlayerNo, 4, 0, 0);
+            dQuake_c::m_instance->shockMotor(mPlayerNo, dQuake_c::TYPE_4, 0, 0);
             return true;
         }
     }
     return false;
+}
+
+bool daPlBase_c::fn_80057E00(int a) {
+    if ((a == 1) && isStatus(STATUS_75)) {
+        return true;
+    }
+
+    if (isStatus(STATUS_B5)) {
+        return true;
+    }
+
+    return false;
+}
+
+void daPlBase_c::fn_80057e70(ulong soundID, bool b) {
+    if (! fn_80057E00(b)) {
+        mSndObj.startSound(soundID, 0);
+    }
+}
+
+void daPlBase_c::vf438(int a, int b) {
+    if (! fn_80057E00(b)) {
+        mSndObj.fn_8019AAB0(a, 0);
+    }
+}
+
+void daPlBase_c::vf434(int a, int b) {
+    if (! fn_80057E00(b)) {
+        mSndObj.fn_8019ABB0(a, 0);
+    }
+}
+
+void daPlBase_c::startFootSoundPlayer(unsigned long a) {
+  if (! fn_80057E00(1)) {
+    mSndObj.startFootSound(a, fabs(mSpeedF), 0);
+  }
+}
+
+void daPlBase_c::setItemCompleteVoice() {
+    vf434(0x38, 0);
+}
+
+void daPlBase_c::setStar(daPlBase_c::StarSet_e, int) {}
+
+void daPlBase_c::clearTreadCount() {
+    mTreadCount = 0;
+}
+
+s8 daPlBase_c::calcTreadCount(int max) {
+    if (mTreadCount < max) {
+        mTreadCount++;
+    }
+
+    return mTreadCount;
+}
+
+void daPlBase_c::clearStarCount() {
+    mStarCount = 0;
+}
+
+s8 daPlBase_c::calcStarCount(int max) {
+    if (isStar() && mStarCount < max) {
+        mStarCount++;
+    }
+
+    return mStarCount;
+}
+
+void daPlBase_c::clearComboCount() {
+    mPlComboCount = 0;
+}
+
+s8 daPlBase_c::calcComboCount(int max) {
+    if (mPlComboCount < max) {
+        mPlComboCount++;
+    }
+    return mPlComboCount;
+}
+
+void daPlBase_c::startQuakeShock(dQuake_c::TYPE_SHOCK_e arg) {
+    dQuake_c::m_instance->shockMotor(mPlayerNo, arg, 0, false);
 }
 
 void daPlBase_c::startPatternRumble(const char *pattern) {
