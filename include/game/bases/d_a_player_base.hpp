@@ -19,9 +19,16 @@ public:
     u8 mPad1[0x24];
     m3d::anmChr_c mAnm;
     u8 mPad2[0x6c];
-    mVec3_c m_cc;
+    mVec3_c mHatPosMaybe;
     u8 mPad3[0x7c];
     int m_154;
+    u8 mPad4[8];
+    u32 mFlags;
+    u8 mPad5[0x98];
+    mAng3_c m_1fe;
+    u8 mPad6[4];
+    u32 m_204;
+    u32 m_208;
 
     static const float scWaterCrouchAnmSpeed;
 };
@@ -99,6 +106,7 @@ public:
 
     enum Status_e {
         STATUS_01 = 0x01,
+        STATUS_02 = 0x02,
         STATUS_03 = 0x03,
         STATUS_04 = 0x04,
         STATUS_06 = 0x06,
@@ -179,6 +187,7 @@ public:
         STATUS_7E = 0x7e,
         STATUS_7F = 0x7f,
         STATUS_80 = 0x80,
+        STATUS_81 = 0x81,
         STATUS_82 = 0x82,
         STATUS_83 = 0x83,
         STATUS_84 = 0x84,
@@ -190,6 +199,8 @@ public:
         STATUS_8C = 0x8c,
         STATUS_8D = 0x8d,
         STATUS_91 = 0x91,
+        STATUS_94 = 0x94,
+        STATUS_95 = 0x95,
         STATUS_96 = 0x96,
         STATUS_97 = 0x97,
         STATUS_98 = 0x98,
@@ -203,8 +214,11 @@ public:
         STATUS_AD = 0xad,
         STATUS_AE = 0xae,
         STATUS_B5 = 0xb5,
+        STATUS_B6 = 0xb6,
         STATUS_B7 = 0xb7,
+        STATUS_B8 = 0xb8,
         STATUS_B9 = 0xb9,
+        STATUS_BA = 0xba,
         STATUS_BB = 0xbb,
         STATUS_BE = 0xbe,
         STATUS_BF = 0xbf,
@@ -273,8 +287,8 @@ public:
     virtual void initStampReduction();
     virtual void calcJumpDaiReductionScale(int, int);
     virtual void setReductionBoyon();
-    virtual void setPressBgDamage(int, int);
-    virtual void setBalloonInDispOut(int);
+    virtual bool setPressBgDamage(int, int);
+    virtual bool setBalloonInDispOut(int) { return false; }
     virtual bool isChange() { return false; }
     virtual void changeNextScene(int);
     virtual bool isEnableDokanInStatus(void);
@@ -326,7 +340,7 @@ public:
 
     virtual void setCreateAction(int);
     virtual bool setTimeOverDemo() { return false; }
-    virtual void setFallDownDemo();
+    virtual void setFallDownDemo() {}
     virtual bool setDokanIn(int);
     virtual void initDemoOutDokan();
     virtual bool vf284(int);
@@ -583,6 +597,17 @@ public:
     bool checkKinopioWaitBG(int);
     void fn_80052ef0(int, int, int);
     bool setEnemyStageClearDemo();
+    void calcHeadAttentionAngle();
+    bool calcSideLimitMultL(float);
+    bool calcSideLimitMultR(float);
+    bool checkDispSideLemit();
+    bool revSideLimitCommon(float);
+    void fn_80055d00();
+    void underOverCheck();
+    void checkDispOver();
+    void checkPressBg();
+    void checkDisplayOutDead();
+    bool isBgPress(dActor_c *);
 
     int getCcLineKind();
     void initCollision(sCcDatNewF *dat1, sCcDatNewF *dat2);
@@ -662,9 +687,9 @@ public:
     u32 m_10;
     const daPlBase_c *mpNoHitPlayer;
     int m_18;
-    u8 mPad3[0x4];
+    u32 m_1c;
     u32 m_20;
-    u8 mPad4[0x34];
+    fBaseID_e mIDs[13];
     float m_58;
     int m_5c;
     s8 m_60;
@@ -773,7 +798,10 @@ public:
     bool m_1070;
     bool m_1071;
     int m_1074;
-    u8 mPad24[0xc];
+    u8 m_1078;
+    u8 m_1079;
+    float m_107c;
+    float m_1080;
     sFStateMgr_c<daPlBase_c, sStateMethodUsr_FI_c> mDemoStateMgr;
     void *mDemoStateChangeParam; ///< To be used as a kind of argument to the new demo state.
     int mDemoSubstate; ///< Demo states can use this as a kind of sub-state variable (cast to some enum)

@@ -11,6 +11,8 @@ public:
     mVec2_c mSize;
     float m_48;
 
+    float fn_80082240(float);
+
     const mVec2_c &pos() const { return mPos; }
     const mVec2_c &size() const { return mSize; }
 

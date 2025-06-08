@@ -34,6 +34,8 @@ public:
     int m_70;
     char mPad7[0xc];
     int mPlNo;
+    u8 mPad8[0x10];
+    int m_94;
 
     int getPlrNo() const { return mPlNo; }
     void setPlrNo(int playerNo) { mPlNo = playerNo; }

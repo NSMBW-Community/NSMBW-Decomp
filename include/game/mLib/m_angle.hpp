@@ -57,6 +57,32 @@ struct mAng {
         return mAng(mAngle * f.mAngle);
     }
 
+    /// @brief Greater than operator.
+    bool operator>(const mAng &v) const {
+        return mAngle > v.mAngle;
+    }
+
+    /// @brief Less than operator.
+    bool operator<(const mAng &v) const {
+        return mAngle < v.mAngle;
+    }
+
+    /// @brief Greater than or equal operator.
+    bool operator>=(const mAng &v) const {
+        return mAngle >= v.mAngle;
+    }
+
+    /// @brief Less than or equal operator.
+    bool operator<=(const mAng &v) const {
+        return mAngle <= v.mAngle;
+    }
+
+    /// @brief Equality operator.
+    bool operator==(s16 v) const { return mAngle == v; }
+
+    /// @brief Inequality operator.
+    bool operator!=(s16 v) const { return mAngle != v; }
+
     /// @brief Equality operator.
     bool operator==(const mAng &v) const { return mAngle == v.mAngle; }
 

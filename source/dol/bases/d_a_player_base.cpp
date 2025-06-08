@@ -17,6 +17,7 @@
 #include <game/bases/d_quake.hpp>
 #include <game/bases/d_rail.hpp>
 #include <game/mLib/m_fader.hpp>
+#include <game/cLib/c_math.hpp>
 #include <game/sLib/s_math.hpp>
 #include <constants/sound_list.h>
 
@@ -1403,7 +1404,7 @@ void daPlBase_c::DemoAnmBossGlad() {
 }
 
 void daPlBase_c::DemoAnmBossAttention() {
-    daPlBase_c *boss = (daPlBase_c *) dAttention_c::mspInstance->search(mpMdlMng->mpMdl->m_cc);
+    daPlBase_c *boss = (daPlBase_c *) dAttention_c::mspInstance->search(mpMdlMng->mpMdl->mHatPosMaybe);
     if (boss != nullptr) {
         if (boss->getLookatPos().x > mPos.x) {
             mDirection = 0;
@@ -5364,6 +5365,255 @@ bool daPlBase_c::setBgDamage() {
             return false;
         }
         return setDamage2(nullptr, i);
+    }
+    return false;
+}
+
+bool daPlBase_c::checkSinkSand() {
+    mVec3_c pos = mPos;
+    pos.y += 128.0f;
+    if (dBc_c::checkGround(&pos, &m_db0, mLayer, m_ca1, 3)) {
+        if (m_db0 > mPos.y) {
+            m_d40 |= 0x8000000;
+        }
+        if (m_db0 > getCenterPos().y) {
+            m_d40 |= 0x10000000;
+        }
+        if (m_c9c + mPos.y > m_db0) {
+            m_d40 |= 0x20000000;
+        }
+        return true;
+    }
+    return false;
+}
+
+bool daPlBase_c::checkBGCrossWall(u8 direction) {
+    static const int flags[] = { 0x40, 0x20 };
+    u32 f = flags[direction];
+    return m_d40 & f;
+}
+
+void daPlBase_c::checkSideViewLemit() {
+    if (!daPyDemoMng_c::mspInstance->m_94 && isDemoType(DEMO_4)) {
+        return;
+    }
+    if (isStatus(STATUS_53) || isStatus(STATUS_6F) || isStatus(STATUS_8D)) {
+        return;
+    }
+    if (dScStage_c::m_loopType == 0) {
+        float tmpL = dBg_c::m_bg_p->getLeftLimit() + m_58;
+        if (mPos.x <= tmpL) {
+            calcSideLimitMultL(tmpL);
+        }
+        float tmpR = dBg_c::m_bg_p->getRightLimit() - m_58;
+        if (mPos.x >= tmpR) {
+            calcSideLimitMultR(tmpR);
+        }
+    }
+    checkDispSideLemit();
+}
+
+bool daPlBase_c::revSideLimitCommon(float f) {
+    if (mPos.x != f) {
+        u8 dir = 0;
+        if (mPos.x <= f) {
+            dir = 1;
+        }
+        if (!isStatus(STATUS_7E)) {
+            mAng ang = mBc.getSakaMoveAngle(dir);
+            if (ang != mAng(0)) {
+                mPos.y += (f - mPos.x) * (ang.sin() / ang.cos());
+            }
+        }
+        mPos.x = f;
+        return true;
+    }
+    return false;
+}
+
+bool daPlBase_c::calcSideLimitMultL(float f) {
+    m_d40 |= 0x80000;
+    revSideLimitCommon(f);
+    if (mSpeedF < 0.0f) {
+        if (mDirection == 1) {
+            mSpeedF = -0.01f;
+        } else {
+            mSpeedF = 0.0f;
+        }
+        return true;
+    }
+    return false;
+}
+
+bool daPlBase_c::calcSideLimitMultR(float f) {
+    m_d40 |= 0x100000;
+    revSideLimitCommon(f);
+    if (mSpeedF > 0.0f) {
+        if (mDirection == 0) {
+            mSpeedF = 0.01f;
+        } else {
+            mSpeedF = 0.0f;
+        }
+        return true;
+    }
+    return false;
+}
+
+bool daPlBase_c::checkDispSideLemit() {
+    if (isStatus(STATUS_B8) || isStatus(STATUS_81)) {
+        return false;
+    }
+    if (dScStage_c::m_loopType == 1) {
+        return false;
+    }
+    float l = dBgParameter_c::ms_Instance_p->fn_80082240(mPos.x);
+    float s = l + m_58;
+    float m = l + dBgParameter_c::ms_Instance_p->xSize() - m_58 + 1.0f;
+    switch (m_1079) {
+        case 0:
+            if (mPos.x < s) {
+                if (m_d48 & 0x400 || (m_d48 & 0x40) == 0) {
+                    calcSideLimitMultL(s);
+                    return true;
+                }
+                m_1079 = 1;
+                m_1080 = mPos.x - s;
+            }
+            break;
+        case 1: {
+            if (mPos.x > s) {
+                m_1079 = 0;
+            }
+            float diff = mPos.x - s;
+            if (m_1080 < diff || m_d48 & 0x40) {
+                m_1080 = diff;
+            }
+            if (mPos.x < s + m_1080) {
+                calcSideLimitMultL(s + m_1080);
+                return true;
+            }
+            break;
+        }
+    }
+    switch (m_1078) {
+        case 0:
+            if (mPos.x > m) {
+                if (m_d48 & 0x200 || (m_d48 & 0x20) == 0) {
+                    calcSideLimitMultR(m);
+                    return true;
+                }
+                m_1078 = 1;
+                m_107c = mLastPos.x - m;
+            }
+            break;
+        case 1: {
+            if (mPos.x < m) {
+                m_1078 = 0;
+            }
+            float diff = mPos.x - m;
+            if (m_107c > diff || m_d48 & 0x20) {
+                m_107c = diff;
+            }
+            if (mPos.x > m + m_107c) {
+                calcSideLimitMultR(m + m_107c);
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+void daPlBase_c::fn_80055d00() {
+    if (dBg_c::m_bg_p->m_9004c) {
+        return;
+    }
+    float l = dBgParameter_c::ms_Instance_p->fn_80082240(mPos.x);
+    float s = l + m_58;
+    float m = l + dBgParameter_c::ms_Instance_p->xSize() - m_58 + 1.0f;
+    if (mPos.x < s) {
+        m_1079 = 1;
+        m_1080 = mPos.x - s;
+    }
+    if (mPos.x > m) {
+        m_1078 = 1;
+        m_107c = mLastPos.x - m;
+    }
+}
+
+void daPlBase_c::underOverCheck() {
+    float f = dBgParameter_c::ms_Instance_p->yStart() - dBgParameter_c::ms_Instance_p->ySize();
+    float t = mPos.y;
+    float t2 = t + mVisibleAreaSize.y + mVisibleAreaOffset.y;
+    float f2 = f - 24.0f;
+    int cond = 0;
+    if (isItemKinopio()) {
+        cond = 1;
+    }
+    if (dBg_c::m_bg_p->m_9004c == 0) {
+        if (dBg_c::m_bg_p->m_90009 == 1 || dBg_c::m_bg_p->m_90009 == 3 || daPyMng_c::mNum > 1) {
+            cond = true;
+        }
+    }
+    if (cond == 1) {
+        if (f2 < t2 && f2 < dBg_c::m_bg_p->m_8fe00) {
+            setFallDownDemo();
+        }
+    } else if (f2 < t2) {
+        setFallDownDemo();
+    }
+}
+
+void daPlBase_c::checkDispOver() {
+    offStatus(STATUS_B9);
+    offStatus(STATUS_BA);
+    offStatus(STATUS_B6);
+    if (isStatus(STATUS_04) || isStatus(STATUS_53)) {
+        return;
+    }
+    if (!isStatus(STATUS_7E)) {
+        float adj = dBgParameter_c::ms_Instance_p->yStart() + 96.0f;
+        if (dScStage_c::m_instance->mCurrWorld == WORLD_1 &&
+            dScStage_c::m_instance->mCurrCourse == STAGE_CASTLE &&
+            dScStage_c::m_instance->mCurrAreaNo == 0
+        ) {
+            adj += 192.0f;
+        }
+        if (mPos.y > adj) {
+            mPos.y = adj;
+        }
+        underOverCheck();
+        checkPressBg();
+        m_1c = 0;
+        setBgDamage();
+    }
+    checkDisplayOutDead();
+}
+
+bool daPlBase_c::isBgPress(dActor_c *actor) {
+    u32 param = m_20;
+    if (param == 0) {
+        return false;
+    }
+    for (int i = 1; i <= 12; i++){
+        if (param & (1 << i) && mIDs[i] == actor->getID()) {
+            return true;
+        }
+    }
+    return false;
+}
+
+bool daPlBase_c::setPressBgDamage(int i1, int i2) {
+    if (i1 == 11) {
+        if (setDamage2(nullptr, DAMAGE_B)) {
+            mBc.clearBgcSaveAll();
+            return true;
+        }
+    } else {
+        if (setDamage2(nullptr, DAMAGE_NONE)) {
+            mBc.clearBgcSaveAll();
+            dQuake_c::m_instance->shockMotor(mPlayerNo, 4, 0, 0);
+            return true;
+        }
     }
     return false;
 }
