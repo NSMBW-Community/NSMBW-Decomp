@@ -680,6 +680,8 @@ public:
     float calcIdkAccel(float f) { return 0.375f * f; }
     void set_m_d80(int i, float f) { m_d80[i] = f; }
 
+    mVec3_c getAnkleCenterPos();
+
     int m_00;
     int m_04;
     float m_08;
