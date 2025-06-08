@@ -20,6 +20,12 @@ struct mAng {
 
     operator s16() { return mAngle; }
 
+    /// @brief Assignment operator from a short value.
+    mAng *operator=(s16 ang) {
+        mAngle = ang;
+        return this;
+    }
+
     bool chase(short target, short step) {
         return sLib::chase(&mAngle, target, step);
     }
@@ -45,6 +51,11 @@ struct mAng {
 
     /// @brief Subtraction operator.
     mAng operator-(const mAng &v) const { return mAng(mAngle - v.mAngle); }
+
+    /// @brief Multiplication operator.
+    mAng operator*(mAng f) const {
+        return mAng(mAngle * f.mAngle);
+    }
 
     /// @brief Equality operator.
     bool operator==(const mAng &v) const { return mAngle == v.mAngle; }

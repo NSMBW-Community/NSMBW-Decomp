@@ -752,7 +752,7 @@ public:
     D88_TYPE_e m_d88;
     float m_d8c;
     int mNoHitObjTimer;
-    short m_d94, m_d96, m_d98, m_d9a, m_d9c;
+    mAng m_d94, m_d96, m_d98, m_d9a, m_d9c;
     int m_da0;
     float m_da4;
     float m_da8;
