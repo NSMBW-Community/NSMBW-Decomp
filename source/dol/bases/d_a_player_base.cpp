@@ -2,6 +2,7 @@
 #include <game/bases/d_a_player_base.hpp>
 #include <game/bases/d_a_player_demo_manager.hpp>
 #include <game/bases/d_a_player_manager.hpp>
+#include <game/bases/d_bg.hpp>
 #include <game/bases/d_bg_parameter.hpp>
 #include <game/bases/d_cd.hpp>
 #include <game/bases/d_game_key.hpp>
@@ -4828,14 +4829,12 @@ void daPlBase_c::clearBgCheckInfo() {
     m_d40 = 0;
     m_d7c = m_d78;
     m_d78 = 0;
-    m_d30 = 0.0f;
-    m_d34 = 0.0f;
-    m_d38 = 0.0f;
+    m_d30.set(0.0f, 0.0f, 0.0f);
     m_d3c = 0.0f;
     m_d88 = T_0;
     m_dac = 0;
-    m_d80.x = 0.0f;
-    m_d80.y = 0.0f;
+    m_d80[0] = 0.0f;
+    m_d80[1] = 0.0f;
 }
 
 void daPlBase_c::bgCheck(int i) {
@@ -5101,7 +5100,7 @@ void daPlBase_c::checkBgCross() {
                 m_d40 |= 4;
             }
         } else {
-            static int flags[] = { 0x1, 0x2 };
+            static const int flags[] = { 0x1, 0x2 };
             if (bgFlags & flags[mDirection]) {
                 m_d40 |= 4;
             }
@@ -5169,15 +5168,203 @@ void daPlBase_c::checkBgCross() {
 }
 
 bool daPlBase_c::isCarryObjBgCarried(u8 i) {
-    if (mBc.mpCtrWalls[i] != nullptr) {
-        ((float *) &m_d30)[i] = mBc.mpCtrWalls[i]->m_a0.x - mBc.mpCtrWalls[i]->m_ac.x;
-        if (mBc.mpCtrWalls[i]->mFlags & 0x800) {
-            dActor_c* carriedActor = mBc.mpCtrWalls[i]->mpActor;
+    dBg_ctr_c *ctrWall = mBc.mpCtrWalls[i];
+    if (ctrWall != nullptr) {
+        mVec2_c tmp = ctrWall->m_a0 - ctrWall->m_ac;
+        set_m_d80(i, tmp.x);
+        if (ctrWall->m_d0 & 0x800) {
+            dActor_c* carriedActor = ctrWall->mpActor;
             if (carriedActor != nullptr && carriedActor->checkCarried(0)) {
                 return true;
             }
         }
     }
 
+    return false;
+}
+
+void daPlBase_c::postBgCross() {
+    if (m_d40 & 2) {
+        if (mSpeed.y > 0.0f || isStatus(STATUS_4E)) {
+            if ((m_d48 & 2) == 0 &&
+                (m_d44 & 0x2000000) == 0 &&
+                (m_d44 & 0x80000000) == 0 &&
+                (m_d44 & 0x4) == 0
+            ) {
+                bool m = false;
+                if (mPowerup == POWERUP_MINI_MUSHROOM) {
+                    m = true;
+                }
+                if (m_d44 & 0x200000) {
+                    fn_80057ee0(SE_PLY_HIT_BLOCK_BOUND, m, false);
+                } else if (m_d44 & 0x1000000) {
+                    if (m_d44 & 0x4000000) {
+                        fn_80057ee0(SE_PLY_HIT_BLOCK, m, false);
+                    } else {
+                        fn_80057ee0(SE_PLY_HIT_GENERAL_OBJ, m, false);
+                    }
+                } else {
+                    fn_80057ee0(SE_PLY_HIT_BLOCK, m, false);
+                }
+            }
+        }
+        if (mSpeed.y > 0.0f) {
+            mSpeed.y = 0.0f;
+            m_cd8 = 0;
+            onStatus(STATUS_BF);
+        }
+    }
+    if (m_d40 & 1) {
+        if (m_d40 & 0xc0000000) {
+            m_d30 = mBc.m_20;
+        }
+        if (m_d40 & 0x4000 || m_d44 & 4) {
+            mSpeed.y = 0.0f;
+        } else if (m_d40 & 0x8000000) {
+            mSpeed.y = 0.0f;
+            m_d30.set(0.0f, mBc.m_20.y * getSandSinkRate(), 0.0f);
+        } else if (isSaka() || isStatus(STATUS_30)) {
+            mSpeed.y = 0.0f;
+        } else {
+            mSpeed.y = -2.0f;
+        }
+        if (isStatus(STATUS_5F)) {
+            mSpeedF = 0.0f;
+        }
+        if (m_d40 & 0x8000 && (m_d40 & 0x4000) == 0) {
+            m_d88 = T_5;
+        }
+        if ((m_d44 & 2) == 0 && m_d40 & 2) {
+            if (mBc.getSakaType() != 0 && mBc.getSakaUpDown(mDirection) == 1) {
+                if (mDirection == 0) {
+                    onStatus(STATUS_1B);
+                } else {
+                    onStatus(STATUS_1A);
+                }
+                mSpeedF = 0.0f;
+                mPos.x = mLastPos.x;
+            }
+        }
+    }
+    if ((m_d40 & 1) == 0 && (m_d44 & 2) == 0) {
+        if (m_d48 & 1 &&  m_d4c & 2) {
+            m_1134 = 0.0f;
+            if (fabsf(mSpeedF) >= 0.01f && m_1eb.x * mSpeedF > 0.0f) {
+                m_1134 = m_1eb.x;
+                float add = m_1eb.x;
+                float absAdd = fabs(add);
+                if (absAdd > 0.01f && absAdd < 1.0f) {
+                    if (add > 1.0f) {
+                        add = 1.0f;
+                    } else {
+                        add = -1.0f;
+                    }
+                }
+                mPos.x += add;
+            }
+        }
+    }
+}
+
+float daPlBase_c::getWaterCheckPosY() {
+    static float waterCheckOffsets[] = { 4.0f, 8.0f, 16.0f };
+    return mPos.y + waterCheckOffsets[getTallType(-1)];
+}
+
+void daPlBase_c::checkWater() {
+    m_db6 = 0;
+    m_da8 = m_da4;
+    m_da4 = dBg_c::m_bg_p->m_8fe00;
+    u8 waterCheck = dBc_c::checkWater(mPos.x, mPos.y , mLayer, &m_da4);
+    if (waterCheck && mPos.y <= m_da4) {
+        m_d40 |= 0x8000;
+        if (waterCheck == 2) {
+            m_d40 |= 0x40000;
+        }
+    }
+    if (waterCheck == 0 || waterCheck == 2) {
+        waterCheck = dBc_c::checkWater(mPos.x, getWaterCheckPosY(), mLayer, &m_da4);
+        if (waterCheck != 2) {
+            return;
+        }
+        m_d40 |= 0x4000;
+        m_d40 |= 0x10000;
+    }
+    switch (waterCheck) {
+        case 2: {
+            m_d40 |= 0x40000;
+            mVec2_c pos;
+            dBc_c::getAirWaterHitPos(&pos);
+            m_db8.set(pos.x, pos.y, mPos.z);
+            short s;
+            dBc_c::getAirWaterHitAngle(&s);
+            m_dc4 = s;
+            break;
+        }
+        case 1: {
+            if (getWaterCheckPosY() <= m_da4) {
+                m_d40 |= 0x4000;
+            }
+            void *p = getHeadBgPointData();
+            float f = *((int *)p + 3);
+            if (mPos.y + f / 4096.0f <= m_da4) {
+                m_d40 |= 0x10000;
+            }
+            m_dac = dBc_c::checkWaterDepth(mPos.x, m_da4, mLayer, m_ca1, nullptr);
+            break;
+        }
+        case 3:
+        case 4:
+            if (!isStatus(STATUS_7E)) {
+                m_db6 = waterCheck;
+            }
+            break;
+    }
+}
+
+void daPlBase_c::checkDamageBg() {
+    if (isStatus(STATUS_04) ||
+        isStatus(STATUS_06) ||
+        isStatus(STATUS_53) ||
+        isStatus(STATUS_6F)
+    ) {
+        return;
+    }
+    if (!isDemoAll() || isDemoType(DEMO_5)) {
+        m_db4 = mBc.m_e0;
+        m_db5 = mBc.m_e1;
+        switch (m_db6) {
+            case 3:
+                m_db4 = 1;
+                m_db5 = 7;
+                break;
+            case 4:
+                m_db4 = 1;
+                m_db5 = 8;
+                break;
+        }
+    }
+}
+
+bool daPlBase_c::setBgDamage() {
+    if (m_db4 != 0) {
+        m_db4 = 0;
+        DamageType_e i = DAMAGE_1;
+        switch (m_db5) {
+            case 7:
+                i = DAMAGE_7;
+                break;
+            case 8:
+                i = DAMAGE_A;
+                break;
+            case 9:
+                i = DAMAGE_B;
+                break;
+        }
+        if (i == 1 && isNoDamage()) {
+            return false;
+        }
+        return setDamage2(nullptr, i);
+    }
     return false;
 }

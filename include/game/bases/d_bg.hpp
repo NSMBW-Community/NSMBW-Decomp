@@ -3,7 +3,9 @@
 
 class dBg_c {
 public:
-    char pad[0x8fea0];
+    u8 mPad1[0x8fe70];
+    float m_8fe00;
+    u8 mPad2[0x2c];
     float mLoopOffset;
 
     void setWaterInWave(float x, float y, u8 type);

@@ -40,7 +40,10 @@ public:
 class daPlBase_c : public dActor_c {
 public:
     enum DamageType_e {
-        DAMAGE_NONE = 0
+        DAMAGE_NONE = 0,
+        DAMAGE_1, DAMAGE_2, DAMAGE_3, DAMAGE_4,
+        DAMAGE_5, DAMAGE_6, DAMAGE_7, DAMAGE_8,
+        DAMAGE_9, DAMAGE_A, DAMAGE_B, DAMAGE_C
     };
 
     enum D88_TYPE_e {
@@ -204,6 +207,7 @@ public:
         STATUS_B9 = 0xb9,
         STATUS_BB = 0xbb,
         STATUS_BE = 0xbe,
+        STATUS_BF = 0xbf,
         STATUS_C1 = 0xc1,
         STATUS_C4 = 0xc4,
     };
@@ -421,7 +425,7 @@ public:
     virtual int turnAngle();
     virtual void maxFallSpeedSet();
 
-    virtual void setDamage2();
+    virtual bool setDamage2(dActor_c *, daPlBase_c::DamageType_e);
 
     void executeState();
     void changeDemoState(const sStateIDIf_c &, int);
@@ -461,6 +465,7 @@ public:
     void fn_80057f60(int soundID, bool);
     void fn_80057fd0(int soundID, short, bool);
     void fn_80057e70(int soundID, bool);
+    void fn_80057ee0(int soundID, bool, bool);
     void setHipAttackDropEffect();
     void setHipBlockBreak();
     void setHipAttack_Ready();
@@ -602,6 +607,8 @@ public:
     bool checkSinkSand();
     void fn_80056370(int *, int);
     bool isCarryObjBgCarried(u8);
+    float getWaterCheckPosY();
+    bool setBgDamage();
 
     daPlBase_c *getHipAttackDamagePlayer();
     void setHipAttackDamagePlayer(daPlBase_c *player);
@@ -646,6 +653,7 @@ public:
 
     float calcStarAccel(float f) { return 3.0f * f; }
     float calcIdkAccel(float f) { return 0.375f * f; }
+    void set_m_d80(int i, float f) { m_d80[i] = f; }
 
     int m_00;
     int m_04;
@@ -730,7 +738,8 @@ public:
     u8 mPad17[0x14];
     PLAYER_POWERUP_e mPowerup;
     u8 mPad18[0x2e];
-    float m_d30, m_d34, m_d38, m_d3c;
+    mVec3_c m_d30;
+    float m_d3c;
     u32 m_d40;
     u32 m_d44;
     u32 m_d48;
@@ -739,7 +748,7 @@ public:
     u8 mPad19[0x4];
     u32 m_d78;
     u32 m_d7c;
-    mVec2_c m_d80;
+    float m_d80[2];
     D88_TYPE_e m_d88;
     float m_d8c;
     int mNoHitObjTimer;
@@ -749,7 +758,11 @@ public:
     float m_da8;
     u32 m_dac;
     float m_db0;
-    u8 mPad22[0x14];
+    u8 m_db4;
+    s8 m_db5;
+    u8 m_db6;
+    mVec3_c m_db8;
+    short m_dc4;
     float m_dc8;
     float m_dcc;
     dCc_c mCc1, mAttCc1, mAttCc2, mAttCc3;
@@ -760,7 +773,7 @@ public:
     bool m_1070;
     bool m_1071;
     int m_1074;
-    u8 mPad23[0xc];
+    u8 mPad24[0xc];
     sFStateMgr_c<daPlBase_c, sStateMethodUsr_FI_c> mDemoStateMgr;
     void *mDemoStateChangeParam; ///< To be used as a kind of argument to the new demo state.
     int mDemoSubstate; ///< Demo states can use this as a kind of sub-state variable (cast to some enum)
@@ -772,10 +785,10 @@ public:
     int m_1114;
     int m_1118;
     mVec2_c m_111c;
-    u8 mPad24[0x4];
+    u8 mPad25[0x4];
     int m_1128;
     float m_112c;
-    u8 mPad25[4];
+    u8 mPad26[4];
     float m_1134, m_1138, m_113c;
     int m_1140;
 

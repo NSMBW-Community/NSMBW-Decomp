@@ -6,9 +6,9 @@ class dBg_ctr_c {
 public:
     dActor_c *mpActor;
     u8 mPad1[0x9c];
-    mVec3_c m_a0;
-    mVec3_c m_ac;
-    u8 mPad2[0x4];
+    mVec2_c m_a0;
+    mVec2_c m_ac;
+    u8 mPad2[0xc];
     short *m_bc;
     u8 mPad4[0x8];
     int m_c8;
@@ -26,7 +26,9 @@ public:
     bool checkRide();
     void checkLink();
 
-    char mPad1[0x4c];
+    char mPad1[0x1c];
+    mVec3_c m_20;
+    char mPad2[0x24];
     dRc_c *mpRc;
     dActor_c *mpNoHitActor;
     dBg_ctr_c *mpCtrHead;
@@ -46,7 +48,11 @@ public:
     short mAdjacentSlopeAngle;
     char mPad7[0x12];
     float mIceSpeed;
-    char mPad8[0x5];
+    u8 m_e0;
+    u8 m_e1;
+    u8 m_e2;
+    bool mMovingLeft;
+    bool mGrounded;
     u8 mLineKind;
     char mPad9[0x6];
     u8 mLayer;
@@ -57,6 +63,9 @@ public:
     static bool checkGround(const mVec3_c *, float *, int *, u8, u8, s8);
     static bool checkGroundHalf(const mVec3_c *, float *, u8, u8);
     static bool checkTenjou(const mVec3_c &, float &, u8, u8);
+    static void getAirWaterHitPos(mVec2_c *);
+    static void getAirWaterHitAngle(short *);
+
     bool checkRoofPlayer(const mVec3_c *, float *);
     u16 getFootAttr();
     u32 getSakaDir();
