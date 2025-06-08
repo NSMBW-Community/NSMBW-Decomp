@@ -5617,3 +5617,13 @@ bool daPlBase_c::setPressBgDamage(int i1, int i2) {
     }
     return false;
 }
+
+mVec3_c daPlBase_c::getAnkleCenterPos() {
+    mVec3_c joint7Pos;
+    mVec3_c joint4Pos;
+
+    mpMdlMng->mpMdl->getJointPos(&joint4Pos, 4);
+    mpMdlMng->mpMdl->getJointPos(&joint7Pos, 7);
+
+    return (joint4Pos + joint7Pos) / 2.0f;
+}
