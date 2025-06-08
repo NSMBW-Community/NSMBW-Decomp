@@ -5619,6 +5619,135 @@ bool daPlBase_c::setPressBgDamage(int i1, int i2) {
     return false;
 }
 
+bool daPlBase_c::setDelayHelpJump() {
+    if (mKey.triggerJump() && fabsf(mSpeedF) > 1.3f) {
+        bool x = false;
+
+        if (m_d50[0]) {
+            x = true;
+        } else if (m_d50[1]) {
+            x = true;
+        }
+
+        if (x && fn_800579c0(1, 1)) {
+            return true;
+        }
+    }
+    return false;
+}
+
+bool daPlBase_c::fn_800579c0(int a, int b) {
+    if ((m_d40 & 0x4000) || isStatus(STATUS_87)) {
+        return false;
+    }
+
+    if ((m_d40 & 2) && !(m_d44 & 0x8000000)) {
+        return false;
+    }
+
+    if ((getModel()->mFlags & 1) && fn_80047ee0()) {
+        return setCrouchJump();
+    }
+
+    if (mKey.triggerJump()) {
+        daPlBase_c::jmpInf_c info;
+        info.m_04 = 0.0f;
+        info.m_08 = b;
+        info.m_0c = a;
+
+        changeState(StateID_Jump, &info);
+
+        return true;
+    }
+
+    return false;
+}
+
+bool daPlBase_c::checkJumpTrigger() {
+    if ((m_d40 & 1) && !(m_d44 & 0x100) && fn_800579c0(1, 1)) {
+        return true;
+    }
+    return false;
+}
+
+bool daPlBase_c::isNoDamage() {
+    return false;
+}
+
+bool daPlBase_c::setDamage(dActor_c*, daPlBase_c::DamageType_e) {
+    return false;
+}
+
+bool daPlBase_c::setForcedDamage(dActor_c*, daPlBase_c::DamageType_e) {
+    return false;
+}
+
+bool daPlBase_c::setDamage2(dActor_c*, daPlBase_c::DamageType_e) {
+    return false;
+}
+
+u32 daPlBase_c::vf3fc(float, float, int, int, int) {
+    return 0;
+}
+
+u32 daPlBase_c::vf400(float, float, int, int, int) {
+    return 0;
+}
+
+bool daPlBase_c::setWaitJump(float a) {
+    if (isDemo() || isStatus(STATUS_04)) {
+        return false;
+    }
+
+    mSpeedF = 0.0f;
+    mSpeed.y = a;
+    changeState(StateID_WaitJump, nullptr);
+    return true;
+}
+
+bool daPlBase_c::setSwimSpeed(float a, float b) {
+    return false;
+}
+
+void daPlBase_c::onFollowMameKuribo() {
+    onStatus(STATUS_AC);
+    m_cf0++;
+}
+
+void daPlBase_c::clearFollowMameKuribo() {
+    offStatus(STATUS_AC);
+    mFollowMameKuribo = m_cf0;
+    m_cf0 = 0;
+}
+
+u32 daPlBase_c::getFollowMameKuribo() {
+    return mFollowMameKuribo;
+}
+
+bool daPlBase_c::isMaskDraw() {
+    if (isStatus(STATUS_53) || isStatus(STATUS_64)) {
+        return false;
+    }
+    return true;
+}
+
+void daPlBase_c::setRideNat(float a) {
+    onStatus(STATUS_59);
+    m_dcc = a;
+}
+
+void daPlBase_c::updateRideNat() {
+    if (isStatus(STATUS_59) && (mSpeed.y <= 0)) {
+        if (! isStatus(STATUS_58) && (mPos.y <= m_dcc)) {
+            offStatus(STATUS_58);
+            return;
+        }
+    } else {
+        offStatus(STATUS_58);
+        return;
+    }
+}
+
 bool daPlBase_c::fn_80057E00(int a) {
     if ((a == 1) && isStatus(STATUS_75)) {
         return true;

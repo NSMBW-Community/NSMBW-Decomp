@@ -155,6 +155,7 @@ public:
         STATUS_51 = 0x51,
         STATUS_52 = 0x52,
         STATUS_53 = 0x53,
+        STATUS_58 = 0x58,
         STATUS_59 = 0x59,
         STATUS_5B = 0x5b,
         STATUS_5C = 0x5c,
@@ -215,6 +216,7 @@ public:
         STATUS_A8 = 0xa8,
         STATUS_AA = 0xaa,
         STATUS_AB = 0xab,
+        STATUS_AC = 0xac,
         STATUS_AD = 0xad,
         STATUS_AE = 0xae,
         STATUS_B5 = 0xb5,
@@ -263,6 +265,15 @@ public:
             }
             return this;
         }
+    };
+
+    class jmpInf_c {
+    public:
+        virtual ~jmpInf_c() {};
+
+        float m_04;
+        int m_08;
+        int m_0c;
     };
 
     typedef void (daPlBase_c::*ProcFunc)();
@@ -415,17 +426,17 @@ public:
     virtual s8 calcStarCount(int);
 
     virtual bool isNoDamage();
-    virtual void setDamage();
-    virtual void setForcedDamage();
+    virtual bool setDamage(dActor_c *, DamageType_e);
+    virtual bool setForcedDamage(dActor_c *, DamageType_e);
 
-    virtual void vf3fc(float, float, int, int, int);
-    virtual void vf400();
-    virtual void setWaitJump(float);
+    virtual u32 vf3fc(float, float, int, int, int);
+    virtual u32 vf400(float, float, int, int, int);
+    virtual bool setWaitJump(float);
 
     virtual bool setHipAttackOnEnemy(mVec3_c *);
 
     virtual void clearJumpActionInfo(int) {}
-    virtual void setSwimSpeed();
+    virtual bool setSwimSpeed(float, float);
     virtual void setLandSE();
 
     virtual void set1UpKinokoEffect() {}
@@ -691,6 +702,13 @@ public:
     dPyMdlMng_c *getModelMng() const { return mpMdlMng; }
     const mVec3_c &getHatPos() const { return getModelMng()->mpMdl->getHatPos(); }
 
+    bool setDelayHelpJump();
+    bool fn_800579c0(int, int);
+    void onFollowMameKuribo();
+    u32 getFollowMameKuribo();
+    bool isMaskDraw();
+    void setRideNat(float);
+    void updateRideNat();
     bool fn_80057E00(int);
     void setItemCompleteVoice();
     void clearTreadCount();
@@ -782,9 +800,12 @@ public:
     s8 mTreadCount;
     s8 mStarCount;
     s8 mPlComboCount;
-    u8 mPad17[0xD];
+    u8 mPad17[1];
+    u32 m_cf0;
+    u32 mFollowMameKuribo;
+    u8 mPad17_5[4];
     PLAYER_POWERUP_e mPowerup;
-    u8 mPad18[0x2e];
+    u8 mPad18[0x30];
     mVec3_c m_d30;
     float m_d3c;
     u32 m_d40;
