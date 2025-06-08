@@ -16,6 +16,7 @@
 #include <game/bases/d_multi_manager.hpp>
 #include <game/bases/d_quake.hpp>
 #include <game/bases/d_rail.hpp>
+#include <game/bases/d_remocon_mng.hpp>
 #include <game/mLib/m_fader.hpp>
 #include <game/cLib/c_math.hpp>
 #include <game/sLib/s_math.hpp>
@@ -5616,6 +5617,12 @@ bool daPlBase_c::setPressBgDamage(int i1, int i2) {
         }
     }
     return false;
+}
+
+void daPlBase_c::startPatternRumble(const char *pattern) {
+    if (dRemoconMng_c::m_instance->mRemocons[mPlayerNo]->mIsRumbleEnabled) {
+        mPad::g_core[dRemoconMng_c::m_instance->mRemocons[mPlayerNo]->mControllerID]->startPatternRumble(pattern, 0, false);
+    }
 }
 
 mVec3_c daPlBase_c::getAnkleCenterPos() {

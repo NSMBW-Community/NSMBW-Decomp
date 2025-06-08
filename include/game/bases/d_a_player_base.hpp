@@ -433,7 +433,7 @@ public:
     virtual void vf438();
 
     virtual void startQuakeShock(int);
-    virtual void startPatternRumble();
+    virtual void startPatternRumble(const char *pattern);
 
     virtual short getMukiAngle(u8 direction);
     virtual int turnAngle();
