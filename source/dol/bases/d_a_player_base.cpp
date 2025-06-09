@@ -5838,9 +5838,9 @@ void daPlBase_c::posMoveAnglePlayer(mVec3_c a) {
         dir = 1;
     }
 
-    u32 x = mBc.getSakaMoveAngle(dir).mAngle;
+    u16 x = mBc.getSakaMoveAngle(dir);
     if (m_d40 & 2) {
-        x = mBc.getHeadSakaMoveAngle(dir).mAngle;
+        x = mBc.getHeadSakaMoveAngle(dir);
     }
 
     if (isStatus(STATUS_3B)) {
@@ -5848,20 +5848,17 @@ void daPlBase_c::posMoveAnglePlayer(mVec3_c a) {
         return;
     }
 
-    u16 x2 = 0;
+    mAng x2 = 0;
     if (isStatus(STATUS_13)) {
-        x2 = (u16)m_d9c;
+        x2 = m_d9c;
     }
-
-    mAng angle = x;
-    mAng angle2 = x2;
 
     float x_mag = fabs(a.x);
     float y = a.y;
 
     mVec3_c delta(
-        x_mag * angle.cos() - y * angle2.sin(),
-        x_mag * angle.sin() + y * fabsf(angle2.cos()),
+        x_mag * x2.cos() - y * x2.sin(),
+        x_mag * x2.sin() + y * fabsf(x2.cos()),
         a.z
     );
 

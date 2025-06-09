@@ -77,8 +77,8 @@ public:
     bool checkWallPlayer(const mVec3_c *, const mVec3_c *, float *);
     u32 checkBgPlr(dActor_c *);
     u32 getHeadAttr();
-    mAng getHeadSakaMoveAngle(u8 direction);
-    mAng getSakaMoveAngle(u8 direction);
+    short getHeadSakaMoveAngle(u8 direction);
+    short getSakaMoveAngle(u8 direction);
     void clearBgcSaveAll();
 
     bool getSakaUpDown(u8 direction);
