@@ -65,7 +65,8 @@ public:
     m3d::anmChr_c mAnm;
     u8 mPad2[0x6c];
     mVec3_c mHatPosMaybe;
-    u8 mPad3[0x7c];
+    u8 mPad3[0x7a];
+    u8 m_152;
     int m_154;
     u8 mPad4[8];
     u32 mFlags;
@@ -76,16 +77,73 @@ public:
 
     static const float scWaterCrouchAnmSpeed;
 };
+
+class dPyAnm_HIO_c {
+public:
+    u8 mID;
+    float mRate;
+    float mBlendDuration;
+};
+
+class dPyAnmMain_HIO_c {
+public:
+    dPyAnm_HIO_c mAnm[177];
+};
+
+class dPyModel_HIO_c {
+public:
+    float mData[17];
+};
+
+class dYoshiModel_HIO_c {
+public:
+    float mData[4];
+};
+
+class dPyMdlBase_HIO_c {
+public:
+    u8 mPad[0x8];
+    float m_08[8];
+    dPyAnmMain_HIO_c mPyAnm;
+    dPyModel_HIO_c mPyModel[3];
+    dYoshiModel_HIO_c mYoshiModel;
+
+    float pyRate(int anmID) const {
+        return mPyAnm.mAnm[anmID].mRate;
+    }
+
+    float pyBlend(int anmID) const {
+        return mPyAnm.mAnm[anmID].mBlendDuration;
+    }
+};
+
 class dPyMdlMng_c {
 public:
-    class HIO_c {
-        u8 mPad[0x1000];
-    };
-
     u8 mPad[4];
     dPyMdlBase_c *mpMdl;
 
-    static HIO_c m_hio;
+    dPyMdlBase_c *getModel() const { return mpMdl; }
+
+    void setAnm(int anmID, float rate, float blendDuration, float f) {
+        getModel()->setAnm(anmID, rate, blendDuration, f);
+    }
+
+    void setAnm(int anmID, float blendDuration, float f) {
+        float rate = m_hio.mPyAnm.mAnm[anmID].mRate;
+        setAnm(anmID, rate, blendDuration, f);
+    }
+
+    void setAnm(int anmID, const dPyAnm_HIO_c &hio, float f = 0.0f) {
+        getModel()->setAnm(anmID, hio.mRate, hio.mBlendDuration, f);
+    }
+
+    void setAnm(int anmID, float f = 0.0f) {
+        setAnm(anmID, m_hio.mPyAnm.mAnm[anmID], f);
+    }
+
+    bool isAnm(int i) const { return getModel()->m_154 == i; }
+
+    static dPyMdlBase_HIO_c m_hio;
 };
 
 class daPlBase_c : public dActor_c {

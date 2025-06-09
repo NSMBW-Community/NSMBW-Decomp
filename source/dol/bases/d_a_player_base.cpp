@@ -419,8 +419,7 @@ void daPlBase_c::initializeState_Fall() {
         onStatus(STATUS_4D);
     }
     if (!mStateChangeParam) {
-        float f = ((float *) &dPyMdlMng_c::m_hio)[29];
-        mpMdlMng->mpMdl->setAnm(6, f, 0.0f, 10.0f);
+        mpMdlMng->setAnm(6, 0.0f, 10.0f);
     }
     if (m_d4c & 2) {
         if (m_1134 * mSpeedF > 0.0f) {
@@ -455,9 +454,7 @@ bool daPlBase_c::setCancelCrouch() {
         return false;
     }
     if (mpMdlMng->mpMdl->m_154 != 21) {
-        float f1 = ((float *) &dPyMdlMng_c::m_hio)[74];
-        float f2 = ((float *) &dPyMdlMng_c::m_hio)[75];
-        mpMdlMng->mpMdl->setAnm(21, f1, f2, 10.0f);
+        mpMdlMng->setAnm(21);
         mpMdlMng->mpMdl->setFrame(mpMdlMng->mpMdl->mAnm.mFrameMax - 1.0f);
     }
     if (!(m_d40 & 0x4000)) {
@@ -506,9 +503,7 @@ void daPlBase_c::executeState_Crouch() {}
 
 void daPlBase_c::initializeState_Slip() {
     mSubstate = SLIP_ACTION_NONE;
-    float f1 = ((float *) &dPyMdlMng_c::m_hio)[77];
-    float f2 = ((float *) &dPyMdlMng_c::m_hio)[78];
-    mpMdlMng->mpMdl->setAnm(22, f1, f2, 0.0f);
+    mpMdlMng->setAnm(22);
     mMaxSpeedF = getSlipMaxSpeedF();
     m_1114 = 8;
     m_fc = 0;
@@ -572,7 +567,7 @@ void daPlBase_c::setSlipAction_ToStoop() {
         offStatus(STATUS_3C);
     }
     mSubstate = SLIP_ACTION_STOOP;
-    mpMdlMng->mpMdl->setAnm(24, ((float *) &dPyMdlMng_c::m_hio)[83], ((float *) &dPyMdlMng_c::m_hio)[84], 0.0f);
+    mpMdlMng->setAnm(24);
 }
 
 void daPlBase_c::setSlipAction_ToEnd() {
@@ -586,7 +581,7 @@ void daPlBase_c::setSlipAction_ToEnd() {
     mSubstate = SLIP_ACTION_END;
     mSpeedF = 0.0f;
     mMaxSpeedF = 0.0f;
-    mpMdlMng->mpMdl->setAnm(23, ((float *) &dPyMdlMng_c::m_hio)[80], ((float *) &dPyMdlMng_c::m_hio)[81], 0.0f);
+    mpMdlMng->setAnm(23);
 }
 
 void daPlBase_c::setSlipActionEnd() {
@@ -774,7 +769,7 @@ void daPlBase_c::setHipBlockBreak() {
 
 void daPlBase_c::setHipAttack_Ready() {
     mSubstate = HIP_ACTION_READY;
-    mpMdlMng->mpMdl->setAnm(16, ((float *) &dPyMdlMng_c::m_hio)[10], ((float *) &dPyMdlMng_c::m_hio)[11], 0.0f);
+    mpMdlMng->setAnm(16);
     mSpeed.y = 1.0f;
 }
 
@@ -789,7 +784,7 @@ void daPlBase_c::setHipAttack_KinopioStart() {
 
 void daPlBase_c::setHipAttack_AttackStart() {
     mSubstate = HIP_ACTION_ATTACK_START;
-    mpMdlMng->mpMdl->setAnm(17, ((float *) &dPyMdlMng_c::m_hio)[10], ((float *) &dPyMdlMng_c::m_hio)[11], 0.0f);
+    mpMdlMng->setAnm(17);
     m_1114 = 5;
     mSpeed.y = 0.0f;
 }
@@ -813,7 +808,7 @@ void daPlBase_c::setHipAttack_AttackFall() {
 void daPlBase_c::setHipAttack_StandNormal() {
     m_1114 = 20;
     mSubstate = HIP_ACTION_STAND_NORMAL;
-    mpMdlMng->mpMdl->setAnm(18, ((float *) &dPyMdlMng_c::m_hio)[10], ((float *) &dPyMdlMng_c::m_hio)[11], 0.0f);
+    mpMdlMng->setAnm(18);
     onStatus(STATUS_1E);
     offStatus(STATUS_1C);
     onStatus(STATUS_9F);
@@ -824,13 +819,13 @@ void daPlBase_c::setHipAttack_StandNormal() {
 
 void daPlBase_c::setHipAttack_StandNormalEnd() {
     mSubstate = HIP_ACTION_STAND_NORMAL_END;
-    mpMdlMng->mpMdl->setAnm(19, ((float *) &dPyMdlMng_c::m_hio)[10], ((float *) &dPyMdlMng_c::m_hio)[11], 0.0f);
+    mpMdlMng->setAnm(23);
     offStatus(STATUS_1E);
 }
 
 void daPlBase_c::setHipAttack_ToStoop() {
     mSubstate = HIP_ACTION_TO_STOOP;
-    mpMdlMng->mpMdl->setAnm(20, ((float *) &dPyMdlMng_c::m_hio)[10], ((float *) &dPyMdlMng_c::m_hio)[11], 0.0f);
+    mpMdlMng->setAnm(19);
     offStatus(STATUS_1E);
 }
 
@@ -912,7 +907,7 @@ void daPlBase_c::HipAction_Ground() {
 
 void daPlBase_c::HipAction_StandNormal() {
     if (mpMdlMng->mpMdl->m_154 != 18) {
-        mpMdlMng->mpMdl->setAnm(18, ((float *) &dPyMdlMng_c::m_hio)[10], ((float *) &dPyMdlMng_c::m_hio)[11], 0.0f);
+        mpMdlMng->setAnm(18);
     }
     if (m_d40 & 1) {
         if (mpMdlMng->mpMdl->mAnm.isStop()) {
@@ -1044,10 +1039,10 @@ void daPlBase_c::initializeState_JumpDai() {
     mKey.onStatus(dAcPyKey_c::STATUS_NO_INPUT);
     mSpeed.y = 0.0f;
     mSpeedF = 0.0f;
-    if (mpMdlMng->mpMdl->m_154 == 20) {
+    if (mpMdlMng->isAnm(20)) {
         mSubstate = JUMP_DAI_ACTION_1;
     } else {
-        mpMdlMng->mpMdl->setAnm(7, ((float *) &dPyMdlMng_c::m_hio)[10], ((float *) &dPyMdlMng_c::m_hio)[11], 0.0f);
+        mpMdlMng->setAnm(7);
     }
 }
 void daPlBase_c::finalizeState_JumpDai() {
@@ -1111,7 +1106,7 @@ void daPlBase_c::initializeState_PlayerJumpDai() {
     mSpeedF = 0.0f;
     mSpeed.y = 0.0f;
     if (mpMdlMng->mpMdl->m_154 != 20) {
-        mpMdlMng->mpMdl->setAnm(7, ((float *) &dPyMdlMng_c::m_hio)[10], ((float *) &dPyMdlMng_c::m_hio)[11], 0.0f);
+        mpMdlMng->setAnm(7);
     }
     if (mKey.triggerJumpBuf(5)) {
         mSubstate = JUMP_DAI_ACTION_1;
@@ -1210,7 +1205,7 @@ void daPlBase_c::initializeState_Funsui() {
     mSpeedF *= 0.7f;
     mSpeed.y = 0.0f;
     mSubstate = FUNSUI_ACTION_NONE;
-    mpMdlMng->mpMdl->setAnm(138, ((float *) &dPyMdlMng_c::m_hio)[10], ((float *) &dPyMdlMng_c::m_hio)[11], 0.0f);
+    mpMdlMng->setAnm(138);
     if (mPlayerNo >= 0) {
         vf434(50, 0);
         dQuake_c::m_instance->shockMotor(mPlayerNo, dQuake_c::TYPE_7, 0, 0);
@@ -1290,7 +1285,7 @@ void daPlBase_c::initializeState_Cloud() {
     mSpeed.y = 0.1f;
     mSpeedF = 0.0f;
     mMaxSpeedF = 0.0f;
-    mpMdlMng->mpMdl->setAnm(7, ((float *) &dPyMdlMng_c::m_hio)[10], ((float *) &dPyMdlMng_c::m_hio)[11], 0.0f);
+    mpMdlMng->setAnm(7);
     mRc.mFlags |= 4;
 }
 
@@ -1317,7 +1312,7 @@ bool daPlBase_c::updateCloudMove() {
     mPos.y += getCloudOffsetY();
     mSpeed.y = 0.0f;
     if (!isStatus(STATUS_2B)) {
-        mAngle = rideActor->mAngle;
+        mAngle.set(rideActor->mAngle);
         mDirection = rideActor->mDirection;
     }
     return false;
@@ -1369,7 +1364,7 @@ void daPlBase_c::DemoAnmNormal() {
 
 void daPlBase_c::DemoAnmBossSetUp() {
     if (mSubstate == ANIME_PLAY_ACTION_0) {
-        mpMdlMng->mpMdl->setAnm(147, ((float *) &dPyMdlMng_c::m_hio)[10], ((float *) &dPyMdlMng_c::m_hio)[11], 0.0f);
+        mpMdlMng->setAnm(147);
         mSubstate++;
         offStatus(STATUS_03);
     }
@@ -1396,7 +1391,7 @@ void daPlBase_c::DemoAnmBossGlad() {
             if (!vf284(arg)) {
                 break;
             }
-            mpMdlMng->mpMdl->setAnm(148, ((float *) &dPyMdlMng_c::m_hio)[10], ((float *) &dPyMdlMng_c::m_hio)[11], 0.0f);
+            mpMdlMng->setAnm(0, 5.0f, 0.0f);
             mSubstate++;
             offStatus(STATUS_03);
             break;
@@ -1420,9 +1415,9 @@ void daPlBase_c::DemoAnmBossAttention() {
             break;
         case HIP_ACTION_READY:
             if (!mDirection) {
-                mpMdlMng->mpMdl->setAnm(145, ((float *) &dPyMdlMng_c::m_hio)[10], ((float *) &dPyMdlMng_c::m_hio)[11], 0.0f);
+                mpMdlMng->setAnm(145);
             } else {
-                mpMdlMng->mpMdl->setAnm(144, ((float *) &dPyMdlMng_c::m_hio)[10], ((float *) &dPyMdlMng_c::m_hio)[11], 0.0f);
+                mpMdlMng->setAnm(144);
             }
             mSubstate++;
             break;
@@ -1443,7 +1438,7 @@ void daPlBase_c::DemoAnmBossKeyGet() {
             mSubstate++;
         case ANIME_PLAY_ACTION_1:
             if (m_1114 == 0) {
-                mpMdlMng->mpMdl->setAnm(148, ((float *) &dPyMdlMng_c::m_hio)[10], ((float *) &dPyMdlMng_c::m_hio)[11], 0.0f);
+            mpMdlMng->setAnm(148);
                 fn_80051d00(1);
                 mSubstate++;
                 offStatus(STATUS_03);
@@ -1459,7 +1454,7 @@ void daPlBase_c::initializeState_WaitJump() {
     onStatus(STATUS_12);
     mKey.onStatus(dAcPyKey_c::STATUS_FORCE_NO_JUMP);
     mSpeedF = 0.0f;
-    mpMdlMng->mpMdl->setAnm(0, ((float *) &dPyMdlMng_c::m_hio)[10], ((float *) &dPyMdlMng_c::m_hio)[11], 0.0f);
+    mpMdlMng->setAnm(0);
     mAngle.y = getMukiAngle(mDirection);
 }
 
@@ -2070,7 +2065,7 @@ void daPlBase_c::setLandSmokeEffectLight() {
             pos.z = 3700.0f;
         }
     }
-    float sz = ((float *) &dPyMdlMng_c::m_hio)[mpMdlMng->mpMdl->m_154];
+    float sz = dPyMdlMng_c::m_hio.m_08[mpMdlMng->mpMdl->m_152];
     mVec3_c size(sz, sz, sz);
     if (m_d40 & 0x4000000) {
         if (m_d88 == 7) {
@@ -2514,17 +2509,17 @@ bool daPlBase_c::isDemoType(DemoType_e type) {
             }
             break;
         case DEMO_4:
-            if (!isItemKinopio() && (isStatus(STATUS_72) || isStatus(STATUS_71)) && m_60 <= 4) {
+            if (!isItemKinopio() && (isStatus(STATUS_72) || isStatus(STATUS_71)) && (u8) m_60 <= 4) {
                 return true;
             }
             break;
         case DEMO_5:
-            if (isItemKinopio() && (isStatus(STATUS_72) || isStatus(STATUS_71)) && m_60 <= 7) {
+            if (isItemKinopio() && (isStatus(STATUS_72) || isStatus(STATUS_71)) && (u8) m_60 <= 7) {
                 return true;
             }
             break;
         case DEMO_6:
-            if ((isStatus(STATUS_72) || isStatus(STATUS_71)) && (s8) m_60 == 8) {
+            if ((isStatus(STATUS_72) || isStatus(STATUS_71)) && m_60 == 8) {
                 return true;
             }
             break;
@@ -2861,7 +2856,7 @@ void daPlBase_c::executeDemoInDokan(u8 dir) {
                 if (mDemoStateMgr.getStateID()->isEqual(StateID_DemoInDokanL) ||
                     mDemoStateMgr.getStateID()->isEqual(StateID_DemoInDokanR)
                 ) {
-                    mpMdlMng->mpMdl->setAnm(132, ((float *) &dPyMdlMng_c::m_hio)[10], ((float *) &dPyMdlMng_c::m_hio)[11], 0.0f);
+                    mpMdlMng->setAnm(132);
                     if ((int) mDemoStateChangeParam != 1) {
                         mPos.y = getWaterDokanCenterOffset(mPos.y);
                         m_68.y = mPos.y;
@@ -2913,7 +2908,7 @@ void daPlBase_c::executeDemoInDokan(u8 dir) {
 void daPlBase_c::initDemoInDokanUD(u8 dir) {
     static const float tmps[] = { 34.0f, 36.0f, 38.0f, 38.0f };
     static const float tmps_big[] = { 40.0f, 42.0f, 44.0f, 44.0f };
-    mpMdlMng->mpMdl->setAnm(0, ((float *) &dPyMdlMng_c::m_hio)[10], ((float *) &dPyMdlMng_c::m_hio)[11], 0.0f);
+    mpMdlMng->setAnm(0);
     m_68 = mPos;
     if (dir == 1) {
         if ((int) mDemoStateChangeParam == 2) {
@@ -2974,7 +2969,7 @@ void daPlBase_c::initDemoInDokanUD(u8 dir) {
 
 void daPlBase_c::initDemoInDokanLR(u8 dir) {
     static const float tmps[] = { 32.0f, 32.0f, 20.0f };
-    mpMdlMng->mpMdl->setAnm(131, ((float *) &dPyMdlMng_c::m_hio)[10], ((float *) &dPyMdlMng_c::m_hio)[11], 0.0f);
+    mpMdlMng->setAnm(131);
     onStatus(STATUS_2A);
     if (dir == 3) {
         mPos.x += 8.0f;
@@ -3141,7 +3136,7 @@ void daPlBase_c::endDemoOutDokan() {
 void daPlBase_c::initDemoOutDokanUD(u8 dir) {
     m_84 = dir;
     changeState(StateID_Walk, nullptr);
-    mpMdlMng->mpMdl->setAnm(0, ((float *) &dPyMdlMng_c::m_hio)[10], ((float *) &dPyMdlMng_c::m_hio)[11], 0.0f);
+    mpMdlMng->setAnm(0, 0.0f, 5.0f, 85.0f);
     if (m_80 == 2) {
         if (dir == 0) {
             m_90 = 0.0f;
@@ -3219,9 +3214,9 @@ void daPlBase_c::executeDemoOutDokanUD() {
 void daPlBase_c::initDemoOutDokanLR(u8 dir) {
     m_84 = dir;
     if (isStatus(STATUS_3A)) {
-        mpMdlMng->mpMdl->setAnm(132, ((float *) &dPyMdlMng_c::m_hio)[10], ((float *) &dPyMdlMng_c::m_hio)[11], 0.0f);
+        mpMdlMng->setAnm(132);
     } else {
-        mpMdlMng->mpMdl->setAnm(130, ((float *) &dPyMdlMng_c::m_hio)[10], ((float *) &dPyMdlMng_c::m_hio)[11], 0.0f);
+        mpMdlMng->setAnm(130);
     }
     onStatus(STATUS_2A);
     if (m_80 == 1 && daPyMng_c::mNum == 1) {
@@ -3239,7 +3234,7 @@ void daPlBase_c::initDemoOutDokanLR(u8 dir) {
 
 void daPlBase_c::executeDemoOutDokanLR() {
     if (mpMdlMng->mpMdl->mAnm.isStop()) {
-        mpMdlMng->mpMdl->setAnm(131, ((float *) &dPyMdlMng_c::m_hio)[10], ((float *) &dPyMdlMng_c::m_hio)[11], 0.0f);
+        mpMdlMng->setAnm(131);
     }
     switch ((DemoInDokanSubstate_e) mDemoSubstate) {
         case DEMO_IN_DOKAN_ACTION_0: {
@@ -3376,7 +3371,7 @@ void daPlBase_c::executeState_DemoOutDokanRoll() {
 void daPlBase_c::initializeState_DemoInWaterTank() {
     onStatus(STATUS_BB);
     mDirection = (u8) (int) mDemoStateChangeParam;
-    mpMdlMng->mpMdl->setAnm(131, ((float *) &dPyMdlMng_c::m_hio)[10], ((float *) &dPyMdlMng_c::m_hio)[11], 0.0f);
+    mpMdlMng->setAnm(131);
     mAngle.y = 0;
     if ((int) mDemoStateChangeParam == 1) {
         m_ce0 = 0;
@@ -3409,7 +3404,7 @@ void daPlBase_c::executeState_DemoInWaterTank() {
             m_d40 = 0;
             checkWater();
             if (m_d40 & 0x4000) {
-                mpMdlMng->mpMdl->setAnm(132, ((float *) &dPyMdlMng_c::m_hio)[10], ((float *) &dPyMdlMng_c::m_hio)[11], 0.0f);
+                mpMdlMng->setAnm(132);
                 mPos.y = getWaterDokanCenterOffset(mPos.y);
                 fn_80057e70(SE_PLY_WATER_DOKAN_IN_OUT, false);
             } else {
@@ -3427,7 +3422,7 @@ void daPlBase_c::executeState_DemoInWaterTank() {
 }
 
 void daPlBase_c::initializeState_DemoOutWaterTank() {
-    mpMdlMng->mpMdl->setAnm(0, ((float *) &dPyMdlMng_c::m_hio)[10], ((float *) &dPyMdlMng_c::m_hio)[11], 0.0f);
+    mpMdlMng->setAnm(0);
     mSpeedF = 0.0f;
     mMaxSpeedF = 0.0f;
     mSpeed.set(0.0f, 0.0f, 0.0f);
@@ -3441,7 +3436,7 @@ void daPlBase_c::executeState_DemoOutWaterTank() {
     switch ((DemoInDokanSubstate_e) mDemoSubstate) {
         case DEMO_IN_DOKAN_ACTION_0:
             if (sLib::chase(&mPos.x, m_68.x, 1.0f)) {
-                mpMdlMng->mpMdl->setAnm(132, ((float *) &dPyMdlMng_c::m_hio)[10], ((float *) &dPyMdlMng_c::m_hio)[11], 0.0f);
+                mpMdlMng->setAnm(130);
                 fn_80057e70(SE_PLY_DOKAN_IN_OUT, false);
                 m_10c8 = 60;
                 mDemoSubstate = DEMO_IN_DOKAN_ACTION_1;
@@ -3449,7 +3444,7 @@ void daPlBase_c::executeState_DemoOutWaterTank() {
             break;
         case DEMO_IN_DOKAN_ACTION_1:
             if (mpMdlMng->mpMdl->mAnm.isStop()) {
-                mpMdlMng->mpMdl->setAnm(131, ((float *) &dPyMdlMng_c::m_hio)[10], ((float *) &dPyMdlMng_c::m_hio)[11], 0.0f);
+                mpMdlMng->setAnm(131);
             }
             if (m_10c8 == 0) {
                 onStatus(STATUS_BB);
@@ -3665,7 +3660,7 @@ void daPlBase_c::initDemoGoalBase() {
     clearJumpActionInfo(0);
     endStar();
     setDemoGoalMode(0, 0);
-    mpMdlMng->mpMdl->setAnm(85, ((float *) &dPyMdlMng_c::m_hio)[10], ((float *) &dPyMdlMng_c::m_hio)[11], 0.0f);
+    mpMdlMng->setAnm(85);
     mAngle.x = 0;
     setZPositionDirect(3000.0f);
     mSpeed.x = 0.0f;
@@ -3708,7 +3703,7 @@ void daPlBase_c::setDemoGoal_MultiJump() {
     dBc_c::checkGround(&pos, &pos.y, mLayer, 1, -1);
     mAngle.y = 0x4000;
     m_60 = 4;
-    mpMdlMng->mpMdl->setAnm(88, ((float *) &dPyMdlMng_c::m_hio)[10], ((float *) &dPyMdlMng_c::m_hio)[11], 0.0f);
+    mpMdlMng->setAnm(88);
     if (daPyDemoMng_c::mspInstance->m_1c > 1) {
         initGoalJump(pos, 5.128f);
     } else {
@@ -3721,7 +3716,7 @@ void daPlBase_c::executeDemoGoal_Pole() {
         case 0:
             if (!addCalcAngleY(-0x4000, 10) && mpMdlMng->mpMdl->mAnm.isStop()) {
                 m_60 = 1;
-                mpMdlMng->mpMdl->setAnm(86, ((float *) &dPyMdlMng_c::m_hio)[10], ((float *) &dPyMdlMng_c::m_hio)[11], 0.0f);
+                mpMdlMng->setAnm(86);
                 onStatus(STATUS_66);
             }
             break;
@@ -3752,7 +3747,7 @@ void daPlBase_c::executeDemoGoal_Pole() {
                 onStatus(STATUS_68);
                 mSpeed.y = 0.0f;
                 m_60 = 3;
-                mpMdlMng->mpMdl->setAnm(87, ((float *) &dPyMdlMng_c::m_hio)[10], ((float *) &dPyMdlMng_c::m_hio)[11], 0.0f);
+                mpMdlMng->setAnm(87);
             }
             break;
         }
@@ -3764,13 +3759,13 @@ void daPlBase_c::executeDemoGoal_Pole() {
         case 4:
             if (calcGoalJump()) {
                 m_60 = 5;
-                mpMdlMng->mpMdl->setAnm(89, ((float *) &dPyMdlMng_c::m_hio)[10], ((float *) &dPyMdlMng_c::m_hio)[11], 0.0f);
+                mpMdlMng->setAnm(89);
                 setLandSE();
             }
             break;
         case 5:
             if (mpMdlMng->mpMdl->mAnm.isStop()) {
-                mpMdlMng->mpMdl->setAnm(143, ((float *) &dPyMdlMng_c::m_hio)[10], ((float *) &dPyMdlMng_c::m_hio)[11], 0.0f);
+                mpMdlMng->setAnm(143);
                 m_60 = 6;
                 m_10c8 = 5;
             }
@@ -4002,15 +3997,13 @@ void daPlBase_c::setControlDemoAnm(int anmNo) {
     if (isStatus(STATUS_72)) {
         m_60 = 2;
         changeState(StateID_AnimePlay, nullptr);
-        int idx = anmNo * 3;
-        float f1 = ((float *) &dPyMdlMng_c::m_hio)[idx];
-        float f2 = ((float *) &dPyMdlMng_c::m_hio)[1 + idx];
-        mpMdlMng->mpMdl->setAnm(anmNo, f1, f2, 0.0f);
+        dPyAnm_HIO_c &hio = dPyMdlMng_c::m_hio.mPyAnm.mAnm[anmNo & 0xff];
+        mpMdlMng->setAnm(anmNo, hio, 0.0f);
     }
 }
 bool daPlBase_c::isControlDemoAnm(int anmNo) {
     if (isStatus(STATUS_72)) {
-        if (m_60 == 2 && anmNo == *(int*) &mpMdlMng->mpMdl->mAnm.mFrameStart) {
+        if (m_60 == 2 && anmNo == mpMdlMng->mpMdl->m_154) {
             return true;
         }
     }
