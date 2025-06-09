@@ -1,10 +1,10 @@
 #pragma once
 #include <game/bases/d_actor.hpp>
-#include <game/bases/d_audio.hpp>
 #include <game/bases/d_ac_py_key.hpp>
 #include <game/bases/d_cc.hpp>
 #include <game/bases/d_effect.hpp>
 #include <game/sLib/s_State.hpp>
+#include <game/bases/d_audio.hpp>
 #include <game/mLib/m_3d.hpp>
 #include <game/bases/d_quake.hpp>
 #include <constants/game_constants.h>
@@ -539,10 +539,10 @@ public:
     void setTurnEnd();
     void setVsPlHipAttackEffect();
     void setLandSmokeEffect(int);
-    void fn_80057f60(int soundID, bool);
-    void fn_80057fd0(int soundID, short, bool);
     void fn_80057e70(ulong soundID, bool);
-    void fn_80057ee0(int soundID, bool, bool);
+    void fn_80057ee0(ulong soundID, short, bool);
+    void fn_80057f60(ulong soundID, bool);
+    void fn_80057fd0(ulong soundID, short, bool);
     void setHipAttackDropEffect();
     void setHipBlockBreak();
     void setHipAttack_Ready();

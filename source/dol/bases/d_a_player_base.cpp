@@ -4107,7 +4107,7 @@ void daPlBase_c::initializeState_DemoControl() {
     onStatus(STATUS_71);
     mDemoMode = 0;
     initializeDemoControl();
-    m_60 = (u8) mDemoStateChangeParam;
+    m_60 = (u8) (int) mDemoStateChangeParam;
     switch (m_60) {
         case DEMO_4:
             m_10c8 = 60;
@@ -6070,8 +6070,26 @@ bool daPlBase_c::fn_80057E00(int a) {
 }
 
 void daPlBase_c::fn_80057e70(ulong soundID, bool b) {
-    if (! fn_80057E00(b)) {
+    if (!fn_80057E00(b)) {
         mSndObj.startSound(soundID, 0);
+    }
+}
+
+void daPlBase_c::fn_80057ee0(ulong soundID, short s, bool b) {
+    if (!fn_80057E00(b)) {
+        mSndObj.startSound(soundID, s, 0);
+    }
+}
+
+void daPlBase_c::fn_80057f60(ulong soundID, bool b) {
+    if (!fn_80057E00(b)) {
+        mSndObj.holdSound(soundID, 0);
+    }
+}
+
+void daPlBase_c::fn_80057fd0(ulong soundID, short s, bool b) {
+    if (!fn_80057E00(b)) {
+        mSndObj.holdSound(soundID, s, 0);
     }
 }
 

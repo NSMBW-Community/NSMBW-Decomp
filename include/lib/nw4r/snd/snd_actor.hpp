@@ -5,37 +5,84 @@ namespace nw4r {
 namespace snd {
 
 namespace detail {
-namespace BasicSound {
+class BasicSound {
+public:
     struct AmbientInfo;
+
+    void SetVolume(float, int);
+    void SetPan(float);
+    void setPlayerPriority(int);
+
+    u8 mPad[0x9c];
+    u32 m_9c;
+};
+
 } // namespace detail
-} // namespace snd
 
 class SoundHandle {
 public:
-    SoundHandle() : m_00(0), m_04(0.0f) {}
+    SoundHandle() : mpSound(nullptr), m_04(0.0f) {}
     ~SoundHandle() { nw4r::snd::SoundHandle::DetachSound();}
+
+    void SetVolume(float f, int i) { if (mpSound != nullptr) mpSound->SetVolume(f, i); }
+    void SetPan(float f) { if (mpSound != nullptr) mpSound->SetPan(f); }
+    void setPlayerPriority(int i) { if (mpSound != nullptr) mpSound->setPlayerPriority(i); }
+
+    u32 getID() { return (mpSound != nullptr) ? mpSound->m_9c : -1; }
 
     void DetachSound();
 
-    u32 m_00;
+    detail::BasicSound *mpSound;
     float m_04;
 };
 
-namespace SoundStartable {
+class SoundStartable {
+public:
     struct StartInfo;
-} // namespace SoundStartable
+
+    virtual ~SoundStartable() {}
+
+    virtual void detail_SetupSound(SoundHandle *, unsigned long, bool, const StartInfo *);
+    virtual void detail_ConvertLabelStringToSoundId(const char *);
+    virtual void SetupSound(SoundHandle *, unsigned long, const StartInfo *, void *);
+    virtual void detail_SetupSoundWithAmbientInfo(SoundHandle *, unsigned long, const StartInfo *, detail::BasicSound::AmbientInfo *, void *);
+
+    void detail_StartSound(SoundHandle *, unsigned long, const StartInfo *);
+    void detail_HoldSound(SoundHandle *, unsigned long, const StartInfo *);
+};
+
+class SeqSound {
+public:
+    void WriteVariable(int, short);
+};
+
+class SeqSoundHandle {
+public:
+    SeqSoundHandle(SoundHandle *handle);
+    void DetachSound();
+
+    SeqSound *mpSeqSound;
+};
+
+class SoundArchive {
+public:
+    class SoundInfo {
+    public:
+        u8 mPad1[0xc];
+        int m_c;
+        u8 mPad2[0x10];
+    };
+
+    int GetSoundType(unsigned long);
+    void ReadSoundInfo(unsigned long, SoundInfo *);
+};
 
 class SoundArchivePlayer;
 
-class SoundActor {
+class SoundActor : public SoundStartable {
 public:
     SoundActor();
     virtual ~SoundActor() {}
-
-    virtual void detail_SetupSound(nw4r::snd::SoundHandle *, unsigned long, bool, const nw4r::snd::SoundStartable::StartInfo *);
-    virtual void detail_ConvertLabelStringToSoundId(const char *);
-    virtual void SetupSound(nw4r::snd::SoundHandle *, unsigned long, const nw4r::snd::SoundStartable::StartInfo *, void *);
-    virtual void detail_SetupSoundWithAmbientInfo(nw4r::snd::SoundHandle *, unsigned long, const nw4r::snd::SoundStartable::StartInfo *, nw4r::snd::detail::BasicSound::AmbientInfo *, void *);
 
     int GetPlayingSoundCount(int) const;
     void SetPlayableSoundCount(int, int);
