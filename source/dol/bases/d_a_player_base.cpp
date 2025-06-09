@@ -419,14 +419,14 @@ void daPlBase_c::initializeState_Fall() {
         onStatus(STATUS_4D);
     }
     if (!mStateChangeParam) {
-        float f = ((float *) &dPyMdlMng_c::m_hio)[10];
+        float f = ((float *) &dPyMdlMng_c::m_hio)[29];
         mpMdlMng->mpMdl->setAnm(6, f, 0.0f, 10.0f);
     }
     if (m_d4c & 2) {
         if (m_1134 * mSpeedF > 0.0f) {
             m_1138 = m_1134;
             m_1134 = 0.0f;
-            m_113c = fabsf(m_1134 / 10.0f);
+            m_113c = fabsf(m_1138 / 10.0f);
         }
     }
 }

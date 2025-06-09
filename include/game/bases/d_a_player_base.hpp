@@ -11,10 +11,50 @@
 
 class dPyMdlBase_c {
 public:
+    virtual ~dPyMdlBase_c();
+    virtual void getFaceJointIdx();
+    virtual void createModel();
+    virtual void initialize();
+    virtual void play();
+    virtual void _calc();
+    virtual void calc2();
+    virtual void draw();
+    virtual void getBodyMdl();
+    virtual void getAnmResFile();
+    virtual void setPlayerMode();
+    virtual void setColorType();
+    virtual void setDark();
+    virtual void vf3c(); ///< @unofficial
+    virtual void onStarAnm();
+    virtual void offStarAnm();
+    virtual void onStarEffect();
+    virtual void offStarEffect();
+    virtual void getJointMtx();
+    virtual void getHeadPropelJointMtx();
+    virtual void vf58(); ///< @unofficial
     virtual void setAnm(int, float, float, float);
+    virtual void vf60(); ///< @unofficial
+    virtual void vf64(); ///< @unofficial
+    virtual void vf68(); ///< @unofficial
+    virtual void copyAnm();
+    virtual void vf70(); ///< @unofficial
+    virtual void vf74(); ///< @unofficial
+    virtual void setAnmBind();
+    virtual void vf7c(); ///< @unofficial
+    virtual void setTexAnmType();
     virtual void setFrame(float);
-    bool isFootStepTiming();
+    virtual void setBodyFrame();
+    virtual void setRate();
+    virtual void setBodyRate();
+    virtual void vf94(); ///< @unofficial
+    virtual void getPropelRollSpeed();
+    virtual void vf9c(); ///< @unofficial
+    virtual void vfa0(); ///< @unofficial
+    virtual void vfa4(); ///< @unofficial
+    virtual void vfa8(); ///< @unofficial
+    virtual void vfac(); ///< @unofficial
 
+    bool isFootStepTiming();
     void getJointPos(mVec3_c *, int);
 
     const mVec3_c &getHatPos() const { return mHatPosMaybe; }
