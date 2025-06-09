@@ -118,6 +118,7 @@ public:
         STATUS_0A = 0x0a,
         STATUS_0E = 0x0e,
         STATUS_12 = 0x12,
+        STATUS_13 = 0x13,
         STATUS_14 = 0x14,
         STATUS_15 = 0x15,
         STATUS_16 = 0x16,
@@ -141,8 +142,9 @@ public:
         STATUS_33 = 0x33,
         STATUS_35 = 0x35,
         STATUS_36 = 0x36,
-        STATUS_3C = 0x3c,
         STATUS_3A = 0x3a,
+        STATUS_3B = 0x3b,
+        STATUS_3C = 0x3c,
         STATUS_3E = 0x3e,
         STATUS_40 = 0x40,
         STATUS_41 = 0x41,
@@ -209,6 +211,7 @@ public:
         STATUS_96 = 0x96,
         STATUS_97 = 0x97,
         STATUS_98 = 0x98,
+        STATUS_99 = 0x99,
         STATUS_9F = 0x9f,
         STATUS_A0 = 0xa0,
         STATUS_A4 = 0xa4,
@@ -226,6 +229,7 @@ public:
         STATUS_B9 = 0xb9,
         STATUS_BA = 0xba,
         STATUS_BB = 0xbb,
+        STATUS_BC = 0xbc,
         STATUS_BE = 0xbe,
         STATUS_BF = 0xbf,
         STATUS_C1 = 0xc1,
@@ -698,10 +702,18 @@ public:
     float calcStarAccel(float f) { return 3.0f * f; }
     float calcIdkAccel(float f) { return 0.375f * f; }
     void set_m_d80(int i, float f) { m_d80[i] = f; }
-    dPyMdlBase_c *getModel() const { return mpMdlMng->mpMdl; }
     dPyMdlMng_c *getModelMng() const { return mpMdlMng; }
     const mVec3_c &getHatPos() const { return getModelMng()->mpMdl->getHatPos(); }
 
+    void setStatus(int);
+    void fn_800542d0();
+    void calcTimerProc();
+    dPyMdlBase_c* getModel();
+    void calcPlayerSpeedXY();
+    void posMoveAnglePenguin(mVec3_c, u16);
+    void posMoveAnglePlayer(mVec3_c);
+    float setJumpAddSpeedF(float);
+    float fn_80057860();
     bool setDelayHelpJump();
     bool fn_800579c0(int, int);
     void onFollowMameKuribo();
@@ -720,7 +732,7 @@ public:
     int m_04;
     float m_08;
     int m_0c;
-    u32 m_10;
+    int m_10;
     const daPlBase_c *mpNoHitPlayer;
     int m_18;
     u32 m_1c;
@@ -744,7 +756,7 @@ public:
     int m_9c;
     int m_a0;
     float m_a4;
-    u8 mPad8[0x4];
+    int m_a8;
     mVec3_c m_ac;
     int m_b8;
     float m_bc;
@@ -757,15 +769,15 @@ public:
     int m_d8[5];
     int m_ec;
     u8 mPad11[0x4];
-    u32 m_f4;
-    u32 m_f8;
+    int m_f4;
+    int m_f8;
     s8 m_fc;
     dEf::followEffect_c mFollowEf;
     mEf::levelEffect_c mLevelEf1;
     u32 m_344;
     mVec3_c m_348;
     float m_354;
-    u32 m_358;
+    int m_358;
     int m_35c;
     u32 m_360;
     mEf::levelEffect_c mLevelEfs2;
@@ -780,23 +792,26 @@ public:
     fBaseID_e mRideActorID;
     u8 mPad12[0x4];
     fBaseID_e mHipAttackPlayerID;
-    u8 mPad13[0x1c];
+    u32 mStatusFlags[7];
     float m_c9c;
     u8 mPad14[1];
     u8 m_ca1;
+    u8 m_ca2;
+    u8 mPad15[1];
     mVec3_c m_ca4;
     mVec3_c m_cb0;
-    u8 mPad15[0x4];
+    float m_cbc;
     float m_cc0;
     float m_cc4;
     float m_cc8;
-    u8 mPad16[0x8];
+    float *m_ccc;
+    float *m_cd0;
     float *mGravityData;
-    u32 m_cd8;
+    int m_cd8;
     u32 m_cdc;
-    u32 m_ce0;
-    u32 m_ce4;
-    u8 mPad16_5[4];
+    int m_ce0;
+    int m_ce4;
+    int m_ce8;
     s8 mTreadCount;
     s8 mStarCount;
     s8 mPlComboCount;
@@ -820,7 +835,8 @@ public:
     D88_TYPE_e m_d88;
     float m_d8c;
     int mNoHitObjTimer;
-    mAng m_d94, m_d96, m_d98, m_d9a, m_d9c;
+    mAng m_d94, m_d96, m_d98, m_d9a;
+    u16 m_d9c;
     int m_da0;
     float m_da4;
     float m_da8;
@@ -859,9 +875,12 @@ public:
     u8 mPad25[0x4];
     int m_1128;
     float m_112c;
-    u8 mPad26[4];
-    float m_1134, m_1138, m_113c;
+    float m_1130;
+    float m_1134;
+    float m_1138;
+    float m_113c;
     int m_1140;
 
     static const float sc_DirSpeed[2];
+    static const float lbl_802eee8c[4];
 };

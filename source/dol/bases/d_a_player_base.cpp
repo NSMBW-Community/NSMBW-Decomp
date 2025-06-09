@@ -5619,6 +5619,320 @@ bool daPlBase_c::setPressBgDamage(int i1, int i2) {
     return false;
 }
 
+// Doesn't match 100%
+void daPlBase_c::setStatus(int s) {
+    mStatusFlags[s / 32] = (1 << (s & 0x1F));
+}
+
+// Doesn't match 100%
+void daPlBase_c::onStatus(int s) {
+    mStatusFlags[s / 32] |= (1 << (s & 0x1F));
+}
+
+// Doesn't match 100%
+void daPlBase_c::offStatus(int s) {
+    mStatusFlags[s / 32] &= ~(1 << (s & 0x1F));
+}
+
+// Doesn't match 100%
+bool daPlBase_c::isStatus(int s) {
+    return mStatusFlags[s / 32] & (1 << (s & 0x1F));
+}
+
+u8 daPlBase_c::getTallType(s8) {
+    return 2;
+}
+
+void daPlBase_c::calcTimerProc() {
+    int x = sLib::calcTimer<int>(&m_ce0);
+    if (x != 0) {
+        int y = m_ce0;
+        if (y < 60) {
+            if (y & 4) {
+                onStatus(STATUS_BC);
+            }
+        } else if (y & 8) {
+            onStatus(STATUS_BC);
+        }
+    }
+
+    sLib::calcTimer<int>(&m_ce4);
+    sLib::calcTimer<int>(&m_ce8);
+    sLib::calcTimer<int>(&m_cd8);
+    sLib::calcTimer<int>(&m_a8);
+    sLib::calcTimer<int>(&m_0c);
+    sLib::calcTimer<int>(&m_10);
+    sLib::calcTimer<int>(&m_358);
+    sLib::calcTimer<int>(&m_1074);
+    sLib::calcTimer<int>(&m_d4);
+    sLib::calcTimer<int>(&m_f4);
+    sLib::calcTimer<int>(&m_f8);
+
+    updateNoHitPlayer();
+    fn_800542d0();
+}
+
+dPyMdlBase_c * daPlBase_c::getModel() {
+    return mpMdlMng->mpMdl;
+}
+
+// Doesn't match 100%
+void daPlBase_c::calcPlayerSpeedXY() {
+    float t = 0.0f;
+    bool x = calcCcPlayerRev(&t);
+
+    float c = 1.0f;
+    float b = mMaxSpeedF;
+
+    if (isStatus(STATUS_AC)) {
+        int v = getFollowMameKuribo() - 1;
+
+        if (v < 0) {
+            v = 0;
+        }
+        if (v > 4) {
+            v = 4;
+        }
+
+        b = mMaxSpeedF * lbl_802eee8c[v];
+    }
+
+    if (x) {
+        if (b < -0.5f) {
+            b = -0.5f;
+        }
+        if (b > 0.5f) {
+            b = 0.5f;
+        }
+        if (fabsf(mSpeedF) > fabsf(b)) {
+            c = 1.0f;
+        } else {
+            c = 1.8f;
+        }
+    }
+
+    sLib::chase(&mSpeedF, b, mAccelF * c);
+    calcWindSpeed();
+
+    float d = 5.0f;
+    if (isStatus(STATUS_88)) {
+        float z = fabsf(b);
+        if (z > 5.0f) {
+            d = z;
+        }
+    }
+
+    float f = mSpeedF + m_112c;
+    if (f < -d) {
+        f = -d;
+    } else if (f > d) {
+        f = d;
+    }
+
+    mSpeed.x = f;
+
+    if (f * t >= 0.0f) {
+        float z = mPos.x + f;
+        float y = m_c9c / 2.0f;
+        mVec3_c wallvec2(t + t + z + f, mPos.y + y, mPos.z);
+        mVec3_c wallvec1(t + z, mPos.y + y, mPos.z);
+
+        float g;
+
+        if (dBc_c::fn_80075fd0(&wallvec1, &wallvec2, &g, mLayer, m_ca1, nullptr)) {
+            t = 0.0f;
+        }
+    }
+
+    float h = m_1130;
+    t += 0.0f;
+
+    if (0.0f != m_1130) {
+        if (!(m_d40 & 1)) {
+            t += h;
+        } else {
+            if (h * mSpeedF < 0.0f) {
+                mSpeedF += h;
+            }
+            m_1130 = 0.0f;
+        }
+    }
+
+    float j = m_1138;
+    if (j != 0.0f) {
+        if (!(m_d40 & 1)) {
+            t += j;
+            sLib::chase(&m_1138, 0.0f, m_113c);
+        } else {
+            m_1138 = 0.0f;
+        }
+    }
+
+    if ((m_d40 & 1) && isStatus(STATUS_5F)) {
+        mSpeedF = 0.0f;
+    }
+    m_cbc = mSpeedF;
+
+    float k = mMaxFallSpeed;
+    if (m_d40 & 0x18000000) {
+        k = 0.0f;
+    }
+
+    setSandEffect();
+
+    float new_speed = mSpeed.y + mAccelY;
+    m_cc0 = mSpeed.y;
+    mPos += m_d30;
+
+    mSpeed.y = new_speed;
+    if (new_speed < k) {
+        mSpeed.y = k;
+    }
+
+    posMoveAnglePlayer(mVec3_c(mSpeed.x + t, mSpeed.y, mSpeed.z));
+}
+
+// Doesn't match 100%
+void daPlBase_c::posMoveAnglePenguin(mVec3_c a, unsigned short b) {
+    mVec3_c _40(0.0f, a.y, 0.0f);
+
+    if ((m_d40 & 2) && (_40.y > 0.0f)) {
+        mAng angle = mBc.getHeadSakaMoveAngle(mDirection);
+
+        if (angle.mAngle > 0) {
+            _40.x = sc_DirSpeed[mDirection] * fabsf(a.y * angle.sin());
+        }
+
+        _40.y = a.y * fabsf(angle.cos());
+    }
+
+    if ((m_d40 & 1) && (a.y < 0.0f)) {
+        mAng angle = mBc.getSakaMoveAngle(mDirection);
+
+        if (angle.mAngle < 0) {
+            _40.x = sc_DirSpeed[mDirection] * fabsf(a.y * angle.sin());
+        }
+
+        _40.y = a.y * fabsf(angle.cos());
+    }
+
+    float x_mag = fabs(a.x);
+
+    mVec3_c delta(
+        _40.x + x_mag * nw4r::math::CosS(b),
+        _40.y + x_mag * nw4r::math::SinS(b),
+        a.z
+    );
+
+    posMove(delta);
+}
+
+// Doesn't match 100%
+void daPlBase_c::posMoveAnglePlayer(mVec3_c a) {
+    if ((((a.x > 0.0f) && (m_d40 & 0x40)) || ((a.x < 0.0f) && (m_d40 & 0x20))) && (fabsf(a.x) > 2.5f)) {
+        if (a.x > 0.0f) {
+            a.x = 2.5f;
+        } else {
+            a.x = -2.5f;
+        }
+    }
+
+    u8 dir = 0;
+    if (a.x < 0.0f) {
+        dir = 1;
+    }
+
+    u32 x = mBc.getSakaMoveAngle(dir).mAngle;
+    if (m_d40 & 2) {
+        x = mBc.getHeadSakaMoveAngle(dir).mAngle;
+    }
+
+    if (isStatus(STATUS_3B)) {
+        posMoveAnglePenguin(a, x);
+        return;
+    }
+
+    u16 x2 = 0;
+    if (isStatus(STATUS_13)) {
+        x2 = (u16)m_d9c;
+    }
+
+    mAng angle = x;
+    mAng angle2 = x2;
+
+    float x_mag = fabs(a.x);
+    float y = a.y;
+
+    mVec3_c delta(
+        x_mag * angle.cos() - y * angle2.sin(),
+        x_mag * angle.sin() + y * fabsf(angle2.cos()),
+        a.z
+    );
+
+    posMove(delta);
+}
+
+float * daPlBase_c::getSpeedData() {
+    if (isStar()) {
+        return m_cd0;
+    } else {
+        return m_ccc;
+    }
+}
+
+void daPlBase_c::setZPosition() {
+    if (isStatus(STATUS_99)) {
+        return;
+    }
+
+    if ((m_ca1 == 1) && (mLayer == 0)) {
+        mPos.z = 3000.0f - (float)(m_ca2 * 32);
+    } else {
+        mPos.z = -1800.0f - (float)(m_ca2 * 32);
+    }
+}
+
+void daPlBase_c::setZPosition(float a) {
+    onStatus(STATUS_99);
+    mPos.z = a - (float)(m_ca2 * 32);
+}
+
+void daPlBase_c::setZPositionDirect(float a) {
+    onStatus(STATUS_99);
+    mPos.z = a;
+}
+
+void daPlBase_c::offZPosSetNone() {
+    offStatus(STATUS_99);
+}
+
+float daPlBase_c::setJumpAddSpeedF(float a) {
+    if (m_d40 & 1) {
+        return a;
+    }
+
+    if (a >= 2.0f) {
+        a = 2.0f;
+    }
+
+    if (a <= -2.0f) {
+        a = -2.0f;
+    }
+
+    m_1130 = a;
+    return a;
+}
+
+float daPlBase_c::fn_80057860() {
+    float t = m_d3c;
+
+    if (isStatus(STATUS_5D)) {
+        t = m_d3c * 0.4f;
+    }
+
+    return setJumpAddSpeedF(m_d30.x + t);
+}
+
 bool daPlBase_c::setDelayHelpJump() {
     if (mKey.triggerJump() && fabsf(mSpeedF) > 1.3f) {
         bool x = false;
@@ -5645,7 +5959,7 @@ bool daPlBase_c::fn_800579c0(int a, int b) {
         return false;
     }
 
-    if ((getModel()->mFlags & 1) && fn_80047ee0()) {
+    if ((mpMdlMng->mpMdl->mFlags & 1) && fn_80047ee0()) {
         return setCrouchJump();
     }
 
