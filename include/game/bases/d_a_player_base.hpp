@@ -44,7 +44,7 @@ public:
     virtual void setTexAnmType();
     virtual void setFrame(float);
     virtual void setBodyFrame();
-    virtual void setRate();
+    virtual void setRate(float);
     virtual void setBodyRate();
     virtual void vf94(); ///< @unofficial
     virtual void getPropelRollSpeed();

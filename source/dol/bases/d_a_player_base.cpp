@@ -455,14 +455,15 @@ bool daPlBase_c::setCancelCrouch() {
         return false;
     }
     if (mpMdlMng->mpMdl->m_154 != 21) {
-        float f = ((float *) &dPyMdlMng_c::m_hio)[10];
-        mpMdlMng->mpMdl->setAnm(6, f, 0.0f, 10.0f);
-        mpMdlMng->mpMdl->setAnm(6, f, 0.0f, 10.0f);
+        float f1 = ((float *) &dPyMdlMng_c::m_hio)[74];
+        float f2 = ((float *) &dPyMdlMng_c::m_hio)[75];
+        mpMdlMng->mpMdl->setAnm(21, f1, f2, 10.0f);
+        mpMdlMng->mpMdl->setFrame(mpMdlMng->mpMdl->mAnm.mFrameMax - 1.0f);
     }
-    if (m_d40 & 0x4000) {
-        mpMdlMng->mpMdl->setFrame(4.0f);
+    if (!(m_d40 & 0x4000)) {
+        mpMdlMng->mpMdl->setRate(4.0f);
     } else {
-        mpMdlMng->mpMdl->setFrame(-dPyMdlBase_c::scWaterCrouchAnmSpeed);
+        mpMdlMng->mpMdl->setRate(-dPyMdlBase_c::scWaterCrouchAnmSpeed);
     }
     onStatus(STATUS_52);
     changeState(StateID_Walk, (void *) 1);
@@ -505,9 +506,9 @@ void daPlBase_c::executeState_Crouch() {}
 
 void daPlBase_c::initializeState_Slip() {
     mSubstate = SLIP_ACTION_NONE;
-    float f1 = ((float *) &dPyMdlMng_c::m_hio)[10];
-    float f2 = ((float *) &dPyMdlMng_c::m_hio)[11];
-    mpMdlMng->mpMdl->setAnm(21, f1, f2, 0.0f);
+    float f1 = ((float *) &dPyMdlMng_c::m_hio)[77];
+    float f2 = ((float *) &dPyMdlMng_c::m_hio)[78];
+    mpMdlMng->mpMdl->setAnm(22, f1, f2, 0.0f);
     mMaxSpeedF = getSlipMaxSpeedF();
     m_1114 = 8;
     m_fc = 0;
@@ -571,7 +572,7 @@ void daPlBase_c::setSlipAction_ToStoop() {
         offStatus(STATUS_3C);
     }
     mSubstate = SLIP_ACTION_STOOP;
-    mpMdlMng->mpMdl->setAnm(24, ((float *) &dPyMdlMng_c::m_hio)[10], ((float *) &dPyMdlMng_c::m_hio)[11], 0.0f);
+    mpMdlMng->mpMdl->setAnm(24, ((float *) &dPyMdlMng_c::m_hio)[83], ((float *) &dPyMdlMng_c::m_hio)[84], 0.0f);
 }
 
 void daPlBase_c::setSlipAction_ToEnd() {
@@ -585,7 +586,7 @@ void daPlBase_c::setSlipAction_ToEnd() {
     mSubstate = SLIP_ACTION_END;
     mSpeedF = 0.0f;
     mMaxSpeedF = 0.0f;
-    mpMdlMng->mpMdl->setAnm(23, ((float *) &dPyMdlMng_c::m_hio)[10], ((float *) &dPyMdlMng_c::m_hio)[11], 0.0f);
+    mpMdlMng->mpMdl->setAnm(23, ((float *) &dPyMdlMng_c::m_hio)[80], ((float *) &dPyMdlMng_c::m_hio)[81], 0.0f);
 }
 
 void daPlBase_c::setSlipActionEnd() {
@@ -606,6 +607,7 @@ void daPlBase_c::setSlipActionViewLimitEnd() {
     }
 }
 
+// Doesn't match 100%
 void daPlBase_c::slipActionMove(int param) {
     onStatus(STATUS_30);
     if (mSpeedF) {
@@ -615,10 +617,10 @@ void daPlBase_c::slipActionMove(int param) {
             setCcAtPenguinSlip();
         }
     }
-    if (m_d48 & 1 && m_d96.mAngle > 0 && (m_d98 * m_d9a).mAngle <= 0) {
+    if (m_d48 & 1 && m_d96.mAngle > 0 && (m_d98.mAngle * m_d9a.mAngle) <= 0) {
         m_d40 &= ~1;
         float baseSpeed = mSpeedF;
-        float cos = m_d96.cos();
+        float cos = nw4r::math::CosS(m_d96.mAngle);
         mMaxSpeedF = baseSpeed;
         mSpeedF = baseSpeed * cos;
         mSpeed.y = fabsf(baseSpeed) * m_d96.sin();
