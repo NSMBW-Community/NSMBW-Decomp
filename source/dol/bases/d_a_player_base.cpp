@@ -5619,24 +5619,20 @@ bool daPlBase_c::setPressBgDamage(int i1, int i2) {
     return false;
 }
 
-// Doesn't match 100%
 void daPlBase_c::setStatus(int s) {
-    mStatusFlags[s / 32] = (1 << (s & 0x1F));
+    mStatusFlags[s / 32] = (1 << (s % 32));
 }
 
-// Doesn't match 100%
 void daPlBase_c::onStatus(int s) {
-    mStatusFlags[s / 32] |= (1 << (s & 0x1F));
+    mStatusFlags[s / 32] |= (1 << (s % 32));
 }
 
-// Doesn't match 100%
 void daPlBase_c::offStatus(int s) {
-    mStatusFlags[s / 32] &= ~(1 << (s & 0x1F));
+    mStatusFlags[s / 32] &= ~(1 << (s % 32));
 }
 
-// Doesn't match 100%
 bool daPlBase_c::isStatus(int s) {
-    return mStatusFlags[s / 32] & (1 << (s & 0x1F));
+    return mStatusFlags[s / 32] & (1 << (s % 32));
 }
 
 u8 daPlBase_c::getTallType(s8) {
