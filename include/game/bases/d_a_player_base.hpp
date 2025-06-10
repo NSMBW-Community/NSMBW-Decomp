@@ -809,6 +809,7 @@ public:
     void set_m_d80(int i, float f) { m_d80[i] = f; }
     dPyMdlMng_c *getModelMng() const { return mpMdlMng; }
     const mVec3_c &getHatPos() const { return getModelMng()->mpMdl->getHatPos(); }
+    float get_c9c() const { return m_c9c; }
 
     void setStatus(int);
     void fn_800542d0();
@@ -836,17 +837,17 @@ public:
     int m_00;
     int m_04;
     float m_08;
-    int m_0c;
-    int m_10;
+    int mTimer_0c;
+    int mTimer_10;
     const daPlBase_c *mpNoHitPlayer;
-    int m_18;
+    int mNoHitTimer;
     u32 m_1c;
     u32 m_20;
     fBaseID_e mIDs[13];
     float m_58;
     int m_5c;
     s8 m_60;
-    int mDokanRelated;
+    int mDokanNextGoto;
     mVec3_c m_68;
     mVec2_c m_74;
     short m_7c;
@@ -861,7 +862,7 @@ public:
     int m_9c;
     int m_a0;
     float m_a4;
-    int m_a8;
+    int mTimer_a8;
     mVec3_c m_ac;
     int m_b8;
     float m_bc;
@@ -870,19 +871,19 @@ public:
     float m_c8;
     int m_cc;
     int m_d0;
-    int m_d4;
+    int mBossDemoLandTimer;
     int m_d8[5];
     int m_ec;
     u8 mPad11[0x4];
-    int m_f4;
-    int m_f8;
+    int mTimer_f4;
+    int mTimer_f8;
     s8 m_fc;
     dEf::followEffect_c mFollowEf;
     mEf::levelEffect_c mLevelEf1;
     u32 m_344;
     mVec3_c m_348;
     float m_354;
-    int m_358;
+    int mFallTimer;
     int m_35c;
     u32 m_360;
     mEf::levelEffect_c mLevelEfs2;
@@ -912,15 +913,14 @@ public:
     float *m_ccc;
     float *m_cd0;
     float *mGravityData;
-    int m_cd8;
+    int mNoGravityTimer;
     u32 m_cdc;
-    int m_ce0;
-    int m_ce4;
-    int m_ce8;
+    int mTimer_ce0;
+    int mTimer_ce4;
+    int mTimer_ce8;
     s8 mTreadCount;
     s8 mStarCount;
     s8 mPlComboCount;
-    u8 mPad17[1];
     u32 m_cf0;
     u32 mFollowMameKuribo;
     u8 mPad17_5[4];
@@ -933,8 +933,7 @@ public:
     u32 m_d44;
     u32 m_d48;
     u32 m_d4c;
-    u32 m_d50[9];
-    u8 mPad19[0x4];
+    u32 mBgCrossHistory[10];
     u32 m_d78;
     u32 m_d7c;
     float m_d80[2];
@@ -962,7 +961,7 @@ public:
     float m_106c;
     bool m_1070;
     bool m_1071;
-    int m_1074;
+    int mTimer_1074;
     u8 m_1078;
     u8 m_1079;
     float m_107c;

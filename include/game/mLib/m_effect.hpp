@@ -1,6 +1,7 @@
 #pragma once
 #include <lib/egg/eggEffect.hpp>
 #include <game/mLib/m_vec.hpp>
+#include <game/mLib/m_mtx.hpp>
 
 namespace mEf {
 
@@ -8,7 +9,13 @@ class effect_c : public EGG::Effect {
 public:
     effect_c() {}
 
+    virtual void createEffect(const char *, int);
+    virtual void createEffect(const char *, ulong, const mVec3_c *, const mAng3_c *, const mVec3_c *);
+    virtual void createEffect(const char *, ulong, const mMtx_c *);
+    virtual void vfa8();
+    virtual void vfac();
     virtual void follow(const mVec3_c *, const mAng3_c *, const mVec3_c *);
+    virtual void follow(const mMtx_c *);
 
     u8 mPad[0x92];
     mAng mAng;

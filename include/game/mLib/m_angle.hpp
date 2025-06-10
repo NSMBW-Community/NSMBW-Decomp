@@ -110,7 +110,7 @@ public:
     mAng3_c(const s16 *p) { x = p[0]; y = p[1]; z = p[2]; }
 
     /// @brief Constructs a vector from three short values.
-    mAng3_c(s16 fx, s16 fy, s16 fz) { x = fx; y = fy; z = fz; }
+    // mAng3_c(s16 fx, s16 fy, s16 fz) { x = fx; y = fy; z = fz; }
 
     static mAng3_c onlyY(s16 fy) {
         mAng3_c tmp;
