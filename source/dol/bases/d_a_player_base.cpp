@@ -1796,6 +1796,25 @@ void daPlBase_c::fn_8004bf80(daPlBase_c::SpeedData_t *data) {
     }
 }
 
+// TODO: fix indices here
+extern float lbl_802f58b8[30][4];
+
+void daPlBase_c::fn_8004c0d0(mBoundBox &bb) {
+    float (*data)[4] = lbl_802f58b8;
+    int idx = isStar() ? 1 : 0;
+    switch (getPowerChangeType(false)) {
+        case POWER_CHANGE_0:
+            bb.set(data[idx][14], data[idx][15], data[idx][16], data[idx][17]);
+            break;
+        case POWER_CHANGE_1:
+            bb.set(data[idx][22], data[idx][23], data[idx][24], data[idx][25]);
+            break;
+        case POWER_CHANGE_2:
+            bb.set(data[idx][30], data[idx][31], data[idx][32], data[idx][33]);
+            break;
+    }
+}
+
 void daPlBase_c::icePowerChange(int mode) {
     PowerChangeType_e powerChangeType = getPowerChangeType(false);
     if (powerChangeType == POWER_CHANGE_1 || (powerChangeType == POWER_CHANGE_2 && mode == 1)) {
@@ -3184,7 +3203,7 @@ void daPlBase_c::executeDemoOutDokanUD() {
         case DEMO_IN_DOKAN_ACTION_0: {
             int cond = 0;
             if (mKind == 2) {
-                if (mAngle.y.chase(0, scDokanOutTurnSpeed[0])) {
+                if (sLib::chase(&mAngle.y.mAngle, 0, scDokanOutTurnSpeed[0])) {
                     cond = 1;
                 }
             } else {
@@ -4060,7 +4079,7 @@ bool daPlBase_c::isBossDemoLand() {
     if ((m_d40 & 1) == 0) {
         return false;
     }
-    if (isStatus(STATUS_14) || isStatus(STATUS_4E) || (m_d40 & 0x18000000) || mBossDemoLandTimer == 0) {
+    if (isStatus(STATUS_14) || isStatus(STATUS_4E) || (m_d40 & 0x18000000) || mBossDemoLandTimer != 0) {
         return false;
     }
     return true;
@@ -4339,12 +4358,12 @@ void daPlBase_c::updateEndingDance() {
     }
     if (!isDemoType(DEMO_6)) {
         if (cond == 1) {
-            mTimer_f4 = 0;
+            m_ec = 0;
         } else {
-            mTimer_f4++;
-            if (mTimer_f4 >= 180) {
+            m_ec++;
+            if (m_ec >= 180) {
                 setControlDemoEndingDance();
-                mTimer_f4 = 0;
+                m_ec = 0;
             }
         }
     } else if (cond == 1) {
@@ -4661,7 +4680,9 @@ bool daPlBase_c::calcCcPlayerRev(float *f) {
                     mSpeedF = f1 * 0.4f;
                     return true;
                 }
-                if (fabsf(mSpeedF) > fabsf(m_1060) && mSpeedF > 1.5f) {
+                float f3 = fabsf(m_1060);
+                float f4 = fabsf(mSpeedF);
+                if (f4 > f3 && m_1060 > 1.5f) {
                     mSpeedF = 0.0f;
                     return true;
                 }
@@ -4748,8 +4769,8 @@ void daPlBase_c::calcJumpDaiReductionScale(int i1, int i2) {
     if (i1 > i2) {
         i1 = i2;
     }
+    m_08 = i1 * 0.7f / i2;
     m_00 = 1;
-    m_08 = (0.6f * i1) / i2;
 }
 
 void daPlBase_c::setReductionBoyon() {
@@ -5437,9 +5458,9 @@ bool daPlBase_c::revSideLimitCommon(float f) {
             dir = 1;
         }
         if (!isStatus(STATUS_7E)) {
-            mAng ang = mBc.getSakaMoveAngle(dir);
-            if (ang != mAng(0)) {
-                mPos.y += (f - mPos.x) * (ang.sin() / ang.cos());
+            u16 ang = mBc.getSakaMoveAngle(dir);
+            if (ang != 0) {
+                mPos.y += (f - mPos.x) * (nw4r::math::SinS(ang) / nw4r::math::CosS(ang));
             }
         }
         mPos.x = f;
@@ -6102,7 +6123,7 @@ void daPlBase_c::posMoveAnglePlayer(mVec3_c a) {
         return;
     }
 
-    mAng x2 = 0;
+    u16 x2 = 0;
     if (isStatus(STATUS_13)) {
         x2 = m_d9c;
     }
@@ -6111,8 +6132,8 @@ void daPlBase_c::posMoveAnglePlayer(mVec3_c a) {
     float y = a.y;
 
     mVec3_c delta(
-        x_mag * x2.cos() - y * x2.sin(),
-        x_mag * x2.sin() + y * fabsf(x2.cos()),
+        x_mag * mAng(x).cos() - y * mAng(x2).sin(),
+        x_mag * mAng(x).sin() + y * fabsf(mAng(x2).cos()),
         a.z
     );
 

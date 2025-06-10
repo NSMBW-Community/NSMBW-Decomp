@@ -28,9 +28,9 @@ public:
     bool m_42;
     char mPad4[0x2];
     mVec3_c mFireworkPos;
-    char mPad5[0x10];
+    char mPad5[0x8];
     int m_5c;
-    char mPad6[0x8];
+    char mPad6[0x10];
     int m_70;
     char mPad7[0xc];
     int mPlNo;

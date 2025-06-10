@@ -762,6 +762,7 @@ public:
     bool isRideCheckEnable();
     void setStatus5D(float f); ///< @unofficial
     void setPowerup(PLAYER_POWERUP_e, int); ///< @unofficial
+    void fn_8004c0d0(mBoundBox &); ///< @unofficial
 
     daPlBase_c *getHipAttackDamagePlayer();
     void setHipAttackDamagePlayer(daPlBase_c *player);
