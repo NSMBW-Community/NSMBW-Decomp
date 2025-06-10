@@ -988,5 +988,19 @@ public:
     int m_1140;
 
     static const float sc_DirSpeed[2];
-    static const float lbl_802eee8c[4];
+    static const float sc_JumpSpeed;
+    static const float sc_JumpSpeedNuma1;
+    static const float sc_JumpSpeedNuma2;
+    static const float sc_WaterWalkSpeed;
+    static const float sc_WaterSwimSpeed;
+    static const float sc_WaterJumpSpeed;
+    static const float sc_WaterMaxFallSpeed;
+    static const float sc_MaxFallSpeed;
+    static const float sc_MaxFallSpeed_Foot;
+    static const float sc_MaxFallDownSpeed;
+    static const float scTurnPowerUpRate;
+    static const float scDokanInSpeedX;
+    static const float scDokanInWidthX;
+    static const float scDokanInMoveSpeed;
+    static const float scDokanWaitAnmFixFrame;
 };

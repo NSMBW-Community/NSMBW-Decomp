@@ -16,7 +16,7 @@ namespace mPad {
         MPAD_CH_3
     };
 
-    static EGG::CoreController *g_core[4];
+    extern EGG::CoreController *g_core[4];
 };
 
 class dRemoconMng_c {

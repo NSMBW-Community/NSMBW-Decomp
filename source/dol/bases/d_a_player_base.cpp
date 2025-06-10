@@ -22,6 +22,19 @@
 #include <game/sLib/s_math.hpp>
 #include <constants/sound_list.h>
 
+const float daPlBase_c::sc_DirSpeed[] = { 1.0f, -1.0f };
+const float daPlBase_c::sc_JumpSpeed = 3.628f;
+const float daPlBase_c::sc_JumpSpeedNuma1 = 3.5f;
+const float daPlBase_c::sc_JumpSpeedNuma2 = 2.3f;
+const float daPlBase_c::sc_WaterWalkSpeed = 0.5625f;
+const float daPlBase_c::sc_WaterSwimSpeed = 1.125f;
+const float daPlBase_c::sc_WaterJumpSpeed = 1.25f;
+const float daPlBase_c::sc_WaterMaxFallSpeed = -3.0f;
+const float daPlBase_c::sc_MaxFallSpeed = -4.0f;
+const float daPlBase_c::sc_MaxFallSpeed_Foot = -2.0f;
+const float daPlBase_c::sc_MaxFallDownSpeed = -8.5f;
+const float daPlBase_c::scTurnPowerUpRate = 3.0f;
+
 namespace {
     const float l_sakaMaxSpeedRatio[][3] = {
         { 1.0f, 1.0f, 1.0f },
@@ -51,8 +64,6 @@ namespace {
         { 0.4f, -0.4f, 0.0f },
         { 0.4f, -0.4f, 0.0f },
     };
-
-    const float scDokanOutTurnSpeed[] = { 2048.0f };
 }
 
 daPlBase_c::daPlBase_c() :
@@ -458,7 +469,7 @@ bool daPlBase_c::setCancelCrouch() {
         mpMdlMng->mpMdl->setFrame(mpMdlMng->mpMdl->mAnm.mFrameMax - 1.0f);
     }
     if (!(m_d40 & 0x4000)) {
-        mpMdlMng->mpMdl->setRate(4.0f);
+        mpMdlMng->mpMdl->setRate(-1.0f);
     } else {
         mpMdlMng->mpMdl->setRate(-dPyMdlBase_c::scWaterCrouchAnmSpeed);
     }
@@ -1140,13 +1151,13 @@ void daPlBase_c::executeState_PlayerJumpDai() {
                         mSubstate = JUMP_DAI_ACTION_1;
                     }
                 } else if (isMameAction()) {
-                    vf3fc(3.278f, m_354, 1, 0, 0);
+                    vf3fc(daPlBase_c::sc_JumpSpeed - 0.35f, m_354, 1, 0, 0);
                     return;
                 } else if (mKey.buttonJump()) {
-                    vf3fc(3.828f, m_354, 1, 0, 2);
+                    vf3fc(daPlBase_c::sc_JumpSpeed + 0.2f, m_354, 1, 0, 2);
                     return;
                 } else {
-                    vf3fc(4.628f, m_354, 1, 2, 0);
+                    vf3fc(daPlBase_c::sc_JumpSpeed + 1.0f, m_354, 1, 2, 0);
                     return;
                 }
                 break;
@@ -2800,6 +2811,15 @@ void daPlBase_c::executeState_DemoWait() {
     }
 }
 
+const float daPlBase_c::scDokanInSpeedX = 1.0f;
+const float daPlBase_c::scDokanInWidthX = 0.0f;
+const float daPlBase_c::scDokanInMoveSpeed = 0.75f;
+const float daPlBase_c::scDokanWaitAnmFixFrame = 85.0f;
+
+namespace {
+    const float scDokanOutTurnSpeed[] = { 2048.0f };
+}
+
 float daPlBase_c::getWaterDokanCenterOffset(float param1) {
     static const float l_maxOffsets[] = { 12.0f, 15.0f, 13.0f, 13.0f };
     float max = 16.0f;
@@ -2893,7 +2913,9 @@ void daPlBase_c::executeDemoInDokan(u8 dir) {
             break;
         case DEMO_IN_DOKAN_ACTION_3:
             if (!mKey.buttonWalk(nullptr)) {
-                if (!mAngle.y.chase(getMukiAngle(mDirection), scDokanOutTurnSpeed[0])) {
+                short ang = getMukiAngle(mDirection);
+                short step = scDokanOutTurnSpeed[0];
+                if (!mAngle.y.chase(ang, step)) {
                     break;
                 }
             }
@@ -3348,7 +3370,7 @@ void daPlBase_c::executeState_DemoOutDokanRoll() {
                 v = -v;
             }
             sLib::addCalcAngle(&mAngle.x.mAngle, v.mAngle, 4, 0x1000, 0x100);
-            float tmp = m_90 - 32.0f;
+            float tmp = m_90 + -32.0f;
             sLib::chase(&m_74.y, tmp, 0.75f);
             mMtx_c m1, m2;
             m1.trans(delta);
@@ -3705,9 +3727,9 @@ void daPlBase_c::setDemoGoal_MultiJump() {
     m_60 = 4;
     mpMdlMng->setAnm(88);
     if (daPyDemoMng_c::mspInstance->m_1c > 1) {
-        initGoalJump(pos, 5.128f);
+        initGoalJump(pos, daPlBase_c::sc_JumpSpeed + 1.5f);
     } else {
-        initGoalJump(pos, 4.928f);
+        initGoalJump(pos, daPlBase_c::sc_JumpSpeed + 1.3f);
     }
 }
 
@@ -4690,14 +4712,14 @@ void daPlBase_c::setStampReduction() {
 
 void daPlBase_c::setStampPlayerJump(bool b, float f) {
     if (!isStatus(STATUS_3A)) {
-        float scale = 3.628f;
+        float scale = daPlBase_c::sc_JumpSpeed;
         if (isMameAction()) {
-            scale = 3.278f;
+            scale = daPlBase_c::sc_JumpSpeed - 0.35f;
         }
         if (b) {
             dQuake_c::m_instance->shockMotor(mPlayerNo, dQuake_c::TYPE_7, 0, 0);
             if (mKey.buttonJump()) {
-                scale = 4.128f;
+                scale = daPlBase_c::sc_JumpSpeed + 0.5f;
             }
             vf3fc(scale, mSpeedF, 1, 1, 0);
         } else {
@@ -5263,7 +5285,7 @@ void daPlBase_c::postBgCross() {
 }
 
 float daPlBase_c::getWaterCheckPosY() {
-    static float waterCheckOffsets[] = { 4.0f, 8.0f, 16.0f };
+    static const float waterCheckOffsets[] = { 4.0f, 8.0f, 16.0f };
     return mPos.y + waterCheckOffsets[getTallType(-1)];
 }
 
@@ -5908,6 +5930,7 @@ dPyMdlBase_c * daPlBase_c::getModel() {
 
 // Doesn't match 100%
 void daPlBase_c::calcPlayerSpeedXY() {
+    static const float ratios[] = { 0.6f, 0.55f, 0.5f, 0.45f, 0.4f };
     float t = 0.0f;
     bool x = calcCcPlayerRev(&t);
 
@@ -5924,7 +5947,7 @@ void daPlBase_c::calcPlayerSpeedXY() {
             v = 4;
         }
 
-        b = mMaxSpeedF * lbl_802eee8c[v];
+        b = mMaxSpeedF * ratios[v];
     }
 
     if (x) {
