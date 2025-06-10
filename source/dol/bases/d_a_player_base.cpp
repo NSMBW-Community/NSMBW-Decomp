@@ -5585,6 +5585,79 @@ void daPlBase_c::checkDispOver() {
     checkDisplayOutDead();
 }
 
+void daPlBase_c::checkDisplayOutDead() {
+    float f = 20.0f;
+    if (daPyMng_c::mNum > 1 || dBg_c::m_bg_p->m_90009 == 1 || dBg_c::m_bg_p->m_90009 == 3) {
+        f = 64.0f;
+    }
+    float bgY = dBgParameter_c::ms_Instance_p->yStart() - dBgParameter_c::ms_Instance_p->ySize() - 16.0f;
+    float bgY2 = dBgParameter_c::ms_Instance_p->yStart() - dBgParameter_c::ms_Instance_p->ySize() - f;
+    float selfY = mVisibleAreaOffset.y + mPos.y + mVisibleAreaSize.y;
+    if (selfY < bgY) {
+        onStatus(STATUS_B9);
+        onStatus(STATUS_BA);
+        if (isItemKinopio()) {
+            onStatus(STATUS_B6);
+        }
+    }
+    if (selfY < bgY2) {
+        setBalloonInDispOut(3);
+    }
+    float selfY2 = mVisibleAreaOffset.y + mPos.y - mVisibleAreaSize.y;
+    if (selfY2 > dBgParameter_c::ms_Instance_p->yStart() + 16.0f) {
+        onStatus(STATUS_B9);
+    }
+    if (isItemKinopio() && selfY2 > dBgParameter_c::ms_Instance_p->yStart() + 128.0f) {
+        onStatus(STATUS_B6);
+    }
+    if (isStatus(STATUS_81)) {
+        return;
+    }
+    float f2 = 0.0f;
+    if (!isStatus(STATUS_B8)) {
+        if (dBg_c::m_bg_p->m_9004c && dBg_c::m_bg_p->m_90009 != 4) {
+            f2 = -(m_d2c / 4096.0f - 1.0f + mVisibleAreaSize.x);
+        } else if (daPyMng_c::mNum > 1) {
+            f2 = 16.0f;
+        }
+    }
+    float bgX = dBgParameter_c::ms_Instance_p->fn_80082240(mPos.x);
+    float selfX = mVisibleAreaOffset.x + mPos.x + mVisibleAreaSize.x;
+    float bgX2 = bgX - f2;
+    if (selfX < bgX - 16.0f) {
+        onStatus(STATUS_B9);
+        onStatus(STATUS_BA);
+        if (isItemKinopio()) {
+            onStatus(STATUS_B6);
+        }
+    }
+    if (selfX < bgX2) {
+        setBalloonInDispOut(1);
+    }
+    float bgSizeX = bgX + dBgParameter_c::ms_Instance_p->xSize();
+    float selfX2 = mVisibleAreaOffset.x + mPos.x - mVisibleAreaSize.x;
+    bgX += f2;
+    if (bgSizeX + 16.0f > selfX2) {
+        onStatus(STATUS_B9);
+        onStatus(STATUS_BA);
+        if (isItemKinopio()) {
+            onStatus(STATUS_B6);
+        }
+    }
+    if (selfX2 > bgX) {
+        setBalloonInDispOut(0);
+    }
+}
+
+void daPlBase_c::fn_80056370(dActor_c *actor, int i) {
+    m_1c |= (1 << i);
+    if (actor != nullptr) {
+        mIDs[i] = actor->mUniqueID;
+    } else {
+        mIDs[i] = (fBaseID_e) 0;
+    }
+}
+
 bool daPlBase_c::isBgPress(dActor_c *actor) {
     u32 param = m_20;
     if (param == 0) {
@@ -5599,7 +5672,7 @@ bool daPlBase_c::isBgPress(dActor_c *actor) {
 }
 
 bool daPlBase_c::setPressBgDamage(int i1, int i2) {
-    if (i1 == 11) {
+    if (i1 == DAMAGE_B) {
         if (setDamage2(nullptr, DAMAGE_B)) {
             mBc.clearBgcSaveAll();
             return true;
@@ -5610,6 +5683,172 @@ bool daPlBase_c::setPressBgDamage(int i1, int i2) {
             dQuake_c::m_instance->shockMotor(mPlayerNo, dQuake_c::TYPE_4, 0, 0);
             return true;
         }
+    }
+    return false;
+}
+
+bool daPlBase_c::isEnablePressUD() {
+    dBg_ctr_c *ctrHead = mBc.mpCtrHead;
+    dBg_ctr_c *ctrFoot = mBc.mpCtrFoot;
+    if (ctrHead != nullptr && ctrFoot != nullptr) {
+        if (ctrHead == ctrFoot || ctrHead->m_e0 == ctrFoot->m_e0) {
+            return false;
+        }
+    }
+    return true;
+}
+
+bool daPlBase_c::isEnablePressLR() {
+    dBg_ctr_c *ctrL = mBc.mpCtrWalls[1];
+    dBg_ctr_c *ctrR = mBc.mpCtrWalls[0];
+    if (ctrL != nullptr && ctrR != nullptr) {
+        if (ctrL == ctrR || ctrL->m_e0 == ctrR->m_e0) {
+            return false;
+        }
+    }
+    return true;
+}
+
+bool daPlBase_c::checkPressBg() {
+    if (
+        (m_d40 & 0x80000 && m_d40 & 0x40) ||
+        (m_d40 & 0x100000 && m_d40 & 0x20)
+    ) {
+        return true;
+    }
+    if (dScStage_c::m_instance->mCurrWorld == WORLD_6 &&
+        dScStage_c::m_instance->mCurrLevel == STAGE_CASTLE &&
+        dScStage_c::m_instance->mCurrFile == 1 &&
+        mPos.y >= -1420.0f
+    ) {
+        if (setPressBgDamage(DAMAGE_B, 1)) {
+            m_20 |= 0x8;
+            return true;
+        }
+    }
+    if (m_1c & 0x20a && m_1c & 0x414 && isEnablePressUD()) {
+        if (m_1c & 0x18 && setPressBgDamage(DAMAGE_B, 1)) {
+            if (m_1c & 0x8) {
+                m_20 |= 0x8;
+            }
+            if (m_1c & 0x10) {
+                m_20 |= 0x10;
+            }
+            return true;
+        }
+        if (m_1c & 6 && setPressBgDamage(DAMAGE_1, 1)) {
+            if (m_1c & 2) {
+                m_20 |= 0x2;
+            }
+            if (m_1c & 4) {
+                m_20 |= 0x4;
+            }
+            return true;
+        }
+    }
+    if (isStatus(STATUS_3C)) {
+        return false;
+    }
+    if (m_1c & 0x1140 && m_1c & 0x8a0 && isEnablePressLR()) {
+        if (m_1c & 0x60 && setPressBgDamage(DAMAGE_B, 0)) {
+            if (m_1c & 0x20) {
+                m_20 |= 0x20;
+            }
+            if (m_1c & 0x40) {
+                m_20 |= 0x40;
+            }
+            return true;
+        }
+        if (m_1c & 0x180 && setPressBgDamage(DAMAGE_1, 0)) {
+            if (m_1c & 0x80) {
+                m_20 |= 0x80;
+            }
+            if (m_1c & 0x100) {
+                m_20 |= 0x100;
+            }
+            return true;
+        }
+    }
+    return false;
+}
+
+void daPlBase_c::setStatus87() {
+    onStatus(STATUS_87);
+}
+
+bool daPlBase_c::isRideCheckEnable() {
+    if (mSpeed.y > 0.0f) {
+        return false;
+    }
+    if (isStatus(STATUS_4E)) {
+        dActor_c *rideActor = (dActor_c *) fManager_c::searchBaseByID(mRideActorID);
+        if (rideActor != nullptr && rideActor->mSpeed.y > 0.0f) {
+            return false;
+        }
+    }
+    return true;
+}
+
+void daPlBase_c::setStatus5D(float f) {
+    onStatus(STATUS_5D);
+    m_d3c = f;
+}
+
+bool daPlBase_c::checkInsideCrossBg(float f) {
+    void *wallBg = getWallBgPointData();
+    if (wallBg == nullptr) {
+        return false;
+    }
+    void *footBg = getFootBgPointData();
+    if (footBg == nullptr) {
+        return false;
+    }
+    float foot1 = *((int *) footBg + 1);
+    float wall1 = *((int *) wallBg + 1);
+    float foot2 = *((int *) footBg + 2);
+    float wall2 = *((int *) wallBg + 2);
+    float offs[] = {
+        wall1 / 4096.0f,
+        wall2 / 4096.0f
+    };
+    float offs2[] = {
+        foot1 / 4096.0f + f,
+        foot2 / 4096.0f - f
+    };
+    for (int i = 0; i < 2; i++) {
+        mVec3_c modPos = mVec3_c(
+            mPos.x,
+            mPos.y + offs[i],
+            mPos.z
+        );
+        mVec3_c copy;
+        copy.set(
+            modPos.x + offs2[0],
+            modPos.y,
+            modPos.z
+        );
+        if (mBc.checkWallPlayer(&modPos, &copy, nullptr)) {
+            return true;
+        }
+        copy.set(
+            modPos.x + offs2[1],
+            modPos.y,
+            modPos.z
+        );
+        if (mBc.checkWallPlayer(&modPos, &copy, nullptr)) {
+            return true;
+        }
+    }
+    return false;
+}
+
+void daPlBase_c::setPowerup(PLAYER_POWERUP_e powerup, int) {
+    mPowerup = powerup;
+}
+
+bool daPlBase_c::isMameAction() {
+    if (mPowerup == POWERUP_MINI_MUSHROOM && !vf3d0()) {
+        return true;
     }
     return false;
 }
@@ -5911,7 +6150,7 @@ float daPlBase_c::setJumpAddSpeedF(float a) {
     return a;
 }
 
-float daPlBase_c::fn_80057860() {
+float daPlBase_c::setAddLiftSpeedF() {
     float t = m_d3c;
 
     if (isStatus(STATUS_5D)) {

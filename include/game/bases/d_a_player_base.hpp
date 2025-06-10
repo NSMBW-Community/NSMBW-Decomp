@@ -518,7 +518,7 @@ public:
     virtual bool isCarry() const { return false; }
     virtual bool isLiftUp() { return false; }
 
-    virtual void vf3d0();
+    virtual bool vf3d0() { return false; }
     virtual int isStar() const;
     virtual void setStar(daPlBase_c::StarSet_e, int);
     virtual void endStar() {}
@@ -726,9 +726,10 @@ public:
     void fn_80055d00();
     void underOverCheck();
     void checkDispOver();
-    void checkPressBg();
+    bool checkPressBg();
     void checkDisplayOutDead();
     bool isBgPress(dActor_c *);
+    bool checkInsideCrossBg(float);
 
     int getCcLineKind();
     void initCollision(sCcDatNewF *dat1, sCcDatNewF *dat2);
@@ -751,10 +752,16 @@ public:
     mVec3_c getReductionModelScale();
     void checkSideViewLemit();
     bool checkSinkSand();
-    void fn_80056370(int *, int);
+    void fn_80056370(dActor_c *, int);
     bool isCarryObjBgCarried(u8);
     float getWaterCheckPosY();
     bool setBgDamage();
+    bool isEnablePressUD();
+    bool isEnablePressLR();
+    void setStatus87(); ///< @unofficial
+    bool isRideCheckEnable();
+    void setStatus5D(float f); ///< @unofficial
+    void setPowerup(PLAYER_POWERUP_e, int); ///< @unofficial
 
     daPlBase_c *getHipAttackDamagePlayer();
     void setHipAttackDamagePlayer(daPlBase_c *player);
@@ -811,7 +818,7 @@ public:
     void posMoveAnglePenguin(mVec3_c, u16);
     void posMoveAnglePlayer(mVec3_c);
     float setJumpAddSpeedF(float);
-    float fn_80057860();
+    float setAddLiftSpeedF();
     bool setDelayHelpJump();
     bool fn_800579c0(int, int);
     void onFollowMameKuribo();
@@ -918,7 +925,8 @@ public:
     u32 mFollowMameKuribo;
     u8 mPad17_5[4];
     PLAYER_POWERUP_e mPowerup;
-    u8 mPad18[0x30];
+    u8 mPad18[0x2c];
+    int m_d2c;
     mVec3_c m_d30;
     float m_d3c;
     u32 m_d40;

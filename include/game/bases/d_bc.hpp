@@ -14,6 +14,8 @@ public:
     int m_c8;
     u32 mFlags;
     int m_d0;
+    u8 mpPad5[0xc];
+    int m_e0;
 
     void addDokanMoveDiff(mVec3_c *);
 };
