@@ -8,5 +8,5 @@ public:
 
     void getTongueTipMtx(mMtx_c *mtx);
     void getMouthMtx(mMtx_c *mtx);
-    daPlBase_c *getPlayerRideOn();
+    daPlBase_c *getPlayerRideOn() const;
 };

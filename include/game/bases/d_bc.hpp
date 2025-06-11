@@ -64,7 +64,7 @@ public:
     static bool checkGround(const mVec3_c *, float *, u8, u8, s8);
     static bool checkGround(const mVec3_c *, float *, int *, u8, u8, s8);
     static bool checkGroundHalf(const mVec3_c *, float *, u8, u8);
-    static bool checkTenjou(const mVec3_c &, float &, u8, u8);
+    static bool checkTenjou(const mVec3_c *, float *, u8, u8);
     static bool fn_80075fd0(mVec3_c *, mVec3_c *, float *p_hit_x, u8 layer, int, dActor_c **p_hit_actor);
     static void getAirWaterHitPos(mVec2_c *);
     static void getAirWaterHitAngle(short *);

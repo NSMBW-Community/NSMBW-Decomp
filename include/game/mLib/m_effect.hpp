@@ -9,6 +9,7 @@ class effect_c : public EGG::Effect {
 public:
     effect_c() {}
 
+    virtual void reset();
     virtual void createEffect(const char *, int);
     virtual void createEffect(const char *, ulong, const mVec3_c *, const mAng3_c *, const mVec3_c *);
     virtual void createEffect(const char *, ulong, const mMtx_c *);
@@ -24,7 +25,19 @@ public:
 class levelEffect_c : public effect_c {
 public:
     levelEffect_c() : m_114(0), m_118(0), m_11c(0), m_11d(0), m_120(0), m_124(0) {}
-    ~levelEffect_c() { cleanup(); }
+    virtual ~levelEffect_c() { cleanup(); }
+
+    virtual void fade();
+    virtual void kill();
+    virtual void update();
+    virtual void createEffect(const char *, int);
+    virtual void createEffect(const char *, ulong, const mVec3_c *, const mAng3_c *, const mVec3_c *);
+    virtual void createEffect(const char *, ulong, const mMtx_c *);
+    virtual void vfa8();
+    virtual void vfac();
+    virtual void follow(const mVec3_c *, const mAng3_c *, const mVec3_c *);
+    virtual void follow(const mMtx_c *);
+    virtual void isActive();
 
     void cleanup();
 

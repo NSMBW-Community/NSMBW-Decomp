@@ -15,7 +15,7 @@ public:
         TYPE_8
     };
 
-    void shockMotor(s8, TYPE_SHOCK_e, int, int);
+    void shockMotor(s8, TYPE_SHOCK_e, int, bool);
 
     static dQuake_c *m_instance;
 };

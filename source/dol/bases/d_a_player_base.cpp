@@ -500,11 +500,11 @@ bool daPlBase_c::fn_80047f10() {
         mPos.z
     );
     float res;
-    if (dBc_c::checkTenjou(p, res, mLayer, m_ca1) && res < tmpCalc) {
+    if (dBc_c::checkTenjou(&p, &res, mLayer, m_ca1) && res < tmpCalc) {
         return true;
     }
     p.x = mPos.x + *((int *)(headBgP) + 2) / 4096.0f;
-    if (dBc_c::checkTenjou(p, res, mLayer, m_ca1) && res < tmpCalc) {
+    if (dBc_c::checkTenjou(&p, &res, mLayer, m_ca1) && res < tmpCalc) {
         return true;
     }
     return false;
@@ -1219,7 +1219,7 @@ void daPlBase_c::initializeState_Funsui() {
     mpMdlMng->setAnm(138);
     if (mPlayerNo >= 0) {
         vf434(50, 0);
-        dQuake_c::m_instance->shockMotor(mPlayerNo, dQuake_c::TYPE_7, 0, 0);
+        dQuake_c::m_instance->shockMotor(mPlayerNo, dQuake_c::TYPE_7, 0, false);
         m_1114 = 8;
     }
 }
@@ -1232,7 +1232,7 @@ void daPlBase_c::executeState_Funsui() {
         dEf::createPlayerEffect(mPlayerNo, &mLevelEfs2, "Wm_mr_sprisesmoke", 0, &mPos, nullptr, nullptr);
         if (m_1114 == 0) {
             m_1114 = 8;
-            dQuake_c::m_instance->shockMotor(mPlayerNo, dQuake_c::TYPE_8, 0, 0);
+            dQuake_c::m_instance->shockMotor(mPlayerNo, dQuake_c::TYPE_8, 0, false);
         }
     }
     turnAngle();
@@ -2760,19 +2760,19 @@ void daPlBase_c::executeState_DemoNone() {
         m_8c = 0;
     }
     if (m_10c8 == 0 && isEnableDokanInStatus()) {
-        if (setDokanIn(1)) {
+        if (setDokanIn(DOKAN_D)) {
             return;
         }
-        if (setDokanIn(0)) {
+        if (setDokanIn(DOKAN_U)) {
             return;
         }
         if (m_8d >= 10 && mDirection == 0) {
-            if (setDokanIn(3)) {
+            if (setDokanIn(DOKAN_R)) {
                 return;
             }
         }
         if (m_8c >= 10 && mDirection == 1) {
-            if (setDokanIn(2)) {
+            if (setDokanIn(DOKAN_L)) {
                 return;
             }
         }
@@ -3129,7 +3129,8 @@ bool daPlBase_c::setDemoOutDokanAction(int param1, DokanDir_e dir) {
         &StateID_DemoOutDokanU,
         &StateID_DemoOutDokanD,
         &StateID_DemoOutDokanL,
-        &StateID_DemoOutDokanR
+        &StateID_DemoOutDokanR,
+        &StateID_DemoOutDokanRoll,
     };
     switch (m_80) {
         case 1:
@@ -3336,19 +3337,19 @@ void daPlBase_c::executeDemoOutDokanLR() {
 
 void daPlBase_c::initializeState_DemoOutDokanU() { initDemoInDokanUD(0); }
 void daPlBase_c::finalizeState_DemoOutDokanU() { endDemoInDokan(); }
-void daPlBase_c::executeState_DemoOutDokanU() { executeDemoOutDokan(); }
+void daPlBase_c::executeState_DemoOutDokanU() { executeDemoOutDokanUD(); }
 
 void daPlBase_c::initializeState_DemoOutDokanD() { initDemoInDokanUD(1); }
 void daPlBase_c::finalizeState_DemoOutDokanD() { endDemoInDokan(); }
-void daPlBase_c::executeState_DemoOutDokanD() { executeDemoOutDokan(); }
+void daPlBase_c::executeState_DemoOutDokanD() { executeDemoOutDokanUD(); }
 
 void daPlBase_c::initializeState_DemoOutDokanL() { initDemoInDokanLR(2); }
 void daPlBase_c::finalizeState_DemoOutDokanL() { endDemoInDokan(); }
-void daPlBase_c::executeState_DemoOutDokanL() { executeDemoOutDokan(); }
+void daPlBase_c::executeState_DemoOutDokanL() { executeDemoOutDokanLR(); }
 
 void daPlBase_c::initializeState_DemoOutDokanR() { initDemoInDokanLR(3); }
 void daPlBase_c::finalizeState_DemoOutDokanR() { endDemoInDokan(); }
-void daPlBase_c::executeState_DemoOutDokanR() { executeDemoOutDokan(); }
+void daPlBase_c::executeState_DemoOutDokanR() { executeDemoOutDokanLR(); }
 
 void daPlBase_c::initializeState_DemoOutDokanRoll() {
     initDemoOutDokanUD(4);
@@ -3947,7 +3948,7 @@ bool daPlBase_c::vf284(int) {
     return false;
 }
 
-void daPlBase_c::fn_80051cf0(int p) {
+void daPlBase_c::fn_80051d00(int p) {
     int iVar1;
     if (p == 0) {
         iVar1 = daPyDemoMng_c::mspInstance->m_1c;
@@ -4742,7 +4743,7 @@ void daPlBase_c::setStampPlayerJump(bool b, float f) {
             scale = daPlBase_c::sc_JumpSpeed - 0.35f;
         }
         if (b) {
-            dQuake_c::m_instance->shockMotor(mPlayerNo, dQuake_c::TYPE_7, 0, 0);
+            dQuake_c::m_instance->shockMotor(mPlayerNo, dQuake_c::TYPE_7, 0, false);
             if (mKey.buttonJump()) {
                 scale = daPlBase_c::sc_JumpSpeed + 0.5f;
             }
@@ -4767,7 +4768,7 @@ void daPlBase_c::initStampReduction() {
     }
     mTimer_10 = 10;
     vf434(52, 0);
-    dQuake_c::m_instance->shockMotor(mPlayerNo, dQuake_c::TYPE_7, 0, 0);
+    dQuake_c::m_instance->shockMotor(mPlayerNo, dQuake_c::TYPE_7, 0, false);
 }
 
 void daPlBase_c::calcJumpDaiReductionScale(int i1, int i2) {
@@ -5729,7 +5730,7 @@ bool daPlBase_c::setPressBgDamage(int i1, int i2) {
     } else {
         if (setDamage2(nullptr, DAMAGE_NONE)) {
             mBc.clearBgcSaveAll();
-            dQuake_c::m_instance->shockMotor(mPlayerNo, dQuake_c::TYPE_4, 0, 0);
+            dQuake_c::m_instance->shockMotor(mPlayerNo, dQuake_c::TYPE_4, 0, false);
             return true;
         }
     }
@@ -5946,7 +5947,7 @@ void daPlBase_c::calcTimerProc() {
     sLib::calcTimer(&mTimer_f8);
 
     updateNoHitPlayer();
-    fn_800542d0();
+    calcNoHitObjBgTimer();
 }
 
 dPyMdlBase_c * daPlBase_c::getModel() {

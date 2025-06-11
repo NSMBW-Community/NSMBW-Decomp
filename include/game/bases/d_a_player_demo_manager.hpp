@@ -17,7 +17,7 @@ public:
     void setDemoMode(daPyDemoMng_c::Mode_e, int);
     void stopBgmGoalDemo();
     int getPoleBelowPlayer(int playerNo);
-    int getControlDemoPlayerNum();
+    int getControlDemoPlayerNum() const;
 
     char mPad1[0x10];
     u32 mFlags;

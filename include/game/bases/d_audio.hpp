@@ -76,9 +76,9 @@ public:
                         nw4r::snd::SoundArchive::SoundInfo info;
                         SndAudioMgr::sInstance->mpSndArc->ReadSoundInfo(mParams[sndIdx].getID(), &info);
                         if (m_68 < 0) {
-                            mParams[sndIdx].setPlayerPriority(info.m_c + m_68);
+                            mParams[sndIdx].SetPlayerPriority(info.m_c + m_68);
                         } else {
-                            mParams[sndIdx].setPlayerPriority(info.m_c);
+                            mParams[sndIdx].SetPlayerPriority(info.m_c);
                         }
                     }
                     if (flag & 2) {
@@ -243,13 +243,15 @@ public:
 
     virtual SoundHandlePrm *startSound(ulong p1, ulong p2);
     virtual SoundHandlePrm *holdSound(ulong p1, ulong p2);
-    virtual SoundHandlePrm *prepareSound(ulong p1, ulong p2);
     virtual SoundHandlePrm *startSound(ulong p1, short p2, ulong p3);
     virtual SoundHandlePrm *holdSound(ulong p1, short p2, ulong p3);
     virtual SoundHandlePrm *startSound(ulong p1, const nw4r::math::VEC2 &p2, ulong p3);
     virtual SoundHandlePrm *holdSound(ulong p1, const nw4r::math::VEC2 &p2, ulong p3);
 
     void stopPlyJumpSound();
+    void startFootSound(ulong, float, ulong);
+    void fn_8019AAB0(ulong, int);
+    void fn_8019ABB0(ulong, int);
 };
 
 class SndObjctCmnEmy : public NMSndObject<4> {
@@ -278,10 +280,6 @@ namespace dAudio {
 
     class SndObjctPly_c : public SndObjctPlyBase_c {
     public:
-        void startFootSound(ulong, float, ulong);
-        void fn_8019AAB0(ulong, int);
-        void fn_8019ABB0(ulong, int);
-
         virtual SoundHandlePrm *startSound(ulong p1, ulong p2) {
             return SndObjctPly::startSound(p1, p2);
         }

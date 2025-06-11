@@ -2,8 +2,8 @@
 #include <game/bases/d_actor.hpp>
 #include <game/bases/d_ac_py_key.hpp>
 #include <game/bases/d_cc.hpp>
-#include <game/bases/d_effect.hpp>
 #include <game/sLib/s_State.hpp>
+#include <game/bases/d_effect.hpp>
 #include <game/bases/d_audio.hpp>
 #include <game/mLib/m_3d.hpp>
 #include <game/bases/d_quake.hpp>
@@ -394,8 +394,8 @@ public:
     virtual void executeMain() {}
     virtual void executeLastPlayer() {}
     virtual void executeLastAll() {}
-    virtual bool isItemKinopio();
-    virtual void vfe4();
+    virtual bool isItemKinopio() { return false; }
+    virtual void setPowerup(PLAYER_POWERUP_e, int); ///< @unofficial
     virtual u8 getTallType(s8);
     virtual void *getHeadBgPointData() { return nullptr; };
     virtual void *getWallBgPointData() { return nullptr; };
@@ -462,7 +462,7 @@ public:
     virtual void setCreateAction(int);
     virtual bool setTimeOverDemo() { return false; }
     virtual void setFallDownDemo() {}
-    virtual bool setDokanIn(int);
+    virtual bool setDokanIn(DokanDir_e dir);
     virtual void initDemoOutDokan();
     virtual bool vf284(int);
     virtual void initDemoGoalBase();
@@ -524,7 +524,7 @@ public:
     virtual void endStar() {}
     virtual void setVirusStar(daPlBase_c *) {}
     virtual void clearStarCount();
-    virtual int getStarCount();
+    virtual int getStarCount() const { return mStarCount; }
     virtual s8 calcStarCount(int);
 
     virtual bool isNoDamage();
@@ -673,12 +673,10 @@ public:
     void initDemoInDokanLR(u8);
     void endDemoInDokan();
     void executeDemoInDokan(u8);
-    void executeDemoOutDokan();
     float getWaterDokanCenterOffset(float);
     void initDemoInDokan();
     bool demo_dokan_move_x(float, float);
     bool demo_dokan_move_y(float, float);
-    bool setDokanIn(DokanDir_e dir);
     bool setDemoOutDokanAction(int, DokanDir_e dir);
     void endDemoOutDokan();
     void initDemoOutDokanUD(u8);
@@ -700,7 +698,6 @@ public:
     void executeDemoGoal_KimePose();
     void setObjDokanIn(dBg_ctr_c *, mVec3_c &, int);
     bool isDispOutCheckOn();
-    void fn_80051cf0(int);
     void endControlDemo(int);
     void setControlDemoDir(u8);
     bool isControlDemoWait();
@@ -761,7 +758,6 @@ public:
     void setStatus87(); ///< @unofficial
     bool isRideCheckEnable();
     void setStatus5D(float f); ///< @unofficial
-    void setPowerup(PLAYER_POWERUP_e, int); ///< @unofficial
     void fn_8004c0d0(mBoundBox &); ///< @unofficial
 
     daPlBase_c *getHipAttackDamagePlayer();
@@ -813,7 +809,6 @@ public:
     float get_c9c() const { return m_c9c; }
 
     void setStatus(int);
-    void fn_800542d0();
     void calcTimerProc();
     dPyMdlBase_c* getModel();
     void calcPlayerSpeedXY();
