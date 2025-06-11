@@ -335,7 +335,7 @@ void daPlBase_c::calcSpeedOnIceLift() {
     static const float csSpeedMult[] = { 0.5f, 0.8f };
     /// @unofficial
     static const float csSpeedMultNoMove[] = { 0.3f, 1.0f };
-    if (mPowerup != POWERUP_PENGUIN_SUIT && (m_d44 & 2) && m_d40 & 0x800000 && fabsf(mBc.mIceSpeed) > 1.0f) {
+    if (mPowerup != POWERUP_PENGUIN_SUIT && (m_d44 & 2) && m_d40 & 0x800000 && EGG::Mathf::abs(mBc.mIceSpeed) > 1.0f) {
         u8 idx = 0;
         if (mBc.mIceSpeed < 0.0f) {
             idx = 1;
@@ -346,7 +346,7 @@ void daPlBase_c::calcSpeedOnIceLift() {
             mSpeedF *= csSpeedMultNoMove[idx];
         }
 
-        float newSpeedF = fabs(mSpeedF);
+        float newSpeedF = EGG::Mathf::abs(mSpeedF);
         if (newSpeedF < 0.3f) {
             newSpeedF = 0.3f;
         } else if (newSpeedF > 1.5f) {
@@ -362,7 +362,7 @@ void daPlBase_c::calcSpeedOnIceLift() {
 }
 
 void daPlBase_c::calcAccOnIceLift() {
-    if ((m_d44 & 2) && m_d40 & 0x800000 && !mKey.buttonWalk(nullptr) && fabsf(mBc.mIceSpeed) > 1.0f) {
+    if ((m_d44 & 2) && m_d40 & 0x800000 && !mKey.buttonWalk(nullptr) && EGG::Mathf::abs(mBc.mIceSpeed) > 1.0f) {
         mAccelF = calcStarAccel(mAccelF);
     }
 }
@@ -438,7 +438,7 @@ void daPlBase_c::initializeState_Fall() {
         if (m_1134 * mSpeedF > 0.0f) {
             m_1138 = m_1134;
             m_1134 = 0.0f;
-            m_113c = fabsf(m_1138 / 10.0f);
+            m_113c = EGG::Mathf::abs(m_1138 / 10.0f);
         }
     }
 }
@@ -463,7 +463,7 @@ bool daPlBase_c::checkCrouch() {
 }
 
 bool daPlBase_c::setCancelCrouch() {
-    if (fn_80047ee0()) {
+    if (checkStandUpRoofOnLift()) {
         return false;
     }
     if (mpMdlMng->mpMdl->m_154 != 21) {
@@ -480,14 +480,14 @@ bool daPlBase_c::setCancelCrouch() {
     return true;
 }
 
-bool daPlBase_c::fn_80047ee0() {
+bool daPlBase_c::checkStandUpRoofOnLift() {
     if ((m_d40 & 1) != 0 && (m_d44 & 2) == 0) {
         return false;
     }
-    return fn_80047f10();
+    return checkStandUpRoof();
 }
 
-bool daPlBase_c::fn_80047f10() {
+bool daPlBase_c::checkStandUpRoof() {
     void *headBgP = getHeadBgPointData();
     if (headBgP == nullptr) {
         return false;
@@ -572,7 +572,7 @@ void daPlBase_c::executeState_Slip() {
 }
 
 void daPlBase_c::setSlipAction_ToStoop() {
-    if (fn_80047ee0()) {
+    if (checkStandUpRoofOnLift()) {
         return;
     }
     offStatus(STATUS_30);
@@ -584,7 +584,7 @@ void daPlBase_c::setSlipAction_ToStoop() {
 }
 
 void daPlBase_c::setSlipAction_ToEnd() {
-    if (fn_80047ee0()) {
+    if (checkStandUpRoofOnLift()) {
         return;
     }
     offStatus(STATUS_30);
@@ -631,7 +631,7 @@ void daPlBase_c::slipActionMove(int param) {
         float cos = nw4r::math::CosS(m_d96.mAngle);
         mMaxSpeedF = baseSpeed;
         mSpeedF = baseSpeed * cos;
-        mSpeed.y = fabsf(baseSpeed) * m_d96.sin();
+        mSpeed.y = EGG::Mathf::abs(baseSpeed) * m_d96.sin();
     }
     if (m_d40 & 1) {
         if (mSpeedF <= 0.0f && m_d40 & 0x80000) {
@@ -646,7 +646,7 @@ void daPlBase_c::slipActionMove(int param) {
                 if (param == 0) {
                     mAccelF = 0.5f * mAccelF;
                 }
-                if (fabsf(mSpeedF) < 1.0f &&
+                if (EGG::Mathf::abs(mSpeedF) < 1.0f &&
                     ((mCc.mCollOffsetX[0] < 0.0f && mSpeedF >= 0.0f) ||
                     (mCc.mCollOffsetX[0] > 0.0f && mSpeedF <= 0.0f)))
                 {
@@ -659,7 +659,7 @@ void daPlBase_c::slipActionMove(int param) {
         } else {
             m_1114 = 0;
             mMaxSpeedF = 0.0f;
-            if (mTimer_f8 == 0 && fabsf(mSpeedF) < 1.1f) {
+            if (mTimer_f8 == 0 && EGG::Mathf::abs(mSpeedF) < 1.1f) {
                 if (!mKey.buttonCrouch()) {
                     setSlipAction_ToEnd();
                 } else {
@@ -698,7 +698,7 @@ void daPlBase_c::fn_800488f0(int param) {
 }
 
 bool daPlBase_c::checkTurn() {
-    if (!isCarry() && !isStatus(STATUS_74) && fabsf(mSpeedF) >= 2.5f) {
+    if (!isCarry() && !isStatus(STATUS_74) && EGG::Mathf::abs(mSpeedF) >= 2.5f) {
         if ((m_d40 & 0x800000) != 0) {
             if (
                 (mSpeedF < 0.0f && mKey.buttonRight() && mDirection == 0) ||
@@ -1250,7 +1250,7 @@ void daPlBase_c::executeState_Funsui() {
     } else {
         mMaxSpeedF = 0.0f;
     }
-    if (fabsf(mSpeedF) > 0.35f) {
+    if (EGG::Mathf::abs(mSpeedF) > 0.35f) {
         mAccelF = 0.1f;
     } else {
         mAccelF = 0.04f;
@@ -1485,7 +1485,7 @@ void daPlBase_c::executeState_WaitJump() {
 }
 
 bool daPlBase_c::checkSakaReverse() {
-    if (fabsf(mSpeedF) < 0.5f && mBc.mPlayerFlags & 4) {
+    if (EGG::Mathf::abs(mSpeedF) < 0.5f && mBc.mPlayerFlags & 4) {
         return true;
     }
     return false;
@@ -1588,7 +1588,7 @@ bool daPlBase_c::setSandMoveSpeed() {
             mMaxSpeedF = 0.0f;
         }
         if (mSpeedF * mMaxSpeedF >= 0.0f) {
-            if (fabsf(mSpeedF) > fabsf(mMaxSpeedF)) {
+            if (EGG::Mathf::abs(mSpeedF) > EGG::Mathf::abs(mMaxSpeedF)) {
                 mSpeedF = mMaxSpeedF;
             }
         } else {
@@ -1604,13 +1604,13 @@ void daPlBase_c::moveSpeedSet() {
         int dir;
         if (mKey.buttonWalk(&dir)) {
             if ((m_d40 & 1) == 0) {
-                float absSpeed = absSpeedF();
+                float absSpeed = EGG::Mathf::abs(mSpeedF);
                 float speed1 = sc_DirSpeed[dir] * *(getSpeedData() + 0);
                 float speed2 = sc_DirSpeed[dir] * *(getSpeedData() + 2);
                 float tmp = sc_DirSpeed[dir] * absSpeed;
-                if (absSpeed >= fabsf(speed2) || mKey.buttonDush()) {
+                if (absSpeed >= EGG::Mathf::abs(speed2) || mKey.buttonDush()) {
                     mMaxSpeedF = speed2;
-                } else if (absSpeed > fabsf(speed1)) {
+                } else if (absSpeed > EGG::Mathf::abs(speed1)) {
                     mMaxSpeedF = tmp;
                 } else {
                     mMaxSpeedF = speed1;
@@ -1632,7 +1632,7 @@ void daPlBase_c::moveSpeedSet() {
                 mMaxSpeedF = getIceSakaSlipOffSpeed();
             }
         }
-        if (!(m_d40 & 1) && !isStatus(STATUS_88) && absSpeedF() > *(getSpeedData() + 2)) {
+        if (!(m_d40 & 1) && !isStatus(STATUS_88) && EGG::Mathf::abs(mSpeedF) > *(getSpeedData() + 2)) {
             if (mSpeedF < 0.0f) {
                 mSpeedF = -*(getSpeedData() + 2);
             } else {
@@ -1710,7 +1710,7 @@ void daPlBase_c::slipPowerSet(int mode) {
 }
 
 void daPlBase_c::normalPowerSet() {
-    if (absSpeedF() > *(getSpeedData() + 2)) {
+    if (EGG::Mathf::abs(mSpeedF) > *(getSpeedData() + 2)) {
         mAccelF = 0.75f;
         return;
     }
@@ -1720,12 +1720,12 @@ void daPlBase_c::normalPowerSet() {
     if (!mKey.buttonWalk(nullptr)) {
         if (mSpeedF * sc_DirSpeed[mDirection] < 0.0f) {
             mAccelF = data.data[2];
-        } else if (absSpeedF() < *getSpeedData()) {
+        } else if (EGG::Mathf::abs(mSpeedF) < *getSpeedData()) {
             mAccelF = data.data[1];
         } else {
             mAccelF = data.data[0];
         }
-        if (powerChangeType == POWER_CHANGE_1 && absSpeedF() < 0.5f) {
+        if (powerChangeType == POWER_CHANGE_1 && EGG::Mathf::abs(mSpeedF) < 0.5f) {
             mAccelF = 0.004f;
         }
         if (isStatus(STATUS_89)) {
@@ -1741,8 +1741,8 @@ void daPlBase_c::normalPowerSet() {
         return;
     }
 
-    float absMaxSpeed = absMaxSpeedF();
-    float absSpeed = absSpeedF();
+    float absMaxSpeed = EGG::Mathf::abs(mMaxSpeedF);
+    float absSpeed = EGG::Mathf::abs(mSpeedF);
 
     if (absSpeed < 0.5f) {
         mAccelF = data.data[4];
@@ -1825,11 +1825,11 @@ void daPlBase_c::icePowerChange(int mode) {
             } else if (mode == 0) {
                 if (isSaka()) {
                     mAccelF = mAccelF * 0.25f;
-                } else if (absSpeedF() < 0.5f) {
+                } else if (EGG::Mathf::abs(mSpeedF) < 0.5f) {
                     mAccelF = mAccelF * 0.375f;
                 }
             }
-        } else if (!isSaka() && absSpeedF() < 0.5f) {
+        } else if (!isSaka() && EGG::Mathf::abs(mSpeedF) < 0.5f) {
             mAccelF = 0.004;
         } else {
             mAccelF = mAccelF * 0.375f;
@@ -1837,22 +1837,23 @@ void daPlBase_c::icePowerChange(int mode) {
     }
 }
 
-extern float lbl_802f5880[4][7];
+extern float lbl_802f5880[2][7];
 
 void daPlBase_c::airPowerSet() {
+    float (*data_tmp)[7] = lbl_802f5880;
+    u8 idx = isStar() ? 1 : 0;
+    float *data = data_tmp[idx];
     int dir;
-    bool idx = isStar();
-    float *data = lbl_802f5880[idx];
     if (mKey.buttonWalk(&dir)) {
         if (mSpeedF * sc_DirSpeed[dir] < 0.0f) {
             mAccelF = data[6];
             return;
-        } else if (absSpeedF() < 0.5f) {
+        } else if (EGG::Mathf::abs(mSpeedF) < 0.5f) {
             mAccelF = data[1];
             return;
         }
 
-        float absSpeed = absSpeedF();
+        float absSpeed = EGG::Mathf::abs(mSpeedF);
 
         if (absSpeed < *(getSpeedData() + 0)) {
             if (mKey.buttonDush()) {
@@ -1968,8 +1969,7 @@ void daPlBase_c::calcWindSpeed() {
     if (isStatus(STATUS_A0) && (m_d40 & 0x18000000) == 0) {
         float tmp = fn_8004c700(windActor->m_00);
         float halfTmp = tmp * 0.5f;
-        tmp = fabs(tmp);
-        tmp = tmp * 3.0f;
+        tmp = EGG::Mathf::abs(tmp) * 3.0f;
         if (m_112c > 0.0f && m_d40 & 0x40 || m_112c < 0.0f && m_d40 & 0x20) {
             m_112c = 0.0f;
         }
@@ -2035,7 +2035,7 @@ void daPlBase_c::setLandSE() {
 
 void daPlBase_c::setSlipSE() {
     if (m_d88 == POWERUP_PENGUIN_SUIT) {
-        fn_80057fd0(SE_PLY_PNGN_SLIP_SEA, (short) fabsf(mSpeedF), false);
+        fn_80057fd0(SE_PLY_PNGN_SLIP_SEA, EGG::Mathf::abs(mSpeedF), false);
         return;
     }
     static const dAudio::SoundEffectID_t scSlipSeID[] = {
@@ -2916,10 +2916,10 @@ void daPlBase_c::executeDemoInDokan(u8 dir) {
             }
         case DEMO_IN_DOKAN_ACTION_2:
             onStatus(STATUS_79);
-            if (isStatus(STATUS_2A) && (dir == 2 || dir == 3) && fabsf(mPos.x - m_68.x) <= 20.0f) {
+            if (isStatus(STATUS_2A) && (dir == 2 || dir == 3) && EGG::Mathf::abs(mPos.x - m_68.x) <= 20.0f) {
                 offStatus(STATUS_2A);
             }
-            if (isStatus(STATUS_5E) && fabsf(mPos.x - m_68.x) <= 20.0f) {
+            if (isStatus(STATUS_5E) && EGG::Mathf::abs(mPos.x - m_68.x) <= 20.0f) {
                 offStatus(STATUS_5E);
             }
             if (!demo_dokan_move_x(0.75f, 0.0f)) {
@@ -3058,7 +3058,7 @@ void daPlBase_c::executeState_DemoInDokanR() { executeDemoInDokan(3); }
 
 bool daPlBase_c::demo_dokan_move_x(float p1, float p2) {
     sLib::chase(&mPos.x, m_68.x, p1);
-    return fabsf(mPos.x - m_68.x) <= p2;
+    return EGG::Mathf::abs(mPos.x - m_68.x) <= p2;
 }
 
 bool daPlBase_c::demo_dokan_move_y(float p1, float p2) {
@@ -4023,7 +4023,7 @@ void daPlBase_c::setControlDemoWalk(const float &f1, const float &f2) {
     if (isStatus(STATUS_72)) {
         m_bc = f1;
         m_60 = 1;
-        m_c8 = fabs(f2);
+        m_c8 = EGG::Mathf::abs(f2);
         if (m_c8 > *(getSpeedData() + 2)) {
             m_c8 = *(getSpeedData() + 2);
         }
@@ -4103,7 +4103,7 @@ bool daPlBase_c::fn_80052500(int p, float f, int) {
     float y;
     if (mBc.checkGround(&tmp, &y, mLayer, m_ca1, -1)) {
         float mpy = mPos.y;
-        if (fabsf(y - mpy) < a) {
+        if (EGG::Mathf::abs(y - mpy) < a) {
             if (p == 1) {
                 tmp.y = mpy - 4.0f;
                 float y2;
@@ -4206,7 +4206,7 @@ void daPlBase_c::executeState_DemoControl() {
                     changeState(StateID_Fall, 0);
                 }
             }
-            if (fabsf(mPos.x - m_bc) < m_c8) {
+            if (EGG::Mathf::abs(mPos.x - m_bc) < m_c8) {
                 m_60 = 0;
                 mSpeedF = 0.0f;
                 mPos.x = m_bc;
@@ -4629,11 +4629,11 @@ void daPlBase_c::setCcPlayerRev(dCc_c *cc1, dCc_c *cc2, float f, int idx) {
                 m_1068 = offsY * f;
             }
         }
-    } else if (!(fabsf(offsY) < 1.0f || other->isActionRevisionY())) {
+    } else if (!(EGG::Mathf::abs(offsY) < 1.0f || other->isActionRevisionY())) {
         if (m_1070) {
             float tmp1 = offsX * f;
             float tmp2 = m_106c * m_1064;
-            if (fabsf(tmp1) < fabsf(tmp2)) {
+            if (EGG::Mathf::abs(tmp1) < EGG::Mathf::abs(tmp2)) {
                 m_1060 = speedF;
             }
             m_106c = 1.0f;
@@ -4682,13 +4682,11 @@ bool daPlBase_c::calcCcPlayerRev(float *f) {
                 }
                 float f1 = m_1060;
                 float f2 = mSpeedF;
-                if (f2 * f1 <= 0.0f && fabsf(f2) + fabsf(f1) > 2.5f) {
-                    mSpeedF = f1 * 0.4f;
+                if (f2 * f1 <= 0.0f && EGG::Mathf::abs(mSpeedF) + EGG::Mathf::abs(m_1060) > 2.5f) {
+                    mSpeedF = m_1060 * 0.4f;
                     return true;
                 }
-                float f3 = fabsf(m_1060);
-                float f4 = fabsf(mSpeedF);
-                if (f4 > f3 && m_1060 > 1.5f) {
+                if (EGG::Mathf::abs(mSpeedF) > EGG::Mathf::abs(m_1060) && m_1060 > 1.5f) {
                     mSpeedF = 0.0f;
                     return true;
                 }
@@ -5062,7 +5060,7 @@ void daPlBase_c::checkBgCross() {
                             mPos.z
                         );
                         float outCheckGround;
-                        if (dBc_c::checkGround(&tmp, &outCheckGround, mLayer, m_ca1, 8) && fabsf(outCheckGround - mPos.y) < 2.0f) {
+                        if (dBc_c::checkGround(&tmp, &outCheckGround, mLayer, m_ca1, 8) && EGG::Mathf::abs(outCheckGround - mPos.y) < 2.0f) {
                             m_d44 |= 0x100;
                         }
                     } else {
@@ -5295,11 +5293,10 @@ void daPlBase_c::postBgCross() {
     if ((m_d40 & 1) == 0 && (m_d44 & 2) == 0) {
         if (m_d48 & 1 &&  m_d4c & 2) {
             m_1134 = 0.0f;
-            if (fabsf(mSpeedF) >= 0.01f && m_1eb.x * mSpeedF > 0.0f) {
+            if (EGG::Mathf::abs(mSpeedF) >= 0.01f && m_1eb.x * mSpeedF > 0.0f) {
                 m_1134 = m_1eb.x;
                 float add = m_1eb.x;
-                float absAdd = fabs(add);
-                if (absAdd > 0.01f && absAdd < 1.0f) {
+                if (EGG::Mathf::abs(add) > 0.01f && EGG::Mathf::abs(add) < 1.0f) {
                     if (add > 1.0f) {
                         add = 1.0f;
                     } else {
@@ -5425,7 +5422,7 @@ bool daPlBase_c::checkSinkSand() {
         if (m_db0 > getCenterPos().y) {
             m_d40 |= 0x10000000;
         }
-        if (mPos.y + get_c9c() > m_db0) {
+        if (m_db0 > mPos.y + get_c9c()) {
             m_d40 |= 0x20000000;
         }
         return true;
@@ -5957,6 +5954,7 @@ dPyMdlBase_c * daPlBase_c::getModel() {
 // Doesn't match 100%
 void daPlBase_c::calcPlayerSpeedXY() {
     static const float ratios[] = { 0.6f, 0.55f, 0.5f, 0.45f, 0.4f };
+    float tmp = 0.0f;
     float t = 0.0f;
     bool x = calcCcPlayerRev(&t);
 
@@ -5983,7 +5981,7 @@ void daPlBase_c::calcPlayerSpeedXY() {
         if (b > 0.5f) {
             b = 0.5f;
         }
-        if (fabsf(mSpeedF) > fabsf(b)) {
+        if (EGG::Mathf::abs(mSpeedF) > EGG::Mathf::abs(b)) {
             c = 1.0f;
         } else {
             c = 1.8f;
@@ -5995,9 +5993,8 @@ void daPlBase_c::calcPlayerSpeedXY() {
 
     float d = 5.0f;
     if (isStatus(STATUS_88)) {
-        float z = fabsf(b);
-        if (z > 5.0f) {
-            d = z;
+        if (EGG::Mathf::abs(b) > 5.0f) {
+            d = EGG::Mathf::abs(b);
         }
     }
 
@@ -6011,10 +6008,8 @@ void daPlBase_c::calcPlayerSpeedXY() {
     mSpeed.x = f;
 
     if (f * t >= 0.0f) {
-        float z = mPos.x + f;
-        float y = get_c9c() / 2.0f;
-        mVec3_c wallvec2(t + t + z + f, mPos.y + y, mPos.z);
-        mVec3_c wallvec1(t + z, mPos.y + y, mPos.z);
+        mVec3_c wallvec1(mPos.x + f + t, mPos.y + get_c9c() / 2.0f, mPos.z);
+        mVec3_c wallvec2(wallvec1.x + f + t, wallvec1.y, wallvec1.z);
 
         float g;
 
@@ -6023,24 +6018,22 @@ void daPlBase_c::calcPlayerSpeedXY() {
         }
     }
 
-    float h = m_1130;
-    t += 0.0f;
+    tmp += t;
 
-    if (0.0f != m_1130) {
+    if (m_1130 != 0.0f) {
         if (!(m_d40 & 1)) {
-            t += h;
+            tmp += m_1130;
         } else {
-            if (h * mSpeedF < 0.0f) {
-                mSpeedF += h;
+            if (m_1130 * mSpeedF < 0.0f) {
+                mSpeedF += m_1130;
             }
             m_1130 = 0.0f;
         }
     }
 
-    float j = m_1138;
-    if (j != 0.0f) {
+    if (m_1138 != 0.0f) {
         if (!(m_d40 & 1)) {
-            t += j;
+            tmp += m_1138;
             sLib::chase(&m_1138, 0.0f, m_113c);
         } else {
             m_1138 = 0.0f;
@@ -6059,19 +6052,24 @@ void daPlBase_c::calcPlayerSpeedXY() {
 
     setSandEffect();
 
-    float new_speed = mSpeed.y + mAccelY;
-    m_cc0 = mSpeed.y;
-    mPos += m_d30;
+    incPos(m_d30);
 
-    mSpeed.y = new_speed;
-    if (new_speed < k) {
+    m_cc0 = mSpeed.y + mAccelY;
+    mSpeed.y = mSpeed.y + mAccelY;
+
+    if (mSpeed.y < k) {
         mSpeed.y = k;
     }
 
-    posMoveAnglePlayer(mVec3_c(mSpeed.x + t, mSpeed.y, mSpeed.z));
+    mVec3_c speed(
+        mSpeed.x + tmp,
+        mSpeed.y,
+        mSpeed.z
+    );
+
+    posMoveAnglePlayer(speed);
 }
 
-// Doesn't match 100%
 void daPlBase_c::posMoveAnglePenguin(mVec3_c a, unsigned short b) {
     mVec3_c _40(0.0f, a.y, 0.0f);
 
@@ -6079,23 +6077,23 @@ void daPlBase_c::posMoveAnglePenguin(mVec3_c a, unsigned short b) {
         mAng angle = mBc.getHeadSakaMoveAngle(mDirection);
 
         if (angle.mAngle > 0) {
-            _40.x = sc_DirSpeed[mDirection] * fabsf(a.y * angle.sin());
+            _40.x = sc_DirSpeed[mDirection] * EGG::Mathf::abs(a.y * angle.sin());
         }
 
-        _40.y = a.y * fabsf(angle.cos());
+        _40.y = a.y * EGG::Mathf::abs(angle.cos());
     }
 
     if ((m_d40 & 1) && (a.y < 0.0f)) {
         mAng angle = mBc.getSakaMoveAngle(mDirection);
 
         if (angle.mAngle < 0) {
-            _40.x = sc_DirSpeed[mDirection] * fabsf(a.y * angle.sin());
+            _40.x = sc_DirSpeed[mDirection] * EGG::Mathf::abs(a.y * angle.sin());
         }
 
-        _40.y = a.y * fabsf(angle.cos());
+        _40.y = a.y * EGG::Mathf::abs(angle.cos());
     }
 
-    float x_mag = fabs(a.x);
+    float x_mag = EGG::Mathf::abs(a.x);
 
     mVec3_c delta(
         _40.x + x_mag * nw4r::math::CosS(b),
@@ -6108,7 +6106,10 @@ void daPlBase_c::posMoveAnglePenguin(mVec3_c a, unsigned short b) {
 
 // Doesn't match 100%
 void daPlBase_c::posMoveAnglePlayer(mVec3_c a) {
-    if ((((a.x > 0.0f) && (m_d40 & 0x40)) || ((a.x < 0.0f) && (m_d40 & 0x20))) && (fabsf(a.x) > 2.5f)) {
+    if (
+        ((a.x > 0.0f && m_d40 & 0x40) || (a.x < 0.0f && m_d40 & 0x20)) &&
+        (EGG::Mathf::abs(a.x) > 2.5f)
+    ) {
         if (a.x > 0.0f) {
             a.x = 2.5f;
         } else {
@@ -6136,12 +6137,12 @@ void daPlBase_c::posMoveAnglePlayer(mVec3_c a) {
         x2 = m_d9c;
     }
 
-    float x_mag = fabs(a.x);
+    float x_mag = EGG::Mathf::abs(a.x);
     float y = a.y;
 
     mVec3_c delta(
         x_mag * mAng(x).cos() - y * mAng(x2).sin(),
-        x_mag * mAng(x).sin() + y * fabsf(mAng(x2).cos()),
+        x_mag * mAng(x).sin() + y * EGG::Mathf::abs(mAng(x2).cos()),
         a.z
     );
 
@@ -6210,7 +6211,7 @@ float daPlBase_c::setAddLiftSpeedF() {
 }
 
 bool daPlBase_c::setDelayHelpJump() {
-    if (mKey.triggerJump() && fabsf(mSpeedF) > 1.3f) {
+    if (mKey.triggerJump() && EGG::Mathf::abs(mSpeedF) > 1.3f) {
         bool x = false;
 
         if (mBgCrossHistory[0]) {
@@ -6235,7 +6236,7 @@ bool daPlBase_c::fn_800579c0(int a, int b) {
         return false;
     }
 
-    if ((mpMdlMng->mpMdl->mFlags & 1) && fn_80047ee0()) {
+    if ((mpMdlMng->mpMdl->mFlags & 1) && checkStandUpRoofOnLift()) {
         return setCrouchJump();
     }
 
@@ -6388,7 +6389,7 @@ void daPlBase_c::vf434(int a, int b) {
 
 void daPlBase_c::startFootSoundPlayer(unsigned long a) {
   if (! fn_80057E00(1)) {
-    mSndObj.startFootSound(a, fabs(mSpeedF), 0);
+    mSndObj.startFootSound(a, EGG::Mathf::abs(mSpeedF), 0);
   }
 }
 
@@ -6531,8 +6532,7 @@ void daPlBase_c::calcHeadAttentionAngle() {
                     if (r29) {
                         r30 = r27;
                     } else {
-                        float tmpf = fabs(mAng(r3 / 2.0f).cos());
-                        r30 = r27 * tmpf;
+                        r30 = r27 * EGG::Mathf::abs(mAng(r3 / 2.0f).cos());
                     }
                     cond = true;
                 } else if (abs(iVar2) < 0x4000) {

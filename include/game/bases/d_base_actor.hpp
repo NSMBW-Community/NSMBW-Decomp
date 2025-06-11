@@ -113,10 +113,12 @@ public:
     // Getters / setters
     float getAccelF() const { return mAccelF; }
     void setAccelF(float accelF) { mAccelF = accelF; }
-    float absSpeedF() { return fabs(mSpeedF); }
+    float absSpeedF() { return EGG::Mathf::abs(mSpeedF); }
     float absMaxSpeedF() { return fabs(mMaxSpeedF); }
 
     float getYCenter() const { return mPos.y + mCenterOffs.y; }
+
+    void incPos(mVec3_c delta) { mPos += delta; }
 
 private:
     /**

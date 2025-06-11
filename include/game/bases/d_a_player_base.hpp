@@ -580,8 +580,8 @@ public:
     void calcSpeedOnIceLift();
     void calcAccOnIceLift();
     bool setCrouchJump();
-    bool fn_80047ee0();
-    bool fn_80047f10();
+    bool checkStandUpRoofOnLift();
+    bool checkStandUpRoof();
     void gravitySet();
     void moveSpeedSet();
     void powerSet();
