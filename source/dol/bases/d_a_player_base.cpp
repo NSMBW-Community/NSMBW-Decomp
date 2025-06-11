@@ -331,7 +331,9 @@ void daPlBase_c::executeState_Walk() {
 }
 
 void daPlBase_c::calcSpeedOnIceLift() {
+    /// @unofficial
     static const float csSpeedMult[] = { 0.5f, 0.8f };
+    /// @unofficial
     static const float csSpeedMultNoMove[] = { 0.3f, 1.0f };
     if (mPowerup != POWERUP_PENGUIN_SUIT && (m_d44 & 2) && m_d40 & 0x800000 && fabsf(mBc.mIceSpeed) > 1.0f) {
         u8 idx = 0;
@@ -760,14 +762,12 @@ void daPlBase_c::setHipAttackEffect() {
 }
 
 void daPlBase_c::setHipAttackDropEffect() {
-    static const float xOffsets[] = { 0.7f, 0.8f, 1.0f };
+    static const float sc_dropEffectScale[] = { 0.7f, 0.8f, 1.0f };
     mVec3_c pos;
     mpMdlMng->mpMdl->getJointPos(&pos, 1);
-    mVec3_c efPosOffset;
-    efPosOffset.x = xOffsets[getTallType(-1)];
-    efPosOffset.y = efPosOffset.x;
-    efPosOffset.z = efPosOffset.x;
-    dEf::createPlayerEffect(mPlayerNo, &mLevelEf1, "Wm_mr_drop", 0, &pos, nullptr, &efPosOffset);
+    float sz = sc_dropEffectScale[getTallType(-1)];
+    mVec3_c size(sz, sz, sz);
+    dEf::createPlayerEffect(mPlayerNo, &mLevelEf1, "Wm_mr_drop", 0, &pos, nullptr, &size);
 }
 
 void daPlBase_c::setHipBlockBreak() {
@@ -1668,6 +1668,7 @@ void daPlBase_c::grandPowerSet() {
 }
 
 void daPlBase_c::slipPowerSet(int mode) {
+    /// @unofficial
     static const float sc_data[] = { 1.1f, 0.9f, 1.0f };
     if (isSaka()) {
         int dir = 0;
@@ -2056,7 +2057,7 @@ void daPlBase_c::setSlipSE() {
 }
 
 void daPlBase_c::setLandSmokeEffect(int param1) {
-    static const char *csLandLookup[][3] = {
+    static const char *sc_landSmokeEffectID[][3] = {
         {"Wm_mr_landsmoke_ss", "Wm_mr_landsmoke_s", "Wm_mr_landsmoke" },
         {"Wm_mr_landsmoke_ss", "Wm_mr_landsmoke_s", "Wm_mr_landsmoke" },
         {"Wm_mr_sndlandsmk_ss", "Wm_mr_sndlandsmk_s", "Wm_mr_sndlandsmk" },
@@ -2082,9 +2083,9 @@ void daPlBase_c::setLandSmokeEffect(int param1) {
             sz = 0.8f;
         }
         mVec3_c size(sz, sz, sz);
-        dEf::createPlayerEffect(mPlayerNo, csLandLookup[m_d88][param1], 0, &mPos, nullptr, &size);
+        dEf::createPlayerEffect(mPlayerNo, sc_landSmokeEffectID[m_d88][param1], 0, &mPos, nullptr, &size);
     } else {
-        dEf::createPlayerEffect_change(mPlayerNo, csLandLookup[m_d88][param1], 0, &mPos, nullptr, nullptr);
+        dEf::createPlayerEffect_change(mPlayerNo, sc_landSmokeEffectID[m_d88][param1], 0, &mPos, nullptr, nullptr);
     }
 }
 
@@ -2135,8 +2136,8 @@ void daPlBase_c::setLandJumpEffect(int param1) {
 }
 
 void daPlBase_c::setSlipOnWaterEffect(mEf::levelEffect_c *effect) {
-    static const float scEffectScale[] = { 0.5f, 0.8f, 1.0f };
-    float sz = scEffectScale[getTallType(-1)];
+    static const float sc_runFootScale[] = { 0.5f, 0.8f, 1.0f };
+    float sz = sc_runFootScale[getTallType(-1)];
     mVec3_c size(sz, sz, sz);
     mVec3_c pos(
         mPos.x,
@@ -2147,7 +2148,7 @@ void daPlBase_c::setSlipOnWaterEffect(mEf::levelEffect_c *effect) {
 }
 
 void daPlBase_c::setSlipSmokeEffect() {
-    static const char *csSlipSmokeEffectNames[][2] = {
+    static const char *sc_slipSmokeEffectID[][2] = {
         { "Wm_mr_slipsmoke_ss", "Wm_mr_slipsmoke" },
         { "Wm_mr_slipsmoke_ss", "Wm_mr_slipsmoke" },
         { "Wm_mr_sndslipsmk_ss", "Wm_mr_sndslipsmk" },
@@ -2173,11 +2174,11 @@ void daPlBase_c::setSlipSmokeEffect() {
     if (mPowerup != POWERUP_MINI_MUSHROOM) {
         idx = 1;
     }
-    dEf::createPlayerEffect_change(mPlayerNo, &mLevelEfs3, csSlipSmokeEffectNames[m_d88][idx], 0, &pos, nullptr, nullptr);
+    dEf::createPlayerEffect_change(mPlayerNo, &mLevelEfs3, sc_slipSmokeEffectID[m_d88][idx], 0, &pos, nullptr, nullptr);
 }
 
 void daPlBase_c::setBrakeSmokeEffect(mVec3_c &offset) {
-    static const char *csBrakeSmokeEffectNames[][2] = {
+    static const char *sc_brakeSmokeEffectID[][2] = {
         { "Wm_mr_brakesmoke_ss", "Wm_mr_brakesmoke" },
         { "Wm_mr_brakesmoke_ss", "Wm_mr_brakesmoke" },
         { "Wm_mr_sndbrakesmk_ss", "Wm_mr_sndbrakesmk" },
@@ -2201,7 +2202,7 @@ void daPlBase_c::setBrakeSmokeEffect(mVec3_c &offset) {
     if (mPowerup != POWERUP_MINI_MUSHROOM) {
         idx = 1;
     }
-    dEf::createPlayerEffect_change(mPlayerNo, &mLevelEfs4, csBrakeSmokeEffectNames[m_d88][idx], 0, &offset, nullptr, nullptr);
+    dEf::createPlayerEffect_change(mPlayerNo, &mLevelEfs4, sc_brakeSmokeEffectID[m_d88][idx], 0, &offset, nullptr, nullptr);
 }
 
 void daPlBase_c::setTurnSmokeEffect() {
@@ -2223,7 +2224,7 @@ void daPlBase_c::setTurnSmokeEffect() {
         };
         fn_80057f60(scTurnSeID[m_d88], 0);
     }
-    static const char *scTurnSmokeNames[][2] = {
+    static const char *sc_turnSmokeEffectID[][2] = {
         { "Wm_mr_turn_usual_r", "Wm_mr_turn_usual_l" },
         { "Wm_mr_turn_snow_r", "Wm_mr_turn_snow_l" },
         { "Wm_mr_turn_sand_r", "Wm_mr_turn_sand_l" },
@@ -2238,7 +2239,7 @@ void daPlBase_c::setTurnSmokeEffect() {
         { "Wm_mr_turn_usual_r", "Wm_mr_turn_usual_l" },
         { "Wm_mr_turn_usual_r", "Wm_mr_turn_usual_l" }
     };
-    static const float scEffectScale[] = { 0.5f, 0.8f, 1.0f };
+    static const float sc_turnSmokeScale[] = { 0.5f, 0.8f, 1.0f };
     mVec3_c pos;
     mpMdlMng->mpMdl->getJointPos(&pos, 1);
     if (m_d88 == 5) {
@@ -2248,12 +2249,12 @@ void daPlBase_c::setTurnSmokeEffect() {
         }
         pos.y = m_da4;
     }
-    float sz = scEffectScale[getTallType(-1)];
+    float sz = sc_turnSmokeScale[getTallType(-1)];
     mVec3_c size(sz, sz, sz);
     if (mFollowEf.m_118 == 1 && mFollowEf.m_114 == m_d88) {
         mFollowEf.follow(&pos, 0, 0);
     } else {
-        dEf::createPlayerEffect(mPlayerNo, &mFollowEf, scTurnSmokeNames[m_d88][mDirection], 0, &pos, nullptr, &size);
+        dEf::createPlayerEffect(mPlayerNo, &mFollowEf, sc_turnSmokeEffectID[m_d88][mDirection], 0, &pos, nullptr, &size);
         mFollowEf.m_114 = m_d88;
         mFollowEf.m_118 = 1;
     }
@@ -2268,7 +2269,7 @@ void daPlBase_c::fadeOutTurnEffect() {
 }
 
 void daPlBase_c::setRunFootEffect() {
-    static const char *scRunEffectNames[] = {
+    static const char *sc_runFootEffectID[] = {
         nullptr,
         "Wm_mr_foot_snow",
         "Wm_mr_foot_sand",
@@ -2295,10 +2296,10 @@ void daPlBase_c::setRunFootEffect() {
             case T_9:
                 mVec3_c pos;
                 mpMdlMng->mpMdl->getJointPos(&pos, 1);
-                static const float scEffectScale[] = { 0.5f, 0.8f, 1.0f };
-                float sz = scEffectScale[getTallType(-1)];
+                static const float sc_runFootScale[] = { 0.5f, 0.8f, 1.0f };
+                float sz = sc_runFootScale[getTallType(-1)];
                 mVec3_c size(sz, sz, sz);
-                dEf::createPlayerEffect(mPlayerNo, &mLevelEfs5, scRunEffectNames[m_d88], 0, &pos, nullptr, &size);
+                dEf::createPlayerEffect(mPlayerNo, &mLevelEfs5, sc_runFootEffectID[m_d88], 0, &pos, nullptr, &size);
                 break;
         }
     }
@@ -2329,12 +2330,12 @@ void daPlBase_c::setSandEffect() {
                 m_db0,
                 mPos.z
             );
-            static const char *scSandJumpEffectNames[] = {
+            static const char *scSandDiveEffectID[] = {
                 "Wm_mr_sanddive",
                 "Wm_mr_sanddive_m",
                 "Wm_mr_sanddive_s"
             };
-            dEf::createPlayerEffect(mPlayerNo, scSandJumpEffectNames[idx], 0, &pos, nullptr, nullptr);
+            dEf::createPlayerEffect(mPlayerNo, scSandDiveEffectID[idx], 0, &pos, nullptr, nullptr);
         }
     }
 }
@@ -2350,10 +2351,10 @@ bool daPlBase_c::setSandJumpEffect() {
 }
 
 void daPlBase_c::setSoundPlyMode() {
-    static const int csSoundPlyMode[] = {
+    static const int scPlayerSound[] = {
         0, 1, 2, 3, 4, 5, 1
     };
-    mSndObj.m_b0 = csSoundPlyMode[mPowerup];
+    mSndObj.m_b0 = scPlayerSound[mPowerup];
 }
 
 void daPlBase_c::setFootSound() {
@@ -2841,6 +2842,7 @@ namespace {
 }
 
 float daPlBase_c::getWaterDokanCenterOffset(float param1) {
+    /// @unofficial
     static const float l_maxOffsets[] = { 12.0f, 15.0f, 13.0f, 13.0f };
     float max = 16.0f;
     if (mKind == 1) {
@@ -2948,7 +2950,9 @@ void daPlBase_c::executeDemoInDokan(u8 dir) {
 }
 
 void daPlBase_c::initDemoInDokanUD(u8 dir) {
+    /// @unofficial
     static const float tmps[] = { 34.0f, 36.0f, 38.0f, 38.0f };
+    /// @unofficial
     static const float tmps_big[] = { 40.0f, 42.0f, 44.0f, 44.0f };
     mpMdlMng->setAnm(0);
     m_68 = mPos;
@@ -3009,7 +3013,7 @@ void daPlBase_c::initDemoInDokanUD(u8 dir) {
 }
 
 void daPlBase_c::initDemoInDokanLR(u8 dir) {
-    static const float tmps[] = { 32.0f, 32.0f, 20.0f };
+    static const float l_dokanOffset[] = { 32.0f, 32.0f, 20.0f };
     mpMdlMng->setAnm(131);
     onStatus(STATUS_2A);
     if (dir == 3) {
@@ -3021,7 +3025,7 @@ void daPlBase_c::initDemoInDokanLR(u8 dir) {
     if (mKind == 2) {
         tmp = 32.0f;
     } else {
-        tmp = tmps[(int) mDemoStateChangeParam];
+        tmp = l_dokanOffset[(int) mDemoStateChangeParam];
     }
     if (dir == 3) {
         tmp = -tmp;
@@ -3120,6 +3124,7 @@ bool daPlBase_c::setDemoOutDokanAction(int param1, DokanDir_e dir) {
     } else if (nextGoto->mFlags & 4) {
         m_80 = 3;
     }
+    /// @unofficial
     static sFStateVirtualID_c<daPlBase_c> *stateIDs[] = {
         &StateID_DemoOutDokanU,
         &StateID_DemoOutDokanD,
@@ -3858,8 +3863,8 @@ void daPlBase_c::executeDemoGoal_KimePose() {
                     if (m_9c == 0) {
                         SndAudioMgr::sInstance->startSystemSe(SE_OBJ_GOAL_GET_COIN_BONUS, 1);
                     }
-                    static const int coinBonus[] = {20, 15, 10, 5 };
-                    dMultiMng_c::mspInstance->setBattleCoin(mPlayerNo, coinBonus[m_a0]);
+                    static const int scGoalCoin[] = {20, 15, 10, 5 };
+                    dMultiMng_c::mspInstance->setBattleCoin(mPlayerNo, scGoalCoin[m_a0]);
                 }
             }
         }
@@ -4117,8 +4122,8 @@ bool daPlBase_c::fn_80052500(int p, float f, int) {
 }
 
 bool daPlBase_c::isHitWallKinopioWalk(int dir) {
-    static const int sc_DirFlag[] = { 0x100000, 0x80000 };
-    if (checkBGCrossWall(dir) || sc_DirFlag[dir] & m_d40) {
+    static const int scViewHitFlag[] = { 0x100000, 0x80000 };
+    if (checkBGCrossWall(dir) || m_d40 & scViewHitFlag[dir]) {
         return true;
     }
     return false;
@@ -4789,7 +4794,9 @@ void daPlBase_c::calcReductionScale() {
         case 3:
             if (m_04) {
                 int idx = m_04 - 1;
+                /// @unofficial
                 static const float floats[] = { 0.0f, 0.2f, 0.0f, 0.4f };
+                /// @unofficial
                 static const float floats2[] = { 0.02f, 0.025f, 0.04f, 0.06f };
                 if (sLib::chase(&m_08, floats[idx], floats2[idx])) {
                     m_04--;
@@ -5305,8 +5312,8 @@ void daPlBase_c::postBgCross() {
 }
 
 float daPlBase_c::getWaterCheckPosY() {
-    static const float waterCheckOffsets[] = { 4.0f, 8.0f, 16.0f };
-    return mPos.y + waterCheckOffsets[getTallType(-1)];
+    static const float scWaterOffsetY[] = { 4.0f, 8.0f, 16.0f };
+    return mPos.y + scWaterOffsetY[getTallType(-1)];
 }
 
 void daPlBase_c::checkWater() {
