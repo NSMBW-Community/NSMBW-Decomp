@@ -4155,21 +4155,21 @@ bool daPlBase_c::isBossDemoLand() {
     return true;
 }
 
-bool daPlBase_c::fn_80052500(int p, float f, int) {
-    mVec3_c tmp = mPos;
-    float tmpf = f * 1.2f;
-    tmp.x += f + sc_DirSpeed[p];
+bool daPlBase_c::fn_80052500(int p, float f, int i2) {
+    mVec3_c tmp(
+mPos.x + f * sc_DirSpeed[p],
+        mPos.y,
+        mPos.z
+    );
     float a = 4.0f;
-    if (tmpf < 4.0f) {
-        a = tmpf;
+    if (a < 1.2f * f) {
+        a = 1.2f * f;
     }
     tmp.y = mPos.y + a;
     float y;
-    if (mBc.checkGround(&tmp, &y, mLayer, m_ca1, -1)) {
-        float mpy = mPos.y;
-        if (EGG::Mathf::abs(y - mpy) < a) {
-            if (p == 1) {
-                tmp.y = mpy - 4.0f;
+    if (mBc.checkGround(&tmp, &y, mLayer, m_ca1, -1) && EGG::Mathf::abs(y - mPos.y) < a) {
+            if (i2 == 1) {
+                tmp.y = mPos.y - 4.0f;
                 float y2;
                 if (dBc_c::checkWater(tmp.x, tmp.y, mLayer, &y2) &&
                     m_ca4.y >= 0.0f &&
@@ -4179,12 +4179,10 @@ bool daPlBase_c::fn_80052500(int p, float f, int) {
                     return false;
                 }
             }
+return true;
         }
-    } else {
-        return false;
+            return false;
     }
-    return true;
-}
 
 bool daPlBase_c::isHitWallKinopioWalk(int dir) {
     static const int scViewHitFlag[] = { 0x100000, 0x80000 };
