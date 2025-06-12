@@ -328,6 +328,12 @@ public:
 private:
     bool mIsLinked; ///< Whether this collider has been placed in the collider list.
 
+    // Getters / setters
+public:
+    float getXOffset(int idx) { return mCollOffsetX[idx]; }
+    float getYOffset(int idx) { return mCollOffsetY[idx]; }
+
+private:
     typedef bool (*hitCheck)(dCc_c *, dCc_c *);
 
     /**

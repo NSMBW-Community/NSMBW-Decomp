@@ -615,7 +615,6 @@ void daPlBase_c::setSlipActionViewLimitEnd() {
     }
 }
 
-// Doesn't match 100%
 void daPlBase_c::slipActionMove(int param) {
     onStatus(STATUS_30);
     if (mSpeedF) {
@@ -647,8 +646,8 @@ void daPlBase_c::slipActionMove(int param) {
                     mAccelF = 0.5f * mAccelF;
                 }
                 if (EGG::Mathf::abs(mSpeedF) < 1.0f &&
-                    ((mCc.mCollOffsetX[0] < 0.0f && mSpeedF >= 0.0f) ||
-                    (mCc.mCollOffsetX[0] > 0.0f && mSpeedF <= 0.0f)))
+                    ((mCc.getXOffset(0) < 0.0f && mSpeedF >= 0.0f) ||
+                    (mCc.getXOffset(0) > 0.0f && mSpeedF <= 0.0f)))
                 {
                     setSlipActionEnd();
                 }
