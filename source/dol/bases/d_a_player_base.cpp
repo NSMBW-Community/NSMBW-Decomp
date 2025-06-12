@@ -2938,9 +2938,7 @@ void daPlBase_c::executeDemoInDokan(u8 dir) {
             break;
         case DEMO_IN_DOKAN_ACTION_3:
             if (!mKey.buttonWalk(nullptr)) {
-                short ang = getMukiAngle(mDirection);
-                short step = scDokanOutTurnSpeed[0];
-                if (!mAngle.y.chase(ang, step)) {
+                if (!mAngle.y.chase(getMukiAngle(mDirection), scDokanOutTurnSpeed[0])) {
                     break;
                 }
             }
@@ -3212,7 +3210,7 @@ void daPlBase_c::executeDemoOutDokanUD() {
         case DEMO_IN_DOKAN_ACTION_0: {
             int cond = 0;
             if (mKind == 2) {
-                if (sLib::chase(&mAngle.y.mAngle, 0, scDokanOutTurnSpeed[0])) {
+                if (mAngle.y.chase(0, scDokanOutTurnSpeed[0])) {
                     cond = 1;
                 }
             } else {
@@ -3381,19 +3379,22 @@ void daPlBase_c::executeState_DemoOutDokanRoll() {
                     cond = 1;
                 }
             }
-            mVec3_c tmp = delta - mPos;
-            tmp.normalize();
-            mVec3_c tmp2 = tmp * 1.0f;
-            mPos += tmp2;
-            if (!(mPos - delta).lt1() || cond != 1) {
-                break;
+            mVec3_c copy;
+            mVec3_c diff1 = delta - mPos;
+            copy.set(diff1.x, diff1.y, diff1.z);
+            copy.normalize();
+            mPos += 1.0f * copy;
+
+            if ((mPos - delta).isSmallerThan1()) {
+                if (cond == 1) {
+                    mPos = delta;
+                    mDemoSubstate = DEMO_IN_DOKAN_ACTION_1;
+                }
             }
-            mPos = delta;
-            mDemoSubstate = DEMO_IN_DOKAN_ACTION_1;
             break;
         }
         case DEMO_IN_DOKAN_ACTION_1: {
-            mAng v = mFollowEf.mAng;
+            mAng v = *mpBgCtr->m_bc;
             if (mDirection == 1) {
                 v = -v;
             }
@@ -3402,10 +3403,10 @@ void daPlBase_c::executeState_DemoOutDokanRoll() {
             sLib::chase(&m_74.y, tmp, 0.75f);
             mMtx_c m1, m2;
             m1.trans(delta);
-            m1.ZrotM(mFollowEf.mAng);
+            m1.ZrotM(*mpBgCtr->m_bc);
             m2.trans(0.0f, m_74.y, 0.0f);
             m1.concat(m2);
-            m2.multVecZero(mPos);
+            m1.multVecZero(mPos);
             if (m_74.y <= tmp) {
                 changeNextScene(1);
                 mDemoSubstate = DEMO_IN_DOKAN_ACTION_3;

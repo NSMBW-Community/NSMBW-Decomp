@@ -193,7 +193,13 @@ public:
         return EGG::Mathf::sqrt(PSVECSquareDistance((const Vec*) this, (const Vec*) &other));
     }
 
-    bool lt1() const { return PSVECMag((const Vec *) this) <= 1.0f; }
+    friend mVec3_c operator*(f32 f, const mVec3_c &v) {
+        return mVec3_c(v.x * f, v.y * f, v.z * f);
+    }
+
+    bool isSmallerThan1() const {
+        return PSVECMag(*this) <= 1.0f;
+    }
 
     /// @brief Normalizes the vector.
     /// @return The vector's magnitude.
