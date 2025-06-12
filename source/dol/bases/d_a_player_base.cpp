@@ -1491,7 +1491,7 @@ bool daPlBase_c::checkSakaReverse() {
 }
 
 bool daPlBase_c::isSaka() {
-    if (m_d44 & 0x80) {
+    if (checkD44Status(7)) {
         return true;
     }
     return false;

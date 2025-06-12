@@ -808,6 +808,14 @@ public:
     const mVec3_c &getHatPos() const { return getModelMng()->mpMdl->getHatPos(); }
     float get_c9c() const { return m_c9c; }
 
+    bool checkD44Status(int bit) const {
+        if (m_d44 & (1 << bit)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
     void setStatus(int);
     void calcTimerProc();
     dPyMdlBase_c* getModel();
