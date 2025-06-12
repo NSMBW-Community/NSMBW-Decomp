@@ -118,8 +118,6 @@ public:
 
     float getYCenter() const { return mPos.y + mCenterOffs.y; }
 
-    void incPos(mVec3_c delta) { mPos += delta; }
-
 private:
     /**
      * @brief Sets temporary data to be used for the next actor's construction.

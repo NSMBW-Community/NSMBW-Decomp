@@ -6018,7 +6018,6 @@ dPyMdlBase_c * daPlBase_c::getModel() {
     return mpMdlMng->mpMdl;
 }
 
-// Doesn't match 100%
 void daPlBase_c::calcPlayerSpeedXY() {
     static const float ratios[] = { 0.6f, 0.55f, 0.5f, 0.45f, 0.4f };
     float tmp = 0.0f;
@@ -6119,10 +6118,10 @@ void daPlBase_c::calcPlayerSpeedXY() {
 
     setSandEffect();
 
-    incPos(m_d30);
+    mPos += mVec3_c(m_d30.x, m_d30.y, m_d30.z);
 
-    m_cc0 = mSpeed.y + mAccelY;
-    mSpeed.y = mSpeed.y + mAccelY;
+    m_cc0 = mSpeed.y;
+    mSpeed.y += mAccelY;
 
     if (mSpeed.y < k) {
         mSpeed.y = k;
