@@ -60,6 +60,7 @@ public:
     const mVec3_c &getHatPos() const { return mHatPosMaybe; }
     void setAng(mAng3_c ang) { m_1fe = ang; }
     mAng3_c getAng() const { return m_1fe; }
+    float getFrameMax() { return mAnm.mFrameMax; }
 
     u8 mPad1[0x24];
     m3d::anmChr_c mAnm;
@@ -122,10 +123,8 @@ public:
     u8 mPad[4];
     dPyMdlBase_c *mpMdl;
 
-    dPyMdlBase_c *getModel() const { return mpMdl; }
-
     void setAnm(int anmID, float rate, float blendDuration, float f) {
-        getModel()->setAnm(anmID, rate, blendDuration, f);
+        mpMdl->setAnm(anmID, rate, blendDuration, f);
     }
 
     void setAnm(int anmID, float blendDuration, float f) {
@@ -134,14 +133,24 @@ public:
     }
 
     void setAnm(int anmID, const dPyAnm_HIO_c &hio, float f = 0.0f) {
-        getModel()->setAnm(anmID, hio.mRate, hio.mBlendDuration, f);
+        mpMdl->setAnm(anmID, hio.mRate, hio.mBlendDuration, f);
     }
 
     void setAnm(int anmID, float f = 0.0f) {
         setAnm(anmID, m_hio.mPyAnm.mAnm[anmID], f);
     }
 
-    bool isAnm(int i) const { return getModel()->m_154 == i; }
+    int getAnm() const {
+        return mpMdl->m_154;
+    }
+
+    float getLastFrame() const {
+        return mpMdl->mAnm.mFrameMax - 1.0f;
+    }
+
+    bool isAnmStop() const {
+        return mpMdl->mAnm.isStop();
+    }
 
     static dPyMdlBase_HIO_c m_hio;
 };

@@ -466,9 +466,9 @@ bool daPlBase_c::setCancelCrouch() {
     if (checkStandUpRoofOnLift()) {
         return false;
     }
-    if (mpMdlMng->mpMdl->m_154 != 21) {
+    if (mpMdlMng->getAnm() != 21) {
         mpMdlMng->setAnm(21);
-        mpMdlMng->mpMdl->setFrame(mpMdlMng->mpMdl->mAnm.mFrameMax - 1.0f);
+        mpMdlMng->mpMdl->setFrame(mpMdlMng->getLastFrame());
     }
     if (!(m_d40 & 0x4000)) {
         mpMdlMng->mpMdl->setRate(-1.0f);
@@ -919,11 +919,11 @@ void daPlBase_c::HipAction_Ground() {
 }
 
 void daPlBase_c::HipAction_StandNormal() {
-    if (mpMdlMng->mpMdl->m_154 != 18) {
+    if (mpMdlMng->getAnm() != 18) {
         mpMdlMng->setAnm(18);
     }
     if (m_d40 & 1) {
-        if (mpMdlMng->mpMdl->mAnm.isStop()) {
+        if (mpMdlMng->isAnmStop()) {
             if (!mKey.buttonDown()) {
                 offStatus(STATUS_AE);
                 setHipAttack_StandNormalEnd();
@@ -1052,7 +1052,7 @@ void daPlBase_c::initializeState_JumpDai() {
     mKey.onStatus(dAcPyKey_c::STATUS_NO_INPUT);
     mSpeed.y = 0.0f;
     mSpeedF = 0.0f;
-    if (mpMdlMng->isAnm(20)) {
+    if (mpMdlMng->getAnm() == 20) {
         mSubstate = JUMP_DAI_ACTION_1;
     } else {
         mpMdlMng->setAnm(7);
@@ -1118,7 +1118,7 @@ void daPlBase_c::initializeState_PlayerJumpDai() {
     m_354 = mSpeedF;
     mSpeedF = 0.0f;
     mSpeed.y = 0.0f;
-    if (mpMdlMng->mpMdl->m_154 != 20) {
+    if (mpMdlMng->getAnm() != 20) {
         mpMdlMng->setAnm(7);
     }
     if (mKey.triggerJumpBuf(5)) {
