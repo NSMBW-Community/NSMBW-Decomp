@@ -6514,8 +6514,8 @@ void daPlBase_c::calcHeadAttentionAngle() {
 
     mAng3_c angle = mAng3_c(
         0,
-        mpMdlMng->mpMdl->getAng().y,
-        mpMdlMng->mpMdl->getAng().z
+        mpMdlMng->getAng().y,
+        mpMdlMng->getAng().z
     );
 
     if (!isLiftUp() && !isStatus(STATUS_94) && !isStatus(STATUS_2E)) {
@@ -6527,14 +6527,14 @@ void daPlBase_c::calcHeadAttentionAngle() {
 
             if (mpMdlMng->mpMdl->mFlags & 0x100) {
                 if (isStatus(STATUS_95)) {
-                    pdVar10 = (daPlBase_c *) dAttention_c::mspInstance->searchPlayer(this, getHatPos());
+                    pdVar10 = (daPlBase_c *) dAttention_c::mspInstance->searchPlayer(this, mpMdlMng->getHatPos());
                 }
             } else {
-                pdVar10 = (daPlBase_c *) dAttention_c::mspInstance->search(getHatPos());
+                pdVar10 = (daPlBase_c *) dAttention_c::mspInstance->search(mpMdlMng->getHatPos());
             }
 
             if (pdVar10 != nullptr) {
-                mVec3_c hatPos = getHatPos();
+                mVec3_c hatPos = mpMdlMng->getHatPos();
                 mVec3_c _60 = mVec3_c(
                     pdVar10->getLookatPos().x - hatPos.x,
                     pdVar10->getLookatPos().y - hatPos.y,
@@ -6602,7 +6602,7 @@ void daPlBase_c::calcHeadAttentionAngle() {
                 sLib::addCalcAngle(&angle.z.mAngle, r30.mAngle, 8, 0x400, 0x40);
             }
 
-            mpMdlMng->mpMdl->setAng(angle);
+            mpMdlMng->setAng(angle);
 
             if (!cond && angle.z == mAng(0) && abs(angle.y.mAngle - mAngle.y.mAngle) < 0x100) {
                 mpMdlMng->mpMdl->m_204 = 0;
@@ -6614,6 +6614,6 @@ void daPlBase_c::calcHeadAttentionAngle() {
 
     angle.y = 0;
     angle.z = 0;
-    mpMdlMng->mpMdl->setAng(angle);
+    mpMdlMng->setAng(angle);
     mpMdlMng->mpMdl->m_204 = 0;
 }

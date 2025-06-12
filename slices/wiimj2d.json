@@ -41,7 +41,8 @@
         "getType__Q23m3d6bmdl_cCFv",
         "getType__Q23m3d13anmChrBlend_cCFv",
         "getType__Q23m3d8anmChr_cCFv",
-        "getType__Q23m3d8anmVis_cCFv"
+        "getType__Q23m3d8anmVis_cCFv",
+        "dummy__10daPlBase_cFv"
     ],
     "keepWeak": [
         "changeState__99sStateStateMgr_c<18dActorMultiState_c,12sFStateMgr_c,20sStateMethodUsr_FI_c,20sStateMethodUsr_FI_c>FRC12sStateIDIf_c",

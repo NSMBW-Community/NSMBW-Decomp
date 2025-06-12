@@ -57,9 +57,6 @@ public:
     bool isFootStepTiming();
     void getJointPos(mVec3_c *, int);
 
-    const mVec3_c &getHatPos() const { return mHatPosMaybe; }
-    void setAng(mAng3_c ang) { m_1fe = ang; }
-    mAng3_c getAng() const { return m_1fe; }
     float getFrameMax() { return mAnm.mFrameMax; }
 
     u8 mPad1[0x24];
@@ -151,6 +148,15 @@ public:
     bool isAnmStop() const {
         return mpMdl->mAnm.isStop();
     }
+
+    mAng3_c getAng() const { return mpMdl->m_1fe; }
+    void setAng(mAng3_c ang) { mpMdl->m_1fe = ang; }
+
+    u32 getFlags() const {
+        return mpMdl->mFlags;
+    }
+
+    mVec3_c &getHatPos() const { return mpMdl->mHatPosMaybe; }
 
     static dPyMdlBase_HIO_c m_hio;
 };
@@ -860,9 +866,12 @@ public:
     float calcStarAccel(float f) { return 3.0f * f; }
     float calcIdkAccel(float f) { return 0.375f * f; }
     void set_m_d80(int i, float f) { m_d80[i] = f; }
-    dPyMdlMng_c *getModelMng() const { return mpMdlMng; }
-    const mVec3_c &getHatPos() const { return getModelMng()->mpMdl->getHatPos(); }
     float get_c9c() const { return m_c9c; }
+
+    // [Needed to place getOldStateID in the correct location]
+    void dummy() {
+        mStateMgr.getOldStateID();
+    }
 
     bool checkD40Status(int bit) const {
         if (m_d40 & (1 << bit)) {
