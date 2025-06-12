@@ -1773,13 +1773,13 @@ daPlBase_c::PowerChangeType_e daPlBase_c::getPowerChangeType(bool mode) {
     if (!mode && isStatus(STATUS_AD)) {
         return POWER_CHANGE_0;
     }
-    if (m_d40 & 0x800000) {
+    if (checkD40Status(23)) {
         return POWER_CHANGE_1;
     }
-    if (m_d40 & 0x1000000) {
+    if (checkD40Status(24)) {
         return POWER_CHANGE_2;
     }
-    if (m_d40 & 0x400000) {
+    if (checkD40Status(22)) {
         return POWER_CHANGE_2;
     }
     return POWER_CHANGE_0;
