@@ -745,22 +745,19 @@ void daPlBase_c::setHipAttackEffect() {
         fn_80057e70(SE_PLY_HIP_ATTACK_M, false);
         return;
     }
-    if (
-        (mGroundType < GROUND_TYPE_DEFAULT || mGroundType > GROUND_TYPE_CLOUD) &&
-        (mGroundType < GROUND_TYPE_MANTA || mGroundType > GROUND_TYPE_CARPET)
-    ) {
+
+    if ((groundTypeCheck1() || groundTypeCheck2()) && (groundTypeCheck3() || groundTypeCheck4())) {
         switch (mGroundType) {
             case GROUND_TYPE_FUNSUI:
             case GROUND_TYPE_LEAF:
                 fn_80057e70(SE_PLY_HIP_ATTACK_SOFT, false);
-                break;
-            case GROUND_TYPE_WOOD:
-                fn_80057e70(SE_PLY_HIP_ATTACK, false);
-                break;
             default:
+                return;
+            case GROUND_TYPE_WOOD:
                 break;
         }
     }
+    fn_80057e70(SE_PLY_HIP_ATTACK, false);
 }
 
 void daPlBase_c::setHipAttackDropEffect() {

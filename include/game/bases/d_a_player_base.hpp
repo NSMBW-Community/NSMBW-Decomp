@@ -180,6 +180,22 @@ public:
         GROUND_TYPE_WOOD
     };
 
+    bool groundTypeCheck1() {
+        return (mGroundType < GROUND_TYPE_DEFAULT) ? true : false;
+    }
+
+    bool groundTypeCheck2() {
+        return (mGroundType > GROUND_TYPE_CLOUD) ? true : false;
+    }
+
+    bool groundTypeCheck3() {
+        return (mGroundType < GROUND_TYPE_MANTA) ? true : false;
+    }
+
+    bool groundTypeCheck4() {
+        return (mGroundType > GROUND_TYPE_CARPET) ? true : false;
+    }
+
     enum SlipSubstate_e {
         SLIP_ACTION_NONE,
         SLIP_ACTION_STOOP,
