@@ -155,9 +155,20 @@ public:
         DAMAGE_9, DAMAGE_A, DAMAGE_B, DAMAGE_C
     };
 
-    enum D88_TYPE_e {
-        T_0, T_1, T_2, T_3, T_4, T_5, T_6, T_7,
-        T_8, T_9, T_A, T_B, T_C
+    enum GroundType_e {
+        GROUND_TYPE_DEFAULT,
+        GROUND_TYPE_SNOW,
+        GROUND_TYPE_SAND,
+        GROUND_TYPE_ICE,
+        GROUND_TYPE_DIRT,
+        GROUND_TYPE_WATER,
+        GROUND_TYPE_CLOUD,
+        GROUND_TYPE_FUNSUI,
+        GROUND_TYPE_MANTA,
+        GROUND_TYPE_BEACH,
+        GROUND_TYPE_CARPET,
+        GROUND_TYPE_LEAF,
+        GROUND_TYPE_WOOD
     };
 
     enum SlipSubstate_e {
@@ -942,7 +953,7 @@ public:
     u32 m_d78;
     u32 m_d7c;
     float m_d80[2];
-    D88_TYPE_e m_d88;
+    GroundType_e mGroundType;
     float m_d8c;
     int mNoHitObjTimer;
     mAng m_d94, m_d96, m_d98, m_d9a;

@@ -738,20 +738,23 @@ void daPlBase_c::setHipAttackEffect() {
     if ((m_d40 & 0x18000000) == 0) {
         setLandSmokeEffect(getTallType(-1));
     }
-    if (m_d88 == T_5) {
+    if (mGroundType == GROUND_TYPE_WATER) {
         fn_80057e70(SE_PLY_HPDP_SPLASH, false);
     }
     if (mPowerup == POWERUP_MINI_MUSHROOM) {
         fn_80057e70(SE_PLY_HIP_ATTACK_M, false);
         return;
     }
-    if ((m_d88 < T_0 || m_d88 > T_6) && (m_d88 < T_8 || m_d88 > T_A)) {
-        switch (m_d88) {
-            case T_7:
-            case T_B:
+    if (
+        (mGroundType < GROUND_TYPE_DEFAULT || mGroundType > GROUND_TYPE_CLOUD) &&
+        (mGroundType < GROUND_TYPE_MANTA || mGroundType > GROUND_TYPE_CARPET)
+    ) {
+        switch (mGroundType) {
+            case GROUND_TYPE_FUNSUI:
+            case GROUND_TYPE_LEAF:
                 fn_80057e70(SE_PLY_HIP_ATTACK_SOFT, false);
                 break;
-            case T_C:
+            case GROUND_TYPE_WOOD:
                 fn_80057e70(SE_PLY_HIP_ATTACK, false);
                 break;
             default:
@@ -2029,11 +2032,11 @@ void daPlBase_c::setLandSE() {
         SE_PLY_LAND_LEAF,
         SE_PLY_LAND_ROCK
     };
-    startFootSoundPlayer(scLandSeID[m_d88]);
+    startFootSoundPlayer(scLandSeID[mGroundType]);
 }
 
 void daPlBase_c::setSlipSE() {
-    if (m_d88 == POWERUP_PENGUIN_SUIT) {
+    if (mGroundType == GROUND_TYPE_WATER) {
         fn_80057fd0(SE_PLY_PNGN_SLIP_SEA, EGG::Mathf::abs(mSpeedF), false);
         return;
     }
@@ -2052,7 +2055,7 @@ void daPlBase_c::setSlipSE() {
         SE_PLY_SLIP,
         SE_PLY_SLIP
     };
-    fn_80057f60(scSlipSeID[m_d88], false);
+    fn_80057f60(scSlipSeID[mGroundType], false);
 }
 
 void daPlBase_c::setLandSmokeEffect(int param1) {
@@ -2071,9 +2074,9 @@ void daPlBase_c::setLandSmokeEffect(int param1) {
         {"Wm_mr_landsmoke_ss", "Wm_mr_landsmoke_s", "Wm_mr_landsmoke" },
         {"Wm_mr_landsmoke_ss", "Wm_mr_landsmoke_s", "Wm_mr_landsmoke" }
     };
-    if (m_d88 == 7) {
+    if (mGroundType == GROUND_TYPE_FUNSUI) {
         setSandFunsuiLandEffect();
-    } else if (m_d88 == 5) {
+    } else if (mGroundType == GROUND_TYPE_WATER) {
         PLAYER_POWERUP_e powerup = mPowerup;
         float sz = 1.0f;
         if (powerup == POWERUP_MINI_MUSHROOM) {
@@ -2082,9 +2085,9 @@ void daPlBase_c::setLandSmokeEffect(int param1) {
             sz = 0.8f;
         }
         mVec3_c size(sz, sz, sz);
-        dEf::createPlayerEffect(mPlayerNo, sc_landSmokeEffectID[m_d88][param1], 0, &mPos, nullptr, &size);
+        dEf::createPlayerEffect(mPlayerNo, sc_landSmokeEffectID[mGroundType][param1], 0, &mPos, nullptr, &size);
     } else {
-        dEf::createPlayerEffect_change(mPlayerNo, sc_landSmokeEffectID[m_d88][param1], 0, &mPos, nullptr, nullptr);
+        dEf::createPlayerEffect_change(mPlayerNo, sc_landSmokeEffectID[mGroundType][param1], 0, &mPos, nullptr, nullptr);
     }
 }
 
@@ -2098,7 +2101,7 @@ void daPlBase_c::setLandSmokeEffectLight() {
     float sz = dPyMdlMng_c::m_hio.m_08[mpMdlMng->mpMdl->m_152];
     mVec3_c size(sz, sz, sz);
     if (m_d40 & 0x4000000) {
-        if (m_d88 == 7) {
+        if (mGroundType == GROUND_TYPE_FUNSUI) {
             setSandFunsuiLandEffect();
         } else if ((m_d40 & 0x18000000) == 0) {
             dEf::createPlayerEffect(mPlayerNo, "Wm_mr_cmnsndlandsmk", 0, &pos, nullptr, &size);
@@ -2109,7 +2112,7 @@ void daPlBase_c::setLandSmokeEffectLight() {
 }
 
 bool daPlBase_c::setSandFunsuiLandEffect() {
-    if (m_d88 == 7) {
+    if (mGroundType == GROUND_TYPE_FUNSUI) {
         dEf::createPlayerEffect(mPlayerNo, "Wm_mr_spsmoke", 0, &mPos, nullptr, nullptr);
         return true;
     }
@@ -2163,7 +2166,7 @@ void daPlBase_c::setSlipSmokeEffect() {
         { "Wm_mr_slipsmoke_ss", "Wm_mr_slipsmoke" }
     };
 
-    if (m_d88 == 5) {
+    if (mGroundType == GROUND_TYPE_WATER) {
         setSlipOnWaterEffect(&mLevelEfs3);
         return;
     }
@@ -2173,7 +2176,7 @@ void daPlBase_c::setSlipSmokeEffect() {
     if (mPowerup != POWERUP_MINI_MUSHROOM) {
         idx = 1;
     }
-    dEf::createPlayerEffect_change(mPlayerNo, &mLevelEfs3, sc_slipSmokeEffectID[m_d88][idx], 0, &pos, nullptr, nullptr);
+    dEf::createPlayerEffect_change(mPlayerNo, &mLevelEfs3, sc_slipSmokeEffectID[mGroundType][idx], 0, &pos, nullptr, nullptr);
 }
 
 void daPlBase_c::setBrakeSmokeEffect(mVec3_c &offset) {
@@ -2193,7 +2196,7 @@ void daPlBase_c::setBrakeSmokeEffect(mVec3_c &offset) {
         { "Wm_mr_brakesmoke_ss", "Wm_mr_brakesmoke" }
     };
 
-    if (m_d88 == 5) {
+    if (mGroundType == GROUND_TYPE_WATER) {
         setSlipOnWaterEffect(&mLevelEfs4);
         return;
     }
@@ -2201,7 +2204,7 @@ void daPlBase_c::setBrakeSmokeEffect(mVec3_c &offset) {
     if (mPowerup != POWERUP_MINI_MUSHROOM) {
         idx = 1;
     }
-    dEf::createPlayerEffect_change(mPlayerNo, &mLevelEfs4, sc_brakeSmokeEffectID[m_d88][idx], 0, &offset, nullptr, nullptr);
+    dEf::createPlayerEffect_change(mPlayerNo, &mLevelEfs4, sc_brakeSmokeEffectID[mGroundType][idx], 0, &offset, nullptr, nullptr);
 }
 
 void daPlBase_c::setTurnSmokeEffect() {
@@ -2221,7 +2224,7 @@ void daPlBase_c::setTurnSmokeEffect() {
             SE_PLY_BRAKE,
             SE_PLY_BRAKE
         };
-        fn_80057f60(scTurnSeID[m_d88], 0);
+        fn_80057f60(scTurnSeID[mGroundType], 0);
     }
     static const char *sc_turnSmokeEffectID[][2] = {
         { "Wm_mr_turn_usual_r", "Wm_mr_turn_usual_l" },
@@ -2241,7 +2244,7 @@ void daPlBase_c::setTurnSmokeEffect() {
     static const float sc_turnSmokeScale[] = { 0.5f, 0.8f, 1.0f };
     mVec3_c pos;
     mpMdlMng->mpMdl->getJointPos(&pos, 1);
-    if (m_d88 == 5) {
+    if (mGroundType == GROUND_TYPE_WATER) {
         if (mPos.y < m_da4 - 4.0f) {
             fadeOutTurnEffect();
             return;
@@ -2250,11 +2253,11 @@ void daPlBase_c::setTurnSmokeEffect() {
     }
     float sz = sc_turnSmokeScale[getTallType(-1)];
     mVec3_c size(sz, sz, sz);
-    if (mFollowEf.m_118 == 1 && mFollowEf.m_114 == m_d88) {
+    if (mFollowEf.m_118 == 1 && mFollowEf.m_114 == mGroundType) {
         mFollowEf.follow(&pos, 0, 0);
     } else {
-        dEf::createPlayerEffect(mPlayerNo, &mFollowEf, sc_turnSmokeEffectID[m_d88][mDirection], 0, &pos, nullptr, &size);
-        mFollowEf.m_114 = m_d88;
+        dEf::createPlayerEffect(mPlayerNo, &mFollowEf, sc_turnSmokeEffectID[mGroundType][mDirection], 0, &pos, nullptr, &size);
+        mFollowEf.m_114 = mGroundType;
         mFollowEf.m_118 = 1;
     }
 }
@@ -2284,21 +2287,22 @@ void daPlBase_c::setRunFootEffect() {
         nullptr
     };
     if ((m_d40 & 0x18000000) == 0 && isStatus(STATUS_62)) {
-        switch (m_d88) {
-            default:
-                break;
-            case T_1:
-            case T_2:
-            case T_3:
-            case T_5:
-            case T_7:
-            case T_9:
+        switch (mGroundType) {
+            case GROUND_TYPE_SNOW:
+            case GROUND_TYPE_SAND:
+            case GROUND_TYPE_ICE:
+            case GROUND_TYPE_WATER:
+            case GROUND_TYPE_FUNSUI:
+            case GROUND_TYPE_BEACH: {
                 mVec3_c pos;
                 mpMdlMng->mpMdl->getJointPos(&pos, 1);
                 static const float sc_runFootScale[] = { 0.5f, 0.8f, 1.0f };
                 float sz = sc_runFootScale[getTallType(-1)];
                 mVec3_c size(sz, sz, sz);
-                dEf::createPlayerEffect(mPlayerNo, &mLevelEfs5, sc_runFootEffectID[m_d88], 0, &pos, nullptr, &size);
+                dEf::createPlayerEffect(mPlayerNo, &mLevelEfs5, sc_runFootEffectID[mGroundType], 0, &pos, nullptr, &size);
+                break;
+            }
+            default:
                 break;
         }
     }
@@ -2377,7 +2381,7 @@ void daPlBase_c::setFootSound() {
             SE_PLY_FOOTNOTE_LEAF,
             SE_PLY_FOOTNOTE_WOOD
         };
-        startFootSoundPlayer(scFootSoundID[m_d88]);
+        startFootSoundPlayer(scFootSoundID[mGroundType]);
     }
 }
 
@@ -4157,7 +4161,7 @@ bool daPlBase_c::isBossDemoLand() {
 
 bool daPlBase_c::fn_80052500(int p, float f, int i2) {
     mVec3_c tmp(
-mPos.x + f * sc_DirSpeed[p],
+        mPos.x + f * sc_DirSpeed[p],
         mPos.y,
         mPos.z
     );
@@ -4168,21 +4172,21 @@ mPos.x + f * sc_DirSpeed[p],
     tmp.y = mPos.y + a;
     float y;
     if (mBc.checkGround(&tmp, &y, mLayer, m_ca1, -1) && EGG::Mathf::abs(y - mPos.y) < a) {
-            if (i2 == 1) {
-                tmp.y = mPos.y - 4.0f;
-                float y2;
-                if (dBc_c::checkWater(tmp.x, tmp.y, mLayer, &y2) &&
-                    m_ca4.y >= 0.0f &&
-                    y <= y2 &&
-                    mPos.y <= y2 - 4.0f
-                ) {
-                    return false;
-                }
+        if (i2 == 1) {
+            tmp.y = mPos.y - 4.0f;
+            float y2;
+            if (dBc_c::checkWater(tmp.x, tmp.y, mLayer, &y2) &&
+                m_ca4.y >= 0.0f &&
+                y <= y2 &&
+                mPos.y <= y2 - 4.0f
+            ) {
+                return false;
             }
-return true;
         }
-            return false;
+        return true;
     }
+    return false;
+}
 
 bool daPlBase_c::isHitWallKinopioWalk(int dir) {
     static const int scViewHitFlag[] = { 0x100000, 0x80000 };
@@ -4937,7 +4941,7 @@ void daPlBase_c::clearBgCheckInfo() {
     m_d78 = 0;
     m_d30.set(0.0f, 0.0f, 0.0f);
     m_d3c = 0.0f;
-    m_d88 = T_0;
+    mGroundType = GROUND_TYPE_DEFAULT;
     m_dac = 0;
     m_d80[0] = 0.0f;
     m_d80[1] = 0.0f;
@@ -5088,26 +5092,26 @@ void daPlBase_c::checkBgCross() {
             switch (footAttr) {
                 case 2:
                     m_d40 |= 0x400000;
-                    m_d88 = T_1;
+                    mGroundType = GROUND_TYPE_SNOW;
                     break;
                 case 3:
                 case 12:
                     m_d40 |= 0x4000000;
                     if (m_d44 & 2) {
-                        m_d88 = T_7;
+                        mGroundType = GROUND_TYPE_FUNSUI;
                     } else {
-                        m_d88 = T_2;
+                        mGroundType = GROUND_TYPE_SAND;
                     }
                     break;
                 case 15:
                     m_d40 |= 0x4000000;
-                    m_d88 = T_9;
+                    mGroundType = GROUND_TYPE_BEACH;
                     break;
                 case 13:
-                    m_d88 = T_4;
+                    mGroundType = GROUND_TYPE_DIRT;
                     break;
                 case 1:
-                    m_d88 = T_3;
+                    mGroundType = GROUND_TYPE_ICE;
                     if (bgFlags & 0x2000000) {
                         m_d40 |= 0x1000000;
                     } else {
@@ -5130,21 +5134,21 @@ void daPlBase_c::checkBgCross() {
                     }
                     break;
                 case 14:
-                    m_d88 = T_6;
+                    mGroundType = GROUND_TYPE_CLOUD;
                     break;
                 case 11:
-                    m_d88 = T_A;
+                    mGroundType = GROUND_TYPE_CARPET;
                     break;
             }
             if (m_d44 & 2) {
                 if (bgFlags & 0x40000) {
-                    m_d88 = T_8;
+                    mGroundType = GROUND_TYPE_MANTA;
                 }
                 if (bgFlags & 0x80000) {
-                    m_d88 = T_B;
+                    mGroundType = GROUND_TYPE_LEAF;
                 }
                 if (bgFlags & 0x100000) {
-                    m_d88 = T_C;
+                    mGroundType = GROUND_TYPE_WOOD;
                 }
             }
         }
@@ -5338,7 +5342,7 @@ void daPlBase_c::postBgCross() {
             mSpeedF = 0.0f;
         }
         if (m_d40 & 0x8000 && (m_d40 & 0x4000) == 0) {
-            m_d88 = T_5;
+            mGroundType = GROUND_TYPE_WATER;
         }
         if ((m_d44 & 2) == 0 && m_d40 & 2) {
             if (mBc.getSakaType() != 0 && mBc.getSakaUpDown(mDirection) == 1) {
