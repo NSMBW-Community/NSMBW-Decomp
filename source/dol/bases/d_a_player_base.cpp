@@ -2284,23 +2284,13 @@ void daPlBase_c::setRunFootEffect() {
         nullptr
     };
     if ((m_d40 & 0x18000000) == 0 && isStatus(STATUS_62)) {
-        switch (mGroundType) {
-            case GROUND_TYPE_SNOW:
-            case GROUND_TYPE_SAND:
-            case GROUND_TYPE_ICE:
-            case GROUND_TYPE_WATER:
-            case GROUND_TYPE_FUNSUI:
-            case GROUND_TYPE_BEACH: {
-                mVec3_c pos;
-                mpMdlMng->mpMdl->getJointPos(&pos, 1);
-                static const float sc_runFootScale[] = { 0.5f, 0.8f, 1.0f };
-                float sz = sc_runFootScale[getTallType(-1)];
-                mVec3_c size(sz, sz, sz);
-                dEf::createPlayerEffect(mPlayerNo, &mLevelEfs5, sc_runFootEffectID[mGroundType], 0, &pos, nullptr, &size);
-                break;
-            }
-            default:
-                break;
+        if ((groundTypeCheck5() && groundTypeCheck6()) || groundTypeCheck7() || groundTypeCheck8() || groundTypeCheck9()) {
+            mVec3_c pos;
+            mpMdlMng->mpMdl->getJointPos(&pos, 1);
+            static const float sc_runFootScale[] = { 0.5f, 0.8f, 1.0f };
+            float sz = sc_runFootScale[getTallType(-1)];
+            mVec3_c size(sz, sz, sz);
+            dEf::createPlayerEffect(mPlayerNo, &mLevelEfs5, sc_runFootEffectID[mGroundType], 0, &pos, nullptr, &size);
         }
     }
 }

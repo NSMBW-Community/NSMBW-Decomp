@@ -196,6 +196,26 @@ public:
         return (mGroundType > GROUND_TYPE_CARPET) ? true : false;
     }
 
+    bool groundTypeCheck5() {
+        return (mGroundType >= GROUND_TYPE_SNOW) ? true : false;
+    }
+
+    bool groundTypeCheck6() {
+        return (mGroundType <= GROUND_TYPE_ICE) ? true : false;
+    }
+
+    bool groundTypeCheck7() {
+        return (mGroundType == GROUND_TYPE_WATER) ? true : false;
+    }
+
+    bool groundTypeCheck8() {
+        return (mGroundType == GROUND_TYPE_FUNSUI) ? true : false;
+    }
+
+    bool groundTypeCheck9() {
+        return (mGroundType == GROUND_TYPE_BEACH) ? true : false;
+    }
+
     enum SlipSubstate_e {
         SLIP_ACTION_NONE,
         SLIP_ACTION_STOOP,
