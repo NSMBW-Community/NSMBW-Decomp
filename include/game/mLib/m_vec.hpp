@@ -36,6 +36,10 @@ public:
     /// @param y The value to increment by.
     void incY(float y) { this->y += y; }
 
+    float getLength() const {
+        return EGG::Mathf::sqrt(x * x + y * y);
+    }
+
     // mVec2_c &operator=(const mVec2_c &v) { set(v.x, v.y); return *this; }
     mVec2_c &operator=(const mVec2_c &v) { x = v.x; y = v.y; return *this; }
 

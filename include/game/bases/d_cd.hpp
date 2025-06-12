@@ -36,13 +36,25 @@ public:
     u16 mFlags;
 };
 
+/// @unofficial
+struct dRailNode_s {
+    s16 x;
+    s16 y;
+    float mSpeed;
+    float mAccel;
+    u16 mDelay;
+    u16 m_e;
+};
+
 class dCdFile_c {
 public:
     char pad[0xc];
     dCdCourseSettings_c *mpCourseSettings;
     char pad2[0x1c];
     AreaBoundU16 *mpAreas;
-    char pad3[0x380];
+    u8 mPad3[0xc];
+    dRailNode_s *mpRailNodes;
+    u8 pad3[0x370];
 
     u8 getAreaNo(mVec3_c *);
     AreaBoundU16 *getAreaP(u8 zoneID, mBoundBox *bound); ///< @unofficial

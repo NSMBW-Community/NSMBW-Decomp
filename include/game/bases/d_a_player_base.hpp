@@ -854,7 +854,8 @@ public:
     u8 m_8d;
     float m_90;
     float m_94;
-    u8 mPad7[4];
+    short m_98;
+    short m_9a;
     int m_9c;
     int m_a0;
     float m_a4;

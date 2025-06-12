@@ -3548,10 +3548,27 @@ void daPlBase_c::executeState_DemoOutWaterTank() {
 
 void daPlBase_c::initializeState_DemoRailDokan() {
     onStatus(STATUS_BB);
-    dCdFile_c *cdFile = dCd_c::m_instance->getFileP(dScStage_c::m_instance->mCurrCourse);
-    dNextGoto_c *nextGoto = cdFile->getNextGotoP(mDokanNextGoto);
-    void *rail = dRail_c::getRailInfoP(nextGoto->m_0f);
-    dCdFile_c *cdFile2 = dCd_c::m_instance->getFileP(dScStage_c::m_instance->mCurrCourse);
+    dNextGoto_c *nextGoto = dCd_c::m_instance->
+        getFileP(dScStage_c::m_instance->mCurrCourse)->
+        getNextGotoP(mDokanNextGoto);
+
+    dRailInfo_s *rail = dRail_c::getRailInfoP(nextGoto->m_0f);
+
+    dRailNode_s *node = &dCd_c::m_instance->
+        getFileP(dScStage_c::m_instance->mCurrCourse)->
+        mpRailNodes[rail->mStartNodeIdx + m_98];
+
+    if (nextGoto->mFlags & 1) {
+        m_98 = rail->mNumNodes - 2;
+    } else {
+        m_98 = 1;
+    }
+
+    mVec2_c delta(node->x - mPos.x, -node->y - mPos.y);
+
+    float size = delta.getLength();
+    m_9a = size / 2.0f;
+    m_74.set(delta.x / size * 2.0f, delta.y / size * 2.0f);
 }
 
 void daPlBase_c::finalizeState_DemoRailDokan() {
@@ -3578,7 +3595,55 @@ void daPlBase_c::setExitRailDokan() {
     }
 }
 
-void daPlBase_c::executeState_DemoRailDokan() {}
+void daPlBase_c::executeState_DemoRailDokan() {
+    m_9a--;
+    if (m_9a < 0) {
+        dNextGoto_c *ngt = dCd_c::m_instance->
+            getFileP(dScStage_c::m_instance->mCurrCourse)->
+            getNextGotoP(mDokanNextGoto & 0xFF);
+        dRailInfo_s *rail = dRail_c::getRailInfoP(ngt->m_0f);
+
+        dRailNode_s *node = &dCd_c::m_instance->
+            getFileP(dScStage_c::m_instance->mCurrCourse)->
+            mpRailNodes[rail->mStartNodeIdx + m_98];
+
+        mPos.x = node->x;
+        mPos.y = -node->y;
+
+        int done = 0;
+        if ((ngt->mFlags & 1)) {
+            m_98--;
+            if (m_98 < 0) {
+                done = 1;
+            }
+        } else {
+            m_98++;
+            if (m_98 >= rail->mNumNodes) {
+                done = 1;
+            }
+        }
+
+        if (done == 1) {
+            setExitRailDokan();
+            return;
+        }
+
+        dRailNode_s *node2 = &dCd_c::m_instance->
+            getFileP(dScStage_c::m_instance->mCurrCourse)->
+            mpRailNodes[rail->mStartNodeIdx + m_98];
+
+        mVec2_c delta(node2->x - mPos.x, -node2->y - mPos.y);
+
+        float size = delta.getLength();
+        m_9a = size / 2.0f;
+        m_74.set(delta.x / size * 2.0f, delta.y / size * 2.0f);
+
+
+    } else {
+        mPos.x += m_74.x;
+        mPos.y += m_74.y;
+    }
+}
 
 void daPlBase_c::setObjDokanIn(dBg_ctr_c *bgCtr, mVec3_c &pos, int param3) {
     mpBgCtr = bgCtr;
