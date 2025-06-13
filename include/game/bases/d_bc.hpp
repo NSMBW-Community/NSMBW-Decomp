@@ -47,7 +47,7 @@ public:
     u8 mPlayerFlags;
     char mPad6[0x4];
     int m_c4;
-    short mAdjacentSlopeAngle;
+    mAng mAdjacentSlopeAngle;
     char mPad7[0x12];
     float mIceSpeed;
     u8 m_e0;

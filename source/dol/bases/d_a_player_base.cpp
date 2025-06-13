@@ -5079,8 +5079,8 @@ void daPlBase_c::checkBgCross() {
             }
             switch (footAttr) {
                 case 2:
-                    m_d40 |= 0x400000;
                     mGroundType = GROUND_TYPE_SNOW;
+                    m_d40 |= 0x400000;
                     break;
                 case 3:
                 case 12:
@@ -5163,8 +5163,9 @@ void daPlBase_c::checkBgCross() {
     }
 
     if (mSpeed.y < 0.0f && (isStatus(0x14) || isStatus(0x4e))) {
-        m_d44 |= 0x42;
-        m_d40 |= 1;
+        setD44Status(6);
+        setD40Status(0);
+        setD44Status(1);
     }
 
     if (bgFlags & 0x1fe000) {
@@ -6183,7 +6184,7 @@ void daPlBase_c::posMoveAnglePlayer(mVec3_c a) {
 
     u16 x2 = 0;
     if (isStatus(STATUS_13)) {
-        x2 = m_d9c;
+        x2 = m_d9c.mAngle;
     }
 
     float x_mag = EGG::Mathf::abs(a.x);

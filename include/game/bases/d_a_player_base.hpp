@@ -889,6 +889,14 @@ public:
         }
     }
 
+    void setD40Status(int bit) {
+        m_d40 |= (1 << bit);
+    }
+
+    void setD44Status(int bit) {
+        m_d44 |= (1 << bit);
+    }
+
     void setStatus(int);
     void calcTimerProc();
     dPyMdlBase_c* getModel();
@@ -1018,8 +1026,7 @@ public:
     GroundType_e mGroundType;
     float m_d8c;
     int mNoHitObjTimer;
-    mAng m_d94, m_d96, m_d98, m_d9a;
-    u16 m_d9c;
+    mAng m_d94, m_d96, m_d98, m_d9a, m_d9c;
     int m_da0;
     float m_da4;
     float m_da8;
