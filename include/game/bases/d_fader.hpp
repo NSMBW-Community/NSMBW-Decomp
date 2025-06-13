@@ -3,6 +3,14 @@
 
 class dFader_c {
 public:
+    enum fader_type_e {
+        FADER_FADE,
+        FADER_CIRCLE_MIDDLE,
+        FADER_BOWSER,
+        FADER_DRIP_DOWN,
+        FADER_MARIO,
+        FADER_CIRCLE_TARGET
+    };
 
     /// @brief Starts a fade in with the @ref mFader_c::mFader "current fader".
     /// @param duration The duration of the fade in.
