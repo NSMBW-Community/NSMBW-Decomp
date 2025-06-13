@@ -5904,17 +5904,13 @@ bool daPlBase_c::checkInsideCrossBg(float f) {
     if (footBg == nullptr) {
         return false;
     }
-    float foot1 = *((int *) footBg + 1);
-    float wall1 = *((int *) wallBg + 1);
-    float foot2 = *((int *) footBg + 2);
-    float wall2 = *((int *) wallBg + 2);
-    float offs[] = {
-        wall1 / 4096.0f,
-        wall2 / 4096.0f
-    };
     float offs2[] = {
-        foot1 / 4096.0f + f,
-        foot2 / 4096.0f - f
+        *((int *) footBg + 1) / 4096.0f + f,
+        *((int *) footBg + 2) / 4096.0f - f
+    };
+    float offs[] = {
+        *((int *) wallBg + 1) / 4096.0f,
+        *((int *) wallBg + 2) / 4096.0f
     };
     for (int i = 0; i < 2; i++) {
         mVec3_c modPos = mVec3_c(
