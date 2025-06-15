@@ -155,7 +155,7 @@ public:
     virtual SoundHandlePrm *prepareSound(unsigned long p1, unsigned long p2) {
         SoundHandlePrm *p = getFreeHandle();
         if (p != nullptr) {
-            detail_StartSound(p, p1, 0);
+            detail_PrepareSound(p, p1, 0);
             if (p->mpSound == 0) {
                 return nullptr;
             }

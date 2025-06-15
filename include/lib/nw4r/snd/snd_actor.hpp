@@ -68,6 +68,7 @@ public:
 class SoundStartable {
 public:
     struct StartInfo;
+    void detail_PrepareSound(SoundHandle *, unsigned long, const StartInfo *);
     void detail_StartSound(SoundHandle *, unsigned long, const StartInfo *);
     void detail_HoldSound(SoundHandle *, unsigned long, const StartInfo *);
 };

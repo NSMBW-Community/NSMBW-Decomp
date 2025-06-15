@@ -432,7 +432,7 @@ void daPlBase_c::initializeState_Fall() {
         onStatus(STATUS_4D);
     }
     if (!mStateChangeParam) {
-        mpMdlMng->setAnm(6, 0.0f, 10.0f);
+        mpMdlMng->setAnm(6, 10.0f, 0.0f);
     }
     if (m_d4c & 2) {
         if (m_1134 * mSpeedF > 0.0f) {
@@ -947,7 +947,7 @@ void daPlBase_c::HipAction_StandNormal() {
         }
     } else {
         if (mKey.buttonCrouch()) {
-            HipAction_AttackFall();
+            setHipAttack_AttackFall();
         }
     }
 }
@@ -1571,7 +1571,7 @@ float daPlBase_c::getSakaMoveAccele(u8 direction) {
 }
 
 float daPlBase_c::getIceSakaSlipOffSpeed() {
-    return l_sakaSlipOffSpeed[mBc.getSakaDir()][mBc.getSakaType()];
+    return l_sakaSlipOffSpeed[mBc.getSakaType()][mBc.getSakaDir()];
 }
 
 bool daPlBase_c::setSandMoveSpeed() {
@@ -1823,9 +1823,9 @@ void daPlBase_c::icePowerChange(int mode) {
                 mAccelF = mAccelF * 0.375f;
             } else if (mode == 0) {
                 if (isSaka()) {
-                    mAccelF = mAccelF * 0.25f;
-                } else if (EGG::Mathf::abs(mSpeedF) < 0.5f) {
                     mAccelF = mAccelF * 0.375f;
+                } else if (EGG::Mathf::abs(mSpeedF) < 0.5f) {
+                    mAccelF = mAccelF * 0.25f;
                 }
             }
         } else if (!isSaka() && EGG::Mathf::abs(mSpeedF) < 0.5f) {
@@ -2424,16 +2424,16 @@ void daPlBase_c::initialDokanLeft() {
     changeDemoState(StateID_DemoInDokanL, 0);
 }
 void daPlBase_c::initialDokanUnderM() {
-    changeDemoState(StateID_DemoOutDokanD, 2);
+    changeDemoState(StateID_DemoInDokanD, 2);
 }
 void daPlBase_c::initialDokanUperM() {
-    changeDemoState(StateID_DemoOutDokanU, 2);
+    changeDemoState(StateID_DemoInDokanU, 2);
 }
 void daPlBase_c::initialDokanRightM() {
-    changeDemoState(StateID_DemoOutDokanR, 2);
+    changeDemoState(StateID_DemoInDokanR, 2);
 }
 void daPlBase_c::initialDokanLeftM() {
-    changeDemoState(StateID_DemoOutDokanL, 2);
+    changeDemoState(StateID_DemoInDokanL, 2);
 }
 void daPlBase_c::initialDokanDepth() {
     changeDemoState(StateID_DemoInWaterTank, 0);
@@ -2737,7 +2737,7 @@ void daPlBase_c::executeState_DemoNone() {
         } else {
             m_8d = 0;
         }
-        if (mKey.buttonRight()) {
+        if (mKey.buttonLeft()) {
             m_8c++;
             if (m_8c > 10) {
                 m_8c = 10;
@@ -2773,7 +2773,6 @@ void daPlBase_c::executeState_DemoNone() {
 }
 
 void daPlBase_c::initializeState_DemoStartWait() {}
-void daPlBase_c::finalizeState_DemoStartWait() {}
 void daPlBase_c::executeState_DemoStartWait() {
     if (dScStage_c::m_gameMode == 2){
         changeDemoState(StateID_DemoNone, 0);
@@ -2784,6 +2783,7 @@ void daPlBase_c::executeState_DemoStartWait() {
         }
     }
 }
+void daPlBase_c::finalizeState_DemoStartWait() {}
 
 void daPlBase_c::initializeState_DemoWait() {
     if (daPyDemoMng_c::mspInstance->checkDemoNo(mPlayerNo)) {
@@ -2953,7 +2953,7 @@ void daPlBase_c::initDemoInDokanUD(u8 dir) {
         if (mKind == 2) {
             mPos.y -= 16.0f;
         } else {
-            mPos.y -= 32.0f;
+            mPos.y -= 8.0f;
         }
     } else {
         onStatus(STATUS_2A);
@@ -3323,20 +3323,20 @@ void daPlBase_c::executeDemoOutDokanLR() {
     }
 }
 
-void daPlBase_c::initializeState_DemoOutDokanU() { initDemoInDokanUD(0); }
-void daPlBase_c::finalizeState_DemoOutDokanU() { endDemoInDokan(); }
+void daPlBase_c::initializeState_DemoOutDokanU() { initDemoOutDokanUD(0); }
+void daPlBase_c::finalizeState_DemoOutDokanU() { endDemoOutDokan(); }
 void daPlBase_c::executeState_DemoOutDokanU() { executeDemoOutDokanUD(); }
 
-void daPlBase_c::initializeState_DemoOutDokanD() { initDemoInDokanUD(1); }
-void daPlBase_c::finalizeState_DemoOutDokanD() { endDemoInDokan(); }
+void daPlBase_c::initializeState_DemoOutDokanD() { initDemoOutDokanUD(1); }
+void daPlBase_c::finalizeState_DemoOutDokanD() { endDemoOutDokan(); }
 void daPlBase_c::executeState_DemoOutDokanD() { executeDemoOutDokanUD(); }
 
-void daPlBase_c::initializeState_DemoOutDokanL() { initDemoInDokanLR(2); }
-void daPlBase_c::finalizeState_DemoOutDokanL() { endDemoInDokan(); }
+void daPlBase_c::initializeState_DemoOutDokanL() { initDemoOutDokanLR(2); }
+void daPlBase_c::finalizeState_DemoOutDokanL() { endDemoOutDokan(); }
 void daPlBase_c::executeState_DemoOutDokanL() { executeDemoOutDokanLR(); }
 
-void daPlBase_c::initializeState_DemoOutDokanR() { initDemoInDokanLR(3); }
-void daPlBase_c::finalizeState_DemoOutDokanR() { endDemoInDokan(); }
+void daPlBase_c::initializeState_DemoOutDokanR() { initDemoOutDokanLR(3); }
+void daPlBase_c::finalizeState_DemoOutDokanR() { endDemoOutDokan(); }
 void daPlBase_c::executeState_DemoOutDokanR() { executeDemoOutDokanLR(); }
 
 void daPlBase_c::initializeState_DemoOutDokanRoll() {
@@ -3695,7 +3695,7 @@ int daPlBase_c::vf130(float f, mVec2_c *v, int param3) {
         daPyDemoMng_c::mspInstance->m_42 = 1;
         dGameCom::hideFukidashiForSession(mPlayerNo, 8);
     }
-    int sum = daPyMng_c::getItemKinopioNum() + daPyMng_c::getNumInGame();
+    int sum = daPyMng_c::getNumInGame() + daPyMng_c::getItemKinopioNum();
     if (sum == m_9c + 1) {
         daPyDemoMng_c::mspInstance->stopBgmGoalDemo();
     }
@@ -4829,7 +4829,7 @@ void daPlBase_c::calcJumpDaiReductionScale(int i1, int i2) {
     if (i1 > i2) {
         i1 = i2;
     }
-    m_08 = i1 * 0.7f / i2;
+    m_08 = i1 * 0.6f / i2;
     m_00 = 1;
 }
 
@@ -6381,8 +6381,8 @@ void daPlBase_c::setRideNat(float a) {
 
 void daPlBase_c::updateRideNat() {
     if (isStatus(STATUS_59) && (mSpeed.y <= 0)) {
-        if (! isStatus(STATUS_58) && (mPos.y <= m_dcc)) {
-            offStatus(STATUS_58);
+        if (!isStatus(STATUS_58) && (mPos.y <= m_dcc)) {
+            onStatus(STATUS_58);
             return;
         }
     } else {
@@ -6427,20 +6427,20 @@ void daPlBase_c::fn_80057fd0(ulong soundID, short s, bool b) {
     }
 }
 
-void daPlBase_c::vf438(int a, int b) {
-    if (! fn_80057E00(b)) {
-        mSndObj.fn_8019AAB0(a, 0);
-    }
-}
-
 void daPlBase_c::vf434(int a, int b) {
-    if (! fn_80057E00(b)) {
+    if (!fn_80057E00(b)) {
         mSndObj.fn_8019ABB0(a, 0);
     }
 }
 
+void daPlBase_c::vf438(int a, int b) {
+    if (!fn_80057E00(b)) {
+        mSndObj.fn_8019AAB0(a, 0);
+    }
+}
+
 void daPlBase_c::startFootSoundPlayer(unsigned long a) {
-  if (! fn_80057E00(1)) {
+  if (!fn_80057E00(1)) {
     mSndObj.startFootSound(a, EGG::Mathf::abs(mSpeedF), 0);
   }
 }
