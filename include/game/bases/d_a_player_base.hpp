@@ -881,6 +881,10 @@ public:
         }
     }
 
+    float get_1064() const { return m_1064; }
+    float get_106c() const { return m_106c; }
+
+
     bool checkD44Status(int bit) const {
         if (m_d44 & (1 << bit)) {
             return true;

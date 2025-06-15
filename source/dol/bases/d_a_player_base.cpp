@@ -4685,8 +4685,8 @@ void daPlBase_c::setCcPlayerRev(dCc_c *cc1, dCc_c *cc2, float f, int idx) {
         }
     } else if (!(EGG::Mathf::abs(offsY) < 1.0f || other->isActionRevisionY())) {
         if (m_1070) {
-            float tmp1 = offsX * f;
-            float tmp2 = m_106c * m_1064;
+            float tmp1 = get_1064() * get_106c();
+            float tmp2 = offsX * f;
             if (EGG::Mathf::abs(tmp1) < EGG::Mathf::abs(tmp2)) {
                 m_1060 = speedF;
             }
