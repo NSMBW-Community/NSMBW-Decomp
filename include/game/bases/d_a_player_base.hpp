@@ -420,6 +420,11 @@ public:
         STARSET_0, // idk - there are probably more values
     };
 
+    enum AnmBlend_e {
+        BLEND_0,
+        BLEND_1
+    };
+
     struct SpeedData_t {
         float data[9];
 
@@ -554,11 +559,11 @@ public:
 
     virtual bool isWaitFrameCountMax() { return false; }
     virtual bool checkWalkNextAction() { return false; }
-    virtual void vf378(int);
-    virtual void vf37c(int);
-    virtual void vf380(int);
+    virtual void setWaitActionAnm(AnmBlend_e);
+    virtual void setWalkActionAnm(AnmBlend_e);
+    virtual void walkActionInit_Wait(AnmBlend_e);
     virtual void walkAction_Wait();
-    virtual void vf384(int);
+    virtual void walkActionInit_Move(AnmBlend_e);
     virtual void walkAction_Move();
     virtual bool checkCrouch();
     virtual bool setCancelCrouch();
@@ -580,7 +585,7 @@ public:
     virtual bool isCarry() const { return false; }
     virtual bool isLiftUp() { return false; }
 
-    virtual bool vf3d0() { return false; }
+    virtual bool isLiftUpExceptMame() { return false; }
     virtual int isStar() const;
     virtual void setStar(daPlBase_c::StarSet_e, int);
     virtual void endStar() {}

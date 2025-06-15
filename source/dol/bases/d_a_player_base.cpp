@@ -284,39 +284,39 @@ void daPlBase_c::initializeState_None() {}
 void daPlBase_c::finalizeState_None() {}
 void daPlBase_c::executeState_None() {}
 
-void daPlBase_c::vf378(int) {}
-void daPlBase_c::vf37c(int) {}
-void daPlBase_c::vf380(int) {}
+void daPlBase_c::setWaitActionAnm(AnmBlend_e blend) {}
+void daPlBase_c::setWalkActionAnm(AnmBlend_e blend) {}
+void daPlBase_c::walkActionInit_Wait(AnmBlend_e blend) {}
 void daPlBase_c::walkAction_Wait() {}
-void daPlBase_c::vf384(int) {}
+void daPlBase_c::walkActionInit_Move(AnmBlend_e blend) {}
 void daPlBase_c::walkAction_Move() {
-    int arg = 1;
+    AnmBlend_e arg = BLEND_1;
     if (!mSpeedF) {
         if ((m_d40 & 0x800) || mTimer_f4 != 0 || m_112c) {
             if (mKey.buttonWalk(nullptr)) {
-                arg = 0;
+                arg = BLEND_0;
             } else {
-                vf380(1);
+                walkActionInit_Wait(BLEND_1);
                 return;
             }
         } else {
             if (m_d40 & 4) {
                 if (mPowerup == POWERUP_MINI_MUSHROOM && mBc.getSakaUpDown(mDirection) == 1) {
-                    arg = 0;
+                    arg = BLEND_0;
                 } else {
-                    vf380(1);
+                    walkActionInit_Wait(BLEND_1);
                     return;
                 }
             }
             if (m_d40 & 0x2000000 || !mKey.buttonWalk(nullptr)) {
-                vf380(1);
+                walkActionInit_Wait(BLEND_1);
                 return;
             }
         }
     } else if (m_d44 & 2) {
         mTimer_f4 = 3;
     }
-    vf37c(arg);
+    setWalkActionAnm(arg);
     setRunFootEffect();
 }
 
@@ -1066,7 +1066,7 @@ void daPlBase_c::executeState_JumpDai() {
     } else {
         turnAngle();
         if (mSubstate == JUMP_DAI_ACTION_0 && mpMdlMng->mpMdl->mAnm.isStop()) {
-            vf378(1);
+            setWaitActionAnm(BLEND_1);
             mSubstate = JUMP_DAI_ACTION_1;
         }
     }
@@ -1141,7 +1141,7 @@ void daPlBase_c::executeState_PlayerJumpDai() {
         setNoHitPlayer(rideActor, 5);
         turnAngle();
         if (mpMdlMng->mpMdl->m_154 == 7 && mpMdlMng->mpMdl->mAnm.isStop()) {
-            vf378(1);
+            setWaitActionAnm(BLEND_1);
         }
         switch ((JumpDaiSubstate_e) mSubstate) {
             case JUMP_DAI_ACTION_0:
@@ -5945,7 +5945,7 @@ void daPlBase_c::setPowerup(PLAYER_POWERUP_e powerup, int) {
 }
 
 bool daPlBase_c::isMameAction() {
-    if (mPowerup == POWERUP_MINI_MUSHROOM && !vf3d0()) {
+    if (mPowerup == POWERUP_MINI_MUSHROOM && !isLiftUpExceptMame()) {
         return true;
     }
     return false;
