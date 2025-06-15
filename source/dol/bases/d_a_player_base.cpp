@@ -4740,9 +4740,11 @@ bool daPlBase_c::calcCcPlayerRev(float *f) {
                     mSpeedF = m_1060 * 0.4f;
                     return true;
                 }
-                if (EGG::Mathf::abs(mSpeedF) > EGG::Mathf::abs(m_1060) && m_1060 > 1.5f) {
+                if (EGG::Mathf::abs(mSpeedF) > EGG::Mathf::abs(m_1060)) {
+                    if (EGG::Mathf::abs(mSpeedF) > 1.5f) {
                     mSpeedF = 0.0f;
                     return true;
+                    }
                 }
             }
         }
