@@ -26,5 +26,15 @@ public:
 
     dGameKeyCore_c *keys[4];
 
+    // [These two functions must have different types to match]
+
+    bool checkButtonsDown(s32 i) {
+        return keys[i]->mDownButtons != 0;
+    }
+
+    bool checkShaking(u32 i) {
+        return keys[i]->mIsShaking != 0;
+    }
+
     static dGameKey_c *m_instance;
 };

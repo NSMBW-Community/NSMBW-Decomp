@@ -173,13 +173,26 @@ public:
     mVec3_c operator*(f32 f) const { return mVec3_c(f * x, f * y, f * z); }
 
     /// @brief Scalar division operator.
-    mVec3_c operator/(f32 f) const { f32 r = 1.0f / f; return operator*(r); }
+    mVec3_c operator/(f32 f) const { f32 r = 1.0f / f; return mVec3_c(x * r, y * r, z * r); }
 
     /// @brief Equality operator.
     bool operator==(const mVec3_c &v) const { return x == v.x && y == v.y && z == v.z; }
 
     /// @brief Inequality operator.
     bool operator!=(const mVec3_c &v) const { return x != v.x || y != v.y || z != v.z; }
+
+    /// @brief Returns the length of the vector.
+    float xzLen() const {
+        return EGG::Mathf::sqrt(x * x + z * z);
+    }
+
+    friend mVec3_c operator*(f32 f, const mVec3_c &v) {
+        return mVec3_c(v.x * f, v.y * f, v.z * f);
+    }
+
+    bool isSmallerThan1() const {
+        return PSVECMag(*this) <= 1.0f;
+    }
 
     /// @brief Normalizes the vector.
     /// @return The vector's magnitude.
@@ -196,4 +209,36 @@ public:
     static mVec3_c Ex; ///< The unit vector for the X axis.
     static mVec3_c Ey; ///< The unit vector for the Y axis.
     static mVec3_c Ez; ///< The unit vector for the Z axis.
+};
+
+/// @unofficial
+class mBoundBox {
+public:
+    mBoundBox() {}
+
+    mBoundBox(float t, float b, float l, float r) {
+        set(t, b, l, r);
+    }
+
+    mBoundBox(const mBoundBox &b) {
+        set(b.mOffset.x, b.mOffset.y, b.mSize.x, b.mSize.y);
+    }
+
+    void set(float t, float b, float l, float r) {
+        mOffset.set(t, b);
+        mSize.set(l, r);
+    }
+
+    mVec2_c withPos(const mVec3_c &pos) const {
+        mVec2_c res;
+        res.x = pos.x + mOffset.x - mSize.x;
+        res.y = pos.y + mOffset.y + mSize.y;
+        return res;
+    }
+
+    mVec2_c getSize() const {
+        return mSize;
+    }
+
+    mVec2_c mOffset, mSize;
 };
