@@ -4197,7 +4197,7 @@ void daPlBase_c::initializeState_DemoControl() {
     }
     mKey.onStatus(dAcPyKey_c::STATUS_DEMO);
     onStatus(STATUS_72);
-    onStatus(STATUS_71);
+    offStatus(STATUS_71);
     mDemoMode = 0;
     initializeDemoControl();
     m_60 = (u8) (int) mDemoStateChangeParam;
