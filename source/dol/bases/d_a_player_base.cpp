@@ -4411,9 +4411,7 @@ void daPlBase_c::updateEndingDance() {
         return;
     }
     int cond = 0;
-    dGameKeyCore_c **keys = dGameKey_c::m_instance->mRemocon;
-    dGameKeyCore_c *key = keys[mPlayerNo];
-    if (key->mDownButtons != 0 || key->mIsShaking != 0) {
+    if (dGameKey_c::m_instance->checkButtonsDown(mPlayerNo) || dGameKey_c::m_instance->checkShaking(mPlayerNo)) {
         cond = 1;
     }
     if (!isDemoType(DEMO_6)) {
