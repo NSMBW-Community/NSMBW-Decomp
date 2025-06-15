@@ -13,8 +13,12 @@ public:
     void SetPan(float);
     void SetPlayerPriority(int);
 
+    u32 GetId() const {
+        return mId;
+    }
+
     u8 mPad[0x9c];
-    u32 m_9c;
+    u32 mId;
 };
 
 class SeqSound {
@@ -26,19 +30,39 @@ public:
 
 class SoundHandle {
 public:
-    SoundHandle() : mpSound(nullptr), m_04(0.0f) {}
-    ~SoundHandle() { nw4r::snd::SoundHandle::DetachSound();}
+    SoundHandle() : mpSound(nullptr) {}
+    ~SoundHandle() { DetachSound();}
 
-    void SetVolume(float f, int i) { if (mpSound != nullptr) mpSound->SetVolume(f, i); }
-    void SetPan(float f) { if (mpSound != nullptr) mpSound->SetPan(f); }
-    void SetPlayerPriority(int i) { if (mpSound != nullptr) mpSound->SetPlayerPriority(i); }
+    bool IsAttachedSound() const {
+        return mpSound != nullptr;
+    }
 
-    u32 getID() { return (mpSound != nullptr) ? mpSound->m_9c : -1; }
+    void SetVolume(float f, int i) {
+        if (IsAttachedSound()) {
+            mpSound->SetVolume(f, i);
+        }
+    }
+    void SetPan(float f) {
+        if (IsAttachedSound()) {
+            mpSound->SetPan(f);
+        }
+    }
+    void SetPlayerPriority(int i) {
+        if (IsAttachedSound()) {
+            mpSound->SetPlayerPriority(i);
+        }
+    }
+
+    u32 GetId() const {
+        if (IsAttachedSound()) {
+            return mpSound->GetId();
+        }
+        return -1;
+    }
 
     void DetachSound();
 
     detail::BasicSound *mpSound;
-    float m_04;
 };
 
 class SoundStartable {

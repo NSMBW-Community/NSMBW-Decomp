@@ -40,7 +40,12 @@ public:
 template<int T>
 class NMSndObject : public NMSndObjectBase {
 public:
-    class SoundHandlePrm : public nw4r::snd::SoundHandle {};
+    class SoundHandlePrm : public nw4r::snd::SoundHandle {
+    public:
+        SoundHandlePrm() : m_04(1.0f) {}
+
+        float m_04;
+    };
 
     NMSndObject() :
         NMSndObjectBase(NMSndObjectBase::OBJ_TYPE_0, SndAudioMgr::sInstance->mArcPlayer),
@@ -54,46 +59,54 @@ public:
         m_b4 = 0;
     }
 
-    virtual void calc(const nw4r::math::VEC2 &pos) {
-        mPos = pos;
+    void processParams() {
+        for (int idx = 0; idx < mTotalCount; idx++) {
+            if (!mParams[idx].IsAttachedSound()) {
+                continue;
+            }
+            u32 flag = SndAudioMgr::sInstance->get3DCtrlFlag(mParams[idx].GetId());
+            if (~flag & 1) {
+                mParams[idx].SetVolume(m_64, 0);
+            } else if (
+                SndSceneMgr::sInstance->m_14 == 3 ||
+                (SndSceneMgr::sInstance->m_14 == 2 && SndSceneMgr::sInstance->m_10 == 3)
+            ) {
+                mParams[idx].SetVolume(m_64, 0);
+            }
+            if (~flag & 8) {
+                nw4r::snd::SoundArchive::SoundInfo info;
+                SndAudioMgr::sInstance->mpSndArc->ReadSoundInfo(mParams[idx].GetId(), &info);
+                if (m_68 < 0) {
+                    mParams[idx].SetPlayerPriority(info.m_c + m_68);
+                } else {
+                    mParams[idx].SetPlayerPriority(info.m_c);
+                }
+            }
+            if (~flag & 2) {
+                mParams[idx].SetPan(m_70);
+            }
+        }
+    }
+
+    void calc() {
         for (int i = 0; i < T; i++) {
             if (GetPlayingSoundCount(i) > 0) {
                 mpSnd2dCalc->fn_8019ee20(m_64, mPos, 0);
-                for (int sndIdx = 0; sndIdx < mTotalCount; sndIdx++) {
-                    if (mParams[sndIdx].mpSound == nullptr) {
-                        continue;
-                    }
-                    u32 flag = ~SndAudioMgr::sInstance->get3DCtrlFlag(mParams[sndIdx].getID());
-                    if (flag & 1) {
-                        mParams[sndIdx].SetVolume(m_64, 0);
-                    } else if (
-                        SndSceneMgr::sInstance->m_14 == 3 ||
-                        (SndSceneMgr::sInstance->m_14 == 2 && SndSceneMgr::sInstance->m_10 == 3)
-                    ) {
-                        mParams[sndIdx].SetVolume(m_64, 0);
-                    }
-                    if (flag & 8) {
-                        nw4r::snd::SoundArchive::SoundInfo info;
-                        SndAudioMgr::sInstance->mpSndArc->ReadSoundInfo(mParams[sndIdx].getID(), &info);
-                        if (m_68 < 0) {
-                            mParams[sndIdx].SetPlayerPriority(info.m_c + m_68);
-                        } else {
-                            mParams[sndIdx].SetPlayerPriority(info.m_c);
-                        }
-                    }
-                    if (flag & 2) {
-                        mParams[sndIdx].SetPan(m_70);
-                    }
-                }
+                processParams();
                 break;
             }
         }
     }
 
+    virtual void calc(const nw4r::math::VEC2 &pos) {
+        mPos = pos;
+        calc();
+    }
+
     SoundHandlePrm *findHandle(int id) {
         for (int i = 0; i < mTotalCount; i++) {
             if (mParams[i].mpSound != 0) {
-                if (mParams[i].getID() == id) {
+                if (mParams[i].GetId() == id) {
                     return &mParams[i];
                 }
             }
