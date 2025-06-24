@@ -58,6 +58,7 @@ public:
 
     void setScale(const math::VEC2 &scale) { mScale = scale; }
     void setAlpha(u8 alpha) { mAlpha = alpha; }
+    void setField_b9(u8 field_b9) { mField_b9 = field_b9; }
 
 public:
     char mFill1[0x28]; // To be RE'd

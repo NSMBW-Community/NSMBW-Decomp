@@ -48,6 +48,11 @@ namespace ut {
 
 namespace m2d {
 
+void draw();
+void drawBefore(unsigned char);
+void drawAfter(unsigned char);
+void drawBtween(unsigned char, unsigned char);
+
 class AnmResV2_c;
 class AnmGroup_c;
 

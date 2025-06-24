@@ -9,6 +9,13 @@
 
 namespace d2d {
 
+void init();
+void draw();
+void drawBefore();
+void drawAfter();
+void drawBtween(unsigned char, unsigned char);
+int setAlpha_patrolPane_patrol(nw4r::lyt::Pane*, void*);
+
 struct ClipSettings {
     ClipSettings() : mPos(0.0f, 0.0f), mSize(0.0f, 0.0f), mEnabled(false) {}
 
