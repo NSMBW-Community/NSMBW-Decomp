@@ -11,6 +11,7 @@ public:
     void entry();
 
     virtual ~Base_c();
+    virtual void draw();
 
     u8 mDrawOrder;
 };

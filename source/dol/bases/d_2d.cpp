@@ -1,4 +1,5 @@
 #include <game/bases/d_2d.hpp>
+#include <game/bases/d_resource.hpp>
 #include <_dummy_classes.hpp>
 
 namespace d2d {
@@ -21,8 +22,8 @@ namespace d2d {
         m2d::drawBtween(a, b);
     }
     
-    int setAlpha_patrolPane_patrol(nw4r::lyt::Pane* pane, void* obj) {
-        u8* s = (u8*)obj;
+    int setAlpha_patrolPane_patrol(nw4r::lyt::Pane *pane, void *obj) {
+        u8 *s = (u8 *)obj;
         
         pane->setAlpha(s[0]);
         pane->setGlbAlpha(s[0]);
@@ -34,8 +35,12 @@ namespace d2d {
         m2d::Base_c::entry();
     }
 
-    nw4r::lyt::Pane* Multi_c::getRootPane() {
+    nw4r::lyt::Pane *Multi_c::getRootPane() {
         return mLayout.getRootPane();
+    }
+
+    nw4r::lyt::Pane *Multi_c::findPaneByName(const char *name) {
+        return mLayout.getRootPane()->FindPaneByName(name, true);
     }
     
 } // namespace d2d
