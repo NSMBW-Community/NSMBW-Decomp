@@ -13,7 +13,7 @@ void init();
 void draw();
 void drawBefore();
 void drawAfter();
-void drawBtween(unsigned char, unsigned char);
+void drawBtween(u8, u8);
 int setAlpha_patrolPane_patrol(nw4r::lyt::Pane*, void*);
 
 struct ClipSettings {
@@ -38,6 +38,7 @@ public:
     virtual bool build(const char *, ResAccMult_c *);
 
     void entry();
+    nw4r::lyt::Pane* getRootPane();
 
 private:
     nw4r::lyt::Layout mLayout;

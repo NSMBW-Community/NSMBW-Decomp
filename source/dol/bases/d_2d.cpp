@@ -21,7 +21,6 @@ namespace d2d {
         m2d::drawBtween(a, b);
     }
     
-    
     int setAlpha_patrolPane_patrol(nw4r::lyt::Pane* pane, void* obj) {
         u8* s = (u8*)obj;
         
@@ -33,6 +32,10 @@ namespace d2d {
 
     void Multi_c::entry() {
         m2d::Base_c::entry();
+    }
+
+    nw4r::lyt::Pane* Multi_c::getRootPane() {
+        return mLayout.getRootPane();
     }
     
 } // namespace d2d
