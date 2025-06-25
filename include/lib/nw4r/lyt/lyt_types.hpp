@@ -26,5 +26,18 @@ template <typename T> inline T GetBits(T bits, int pos, int len) {
 }
 
 } // namespace detail
+
+struct Size {
+    // total size: 0x8
+    float width; // offset 0x0, size 0x4
+    float height; // offset 0x4, size 0x4
+};
+
+struct DataBlockHeader {
+    // total size: 0x8
+    char kind[4]; // offset 0x0, size 0x4
+    unsigned long size; // offset 0x4, size 0x4
+};
+
 } // namespace lyt
 } // namespace nw4r

@@ -10,11 +10,11 @@ namespace d2d {
     }
     
     void drawBefore() {
-        m2d::drawBefore((unsigned char)0x81);
+        m2d::drawBefore(0x81);
     }
     
     void drawAfter() {
-        m2d::drawAfter((unsigned char)0x80);
+        m2d::drawAfter(0x80);
     }
     
     void drawBtween(unsigned char a, unsigned char b) {
@@ -23,15 +23,16 @@ namespace d2d {
     
     
     int setAlpha_patrolPane_patrol(nw4r::lyt::Pane* pane, void* obj) {
-        struct unkstruct {
-            u8 _00;
-        };
-        unkstruct* s = (unkstruct*)obj;
+        u8* s = (u8*)obj;
         
-        pane->setAlpha(s->_00);
-        pane->setField_b9(s->_00);
+        pane->setAlpha(s[0]);
+        pane->setGlbAlpha(s[0]);
         
         return 0;
+    }
+
+    void Multi_c::entry() {
+        m2d::Base_c::entry();
     }
     
 } // namespace d2d

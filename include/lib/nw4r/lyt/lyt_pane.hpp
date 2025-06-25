@@ -1,16 +1,30 @@
 #pragma once
 #include <lib/nw4r/lyt/lyt_types.hpp>
+#include <lib/nw4r/lyt/lyt_animation.hpp>
 #include <lib/nw4r/lyt/lyt_draw_info.hpp>
 #include <lib/nw4r/ut/color.hpp>
+#include <lib/nw4r/ut/list.hpp>
 #include <lib/nw4r/math/vec.hpp>
 #include <_dummy_classes.hpp>
 
 namespace nw4r {
 namespace lyt {
 
-class Pane {
+namespace detail {
+
+    class PaneBase {
+    public:
+        virtual ~PaneBase();
+        nw4r::ut::LinkListNode node;
+    };
+
+} // namespace detail
+
+class Pane : detail::PaneBase {
 private:
     enum FlagBit { BIT_VISIBLE, BIT_INFLUENCED_ALPHA, BIT_LOCATION_ADJUST };
+
+    typedef ut::LinkList<Pane, 4> PaneList;
 
 public:
 
@@ -53,28 +67,31 @@ public:
     void *FindExtUserDataByName(const char *);
 
     void setVisible(bool visible) {
-        detail::SetBit(&mFlags, BIT_VISIBLE, visible);
+        detail::SetBit(&mFlag, BIT_VISIBLE, visible);
     }
 
     void setScale(const math::VEC2 &scale) { mScale = scale; }
     void setAlpha(u8 alpha) { mAlpha = alpha; }
-    void setField_b9(u8 field_b9) { mField_b9 = field_b9; }
+    void setGlbAlpha(u8 glbAlpha) { mGlbAlpha = glbAlpha; }
 
-public:
-    char mFill1[0x28]; // To be RE'd
-    math::VEC3 mPos;
-    math::VEC3 mRot;
+protected:
+    Pane* mpParent;
+    PaneList mChildList;
+    AnimationLinkList mAnimList;
+    Material* mpMaterial;
+    math::VEC3 mTranslate;
+    math::VEC3 mRotate;
     math::VEC2 mScale;
-private:
-    float width;
-    float height;
-    char mFill2[0x64]; // To be RE'd
+    Size mSize;
+    math::MTX34 mMtx;
+    math::MTX34 mGlbMtx;
+    char mName[0x10];
+    char mUserData[8];
     u8 mAlpha;
-    u8 mField_b9;
-    u8 mOriginType;
-
-public:
-    u8 mFlags;
+    u8 mGlbAlpha;
+    u8 mBasePosition;
+    u8 mFlag;
+    u8 mbUserAllocated;
 
     static int typeInfo;
 };

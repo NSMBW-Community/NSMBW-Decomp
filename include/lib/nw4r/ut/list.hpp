@@ -19,6 +19,12 @@ struct List {
     u16 mOffset; ///< The offset of the Link structure in each object.
 };
 
+class LinkListNode {
+    // total size: 0x8
+    LinkListNode* mNext; // offset 0x0, size 0x4
+    LinkListNode* mPrev; // offset 0x4, size 0x4
+};
+
 void List_Init(List *list, u16 offset); ///< Initializes the list.
 void List_Append(List *list, void *obj); ///< Adds an object to the end of the list.
 void List_Prepend(List *list, void *obj); ///< Adds an object to the beginning of the list.

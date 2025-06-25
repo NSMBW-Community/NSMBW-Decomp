@@ -8,6 +8,8 @@ class Base_c {
 public:
     nw4r::ut::Link mNode;
 
+    void entry();
+
     virtual ~Base_c();
 
     u8 mDrawOrder;

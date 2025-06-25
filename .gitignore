@@ -19,6 +19,7 @@ __pycache__/
 
 # IDE configuration files
 .vscode/
+.vs/
 
 # Doxygen generated files
 /doxygen

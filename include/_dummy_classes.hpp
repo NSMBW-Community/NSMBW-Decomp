@@ -9,6 +9,7 @@ namespace nw4r {
 namespace lyt {
 
 namespace res {
+    class AnimationBlock;
     class Pane;
     class Picture;
     class TextBox;

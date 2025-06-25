@@ -34,12 +34,10 @@ struct ClipSettings {
 class Multi_c : public m2d::Base_c {
 public:
     virtual ~Multi_c();
-    virtual void draw();
     virtual void calc();
     virtual bool build(const char *, ResAccMult_c *);
 
     void entry();
-    nw4r::lyt::Pane *getRootPane();
 
 private:
     nw4r::lyt::Layout mLayout;
