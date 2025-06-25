@@ -43,7 +43,7 @@
         {
             "source": "dol/bases/d_2d.cpp",
             "memoryRanges": {
-                ".data": "0x38-0x80",
+                ".data": "0x38-0x88",
                 ".sbss": "0x0-0x18",
                 ".text": "0x10-0xd90"
             }

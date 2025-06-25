@@ -74,7 +74,7 @@ public:
     void setAlpha(u8 alpha) { mAlpha = alpha; }
     void setGlbAlpha(u8 glbAlpha) { mGlbAlpha = glbAlpha; }
 
-protected:
+public:
     Pane* mpParent;
     PaneList mChildList;
     AnimationLinkList mAnimList;

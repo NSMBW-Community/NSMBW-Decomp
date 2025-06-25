@@ -126,7 +126,7 @@ int dYesNoWindow_c::create() {
     mCancel = false;
     mHideBG = false;
 
-    mpRootPane->mFlags &= ~1;
+    mpRootPane->mFlag &= ~1;
 
     mLayout.AllAnimeEndSetup();
     mLayout.ReverseAnimeStartSetup(ANIM_IN_BG, false);
@@ -350,7 +350,7 @@ void dYesNoWindow_c::initializeState_InitWait() {
     if (mHideBG) {
         return;
     }
-    mpRootPane->mFlags &= ~1;
+    mpRootPane->mFlag &= ~1;
 }
 
 void dYesNoWindow_c::executeState_InitWait() {

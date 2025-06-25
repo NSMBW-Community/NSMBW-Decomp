@@ -331,7 +331,7 @@ void dSmallScore_c::DispWait() {
 void dSmallScore_c::GoalScoreDisp() {}
 
 void dSmallScore_c::PositionSet() {
-    if (!(mpRootPane->mFlags & 1)) {
+    if (!(mpRootPane->mFlag & 1)) {
         return;
     }
 
@@ -355,7 +355,7 @@ void dSmallScore_c::PositionSet() {
     pos.x = globalPos.x;
     pos.y = globalPos.y;
 
-    mpRootPane->mPos = mVec3_c(pos, 0.0f);
+    mpRootPane->mTranslate = mVec3_c(pos, 0.0f);
 }
 
 void dSmallScore_c::CreateSmallScore(const mVec3_c &pos, int popupType, int playerType) {
