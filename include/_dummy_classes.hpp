@@ -9,6 +9,7 @@ namespace nw4r {
 namespace lyt {
 
 namespace res {
+    class AnimationBlock;
     class Pane;
     class Picture;
     class TextBox;
@@ -47,6 +48,11 @@ namespace ut {
 } // namespace nw4r
 
 namespace m2d {
+
+void draw();
+void drawBefore(unsigned char);
+void drawAfter(unsigned char);
+void drawBtween(unsigned char, unsigned char);
 
 class AnmResV2_c;
 class AnmGroup_c;

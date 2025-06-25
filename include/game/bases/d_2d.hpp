@@ -5,9 +5,19 @@
 #include <lib/nw4r/lyt/lyt_layout.hpp>
 #include <lib/nw4r/lyt/lyt_resource.hpp>
 #include <lib/nw4r/lyt/lyt_draw_info.hpp>
+#include <lib/nw4r/lyt/lyt_textBox.hpp>
+#include <lib/nw4r/lyt/lyt_picture.hpp>
+#include <lib/nw4r/lyt/lyt_window.hpp>
 #include <lib/nw4r/math/vec.hpp>
 
 namespace d2d {
+
+void init();
+void draw();
+void drawBefore();
+void drawAfter();
+void drawBtween(u8, u8);
+int setAlpha_patrolPane_patrol(nw4r::lyt::Pane *, void *);
 
 struct ClipSettings {
     ClipSettings() : mPos(0.0f, 0.0f), mSize(0.0f, 0.0f), mEnabled(false) {}
@@ -32,7 +42,13 @@ public:
     virtual bool build(const char *, ResAccMult_c *);
 
     void entry();
+    void calcBefore();
+    void calcAfter();
     nw4r::lyt::Pane *getRootPane();
+    nw4r::lyt::Pane *findPaneByName(const char*);
+    nw4r::lyt::TextBox *findTextBoxByName(const char*);
+    nw4r::lyt::Picture *findPictureByName(const char*);
+    nw4r::lyt::Window *findWindowByName(const char*);
 
 private:
     nw4r::lyt::Layout mLayout;
