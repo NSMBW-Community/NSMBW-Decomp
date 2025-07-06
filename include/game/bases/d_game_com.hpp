@@ -45,6 +45,37 @@ namespace dGameCom {
     void SetSoftLight_MapObj(m3d::bmdl_c&, int); ///< Sets the soft light effect for map objects.
     void SetSoftLight_Item(m3d::bmdl_c&, int); ///< Sets the soft light effect for items.
 
+    ////////////////////
+    // Fukidashi APIs //
+    ////////////////////
+
+    /// @brief Displays the given action prompt to the given player.
+    /// @unofficial
+    /// @param playerId The player to display the action prompt to.
+    /// @param fukidashiAction The action prompt to display.
+    void showFukidashi(int playerId, int fukidashiAction);
+
+    /// @brief Temporarily hides the given action prompt for the given player.
+    /// @unofficial
+    /// @param playerId The player to hide the action prompt for.
+    /// @param fukidashiAction The action prompt type to be hidden.
+    /// @param param3 Unknown.
+    void hideFukidashiTemporarily(int playerId, int fukidashiAction, int param3);
+
+    /// @brief Hides the given action prompt for the given player for the rest of the current level.
+    /// @unofficial
+    /// @param playerId The player to hide the action prompt for.
+    /// @param fukidashiAction The action prompt type to be hidden.
+    /// @param param3 Unknown.
+    void hideFukidashiForLevel(int playerId, int fukidashiAction, int param3);
+
+    /// @brief Hides the given action prompt for the given player for the rest of the current session.
+    /// @details The action prompt remains hidden until the player returns to the main menu.
+    /// @unofficial
+    /// @param playerId The player to hide the action prompt for.
+    /// @param fukidashiAction The action prompt type to be hidden.
+    void hideFukidashiForSession(int playerId, int fukidashiAction);
+
     ////////////////
     // Other APIs //
     ////////////////
@@ -56,13 +87,8 @@ namespace dGameCom {
     void getGlbPosToLyt(mVec3_c &);
     bool someCheck(mVec3_c *a, mBoundBox *b); ///< @unofficial
 
-    void FUN_800b3600(int, int); ///< @unofficial
-    bool isInside(mVec3_c *, mVec3_c *, mVec3_c *, mVec3_c *, float); ///< @unofficial
-    void FUN_800b3720(int, int, int); ///< @unofficial
-    void FUN_800b3780(int, int); ///< @unofficial
-    void FUN_800b3750(int, int, int); ///< @unofficial
+    bool checkRectangleOverlap(mVec3_c *, mVec3_c *, mVec3_c *, mVec3_c *, float); ///< @unofficial
 
-    /// @unofficial
-    void updateSelectCursor(nw4r::lyt::Picture *pic, int index, bool useSpecialDraw);
+    void updateSelectCursor(nw4r::lyt::Picture *pic, int index, bool useSpecialDraw); ///< @unofficial
     float getDispCenterY();
 }

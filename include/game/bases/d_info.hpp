@@ -44,7 +44,7 @@ public:
     int pad3[7];
     int field_3b4;
     char pad4[0x746];
-    bool mCarryRelated[4][0x16];
+    bool mFukidashiActionPerformed[4][0x16];
 
     static dInfo_c *m_instance;
     static unsigned int mGameFlag;

@@ -12,10 +12,12 @@
 #include <game/bases/d_multi_manager.hpp>
 #include <game/bases/d_s_stage.hpp>
 #include <game/bases/d_score_manager.hpp>
+#include <game/bases/d_SmallScore.hpp>
 #include <game/mLib/m_effect.hpp>
 #include <lib/nw4r/g3d/scn_mdl.hpp>
 #include <constants/sjis_constants.h>
 #include <constants/sound_list.h>
+/// @file
 
 u8 dActor_c::mExecStopReq;
 u8 dActor_c::mDrawStopReq;
@@ -42,18 +44,13 @@ u64 dActor_c::m_tmpCtEventMask;
 u8 dActor_c::m_tmpCtSpriteLayerNo;
 
 dActor_c::dActor_c() :
-    m_00(0), mCarryingPlayerNo(-1), m_17(0), m_1b(1.0f),
+    m_00(0), mCarryFukidashiPlayerNo(-1), m_17(0), m_1b(1.0f),
     mVisibleAreaSize(0.0f, 0.0f), mVisibleAreaOffset(0.0f, 0.0f),
-    mMaxBound(0.0f, 0.0f, 0.0f, 0.0f) {
-
-    mpSpawnFlags = nullptr;
-    mpDeleteVal = nullptr;
-    mEatenByID = BASE_ID_NULL;
-    mEatBehaviour = EAT_TYPE_EAT_PERMANENT;
-    m_25b = 0;
-
-    mPlayerNo = -1;
-    mNoRespawn = false;
+    mMaxBound(0.0f, 0.0f, 0.0f, 0.0f),
+    mpSpawnFlags(nullptr), mpDeleteVal(nullptr),
+    mEatenByID(BASE_ID_NULL), mEatBehaviour(EAT_TYPE_EAT_PERMANENT),
+    mAttentionMode(0), mPlayerNo(-1),
+    mNoRespawn(false) {
 
     setKind(STAGE_ACTOR_GENERIC);
 
@@ -69,8 +66,8 @@ dActor_c::dActor_c() :
     mRc.set(this, 1);
     mRc.mpBc = &mBc;
 
-    mBgCollFlags = 0;
-    mPointsCombo = 0;
+    mBgCollFlags = COLL_NONE;
+    mComboMultiplier = 0;
 
     mLayer = m_tmpCtLayerNo;
     mCc.mLayer = mLayer;
@@ -125,7 +122,7 @@ int dActor_c::preExecute() {
 
 void dActor_c::postExecute(fBase_c::MAIN_STATE_e status) {
     if (status == SUCCESS) {
-        if ((mActorProperties & 0x400) == 0) {
+        if (!(mActorProperties & 0x400)) {
             mPos.x = dScStage_c::getLoopPosX(mPos.x);
         }
         mCc.clear();
@@ -133,7 +130,7 @@ void dActor_c::postExecute(fBase_c::MAIN_STATE_e status) {
             mBc.checkLink();
             mRc.chkLink();
         }
-        if ((mActorProperties & 0x8) != 0) {
+        if (mActorProperties & 0x8) {
             dAttention_c::mspInstance->entry(mUniqueID);
         }
         m_1eb.set(0.0f, 0.0f);
@@ -145,10 +142,10 @@ int dActor_c::preDraw() {
     if (dBaseActor_c::preDraw() == NOT_READY || (mDrawStop & getKindMask()) != 0) {
         return NOT_READY;
     }
-    if (mEatState == 2) {
+    if (mEatState == EAT_STATE_EATEN) {
         return NOT_READY;
     }
-    if ((mActorProperties & 2) != 0 && ActorDrawCullCheck() != 0) {
+    if ((mActorProperties & 2) && ActorDrawCullCheck()) {
         return NOT_READY;
     }
     return SUCCEEDED;
@@ -183,7 +180,6 @@ void dActor_c::setKind(u8 kind) {
 }
 
 void dActor_c::setSearchNearPlayerFunc(int loopType) {
-    /// @unofficial
     static const searchNearPlayerFunc funcs[dScStage_c::LOOP_COUNT] = {
         searchNearPlayerNormal,
         searchNearPlayerLoop,
@@ -203,7 +199,7 @@ dAcPy_c *dActor_c::searchNearPlayer_Main(mVec2_c &delta, const mVec2_c &pos) {
 
 dAcPy_c *dActor_c::searchNearPlayerNormal(mVec2_c &delta, const mVec2_c &pos) {
     dAcPy_c *closestPlayer = nullptr;
-    float closest = 1e9;
+    float closestDist = 1e9;
     for (int i = 0; i < 4; i++) {
         dAcPy_c *player = daPyMng_c::getPlayer(i);
         if (player == nullptr || !daPyMng_c::checkPlayer(i)) {
@@ -214,10 +210,10 @@ dAcPy_c *dActor_c::searchNearPlayerNormal(mVec2_c &delta, const mVec2_c &pos) {
         float yDiff = player->mPos.y + player->mCenterOffs.y - pos.y;
         float dist = xDiff * xDiff + yDiff * yDiff;
 
-        if (closest > dist) {
+        if (closestDist > dist) {
             delta.set(xDiff, yDiff);
             closestPlayer = player;
-            closest = dist;
+            closestDist = dist;
         }
     }
     return closestPlayer;
@@ -231,7 +227,7 @@ dAcPy_c *dActor_c::searchNearPlayerLoop(mVec2_c &delta, const mVec2_c &pos) {
     mVec2_c loopPos;
     loopPos.x = dScStage_c::getLoopPosX(pos.x);
     loopPos.y = pos.y;
-    float closest = 1e9;
+    float closestDist = 1e9;
 
     dAcPy_c *player;
     for (int i = 0; i < 4; i++) {
@@ -260,10 +256,10 @@ dAcPy_c *dActor_c::searchNearPlayerLoop(mVec2_c &delta, const mVec2_c &pos) {
         adjDelta.y = loopPlayerPos.y - loopPos.y;
 
         float dist = adjDelta.x * adjDelta.x + adjDelta.y * adjDelta.y;
-        if (closest > dist) {
+        if (closestDist > dist) {
             delta.set(adjDelta.x, adjDelta.y);
             closestPlayer = player;
-            closest = dist;
+            closestDist = dist;
         }
     }
     return closestPlayer;
@@ -360,27 +356,27 @@ void dActor_c::setSoftLight_Item(m3d::bmdl_c &mdl) {
 void dActor_c::deleteActor(u8 deleteForever) {
     deleteRequest();
 
-    u8 *flags = mpSpawnFlags;
-    u16 *val = mpDeleteVal;
-    if (flags == nullptr || val == nullptr) {
+    u8 *spawnFlags = mpSpawnFlags;
+    u16 *deleteVal = mpDeleteVal;
+    if (spawnFlags == nullptr || deleteVal == nullptr) {
         return;
     }
 
-    if (deleteForever == 0) {
-        if (flags != nullptr) {
-            *flags = *flags & ~ACTOR_SPAWNED;
+    if (!deleteForever) {
+        if (spawnFlags != nullptr) {
+            *spawnFlags = *spawnFlags & ~ACTOR_SPAWNED;
         }
     } else {
-        if (flags != nullptr) {
-            *flags = *flags | ACTOR_NO_RESPAWN;
+        if (spawnFlags != nullptr) {
+            *spawnFlags = *spawnFlags | ACTOR_NO_RESPAWN;
         }
-        if (val != nullptr) {
-            *val = 300;
+        if (deleteVal != nullptr) {
+            *deleteVal = 300;
         }
     }
 }
 
-bool dActor_c::cullCheck(const mVec3_c &pos, const mBoundBox &bound, u8 areaID) const {
+bool dActor_c::areaCullCheck(const mVec3_c &pos, const mBoundBox &bound, u8 areaID) const {
     dCdFile_c *course = dCd_c::m_instance->getFileP(dScStage_c::m_instance->mCurrCourse);
     AreaBoundU16 *area = course->getAreaP(areaID, nullptr);
     if (area == nullptr) {
@@ -401,7 +397,7 @@ bool dActor_c::cullCheck(const mVec3_c &pos, const mBoundBox &bound, u8 areaID) 
 
     mVec2_c maxBoundSize = mMaxBound.getSize();
 
-    if ((course->mpCourseSettings->mFlags & dCdCourseSettings_c::WRAP_AROUND_EDGES) == 0) {
+    if (!(course->mpCourseSettings->mFlags & dCdCourseSettings_c::WRAP_AROUND_EDGES)) {
         if (b.x + doubleBoundSize.x < -maxBoundSize.x || b.x > area->width + maxBoundSize.x) {
             return true;
         }
@@ -414,33 +410,35 @@ bool dActor_c::cullCheck(const mVec3_c &pos, const mBoundBox &bound, u8 areaID) 
 }
 
 bool dActor_c::ActorScrOutCheck(u16 flags) {
-    if (mEatState == 2) {
-        return false;
-    }
-    if ((flags & 8) == 0 && mBc.checkRide()) {
+    if (mEatState == EAT_STATE_EATEN) {
         return false;
     }
 
-    mBoundBox bound;
-    bound.mOffset.x = mVisibleAreaOffset.x;
-    bound.mOffset.y = mVisibleAreaOffset.y;
-    bound.mSize.x = mVisibleAreaSize.x * 0.5f;
-    bound.mSize.y = mVisibleAreaSize.y * 0.5f;
+    if (!(flags & SKIP_RIDE_CHECK) && mBc.checkRide()) {
+        return false;
+    }
 
-    bool res = false;
-    if (cullCheck(mPos, bound, mAreaNo)) {
-        res = true;
-    } else if ((flags & 4) == 0) {
-        if (otherCullCheck(mPos, bound, getDestroyBound(), mAreaNo)) {
-            res = true;
+    mBoundBox visibleBound;
+    visibleBound.mOffset.x = mVisibleAreaOffset.x;
+    visibleBound.mOffset.y = mVisibleAreaOffset.y;
+    visibleBound.mSize.x = mVisibleAreaSize.x * 0.5f;
+    visibleBound.mSize.y = mVisibleAreaSize.y * 0.5f;
+
+    bool outOfScreen = false;
+    if (areaCullCheck(mPos, visibleBound, mAreaNo)) {
+        outOfScreen = true;
+    } else if (!(flags & SKIP_SCREEN_CHECK)) {
+        if (screenCullCheck(mPos, visibleBound, getDestroyBound(), mAreaNo)) {
+            outOfScreen = true;
         }
     }
-    if (res && (flags & 2) == 0) {
+
+    if (outOfScreen && !(flags & SKIP_ACTOR_DELETE)) {
         deleteActor(mNoRespawn);
     }
-    return res;
-}
 
+    return outOfScreen;
+}
 
 bool dActor_c::ActorDrawCullCheck() {
     mBoundBox bound;
@@ -457,79 +455,79 @@ bool dActor_c::ActorDrawCullCheck() {
 
 bool dActor_c::checkBgColl() {
     if (mBgCollFlags != 0) {
-        if ((mBgCollFlags & 1) && mBc.isHead()) {
+        if ((mBgCollFlags & COLL_HEAD) && mBc.isHead()) {
             return true;
         }
-        if ((mBgCollFlags & 2) && mBc.isWallL()) {
+        if ((mBgCollFlags & COLL_WALL_L) && mBc.isWallL()) {
             return true;
         }
-        if ((mBgCollFlags & 8) && mBc.isFoot()) {
+        if ((mBgCollFlags & COLL_FOOT) && mBc.isFoot()) {
             return true;
         }
-        if ((mBgCollFlags & 4) && mBc.isWallR()) {
+        if ((mBgCollFlags & COLL_WALL_R) && mBc.isWallR()) {
             return true;
         }
     }
     return false;
 }
 
-bool dActor_c::carryFukidashiCheck(int otherPlayerNo, mVec2_c triggerSize) {
-    mVec3_c center = getCenterPos();
+bool dActor_c::carryFukidashiCheck(int fukidashiAction, mVec2_c fukidashiTriggerSize) {
+    mVec3_c centerPos = getCenterPos();
 
-    mVec3_c minPos(center.x - triggerSize.x, center.y - triggerSize.y, mPos.z);
-    mVec3_c maxPos(center.x + triggerSize.x, center.y + triggerSize.y, mPos.z);
+    mVec3_c minTriggerPos(centerPos.x - fukidashiTriggerSize.x, centerPos.y - fukidashiTriggerSize.y, mPos.z);
+    mVec3_c maxTriggerPos(centerPos.x + fukidashiTriggerSize.x, centerPos.y + fukidashiTriggerSize.y, mPos.z);
 
-    if (mCarryingPlayerNo <= 3 && dInfo_c::m_instance->mCarryRelated[mCarryingPlayerNo][otherPlayerNo]) {
-        mCarryingPlayerNo = -1;
+    if (mCarryFukidashiPlayerNo <= 3 && dInfo_c::m_instance->mFukidashiActionPerformed[mCarryFukidashiPlayerNo][fukidashiAction]) {
+        mCarryFukidashiPlayerNo = -1;
     }
 
-    if (mCarryingPlayerNo <= 3) {
-        // Already carrying
-        dAcPy_c *player = daPyMng_c::getPlayer(mCarryingPlayerNo);
+    if (mCarryFukidashiPlayerNo <= 3) {
+        // Already displaying a fukidashi
+        dAcPy_c *player = daPyMng_c::getPlayer(mCarryFukidashiPlayerNo);
         if (player != nullptr) {
-            bool alreadyDrawing = player->isDrawingCarryFukidashi();
+            bool canDrawFukidashi = player->isDrawingCarryFukidashi();
 
-            mBoundBox b;
-            player->getCcBounds(b);
-            mVec3_c newPos(
-                dScStage_c::getLoopPosX(b.mOffset.x + player->mPos.x),
-                b.mOffset.y + player->mPos.y,
+            mBoundBox playerBoundBox;
+            player->getCcBounds(playerBoundBox);
+            mVec3_c playerPos(
+                dScStage_c::getLoopPosX(playerBoundBox.mOffset.x + player->mPos.x),
+                playerBoundBox.mOffset.y + player->mPos.y,
                 player->mPos.z
             );
 
-            mVec3_c v1(newPos.x - b.mSize.x - 2.0f, newPos.y - b.mSize.y, newPos.z);
-            mVec3_c v2(newPos.x + b.mSize.x + 2.0f, newPos.y + b.mSize.y, newPos.z);
+            mVec3_c minPlayerPos(playerPos.x - playerBoundBox.mSize.x - 2.0f, playerPos.y - playerBoundBox.mSize.y, playerPos.z);
+            mVec3_c maxPlayerPos(playerPos.x + playerBoundBox.mSize.x + 2.0f, playerPos.y + playerBoundBox.mSize.y, playerPos.z);
 
-            if (dfukidashiManager_c::m_instance->mSubstruct[mCarryingPlayerNo].smth == 0) {
-                dGameCom::FUN_800b3600(mCarryingPlayerNo, otherPlayerNo);
+            if (!dfukidashiManager_c::m_instance->mInfos[mCarryFukidashiPlayerNo].mVisible) {
+                dGameCom::showFukidashi(mCarryFukidashiPlayerNo, fukidashiAction);
             }
 
-            bool overlap = dGameCom::isInside(&minPos, &maxPos, &v1, &v2, 0.0f);
-            if (!alreadyDrawing || !overlap) {
-                dGameCom::FUN_800b3750(mCarryingPlayerNo, otherPlayerNo, 0);
-                mCarryingPlayerNo = -1;
+            bool overlap = dGameCom::checkRectangleOverlap(&minTriggerPos, &maxTriggerPos, &minPlayerPos, &maxPlayerPos, 0.0f);
+            if ((!canDrawFukidashi) || (!overlap)) {
+                dGameCom::hideFukidashiTemporarily(mCarryFukidashiPlayerNo, fukidashiAction, 0);
+                mCarryFukidashiPlayerNo = -1;
             }
         }
     } else {
-        // Not carrying yet, search for a player to carry
-        dAcPy_c *player = searchCarryFukidashiPlayer(otherPlayerNo);
+        // Not displaying a fukidashi yet, search for a player to show it
+        dAcPy_c *player = searchCarryFukidashiPlayer(fukidashiAction);
         if (player != nullptr) {
-            bool alreadyDrawing = player->isDrawingCarryFukidashi();
+            bool canDrawFukidashi = player->isDrawingCarryFukidashi();
 
-            mBoundBox b;
-            player->getCcBounds(b);
-            mVec3_c newPos(
-                dScStage_c::getLoopPosX(b.mOffset.x + player->mPos.x),
-                b.mOffset.y + player->mPos.y,
+            mBoundBox playerBoundBox;
+            player->getCcBounds(playerBoundBox);
+            mVec3_c playerPos(
+                dScStage_c::getLoopPosX(playerBoundBox.mOffset.x + player->mPos.x),
+                playerBoundBox.mOffset.y + player->mPos.y,
                 player->mPos.z
             );
 
-            mVec3_c v1(newPos.x - b.mSize.x, newPos.y - b.mSize.y, newPos.z);
-            mVec3_c v2(newPos.x + b.mSize.x, newPos.y + b.mSize.y, newPos.z);
+            mVec3_c minPlayerPos(playerPos.x - playerBoundBox.mSize.x, playerPos.y - playerBoundBox.mSize.y, playerPos.z);
+            mVec3_c maxPlayerPos(playerPos.x + playerBoundBox.mSize.x, playerPos.y + playerBoundBox.mSize.y, playerPos.z);
 
-            bool overlap = dGameCom::isInside(&minPos, &maxPos, &v1, &v2, 0.0f);
-            if (alreadyDrawing && overlap) {
-                mCarryingPlayerNo = *player->getPlrNo();
+            bool overlap = dGameCom::checkRectangleOverlap(&minTriggerPos, &maxTriggerPos, &minPlayerPos, &maxPlayerPos, 0.0f);
+            if (canDrawFukidashi && overlap) {
+                mCarryFukidashiPlayerNo = *player->getPlrNo();
             }
         }
     }
@@ -537,25 +535,25 @@ bool dActor_c::carryFukidashiCheck(int otherPlayerNo, mVec2_c triggerSize) {
     return false;
 }
 
-void dActor_c::carryFukidashiCancel(int carriedPlayerNo, int carryingPlayerNo) {
+void dActor_c::carryFukidashiCancel(int fukidashiAction, int playerId) {
     for (int i = 0; i < 4; i++) {
-        if (i == carryingPlayerNo) {
-            dGameCom::FUN_800b3720(i, carriedPlayerNo, 0);
-            dGameCom::FUN_800b3780(i, carriedPlayerNo);
+        if (i == playerId) {
+            dGameCom::hideFukidashiForLevel(i, fukidashiAction, 0);
+            dGameCom::hideFukidashiForSession(i, fukidashiAction);
         } else {
-            dGameCom::FUN_800b3750(i, carriedPlayerNo, 0);
+            dGameCom::hideFukidashiTemporarily(i, fukidashiAction, 0);
         }
     }
-    mCarryingPlayerNo = -1;
+    mCarryFukidashiPlayerNo = -1;
 }
 
-dAcPy_c *dActor_c::searchCarryFukidashiPlayer(int carryingPlayerNo) {
+dAcPy_c *dActor_c::searchCarryFukidashiPlayer(int fukidashiAction) {
     mVec3_c center = getCenterPos();
 
-    dAcPy_c *closest = nullptr;
+    dAcPy_c *closestPlayer = nullptr;
     float closestDist = 1e9;
     for (int i = 0; i < 4; i++) {
-        if (daPyMng_c::checkPlayer(i) && !dInfo_c::m_instance->mCarryRelated[i][carryingPlayerNo]) {
+        if (daPyMng_c::checkPlayer(i) && !dInfo_c::m_instance->mFukidashiActionPerformed[i][fukidashiAction]) {
             dAcPy_c *player = daPyMng_c::getPlayer(i);
             if (player == nullptr) {
                 continue;
@@ -565,12 +563,12 @@ dAcPy_c *dActor_c::searchCarryFukidashiPlayer(int carryingPlayerNo) {
             float diffY = player->mPos.y + player->mCenterOffs.y - center.y;
             float dist = diffX * diffX + diffY * diffY;
             if (closestDist > dist) {
-                closest = player;
+                closestPlayer = player;
                 closestDist = dist;
             }
         }
     }
-    return closest;
+    return closestPlayer;
 }
 
 mVec2_c dActor_c::getLookatPos() const {
@@ -580,12 +578,12 @@ mVec2_c dActor_c::getLookatPos() const {
 void dActor_c::block_hit_init() {}
 
 void dActor_c::allEnemyDeathEffSet() {
-    mVec3_c center = getCenterPos();
-    center.y += 4.0f;
-    mEf::createEffect("Wm_en_burst_s", 0, &center, nullptr, nullptr);
+    mVec3_c effPos = getCenterPos();
+    effPos.y += 4.0f;
+    mEf::createEffect("Wm_en_burst_s", 0, &effPos, nullptr, nullptr);
 }
 
-void dActor_c::touchFlagpole(s8 scoreSetType, int noScore) {
+void dActor_c::killActor(s8 playerId, int noScore) {
     mVec3_c effPos = mPos;
     mVec3_c centerOffs = mCenterOffs;
 
@@ -602,46 +600,46 @@ void dActor_c::touchFlagpole(s8 scoreSetType, int noScore) {
     deleteActor(1);
 
     if (!noScore) {
-        if (scoreSetType < 0) {
+        if (playerId < 0) {
             dScoreMng_c::m_instance->UnKnownScoreSet(this, 1, dScoreMng_c::smc_SCORE_X, dScoreMng_c::smc_SCORE_Y);
         } else {
-            dScoreMng_c::m_instance->ScoreSet(this, 1, scoreSetType, dScoreMng_c::smc_SCORE_X, dScoreMng_c::smc_SCORE_Y);
+            dScoreMng_c::m_instance->ScoreSet(this, 1, playerId, dScoreMng_c::smc_SCORE_X, dScoreMng_c::smc_SCORE_Y);
         }
     }
 }
 
-void dActor_c::setSpinLiftUpActor(dActor_c *actor) {}
+void dActor_c::setSpinLiftUpActor(dActor_c *carryingActor) {}
 
-void dActor_c::setEatTongue(dActor_c *actor) {
+void dActor_c::setEatTongue(dActor_c *eatingActor) {
     mPreEatScale = mScale;
 }
 
-void dActor_c::setEatTongueOff(dActor_c *actor) {}
+void dActor_c::setEatTongueOff(dActor_c *eatingActor) {}
 
-void dActor_c::setEatMouth(dActor_c *actor) {}
+void dActor_c::setEatMouth(dActor_c *eatingActor) {}
 
-bool dActor_c::setEatSpitOut(dActor_c *actor) {
+bool dActor_c::setEatSpitOut(dActor_c *eatingActor) {
     return true;
 }
 
-bool dActor_c::setEatGlupDown(dActor_c *actor) {
-    static const int yoshiEatPoints[] = { 1, 4 };
-    static const int yoshiEatPoints2[] = { 200, 1000 };
+bool dActor_c::setEatGlupDown(dActor_c *eatingActor) {
+    static const int yoshiEatPopupTypes[] = { dSmallScore_c::POPUP_TYPE_200, dSmallScore_c::POPUP_TYPE_1000 };
+    static const int yoshiEatPoints[] = { 200, 1000 };
 
     if (mEatPoints != EAT_POINTS_NONE) {
-        mVec3_c adjPos = actor->mPos;
-        adjPos.y += 40.0f;
+        mVec3_c smallScorePos = eatingActor->mPos;
+        smallScorePos.y += 40.0f;
 
-        s8 plrNo = *actor->getPlrNo();
-        dGameCom::CreateSmallScore(adjPos, yoshiEatPoints[mEatPoints], plrNo, false);
+        s8 plrNo = *eatingActor->getPlrNo();
+        dGameCom::CreateSmallScore(smallScorePos, yoshiEatPopupTypes[mEatPoints], plrNo, false);
 
         if (plrNo != -1) {
-            daPyMng_c::addScore(yoshiEatPoints2[mEatPoints], plrNo);
+            daPyMng_c::addScore(yoshiEatPoints[mEatPoints], plrNo);
             dMultiMng_c::mspInstance->incEnemyDown(plrNo);
         }
     }
-    deleteRequest();
 
+    deleteRequest();
     return true;
 }
 
@@ -649,9 +647,9 @@ void dActor_c::setAfterEatScale() {
     mScale = mPreEatScale;
 }
 
-void dActor_c::calcSpitOutPos(dActor_c *actor) {
+void dActor_c::calcSpitOutPos(dActor_c *eatingActor) {
     mMtx_c mouthMtx;
-    daYoshi_c *yoshi = (daYoshi_c *) actor;
+    daYoshi_c *yoshi = (daYoshi_c *) eatingActor;
 
     yoshi->getMouthMtx(&mouthMtx);
     mMtx_c transposeMtx;
@@ -662,9 +660,9 @@ void dActor_c::calcSpitOutPos(dActor_c *actor) {
     mPos.y = mouthMtx.transY();
 }
 
-float dActor_c::calcEatScaleRate(dActor_c *actor) {
+float dActor_c::calcEatScaleRate(dActor_c *eatingActor) {
     float res = 1.0f;
-    daYoshi_c *yoshi = (daYoshi_c *) actor;
+    daYoshi_c *yoshi = (daYoshi_c *) eatingActor;
 
     if (yoshi->m_a0 <= 1) {
         res = yoshi->m_a0 / 1.25f;
@@ -672,18 +670,18 @@ float dActor_c::calcEatScaleRate(dActor_c *actor) {
     return res;
 }
 
-void dActor_c::calcEatInScale(dActor_c *actor) {
+void dActor_c::calcEatInScale(dActor_c *eatingActor) {
     mScale = mPreEatScale;
 
-    float scaleRate = calcEatScaleRate(actor);
+    float scaleRate = calcEatScaleRate(eatingActor);
     if (scaleRate < 1.0f) {
         mScale *= scaleRate;
     }
 }
 
-void dActor_c::eatMove(dActor_c *actor) {
+void dActor_c::eatMove(dActor_c *eatingActor) {
     mMtx_c tongueTipMtx;
-    daYoshi_c *yoshi = (daYoshi_c *) actor;
+    daYoshi_c *yoshi = (daYoshi_c *) eatingActor;
 
     yoshi->getTongueTipMtx(&tongueTipMtx);
     mPos.x = tongueTipMtx.transX();
@@ -698,7 +696,7 @@ void dActor_c::cancelFunsuiActSide(int) {}
 
 void dActor_c::cancelFunsuiActVanish() {}
 
-void dActor_c::slideComboSE(int count, bool clapType) {
+void dActor_c::slideComboSE(int multiplier, bool shortCombo) {
     static const dAudio::SoundEffectID_t cs_combo_se[] = {
         SE_EMY_KAME_HIT_1,
         SE_EMY_KAME_HIT_2,
@@ -712,27 +710,27 @@ void dActor_c::slideComboSE(int count, bool clapType) {
     };
 
     if ((u8) mPlayerNo <= 3) {
-        int a = count;
-        if (a >= ARRAY_SIZE(cs_combo_se)) {
-            a = ARRAY_SIZE(cs_combo_se) - 1;
+        int combo = multiplier;
+        if (combo >= ARRAY_SIZE(cs_combo_se)) {
+            combo = ARRAY_SIZE(cs_combo_se) - 1;
         }
-        int countNeededForClaps = clapType ? 4 : 7;
-        if (a >= countNeededForClaps) {
+        int comboNeededForClaps = shortCombo ? 4 : 7;
+        if (combo >= comboNeededForClaps) {
             dMultiMng_c::mspInstance->setClapSE();
         }
 
-        cs_combo_se[a].playEmySound(getCenterPos(), dAudio::getRemotePlayer(mPlayerNo));
+        cs_combo_se[combo].playEmySound(getCenterPos(), dAudio::getRemotePlayer(mPlayerNo));
     }
 }
 
 void dActor_c::clrComboCnt() {
-    mPointsCombo = 0;
+    mComboMultiplier = 0;
 }
 
 void dActor_c::waterSplashEffect(const mVec3_c &pos, float size) {
     mVec3_c shiftedPos(pos, 6500.0f);
 
-    int waterDepth = dBc_c::checkWaterDepth(shiftedPos.x, shiftedPos.y, mLayer, mBc.m_e5, nullptr);
+    int waterDepth = dBc_c::checkWaterDepth(shiftedPos.x, shiftedPos.y, mLayer, mBc.mLineKind, nullptr);
 
     u32 splashInfo = 0;
     if (waterDepth < 3) {

@@ -12,7 +12,7 @@ public:
     dRc_c();
     virtual ~dRc_c();
 
-    void set(dActor_c *, u8);
+    void set(dActor_c *actor, u8 lineKind);
 
     void clrLink();
     void chkLink();
@@ -24,7 +24,7 @@ public:
     dBc_c *mpBc;
     float m_1c[4];
     short mRotation;
-    bool mChainlinkMode;
+    u8 mLineKind;
     u8 mRideType;
     u8 pad2[2];
     u8 mLayer;

@@ -15,7 +15,7 @@ public:
     char mPad2[0x34];
     u32 mFlags;
     char mPad3[0x59];
-    u8 m_e5;
+    u8 mLineKind;
     char mPad4[0x6];
     u8 mLayer;
 
