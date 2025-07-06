@@ -6,7 +6,7 @@
 
 
 class dSmallScore_c {
-
+public:
     enum STATE_e {
         STATE_MAKE_START = 0,
         STATE_UP_MOVE = 1,
@@ -15,9 +15,38 @@ class dSmallScore_c {
         STATE_NONE = 4
     };
 
+    enum POPUP_TYPE_e {
+        POPUP_TYPE_100,
+        POPUP_TYPE_200,
+        POPUP_TYPE_400,
+        POPUP_TYPE_800,
+        POPUP_TYPE_1000,
+        POPUP_TYPE_2000,
+        POPUP_TYPE_4000,
+        POPUP_TYPE_8000,
+        POPUP_TYPE_ONE,
+        POPUP_TYPE_TWO,
+        POPUP_TYPE_THREE,
+        POPUP_TYPE_FOUR,
+        POPUP_TYPE_FIVE,
+        POPUP_TYPE_SIX,
+        POPUP_TYPE_SEVEN,
+        POPUP_TYPE_EIGHT,
+        POPUP_TYPE_1UP,
+        POPUP_TYPE_2UP,
+        POPUP_TYPE_3UP,
+        POPUP_TYPE_4UP,
+        POPUP_TYPE_1UP_DUPE,
+        POPUP_TYPE_COIN_2,
+        POPUP_TYPE_COIN_3,
+        POPUP_TYPE_COIN_5,
+        POPUP_TYPE_COIN_10,
+        POPUP_TYPE_COIN_15,
+        POPUP_TYPE_COIN_20
+    };
+
     typedef void (dSmallScore_c::*ProcFunc)();
 
-public:
     dSmallScore_c();
     virtual ~dSmallScore_c();
 

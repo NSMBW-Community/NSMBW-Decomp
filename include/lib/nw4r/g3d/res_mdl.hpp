@@ -20,7 +20,7 @@ class ResMatMisc {
 public:
     void SetLightSetIdx(int);
 
-    u32 smth;
+    u32 mZCompLoc;
 };
 
 class ResMat {
