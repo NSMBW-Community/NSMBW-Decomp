@@ -180,12 +180,12 @@ void dActor_c::setKind(u8 kind) {
 }
 
 void dActor_c::setSearchNearPlayerFunc(int loopType) {
-    static const searchNearPlayerFunc funcs[dScStage_c::LOOP_COUNT] = {
+    static const searchNearPlayerFunc searchFunc[dScStage_c::LOOP_COUNT] = {
         searchNearPlayerNormal,
         searchNearPlayerLoop,
         searchNearPlayerLoop
     };
-    mSearchNearPlayerFunc = funcs[loopType];
+    mSearchNearPlayerFunc = searchFunc[loopType];
 }
 
 dAcPy_c *dActor_c::searchNearPlayer(mVec2_c &delta) {
@@ -266,12 +266,12 @@ dAcPy_c *dActor_c::searchNearPlayerLoop(mVec2_c &delta, const mVec2_c &pos) {
 }
 
 void dActor_c::setGetTrgToSrcDirFunc(int loopType) {
-    static const getTrgToSrcDirFunc funcs[dScStage_c::LOOP_COUNT] = {
+    static const getTrgToSrcDirFunc getdirFunc[dScStage_c::LOOP_COUNT] = {
         getTrgToSrcDirNormal,
         getTrgToSrcDirLoop,
         getTrgToSrcDirLoop
     };
-    mGetTrgToSrcDirFunc = funcs[loopType];
+    mGetTrgToSrcDirFunc = getdirFunc[loopType];
 }
 
 bool dActor_c::getTrgToSrcDir_Main(float trgX, float srcX) {
