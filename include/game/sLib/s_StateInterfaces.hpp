@@ -27,9 +27,9 @@ public:
 class sStateIf_c {
 public:
     virtual ~sStateIf_c() {}
-    virtual const void initialize() = 0; ///<  Initializes the state.
-    virtual const void execute() = 0; ///<  Executes the state.
-    virtual const void finalize() = 0; ///<  Prepares the state for termination.
+    virtual void initialize() = 0; ///<  Initializes the state.
+    virtual void execute() = 0; ///<  Executes the state.
+    virtual void finalize() = 0; ///<  Prepares the state for termination.
 };
 
 /// @brief The interface for state factories.
