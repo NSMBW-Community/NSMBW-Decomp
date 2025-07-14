@@ -4,6 +4,7 @@
 #include <lib/nw4r/lyt/lyt_draw_info.hpp>
 #include <lib/nw4r/ut/color.hpp>
 #include <lib/nw4r/ut/list.hpp>
+#include <lib/nw4r/ut/RuntimeTypeInfo.hpp>
 #include <lib/nw4r/math/vec.hpp>
 #include <_dummy_classes.hpp>
 
@@ -14,8 +15,9 @@ namespace detail {
 
     class PaneBase {
     public:
+        inline PaneBase() : mLink() {}
         virtual ~PaneBase();
-        nw4r::ut::LinkListNode node;
+        nw4r::ut::LinkListNode mLink;
     };
 
 } // namespace detail
@@ -32,7 +34,8 @@ public:
 
     virtual ~Pane();
 
-    virtual int *GetRuntimeTypeInfo() const { return &typeInfo; }
+    NW4R_UT_RUNTIME_TYPEINFO;
+
     virtual void CalculateMtx(const DrawInfo &);
     virtual void Draw(const DrawInfo &);
     virtual void DrawSelf(const DrawInfo &);
@@ -92,8 +95,6 @@ public:
     u8 mBasePosition;
     u8 mFlag;
     u8 mbUserAllocated;
-
-    static int typeInfo;
 };
 
 } // namespace lyt
