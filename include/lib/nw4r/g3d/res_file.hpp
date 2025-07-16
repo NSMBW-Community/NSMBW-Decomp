@@ -1,4 +1,5 @@
 #pragma once
+#include <lib/nw4r/g3d/res_mdl.hpp>
 
 namespace nw4r {
     namespace g3d {
@@ -8,6 +9,7 @@ namespace nw4r {
             bool CheckRevision() const;
             void Init();
             void Bind(ResFile);
+            ResMdl GetResMdl(const char *name) const;
 
             void *data;
         };
