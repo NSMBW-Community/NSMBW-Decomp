@@ -4,7 +4,7 @@
 # Generates the Ninja build file.
 
 import sys
-from pathlib import Path, PureWindowsPath
+from pathlib import Path
 
 sys.path.append('tools')
 
@@ -110,7 +110,7 @@ def gen_rel_build_statements(writer: NinjaWriter, slices: list[SliceFile]):
             rel_files.append(get_build_path(slice_file, '.rel'))
 
     common_lcf = BUILDDIR / 'modules.lcf'
-    fake_path = PureWindowsPath('d:/home/Project/WIIMJ2D/EU/PRD/RVL/bin') # Used for the .str file
+    fake_path = Path('d:/home/Project/WIIMJ2D/EU/PRD/RVL/bin') # Used for the .str file
     str_file = dol_file.with_suffix('.str')
 
     #################################
@@ -147,8 +147,8 @@ def gen_rel_build_statements(writer: NinjaWriter, slices: list[SliceFile]):
                      implicit_inputs=common_lcf)
 
         # Fake PLF for the .str file
-        fake_plf_path = PureWindowsPath(fake_path / slice_file.meta.fileName).with_suffix('.plf')
-        fake_paths.append(str(fake_plf_path).replace('\\', '\\\\'))
+        fake_plf_path = Path(fake_path / slice_file.meta.fileName).with_suffix('.plf')
+        fake_paths.append(str(fake_plf_path))
 
         # Build final REL
         writer.build('build_rel',
@@ -213,7 +213,7 @@ writer.rule('build_dol',
             description='Build $out')
 
 writer.rule('write_str',
-            command='''$python -c "import sys; open(sys.argv[1], 'w').write('\\0'.join(sys.argv[2:])+'\\0')" $out $paths''',
+            command='''$python -c "import sys; open(sys.argv[1], 'w').write('\\0'.join([p.replace('/', '\\u005c') for p in sys.argv[2:]])+'\\0')" $out $paths''',
             description='Write $out')
 
 writer.rule('build_rel',
