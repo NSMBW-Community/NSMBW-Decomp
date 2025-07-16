@@ -148,8 +148,7 @@ def gen_rel_build_statements(writer: NinjaWriter, slices: list[SliceFile]):
 
         # Fake PLF for the .str file
         fake_plf_path = PureWindowsPath(fake_path / slice_file.meta.fileName).with_suffix('.plf')
-        writer.build('phony', fake_plf_path, get_build_path(slice_file, '.plf'))
-        fake_paths.append(str(fake_plf_path))
+        fake_paths.append(str(fake_plf_path).replace('\\', '\\\\'))
 
         # Build final REL
         writer.build('build_rel',
@@ -163,7 +162,7 @@ def gen_rel_build_statements(writer: NinjaWriter, slices: list[SliceFile]):
     # Each REL file contains a pointer into a STR file, which contains the names of the modules.
     writer.build('write_str',
                  str_file,
-                 fake_paths)
+                 paths=fake_paths)
 
     # RELs need to come together to create the common linker script for the final stripped modules
     # Pick the slice with the largest number of sections as the base
@@ -214,7 +213,7 @@ writer.rule('build_dol',
             description='Build $out')
 
 writer.rule('write_str',
-            command='''$python -c "import sys; open(sys.argv[1], 'w').write('\\0'.join(sys.argv[2:])+'\\0')" $out $in''',
+            command='''$python -c "import sys; open(sys.argv[1], 'w').write('\\0'.join(sys.argv[2:])+'\\0')" $out $paths''',
             description='Write $out')
 
 writer.rule('build_rel',
