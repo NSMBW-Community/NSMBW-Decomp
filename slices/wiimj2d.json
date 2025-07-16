@@ -233,6 +233,19 @@
             }
         },
         {
+            "source": "dol/bases/d_wm_demo_actor.cpp",
+            "nonMatching": true,
+            "memoryRanges": {
+                ".text": "0xef960-0xf08d0",
+                ".ctors": "0x174-0x178",
+                ".data": "0x1daa8-0x1db40",
+                ".bss": "0x22660-0x22670",
+                ".sdata": "0x1428-0x1438",
+                ".sbss": "0x590-0x598",
+                ".sdata2": "0x1f18-0x1f50"
+            }
+        },
+        {
             "source": "dol/sLib/s_Phase.cpp",
             "memoryRanges": {
                 ".text": "0x158fc0-0x159090"
