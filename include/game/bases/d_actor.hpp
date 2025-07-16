@@ -72,6 +72,7 @@ public:
 
     /// @brief Flags used to control out of screen checks.
     enum SCREEN_OUT_e {
+        SKIP_NONE = BIT_FLAG(-1), ///< No checks are skipped.
         SKIP_ACTOR_DELETE = BIT_FLAG(1), ///< The actor is not deleted if out of screen.
         SKIP_SCREEN_CHECK = BIT_FLAG(2), ///< The actor position is not checked against the screen boundaries.
         SKIP_RIDE_CHECK = BIT_FLAG(3), ///< The actor's ride status is not checked.

@@ -31,15 +31,15 @@ int daRemoDoor_c::create() {
     mVisibleAreaSize.x = 96.0f;
     mVisibleAreaSize.y = 80.0f;
     mStateMgr.changeState(StateID_OpenReady);
-    return 1;
+    return SUCCEEDED;
 }
 
 int daRemoDoor_c::execute() {
-    if (ActorScrOutCheck(0)) {
-        return 1;
+    if (ActorScrOutCheck(SKIP_NONE)) {
+        return SUCCEEDED;
     }
     mStateMgr.executeState();
-    return 1;
+    return SUCCEEDED;
 }
 
 int daRemoDoor_c::draw() {
@@ -52,13 +52,14 @@ int daRemoDoor_c::draw() {
     mDoorModel.setLocalMtx(&mMatrix);
     mDoorModel.setScale(mScale);
     mDoorModel.entry();
-    return 1;
+    return SUCCEEDED;
 }
 
 void daRemoDoor_c::initializeState_OpenReady() {}
 void daRemoDoor_c::finalizeState_OpenReady() {}
 void daRemoDoor_c::executeState_OpenReady() {
-    if ((daPyMng_c::mCtrlPlrNo < 4) && dGameKey_c::m_instance->getAccVerticalAngleX(daPyMng_c::mCtrlPlrNo) >= 0x2000) {
+    // [Oversight: the player number check never fails]
+    if (daPyMng_c::mCtrlPlrNo < 4 && dGameKey_c::m_instance->getAccVerticalAngleX(daPyMng_c::mCtrlPlrNo) >= 0x2000) {
         mStateMgr.changeState(StateID_Open);
     }
 }
@@ -66,34 +67,37 @@ void daRemoDoor_c::executeState_OpenReady() {
 void daRemoDoor_c::initializeState_Open() {
     dAudio::SoundEffectID_t(SOUND_OPEN).playMapSound(mPos, 0);
 }
+
 void daRemoDoor_c::finalizeState_Open() {}
+
 void daRemoDoor_c::executeState_Open() {
-    short tmp = mAngle.y;
-    tmp += 0x400;
-    if (tmp < 0) {
-        tmp = -0x8000;
+    short newAngle = mAngle.y;
+    newAngle += 0x400;
+    if (newAngle < 0) {
+        newAngle = -0x8000;
     }
-    mAngle.y = tmp;
-    if (
-        mAngle.y == -0x8000 &&
-        (daPyMng_c::mCtrlPlrNo < 4) &&
-        dGameKey_c::m_instance->getAccVerticalAngleX(daPyMng_c::mCtrlPlrNo) <= 0x1000
-    ) {
-        mStateMgr.changeState(StateID_Close);
+    mAngle.y = newAngle;
+
+    // [Oversight: the player number check never fails]
+    if (mAngle.y == -0x8000 && daPyMng_c::mCtrlPlrNo < 4 &&
+        dGameKey_c::m_instance->getAccVerticalAngleX(daPyMng_c::mCtrlPlrNo) <= 0x1000) {
+            mStateMgr.changeState(StateID_Close);
     }
 }
 
 void daRemoDoor_c::initializeState_Close() {}
+
 void daRemoDoor_c::finalizeState_Close() {
     dAudio::SoundEffectID_t(SOUND_CLOSE).playMapSound(mPos, 0);
 }
+
 void daRemoDoor_c::executeState_Close() {
-    short tmp = mAngle.y;
-    tmp -= 0x400;
-    if (tmp < 0) {
-        tmp = 0;
+    short newAngle = mAngle.y;
+    newAngle -= 0x400;
+    if (newAngle < 0) {
+        newAngle = 0;
     }
-    mAngle.y = tmp;
+    mAngle.y = newAngle;
     if (mAngle.y == 0) {
         mStateMgr.changeState(StateID_OpenReady);
     }
