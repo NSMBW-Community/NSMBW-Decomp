@@ -39,6 +39,15 @@
         "getType__Q23m3d8anmChr_cCFv",
         "getType__Q23m3d8anmVis_cCFv"
     ],
+    "keepWeak": [
+        "changeState__99sStateStateMgr_c<18dActorMultiState_c,12sFStateMgr_c,20sStateMethodUsr_FI_c,20sStateMethodUsr_FI_c>FRC12sStateIDIf_c",
+        "__dt__85sFStateStateMgr_c<18dActorMultiState_c,20sStateMethodUsr_FI_c,20sStateMethodUsr_FI_c>Fv",
+        "__dt__99sStateStateMgr_c<18dActorMultiState_c,12sFStateMgr_c,20sStateMethodUsr_FI_c,20sStateMethodUsr_FI_c>Fv",
+        "__dt__57sFStateMgr_c<18dActorMultiState_c,20sStateMethodUsr_FI_c>Fv",
+        "__dt__87sStateMgr_c<18dActorMultiState_c,20sStateMethodUsr_FI_c,12sFStateFct_c,13sStateIDChk_c>Fv",
+        "__dt__34sFStateFct_c<18dActorMultiState_c>Fv",
+        "__dt__31sFState_c<18dActorMultiState_c>Fv"
+    ],
     "slices": [
         {
             "source": "dol/bases/d_SmallScore.cpp",
@@ -101,6 +110,15 @@
                 ".sdata": "0x290-0x2a0",
                 ".sbss": "0x138-0x170",
                 ".sdata2": "0xa88-0xb10"
+            }
+        },
+        {
+            "source": "dol/bases/d_actor_state.cpp",
+            "memoryRanges": {
+                ".text": "0x60830-0x618c0",
+                ".ctors": "0xa0-0xa4",
+                ".data": "0x10818-0x10c58",
+                ".bss": "0x47e8-0x4868"
             }
         },
         {

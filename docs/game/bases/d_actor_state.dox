@@ -1,0 +1,41 @@
+/*!
+@class dActorState_c
+@details
+
+## States
+<table>
+<thead>
+  <tr>
+    <th>State Name</th>
+    <th>State Description</th>
+  </tr>
+</thead>
+<tbody>
+  <tr>
+    <td>@ref dActorState_c::StateID_Gegneric "Gegneric"</td>
+    <td>An example state that does nothing.</td>
+  </tr>
+</tbody>
+</table>
+*/
+
+/*!
+@class dActorMultiState_c
+@details
+
+## States
+<table>
+<thead>
+  <tr>
+    <th>State Name</th>
+    <th>State Description</th>
+  </tr>
+</thead>
+<tbody>
+  <tr>
+    <td>@ref dActorMultiState_c::StateID_GegnericMulti "GegnericMulti"</td>
+    <td>An example state that does nothing.</td>
+  </tr>
+</tbody>
+</table>
+*/
