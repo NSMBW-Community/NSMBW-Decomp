@@ -1,29 +1,10 @@
 #pragma once
 
+#include <lib/egg/math/eggMath.h>
 #include <lib/nw4r/math/vec.hpp>
-#include <lib/MSL_C/math.h>
+#include <types.h>
 
 namespace EGG {
-    /// @note Unfinished
-    template <class T>
-    class Math {
-    public:
-        static T sqrt(T v);
-
-        static T abs(T v) {
-            return v < 0 ? -v : v;
-        }
-
-        static T zero() { return 0; }
-    };
-
-    template <>
-    float Math<float>::abs(float v) {
-        return fabs(v);
-    }
-
-    typedef Math<float> Mathf;
-
     /// @brief A two-dimensional floating point vector.
     class Vector2f : public nw4r::math::VEC2 {
     public:
@@ -64,15 +45,4 @@ namespace EGG {
         }
     };
 
-    /// @brief A sphere defined by a center point and a radius.
-    class Sphere3f {
-    public:
-        Sphere3f() {}
-
-        /// @brief Constructs a sphere from a center and radius.
-        Sphere3f(const Vector3f &center, float radius) : mPos(center), mRadius(radius) {}
-
-        Vector3f mPos;
-        float mRadius;
-    };
 }

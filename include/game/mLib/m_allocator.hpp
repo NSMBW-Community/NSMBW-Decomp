@@ -1,6 +1,6 @@
 #pragma once
 #include <types.h>
-#include <lib/egg/allocator.hpp>
+#include <lib/egg/core/eggAllocator.h>
 
 /**
  * @brief An allocator class that wraps an EGG:Allocator .

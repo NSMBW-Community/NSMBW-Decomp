@@ -1,5 +1,5 @@
 #pragma once
-#include <lib/egg/fader/eggFader.hpp>
+#include <lib/egg/core/eggFader.h>
 #include <lib/nw4r/ut/color.hpp>
 
 namespace EGG {

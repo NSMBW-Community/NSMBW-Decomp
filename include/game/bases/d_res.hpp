@@ -1,9 +1,8 @@
 #pragma once
 #include <types.h>
 #include <lib/rvl/arc/ARC.h>
-#include <lib/egg/heap/eggHeap.hpp>
-#include <lib/egg/heap/eggFrmHeap.hpp>
-#include <lib/egg/archive.hpp>
+#include <lib/egg/core/eggFrmHeap.h>
+#include <lib/egg/core/eggArchive.h>
 #include <game/mLib/m_dvd.hpp>
 
 /// @brief An archive resource management class.

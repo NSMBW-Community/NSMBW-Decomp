@@ -1,6 +1,6 @@
 #pragma once
 #include <types.h>
-#include <lib/egg/heap/eggFrmHeap.hpp>
+#include <lib/egg/core/eggFrmHeap.h>
 #include <game/framework/f_profile.hpp>
 #include <game/framework/f_base_id.hpp>
 #include <game/framework/f_helper_unk.hpp>

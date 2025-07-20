@@ -1,8 +1,8 @@
 #include <game/mLib/m_3d.hpp>
 
 #include <game/mLib/m_video.hpp>
-#include <lib/egg/gx/eggGlobalDrawState.hpp>
-#include <lib/egg/gx/eggScreenEffectBase.hpp>
+#include <lib/egg/gfxe/eggGlobalDrawState.h>
+#include <lib/egg/gfxe/eggScreenEffectBase.h>
 
 // [This might be inside a different TU, not sure]
 void m3d::screenEffectReset(int cameraID, EGG::Screen &scr) {

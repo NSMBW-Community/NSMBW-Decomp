@@ -1,4 +1,4 @@
-#include <lib/egg/fader/eggColorFader.hpp>
+#include <lib/egg/core/eggColorFader.h>
 #include <lib/rvl/gx/GX.h>
 
 EGG::ColorFader::ColorFader(float x, float y, float w, float h, nw4r::ut::Color color, Fader::EStatus initialStatus) :

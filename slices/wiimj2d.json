@@ -522,7 +522,7 @@
             }
         },
         {
-            "source": "lib/egg/fader/eggColorFader.cpp",
+            "source": "lib/egg/core/eggColorFader.cpp",
             "memoryRanges": {
                 ".text": "0x2b49f0-0x2b4f40",
                 ".data": "0x51b78-0x51ba0",

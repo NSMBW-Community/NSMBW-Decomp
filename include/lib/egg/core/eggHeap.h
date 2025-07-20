@@ -1,6 +1,6 @@
 #pragma once
 #include <lib/rvl/mem/MEMHeapCommon.h>
-#include <lib/egg/eggDisposer.hpp>
+#include <lib/egg/core/eggDisposer.h>
 
 // [TODO: extend this]
 

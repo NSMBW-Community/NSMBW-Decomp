@@ -1,7 +1,7 @@
 #include <game/mLib/m_allocator_dummy_heap.hpp>
 #include <game/mLib/m_allocator.hpp>
 #include <game/mLib/m_heap.hpp>
-#include <lib/egg/heap/eggFrmHeap.hpp>
+#include <lib/egg/core/eggFrmHeap.h>
 
 mAllocatorDummyHeap_c *mAllocatorDummyHeap_c::m_instance;
 

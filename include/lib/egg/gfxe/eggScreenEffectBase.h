@@ -1,6 +1,6 @@
 #pragma once
 
-#include <lib/egg/gx/eggScreen.hpp>
+#include <lib/egg/gfxe/eggScreen.h>
 #include <lib/nw4r/math/mtx.hpp>
 
 namespace EGG {
