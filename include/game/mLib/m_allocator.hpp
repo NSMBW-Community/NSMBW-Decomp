@@ -1,5 +1,6 @@
 #pragma once
 #include <types.h>
+#include <game/mLib/m_heap.hpp>
 #include <lib/egg/core/eggAllocator.h>
 
 /**
@@ -27,13 +28,10 @@ public:
     mHeapAllocator_c(); ///< Constructs a new heap allocator.
     virtual ~mHeapAllocator_c(); ///< Destroys the heap allocator.
 
-    /// @unofficial
-    bool createHeap(size_t size, EGG::Heap *parent, const char *name, u32 align, u32 opt);
+    bool createFrmHeap(size_t size, EGG::Heap *parent, const char *name, ulong align, mHeap::AllocOptBit_t opt);
+    bool createFrmHeapToCurrent(size_t size, EGG::Heap *parent, const char *name, ulong align, mHeap::AllocOptBit_t opt);
 
-    /// @unofficial
-    bool createHeapRestoreCurrent(size_t size, EGG::Heap *parent, const char *name, u32 align, u32 opt);
-
-    void destroyHeap(); ///< Destroys the underlying heap and replaces it with the dummy heap;
+    void destroyHeap(); ///< Destroys the underlying heap and replaces it with the dummy heap.
     size_t adjustFrmHeap();
     size_t adjustFrmHeapRestoreCurrent();
 };

@@ -30,5 +30,5 @@ class dMdActor_c : public dBaseActor_c {
     static dMdActor_c *construct(ProfileName profName, dBase_c *base, unsigned long param, const mVec3_c *position, const mAng3_c *rotation);
 
 private:
-    mSphere_c mCullSphere; ///< A sphere representing the actor's visible area. @unused
+    mSphere_c mClipSphere; ///< A sphere representing the actor's visible area. @unused
 };

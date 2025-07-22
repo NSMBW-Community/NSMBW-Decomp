@@ -499,7 +499,7 @@ void dYesNoWindow_c::initializeState_SelectWait() {
         mLayout.LoopAnimeStartSetup(ANIM_LOOP_QUICK_SAVE);
     }
     mLayout.LoopAnimeStartSetup(ANIM_LOOP_WINDOW);
-    dGameCom::updateSelectCursor(mpPictures[mCursorPos], 0, false);
+    dGameCom::SelectCursorSetup(mpPictures[mCursorPos], 0, false);
 }
 
 void dYesNoWindow_c::executeState_SelectWait() {

@@ -1,6 +1,5 @@
 #pragma once
 #include <types.h>
-#include <game/bases/d_base_actor.hpp>
 #include <game/mLib/m_vec.hpp>
 
 class dActor_c;
