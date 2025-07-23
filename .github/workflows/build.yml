@@ -24,8 +24,12 @@ jobs:
       - name: Download and decrypt blob
         env:
           BLOB_PASSPHRASE: ${{ secrets.BLOB_PASSPHRASE }}
-          BLOB_URL: 'https://rootcubed.dev/nsmbw/gh-actions-blob.zip.gpg'
+          BLOB_URL: ${{ secrets.BLOB_URL }}
         run: |
+          if ([string]::IsNullOrEmpty($env:BLOB_URL)) {
+            Write-Error "BLOB_URL is empty. Please visit https://rootcubed.dev/decomp-token to generate a token."
+            exit 1
+          }
           $ProgressPreference = "SilentlyContinue"
           Invoke-WebRequest "$env:BLOB_URL" -OutFile .\gh-actions-blob.zip.gpg
           gpg --pinentry-mode loopback -d --cipher-algo AES256 --yes --passphrase "$env:BLOB_PASSPHRASE" -o .\gh-actions-blob.zip .\gh-actions-blob.zip.gpg
