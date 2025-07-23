@@ -38,11 +38,11 @@ private:
     u8 mRevision[2]; ///< The save revision numbers. See ::SAVE_REVISION_MAJOR and ::SAVE_REVISION_MINOR.
 
     u8 mLastSelectedFile; ///< The last selected save data slot.
-    u8 mUnknown7; ///< @brief Padding. @unused
+    u8 mUnknown7; ///< Padding. @unused
     u16 mPlayCountFreeMode[WORLD_COUNT][STAGE_COUNT]; ///< The play count of each level in Free Mode.
     u16 mPlayCountCoinBattle[WORLD_COUNT][STAGE_COUNT]; ///< The play count of each level in Coin Battle.
     u16 mMultiWorldOpenFlag; ///< The worlds unlocked in Extra Modes.
-    u16 mUnknown69A; ///< @brief Padding. @unused
+    u16 mUnknown69A; ///< Padding. @unused
 
     u32 mChecksum; ///< The CRC32 checksum of the above data (excluding ::mMagic).
 

@@ -42,5 +42,5 @@ protected:
     static void setSoftLight_Boss(m3d::bmdl_c &mdl); ///< @copydoc dGameCom::SetSoftLight_Boss
 
 private:
-    mSphere_c mCullSphere; ///< @brief A sphere representing the actor's visible area.
+    mSphere_c mCullSphere; ///< A sphere representing the actor's visible area.
 };
