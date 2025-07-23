@@ -126,7 +126,7 @@ int dYesNoWindow_c::create() {
     mCancel = false;
     mHideBG = false;
 
-    mpRootPane->mFlags &= ~1;
+    mpRootPane->SetVisible(false);
 
     mLayout.AllAnimeEndSetup();
     mLayout.ReverseAnimeStartSetup(ANIM_IN_BG, false);
@@ -275,8 +275,8 @@ void dYesNoWindow_c::populateLayout() {
         T_otehonText_01->setMessage(msgRes, BMG_CATEGORY_HINT_MOVIES, MSG_STAR_COINS_REQUIRED, 0);
         T_needCoinX_00->setMessage(msgRes, BMG_CATEGORY_HINT_MOVIES, MSG_STAR_COINS_REQUIRED_X, 0);
 
-        T_questionS_00->setVisible(false);
-        N_otehonText_00->setVisible(true);
+        T_questionS_00->SetVisible(false);
+        N_otehonText_00->SetVisible(true);
     } else {
         if (mType == GOT_ALL_STAR_COINS_ALL_WORLDS) {
             dInfo_c::m_instance->field_3b4 = dScWMap_c::m_WorldNo + 1;
@@ -288,8 +288,8 @@ void dYesNoWindow_c::populateLayout() {
             mainMsgID = MSG_SKIP_FINAL_COURSE;
         }
 
-        T_questionS_00->setVisible(true);
-        N_otehonText_00->setVisible(false);
+        T_questionS_00->SetVisible(true);
+        N_otehonText_00->SetVisible(false);
         T_questionS_00->setMessage(msgRes, BMG_CATEGORY_YES_NO_WINDOW, mainMsgID, 0);
         T_question_00->setMessage(msgRes, BMG_CATEGORY_YES_NO_WINDOW, mainMsgID, 0);
     }
@@ -297,7 +297,7 @@ void dYesNoWindow_c::populateLayout() {
     // Set visibility of Yes/No/OK buttons
     for (int i = 0; i < 3;) {
         bool isVisible = PicVisible[mType][i];
-        getPicturePane(i++)->setVisible(isVisible);
+        getPicturePane(i++)->SetVisible(isVisible);
     }
 
     mCursorPos = StartingCursorPositions[mType];
@@ -336,9 +336,9 @@ void dYesNoWindow_c::populateLayout() {
     T_no_01->setMessage(msgRes, BMG_CATEGORY_YES_NO_WINDOW, bmgIDForNoButton, false);
 
     if (mType == QUICK_SAVED) {
-        N_saveIcon_00->setVisible(true);
+        N_saveIcon_00->SetVisible(true);
     } else {
-        N_saveIcon_00->setVisible(false);
+        N_saveIcon_00->SetVisible(false);
     }
 }
 
@@ -350,7 +350,7 @@ void dYesNoWindow_c::initializeState_InitWait() {
     if (mHideBG) {
         return;
     }
-    mpRootPane->mFlags &= ~1;
+    mpRootPane->SetVisible(false);
 }
 
 void dYesNoWindow_c::executeState_InitWait() {
@@ -369,7 +369,7 @@ void dYesNoWindow_c::finalizeState_InitWait() {}
 
 void dYesNoWindow_c::initializeState_OpenAnimeEndWait() {
     mCancel = false;
-    mpRootPane->setVisible(true);
+    mpRootPane->SetVisible(true);
     mIsAnimating = true;
 
     mLayout.AllAnimeEndSetup();

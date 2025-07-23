@@ -10,7 +10,13 @@ namespace lyt {
 
 class Pane {
 private:
-    enum FlagBit { BIT_VISIBLE, BIT_INFLUENCED_ALPHA, BIT_LOCATION_ADJUST };
+
+    /// @brief The pane display settings.
+    enum FlagBit {
+        BIT_VISIBLE, ///< The pane is visible.
+        BIT_INFLUENCED_ALPHA, ///< The alpha of the parent pane influences child panes.
+        BIT_LOCATION_ADJUST ///< The pane is for the position adjustment process.
+    };
 
 public:
 
@@ -52,12 +58,16 @@ public:
     unsigned short GetExtUserDataNum() const;
     void *FindExtUserDataByName(const char *);
 
-    void setVisible(bool visible) {
+    bool IsVisible() const {
+        return detail::TestBit(mFlags, BIT_VISIBLE);
+    }
+
+    void SetVisible(bool visible) {
         detail::SetBit(&mFlags, BIT_VISIBLE, visible);
     }
 
-    void setScale(const math::VEC2 &scale) { mScale = scale; }
-    void setAlpha(u8 alpha) { mAlpha = alpha; }
+    void SetScale(const math::VEC2 &scale) { mScale = scale; }
+    void SetAlpha(u8 alpha) { mAlpha = alpha; }
 
 public:
     char mFill1[0x28]; // To be RE'd
