@@ -44,9 +44,11 @@ public:
 
     /// @brief The possible cursor positions.
     enum CURSOR_POS_e {
+        POS_NONE = -1,
         POS_YES,
         POS_NO,
-        POS_OK
+        POS_OK,
+        POS_COUNT
     };
 
     /// @brief The sound effect types used by the window.
@@ -54,11 +56,26 @@ public:
         SOUND_CLOSE,
         SOUND_WAIT,
         SOUND_CURSOR_MOVE,
-        SOUND_OPEN_ANIME
+        SOUND_OPEN_ANIME,
+        SOUND_COUNT
+    };
+
+    enum ANIM_NAME_e {
+        yesnoWindow_11_inWindow,
+        yesnoWindow_11_loopWindow,
+        yesnoWindow_11_inYesNoButton,
+        yesnoWindow_11_onYesNoButton,
+        yesnoWindow_11_idleYesNoButton,
+        yesnoWindow_11_hitYesNoButton,
+        yesnoWindow_11_offYesNoButton,
+        yesnoWindow_11_inBG,
+        yesnoWindow_11_outBG,
+        yesnoWindow_11_outWindow,
+        ANIM_NAME_COUNT
     };
 
     /// @brief The animations used for the window.
-    enum ANIMS_e {
+    enum ANIM_e {
         ANIM_IN_WINDOW,
         ANIM_IN_QUICK_SAVE,
         ANIM_LOOP_WINDOW,
@@ -81,7 +98,43 @@ public:
         ANIM_OFF_OK,
         ANIM_IN_BG,
         ANIM_OUT_BG,
-        ANIM_OUT_WINDOW
+        ANIM_OUT_WINDOW,
+        ANIM_COUNT
+    };
+
+    enum P_PANE_e {
+        P_yesBase_00,
+        P_noBase_00,
+        P_centerBase_00,
+        P_COUNT
+    };
+
+    enum T_FIXED_PANE_e {
+        T_center_00,
+        T_center_01,
+        T_otehonTextS_00,
+        T_otehonText_00,
+        T_FIXED_COUNT
+    };
+
+    enum T_PANE_e {
+        T_questionS_00,
+        T_question_00,
+        T_otehonTextS_01,
+        T_otehonText_01,
+        T_needCoinX_00,
+        T_needCoin_00,
+        T_yes_00,
+        T_yes_01,
+        T_no_00,
+        T_no_01,
+        T_COUNT
+    };
+
+    enum N_PANE_e {
+        N_otehonText_00,
+        N_saveIcon_00,
+        N_COUNT
     };
 
     dYesNoWindow_c();
@@ -114,26 +167,9 @@ private:
     sFStateMgr_c<dYesNoWindow_c, sStateMethodUsr_FI_c> mStateMgr;
 
     nw4r::lyt::Pane *mpRootPane; ///< The root pane of the window.
-    nw4r::lyt::Picture *P_yesBase_00,
-                       *P_noBase_00,
-                       *P_centerBase_00;
-
-    /// @brief Gets the n-th picture pane.
-    nw4r::lyt::Picture *getPicturePane(int n) { return (&P_yesBase_00)[n]; }
-
-    LytTextBox_c *T_questionS_00,
-                 *T_question_00,
-                 *T_otehonTextS_01,
-                 *T_otehonText_01,
-                 *T_needCoinX_00,
-                 *T_needCoin_00,
-                 *T_yes_00,
-                 *T_yes_01,
-                 *T_no_00,
-                 *T_no_01;
-
-    nw4r::lyt::Pane *N_otehonText_00,
-                    *N_saveIcon_00;
+    nw4r::lyt::Picture *mpPictures[P_COUNT];
+    LytTextBox_c *mpTextBoxes[T_COUNT];
+    nw4r::lyt::Pane *mpNullPanes[N_COUNT];
 
     int mCursorPos; ///< The current cursor position.
     int mPrevCursorPos; ///< The previous cursor position.

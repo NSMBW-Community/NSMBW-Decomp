@@ -45,6 +45,21 @@ public:
         POPUP_TYPE_COIN_20
     };
 
+    enum T_PANE_e {
+        T_100_00,
+        T_1000_00,
+        T_red2_00,
+        T_1UP_00,
+        T_coin_x_00,
+        T_coinPoint_00,
+        T_COUNT,
+    };
+
+    enum N_PANE_e {
+        N_coin_00,
+        N_COUNT,
+    };
+
     typedef void (dSmallScore_c::*ProcFunc)();
 
     dSmallScore_c();
@@ -83,13 +98,8 @@ public:
     mVec2_c mClipScale;
     mVec2_c mAnimScale;
     nw4r::lyt::Pane *mpRootPane;
-    LytTextBox_c *T_100_00;
-    LytTextBox_c *T_1000_00;
-    LytTextBox_c *T_red2_00;
-    LytTextBox_c *T_1UP_00;
-    LytTextBox_c *T_coin_x_00;
-    LytTextBox_c *T_coinPoint_00;
-    nw4r::lyt::Pane *N_coin_00;
+    LytTextBox_c *mpTextBoxes[T_COUNT];
+    nw4r::lyt::Pane *mpNullPanes[N_COUNT];
     float mMaxHeight;
     STATE_e mState; ///< Determines the state the score popup is in
     int mPopupType;
@@ -107,9 +117,5 @@ public:
     bool mAnimIsShrinking;
     bool mHasBlueColor;
 
-    /// @brief Gets the n-th text box.
-    LytTextBox_c *getTextBox(int n) { return (&T_100_00)[n]; }
-
     static dSmallScore_c *m_instance;
-
 };
