@@ -99,22 +99,21 @@ private:
     /// - Showing the quick save balloon if necessary
     void populateLayout();
 
-    STATE_FUNC_DECLARE(dYesNoWindow_c, InitWait); ///< @brief Initial state. Switches to OpenAnimeStartWait immediately.
-    STATE_FUNC_DECLARE(dYesNoWindow_c, OpenAnimeEndWait); ///< @brief Waiting for the window to finish the opening animation.
-    STATE_FUNC_DECLARE(dYesNoWindow_c, ButtonOnStageAnimeEndWait); ///< @brief Plays the button appearing animation and waits for it to finish.
-    STATE_FUNC_DECLARE(dYesNoWindow_c, ButtonChangeAnimeEndWait); ///< @brief Playing the button change animations.
-    STATE_FUNC_DECLARE(dYesNoWindow_c, SelectWait); ///< @brief Waiting for either a button change or button hit to occur.
-    STATE_FUNC_DECLARE(dYesNoWindow_c, HitAnimeEndWait); ///< @brief Waiting for the button to finish the hit animation.
-    STATE_FUNC_DECLARE(dYesNoWindow_c, ClouseAnimeEndWait); ///< @brief Waiting for the window to finish the closing animation.
-    STATE_FUNC_DECLARE(dYesNoWindow_c, HitAnimeAfterWait); ///< @brief Waiting in an infinite loop after the button was pressed.
+    STATE_FUNC_DECLARE(dYesNoWindow_c, InitWait); ///< Initial state. Switches to OpenAnimeStartWait immediately.
+    STATE_FUNC_DECLARE(dYesNoWindow_c, OpenAnimeEndWait); ///< Waiting for the window to finish the opening animation.
+    STATE_FUNC_DECLARE(dYesNoWindow_c, ButtonOnStageAnimeEndWait); ///< Plays the button appearing animation and waits for it to finish.
+    STATE_FUNC_DECLARE(dYesNoWindow_c, ButtonChangeAnimeEndWait); ///< Playing the button change animations.
+    STATE_FUNC_DECLARE(dYesNoWindow_c, SelectWait); ///< Waiting for either a button change or button hit to occur.
+    STATE_FUNC_DECLARE(dYesNoWindow_c, HitAnimeEndWait); ///< Waiting for the button to finish the hit animation.
+    STATE_FUNC_DECLARE(dYesNoWindow_c, ClouseAnimeEndWait); ///< Waiting for the window to finish the closing animation.
+    STATE_FUNC_DECLARE(dYesNoWindow_c, HitAnimeAfterWait); ///< Waiting in an infinite loop after the button was pressed.
 
-    LytBase_c mLayout; ///< @brief The layout for the window.
+    LytBase_c mLayout; ///< The layout for the window.
 
     /// @brief The state manager for the window.
     sFStateMgr_c<dYesNoWindow_c, sStateMethodUsr_FI_c> mStateMgr;
 
-    nw4r::lyt::Pane *mpRootPane; ///< @brief The root pane of the window.
-
+    nw4r::lyt::Pane *mpRootPane; ///< The root pane of the window.
     nw4r::lyt::Picture *P_yesBase_00,
                        *P_noBase_00,
                        *P_centerBase_00;
@@ -136,8 +135,8 @@ private:
     nw4r::lyt::Pane *N_otehonText_00,
                     *N_saveIcon_00;
 
-    int mCursorPos; ///< @brief The current cursor position.
-    int mPrevCursorPos; ///< @brief The previous cursor position.
+    int mCursorPos; ///< The current cursor position.
+    int mPrevCursorPos; ///< The previous cursor position.
 
     /// @brief The type of the window.
     /// @details This determines the text and the layout of the window.
@@ -149,13 +148,13 @@ public:
     int mStarCoinsRequired;
 
 private:
-    bool mHasLoadedLayout; ///< @brief Whether the layout has been loaded.
-    bool mIsActive; ///< @brief Whether the window is currently open.
+    bool mHasLoadedLayout; ///< Whether the layout has been loaded.
+    bool mIsActive; ///< Whether the window is currently open.
 
 public:
-    bool mHitButton; ///< @brief Whether a button has been pressed.
-    bool mIsAnimating; ///< @brief Whether an animation is currently playing.
-    bool mKeepOpen; ///< @brief Whether the window should stay open after a button has been pressed.
-    bool mCancel; ///< @brief Whether the window has been cancelled (and closed).
-    bool mHideBG; ///< @brief Whether to hide the translucent background that fills the screen.
+    bool mHitButton; ///< Whether a button has been pressed.
+    bool mIsAnimating; ///< Whether an animation is currently playing.
+    bool mKeepOpen; ///< Whether the window should stay open after a button has been pressed.
+    bool mCancel; ///< Whether the window has been cancelled (and closed).
+    bool mHideBG; ///< Whether to hide the translucent background that fills the screen.
 };

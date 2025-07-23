@@ -39,5 +39,5 @@ class dWmActor_c : public dBaseActor_c {
     static void setSoftLight_Boss(m3d::bmdl_c &mdl); ///< @copydoc dGameCom::SetSoftLight_Boss
 
 private:
-    mSphere_c mClipSphere; ///< @brief A sphere representing the actor's visible area.
+    mSphere_c mClipSphere; ///< A sphere representing the actor's visible area.
 };
