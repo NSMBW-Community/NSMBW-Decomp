@@ -15,8 +15,8 @@ EGG::ColorFader::ColorFader(float x, float y, float w, float h, nw4r::ut::Color 
     mFlag |= 2;
 }
 
-void EGG::ColorFader::setFrame(u16 frames) {
-    mFrameCount = frames;
+void EGG::ColorFader::setFrame(u16 frame) {
+    mFrameCount = frame;
 }
 
 void EGG::ColorFader::setColor(nw4r::ut::Color color) {
@@ -56,8 +56,8 @@ bool EGG::ColorFader::fadeOut() {
     return doFadeIn;
 }
 
-int EGG::ColorFader::calc() {
-    int result = 0;
+bool EGG::ColorFader::calc() {
+    bool result = false;
 
     if (mStatus == Fader::HIDDEN) {
         mCurrColor.a = 0;

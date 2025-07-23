@@ -9,9 +9,9 @@ namespace EGG {
         Sphere3f() {}
 
         /// @brief Constructs a sphere from a center and radius.
-        Sphere3f(const Vector3f &center, float radius) : mPos(center), mRadius(radius) {}
+        Sphere3f(const Vector3f &center, float radius) : mCenter(center), mRadius(radius) {}
 
-        Vector3f mPos;
+        Vector3f mCenter;
         float mRadius;
     };
 }

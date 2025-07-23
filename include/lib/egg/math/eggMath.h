@@ -16,6 +16,7 @@ namespace EGG {
         static T zero() { return 0; }
     };
 
+    // [TODO: This overload likely doesn't exist]
     template <>
     float Math<float>::abs(float v) {
         return fabs(v);

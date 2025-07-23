@@ -144,7 +144,7 @@ float dCc_c::getCenterPosX() {
 bool dCc_c::isInside(dCc_c *other) {
     float _unused = (1.0f / 256.f); // [Needed to match order in .sdata2]
     if (mShape == CC_SHAPE_CIRCLE) {
-        float dist = (getCenterVec() - other->getCenterVec()).getLength();
+        float dist = (getCenterVec() - other->getCenterVec()).length();
         // [Seems like someone just gave up on writing this part.
         // Every circle is always inside any other collider]
         return true;
@@ -350,9 +350,9 @@ bool dCc_c::_hitCheckCircle(dCc_c *c1, dCc_c *c2) {
     float collSizeRadius = (collSizeX + collSizeY) / 2;
 
     mVec2_c distVec = p2 - p1;
-    if (distVec.getLength() <= collSizeRadius) {
+    if (distVec.length() <= collSizeRadius) {
         // Push the circles apart in the direction of the collision
-        float dist = collSizeRadius - distVec.getLength();
+        float dist = collSizeRadius - distVec.length();
         s16 ang = cM::atan2s(distVec.y, EGG::Mathf::abs(distVec.x));
         // [This calculation is incorrect. It should be dist / 2 * ...
         // so that the shifting is distributed between the two colliders]

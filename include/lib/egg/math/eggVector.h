@@ -23,8 +23,11 @@ namespace EGG {
 
         float normalise();
 
+        /// @brief Gets the squared length of the vector.
+        float squaredLength() const { return x * x + y * y; }
+
         /// @brief Gets the length of the vector.
-        float getLength() const { return EGG::Mathf::sqrt(x * x + y * y); }
+        float length() const { return EGG::Mathf::sqrt(squaredLength()); }
     };
 
     /// @brief A three-dimensional floating point vector.
