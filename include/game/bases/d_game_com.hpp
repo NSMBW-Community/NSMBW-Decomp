@@ -88,7 +88,6 @@ namespace dGameCom {
     bool someCheck(mVec3_c *a, mBoundBox *b); ///< @unofficial
     void CreateSmallScore(const mVec3_c &, int, int, bool);
     u8 GetAspectRatio();
-    bool PlayerEnterCheck(int);
 
     bool checkRectangleOverlap(mVec3_c *, mVec3_c *, mVec3_c *, mVec3_c *, float); ///< @unofficial
 
@@ -96,4 +95,6 @@ namespace dGameCom {
     float getDispCenterY();
 
     void DispSizeScale(nw4r::math::VEC2 &scale);
+
+    void LayoutDispNumber(const int &value, const int &fillLeft, LytTextBox_c *textBox, bool fillWidth);
 }

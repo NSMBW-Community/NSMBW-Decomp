@@ -115,9 +115,9 @@ bool dCourseSelectGuide_c::createLayout() {
     };
 
     static const int MESSAGE_DATA_TBL[] = {
-        MSG_SELECT_WORLD,
-        MSG_WM_MENU,
-        MSG_WM_WORLD
+        MSG_CS_SELECT_WORLD,
+        MSG_CS_MENU,
+        MSG_CS_WORLD
     };
     static const char *T_PANE_FIXED_NAME_TBL[] = {
         "T_guideViewC_00",
@@ -150,15 +150,15 @@ bool dCourseSelectGuide_c::createLayout() {
     mLayout.AnimeResRegister(AnmNameTbl, ARRAY_SIZE(AnmNameTbl));
     mLayout.GroupRegister(GROUP_NAME_DT, ANIME_INDEX_TBL, ARRAY_SIZE(ANIME_INDEX_TBL));
     mpRootPane = mLayout.getRootPane();
-    mLayout.NPaneRegister(NPANE_NAME_DT, &N_IconPos1P_00, ARRAY_SIZE(NPANE_NAME_DT));
-    mLayout.TPaneRegister(T_PANE_NAME_TBL, &T_worldNum_00, ARRAY_SIZE(T_PANE_NAME_TBL));
+    mLayout.NPaneRegister(NPANE_NAME_DT, &mpNullPanes[N_IconPos1P_00], ARRAY_SIZE(NPANE_NAME_DT));
+    mLayout.TPaneRegister(T_PANE_NAME_TBL, &mpTextBoxes[T_worldNum_00], ARRAY_SIZE(T_PANE_NAME_TBL));
     mLayout.TPaneNameRegister(T_PANE_FIXED_NAME_TBL, MESSAGE_DATA_TBL, BMG_CATEGORY_COURSE_SELECT_GUIDE, ARRAY_SIZE(MESSAGE_DATA_TBL));
-    mLayout.PPaneRegister(P_PANE_NAME_TBL, &P_cC_1_00, ARRAY_SIZE(P_PANE_NAME_TBL));
+    mLayout.PPaneRegister(P_PANE_NAME_TBL, &mpPicturePanes[P_cC_1_00], ARRAY_SIZE(P_PANE_NAME_TBL));
 
     mLayout.mDrawOrder = 2;
     mpRootPane->setVisible(true);
-    N_mapArrow_00->setVisible(true);
-    P_flagSkull_00->setVisible(false);
+    mpNullPanes[N_mapArrow_00]->setVisible(true);
+    mpPicturePanes[P_flagSkull_00]->setVisible(false);
 
     for (int i = 0; i < 4; i++) {
         mRest[i] = -1;
@@ -219,9 +219,9 @@ bool dCourseSelectGuide_c::createLayout() {
 
     mVec2_c scale;
     dGameCom::DispSizeScale(scale);
-    N_proportionL_00->setScale(scale);
-    N_proportionR_00->setScale(scale);
-    N_proportionC_00->setScale(scale);
+    mpNullPanes[N_proportionL_00]->setScale(scale);
+    mpNullPanes[N_proportionR_00]->setScale(scale);
+    mpNullPanes[N_proportionC_00]->setScale(scale);
 
     ScissorMaskSet();
 
@@ -240,36 +240,30 @@ void dCourseSelectGuide_c::ScissorMaskSet() {
 }
 
 void dCourseSelectGuide_c::FUN_80010690() {
-    static const int picPaneNums[] = { 7, 8, 9, 10 };
+    static const int picPaneNums[] = { P_marioFace_00, P_luigiFace_00, P_BkinoFace_00, P_YkinoFace_00 };
 
-    P_marioFace_00->setVisible(false);
-    P_luigiFace_00->setVisible(false);
-    P_BkinoFace_00->setVisible(false);
-    P_YkinoFace_00->setVisible(false);
+    for (int i = 0; i < 4; i++) {
+        mpPicturePanes[P_marioFace_00 + i]->setVisible(false);
+    }
 
-    int currPane = 0;
+    int currPane = N_IconPos1P_00;
     int playerCount = -1;
     for (int i = 0; i < 4; i++) {
         daPyMng_c::PyType paneIdx = (daPyMng_c::PyType) getPaneNum(i);
         int cvtPaneIdx = daPyMng_c::getPlayerIndex(paneIdx);
         if (dGameCom::PlayerEnterCheck(cvtPaneIdx)) {
-            mVec3_c pos = getPane(currPane)->mPos;
-            getPicturePane(picPaneNums[paneIdx])->mPos = pos;
-            getPicturePane(picPaneNums[paneIdx])->setVisible(true);
+            mVec3_c pos = mpNullPanes[currPane]->mPos;
+            mpPicturePanes[picPaneNums[paneIdx]]->mPos = pos;
+            mpPicturePanes[picPaneNums[paneIdx]]->setVisible(true);
             currPane++;
             playerCount++;
         }
     }
-    getPane(0)->setVisible(false);
-    getPane(1)->setVisible(false);
-    getPane(2)->setVisible(false);
-    getPane(3)->setVisible(false);
-    getPane(playerCount)->setVisible(true);
-}
 
-inline int getPaneNum(int i) {
-    static const int paneNums[] = { 0, 1, 3, 2 };
-    return paneNums[i];
+    for (int i = 0; i < 4; i++) {
+        mpNullPanes[N_IconPos1P_00 + i]->setVisible(false);
+    }
+    mpNullPanes[N_IconPos1P_00 + playerCount]->setVisible(true);
 }
 
 inline int getRest(int i) {
@@ -277,7 +271,7 @@ inline int getRest(int i) {
 }
 
 void dCourseSelectGuide_c::RestNumberDisp() {
-    static const int textBoxIdxs[] = { 3, 4, 6, 5 };
+    static const int textBoxIdxs[] = { T_lifeNumber_00, T_lifeNumber_01, T_lifeNumber_03, T_lifeNumber_02 };
 
     for (int i = 0; i < 4; i++) {
         daPyMng_c::PyType paneIdx = (daPyMng_c::PyType) getPaneNum(i);
@@ -286,8 +280,8 @@ void dCourseSelectGuide_c::RestNumberDisp() {
         if (mRest[i] != rest) {
             mRest[i] = rest;
             int textIdx = textBoxIdxs[i];
-            LytTextBox_c *textBox = getTextBox(textIdx);
-            LytTextBox_c::SetTextInt(&rest, &dGameDisplay_c::c_PLAYNUM_DIGIT, textBox, true);
+            LytTextBox_c *textBox = mpTextBoxes[textIdx];
+            dGameCom::LayoutDispNumber(rest, dGameDisplay_c::c_PLAYNUM_DIGIT, textBox, true);
         }
     }
     mShowRestNumber = false;
@@ -298,26 +292,26 @@ void dCourseSelectGuide_c::RestAlphaDisp() {
         return;
     }
     if (mAlphaTarget != 0) {
-        mAlpha += 0x14;
+        mAlpha += 20;
         if (mAlpha >= 255) {
             mAlpha = 255;
         }
     } else {
-        mAlpha -= 0x14;
+        mAlpha -= 20;
         if (mAlpha < 0) {
             mAlpha = 0;
         }
     }
 
     u8 alpha = mAlpha;
-    N_IconPos1P_00->setAlpha(alpha);
-    P_marioFace_00->setAlpha(alpha);
-    N_IconPos2P_00->setAlpha(alpha);
-    P_luigiFace_00->setAlpha(alpha);
-    N_IconPos3P_00->setAlpha(alpha);
-    P_BkinoFace_00->setAlpha(alpha);
-    N_IconPos4P_00->setAlpha(alpha);
-    P_YkinoFace_00->setAlpha(alpha);
+    mpNullPanes[N_IconPos1P_00]->setAlpha(alpha);
+    mpPicturePanes[P_marioFace_00]->setAlpha(alpha);
+    mpNullPanes[N_IconPos2P_00]->setAlpha(alpha);
+    mpPicturePanes[P_luigiFace_00]->setAlpha(alpha);
+    mpNullPanes[N_IconPos3P_00]->setAlpha(alpha);
+    mpPicturePanes[P_BkinoFace_00]->setAlpha(alpha);
+    mpNullPanes[N_IconPos4P_00]->setAlpha(alpha);
+    mpPicturePanes[P_YkinoFace_00]->setAlpha(alpha);
 }
 
 void dCourseSelectGuide_c::execute() {
@@ -367,8 +361,16 @@ void dCourseSelectGuide_c::doDelete() {
 }
 
 void dCourseSelectGuide_c::FUN_80010b50(dWmLib::CourseType_e type) {
-    static const int clearedKinokoHouseBmgIds[] = {
-        0x37, 0x38, 0x37, 0x38, 0x37, 0x38, 0x37, 0x38, 0x38
+    static const int sc_startPointIcons[] = {
+        MSG_CS_ICON_START_RIGHT, // W1
+        MSG_CS_ICON_START_UP,    // W2
+        MSG_CS_ICON_START_RIGHT, // W3
+        MSG_CS_ICON_START_UP,    // W4
+        MSG_CS_ICON_START_RIGHT, // W5
+        MSG_CS_ICON_START_UP,    // W6
+        MSG_CS_ICON_START_RIGHT, // W7
+        MSG_CS_ICON_START_UP,    // W8
+        MSG_CS_ICON_START_UP,    // W9
     };
     dInfo_c *info = dInfo_c::m_instance;
     MsgRes_c *msgRes = dMessage_c::getMesRes();
@@ -377,7 +379,7 @@ void dCourseSelectGuide_c::FUN_80010b50(dWmLib::CourseType_e type) {
         mCourseNo = -2;
         return;
     }
-    if (type - 3U <= 1) {
+    if (type == 3 || type == 4) {
         type = (dWmLib::CourseType_e) (mCourseNo + 1);
     } else if (type == 2) {
         mCourseType = 11;
@@ -385,90 +387,88 @@ void dCourseSelectGuide_c::FUN_80010b50(dWmLib::CourseType_e type) {
         mCourseType = 5;
     }
     info->field_3b4 = actualWNo;
-    T_worldNum_00->setMessage(msgRes, BMG_CATEGORY_COURSE_SELECT_GUIDE, MSG_WM_WORLD_X, 0);
+    mpTextBoxes[T_worldNum_00]->setMessage(msgRes, BMG_CATEGORY_COURSE_SELECT_GUIDE, MSG_CS_CURR_WORLD, 0);
     mAlphaTarget = 255;
     int messageID;
     switch(mCourseType) {
         default:
             info->field_3b8 = type;
-            T_cSelect_00->setMessage(msgRes, BMG_CATEGORY_COURSE_SELECT_GUIDE, MSG_COURSE_NUM, 0);
-            T_cSelect_00->setVisible(true);
-            T_cSelect_pic->setVisible(false);
+            mpTextBoxes[T_cSelect_00]->setMessage(msgRes, BMG_CATEGORY_COURSE_SELECT_GUIDE, MSG_CS_COURSE_NUM, 0);
+            mpTextBoxes[T_cSelect_00]->setVisible(true);
+            mpTextBoxes[T_cSelect_pic]->setVisible(false);
             return;
-        case 1: messageID = MSG_COURSE_53; break;
-        case 2: messageID = MSG_COURSE_51; break;
+        case 1: messageID = MSG_CS_ICON_GHOST_HOUSE; break;
+        case 2: messageID = MSG_CS_ICON_TOWER; break;
         case 3:
             if (mWorldNo != 7) {
-                messageID = 52;
+                messageID = MSG_CS_ICON_CASTLE;
             } else {
-                messageID = 43;
+                messageID = MSG_CS_ICON_W8_CASTLE;
             }
             break;
         case 4:
-            if (dScWMap_c::IsCourseType(mWorldNo, mCourseNo, dScWMap_c::COURSE_TYPE_80)) {
-                messageID = 41;
-                break;
+            if (dScWMap_c::IsCourseType(mWorldNo, mCourseNo, dScWMap_c::COURSE_TYPE_KINOKO_HOUSE_1UP)) {
+                messageID = MSG_CS_ICON_KINOKO_HOUSE_1UP;
+            } else if (dScWMap_c::IsCourseType(mWorldNo, mCourseNo, dScWMap_c::COURSE_TYPE_KINOKO_HOUSE_STAR)) {
+                messageID = MSG_CS_ICON_KINOKO_HOUSE_STAR;
+            } else {
+                messageID = MSG_CS_ICON_KINOKO_HOUSE_RED;
             }
-            if (dScWMap_c::IsCourseType(mWorldNo, mCourseNo, dScWMap_c::COURSE_TYPE_200)) {
-                messageID = 42;
-                break;
-            }
-            messageID = 54;
             break;
-        case 5: messageID = 58; break;
-        case 6: messageID = 57; break;
+        case 5: messageID = MSG_CS_ICON_JUNCTION; break;
+        case 6: messageID = MSG_CS_ICON_CANNON; break;
         case 8:
             if (dWmLib::isKoopaShipAnchor()) {
-                messageID = 39;
+                messageID = MSG_CS_ICON_ANCHOR;
             } else {
-                messageID = 59;
+                messageID = MSG_CS_ICON_AIRSHIP;
             }
             break;
         case 10:
             mAlphaTarget = 0;
-            messageID = 40;
+            messageID = MSG_CS_ICON_PEACH_CASTLE;
             break;
         case 11:
             if (dWmLib::getStartPointKinokoHouseKindNum() == 0 || dWmLib::IsCourseClear(mWorldNo, STAGE_RESCUE)) {
-                messageID = clearedKinokoHouseBmgIds[mWorldNo];
+                messageID = sc_startPointIcons[mWorldNo];
                 break;
             }
             if (dWmLib::isStartPointKinokoHouseStar()) {
-                messageID = 42;
+                messageID = MSG_CS_ICON_KINOKO_HOUSE_STAR;
             } else if (dWmLib::isStartPointKinokoHouseRed()) {
-                messageID = 54;
+                messageID = MSG_CS_ICON_KINOKO_HOUSE_RED;
             } else {
-                messageID = 41;
+                messageID = MSG_CS_ICON_KINOKO_HOUSE_1UP;
             }
             break;
     }
-    T_cSelect_pic->setMessage(msgRes, BMG_CATEGORY_COURSE_SELECT_GUIDE, messageID, 0);
-    T_cSelect_00->setVisible(false);
-    T_cSelect_pic->setVisible(true);
+    mpTextBoxes[T_cSelect_pic]->setMessage(msgRes, BMG_CATEGORY_COURSE_SELECT_GUIDE, messageID, 0);
+    mpTextBoxes[T_cSelect_00]->setVisible(false);
+    mpTextBoxes[T_cSelect_pic]->setVisible(true);
 }
 
 void dCourseSelectGuide_c::CollectionCoinSet() {
     dMj2dGame_c *saveGame = dSaveMng_c::m_instance->getSaveGame(-1);
     dCyuukan_c *checkpoint = dInfo_c::m_instance->getCyuukan();
-    for (int i = 0; i < 3U; i++) {
-        getPicturePane(i + 3)->setVisible(true);
-        getPicturePane(i + 3)->setAlpha(255);
-        getPicturePane(i)->setAlpha(255);
+    for (unsigned int i = 0; i < 3; i++) {
+        mpPicturePanes[P_cC_1s_00 + i]->setVisible(true);
+        mpPicturePanes[P_cC_1s_00 + i]->setAlpha(255);
+        mpPicturePanes[P_cC_1_00 + i]->setAlpha(255);
         if (mCourseNo < 0 || !dScWMap_c::IsCourseType(mWorldNo, mCourseNo, dScWMap_c::COURSE_TYPE_2)) {
-            getPicturePane(i + 3)->setVisible(false);
+            mpPicturePanes[P_cC_1s_00 + i]->setVisible(false);
         } else {
             u8 collectCoin = saveGame->isCollectCoin(mWorldNo, mCourseNo, i);
             if (collectCoin != 0) {
-                getPicturePane(i)->setVisible(true);
+                mpPicturePanes[P_cC_1_00 + i]->setVisible(true);
             } else {
                 if (mWorldNo == checkpoint->mWorldNo
                 && mCourseNo == checkpoint->mCourseNo
                 && checkpoint->mCoinCollection[i] != 4) {
-                    getPicturePane(i + 3)->setAlpha(0);
-                    getPicturePane(i)->setVisible(true);
-                    getPicturePane(i)->setAlpha(70);
+                    mpPicturePanes[P_cC_1s_00 + i]->setAlpha(0);
+                    mpPicturePanes[P_cC_1_00 + i]->setVisible(true);
+                    mpPicturePanes[P_cC_1_00 + i]->setAlpha(70);
                 } else {
-                    getPicturePane(i)->setVisible(false);
+                    mpPicturePanes[P_cC_1_00 + i]->setVisible(false);
                 }
             }
         }
@@ -897,9 +897,9 @@ void dCourseSelectGuide_c::finalizeState_ScrollGuideOnStageWait() {
 void dCourseSelectGuide_c::initializeState_ScrollGuideOnStageAnimeEndCheck() {
     mExtension = Remocon::EXTENSION_THREE;
     mInScrollMode = true;
-    N_guideViewC_00->setVisible(false);
-    N_guideViewR_01->setVisible(false);
-    N_left_00->setVisible(false);
+    mpNullPanes[N_guideViewC_00]->setVisible(false);
+    mpNullPanes[N_guideViewR_01]->setVisible(false);
+    mpNullPanes[N_left_00]->setVisible(false);
     mLayout.AnimeStartSetup(0, false);
     m448 = true;
 }
@@ -941,9 +941,9 @@ void dCourseSelectGuide_c::executeState_ScrollGuideExitAnimeEndCheck() {
 void dCourseSelectGuide_c::finalizeState_ScrollGuideExitAnimeEndCheck() {
     mExtension = Remocon::EXTENSION_THREE;
     m448 = false;
-    N_guideViewC_00->setVisible(true);
-    N_guideViewR_01->setVisible(true);
-    N_left_00->setVisible(true);
+    mpNullPanes[N_guideViewC_00]->setVisible(true);
+    mpNullPanes[N_guideViewR_01]->setVisible(true);
+    mpNullPanes[N_left_00]->setVisible(true);
     mInScrollMode = false;
 }
 
@@ -962,11 +962,11 @@ void dCourseSelectGuide_c::FUN_800125c0(short courseNo, dWmLib::CourseType_e typ
     u8 wNo, cNo;
     cNo = courseNo;
     wNo = mWorldNo;
-    P_flagSkull_00->mFlags &= 0xfe;
+    mpPicturePanes[P_flagSkull_00]->mFlags &= 0xfe;
     checkpoint = &info->mCyuukan;
     for (int i = 0; i < 2; i++) {
         if (checkpoint->isCyuukanStart(i, wNo, cNo)) {
-            P_flagSkull_00->setVisible(true);
+            mpPicturePanes[P_flagSkull_00]->setVisible(true);
             break;
         }
     }
@@ -984,10 +984,10 @@ void dCourseSelectGuide_c::ControllerConnectCheck() {
         }
         dInfo_c::m_instance->mExtensionAttached = attached;
         if (mInScrollMode) {
-            T_guideViewLS_00->setMessage(msgRes, BMG_CATEGORY_COURSE_SELECT_GUIDE, MSG_BACK_TO_MARIO, 0);
+            mpTextBoxes[T_guideViewLS_00]->setMessage(msgRes, BMG_CATEGORY_COURSE_SELECT_GUIDE, MSG_CS_BACK_TO_MARIO, 0);
         } else {
-            T_guideViewLS_00->setMessage(msgRes, BMG_CATEGORY_COURSE_SELECT_GUIDE, MSG_VIEW_MAP, 0);
+            mpTextBoxes[T_guideViewLS_00]->setMessage(msgRes, BMG_CATEGORY_COURSE_SELECT_GUIDE, MSG_CS_VIEW_MAP, 0);
         }
-        T_guideViewL_01->setMessage(msgRes, BMG_CATEGORY_COURSE_SELECT_GUIDE, MSG_ITEMS, 0);
+        mpTextBoxes[T_guideViewL_01]->setMessage(msgRes, BMG_CATEGORY_COURSE_SELECT_GUIDE, MSG_CS_ITEMS, 0);
     }
 }

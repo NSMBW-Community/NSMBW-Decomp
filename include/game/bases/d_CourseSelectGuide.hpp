@@ -10,6 +10,51 @@
 #include <game/bases/d_info.hpp>
 
 class dCourseSelectGuide_c {
+
+    enum T_PANE_e {
+        T_worldNum_00,
+        T_cSelect_00,
+        T_cSelect_pic,
+        T_lifeNumber_00,
+        T_lifeNumber_01,
+        T_lifeNumber_02,
+        T_lifeNumber_03,
+        T_guideViewLS_00,
+        T_guideViewL_01,
+        T_COUNT
+    };
+
+    enum N_PANE_e {
+        N_IconPos1P_00,
+        N_IconPos2P_00,
+        N_IconPos3P_00,
+        N_IconPos4P_00,
+        N_mapArrow_00,
+        N_proportionL_00,
+        N_proportionR_00,
+        N_proportionC_00,
+        N_guideViewC_00,
+        N_guideViewR_01,
+        N_left_00,
+        N_COUNT
+    };
+
+    enum P_PANE_e {
+        P_cC_1_00,
+        P_cC_2_00,
+        P_cC_3_00,
+        P_cC_1s_00,
+        P_cC_2s_00,
+        P_cC_3s_00,
+        P_flagSkull_00,
+        P_marioFace_00,
+        P_luigiFace_00,
+        P_BkinoFace_00,
+        P_YkinoFace_00,
+        P_bgShadow_00,
+        P_COUNT
+    };
+
 public:
     dCourseSelectGuide_c();
     virtual ~dCourseSelectGuide_c();
@@ -27,11 +72,9 @@ private:
 
     void FUN_80010690();
     void ControllerConnectCheck();
+    void FUN_80010b50(dWmLib::CourseType_e);
     bool FUN_80010f40(int);
     void FUN_800125c0(short, dWmLib::CourseType_e);
-    void FUN_80010b50(dWmLib::CourseType_e);
-
-    void dostuff(u8 wNo, u8 cNo);
 
     u8 mUnk;
 
@@ -88,40 +131,9 @@ private:
 
     nw4r::lyt::Pane *mpRootPane; ///< @brief The root pane of the window.
 
-    nw4r::lyt::Pane *N_IconPos1P_00,
-                    *N_IconPos2P_00,
-                    *N_IconPos3P_00,
-                    *N_IconPos4P_00,
-                    *N_mapArrow_00,
-                    *N_proportionL_00,
-                    *N_proportionR_00,
-                    *N_proportionC_00,
-                    *N_guideViewC_00,
-                    *N_guideViewR_01,
-                    *N_left_00;
-
-    LytTextBox_c *T_worldNum_00,
-                 *T_cSelect_00,
-                 *T_cSelect_pic,
-                 *T_lifeNumber_00,
-                 *T_lifeNumber_01,
-                 *T_lifeNumber_02,
-                 *T_lifeNumber_03,
-                 *T_guideViewLS_00,
-                 *T_guideViewL_01;
-
-    nw4r::lyt::Picture *P_cC_1_00,
-                       *P_cC_2_00,
-                       *P_cC_3_00,
-                       *P_cC_1s_00,
-                       *P_cC_2s_00,
-                       *P_cC_3s_00,
-                       *P_flagSkull_00,
-                       *P_marioFace_00,
-                       *P_luigiFace_00,
-                       *P_BkinoFace_00,
-                       *P_YkinoFace_00,
-                       *P_bgShadow_00;
+    nw4r::lyt::Pane *mpNullPanes[N_COUNT];
+    LytTextBox_c *mpTextBoxes[T_COUNT];
+    nw4r::lyt::Picture *mpPicturePanes[P_COUNT];
 
     Remocon::EXTENSION_TYPE_e mExtension;
     int mWorldNo;
@@ -160,26 +172,11 @@ private:
     bool m44d;
     bool mShowRestNumber;
 
-    /// @brief Gets the n-th pane.
-    nw4r::lyt::Pane *getPane(int n) { return (&N_IconPos1P_00)[n]; }
-
-    /// @brief Gets the n-th picture pane.
-    nw4r::lyt::Picture *getPicturePane(int n) { return (&P_cC_1_00)[n]; }
-
-    /// @brief Gets the n-th text box.
-    LytTextBox_c *getTextBox(int n) { return (&T_worldNum_00)[n]; }
-
 public:
     static inline int getPaneNum(int i) {
         static const int paneNums[] = { 0, 1, 3, 2 };
         return paneNums[i];
     }
-
-    void thing(u8 wNo, u8 cNo);
-
-    inline void hideFlag() { P_flagSkull_00->setVisible(false); }
-    inline void showFlag() { P_flagSkull_00->setVisible(true); }
-    inline nw4r::lyt::Picture *getFlag() { return P_flagSkull_00; }
 
     static dCourseSelectGuide_c *m_instance;
 

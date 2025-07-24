@@ -5,8 +5,8 @@ class dScWMap_c {
 public:
     enum CourseType_e {
         COURSE_TYPE_2 = 2,
-        COURSE_TYPE_80 = 0x80,
-        COURSE_TYPE_200 = 0x200
+        COURSE_TYPE_KINOKO_HOUSE_1UP = 0x80,
+        COURSE_TYPE_KINOKO_HOUSE_STAR = 0x200
     };
 
     static u8 getWorldNo() NOINLINE { return m_WorldNo; }
