@@ -1,5 +1,5 @@
 #pragma once
-#include <lib/egg/heap/eggHeap.hpp>
+#include <lib/egg/core/eggHeap.h>
 #include <lib/rvl/gx/GX.h>
 
 namespace m3d {

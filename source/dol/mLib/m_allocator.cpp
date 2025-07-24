@@ -1,7 +1,7 @@
 #include <game/mLib/m_allocator_dummy_heap.hpp>
 #include <game/mLib/m_allocator.hpp>
 #include <game/mLib/m_heap.hpp>
-#include <lib/egg/heap/eggFrmHeap.hpp>
+#include <lib/egg/core/eggFrmHeap.h>
 
 mAllocatorDummyHeap_c *mAllocatorDummyHeap_c::m_instance;
 
@@ -24,7 +24,7 @@ int mAllocatorDummyHeap_c::getHeapKind() const {
 void mAllocatorDummyHeap_c::initAllocator(EGG::Allocator *allocator, long alignment) {
     const static MEMAllocatorFuncs funcs = { dummyHeapAlloc, dummyHeapFree };
     allocator->mpFuncs = &funcs;
-    allocator->mpHeapHandle = mpHeapHandle;
+    allocator->mpHeapHandle = mHeapHandle;
     allocator->mAlignment = alignment;
     allocator->mUnused = 0;
 }
@@ -115,7 +115,7 @@ size_t mHeapAllocator_c::adjustFrmHeap() {
         return 0;
     }
 
-    EGG::FrmHeap *heap = mpHeap->toFrmHeap();
+    EGG::FrmHeap *heap = EGG::Heap::dynamicCastToFrm(mpHeap);
     return mHeap::adjustFrmHeap(heap);
 }
 
@@ -131,6 +131,6 @@ bool mHeapAllocator_c::createHeapRestoreCurrent(size_t size, EGG::Heap *parent, 
 
 size_t mHeapAllocator_c::adjustFrmHeapRestoreCurrent() {
     mHeap::restoreCurrentHeap();
-    EGG::FrmHeap *heap = mpHeap->toFrmHeap();
+    EGG::FrmHeap *heap = EGG::Heap::dynamicCastToFrm(mpHeap);
     return mHeap::adjustFrmHeap(heap);
 }

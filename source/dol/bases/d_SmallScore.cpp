@@ -7,7 +7,7 @@
 #include <game/mLib/m_video.hpp>
 #include <game/mLib/m_vec.hpp>
 #include <game/bases/d_bg_parameter.hpp>
-#include <lib/egg/math.hpp>
+#include <lib/egg/math/eggMath.h>
 
 dSmallScore_c *dSmallScore_c::m_instance = nullptr;
 

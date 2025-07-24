@@ -1,6 +1,6 @@
 #pragma once
 #include <game/mLib/m_allocator.hpp>
-#include <lib/egg/heap/eggFrmHeap.hpp>
+#include <lib/egg/core/eggFrmHeap.h>
 #include <lib/nw4r/g3d/anm_obj.hpp>
 
 namespace m3d {
