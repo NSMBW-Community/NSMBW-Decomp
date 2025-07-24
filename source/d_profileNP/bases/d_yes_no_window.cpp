@@ -43,8 +43,33 @@ int dYesNoWindow_c::create() {
         "yesnoWindow_11_outWindow.brlan"
     };
 
-    static const int ANIME_INDEX_TBL[] = {0, 0, 1, 1, 2, 2, 2, 3, 3, 3, 4, 4, 4, 5, 5, 5, 5, 6, 6, 6, 7, 8, 9, 0};
-    static const char *GROUP_NAME_DT[] = {
+    static const int ANIME_INDEX_TBL[ANIM_COUNT] = {
+        inWindow,
+        inWindow,
+        loopWindow,
+        loopWindow,
+        inYesNoButton,
+        inYesNoButton,
+        inYesNoButton,
+        onYesNoButton,
+        onYesNoButton,
+        onYesNoButton,
+        idleYesNoButton,
+        idleYesNoButton,
+        idleYesNoButton,
+        hitYesNoButton,
+        hitYesNoButton,
+        hitYesNoButton,
+        hitYesNoButton,
+        offYesNoButton,
+        offYesNoButton,
+        offYesNoButton,
+        inBG,
+        outBG,
+        outWindow
+    };
+
+    static const char *GROUP_NAME_DT[ANIM_COUNT] = {
         "A00_inWindow",
         "D00_save00",
         "A00_inWindow",
@@ -115,9 +140,9 @@ int dYesNoWindow_c::create() {
     mLayout.mDrawOrder = 143;
     mpRootPane = mLayout.getRootPane();
 
-    mLayout.PPaneRegister(PPANE_NAME_DT, &P_yesBase_00, ARRAY_SIZE(PPANE_NAME_DT));
-    mLayout.TPaneRegister(T_PANE_NAME_TBL, &T_questionS_00, ARRAY_SIZE(T_PANE_NAME_TBL));
-    mLayout.NPaneRegister(NPANE_NAME_DT, &N_otehonText_00, ARRAY_SIZE(NPANE_NAME_DT));
+    mLayout.PPaneRegister(PPANE_NAME_DT, mpPictures, ARRAY_SIZE(PPANE_NAME_DT));
+    mLayout.TPaneRegister(T_PANE_NAME_TBL, mpTextBoxes, ARRAY_SIZE(T_PANE_NAME_TBL));
+    mLayout.NPaneRegister(NPANE_NAME_DT, mpNullPanes, ARRAY_SIZE(NPANE_NAME_DT));
 
     mIsActive = false;
     mHasLoadedLayout = true;
@@ -160,7 +185,7 @@ int dYesNoWindow_c::doDelete() {
 }
 
 /// @brief The prompt message for each type.
-static const int MainMsgIDs[] = {
+static const int MainMsgIDs[dYesNoWindow_c::WINDOW_TYPE_COUNT] = {
     MSG_SAVE_DATA_CREATED,          // SAVE_DATA_CREATED
     MSG_ASK_SAVE,                   // SAVE
     MSG_PROGRESS_SAVED,             // SAVED
@@ -196,7 +221,7 @@ static const int MainMsgIDs[] = {
 #define OPTIONS_OK { false, false, true }
 
 /// @brief Which buttons are visible in the Yes/No window.
-static const bool PicVisible[][3] = {
+static const bool PicVisible[dYesNoWindow_c::WINDOW_TYPE_COUNT][dYesNoWindow_c::POS_COUNT] = {
     OPTIONS_OK,     // SAVE_DATA_CREATED
     OPTIONS_YES_NO, // SAVE
     OPTIONS_OK,     // SAVED
@@ -229,7 +254,7 @@ static const bool PicVisible[][3] = {
 };
 
 /// @brief Starting cursor positions for the Yes/No window.
-static const int StartingCursorPositions[] = {
+static const int StartingCursorPositions[dYesNoWindow_c::WINDOW_TYPE_COUNT] = {
     dYesNoWindow_c::POS_OK,  // SAVE_DATA_CREATED
     dYesNoWindow_c::POS_YES, // SAVE
     dYesNoWindow_c::POS_OK,  // SAVED
@@ -269,14 +294,13 @@ void dYesNoWindow_c::populateLayout() {
 
     int mainMsgID = MainMsgIDs[mType];
     if (mType == WATCH_HINT_MOVIE) {
-        dGameCom::LayoutDispNumber(mStarCoinsRequired, fillLeftReqStarCoins, T_needCoin_00, true);
+        dGameCom::LayoutDispNumber(mStarCoinsRequired, fillLeftReqStarCoins, mpTextBoxes[T_needCoin_00], true);
 
-        T_otehonTextS_01->setMessage(msgRes, BMG_CATEGORY_HINT_MOVIES, MSG_STAR_COINS_REQUIRED, 0);
-        T_otehonText_01->setMessage(msgRes, BMG_CATEGORY_HINT_MOVIES, MSG_STAR_COINS_REQUIRED, 0);
-        T_needCoinX_00->setMessage(msgRes, BMG_CATEGORY_HINT_MOVIES, MSG_STAR_COINS_REQUIRED_X, 0);
-
-        T_questionS_00->SetVisible(false);
-        N_otehonText_00->SetVisible(true);
+        mpTextBoxes[T_otehonTextS_01]->setMessage(msgRes, BMG_CATEGORY_HINT_MOVIES, MSG_STAR_COINS_REQUIRED, 0);
+        mpTextBoxes[T_otehonText_01]->setMessage(msgRes, BMG_CATEGORY_HINT_MOVIES, MSG_STAR_COINS_REQUIRED, 0);
+        mpTextBoxes[T_needCoinX_00]->setMessage(msgRes, BMG_CATEGORY_HINT_MOVIES, MSG_STAR_COINS_REQUIRED_X, 0);
+        mpTextBoxes[T_questionS_00]->SetVisible(false);
+        mpNullPanes[N_otehonText_00]->SetVisible(true);
     } else {
         if (mType == GOT_ALL_STAR_COINS_ALL_WORLDS) {
             dInfo_c::m_instance->mDisplayCourseWorld = dScWMap_c::m_WorldNo + 1;
@@ -288,16 +312,16 @@ void dYesNoWindow_c::populateLayout() {
             mainMsgID = MSG_SKIP_FINAL_COURSE;
         }
 
-        T_questionS_00->SetVisible(true);
-        N_otehonText_00->SetVisible(false);
-        T_questionS_00->setMessage(msgRes, BMG_CATEGORY_YES_NO_WINDOW, mainMsgID, 0);
-        T_question_00->setMessage(msgRes, BMG_CATEGORY_YES_NO_WINDOW, mainMsgID, 0);
+        mpTextBoxes[T_questionS_00]->SetVisible(true);
+        mpNullPanes[N_otehonText_00]->SetVisible(false);
+        mpTextBoxes[T_questionS_00]->setMessage(msgRes, BMG_CATEGORY_YES_NO_WINDOW, mainMsgID, 0);
+        mpTextBoxes[T_question_00]->setMessage(msgRes, BMG_CATEGORY_YES_NO_WINDOW, mainMsgID, 0);
     }
 
     // Set visibility of Yes/No/OK buttons
     for (int i = 0; i < 3;) {
         bool isVisible = PicVisible[mType][i];
-        getPicturePane(i++)->SetVisible(isVisible);
+        mpPictures[i++]->SetVisible(isVisible);
     }
 
     mCursorPos = StartingCursorPositions[mType];
@@ -330,15 +354,15 @@ void dYesNoWindow_c::populateLayout() {
         }
     }
 
-    T_yes_00->setMessage(msgRes, BMG_CATEGORY_YES_NO_WINDOW, bmgIDForYesButton, false);
-    T_yes_01->setMessage(msgRes, BMG_CATEGORY_YES_NO_WINDOW, bmgIDForYesButton, false);
-    T_no_00->setMessage(msgRes, BMG_CATEGORY_YES_NO_WINDOW, bmgIDForNoButton, false);
-    T_no_01->setMessage(msgRes, BMG_CATEGORY_YES_NO_WINDOW, bmgIDForNoButton, false);
+    mpTextBoxes[T_yes_00]->setMessage(msgRes, BMG_CATEGORY_YES_NO_WINDOW, bmgIDForYesButton, false);
+    mpTextBoxes[T_yes_01]->setMessage(msgRes, BMG_CATEGORY_YES_NO_WINDOW, bmgIDForYesButton, false);
+    mpTextBoxes[T_no_00]->setMessage(msgRes, BMG_CATEGORY_YES_NO_WINDOW, bmgIDForNoButton, false);
+    mpTextBoxes[T_no_01]->setMessage(msgRes, BMG_CATEGORY_YES_NO_WINDOW, bmgIDForNoButton, false);
 
     if (mType == QUICK_SAVED) {
-        N_saveIcon_00->SetVisible(true);
+        mpNullPanes[N_saveIcon_00]->SetVisible(true);
     } else {
-        N_saveIcon_00->SetVisible(false);
+        mpNullPanes[N_saveIcon_00]->SetVisible(false);
     }
 }
 
@@ -393,6 +417,8 @@ void dYesNoWindow_c::initializeState_OpenAnimeEndWait() {
             if (!mHideBG) {
                 mLayout.AnimeStartSetup(ANIM_IN_BG, false);
             }
+            break;
+        default:
             break;
     }
     if (mType == QUICK_SAVED) {
@@ -473,7 +499,7 @@ void dYesNoWindow_c::initializeState_SelectWait() {
         mLayout.LoopAnimeStartSetup(ANIM_LOOP_QUICK_SAVE);
     }
     mLayout.LoopAnimeStartSetup(ANIM_LOOP_WINDOW);
-    dGameCom::updateSelectCursor(getPicturePane(mCursorPos), 0, false);
+    dGameCom::updateSelectCursor(mpPictures[mCursorPos], 0, false);
 }
 
 void dYesNoWindow_c::executeState_SelectWait() {
@@ -562,6 +588,8 @@ void dYesNoWindow_c::initializeState_ClouseAnimeEndWait() {
             if (!mHideBG) {
                 mLayout.AnimeStartSetup(ANIM_OUT_BG, false);
             }
+            break;
+        default:
             break;
     }
     SndAudioMgr::sInstance->startSystemSe(SoundEffects[SOUND_CLOSE], 1);
