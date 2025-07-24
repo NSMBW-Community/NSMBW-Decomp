@@ -44,29 +44,29 @@ int dYesNoWindow_c::create() {
     };
 
     static const int ANIME_INDEX_TBL[ANIM_COUNT] = {
-        yesnoWindow_11_inWindow,
-        yesnoWindow_11_inWindow,
-        yesnoWindow_11_loopWindow,
-        yesnoWindow_11_loopWindow,
-        yesnoWindow_11_inYesNoButton,
-        yesnoWindow_11_inYesNoButton,
-        yesnoWindow_11_inYesNoButton,
-        yesnoWindow_11_onYesNoButton,
-        yesnoWindow_11_onYesNoButton,
-        yesnoWindow_11_onYesNoButton,
-        yesnoWindow_11_idleYesNoButton,
-        yesnoWindow_11_idleYesNoButton,
-        yesnoWindow_11_idleYesNoButton,
-        yesnoWindow_11_hitYesNoButton,
-        yesnoWindow_11_hitYesNoButton,
-        yesnoWindow_11_hitYesNoButton,
-        yesnoWindow_11_hitYesNoButton,
-        yesnoWindow_11_offYesNoButton,
-        yesnoWindow_11_offYesNoButton,
-        yesnoWindow_11_offYesNoButton,
-        yesnoWindow_11_inBG,
-        yesnoWindow_11_outBG,
-        yesnoWindow_11_outWindow
+        inWindow,
+        inWindow,
+        loopWindow,
+        loopWindow,
+        inYesNoButton,
+        inYesNoButton,
+        inYesNoButton,
+        onYesNoButton,
+        onYesNoButton,
+        onYesNoButton,
+        idleYesNoButton,
+        idleYesNoButton,
+        idleYesNoButton,
+        hitYesNoButton,
+        hitYesNoButton,
+        hitYesNoButton,
+        hitYesNoButton,
+        offYesNoButton,
+        offYesNoButton,
+        offYesNoButton,
+        inBG,
+        outBG,
+        outWindow
     };
 
     static const char *GROUP_NAME_DT[ANIM_COUNT] = {
@@ -194,7 +194,7 @@ int dYesNoWindow_c::doDelete() {
 }
 
 /// @brief The prompt message for each type.
-static const int MainMsgIDs[dYesNoWindow_c::NUM_WINDOW_TYPES] = {
+static const int MainMsgIDs[dYesNoWindow_c::WINDOW_TYPE_COUNT] = {
     MSG_SAVE_DATA_CREATED,          // SAVE_DATA_CREATED
     MSG_ASK_SAVE,                   // SAVE
     MSG_PROGRESS_SAVED,             // SAVED
@@ -230,7 +230,7 @@ static const int MainMsgIDs[dYesNoWindow_c::NUM_WINDOW_TYPES] = {
 #define OPTIONS_OK { false, false, true }
 
 /// @brief Which buttons are visible in the Yes/No window.
-static const bool PicVisible[dYesNoWindow_c::NUM_WINDOW_TYPES][dYesNoWindow_c::POS_COUNT] = {
+static const bool PicVisible[dYesNoWindow_c::WINDOW_TYPE_COUNT][dYesNoWindow_c::POS_COUNT] = {
     OPTIONS_OK,     // SAVE_DATA_CREATED
     OPTIONS_YES_NO, // SAVE
     OPTIONS_OK,     // SAVED
@@ -263,7 +263,7 @@ static const bool PicVisible[dYesNoWindow_c::NUM_WINDOW_TYPES][dYesNoWindow_c::P
 };
 
 /// @brief Starting cursor positions for the Yes/No window.
-static const int StartingCursorPositions[dYesNoWindow_c::NUM_WINDOW_TYPES] = {
+static const int StartingCursorPositions[dYesNoWindow_c::WINDOW_TYPE_COUNT] = {
     dYesNoWindow_c::POS_OK,  // SAVE_DATA_CREATED
     dYesNoWindow_c::POS_YES, // SAVE
     dYesNoWindow_c::POS_OK,  // SAVED

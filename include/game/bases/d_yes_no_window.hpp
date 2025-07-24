@@ -8,6 +8,7 @@
 /// @ingroup bases
 class dYesNoWindow_c : public dBase_c {
 public:
+
     /// @brief The prompt type.
     enum WINDOW_TYPE_e {
         SAVE_DATA_CREATED,
@@ -39,7 +40,7 @@ public:
         RETURN_TO_MAP2,
         PEACH_CASTLE_HINT1,
         PEACH_CASTLE_HINT2,
-        NUM_WINDOW_TYPES
+        WINDOW_TYPE_COUNT
     };
 
     /// @brief The possible cursor positions.
@@ -51,7 +52,7 @@ public:
         POS_COUNT
     };
 
-    /// @brief The sound effect types used by the window.
+    /// @brief The sound effect types used for the window.
     enum SOUND_e {
         SOUND_CLOSE,
         SOUND_WAIT,
@@ -60,17 +61,18 @@ public:
         SOUND_COUNT
     };
 
+    /// @brief The animation names used for the window.
     enum ANIM_NAME_e {
-        yesnoWindow_11_inWindow,
-        yesnoWindow_11_loopWindow,
-        yesnoWindow_11_inYesNoButton,
-        yesnoWindow_11_onYesNoButton,
-        yesnoWindow_11_idleYesNoButton,
-        yesnoWindow_11_hitYesNoButton,
-        yesnoWindow_11_offYesNoButton,
-        yesnoWindow_11_inBG,
-        yesnoWindow_11_outBG,
-        yesnoWindow_11_outWindow,
+        inWindow,
+        loopWindow,
+        inYesNoButton,
+        onYesNoButton,
+        idleYesNoButton,
+        hitYesNoButton,
+        offYesNoButton,
+        inBG,
+        outBG,
+        outWindow,
         ANIM_NAME_COUNT
     };
 
@@ -102,6 +104,7 @@ public:
         ANIM_COUNT
     };
 
+    /// @brief The picture panes used for the window.
     enum P_PANE_e {
         P_yesBase_00,
         P_noBase_00,
@@ -109,6 +112,7 @@ public:
         P_COUNT
     };
 
+    /// @brief The fixed text boxes used for the window.
     enum T_FIXED_PANE_e {
         T_center_00,
         T_center_01,
@@ -117,6 +121,7 @@ public:
         T_FIXED_COUNT
     };
 
+    /// @brief The text boxes used for the window.
     enum T_PANE_e {
         T_questionS_00,
         T_question_00,
@@ -131,6 +136,7 @@ public:
         T_COUNT
     };
 
+    /// @brief The null panes used for the window.
     enum N_PANE_e {
         N_otehonText_00,
         N_saveIcon_00,
@@ -167,9 +173,9 @@ private:
     sFStateMgr_c<dYesNoWindow_c, sStateMethodUsr_FI_c> mStateMgr;
 
     nw4r::lyt::Pane *mpRootPane; ///< The root pane of the window.
-    nw4r::lyt::Picture *mpPictures[P_COUNT];
-    LytTextBox_c *mpTextBoxes[T_COUNT];
-    nw4r::lyt::Pane *mpNullPanes[N_COUNT];
+    nw4r::lyt::Picture *mpPictures[P_COUNT]; ///< The picture panes.
+    LytTextBox_c *mpTextBoxes[T_COUNT]; ///< The text boxes.
+    nw4r::lyt::Pane *mpNullPanes[N_COUNT]; ///< The null panes.
 
     int mCursorPos; ///< The current cursor position.
     int mPrevCursorPos; ///< The previous cursor position.
