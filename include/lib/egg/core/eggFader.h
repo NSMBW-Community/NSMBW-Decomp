@@ -21,7 +21,7 @@ namespace EGG {
         virtual EStatus getStatus() const = 0; /// @copydoc mFaderBase_c::getStatus
         virtual bool fadeIn() = 0; /// @copydoc mFaderBase_c::fadeIn
         virtual bool fadeOut() = 0; /// @copydoc mFaderBase_c::fadeOut
-        virtual int calc() = 0; /// @copydoc mFaderBase_c::calc
+        virtual bool calc() = 0; /// @copydoc mFaderBase_c::calc
         virtual void draw() = 0; /// @copydoc mFaderBase_c::draw
     };
 }

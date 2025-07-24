@@ -1,7 +1,7 @@
 #pragma once
 
 #include <game/mLib/m_vec.hpp>
-#include <lib/egg/math.hpp>
+#include <lib/egg/geom/eggSphere.h>
 #include <lib/MSL_C/float.h>
 #include <lib/MSL_C/math.h>
 

@@ -2,11 +2,11 @@
 
 #include <game/mLib/m_heap.hpp>
 #include <game/mLib/m_video.hpp>
-#include <lib/egg/gx/eggGfxEngine.hpp>
-#include <lib/egg/gx/eggStateGX.hpp>
-#include <lib/egg/gx/eggScreen.hpp>
-#include <lib/egg/gx/eggDrawGX.hpp>
-#include <lib/egg/gx/eggLightTexture.hpp>
+#include <lib/egg/gfxe/eggGfxEngine.h>
+#include <lib/egg/gfxe/eggStateGX.h>
+#include <lib/egg/gfxe/eggScreen.h>
+#include <lib/egg/gfxe/eggDrawGX.h>
+#include <lib/egg/gfxe/eggLightTexture.h>
 #include <lib/nw4r/g3d/g3d.hpp>
 #include <lib/nw4r/g3d/g3d_state.hpp>
 #include <lib/MSL_C/string.h>

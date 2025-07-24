@@ -1,9 +1,9 @@
 #pragma once
 
 #include <game/mLib/m_allocator.hpp>
-#include <lib/egg/gx/eggLightManager.hpp>
-#include <lib/egg/gx/eggFogManager.hpp>
-#include <lib/egg/gx/eggScreen.hpp>
+#include <lib/egg/gfxe/eggLightManager.h>
+#include <lib/egg/gfxe/eggFogManager.h>
+#include <lib/egg/gfxe/eggScreen.h>
 #include <lib/nw4r/g3d/res_mdl.hpp>
 
 #include <_dummy_classes.hpp>

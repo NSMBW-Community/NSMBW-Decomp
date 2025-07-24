@@ -43,7 +43,7 @@ int dWmActor_c::preExecute() {
         }
     }
 
-    mClipSphere.mPos = mPos;
+    mClipSphere.mCenter = mPos;
 
     return SUCCEEDED;
 }
@@ -57,7 +57,7 @@ int dWmActor_c::preDraw() {
         return NOT_READY;
     }
 
-    mClipSphere.mPos = mPos;
+    mClipSphere.mCenter = mPos;
 
     if (!mClipSphere.isZero() && !dWCamera_c::m_instance->mViewClip.CheckClipSphere(&mClipSphere)) {
         return NOT_READY;

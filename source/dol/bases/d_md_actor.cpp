@@ -39,7 +39,7 @@ int dMdActor_c::preExecute() {
         return NOT_READY;
     }
 
-    mClipSphere.mPos = mPos;
+    mClipSphere.mCenter = mPos;
 
     return SUCCEEDED;
 }

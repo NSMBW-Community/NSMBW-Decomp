@@ -1,6 +1,6 @@
 #pragma once
 #include <types.h>
-#include <lib/egg/heap/eggFrmHeap.hpp>
+#include <lib/egg/core/eggFrmHeap.h>
 #include <lib/nw4r/ut/inlines.hpp>
 
 namespace mHeap {

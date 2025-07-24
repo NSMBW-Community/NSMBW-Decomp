@@ -10,5 +10,6 @@ namespace EGG {
         virtual ~Disposer();
 
         Heap *mpContainingHeap;
+        // [TODO: nw4r::ut::Link]
     };
 }

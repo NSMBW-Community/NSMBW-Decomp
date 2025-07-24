@@ -1,7 +1,6 @@
 #pragma once
 #include <types.h>
-#include <lib/egg/heap/eggHeap.hpp>
-#include <lib/egg/eggDisposer.hpp>
+#include <lib/egg/core/eggHeap.h>
 
 /**
  * @brief A non-functional heap to be used when mHeapAllocator_c

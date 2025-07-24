@@ -1,6 +1,6 @@
 #pragma once
 
-#include <lib/egg/gx/eggLightTextureManager.hpp>
+#include <lib/egg/gfxe/eggLightTextureManager.h>
 #include <lib/nw4r/math/vec.hpp>
 #include <lib/nw4r/g3d/scn_root.hpp>
 

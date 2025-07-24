@@ -1,6 +1,6 @@
 #pragma once
 #include <types.h>
-#include <lib/egg/heap/eggHeap.hpp>
+#include <lib/egg/core/eggHeap.h>
 #include <lib/rvl/mem/MEMHeapCommon.h>
 
 namespace EGG {

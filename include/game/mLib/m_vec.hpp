@@ -2,7 +2,7 @@
 #include <lib/nw4r/math/vec.hpp>
 #include <lib/rvl/mtx/vec.h>
 #include <game/mLib/m_angle.hpp>
-#include <lib/egg/math.hpp>
+#include <lib/egg/math/eggVector.h>
 
 /// @brief A two-dimensional floating point vector.
 /// @ingroup mlib

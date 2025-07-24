@@ -1,6 +1,6 @@
 #pragma once
-#include <lib/egg/heap/eggHeap.hpp>
-#include <lib/egg/fader/eggColorFader.hpp>
+#include <lib/egg/core/eggColorFader.h>
+#include <lib/egg/core/eggHeap.h>
 #include <types.h>
 
 /// @ingroup bases
