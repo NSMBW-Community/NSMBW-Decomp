@@ -1,6 +1,6 @@
 name: Build and Publish
 
-on: [push, pull_request]
+on: [push, pull_request_target]
 
 permissions:
   contents: read
@@ -11,7 +11,26 @@ jobs:
   ci:
     runs-on: windows-2022
     steps:
-      - name: Checkout repo
+      - name: Get merge commit SHA
+        if: github.ref == 'refs/heads/master' && github.event_name == 'pull_request_target'
+        uses: actions/github-script@v7
+        id: pr
+        with:
+          script: |
+            const { data: pullRequest } = await github.rest.pulls.get({
+              ...context.repo,
+              pull_number: context.payload.pull_request.number,
+            });
+            return pullRequest
+
+      - name: Checkout repo (PR)
+        if: github.ref == 'refs/heads/master' && github.event_name == 'pull_request_target'
+        uses: actions/checkout@v4
+        with:
+          ref: ${{fromJSON(steps.pr.outputs.result).merge_commit_sha}}
+
+      - name: Checkout repo (non-PR)
+        if: github.event_name != 'pull_request_target'
         uses: actions/checkout@v4
 
       - name: Setup python
@@ -110,7 +129,7 @@ jobs:
 
   deploy:
     needs: generate_docs
-    if: github.ref == 'refs/heads/master' && github.event_name != 'pull_request'
+    if: github.ref == 'refs/heads/master' && github.event_name != 'pull_request_target'
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
