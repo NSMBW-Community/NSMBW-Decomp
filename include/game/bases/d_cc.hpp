@@ -96,7 +96,7 @@ public:
         float mHeight;
 
         u8 mCategory; ///< The category of this collider. See @ref CC_CATEGORY_e .
-        u8 mAttackCategory; ///< The attack category of this collider. See @ref CC_ATTACK_e .
+        u8 mAttackCategory; ///< The attack category of this collider. See CC_ATTACK_e .
         /**
          * @brief Which categories this collider should be able to collide with.
          *
@@ -106,7 +106,7 @@ public:
         /**
          * @brief Which attack categories this collider should be able to receive.
          *
-         * This is a bitfield with the bits enumerated by @ref CC_ATTACK_e .
+         * This is a bitfield with the bits enumerated by CC_ATTACK_e .
          */
         u32 mAttackCategoryInteract;
 

@@ -26,13 +26,13 @@ exiting the menu.
 open.
 
 ## Bounding Sphere
-The game uses a @ref mCullSphere "bounding sphere" to perform
+The game uses a @ref mClipSphere "bounding sphere" to perform
 @xlink{https://bruop.github.io/frustum_culling/,frustum culling} on the actor.
 
 If the actor's bounding sphere is not within the camera view, it will not be rendered. This behaviour can
-be controlled by setting the sphere's @ref mSphere_c::mRadius "radius" (which must be done manually).
+be controlled by setting the sphere's @ref EGG::Sphere3f::mRadius "radius" (which must be done manually).
 If the radius is set to @p 0.0f (the default value), the check is bypassed and the actor is always
-drawn. The sphere's @ref mSphere_c::mPos "position" is updated automatically.
+drawn. The sphere's @ref EGG::Sphere3f::mCenter "center position" is updated automatically.
 
 @hint{It is recommended to set the sphere radius in the ::create method.}
 
