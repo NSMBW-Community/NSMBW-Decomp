@@ -1,44 +1,38 @@
 #pragma once
+
+#include <lib/egg/core/eggBitFlag.h>
 #include <lib/egg/core/eggFader.h>
-#include <lib/nw4r/ut/color.hpp>
+
+#include <lib/nw4r/ut/Color.h>
+#include <lib/nw4r/ut/Rect.h>
 
 namespace EGG {
 
-    /// @ingroup eggcore
-    class ColorFader : public Fader {
-    public:
-        enum ColorFaderFlag {
-            FLAG_1 = BIT_FLAG(0),
-            FLAG_2 = BIT_FLAG(1)
-        };
+/// @ingroup eggcore
+class ColorFader : public Fader {
+public:
+    ColorFader(float x, float y, float w, float h, nw4r::ut::Color color, EStatus initialStatus);
 
-        ColorFader(float x, float y, float w, float h, nw4r::ut::Color color, EStatus initialStatus);
+    virtual void setStatus(EStatus status);
+    virtual EStatus getStatus() const { return mStatus; }
+    virtual bool fadeIn();
+    virtual bool fadeOut();
+    virtual bool calc();
+    virtual void draw();
+    virtual ~ColorFader() {}
 
-        virtual void setStatus(EStatus status);
-        virtual EStatus getStatus() const { return mStatus; }
-        virtual bool fadeIn();
-        virtual bool fadeOut();
-        virtual bool calc();
-        virtual void draw();
-        virtual ~ColorFader();
+    void setFrame(u16 frame);
+    void setColor(nw4r::ut::Color color);
 
-        void setFrame(u16 frame);
-        void setColor(nw4r::ut::Color color);
+protected:
+    enum eFlag { SIGNAL_ON_FADE_IN, SIGNAL_ON_FADE_OUT };
 
-        // [TODO: Belongs to nw4r::ut::Rect]
-        float getWidth() const { return mRight - mLeft; }
-        // [TODO: Belongs to nw4r::ut::Rect]
-        float getHeight() const { return mBottom - mTop; }
+    EStatus mStatus;
+    TBitFlag<u8> mFlag;
+    u16 mFrameCount;
+    u16 mFrame;
+    nw4r::ut::Color mCurrColor;
+    nw4r::ut::Rect mDims;
+};
 
-    protected:
-        EStatus mStatus;
-        u8 mFlag; // [TODO: TBitFlag<u8>]
-        u16 mFrameCount;
-        u16 mFrame;
-        nw4r::ut::Color mCurrColor;
-        float mLeft; // [TODO: nw4r::ut::Rect]
-        float mTop;
-        float mRight;
-        float mBottom;
-    };
-}
+} // namespace EGG

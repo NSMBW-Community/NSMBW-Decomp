@@ -18,7 +18,7 @@ typedef signed long long s64;
 typedef float f32;
 typedef double f64;
 #ifdef __CWCC__
-    typedef unsigned long size_t;
+typedef unsigned long size_t;
 #endif
 typedef unsigned long ulong;
 typedef volatile s8 vs8;
@@ -35,6 +35,10 @@ typedef volatile f64 vf64;
 // Macros
 #define ARRAY_SIZE(a) (sizeof(a) / sizeof(a[0]))
 #define BIT_FLAG(bit) ((bit) < 0 ? 0 : 1 << (bit))
+
+// No-op on release
+#define EGG_ASSERT(...)
+#define EGG_ASSERT_MSG(...)
 
 #ifdef __CWCC__
 #define NOINLINE __attribute__((noinline))

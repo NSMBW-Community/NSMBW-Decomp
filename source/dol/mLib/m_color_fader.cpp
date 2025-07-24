@@ -50,7 +50,7 @@ void mColorFader_c::draw() {
 
     Mtx44 projMtx;
     C_MTXOrtho(&projMtx, -VI_VIRTUAL_HALF_HEIGHT, VI_VIRTUAL_HALF_HEIGHT, -h, h, 0, 1);
-    GXSetProjection(&projMtx, 1);
+    GXSetProjection(&projMtx, GX_ORTHOGRAPHIC);
 
     Mtx posMtx;
     PSMTXIdentity(&posMtx);
@@ -61,7 +61,7 @@ void mColorFader_c::draw() {
     GXInvalidateVtxCache();
 
     GXSetVtxDesc(GX_VA_POS, GX_VA_TEX0MTXIDX);
-    GXSetVtxAttrFmt(0, GX_VA_POS, 1, 4, 0);
+    GXSetVtxAttrFmt(GX_VTXFMT0, GX_VA_POS, GX_POS_XYZ, GX_F32, 0);
 
     GXSetNumChans(1);
     GXSetChanMatColor(GX_COLOR0A0, mFaderColor);
