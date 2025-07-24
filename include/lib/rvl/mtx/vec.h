@@ -27,6 +27,7 @@ typedef struct {
 void PSVECAdd(const Vec *v1, const Vec *v2, Vec *out); ///< Sums two vectors together.
 void PSVECSubtract(const Vec *v1, const Vec *v2, Vec *out); ///< Subtracts vector @p v2 from vector @p v1.
 void PSVECScale(const Vec *in, Vec *out, float scale); ///< Multiplies a vector by a scalar.
+float PSVECSquareDistance(const Vec *v1, const Vec *v2); ///< Computes the square distance between two vectors.
 f32 PSVECMag(const Vec *v); ///< Computes the magnitude of a vector.
 
 /// @}
