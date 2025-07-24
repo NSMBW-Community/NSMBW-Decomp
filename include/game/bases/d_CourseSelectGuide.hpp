@@ -55,6 +55,30 @@ class dCourseSelectGuide_c {
         P_COUNT
     };
 
+    enum ANIM_NAME_e {
+        inInfo,
+        loopInfo,
+        outInfo,
+        inMapArrow,
+        loopArrow,
+        outMapArrow,
+        inShadow,
+        outShadow,
+        ANIM_NAME_COUNT
+    };
+
+    /// @brief The animations used for the layout.
+    enum ANIM_e {
+        ANIM_IN_UNDER, ANIM_IN_ZANKI, ANIM_IN_COURSE_INFO,
+        ANIM_LOOP_UNDER, ANIM_LOOP_ZANKI, ANIM_LOOP_COURSE_INFO,
+        ANIM_OUT_UNDER, ANIM_OUT_ZANKI, ANIM_OUT_COURSE_INFO,
+        ANIM_IN_ARROW_R, ANIM_IN_ARROW_L, ANIM_IN_ARROW_U, ANIM_IN_ARROW_D,
+        ANIM_LOOP_ARROW_R, ANIM_LOOP_ARROW_L, ANIM_LOOP_ARROW_U, ANIM_LOOP_ARROW_D,
+        ANIM_OUT_ARROW_R, ANIM_OUT_ARROW_L, ANIM_OUT_ARROW_U, ANIM_OUT_ARROW_D,
+        ANIM_IN_SHADOW,
+        ANIM_OUT_SHADOW,
+    };
+
 public:
     dCourseSelectGuide_c();
     virtual ~dCourseSelectGuide_c();
@@ -70,11 +94,11 @@ private:
 
     void CollectionCoinSet();
 
-    void FUN_80010690();
+    void FUN_80010690(); ///< @unofficial
     void ControllerConnectCheck();
-    void FUN_80010b50(dWmLib::CourseType_e);
-    bool FUN_80010f40(int);
-    void FUN_800125c0(short, dWmLib::CourseType_e);
+    void CourseSelectIconDisp(dWmLib::CourseType_e); ///< @unofficial
+    bool FUN_80010f40(int); ///< @unofficial
+    void FUN_800125c0(short, dWmLib::CourseType_e); ///< @unofficial
 
     u8 mUnk;
 
@@ -174,7 +198,12 @@ private:
 
 public:
     static inline int getPaneNum(int i) {
-        static const int paneNums[] = { 0, 1, 3, 2 };
+        static const int paneNums[] = {
+            N_IconPos1P_00,
+            N_IconPos2P_00,
+            N_IconPos4P_00,
+            N_IconPos3P_00
+        };
         return paneNums[i];
     }
 

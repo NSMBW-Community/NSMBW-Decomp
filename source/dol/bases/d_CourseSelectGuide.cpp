@@ -66,7 +66,7 @@ dCourseSelectGuide_c::~dCourseSelectGuide_c() {
 }
 
 bool dCourseSelectGuide_c::createLayout() {
-    static const char *AnmNameTbl[] = {
+    static const char *AnmNameTbl[ANIM_NAME_COUNT] = {
         "corseSelectUIGuide_37_inInfo.brlan",
         "corseSelectUIGuide_37_loopInfo.brlan",
         "corseSelectUIGuide_37_outInfo.brlan",
@@ -89,14 +89,14 @@ bool dCourseSelectGuide_c::createLayout() {
     };
 
     static const int ANIME_INDEX_TBL[] = {
-        0, 0, 0,
-        1, 1, 1,
-        2, 2, 2,
-        3, 3, 3, 3,
-        4, 4, 4, 4,
-        5, 5, 5, 5,
-        6,
-        7
+        inInfo, inInfo, inInfo,
+        loopInfo, loopInfo, loopInfo,
+        outInfo, outInfo, outInfo,
+        inMapArrow, inMapArrow, inMapArrow, inMapArrow,
+        loopArrow, loopArrow, loopArrow, loopArrow,
+        outMapArrow, outMapArrow, outMapArrow, outMapArrow,
+        inShadow,
+        outShadow
     };
 
     static const char *NPANE_NAME_DT[] = {
@@ -204,16 +204,16 @@ bool dCourseSelectGuide_c::createLayout() {
     mAlphaTarget = 255;
 
 
-    mLayout.ReverseAnimeStartSetup(6, false);
-    mLayout.ReverseAnimeStartSetup(7, false);
-    mLayout.ReverseAnimeStartSetup(8, false);
+    mLayout.ReverseAnimeStartSetup(ANIM_OUT_UNDER, false);
+    mLayout.ReverseAnimeStartSetup(ANIM_OUT_ZANKI, false);
+    mLayout.ReverseAnimeStartSetup(ANIM_OUT_COURSE_INFO, false);
     mLayout.AnimePlay();
     mLayout.calc();
     FUN_80010690();
-    mLayout.ReverseAnimeStartSetup(21, false);
-    mLayout.ReverseAnimeStartSetup(0, false);
-    mLayout.ReverseAnimeStartSetup(1, false);
-    mLayout.ReverseAnimeStartSetup(2, false);
+    mLayout.ReverseAnimeStartSetup(ANIM_IN_SHADOW, false);
+    mLayout.ReverseAnimeStartSetup(ANIM_IN_UNDER, false);
+    mLayout.ReverseAnimeStartSetup(ANIM_IN_ZANKI, false);
+    mLayout.ReverseAnimeStartSetup(ANIM_IN_COURSE_INFO, false);
     mLayout.AnimePlay();
     mLayout.calc();
 
@@ -334,7 +334,10 @@ void dCourseSelectGuide_c::execute() {
                 m43e = false;
             }
             if (m43f) {
-                if (!mLayout.isAnime(19) || !mLayout.isAnime(20) || !mLayout.isAnime(18) || !mLayout.isAnime(17)) {
+                if (
+                    !mLayout.isAnime(ANIM_OUT_ARROW_U) || !mLayout.isAnime(ANIM_OUT_ARROW_D) ||
+                    !mLayout.isAnime(ANIM_OUT_ARROW_L) || !mLayout.isAnime(ANIM_OUT_ARROW_R)
+                ) {
                     m43f = false;
                     m440 = false;
                 }
@@ -360,7 +363,7 @@ void dCourseSelectGuide_c::doDelete() {
     mLayout.doDelete();
 }
 
-void dCourseSelectGuide_c::FUN_80010b50(dWmLib::CourseType_e type) {
+void dCourseSelectGuide_c::CourseSelectIconDisp(dWmLib::CourseType_e type) {
     static const int sc_startPointIcons[] = {
         MSG_CS_ICON_START_RIGHT, // W1
         MSG_CS_ICON_START_UP,    // W2
@@ -400,7 +403,7 @@ void dCourseSelectGuide_c::FUN_80010b50(dWmLib::CourseType_e type) {
         case 1: messageID = MSG_CS_ICON_GHOST_HOUSE; break;
         case 2: messageID = MSG_CS_ICON_TOWER; break;
         case 3:
-            if (mWorldNo != 7) {
+            if (mWorldNo != WORLD_8) {
                 messageID = MSG_CS_ICON_CASTLE;
             } else {
                 messageID = MSG_CS_ICON_W8_CASTLE;
@@ -503,13 +506,13 @@ void dCourseSelectGuide_c::finalizeState_WorldCourseOnStageWait() {}
 void dCourseSelectGuide_c::initializeState_WorldCourseOnStageAnimeEndCheck() {
     m449 = true;
     m436 = false;
-    mLayout.AnimeStartSetup(2, m439);
+    mLayout.AnimeStartSetup(ANIM_IN_COURSE_INFO, m439);
 }
 void dCourseSelectGuide_c::executeState_WorldCourseOnStageAnimeEndCheck() {
     if (m437) {
-        mLayout.AnimeEndSetup(2);
+        mLayout.AnimeEndSetup(ANIM_IN_COURSE_INFO);
         mStateMgrWorldCourse.changeState(StateID_WorldCourseExitAnimeEndCheck);
-    } else if (!mLayout.isAnime(2)) {
+    } else if (!mLayout.isAnime(ANIM_IN_COURSE_INFO)) {
         mStateMgrWorldCourse.changeState(StateID_WorldCourseDisp);
     }
 }
@@ -518,7 +521,7 @@ void dCourseSelectGuide_c::finalizeState_WorldCourseOnStageAnimeEndCheck() {
 }
 
 void dCourseSelectGuide_c::initializeState_WorldCourseDisp() {
-    mLayout.LoopAnimeStartSetup(5);
+    mLayout.LoopAnimeStartSetup(ANIM_LOOP_COURSE_INFO);
 }
 void dCourseSelectGuide_c::executeState_WorldCourseDisp() {
     if (m442) {
@@ -535,14 +538,14 @@ void dCourseSelectGuide_c::finalizeState_WorldCourseDisp() {}
 void dCourseSelectGuide_c::initializeState_WorldCourseExitAnimeEndCheck() {
     m449 = true;
     m437 = false;
-    mLayout.AnimeEndSetup(5);
-    mLayout.AnimeStartSetup(8, false);
+    mLayout.AnimeEndSetup(ANIM_LOOP_COURSE_INFO);
+    mLayout.AnimeStartSetup(ANIM_OUT_COURSE_INFO, false);
 }
 void dCourseSelectGuide_c::executeState_WorldCourseExitAnimeEndCheck() {
     if (m436) {
-        mLayout.AnimeEndSetup(8);
+        mLayout.AnimeEndSetup(ANIM_OUT_COURSE_INFO);
         mStateMgrWorldCourse.changeState(StateID_WorldCourseOnStageAnimeEndCheck);
-    } else if (!mLayout.isAnime(8)) {
+    } else if (!mLayout.isAnime(ANIM_OUT_COURSE_INFO)) {
         m438 = false;
         mStateMgrWorldCourse.changeState(StateID_WorldCourseOnStageWait);
     }
@@ -572,17 +575,17 @@ void dCourseSelectGuide_c::finalizeState_GuideOnStageWait() {
 
 void dCourseSelectGuide_c::initializeState_GuideOnStageAnimeEndCheck() {
     m43a = false;
-    mLayout.AnimeStartSetup(0, m43d);
-    mLayout.AnimeStartSetup(1, m43d);
+    mLayout.AnimeStartSetup(ANIM_IN_UNDER, m43d);
+    mLayout.AnimeStartSetup(ANIM_IN_ZANKI, m43d);
 }
 void dCourseSelectGuide_c::executeState_GuideOnStageAnimeEndCheck() {
     if (m43b) {
-        mLayout.AnimeEndSetup(0);
-        mLayout.AnimeEndSetup(1);
+        mLayout.AnimeEndSetup(ANIM_IN_UNDER);
+        mLayout.AnimeEndSetup(ANIM_IN_ZANKI);
         mStateMgrGuide.changeState(StateID_GuideExitAnimeEndCheck);
         return;
     }
-    if (mLayout.isAnime(0) || mLayout.isAnime(1)) {
+    if (mLayout.isAnime(ANIM_IN_UNDER) || mLayout.isAnime(ANIM_IN_ZANKI)) {
         return;
     }
     mStateMgrGuide.changeState(StateID_GuideDisp);
@@ -590,8 +593,8 @@ void dCourseSelectGuide_c::executeState_GuideOnStageAnimeEndCheck() {
 void dCourseSelectGuide_c::finalizeState_GuideOnStageAnimeEndCheck() {}
 
 void dCourseSelectGuide_c::initializeState_GuideDisp() {
-    mLayout.LoopAnimeStartSetup(3);
-    mLayout.LoopAnimeStartSetup(4);
+    mLayout.LoopAnimeStartSetup(ANIM_LOOP_UNDER);
+    mLayout.LoopAnimeStartSetup(ANIM_LOOP_ZANKI);
 }
 void dCourseSelectGuide_c::executeState_GuideDisp() {
     if (m442) {
@@ -607,19 +610,19 @@ void dCourseSelectGuide_c::finalizeState_GuideDisp() {}
 
 void dCourseSelectGuide_c::initializeState_GuideExitAnimeEndCheck() {
     m43b = false;
-    mLayout.AnimeEndSetup(3);
-    mLayout.AnimeEndSetup(4);
-    mLayout.AnimeStartSetup(6, false);
-    mLayout.AnimeStartSetup(7, false);
+    mLayout.AnimeEndSetup(ANIM_LOOP_UNDER);
+    mLayout.AnimeEndSetup(ANIM_LOOP_ZANKI);
+    mLayout.AnimeStartSetup(ANIM_OUT_UNDER, false);
+    mLayout.AnimeStartSetup(ANIM_OUT_ZANKI, false);
 }
 void dCourseSelectGuide_c::executeState_GuideExitAnimeEndCheck() {
     if (m43a) {
-        mLayout.AnimeEndSetup(6);
-        mLayout.AnimeEndSetup(7);
+        mLayout.AnimeEndSetup(ANIM_OUT_UNDER);
+        mLayout.AnimeEndSetup(ANIM_OUT_ZANKI);
         mStateMgrGuide.changeState(StateID_GuideOnStageAnimeEndCheck);
         return;
     }
-    if (mLayout.isAnime(6) || mLayout.isAnime(7)) {
+    if (mLayout.isAnime(ANIM_OUT_UNDER) || mLayout.isAnime(ANIM_OUT_ZANKI)) {
         return;
     }
     m43c = false;
@@ -637,15 +640,15 @@ void dCourseSelectGuide_c::finalizeState_UpOnStageWait() {}
 
 void dCourseSelectGuide_c::initializeState_UpOnStageAnimeEndCheck() {
     m44a = true;
-    mLayout.AnimeStartSetup(11, false);
+    mLayout.AnimeStartSetup(ANIM_IN_ARROW_U, false);
 }
 void dCourseSelectGuide_c::executeState_UpOnStageAnimeEndCheck() {
     if (!FUN_80010f40(0) || m43f) {
-        mLayout.AnimeEndSetup(11);
+        mLayout.AnimeEndSetup(ANIM_IN_ARROW_U);
         mStateMgrUp.changeState(StateID_UpExitAnimeEndCheck);
         return;
     }
-    if (mLayout.isAnime(11) || mLayout.isAnime(0)) {
+    if (mLayout.isAnime(ANIM_IN_ARROW_U) || mLayout.isAnime(ANIM_IN_UNDER)) {
         return;
     }
     mStateMgrUp.changeState(StateID_UpDisp);
@@ -655,7 +658,7 @@ void dCourseSelectGuide_c::finalizeState_UpOnStageAnimeEndCheck() {
 }
 
 void dCourseSelectGuide_c::initializeState_UpDisp() {
-    mLayout.LoopAnimeStartSetup(15);
+    mLayout.LoopAnimeStartSetup(ANIM_LOOP_ARROW_U);
 }
 void dCourseSelectGuide_c::executeState_UpDisp() {
     if (!FUN_80010f40(0) || m43f) {
@@ -666,13 +669,13 @@ void dCourseSelectGuide_c::finalizeState_UpDisp() {}
 
 void dCourseSelectGuide_c::initializeState_UpExitAnimeEndCheck() {
     m44a = true;
-    mLayout.AnimeEndSetup(15);
-    mLayout.AnimeStartSetup(19, false);
+    mLayout.AnimeEndSetup(ANIM_LOOP_ARROW_U);
+    mLayout.AnimeStartSetup(ANIM_OUT_ARROW_U, false);
 }
 void dCourseSelectGuide_c::executeState_UpExitAnimeEndCheck() {
     if (FUN_80010f40(0)) {
         mStateMgrUp.changeState(StateID_UpOnStageAnimeEndCheck);
-    } else if (!mLayout.isAnime(19)) {
+    } else if (!mLayout.isAnime(ANIM_OUT_ARROW_U)) {
         mStateMgrUp.changeState(StateID_UpOnStageWait);
     }
 }
@@ -690,13 +693,13 @@ void dCourseSelectGuide_c::finalizeState_DownOnStageWait() {}
 
 void dCourseSelectGuide_c::initializeState_DownOnStageAnimeEndCheck() {
     m44b = true;
-    mLayout.AnimeStartSetup(12, false);
+    mLayout.AnimeStartSetup(ANIM_IN_ARROW_D, false);
 }
 void dCourseSelectGuide_c::executeState_DownOnStageAnimeEndCheck() {
     if (!FUN_80010f40(1) || m43f) {
-        mLayout.AnimeEndSetup(12);
+        mLayout.AnimeEndSetup(ANIM_IN_ARROW_D);
         mStateMgrDown.changeState(StateID_DownExitAnimeEndCheck);
-    } else if (!mLayout.isAnime(12)) {
+    } else if (!mLayout.isAnime(ANIM_IN_ARROW_D)) {
         mStateMgrDown.changeState(StateID_DownDisp);
     }
 }
@@ -705,7 +708,7 @@ void dCourseSelectGuide_c::finalizeState_DownOnStageAnimeEndCheck() {
 }
 
 void dCourseSelectGuide_c::initializeState_DownDisp() {
-    mLayout.LoopAnimeStartSetup(16);
+    mLayout.LoopAnimeStartSetup(ANIM_LOOP_ARROW_D);
 }
 void dCourseSelectGuide_c::executeState_DownDisp() {
     if (!FUN_80010f40(1) || m43f) {
@@ -716,13 +719,13 @@ void dCourseSelectGuide_c::finalizeState_DownDisp() {}
 
 void dCourseSelectGuide_c::initializeState_DownExitAnimeEndCheck() {
     m44b = true;
-    mLayout.AnimeEndSetup(16);
-    mLayout.AnimeStartSetup(20, false);
+    mLayout.AnimeEndSetup(ANIM_LOOP_ARROW_D);
+    mLayout.AnimeStartSetup(ANIM_OUT_ARROW_D, false);
 }
 void dCourseSelectGuide_c::executeState_DownExitAnimeEndCheck() {
     if (FUN_80010f40(1)) {
         mStateMgrDown.changeState(StateID_DownOnStageAnimeEndCheck);
-    } else if (!mLayout.isAnime(20)) {
+    } else if (!mLayout.isAnime(ANIM_OUT_ARROW_D)) {
         mStateMgrDown.changeState(StateID_DownOnStageWait);
     }
 }
@@ -740,13 +743,13 @@ void dCourseSelectGuide_c::finalizeState_LeftOnStageWait() {}
 
 void dCourseSelectGuide_c::initializeState_LeftOnStageAnimeEndCheck() {
     m44c = true;
-    mLayout.AnimeStartSetup(10, false);
+    mLayout.AnimeStartSetup(ANIM_IN_ARROW_L, false);
 }
 void dCourseSelectGuide_c::executeState_LeftOnStageAnimeEndCheck() {
     if (!FUN_80010f40(2) || m43f) {
-        mLayout.AnimeEndSetup(10);
+        mLayout.AnimeEndSetup(ANIM_IN_ARROW_L);
         mStateMgrLeft.changeState(StateID_LeftExitAnimeEndCheck);
-    } else if (!mLayout.isAnime(10)) {
+    } else if (!mLayout.isAnime(ANIM_IN_ARROW_L)) {
         mStateMgrLeft.changeState(StateID_LeftDisp);
     }
 }
@@ -755,7 +758,7 @@ void dCourseSelectGuide_c::finalizeState_LeftOnStageAnimeEndCheck() {
 }
 
 void dCourseSelectGuide_c::initializeState_LeftDisp() {
-    mLayout.LoopAnimeStartSetup(14);
+    mLayout.LoopAnimeStartSetup(ANIM_LOOP_ARROW_L);
 }
 void dCourseSelectGuide_c::executeState_LeftDisp() {
     if (!FUN_80010f40(2) || m43f) {
@@ -766,13 +769,13 @@ void dCourseSelectGuide_c::finalizeState_LeftDisp() {}
 
 void dCourseSelectGuide_c::initializeState_LeftExitAnimeEndCheck() {
     m44c = true;
-    mLayout.AnimeEndSetup(14);
-    mLayout.AnimeStartSetup(18, false);
+    mLayout.AnimeEndSetup(ANIM_LOOP_ARROW_L);
+    mLayout.AnimeStartSetup(ANIM_OUT_ARROW_L, false);
 }
 void dCourseSelectGuide_c::executeState_LeftExitAnimeEndCheck() {
     if (FUN_80010f40(2)) {
         mStateMgrLeft.changeState(StateID_LeftOnStageAnimeEndCheck);
-    } else if (!mLayout.isAnime(18)) {
+    } else if (!mLayout.isAnime(ANIM_OUT_ARROW_L)) {
         mStateMgrLeft.changeState(StateID_LeftOnStageWait);
     }
 }
@@ -790,13 +793,13 @@ void dCourseSelectGuide_c::finalizeState_RightOnStageWait() {}
 
 void dCourseSelectGuide_c::initializeState_RightOnStageAnimeEndCheck() {
     m44d = true;
-    mLayout.AnimeStartSetup(9, false);
+    mLayout.AnimeStartSetup(ANIM_IN_ARROW_R, false);
 }
 void dCourseSelectGuide_c::executeState_RightOnStageAnimeEndCheck() {
     if (!FUN_80010f40(3) || m43f) {
-        mLayout.AnimeEndSetup(9);
+        mLayout.AnimeEndSetup(ANIM_IN_ARROW_R);
         mStateMgrRight.changeState(StateID_RightExitAnimeEndCheck);
-    } else if (!mLayout.isAnime(9)) {
+    } else if (!mLayout.isAnime(ANIM_IN_ARROW_R)) {
         mStateMgrRight.changeState(StateID_RightDisp);
     }
 }
@@ -805,7 +808,7 @@ void dCourseSelectGuide_c::finalizeState_RightOnStageAnimeEndCheck() {
 }
 
 void dCourseSelectGuide_c::initializeState_RightDisp() {
-    mLayout.LoopAnimeStartSetup(13);
+    mLayout.LoopAnimeStartSetup(ANIM_LOOP_ARROW_R);
 }
 void dCourseSelectGuide_c::executeState_RightDisp() {
     if (!FUN_80010f40(3) || m43f) {
@@ -816,13 +819,13 @@ void dCourseSelectGuide_c::finalizeState_RightDisp() {}
 
 void dCourseSelectGuide_c::initializeState_RightExitAnimeEndCheck() {
     m44d = true;
-    mLayout.AnimeEndSetup(13);
-    mLayout.AnimeStartSetup(17, false);
+    mLayout.AnimeEndSetup(ANIM_LOOP_ARROW_R);
+    mLayout.AnimeStartSetup(ANIM_OUT_ARROW_R, false);
 }
 void dCourseSelectGuide_c::executeState_RightExitAnimeEndCheck() {
     if (FUN_80010f40(3)) {
         mStateMgrRight.changeState(StateID_RightOnStageAnimeEndCheck);
-    } else if (!mLayout.isAnime(17)) {
+    } else if (!mLayout.isAnime(ANIM_OUT_ARROW_R)) {
         mStateMgrRight.changeState(StateID_RightOnStageWait);
     }
 }
@@ -842,7 +845,7 @@ void dCourseSelectGuide_c::finalizeState_ShadowOnStageWait() {
 }
 
 void dCourseSelectGuide_c::initializeState_ShadowOnStageAnimeEndCheck() {
-    mLayout.AnimeStartSetup(21, false);
+    mLayout.AnimeStartSetup(ANIM_IN_SHADOW, false);
 }
 void dCourseSelectGuide_c::executeState_ShadowOnStageAnimeEndCheck() {
     if (mLayout.isAnime(-1)) {
@@ -864,7 +867,7 @@ void dCourseSelectGuide_c::finalizeState_ShadowDisp() {
 }
 
 void dCourseSelectGuide_c::initializeState_ShadowExitAnimeEndCheck() {
-    mLayout.AnimeStartSetup(22, false);
+    mLayout.AnimeStartSetup(ANIM_OUT_SHADOW, false);
 }
 void dCourseSelectGuide_c::executeState_ShadowExitAnimeEndCheck() {
     if (mLayout.isAnime(-1)) {
@@ -900,12 +903,12 @@ void dCourseSelectGuide_c::initializeState_ScrollGuideOnStageAnimeEndCheck() {
     mpNullPanes[N_guideViewC_00]->setVisible(false);
     mpNullPanes[N_guideViewR_01]->setVisible(false);
     mpNullPanes[N_left_00]->setVisible(false);
-    mLayout.AnimeStartSetup(0, false);
+    mLayout.AnimeStartSetup(ANIM_IN_UNDER, false);
     m448 = true;
 }
 void dCourseSelectGuide_c::executeState_ScrollGuideOnStageAnimeEndCheck() {
     if (m447) {
-        mLayout.AnimeEndSetup(0);
+        mLayout.AnimeEndSetup(ANIM_IN_UNDER);
         mStateMgrScrollGuide.changeState(StateID_ScrollGuideExitAnimeEndCheck);
         return;
     }
@@ -917,7 +920,7 @@ void dCourseSelectGuide_c::executeState_ScrollGuideOnStageAnimeEndCheck() {
 void dCourseSelectGuide_c::finalizeState_ScrollGuideOnStageAnimeEndCheck() {}
 
 void dCourseSelectGuide_c::initializeState_ScrollGuideDisp() {
-    mLayout.LoopAnimeStartSetup(3);
+    mLayout.LoopAnimeStartSetup(ANIM_LOOP_UNDER);
 }
 void dCourseSelectGuide_c::executeState_ScrollGuideDisp() {
     if (!m447) {
@@ -929,8 +932,8 @@ void dCourseSelectGuide_c::finalizeState_ScrollGuideDisp() {}
 
 void dCourseSelectGuide_c::initializeState_ScrollGuideExitAnimeEndCheck() {
     m447 = false;
-    mLayout.AnimeEndSetup(3);
-    mLayout.AnimeStartSetup(6, false);
+    mLayout.AnimeEndSetup(ANIM_LOOP_UNDER);
+    mLayout.AnimeStartSetup(ANIM_OUT_UNDER, false);
 }
 void dCourseSelectGuide_c::executeState_ScrollGuideExitAnimeEndCheck() {
     if (mLayout.isAnime(-1)) {
@@ -953,7 +956,7 @@ void dCourseSelectGuide_c::FUN_800125c0(short courseNo, dWmLib::CourseType_e typ
     }
     mCourseType = dWmLib::GetCourseTypeFromCourseNo(courseNo);
     mCourseNo = courseNo;
-    FUN_80010b50(type);
+    CourseSelectIconDisp(type);
     if (type != 1) {
         CollectionCoinSet();
     }
@@ -962,7 +965,7 @@ void dCourseSelectGuide_c::FUN_800125c0(short courseNo, dWmLib::CourseType_e typ
     u8 wNo, cNo;
     cNo = courseNo;
     wNo = mWorldNo;
-    mpPicturePanes[P_flagSkull_00]->mFlags &= 0xfe;
+    mpPicturePanes[P_flagSkull_00]->setVisible(false);
     checkpoint = &info->mCyuukan;
     for (int i = 0; i < 2; i++) {
         if (checkpoint->isCyuukanStart(i, wNo, cNo)) {
@@ -973,9 +976,9 @@ void dCourseSelectGuide_c::FUN_800125c0(short courseNo, dWmLib::CourseType_e typ
 }
 
 void dCourseSelectGuide_c::ControllerConnectCheck() {
-    int attachedExtension = dGameKey_c::m_instance->mRemocon[0]->mAttachedExtension;
+    Remocon::EXTENSION_TYPE_e attachedExtension = dGameKey_c::m_instance->mRemocon[0]->mAttachedExtension;
     if (attachedExtension != mExtension) {
-        mExtension = (Remocon::EXTENSION_TYPE_e) attachedExtension;
+        mExtension = attachedExtension;
 
         MsgRes_c *msgRes = dMessage_c::getMesRes();
         int attached = 1;
