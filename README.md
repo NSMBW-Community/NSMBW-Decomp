@@ -7,40 +7,35 @@
 
 A decompilation project of New Super Mario Bros. Wii, based on the PALv1 binaries.
 
-#### Quick links
-
+## Quick Links
 - [Setup](#setup)
-- [Contributing][Contributing]
+- [Building](#building)
+- [Documentation](#documentation)
+- [Contributing](#contributing)
 
 ## Overview
-
-The build essentially consists of 3 steps:
+This project aims to produce an accurate reconstruction of New Super Mario Bros. Wii's code by decompiling the original binaries. The build process consists of three major stages:
 
 ### 1. Compilation
-
-All source files get compiled and the corresponding object files placed in `bin/compiled/`.
+All decompiled source files are compiled into object files in `bin/compiled/`.
 
 ### 2. Slicing
+Parts of the binary without corresponding source files are extracted from the original binaries using slicing. This produces object files in `bin/sliced/`, using slice information defined in the `slices/` directory.
 
-Since most of the binary does not yet have a corresponding decompiled source file, in order to produce a 1:1 match for the generated binaries, these parts must be extracted from the original files. The slices generate object files in `bin/sliced/` from the slice information files in `slices/`.
+### 3. Linking and Rebuilding
+Compiled and sliced object files are linked together to reconstruct the final `.dol` and `.rel` files that match the originals byte-for-byte.
 
-### 3. Linking and rebuilding
-
-All compiled object files and the remaining sliced object files are linked together to form the final object file, which is then converted into `.dol` or `.rel`.
-
-## Other relevant files
-
+### Other Relevant Files
 - `alias_db.txt`: Contains relocation helpers for rebuilding the `.rel` files.
 - `syms.txt`: Contains known symbol names for `main.dol`. Will eventually be replaced by a proper symbol map.
 
 ## Setup
+1. Obtain `main.dol` and the four `.rel.LZ` files from a dumped PALv1 disc of New Super Mario Bros. Wii. A tutorial to do so can be found [here](https://horizon.miraheze.org/wiki/Obtain_Original_Game_Files).
+2. Use `tools/uncompress_lz.py` to decompress the `.rel.LZ` files into `.rel`.
+3. Rename `main.dol` to `wiimj2d.dol`, and place it along with the decompressed `.rel` files into the `original/` directory.
+4. Verify the following checksums:
 
-1. Obtain `main.dol` and the four `.rel.LZ` files from a dumped PALv1 disc of NSMBW (a tutorial to do so can be found [here](https://horizon.miraheze.org/wiki/Obtain_Original_Game_Files)).
-2. Use `tools/uncompress_lz.py` to decompress the `.rel.LZ` files to `.rel`.
-3. Rename `main.dol` to `wiimj2d.dol`, then place it along with the four decompressed `.rel` files in `original/`.
-4. Ensure that the checksums match:
-
-```text
+```bash
 $ md5sum original/*
 17096d0ed441d44a0c31039138a8d7f8  original/d_basesNP.rel
 f8cffd634edbec6c1bc210dab02c1e32  original/d_en_bossNP.rel
@@ -49,8 +44,66 @@ f8cffd634edbec6c1bc210dab02c1e32  original/d_en_bossNP.rel
 ddab9e5dca53d8c18bf4051b927e822e  original/wiimj2d.dol
 ```
 
-5. Obtain the CodeWarrior for Embedded PowerPC binaries from [here](https://files.decomp.dev/compilers_20230715.zip) and place the contents of the zip file in `compilers/`. The path to the compiler that will actually be used should be `compilers/Wii/1.1/mwcceppc.exe`.
-6. Run `./build.py` to compile the sources and generate the output binaries.
-7. Optionally, run `./progress.py --verify-bin` to ensure the output binaries match the originals.
+5. Download the CodeWarrior for Embedded PowerPC binaries from [here](https://files.decomp.dev/compilers_20230715.zip) and extract it into the `compilers/` directory. The compiler should be located at `compilers/Wii/1.1/mwcceppc.exe`.
+   - **Windows users**: No additional setup is required.
+   - **Linux/macOS users**: Install [wibo](https://github.com/decompals/WiBo) or use [WINE](https://www.winehq.org/). `wibo` is recommended for faster compilation and is used automatically if detected on `PATH`.
 
-[Contributing]: docs/CONTRIBUTING.md
+6. Install `ninja` (if not already installed):
+
+```bash
+pip install ninja
+```
+
+## Building
+1. Generate the build script:
+
+```bash
+./configure.py
+```
+
+2. Run the build using `ninja`:
+
+```bash
+ninja
+```
+
+3. (Optional) Verify that the rebuilt binaries match the originals:
+
+```bash
+./progress.py --verify-bin
+```
+
+## Documentation
+You can generate source documentation using [Doxygen](https://www.doxygen.nl/).
+
+> [!NOTE]
+> Doxygen 1.14 is not yet supported due to incompatible HTML/CSS theme changes.
+
+1. Install Doxygen.
+2. If not already present, download the [doxygen-awesome-css](https://github.com/jothepro/doxygen-awesome-css) theme and place its contents into the following directory:
+
+```
+website/doxygen/doxygen-awesome-css/
+```
+
+3. Generate the documentation:
+
+```bash
+doxygen
+```
+
+The generated HTML documentation will be placed in the `doxygen` directory.
+
+## Contributing
+We welcome contributions to this project! Please see [CONTRIBUTING.md](docs/CONTRIBUTING.md) for detailed guidelines.
+
+### Decompilation
+Usage of [objdiff](https://github.com/encounter/objdiff) is recommended for decompilation work.
+
+To prepare the repository for use with `objdiff`, run:
+
+```bash
+./prepare_objdiff.py
+```
+
+This sets up the necessary files and configuration.

@@ -1,6 +1,6 @@
 #pragma once
 
-#include <lib/egg/gx/eggModelEx.hpp>
+#include <lib/egg/gfxe/eggModelEx.h>
 
 namespace EGG {
 

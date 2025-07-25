@@ -2,7 +2,7 @@
 #include <game/bases/d_dvd.hpp>
 #include <game/mLib/m_2d/resource.hpp>
 #include <lib/nw4r/lyt/lyt_resource.hpp>
-#include <lib/egg/heap/eggHeap.hpp>
+#include <lib/egg/core/eggHeap.h>
 
 namespace d2d {
 

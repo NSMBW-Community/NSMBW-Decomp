@@ -1,5 +1,5 @@
 #pragma once
-#include <lib/egg/fader/eggFader.hpp>
+#include <lib/egg/core/eggFader.h>
 #include <lib/nw4r/ut/color.hpp>
 
 namespace EGG {
@@ -18,24 +18,25 @@ namespace EGG {
         virtual EStatus getStatus() const { return mStatus; }
         virtual bool fadeIn();
         virtual bool fadeOut();
-        virtual int calc();
+        virtual bool calc();
         virtual void draw();
         virtual ~ColorFader();
 
-        void setFrame(u16 frameCount);
+        void setFrame(u16 frame);
         void setColor(nw4r::ut::Color color);
 
-        bool isStatus(EStatus status) { return getStatus() == status; }
+        // [TODO: Belongs to nw4r::ut::Rect]
         float getWidth() const { return mRight - mLeft; }
+        // [TODO: Belongs to nw4r::ut::Rect]
         float getHeight() const { return mBottom - mTop; }
 
     protected:
         EStatus mStatus;
-        u8 mFlag;
+        u8 mFlag; // [TODO: TBitFlag<u8>]
         u16 mFrameCount;
         u16 mFrame;
         nw4r::ut::Color mCurrColor;
-        float mLeft;
+        float mLeft; // [TODO: nw4r::ut::Rect]
         float mTop;
         float mRight;
         float mBottom;

@@ -41,8 +41,8 @@ mAngle3D()
     mScale.y = 1.0f;
     mScale.z = 1.0f;
 
-    fProfile::fActorProfile_c *profile = (fProfile::fActorProfile_c*)((*fProfile::sProfileList)[mProfName]);
-    mActorProperties = profile->mActorProperties;
+    fProfile::fProfilePtr_c profile = (*fProfile::sProfileList)[mProfName];
+    mActorProperties = profile.mActorProfile->mActorProperties;
 }
 
 dBaseActor_c::~dBaseActor_c() {

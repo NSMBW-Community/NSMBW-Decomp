@@ -1,7 +1,7 @@
 #pragma once
 #include <game/mLib/m_allocator.hpp>
-#include <lib/egg/gx/eggLightManager.hpp>
-#include <lib/egg/gx/eggFogManager.hpp>
+#include <lib/egg/gfxe/eggLightManager.h>
+#include <lib/egg/gfxe/eggFogManager.h>
 
 namespace m3d {
     class internal {

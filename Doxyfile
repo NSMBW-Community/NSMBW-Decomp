@@ -431,6 +431,30 @@ ENUM_VALUES_PER_LINE   = 1
 GENERATE_LATEX         = NO
 
 #---------------------------------------------------------------------------
+# Configuration options related to the preprocessor
+#---------------------------------------------------------------------------
+
+# If the MACRO_EXPANSION tag is set to YES, Doxygen will expand all macro names
+# in the source code. If set to NO, only conditional compilation will be
+# performed. Macro expansion can be done in a controlled way by setting
+# EXPAND_ONLY_PREDEF to YES.
+# The default value is: NO.
+# This tag requires that the tag ENABLE_PREPROCESSING is set to YES.
+
+MACRO_EXPANSION        = YES
+
+# The PREDEFINED tag can be used to specify one or more macro names that are
+# defined before the preprocessor is started (similar to the -D option of e.g.
+# gcc). The argument of the tag is a list of macros of the form: name or
+# name=definition (no spaces). If the definition and the "=" are omitted, "=1"
+# is assumed. To prevent a macro definition from being undefined via #undef or
+# recursively expanded use the := operator instead of the = operator.
+# This tag requires that the tag ENABLE_PREPROCESSING is set to YES.
+
+PREDEFINED             += "STATE_VIRTUAL_FUNC_DECLARE(class,name)=/** \brief Initialization function for the \c name state. */ virtual void initializeState_##name(); /** \brief Execution function for the \c name state. */ virtual void executeState_##name(); /** \brief Finalization function for the \c name state. */ virtual void finalizeState_##name(); /** \brief The state ID for the \c name state. */ static sFStateVirtualID_c<class> StateID_##name;"
+PREDEFINED             += "STATE_FUNC_DECLARE(class, name)=/** \brief Initialization function for the \c name state. */ void initializeState_##name(); /** \brief Execution function for the \c name state. */ void executeState_##name(); /** \brief Finalization function for the \c name state. */ void finalizeState_##name(); /** \brief The state ID for the \c name state. */ static sFStateID_c<class> StateID_##name;"
+
+#---------------------------------------------------------------------------
 # Configuration options related to diagram generator tools
 #---------------------------------------------------------------------------
 

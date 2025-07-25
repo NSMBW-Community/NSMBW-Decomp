@@ -13,7 +13,7 @@ def is_iterable(value) -> bool:
     return isinstance(value, Iterable) and not isinstance(value, str)
 
 def as_list(value) -> list:
-    if input is None:
+    if value is None:
         return []
     if is_iterable(value):
         return list(value)

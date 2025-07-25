@@ -39,7 +39,7 @@ int dMdActor_c::preExecute() {
         return NOT_READY;
     }
 
-    mCullSphere.mPos = mPos;
+    mCullSphere.mCenter = mPos;
 
     return SUCCEEDED;
 }
@@ -53,7 +53,7 @@ int dMdActor_c::preDraw() {
         return NOT_READY;
     }
 
-    mCullSphere.mPos = mPos;
+    mCullSphere.mCenter = mPos;
 
     if (!mCullSphere.isZero() && !dWCamera_c::m_instance->mViewClip.intersectSphere(&mCullSphere)) {
         return NOT_READY;
