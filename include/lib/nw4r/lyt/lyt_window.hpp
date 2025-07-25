@@ -13,7 +13,8 @@ public:
 
     Window(const res::Window *, const ResBlockSet &);
 
-    virtual int *GetRuntimeTypeInfo() const { return &typeInfo; }
+    NW4R_UT_RUNTIME_TYPEINFO;
+
     virtual void DrawSelf(const DrawInfo &);
     virtual void AnimateSelf(unsigned long);
     virtual ut::Color GetVtxColor(unsigned long) const;
@@ -31,9 +32,6 @@ public:
     void DrawFrame(const math::VEC2 &, const Window::Frame &, const WindowFrameSize &, unsigned char);
     void DrawFrame4(const math::VEC2 &, const Window::Frame *, const WindowFrameSize &, unsigned char);
     void DrawFrame8(const math::VEC2 &, const Window::Frame *, const WindowFrameSize &, unsigned char);
-
-private:
-    static int typeInfo;
 };
 
 } // namespace lyt

@@ -11,7 +11,8 @@ public:
 
     TextBox(const res::TextBox *, const ResBlockSet &);
 
-    virtual int *GetRuntimeTypeInfo() const { return &typeInfo; }
+    NW4R_UT_RUNTIME_TYPEINFO;
+
     virtual void DrawSelf(const DrawInfo &);
     virtual ut::Color GetVtxColor(unsigned long) const;
     virtual ut::Color SetVtxColor(unsigned long, ut::Color);
@@ -26,9 +27,6 @@ public:
 
     ut::Font *GetFont() const;
     void SetFont(const ut::Font *);
-
-private:
-    static int typeInfo;
 };
 
 } // namespace lyt

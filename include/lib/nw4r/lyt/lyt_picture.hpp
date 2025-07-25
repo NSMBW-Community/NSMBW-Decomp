@@ -10,7 +10,8 @@ public:
 
     Picture(const res::Picture *, const ResBlockSet &);
 
-    virtual int *GetRuntimeTypeInfo() const { return &typeInfo; }
+    NW4R_UT_RUNTIME_TYPEINFO;
+    
     virtual void DrawSelf(const DrawInfo &);
     virtual ut::Color GetVtxColor(unsigned long) const;
     virtual ut::Color SetVtxColor(unsigned long, ut::Color);
@@ -18,9 +19,6 @@ public:
     virtual void SetVtxColorElement(unsigned long, unsigned char);
 
     virtual void Append(const TexMap &);
-
-private:
-    static int typeInfo;
 };
 
 } // namespace lyt

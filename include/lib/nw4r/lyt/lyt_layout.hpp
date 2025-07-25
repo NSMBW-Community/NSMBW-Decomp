@@ -33,6 +33,8 @@ public:
 
     static Pane *BuildPaneObj(long, const void *, const ResBlockSet &);
 
+    Pane* getRootPane() { return mpRootPane; }
+
 private:
     ut::detail::LinkListImpl mAnimTransList;
     Pane *mpRootPane;
