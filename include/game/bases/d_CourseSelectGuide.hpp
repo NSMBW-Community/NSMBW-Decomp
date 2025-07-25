@@ -78,6 +78,7 @@ class dCourseSelectGuide_c {
         ANIM_OUT_ARROW_R, ANIM_OUT_ARROW_L, ANIM_OUT_ARROW_U, ANIM_OUT_ARROW_D,
         ANIM_IN_SHADOW,
         ANIM_OUT_SHADOW,
+        ANIM_COUNT
     };
 
     struct GlobalData_t {
@@ -173,7 +174,7 @@ private:
     int m428;
     int mAlpha;
     int mAlphaTarget;
-    u8 m434;
+    u8 mMoveDirection;
     bool mInitialized;
     bool m436;
     bool m437;
@@ -189,16 +190,16 @@ private:
     bool m441;
     bool m442;
     bool m443;
-    bool m444;
+    bool mStopShadowDisp;
     bool mInScrollMode;
     bool m446;
     bool m447;
-    bool m448;
-    bool m449;
-    bool m44a;
-    bool m44b;
-    bool m44c;
-    bool m44d;
+    bool mUnderAnim;
+    bool mCourseInfoAnim;
+    bool mUpAnim;
+    bool mDownAnim;
+    bool mLeftAnim;
+    bool mRightAnim;
     bool mShowRestNumber;
 
 public:
@@ -215,8 +216,4 @@ public:
     static dCourseSelectGuide_c *m_instance;
 
     static const int c_DISP_WAIT_TIMER;
-
-private:
-    // [Some unused class - but needed here because it has a static initializer.]
-
 };
