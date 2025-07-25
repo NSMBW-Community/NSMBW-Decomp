@@ -11,11 +11,10 @@ dCourseSelectGuide_c *dCourseSelectGuide_c::m_instance;
 
 template <>
 dCourseSelectGuide_c::GlobalData_t sGlobalData_c<dCourseSelectGuide_c>::mData = {
-    dCourseSelectGuide_c::c_DISP_WAIT_TIMER, dCourseSelectGuide_c::c_HIDE_ALPHA
+    dCourseSelectGuide_c::c_DISP_WAIT_TIMER, dCourseSelectGuide_c::c_DISP_WAIT_TIMER + 50
 };
 
 const int dCourseSelectGuide_c::c_DISP_WAIT_TIMER = 20;
-const int dCourseSelectGuide_c::c_HIDE_ALPHA = 70;
 
 dCourseSelectGuide_c::dCourseSelectGuide_c() :
     mStateMgrWorldCourse(*this, StateID_WorldCourseOnStageWait),
@@ -473,7 +472,7 @@ void dCourseSelectGuide_c::CollectionCoinSet() {
                 && checkpoint->mCoinCollection[i] != 4) {
                     mpPicturePanes[P_cC_1s_00 + i]->setAlpha(0);
                     mpPicturePanes[P_cC_1_00 + i]->setVisible(true);
-                    mpPicturePanes[P_cC_1_00 + i]->setAlpha(c_HIDE_ALPHA);
+                    mpPicturePanes[P_cC_1_00 + i]->setAlpha(70);
                 } else {
                     mpPicturePanes[P_cC_1_00 + i]->setVisible(false);
                 }

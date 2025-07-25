@@ -215,7 +215,6 @@ public:
     static dCourseSelectGuide_c *m_instance;
 
     static const int c_DISP_WAIT_TIMER;
-    static const int c_HIDE_ALPHA; ///< [Optimized away]
 
 private:
     // [Some unused class - but needed here because it has a static initializer.]
