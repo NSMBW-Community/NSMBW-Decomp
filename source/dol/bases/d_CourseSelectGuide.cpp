@@ -8,10 +8,14 @@
 #include <constants/message_list.h>
 
 dCourseSelectGuide_c *dCourseSelectGuide_c::m_instance;
-dCourseSelectGuide_c::NumberHolder dCourseSelectGuide_c::msUnk;
-char dCourseSelectGuide_c::msIsInit;
+
+template <>
+dCourseSelectGuide_c::GlobalData_t sGlobalData_c<dCourseSelectGuide_c>::mData = {
+    dCourseSelectGuide_c::c_DISP_WAIT_TIMER, dCourseSelectGuide_c::c_HIDE_ALPHA
+};
 
 const int dCourseSelectGuide_c::c_DISP_WAIT_TIMER = 20;
+const int dCourseSelectGuide_c::c_HIDE_ALPHA = 70;
 
 dCourseSelectGuide_c::dCourseSelectGuide_c() :
     mStateMgrWorldCourse(*this, StateID_WorldCourseOnStageWait),
@@ -292,12 +296,12 @@ void dCourseSelectGuide_c::RestAlphaDisp() {
         return;
     }
     if (mAlphaTarget != 0) {
-        mAlpha += 20;
+        mAlpha += dCourseSelectGuide_c::c_DISP_WAIT_TIMER;
         if (mAlpha >= 255) {
             mAlpha = 255;
         }
     } else {
-        mAlpha -= 20;
+        mAlpha -= dCourseSelectGuide_c::c_DISP_WAIT_TIMER;
         if (mAlpha < 0) {
             mAlpha = 0;
         }
@@ -329,7 +333,7 @@ void dCourseSelectGuide_c::execute() {
             mStateMgrLeft.executeState();
             mStateMgrRight.executeState();
 
-            m434 = false;
+            m434 = 0;
             if (m43e) {
                 m43e = false;
             }
@@ -469,7 +473,7 @@ void dCourseSelectGuide_c::CollectionCoinSet() {
                 && checkpoint->mCoinCollection[i] != 4) {
                     mpPicturePanes[P_cC_1s_00 + i]->setAlpha(0);
                     mpPicturePanes[P_cC_1_00 + i]->setVisible(true);
-                    mpPicturePanes[P_cC_1_00 + i]->setAlpha(70);
+                    mpPicturePanes[P_cC_1_00 + i]->setAlpha(c_HIDE_ALPHA);
                 } else {
                     mpPicturePanes[P_cC_1_00 + i]->setVisible(false);
                 }
@@ -478,9 +482,9 @@ void dCourseSelectGuide_c::CollectionCoinSet() {
     }
 }
 
-bool dCourseSelectGuide_c::FUN_80010f40(int type) {
+bool dCourseSelectGuide_c::FUN_80010f40(int direction) {
     static const u8 flags[] = { 1, 2, 4, 8 };
-    return (m434 & flags[type]) != 0;
+    return (m434 & flags[direction]) != 0;
 }
 
 void dCourseSelectGuide_c::initializeState_WorldCourseOnStageWait() {}

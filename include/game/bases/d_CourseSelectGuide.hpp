@@ -8,6 +8,7 @@
 #include <game/bases/d_s_world_map_static.hpp>
 #include <game/bases/d_game_key.hpp>
 #include <game/bases/d_info.hpp>
+#include <game/sLib/s_GlobalData.hpp>
 
 class dCourseSelectGuide_c {
 
@@ -77,6 +78,10 @@ class dCourseSelectGuide_c {
         ANIM_OUT_ARROW_R, ANIM_OUT_ARROW_L, ANIM_OUT_ARROW_U, ANIM_OUT_ARROW_D,
         ANIM_IN_SHADOW,
         ANIM_OUT_SHADOW,
+    };
+
+    struct GlobalData_t {
+        short mDispWaitTimer, mHideAlpha;
     };
 
 public:
@@ -210,22 +215,9 @@ public:
     static dCourseSelectGuide_c *m_instance;
 
     static const int c_DISP_WAIT_TIMER;
+    static const int c_HIDE_ALPHA; ///< [Optimized away]
 
 private:
     // [Some unused class - but needed here because it has a static initializer.]
 
-    class NumberHolder {
-    public:
-        NumberHolder() {
-            if (!msIsInit) {
-                a = 20;
-                b = 70;
-                msIsInit = true;
-            }
-        }
-
-        u16 a, b;
-    };
-    static NumberHolder msUnk;
-    static char msIsInit;
 };
