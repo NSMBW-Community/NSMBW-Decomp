@@ -1,5 +1,6 @@
 #pragma once
 #include <types.h>
+#include <game/mLib/m_vec.hpp>
 
 class dCyuukan_c {
 public:
@@ -36,6 +37,14 @@ public:
 
     dCyuukan_c *getCyuukan() { return &mCyuukan; }
 
+    void markExtension(int ext) {
+        if (ext == 0) {
+            mExtensionAttached = 0;
+        } else {
+            mExtensionAttached = 1;
+        }
+    }
+
     char pad1[0x8];
     dCyuukan_c mCyuukan;
     char pad2[0x348];
@@ -43,7 +52,10 @@ public:
     bool mIsWorldSelect; ///< Whether the World Select Menu is being displayed.
     int pad3[7];
     int field_3b4;
-    char pad4[0x746];
+    int field_3b8;
+    u8 pad4[0x1d];
+    u8 mExtensionAttached;
+    u8 pad5[0x724];
     bool mFukidashiActionPerformed[4][0x16];
 
     static dInfo_c *m_instance;

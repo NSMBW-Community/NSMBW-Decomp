@@ -24,6 +24,10 @@
     "deadstrip": [
         "__dt__Q23EGG8Vector2fFv",
         "__dt__Q23EGG8Vector3fFv",
+        "getPlrNo__8dActor_cFv",
+        "funsuiMoveX__8dActor_cFv",
+        "setCarryFall__8dActor_cFP8dActor_ci",
+        "isSpinLiftUpEnable__8dActor_cFv",
         "__vt__12sStateIDIf_c",
         "__vt__18sStateStateMgrIf_c",
         "getOldStateID__14sStateMethod_cCFv",
@@ -46,9 +50,23 @@
         "__dt__57sFStateMgr_c<18dActorMultiState_c,20sStateMethodUsr_FI_c>Fv",
         "__dt__87sStateMgr_c<18dActorMultiState_c,20sStateMethodUsr_FI_c,12sFStateFct_c,13sStateIDChk_c>Fv",
         "__dt__34sFStateFct_c<18dActorMultiState_c>Fv",
-        "__dt__31sFState_c<18dActorMultiState_c>Fv"
+        "__dt__31sFState_c<18dActorMultiState_c>Fv",
+        "__dt__7mVec3_cFv"
     ],
     "slices": [
+        {
+            "source": "dol/bases/d_CourseSelectGuide.cpp",
+            "memoryRanges": {
+                ".text": "0x9470-0xdbb0",
+                ".ctors": "0x8-0xc",
+                ".rodata": "0x0-0xc0",
+                ".data": "0x108-0x12d0",
+                ".bss": "0x20-0x828",
+                ".sdata": "0xc8-0xd8",
+                ".sbss": "0x38-0x48",
+                ".sdata2": "0xd0-0x100"
+            }
+        },
         {
             "source": "dol/bases/d_SmallScore.cpp",
             "memoryRanges": {
