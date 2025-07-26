@@ -10,8 +10,12 @@
 #include <game/bases/d_info.hpp>
 #include <game/sLib/s_GlobalData.hpp>
 
+/**
+ * @brief The world map HUD.
+ */
 class dCourseSelectGuide_c {
 
+    /// @brief The text boxes used in the layout.
     enum T_PANE_e {
         T_worldNum_00,
         T_cSelect_00,
@@ -25,6 +29,7 @@ class dCourseSelectGuide_c {
         T_COUNT
     };
 
+    /// @brief The null panes used in the layout.
     enum N_PANE_e {
         N_IconPos1P_00,
         N_IconPos2P_00,
@@ -40,6 +45,7 @@ class dCourseSelectGuide_c {
         N_COUNT
     };
 
+    /// @brief The picture panes used in the layout.
     enum P_PANE_e {
         P_cC_1_00,
         P_cC_2_00,
@@ -56,6 +62,7 @@ class dCourseSelectGuide_c {
         P_COUNT
     };
 
+    /// @brief The animation names used in the layout.
     enum ANIM_NAME_e {
         inInfo,
         loopInfo,
@@ -82,7 +89,8 @@ class dCourseSelectGuide_c {
     };
 
     struct GlobalData_t {
-        short mDispWaitTimer, mHideAlpha;
+        short mDispWaitTimer;
+        short mUnk; ///< @unused
     };
 
 public:
@@ -100,15 +108,15 @@ private:
 
     void CollectionCoinSet();
 
-    void FUN_80010690(); ///< @unofficial
+    void PlayerIconSet(); ///< @unofficial
     void ControllerConnectCheck();
-    void CourseSelectIconDisp(dWmLib::CourseType_e); ///< @unofficial
-    bool FUN_80010f40(int); ///< @unofficial
-    void FUN_800125c0(short, dWmLib::CourseType_e); ///< @unofficial
+    void CourseSelectSet(dWmLib::CourseType_e); ///< @unofficial
+    bool IsDirectionAllowed(int); ///< @unofficial
+    void UpdateGuide(short, dWmLib::CourseType_e); ///< @unofficial
 
-    u8 mUnk;
+    u8 mUnk; ///< @unused
 
-    LytBase_c mLayout; ///< @brief The layout for the window.
+    LytBase_c mLayout; ///< The layout for the window.
 
     sFStateMgr_c<dCourseSelectGuide_c, sStateMethodUsr_FI_c> mStateMgrWorldCourse;
     sFStateMgr_c<dCourseSelectGuide_c, sStateMethodUsr_FI_c> mStateMgrGuide;
@@ -159,7 +167,7 @@ private:
     STATE_FUNC_DECLARE(dCourseSelectGuide_c, ScrollGuideDisp);
     STATE_FUNC_DECLARE(dCourseSelectGuide_c, ScrollGuideExitAnimeEndCheck);
 
-    nw4r::lyt::Pane *mpRootPane; ///< @brief The root pane of the window.
+    nw4r::lyt::Pane *mpRootPane; ///< The root pane of the window.
 
     nw4r::lyt::Pane *mpNullPanes[N_COUNT];
     LytTextBox_c *mpTextBoxes[T_COUNT];
@@ -167,33 +175,33 @@ private:
 
     Remocon::EXTENSION_TYPE_e mExtension;
     int mWorldNo;
-    int mCourseNo;
+    int mCourseNo; ///< The current course number. Set to a negative value if it's a course with an icon.
     int mCourseType;
-    int mRest[4];
-    int m424;
-    int m428;
+    int mRest[4]; ///< The remaining lives for each player. Set to -1 if the player is not present.
+    int mWorldCourseOnStageTimer;
+    int mGuideOnStageTimer;
     int mAlpha;
     int mAlphaTarget;
     u8 mMoveDirection;
     bool mInitialized;
-    bool m436;
-    bool m437;
-    bool m438;
-    bool m439;
-    bool m43a;
-    bool m43b;
-    bool m43c;
-    bool m43d;
-    bool m43e;
-    bool m43f;
-    bool m440;
-    bool m441;
-    bool m442;
-    bool m443;
+    bool mSkipOutCourseAnim;
+    bool mSkipInCourseAnim;
+    bool mIsExitingCourse;
+    bool mNoAnimInCourseInfo;
+    bool mBeginGuide;
+    bool mEndGuide;
+    bool mDisableGuide;
+    bool mSkipGuideAnim;
+    bool mFreeMove;
+    bool mDisableArrows;
+    bool mScrollEnabled;
+    bool mEnabled;
+    bool mHideHUD;
+    bool mShowShadow;
     bool mStopShadowDisp;
     bool mInScrollMode;
-    bool m446;
-    bool m447;
+    bool mShowScrollGuide;
+    bool mEndScrollGuide;
     bool mUnderAnim;
     bool mCourseInfoAnim;
     bool mUpAnim;

@@ -178,22 +178,22 @@ bool dCourseSelectGuide_c::createLayout() {
 
     mLayout.AllAnimeEndSetup();
 
-    m441 = true;
-    m436 = false;
-    m437 = true;
-    m438 = false;
-    m439 = false;
-    m43a = false;
-    m43b = true;
-    m43c = false;
-    m43d = false;
-    m440 = false;
-    m43f = false;
-    m442 = false;
-    m443 = false;
+    mEnabled = true;
+    mSkipOutCourseAnim = false;
+    mSkipInCourseAnim = true;
+    mIsExitingCourse = false;
+    mNoAnimInCourseInfo = false;
+    mBeginGuide = false;
+    mEndGuide = true;
+    mDisableGuide = false;
+    mSkipGuideAnim = false;
+    mScrollEnabled = false;
+    mDisableArrows = false;
+    mHideHUD = false;
+    mShowShadow = false;
     mStopShadowDisp = false;
-    m446 = false;
-    m447 = false;
+    mShowScrollGuide = false;
+    mEndScrollGuide = false;
     mUnderAnim = false;
     mCourseInfoAnim = false;
     mUpAnim = false;
@@ -201,8 +201,8 @@ bool dCourseSelectGuide_c::createLayout() {
     mLeftAnim = false;
     mRightAnim = false;
     mShowRestNumber = false;
-    m424 = 0;
-    m428 = 0;
+    mWorldCourseOnStageTimer = 0;
+    mGuideOnStageTimer = 0;
     mAlpha = 255;
     mAlphaTarget = 255;
 
@@ -212,7 +212,7 @@ bool dCourseSelectGuide_c::createLayout() {
     mLayout.ReverseAnimeStartSetup(ANIM_OUT_COURSE_INFO, false);
     mLayout.AnimePlay();
     mLayout.calc();
-    FUN_80010690();
+    PlayerIconSet();
     mLayout.ReverseAnimeStartSetup(ANIM_IN_SHADOW, false);
     mLayout.ReverseAnimeStartSetup(ANIM_IN_UNDER, false);
     mLayout.ReverseAnimeStartSetup(ANIM_IN_ZANKI, false);
@@ -242,7 +242,7 @@ void dCourseSelectGuide_c::ScissorMaskSet() {
     mLayout.mClipSettings = clipSettings;
 }
 
-void dCourseSelectGuide_c::FUN_80010690() {
+void dCourseSelectGuide_c::PlayerIconSet() {
     static const int picPaneNums[] = { P_marioFace_00, P_luigiFace_00, P_BkinoFace_00, P_YkinoFace_00 };
 
     for (int i = 0; i < 4; i++) {
@@ -318,7 +318,7 @@ void dCourseSelectGuide_c::RestAlphaDisp() {
 }
 
 void dCourseSelectGuide_c::execute() {
-    if (mInitialized && m441) {
+    if (mInitialized && mEnabled) {
         if (mShowRestNumber) {
             RestNumberDisp();
         }
@@ -326,23 +326,23 @@ void dCourseSelectGuide_c::execute() {
         mStateMgrWorldCourse.executeState();
         mStateMgrGuide.executeState();
 
-        if (m440) {
+        if (mScrollEnabled) {
             mStateMgrUp.executeState();
             mStateMgrDown.executeState();
             mStateMgrLeft.executeState();
             mStateMgrRight.executeState();
 
             mMoveDirection = 0;
-            if (m43e) {
-                m43e = false;
+            if (mFreeMove) {
+                mFreeMove = false;
             }
-            if (m43f) {
+            if (mDisableArrows) {
                 if (
                     !mLayout.isAnime(ANIM_OUT_ARROW_U) || !mLayout.isAnime(ANIM_OUT_ARROW_D) ||
                     !mLayout.isAnime(ANIM_OUT_ARROW_L) || !mLayout.isAnime(ANIM_OUT_ARROW_R)
                 ) {
-                    m43f = false;
-                    m440 = false;
+                    mDisableArrows = false;
+                    mScrollEnabled = false;
                 }
             }
         }
@@ -357,7 +357,7 @@ void dCourseSelectGuide_c::execute() {
 }
 
 void dCourseSelectGuide_c::draw() {
-    if (mInitialized && m441) {
+    if (mInitialized && mEnabled) {
         mLayout.entry();
     }
 }
@@ -366,7 +366,7 @@ void dCourseSelectGuide_c::doDelete() {
     mLayout.doDelete();
 }
 
-void dCourseSelectGuide_c::CourseSelectIconDisp(dWmLib::CourseType_e type) {
+void dCourseSelectGuide_c::CourseSelectSet(dWmLib::CourseType_e type) {
     static const int sc_startPointIcons[] = {
         MSG_CS_ICON_START_RIGHT, // W1
         MSG_CS_ICON_START_UP,    // W2
@@ -396,7 +396,7 @@ void dCourseSelectGuide_c::CourseSelectIconDisp(dWmLib::CourseType_e type) {
     mpTextBoxes[T_worldNum_00]->setMessage(msgRes, BMG_CATEGORY_COURSE_SELECT_GUIDE, MSG_CS_CURR_WORLD, 0);
     mAlphaTarget = 255;
     int messageID;
-    switch(mCourseType) {
+    switch (mCourseType) {
         default:
             info->field_3b8 = type;
             mpTextBoxes[T_cSelect_00]->setMessage(msgRes, BMG_CATEGORY_COURSE_SELECT_GUIDE, MSG_CS_COURSE_NUM, 0);
@@ -481,24 +481,24 @@ void dCourseSelectGuide_c::CollectionCoinSet() {
     }
 }
 
-bool dCourseSelectGuide_c::FUN_80010f40(int direction) {
+bool dCourseSelectGuide_c::IsDirectionAllowed(int direction) {
     static const u8 flags[] = { 1, 2, 4, 8 };
     return (mMoveDirection & flags[direction]) != 0;
 }
 
 void dCourseSelectGuide_c::initializeState_WorldCourseOnStageWait() {}
 void dCourseSelectGuide_c::executeState_WorldCourseOnStageWait() {
-    if (mUnderAnim || m442 || m437) {
+    if (mUnderAnim || mHideHUD || mSkipInCourseAnim) {
         return;
     }
 
-    if (m424 > 0) {
-        m424--;
+    if (mWorldCourseOnStageTimer > 0) {
+        mWorldCourseOnStageTimer--;
         return;
     }
-    m424 = 0;
+    mWorldCourseOnStageTimer = 0;
 
-    if (!m436) {
+    if (!mSkipOutCourseAnim) {
         return;
     }
 
@@ -508,11 +508,11 @@ void dCourseSelectGuide_c::finalizeState_WorldCourseOnStageWait() {}
 
 void dCourseSelectGuide_c::initializeState_WorldCourseOnStageAnimeEndCheck() {
     mCourseInfoAnim = true;
-    m436 = false;
-    mLayout.AnimeStartSetup(ANIM_IN_COURSE_INFO, m439);
+    mSkipOutCourseAnim = false;
+    mLayout.AnimeStartSetup(ANIM_IN_COURSE_INFO, mNoAnimInCourseInfo);
 }
 void dCourseSelectGuide_c::executeState_WorldCourseOnStageAnimeEndCheck() {
-    if (m437) {
+    if (mSkipInCourseAnim) {
         mLayout.AnimeEndSetup(ANIM_IN_COURSE_INFO);
         mStateMgrWorldCourse.changeState(StateID_WorldCourseExitAnimeEndCheck);
     } else if (!mLayout.isAnime(ANIM_IN_COURSE_INFO)) {
@@ -527,11 +527,11 @@ void dCourseSelectGuide_c::initializeState_WorldCourseDisp() {
     mLayout.LoopAnimeStartSetup(ANIM_LOOP_COURSE_INFO);
 }
 void dCourseSelectGuide_c::executeState_WorldCourseDisp() {
-    if (m442) {
+    if (mHideHUD) {
         return;
     }
-    m436 = false;
-    if (m437) {
+    mSkipOutCourseAnim = false;
+    if (mSkipInCourseAnim) {
         mStateMgrWorldCourse.changeState(StateID_WorldCourseExitAnimeEndCheck);
     }
 }
@@ -539,16 +539,16 @@ void dCourseSelectGuide_c::finalizeState_WorldCourseDisp() {}
 
 void dCourseSelectGuide_c::initializeState_WorldCourseExitAnimeEndCheck() {
     mCourseInfoAnim = true;
-    m437 = false;
+    mSkipInCourseAnim = false;
     mLayout.AnimeEndSetup(ANIM_LOOP_COURSE_INFO);
     mLayout.AnimeStartSetup(ANIM_OUT_COURSE_INFO, false);
 }
 void dCourseSelectGuide_c::executeState_WorldCourseExitAnimeEndCheck() {
-    if (m436) {
+    if (mSkipOutCourseAnim) {
         mLayout.AnimeEndSetup(ANIM_OUT_COURSE_INFO);
         mStateMgrWorldCourse.changeState(StateID_WorldCourseOnStageAnimeEndCheck);
     } else if (!mLayout.isAnime(ANIM_OUT_COURSE_INFO)) {
-        m438 = false;
+        mIsExitingCourse = false;
         mStateMgrWorldCourse.changeState(StateID_WorldCourseOnStageWait);
     }
 }
@@ -558,30 +558,29 @@ void dCourseSelectGuide_c::finalizeState_WorldCourseExitAnimeEndCheck() {
 
 void dCourseSelectGuide_c::initializeState_GuideOnStageWait() {}
 void dCourseSelectGuide_c::executeState_GuideOnStageWait() {
-    if (mUnderAnim || m442 || m43b) {
+    if (mUnderAnim || mHideHUD || mEndGuide) {
         return;
     }
-    if (m428 > 0) {
-        m428--;
+    if (mGuideOnStageTimer > 0) {
+        mGuideOnStageTimer--;
         return;
     }
-    m428 = 0;
-    if (!m43a) {
-        return;
+    mGuideOnStageTimer = 0;
+    if (mBeginGuide) {
+        mStateMgrGuide.changeState(StateID_GuideOnStageAnimeEndCheck);
     }
-    mStateMgrGuide.changeState(StateID_GuideOnStageAnimeEndCheck);
 }
 void dCourseSelectGuide_c::finalizeState_GuideOnStageWait() {
-    FUN_80010690();
+    PlayerIconSet();
 }
 
 void dCourseSelectGuide_c::initializeState_GuideOnStageAnimeEndCheck() {
-    m43a = false;
-    mLayout.AnimeStartSetup(ANIM_IN_UNDER, m43d);
-    mLayout.AnimeStartSetup(ANIM_IN_ZANKI, m43d);
+    mBeginGuide = false;
+    mLayout.AnimeStartSetup(ANIM_IN_UNDER, mSkipGuideAnim);
+    mLayout.AnimeStartSetup(ANIM_IN_ZANKI, mSkipGuideAnim);
 }
 void dCourseSelectGuide_c::executeState_GuideOnStageAnimeEndCheck() {
-    if (m43b) {
+    if (mEndGuide) {
         mLayout.AnimeEndSetup(ANIM_IN_UNDER);
         mLayout.AnimeEndSetup(ANIM_IN_ZANKI);
         mStateMgrGuide.changeState(StateID_GuideExitAnimeEndCheck);
@@ -599,9 +598,9 @@ void dCourseSelectGuide_c::initializeState_GuideDisp() {
     mLayout.LoopAnimeStartSetup(ANIM_LOOP_ZANKI);
 }
 void dCourseSelectGuide_c::executeState_GuideDisp() {
-    if (!m442) {
-        m43a = false;
-        if (m43b) {
+    if (!mHideHUD) {
+        mBeginGuide = false;
+        if (mEndGuide) {
             mStateMgrGuide.changeState(StateID_GuideExitAnimeEndCheck);
         }
     }
@@ -609,14 +608,14 @@ void dCourseSelectGuide_c::executeState_GuideDisp() {
 void dCourseSelectGuide_c::finalizeState_GuideDisp() {}
 
 void dCourseSelectGuide_c::initializeState_GuideExitAnimeEndCheck() {
-    m43b = false;
+    mEndGuide = false;
     mLayout.AnimeEndSetup(ANIM_LOOP_UNDER);
     mLayout.AnimeEndSetup(ANIM_LOOP_ZANKI);
     mLayout.AnimeStartSetup(ANIM_OUT_UNDER, false);
     mLayout.AnimeStartSetup(ANIM_OUT_ZANKI, false);
 }
 void dCourseSelectGuide_c::executeState_GuideExitAnimeEndCheck() {
-    if (m43a) {
+    if (mBeginGuide) {
         mLayout.AnimeEndSetup(ANIM_OUT_UNDER);
         mLayout.AnimeEndSetup(ANIM_OUT_ZANKI);
         mStateMgrGuide.changeState(StateID_GuideOnStageAnimeEndCheck);
@@ -624,7 +623,7 @@ void dCourseSelectGuide_c::executeState_GuideExitAnimeEndCheck() {
         if (mLayout.isAnime(ANIM_OUT_UNDER) || mLayout.isAnime(ANIM_OUT_ZANKI)) {
             return;
         }
-        m43c = false;
+        mDisableGuide = false;
         mStateMgrGuide.changeState(StateID_GuideOnStageWait);
     }
 }
@@ -632,7 +631,7 @@ void dCourseSelectGuide_c::finalizeState_GuideExitAnimeEndCheck() {}
 
 void dCourseSelectGuide_c::initializeState_UpOnStageWait() {}
 void dCourseSelectGuide_c::executeState_UpOnStageWait() {
-    if (!m43f && (FUN_80010f40(0) || m43e)) {
+    if (!mDisableArrows && (IsDirectionAllowed(0) || mFreeMove)) {
         mStateMgrUp.changeState(StateID_UpOnStageAnimeEndCheck);
     }
 }
@@ -643,7 +642,7 @@ void dCourseSelectGuide_c::initializeState_UpOnStageAnimeEndCheck() {
     mLayout.AnimeStartSetup(ANIM_IN_ARROW_U, false);
 }
 void dCourseSelectGuide_c::executeState_UpOnStageAnimeEndCheck() {
-    if (!FUN_80010f40(0) || m43f) {
+    if (!IsDirectionAllowed(0) || mDisableArrows) {
         mLayout.AnimeEndSetup(ANIM_IN_ARROW_U);
         mStateMgrUp.changeState(StateID_UpExitAnimeEndCheck);
     } else {
@@ -661,7 +660,7 @@ void dCourseSelectGuide_c::initializeState_UpDisp() {
     mLayout.LoopAnimeStartSetup(ANIM_LOOP_ARROW_U);
 }
 void dCourseSelectGuide_c::executeState_UpDisp() {
-    if (!FUN_80010f40(0) || m43f) {
+    if (!IsDirectionAllowed(0) || mDisableArrows) {
         mStateMgrUp.changeState(StateID_UpExitAnimeEndCheck);
     }
 }
@@ -673,7 +672,7 @@ void dCourseSelectGuide_c::initializeState_UpExitAnimeEndCheck() {
     mLayout.AnimeStartSetup(ANIM_OUT_ARROW_U, false);
 }
 void dCourseSelectGuide_c::executeState_UpExitAnimeEndCheck() {
-    if (FUN_80010f40(0)) {
+    if (IsDirectionAllowed(0)) {
         mStateMgrUp.changeState(StateID_UpOnStageAnimeEndCheck);
     } else if (!mLayout.isAnime(ANIM_OUT_ARROW_U)) {
         mStateMgrUp.changeState(StateID_UpOnStageWait);
@@ -685,7 +684,7 @@ void dCourseSelectGuide_c::finalizeState_UpExitAnimeEndCheck() {
 
 void dCourseSelectGuide_c::initializeState_DownOnStageWait() {}
 void dCourseSelectGuide_c::executeState_DownOnStageWait() {
-    if (!m43f && (FUN_80010f40(1) || m43e)) {
+    if (!mDisableArrows && (IsDirectionAllowed(1) || mFreeMove)) {
         mStateMgrDown.changeState(StateID_DownOnStageAnimeEndCheck);
     }
 }
@@ -696,7 +695,7 @@ void dCourseSelectGuide_c::initializeState_DownOnStageAnimeEndCheck() {
     mLayout.AnimeStartSetup(ANIM_IN_ARROW_D, false);
 }
 void dCourseSelectGuide_c::executeState_DownOnStageAnimeEndCheck() {
-    if (!FUN_80010f40(1) || m43f) {
+    if (!IsDirectionAllowed(1) || mDisableArrows) {
         mLayout.AnimeEndSetup(ANIM_IN_ARROW_D);
         mStateMgrDown.changeState(StateID_DownExitAnimeEndCheck);
     } else if (!mLayout.isAnime(ANIM_IN_ARROW_D)) {
@@ -711,7 +710,7 @@ void dCourseSelectGuide_c::initializeState_DownDisp() {
     mLayout.LoopAnimeStartSetup(ANIM_LOOP_ARROW_D);
 }
 void dCourseSelectGuide_c::executeState_DownDisp() {
-    if (!FUN_80010f40(1) || m43f) {
+    if (!IsDirectionAllowed(1) || mDisableArrows) {
         mStateMgrDown.changeState(StateID_DownExitAnimeEndCheck);
     }
 }
@@ -723,7 +722,7 @@ void dCourseSelectGuide_c::initializeState_DownExitAnimeEndCheck() {
     mLayout.AnimeStartSetup(ANIM_OUT_ARROW_D, false);
 }
 void dCourseSelectGuide_c::executeState_DownExitAnimeEndCheck() {
-    if (FUN_80010f40(1)) {
+    if (IsDirectionAllowed(1)) {
         mStateMgrDown.changeState(StateID_DownOnStageAnimeEndCheck);
     } else if (!mLayout.isAnime(ANIM_OUT_ARROW_D)) {
         mStateMgrDown.changeState(StateID_DownOnStageWait);
@@ -735,7 +734,7 @@ void dCourseSelectGuide_c::finalizeState_DownExitAnimeEndCheck() {
 
 void dCourseSelectGuide_c::initializeState_LeftOnStageWait() {}
 void dCourseSelectGuide_c::executeState_LeftOnStageWait() {
-    if (!m43f && (FUN_80010f40(2) || m43e)) {
+    if (!mDisableArrows && (IsDirectionAllowed(2) || mFreeMove)) {
         mStateMgrLeft.changeState(StateID_LeftOnStageAnimeEndCheck);
     }
 }
@@ -746,7 +745,7 @@ void dCourseSelectGuide_c::initializeState_LeftOnStageAnimeEndCheck() {
     mLayout.AnimeStartSetup(ANIM_IN_ARROW_L, false);
 }
 void dCourseSelectGuide_c::executeState_LeftOnStageAnimeEndCheck() {
-    if (!FUN_80010f40(2) || m43f) {
+    if (!IsDirectionAllowed(2) || mDisableArrows) {
         mLayout.AnimeEndSetup(ANIM_IN_ARROW_L);
         mStateMgrLeft.changeState(StateID_LeftExitAnimeEndCheck);
     } else if (!mLayout.isAnime(ANIM_IN_ARROW_L)) {
@@ -761,7 +760,7 @@ void dCourseSelectGuide_c::initializeState_LeftDisp() {
     mLayout.LoopAnimeStartSetup(ANIM_LOOP_ARROW_L);
 }
 void dCourseSelectGuide_c::executeState_LeftDisp() {
-    if (!FUN_80010f40(2) || m43f) {
+    if (!IsDirectionAllowed(2) || mDisableArrows) {
         mStateMgrLeft.changeState(StateID_LeftExitAnimeEndCheck);
     }
 }
@@ -773,7 +772,7 @@ void dCourseSelectGuide_c::initializeState_LeftExitAnimeEndCheck() {
     mLayout.AnimeStartSetup(ANIM_OUT_ARROW_L, false);
 }
 void dCourseSelectGuide_c::executeState_LeftExitAnimeEndCheck() {
-    if (FUN_80010f40(2)) {
+    if (IsDirectionAllowed(2)) {
         mStateMgrLeft.changeState(StateID_LeftOnStageAnimeEndCheck);
     } else if (!mLayout.isAnime(ANIM_OUT_ARROW_L)) {
         mStateMgrLeft.changeState(StateID_LeftOnStageWait);
@@ -785,7 +784,7 @@ void dCourseSelectGuide_c::finalizeState_LeftExitAnimeEndCheck() {
 
 void dCourseSelectGuide_c::initializeState_RightOnStageWait() {}
 void dCourseSelectGuide_c::executeState_RightOnStageWait() {
-    if (!m43f && (FUN_80010f40(3) || m43e)) {
+    if (!mDisableArrows && (IsDirectionAllowed(3) || mFreeMove)) {
         mStateMgrRight.changeState(StateID_RightOnStageAnimeEndCheck);
     }
 }
@@ -796,7 +795,7 @@ void dCourseSelectGuide_c::initializeState_RightOnStageAnimeEndCheck() {
     mLayout.AnimeStartSetup(ANIM_IN_ARROW_R, false);
 }
 void dCourseSelectGuide_c::executeState_RightOnStageAnimeEndCheck() {
-    if (!FUN_80010f40(3) || m43f) {
+    if (!IsDirectionAllowed(3) || mDisableArrows) {
         mLayout.AnimeEndSetup(ANIM_IN_ARROW_R);
         mStateMgrRight.changeState(StateID_RightExitAnimeEndCheck);
     } else if (!mLayout.isAnime(ANIM_IN_ARROW_R)) {
@@ -811,7 +810,7 @@ void dCourseSelectGuide_c::initializeState_RightDisp() {
     mLayout.LoopAnimeStartSetup(ANIM_LOOP_ARROW_R);
 }
 void dCourseSelectGuide_c::executeState_RightDisp() {
-    if (!FUN_80010f40(3) || m43f) {
+    if (!IsDirectionAllowed(3) || mDisableArrows) {
         mStateMgrRight.changeState(StateID_RightExitAnimeEndCheck);
     }
 }
@@ -823,7 +822,7 @@ void dCourseSelectGuide_c::initializeState_RightExitAnimeEndCheck() {
     mLayout.AnimeStartSetup(ANIM_OUT_ARROW_R, false);
 }
 void dCourseSelectGuide_c::executeState_RightExitAnimeEndCheck() {
-    if (FUN_80010f40(3)) {
+    if (IsDirectionAllowed(3)) {
         mStateMgrRight.changeState(StateID_RightOnStageAnimeEndCheck);
     } else if (!mLayout.isAnime(ANIM_OUT_ARROW_R)) {
         mStateMgrRight.changeState(StateID_RightOnStageWait);
@@ -835,12 +834,12 @@ void dCourseSelectGuide_c::finalizeState_RightExitAnimeEndCheck() {
 
 void dCourseSelectGuide_c::initializeState_ShadowOnStageWait() {}
 void dCourseSelectGuide_c::executeState_ShadowOnStageWait() {
-    if (m443) {
+    if (mShowShadow) {
         mStateMgrShadow.changeState(StateID_ShadowOnStageAnimeEndCheck);
     }
 }
 void dCourseSelectGuide_c::finalizeState_ShadowOnStageWait() {
-    m443 = false;
+    mShowShadow = false;
 }
 
 void dCourseSelectGuide_c::initializeState_ShadowOnStageAnimeEndCheck() {
@@ -877,17 +876,17 @@ void dCourseSelectGuide_c::initializeState_ScrollGuideOnStageWait() {
     mUnderAnim = false;
 }
 void dCourseSelectGuide_c::executeState_ScrollGuideOnStageWait() {
-    if (m447 || m43c) {
-        m447 = false;
+    if (mEndScrollGuide || mDisableGuide) {
+        mEndScrollGuide = false;
         mUnderAnim = false;
-        m43c = false;
+        mDisableGuide = false;
         mInScrollMode = false;
-    } else if (m446) {
+    } else if (mShowScrollGuide) {
         mStateMgrScrollGuide.changeState(StateID_ScrollGuideOnStageAnimeEndCheck);
     }
 }
 void dCourseSelectGuide_c::finalizeState_ScrollGuideOnStageWait() {
-    m446 = false;
+    mShowScrollGuide = false;
 }
 
 void dCourseSelectGuide_c::initializeState_ScrollGuideOnStageAnimeEndCheck() {
@@ -900,7 +899,7 @@ void dCourseSelectGuide_c::initializeState_ScrollGuideOnStageAnimeEndCheck() {
     mUnderAnim = true;
 }
 void dCourseSelectGuide_c::executeState_ScrollGuideOnStageAnimeEndCheck() {
-    if (m447) {
+    if (mEndScrollGuide) {
         mLayout.AnimeEndSetup(ANIM_IN_UNDER);
         mStateMgrScrollGuide.changeState(StateID_ScrollGuideExitAnimeEndCheck);
     } else if (!mLayout.isAnime(-1)) {
@@ -913,14 +912,14 @@ void dCourseSelectGuide_c::initializeState_ScrollGuideDisp() {
     mLayout.LoopAnimeStartSetup(ANIM_LOOP_UNDER);
 }
 void dCourseSelectGuide_c::executeState_ScrollGuideDisp() {
-    if (m447) {
+    if (mEndScrollGuide) {
         mStateMgrScrollGuide.changeState(StateID_ScrollGuideExitAnimeEndCheck);
     }
 }
 void dCourseSelectGuide_c::finalizeState_ScrollGuideDisp() {}
 
 void dCourseSelectGuide_c::initializeState_ScrollGuideExitAnimeEndCheck() {
-    m447 = false;
+    mEndScrollGuide = false;
     mLayout.AnimeEndSetup(ANIM_LOOP_UNDER);
     mLayout.AnimeStartSetup(ANIM_OUT_UNDER, false);
 }
@@ -938,13 +937,13 @@ void dCourseSelectGuide_c::finalizeState_ScrollGuideExitAnimeEndCheck() {
     mInScrollMode = false;
 }
 
-void dCourseSelectGuide_c::FUN_800125c0(short courseNo, dWmLib::CourseType_e type) {
+void dCourseSelectGuide_c::UpdateGuide(short courseNo, dWmLib::CourseType_e type) {
     if (mCourseNo == courseNo) {
         return;
     }
     mCourseType = dWmLib::GetCourseTypeFromCourseNo(courseNo);
     mCourseNo = courseNo;
-    CourseSelectIconDisp(type);
+    CourseSelectSet(type);
     if (type != 1) {
         CollectionCoinSet();
     }
