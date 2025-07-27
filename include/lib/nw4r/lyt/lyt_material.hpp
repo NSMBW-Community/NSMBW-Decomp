@@ -35,7 +35,7 @@ public:
     char mName[21];
     bool mbUserAllocated;
 
-    void setTev(int index, GXColorS10 color) {
+    void SetTevColor(int index, GXColorS10 color) {
         mTevCols[index] = color;
     }
 };

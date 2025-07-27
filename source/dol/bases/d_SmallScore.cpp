@@ -131,7 +131,7 @@ void dSmallScore_c::setPlayer100Color(int playerType) {
     };
 
     nw4r::lyt::Material *mat = mpTextBoxes[T_100_00]->GetMaterial();
-    mat->setTev(1, nw4r::lyt::GXColorS10(COLOR_DATA_TBL[playerType]));
+    mat->SetTevColor(1, nw4r::lyt::GXColorS10(COLOR_DATA_TBL[playerType]));
 }
 
 void dSmallScore_c::chgColor() {
