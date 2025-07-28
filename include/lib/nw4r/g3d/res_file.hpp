@@ -11,8 +11,6 @@ namespace nw4r {
             void Bind(ResFile);
             ResMdl GetResMdl(const char *name) const;
 
-            nw4r::g3d::ResMdl GetResMdl(const char *name) const;
-
             void *data;
         };
     }

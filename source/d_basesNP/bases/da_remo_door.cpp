@@ -44,8 +44,7 @@ int daRemoDoor_c::execute() {
 
 int daRemoDoor_c::draw() {
     mMatrix.trans(mPos.x, mPos.y, mPos.z);
-    mAng ang(mAngle.y);
-    mMatrix.YrotM(ang);
+    mMatrix.YrotM(mAngle.y);
     mMtx_c transposeMtx;
     transposeMtx.trans(-24.0f, 0.0f, 0.0f);
     PSMTXConcat(mMatrix, transposeMtx, mMatrix);
@@ -79,7 +78,7 @@ void daRemoDoor_c::executeState_Open() {
     mAngle.y = newAngle;
 
     // [Oversight: the player number check never fails]
-    if (mAngle.y == -0x8000 && daPyMng_c::mCtrlPlrNo < 4 &&
+    if (mAngle.y == mAng(-0x8000) && daPyMng_c::mCtrlPlrNo < 4 &&
         dGameKey_c::m_instance->getAccVerticalAngleX(daPyMng_c::mCtrlPlrNo) <= 0x1000) {
             mStateMgr.changeState(StateID_Close);
     }
@@ -98,7 +97,7 @@ void daRemoDoor_c::executeState_Close() {
         newAngle = 0;
     }
     mAngle.y = newAngle;
-    if (mAngle.y == 0) {
+    if (mAngle.y == mAng(0)) {
         mStateMgr.changeState(StateID_OpenReady);
     }
 }
