@@ -47,6 +47,8 @@ public:
     mMtx_c &trans(const mVec3_c &v) { PSMTXTrans(*this, v.x, v.y, v.z); return *this; }
     mMtx_c &trans(float x, float y, float z) { PSMTXTrans(*this, x, y, z); return *this; }
 
+    void ZXYrotM(const mAng3_c &ang) { ZXYrotM(ang.x, ang.y, ang.z); }
+
     float transX() const { return getTranslation().x; }
     float transY() const { return getTranslation().y; }
     float transZ() const { return getTranslation().z; }

@@ -148,10 +148,11 @@ void dWmDemoActor_c::FUN_800f6820(const char *arc, const char *path, const char 
 }
 
 void dWmDemoActor_c::CalcShadow(float yOffs, float scaleX, float scaleY, float scaleZ) {
-    // TODO: Not fully matching
-    mAng3_c a(0, 0, 0);
-    mMatrix.trans(mVec3_c(mPos.x, mPos.y + yOffs, mPos.z));
-    mMatrix.ZXYrotM(a.x, a.y, a.z);
+    mVec3_c tVec = mPos;
+    mAng3_c a = mAng3_c::onlyY(mAngle.y);
+    tVec.y = mPos.y + yOffs;
+    mMatrix.trans(tVec);
+    mMatrix.ZXYrotM(a);
     mModel.setLocalMtx(&mMatrix);
     mModel.setScale(scaleX, scaleY, scaleZ);
     mModel.calc(false);
