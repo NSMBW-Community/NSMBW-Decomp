@@ -54,7 +54,7 @@ public:
     int field_3b4;
     int field_3b8;
     u8 pad4[0x1d];
-    u8 mExtensionAttached;
+    bool mExtensionAttached;
     u8 pad5[0x724];
     bool mFukidashiActionPerformed[4][0x16];
 

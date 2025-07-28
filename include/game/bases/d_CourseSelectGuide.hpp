@@ -94,37 +94,73 @@ class dCourseSelectGuide_c {
     };
 
 public:
-    dCourseSelectGuide_c();
-    virtual ~dCourseSelectGuide_c();
+    dCourseSelectGuide_c(); ///< Constructs a new course select guide instance.
+    virtual ~dCourseSelectGuide_c(); ///< Destroys the instance.
 
 private:
-    bool createLayout();
-    void ScissorMaskSet();
-    void RestNumberDisp();
-    void RestAlphaDisp();
-    void execute();
-    void draw();
-    void doDelete();
+    bool createLayout(); ///< Creates the layout and initializes the class state.
+    void ScissorMaskSet(); ///< Clips the layout to the maximum allowed size.
+    void RestNumberDisp(); ///< Fills in the text boxes showing the remaining lives count.
+    void RestAlphaDisp(); ///< Sets the opacity of the remaining lives count.
+    void execute(); ///< The main loop of the view.
+    void draw(); ///< Draws the view.
+    void doDelete(); ///< Prepares the view for deletion.
 
-    void CollectionCoinSet();
+    void CollectionCoinSet(); ///< Updates the star coin icons.
 
-    void PlayerIconSet(); ///< @unofficial
+    /**
+     * @brief Updates the player icons in the remaining lives info to the active player.
+     *
+     * @unofficial
+     */
+    void PlayerIconSet();
+
+    /**
+     * @brief Updates the textbox that displays the current course.
+     * @param type The course type.
+     *
+     * @unofficial
+     */
+    void CourseSelectSet(dWmLib::CourseType_e type);
+
+    bool IsDirectionAllowed(int dir); ///< Returns the arrow for direction @p dir should be shown. @unofficial
+
+    /**
+     * @brief Updates the course-related parts of the course info guide.
+     * @param courseNo The course number.
+     * @param type The course type.
+     *
+     * -> Course name, star coins collected, checkpoint status
+     * @unofficial
+     */
+    void UpdateGuide(short courseNo, dWmLib::CourseType_e type);
+
+    /**
+     * @brief Checks for attached Nunchuck and updates the BMG messages where the button icon would change.
+     *
+     * -> "View Map" and "Items"
+     */
     void ControllerConnectCheck();
-    void CourseSelectSet(dWmLib::CourseType_e); ///< @unofficial
-    bool IsDirectionAllowed(int); ///< @unofficial
-    void UpdateGuide(short, dWmLib::CourseType_e); ///< @unofficial
 
-    u8 mUnk; ///< @unused
+    u32 mUnk; ///< @unused
 
     LytBase_c mLayout; ///< The layout for the window.
 
+    /// @brief The state manager for the course info (world / course name).
     sFStateMgr_c<dCourseSelectGuide_c, sStateMethodUsr_FI_c> mStateMgrWorldCourse;
+    /// @brief The state manager for the button legends and remaining lives display.
     sFStateMgr_c<dCourseSelectGuide_c, sStateMethodUsr_FI_c> mStateMgrGuide;
+    /// @brief The state manager for the up arrow for the map view.
     sFStateMgr_c<dCourseSelectGuide_c, sStateMethodUsr_FI_c> mStateMgrUp;
+    /// @brief The state manager for the down arrow for the map view.
     sFStateMgr_c<dCourseSelectGuide_c, sStateMethodUsr_FI_c> mStateMgrDown;
+    /// @brief The state manager for the left arrow for the map view.
     sFStateMgr_c<dCourseSelectGuide_c, sStateMethodUsr_FI_c> mStateMgrLeft;
+    /// @brief The state manager for the right arrow for the map view.
     sFStateMgr_c<dCourseSelectGuide_c, sStateMethodUsr_FI_c> mStateMgrRight;
+    /// @brief The state manager for darkening the course view. [Unused?]
     sFStateMgr_c<dCourseSelectGuide_c, sStateMethodUsr_FI_c> mStateMgrShadow;
+    /// @brief The state manager for the button legends during the map view.
     sFStateMgr_c<dCourseSelectGuide_c, sStateMethodUsr_FI_c> mStateMgrScrollGuide;
 
     STATE_FUNC_DECLARE(dCourseSelectGuide_c, WorldCourseOnStageWait);
@@ -167,61 +203,80 @@ private:
     STATE_FUNC_DECLARE(dCourseSelectGuide_c, ScrollGuideDisp);
     STATE_FUNC_DECLARE(dCourseSelectGuide_c, ScrollGuideExitAnimeEndCheck);
 
-    nw4r::lyt::Pane *mpRootPane; ///< The root pane of the window.
+    nw4r::lyt::Pane *mpRootPane; ///< The root pane of the view.
 
-    nw4r::lyt::Pane *mpNullPanes[N_COUNT];
-    LytTextBox_c *mpTextBoxes[T_COUNT];
-    nw4r::lyt::Picture *mpPicturePanes[P_COUNT];
+    nw4r::lyt::Pane *mpNullPanes[N_COUNT]; ///< The null panes of the view.
+    LytTextBox_c *mpTextBoxes[T_COUNT]; ///< The textboxes of the view.
+    nw4r::lyt::Picture *mpPicturePanes[P_COUNT]; ///< The picture panes of the view.
 
-    Remocon::EXTENSION_TYPE_e mExtension;
-    int mWorldNo;
+    Remocon::EXTENSION_TYPE_e mExtension; ///< The currently attached Wii remote extension.
+    int mWorldNo; ///< The current world number.
     int mCourseNo; ///< The current course number. Set to a negative value if it's a course with an icon.
-    int mCourseType;
-    int mRest[4]; ///< The remaining lives for each player. Set to -1 if the player is not present.
-    int mWorldCourseOnStageTimer;
-    int mGuideOnStageTimer;
-    int mAlpha;
-    int mAlphaTarget;
-    u8 mMoveDirection;
-    bool mInitialized;
-    bool mSkipOutCourseAnim;
-    bool mSkipInCourseAnim;
-    bool mIsExitingCourse;
-    bool mNoAnimInCourseInfo;
-    bool mBeginGuide;
-    bool mEndGuide;
-    bool mDisableGuide;
-    bool mSkipGuideAnim;
-    bool mFreeMove;
-    bool mDisableArrows;
-    bool mScrollEnabled;
-    bool mEnabled;
-    bool mHideHUD;
-    bool mShowShadow;
-    bool mStopShadowDisp;
-    bool mInScrollMode;
-    bool mShowScrollGuide;
-    bool mEndScrollGuide;
-    bool mUnderAnim;
-    bool mCourseInfoAnim;
-    bool mUpAnim;
-    bool mDownAnim;
-    bool mLeftAnim;
-    bool mRightAnim;
-    bool mShowRestNumber;
+    int mCourseType; ///< The current course type. @todo Document this enum.
+
+    /**
+     * @brief The remaining lives for each player.
+     *
+     * Set to -1 if the player is not present. This is stored here so that the game doesn't have to
+     * recalculate the textbox each frame.
+     */
+    int mRest[4];
+
+    int mWorldCourseOnStageTimer; ///< Cooldown for showing the course info.
+    int mGuideOnStageTimer; ///< Cooldown for showing the remaining guide HUD.
+
+    /**
+     * @brief The current transparency for the player remaining lives HUD.
+     *
+     * This should be changed via mRestAlphaTarget, which will cause mRestAlpha to smoothly
+     * transition to mRestAlphaTarget. [This transition effect goes unused though, because even
+     * though stepping on Peach's castle performs this transition, it happens before the
+     * remaining lives counter would appear again on-screen.]
+     */
+    int mRestAlpha;
+    int mRestAlphaTarget; ///< The target transparency for mRestAlpha.
+
+    u8 mMoveDirection; ///< A bitmask describing which arrows should be shown in the free move view.
+
+    bool mInitialized; ///< Whether the layout has been fully initialized.
+
+    bool mShowCourseInfo; ///< Set this to @p true to show the course info.
+    bool mHideCourseInfo; ///< Set this to @p true to hide the course info.
+    bool mIsCourseInfoOutAnime; ///< Automatically set to false after the course info has been hidden.
+    bool mNoAnimCourseInfoIn; ///< Whether the course info should simply appear instead of sliding in.
+
+    bool mBeginGuide; ///< Set this to @p true to show the remaining guide.
+    bool mEndGuide; ///< Set this to @p true to hide the remaining guide.
+    bool mGuideRelated; ///< [@todo Figure out what this does].
+    bool mNoHUDAppearAnim; ///< Whether the HUD should be shown without an animation.
+
+    bool mEnableAllArrows; ///< Whether to show all map view arrows. Gets reset after 1 frame.
+    bool mDisableArrows; ///< Whether to stop updating the map view arrows.
+    bool mMapView; ///< Whether the HUD should process the map view elements.
+
+    bool mEnabled; ///< Controls whether the HUD is updated every frame.
+    bool mHideHUD; ///< Set this to true to hide the entire HUD.
+
+    bool mShowShadow; ///< Set this to @p true to darken the world map view.
+    bool mHideShadow; ///< Set this to @p true to remove the darkening of the world map view.
+
+    bool mInMapView; ///< Whether the HUD is in the map view mode.
+
+    bool mShowScrollGuide; ///< Set this to @p true to show the scroll guide [@todo What is this?].
+    bool mEndScrollGuide; ///< Set this to @p true to show the scroll guide [@todo What is this?].
+    bool mScrollGuideRelated; ///< [@todo Figure out what this does].
+
+    bool mCourseInfoAnim; ///< Whether the course information is in an animation.
+    bool mUpAnim; ///< Whether the up arrow is in an animation.
+    bool mDownAnim; ///< Whether the down arrow is in an animation.
+    bool mLeftAnim; ///< Whether the left arrow is in an animation.
+    bool mRightAnim; ///< Whether the right arrow is in an animation.
+
+    bool mShowRestNumber; ///< Whether to update the remaining lives count.
 
 public:
-    static inline int getPaneNum(int i) {
-        static const int paneNums[] = {
-            N_IconPos1P_00,
-            N_IconPos2P_00,
-            N_IconPos4P_00,
-            N_IconPos3P_00
-        };
-        return paneNums[i];
-    }
+    static dCourseSelectGuide_c *m_instance; ///< The instance of the view.
 
-    static dCourseSelectGuide_c *m_instance;
-
+    /// @brief The speed at which the opacity of the remaining lives counter is changed.
     static const int c_DISP_WAIT_TIMER;
 };

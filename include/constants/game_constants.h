@@ -9,6 +9,13 @@
 
 #define AMBUSH_ENEMY_COUNT 4 ///< The maximum amount of ambush enemies per world map.
 
+enum DIRECTION_e {
+    DIR_UP,
+    DIR_DOWN,
+    DIR_LEFT,
+    DIR_RIGHT
+};
+
 #define HINT_MOVIE_COUNT 70 ///< The total hint movie count.
 
 #define MAX_LIVES 99 ///< The maximum life count.

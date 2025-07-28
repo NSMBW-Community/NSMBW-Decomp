@@ -4,11 +4,11 @@ class Remocon {
 public:
     virtual ~Remocon();
 
+    /// @unofficial
     enum EXTENSION_TYPE_e {
-        EXTENSION_NONE = 0,
-        EXTENSION_NUNCHUK = 1,
-        EXTENSION_TWO,
-        EXTENSION_THREE,
+        EXTENSION_NONE = 0, ///< No Wii remote extension is connected.
+        EXTENSION_NUNCHUK, ///< The nunchuck controller is connected.
+        EXTENSION_UNKNOWN = 3, ///< It has not been checked yet whether an extension is connected.
     };
 
     int mIndex;
