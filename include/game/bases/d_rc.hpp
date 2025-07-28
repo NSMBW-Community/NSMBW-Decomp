@@ -5,7 +5,11 @@
 
 class dActor_c;
 class dBc_c;
-class dRide_ctr_c;
+class dRide_ctr_c {
+public:
+    u8 mPad[0x3c];
+    u32 mFlags;
+};
 
 class dRc_c {
 public:
@@ -23,14 +27,12 @@ public:
 
     /* const */ dRide_ctr_c * getRide();
 
-    void set(dActor_c *, u8);
-
     dActor_c *owner;
     mVec3_c *ownerPos;
     dRc_c *next;
     dRide_ctr_c *ride;
     dRide_ctr_c *ride2;
-    dBc_c *bcRef;
+    dBc_c *mpBc;
     float pad1[4];
     short rotation;
     u8 mNonCollideMask;

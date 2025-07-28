@@ -1,11 +1,13 @@
 #include <game/bases/d_a_iceball.hpp>
 #include <game/bases/d_audio.hpp>
 #include <game/bases/d_actor.hpp>
+#include <game/bases/d_cd.hpp>
+#include <game/bases/d_global.hpp>
 #include <game/bases/d_s_stage.hpp>
 #include <constants/sound_list.h>
 #include <game/bases/d_a_player_manager.hpp>
 #include <game/bases/d_effectmanager.hpp>
-#include <game/bases/d_effactor_mng.hpp>
+#include <game/bases/d_eff_actor_manager.hpp>
 #include <game/bases/d_bg.hpp>
 #include <game/framework/f_profile.hpp>
 #include <game/framework/f_profile_name.hpp>
@@ -16,7 +18,11 @@ ACTOR_PROFILE(ICEBALL, daIceBall_c, 2);
 int daIceBall_c::sm_IceBallCount[4] = {0, 0, 0, 0};
 int daIceBall_c::sm_IceBallAliveCount[4] = {0, 0, 0, 0};
 
-const float lbl_802F5000[4] = {0.75f, 1.05f, 0.6f, 120.0f};
+// const float lbl_802F5000[4] = {0.75f, 1.05f, 0.6f, 120.0f};
+template <>
+const daIceBall_c::GlobalData_s dGlobalData_c<daIceBall_c>::data = {
+    0.75f, 1.05f, 0.6f, 120.0f
+};
 
 const dBcSensor_c l_iceball_foot = { 0.0f, 0, -0x3000 };
 const dBcSensor_c l_iceball_head = { 0.0f, 0, 0x3000 };
@@ -57,7 +63,7 @@ int daIceBall_c::create() {
     }
 
     mCc.mNonCollideMask = (mParam >> 12) & 3;
-    mBc.mNonCollideMask = (mParam >> 12) & 3;
+    mBc.mLineKind = (mParam >> 12) & 3;
     mRc.mNonCollideMask = (mParam >> 12) & 3;
 
     mLayer = (mParam >> 8) & 3;
@@ -65,7 +71,7 @@ int daIceBall_c::create() {
     mBc.mLayer = (mParam >> 8) & 3;
 
     mLiquidType = dBc_c::checkWater(mPos.x, mPos.y, mLayer, &mLiquidHeight);
-    mDirection = (dActor_c::ActorDirection)((mParam >> 4) & 1);
+    mDirection = ((mParam >> 4) & 1);
 
     float v0 = 0.0f;
     if (checkInitLine(v0)) {
@@ -75,15 +81,15 @@ int daIceBall_c::create() {
     if (checkInitVanish()) {
         setDeleteEffect();
 
-        dAudio::playMapSound(SE_OBJ_PNGN_ICEBALL_DISAPP, mPos, 0);
+        dAudio::SoundEffectID_t(SE_OBJ_PNGN_ICEBALL_DISAPP).playMapSound(mPos, 0);
         deleteRequest();
         return fBase_c::CANCELED;
     }
 
     mCenterOffs.set(0.0f, 0.0f, 0.0f);
-    mEatSpitType = 5;
+    mEatBehaviour = EAT_TYPE_ICEBALL;
     mActorProperties |= 0x80;
-    mAreaNo = dCd_c::m_instance->getFileP(dScStage_c::m_instance->currCourse)->getAreaNo(&mPos);
+    mAreaNo = dCd_c::m_instance->getFileP(dScStage_c::m_instance->mCurrCourse)->getAreaNo(&mPos);
 
     mCc.set(this, (sCcDatNewF *) &l_fball_cc_data);
     mCc.mLayer = mLayer;
@@ -165,7 +171,7 @@ bool daIceBall_c::checkInitLine(float &a) {
 }
 
 void daIceBall_c::lightProc() {
-    mLightMask.set(mPos, lbl_802F5000[3]);
+    mLightMask.set(mPos, dGlobalData_c<daIceBall_c>::data.v3);
     mLightMask.execute();
 }
 
@@ -177,7 +183,7 @@ void daIceBall_c::setEatTongue(dActor_c * actor) {
 
 bool daIceBall_c::bgCheck() {
     if (mRc.check(mBc.checkFoot(), 0, 0)) {
-        mBc.mFlags |= dBc_c::SENSOR_8000;
+        mBc.mFlags |= 0x8000;
     }
 
     mBc.checkWall(nullptr);
@@ -203,7 +209,7 @@ void daIceBall_c::ccCallback_Iceball(dCc_c * self, dCc_c * other) {
     self->mFlag |= 2;
     dActor_c *thing = (dActor_c *)other->mpOwner;
 
-    if (thing->mKind == fBase_c::ENTITY) {
+    if (thing->mKind == STAGE_ACTOR_ENTITY) {
         if (thing->mProfName == fProfile::EN_MARUTA) {
             if (iceball->mSpeed.y >= 0.0f) {
                 return;
@@ -250,7 +256,7 @@ void daIceBall_c::chgZpos() {
 }
 
 bool daIceBall_c::cullCheck() {
-    return (int)dActor_c::otherCullCheck(mPos, l_cull_data, BoundingBox(64.0f, 32.0f), mAreaNo);
+    return (int)dActor_c::screenCullCheck(mPos, *(mBoundBox *) l_cull_data, mBoundBox(64.0f, 64.0f, 32.0f, 32.0f), mAreaNo);
 }
 
 void daIceBall_c::eatMove(dActor_c * actor) {
@@ -260,12 +266,12 @@ void daIceBall_c::eatMove(dActor_c * actor) {
 
 bool daIceBall_c::checkDeleteBg() {
     u32 mask1 = 0x3f;
-    u32 mask2 = dBc_c::SENSOR_4000000 | dBc_c::SENSOR_8000000 | dBc_c::SENSOR_10000000 | dBc_c::SENSOR_20000000;
+    u32 mask2 = 0x4000000 | 0x8000000 | 0x10000000 | 0x20000000;
     u32 x = (mBc.mFlags & mask1) | (mBc.mFlags & mask2);
     if (x) {
         return true;
     }
-    if ((mBc.mFlags & dBc_c::SENSOR_8000) && (mRc.isRideFlag(0x200) & 0xFFFF)) {
+    if ((mBc.mFlags & 0x8000) && (mRc.isRideFlag(0x200) & 0xFFFF)) {
         return true;
     }
     if ((u16)mBc.getFootAttr() == 3) {
@@ -436,18 +442,17 @@ void daIceBall_c::initializeState_Move() {
     static const float x_speed_b[] = {1.5f, -1.5f};
 
     dAcPy_c * v0 = daPyMng_c::getPlayer(mPlayerNo);
-    float v1 = v0->mSpeed.x;
 
-    float v2 = lbl_802F5000[0];
-    float v3 = lbl_802F5000[1];
-
+    float v2 = dGlobalData_c<daIceBall_c>::data.v0;
+    float v3 = dGlobalData_c<daIceBall_c>::data.v1;
     float resX;
-    if (v1 > v2) {
-        resX = (v3 * v2) + (v1 - v2) * lbl_802F5000[2];
-    } else if (v1 < -v2) {
-        resX = (-v3 * v2) + (v1 + v2) * lbl_802F5000[2];
+
+    if (v0->mSpeed.x > v2) {
+        resX = (v3 * v2) + dGlobalData_c<daIceBall_c>::data.v2 * (v0->mSpeed.x - v2);
+    } else if (v0->mSpeed.x < -v2) {
+        resX = (-v3 * v2) + dGlobalData_c<daIceBall_c>::data.v2 * (v0->mSpeed.x + v2);
     } else {
-        resX = v3 * v1;
+        resX = v3 * v0->mSpeed.x;
     }
 
     mSpeed.x = resX + x_speed_b[mDirection];

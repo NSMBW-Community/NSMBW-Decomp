@@ -1,5 +1,6 @@
 #pragma once
 #include <game/mLib/m_vec.hpp>
+#include <game/mLib/m_sphere.hpp>
 
 class dLightMask_c {
 public:

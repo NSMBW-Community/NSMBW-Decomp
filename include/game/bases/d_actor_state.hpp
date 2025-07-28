@@ -14,6 +14,10 @@ public:
 
     sFStateMgr_c<dActorState_c, sStateMethodUsr_FI_c> mStateMgr; ///< The state manager.
 
+    bool isState(const sStateIDIf_c &state) {
+        return *mStateMgr.getStateID() == state;
+    }
+
     /// @cond
     void dummy() {
         mStateMgr.initializeState();

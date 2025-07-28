@@ -2,6 +2,7 @@
 #include <game/bases/d_a_player_manager.hpp>
 #include <game/bases/d_game_key.hpp>
 #include <game/bases/d_res_mng.hpp>
+#include <game/mLib/m_heap.hpp>
 #include <constants/sound_list.h>
 
 ACTOR_PROFILE(REMO_DOOR, daRemoDoor_c, 2);

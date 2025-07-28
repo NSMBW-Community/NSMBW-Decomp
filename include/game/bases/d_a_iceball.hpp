@@ -49,6 +49,10 @@ public:
     STATE_FUNC_DECLARE(daIceBall_c, Kill);
     STATE_FUNC_DECLARE(daIceBall_c, Move);
 
+    struct GlobalData_s {
+        float v0, v1, v2, v3;
+    };
+
     static int sm_IceBallCount[4];
     static int sm_IceBallAliveCount[4];
 };
