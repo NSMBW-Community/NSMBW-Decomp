@@ -1,7 +1,12 @@
 #pragma once
 #include <types.h>
+#include <game/sLib/s_math.hpp>
 #include <lib/nw4r/math/trigonometry.hpp>
 #include <lib/rvl/mtx/vec.h>
+
+extern "C" {
+    int abs(int);
+}
 
 /// @brief A one-dimensional short angle vector.
 /// @ingroup mlib
@@ -10,17 +15,18 @@ struct mAng {
     /// @brief Constructs an empty vector.
     mAng() {}
 
-    /// @brief Constructs a vector from a short pointer.
-    mAng(const u16 *p) { mAngle = *p; }
-
     /// @brief Constructs a vector from a short value.
-    mAng(u16 x) { mAngle = x; }
+    mAng(s16 x) : mAngle(x) {}
 
-    /// @brief Short cast operator.
-    operator u16*() { return &mAngle; }
+    operator s16() { return mAngle; }
 
-    /// @brief Const short cast operator.
-    operator const u16*() const { return &mAngle; }
+    bool chase(short target, short step) {
+        return sLib::chase(&mAngle, target, step);
+    }
+
+    mAng abs() const {
+        return mAng(::abs(mAngle));
+    }
 
     /// @brief Augmented addition operator.
     mAng &operator+=(const mAng &v) { mAngle += v.mAngle; return *this; }
@@ -52,7 +58,7 @@ struct mAng {
     /// @brief Computes the cosine of the angle.
     float cos() const { return nw4r::math::CosS(mAngle); }
 
-    u16 mAngle; ///< The rotation.
+    s16 mAngle; ///< The rotation.
 };
 
 /// @brief A three-dimensional short angle vector.
@@ -69,20 +75,27 @@ public:
     /// @brief Constructs a vector from three short values.
     mAng3_c(s16 fx, s16 fy, s16 fz) { x = fx; y = fy; z = fz; }
 
+    static mAng3_c onlyY(s16 fy) {
+        mAng3_c tmp;
+        tmp.y = fy; tmp.x = tmp.z = mAng(0);
+        return tmp;
+    }
+
+    /// @brief Constructs a vector from three mAng values.
+    mAng3_c(mAng fx, mAng fy, mAng fz) : x(fx), y(fy), z(fz) {}
+
     /// @brief Constructs a new vector from an existing vector from the MTX library.
     mAng3_c(const S16Vec &v) { x = v.x; y = v.y; z = v.z; }
 
-    /// @brief Short cast operator.
-    operator s16*() { return &x; }
+    /// @brief Copy constructor.
+    mAng3_c(const mAng3_c &v) : x(v.x), y(v.y), z(v.z) {}
 
-    /// @brief Const short cast operator.
-    operator const s16*() const { return &x; }
-
-    /// @brief S16Vec cast operator.
-    operator S16Vec*() { return (S16Vec*)&x; }
-
-    /// @brief Const S16Vec cast operator.
-    operator const S16Vec*() const { return (const S16Vec*)&x; }
+    mAng3_c *operator=(const mAng3_c &v) {
+        x = v.x;
+        y = v.y;
+        z = v.z;
+        return this;
+    }
 
     /// @brief Augmented addition operator.
     mAng3_c &operator+=(const mAng3_c &v) { x += v.x; y += v.y; z += v.z; return *this; }
@@ -108,9 +121,9 @@ public:
     /// @brief Inequality operator.
     bool operator!=(const mAng3_c &v) const { return x != v.x || y != v.y || z != v.z; }
 
-    s16 x; ///< The rotation on the X axis.
-    s16 y; ///< The rotation on the Y axis.
-    s16 z; ///< The rotation on the Z axis.
+    mAng x; ///< The rotation on the X axis.
+    mAng y; ///< The rotation on the Y axis.
+    mAng z; ///< The rotation on the Z axis.
 
     static mAng3_c Zero; ///< The null rotation vector.
     static mAng3_c Ex; ///< The unit rotation vector for the X axis.
