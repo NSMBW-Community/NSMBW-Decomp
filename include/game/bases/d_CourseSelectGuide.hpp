@@ -16,6 +16,7 @@
 class dCourseSelectGuide_c {
 
     /// @brief The text boxes used in the layout.
+    /// @unofficial
     enum T_PANE_e {
         T_worldNum_00,
         T_cSelect_00,
@@ -30,6 +31,7 @@ class dCourseSelectGuide_c {
     };
 
     /// @brief The null panes used in the layout.
+    /// @unofficial
     enum N_PANE_e {
         N_IconPos1P_00,
         N_IconPos2P_00,
@@ -46,6 +48,7 @@ class dCourseSelectGuide_c {
     };
 
     /// @brief The picture panes used in the layout.
+    /// @unofficial
     enum P_PANE_e {
         P_cC_1_00,
         P_cC_2_00,
@@ -63,6 +66,7 @@ class dCourseSelectGuide_c {
     };
 
     /// @brief The animation names used in the layout.
+    /// @unofficial
     enum ANIM_NAME_e {
         inInfo,
         loopInfo,
@@ -76,6 +80,7 @@ class dCourseSelectGuide_c {
     };
 
     /// @brief The animations used for the layout.
+    /// @unofficial
     enum ANIM_e {
         ANIM_IN_UNDER, ANIM_IN_ZANKI, ANIM_IN_COURSE_INFO,
         ANIM_LOOP_UNDER, ANIM_LOOP_ZANKI, ANIM_LOOP_COURSE_INFO,
@@ -88,6 +93,7 @@ class dCourseSelectGuide_c {
         ANIM_COUNT
     };
 
+    /// @unofficial
     struct GlobalData_t {
         short mDispWaitTimer;
         short mUnk; ///< @unused

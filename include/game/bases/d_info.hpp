@@ -37,14 +37,6 @@ public:
 
     dCyuukan_c *getCyuukan() { return &mCyuukan; }
 
-    void markExtension(int ext) {
-        if (ext == 0) {
-            mExtensionAttached = 0;
-        } else {
-            mExtensionAttached = 1;
-        }
-    }
-
     char pad1[0x8];
     dCyuukan_c mCyuukan;
     char pad2[0x348];

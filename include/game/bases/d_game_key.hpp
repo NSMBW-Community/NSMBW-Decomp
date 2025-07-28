@@ -1,15 +1,16 @@
 #pragma once
+#include <types.h>
 
 class Remocon {
 public:
-    virtual ~Remocon();
-
     /// @unofficial
     enum EXTENSION_TYPE_e {
         EXTENSION_NONE = 0, ///< No Wii remote extension is connected.
         EXTENSION_NUNCHUK, ///< The nunchuck controller is connected.
         EXTENSION_UNKNOWN = 3, ///< It has not been checked yet whether an extension is connected.
     };
+
+    virtual ~Remocon();
 
     int mIndex;
     EXTENSION_TYPE_e mAttachedExtension;

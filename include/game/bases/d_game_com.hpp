@@ -87,7 +87,6 @@ namespace dGameCom {
     void getGlbPosToLyt(mVec3_c &);
     bool someCheck(mVec3_c *a, mBoundBox *b); ///< @unofficial
     void CreateSmallScore(const mVec3_c &, int, int, bool);
-    u8 GetAspectRatio();
 
     bool checkRectangleOverlap(mVec3_c *, mVec3_c *, mVec3_c *, mVec3_c *, float); ///< @unofficial
 
