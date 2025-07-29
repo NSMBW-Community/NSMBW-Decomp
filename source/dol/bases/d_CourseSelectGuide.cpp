@@ -892,7 +892,13 @@ void dCourseSelectGuide_c::executeState_ScrollGuideOnStageWait() {
         mScrollGuideRelated = false;
         mGuideRelated = false;
         mInMapView = false;
+#if !(defined(VERSION_K) || defined(VERSION_W))
     } else if (mShowScrollGuide) {
+#else
+    // Don't transition to the next state until the animation is finished.
+    // Otherwise, the "View Map" text would change to "Back to Mario" too early.
+    } else if (mShowScrollGuide && !mLayout.isAnime(ANIM_OUT_UNDER)) {
+#endif
         mStateMgrScrollGuide.changeState(StateID_ScrollGuideOnStageAnimeEndCheck);
     }
 }
