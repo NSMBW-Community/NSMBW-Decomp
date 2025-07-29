@@ -10,18 +10,18 @@ public:
 
     ~dWmDemoActor_c() {}
 
-    dWmDemoActor_c *FUN_800f6130(dWmDemoActor_c **outActor); ///< @unofficial
+    static dBaseActor_c *GetChildDemoActor(dBaseActor_c *prev, dWmDemoActor_c *&next); ///< @unofficial
 
-    virtual int doDelete();
-    virtual int draw();
-    virtual int create();
+    virtual int create() { return SUCCEEDED; }
+    virtual int draw() { return SUCCEEDED; }
+    virtual int doDelete() { return SUCCEEDED; }
     virtual int execute() = 0;
-    virtual int GetActorType();
+    virtual int GetActorType() { return ACTOR_MAP_DEMO; }
 
     virtual void setCutEndSpecific(int csId, bool p2); ///< @unofficial
-    virtual bool checkCutEnd();
-    virtual void setCutEnd();
-    virtual void clearCutEnd();
+    virtual bool checkCutEnd() { return mIsCutEnd; }
+    virtual void setCutEnd() { mIsCutEnd = true; }
+    virtual void clearCutEnd() { mIsCutEnd = false; }
 
     bool isStaff();
 
@@ -36,7 +36,7 @@ public:
     void rotDirectionX(short s, bool b);
     bool checkArriveTargetXYZ(const mVec3_c &v1, const mVec3_c &v2);
     bool checkArriveTargetXZ(const mVec3_c &v1, const mVec3_c &v2);
-    void FUN_800f6820(const char *arc, const char *path, const char *mdlName);
+    void CreateShadowModel(const char *arc, const char *path, const char *mdlName, bool b);
     void CalcShadow(float yOffs, float scaleX, float scaleY, float scaleZ);
     void CalcShadow(float yOffs, float scale);
     void DrawShadow(bool b);
@@ -47,7 +47,7 @@ public:
     void CsSPosSimple(int i, float f);
     void clearSpeedAll();
     void adjustHeightBase(const mVec3_c &v1, const mVec3_c &v2, int i);
-    bool FUN_800f6e70(int *csList, int csCount);
+    bool isCutscenePlaying(int *csList, int csCount); ///< @unofficial
 
 private:
     bool m_00;

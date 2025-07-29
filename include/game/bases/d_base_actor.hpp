@@ -53,8 +53,10 @@ protected:
     /// for details.
     virtual void draw2D_lyt2();
 
+public:
     virtual int GetActorType() { return ACTOR_GENERIC; } ///< Gets the actor kind. See ::ACTOR_KIND_e.
 
+protected:
     virtual void finalUpdate() {} ///< Code to be executed after all actors' @p execute operation has run.
 
 public:

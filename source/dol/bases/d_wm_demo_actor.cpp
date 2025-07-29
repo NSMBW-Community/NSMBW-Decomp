@@ -10,17 +10,22 @@
 
 dWmDemoActor_c::dWmDemoActor_c() {}
 
-dWmDemoActor_c *dWmDemoActor_c::FUN_800f6130(dWmDemoActor_c **outActor) {
-    dWmDemoActor_c *actor = (dWmDemoActor_c *) fManager_c::searchBaseByGroupType(fBase_c::ACTOR, this);
+dBaseActor_c *dWmDemoActor_c::GetChildDemoActor(dBaseActor_c *prev, dWmDemoActor_c *&next) {
+    dBaseActor_c *actor = (dBaseActor_c *) fManager_c::searchBaseByGroupType(fBase_c::ACTOR, prev);
     if (actor == nullptr) {
-        *outActor = nullptr;
+        next = nullptr;
         return nullptr;
     }
-    int type = actor->GetActorType();
-    if (type == 1 || type == 2 || type == 3 || type == 4) {
-        *outActor = actor;
-    } else {
-        *outActor = nullptr;
+    switch (actor->GetActorType()) {
+        case dBaseActor_c::ACTOR_MAP_DEMO:
+        case dBaseActor_c::ACTOR_MAP_OBJECT:
+        case dBaseActor_c::ACTOR_MAP_ENEMY:
+        case dBaseActor_c::ACTOR_MAP_PLAYER:
+            next = (dWmDemoActor_c *) actor;
+            break;
+        default:
+            next = nullptr;
+            break;
     }
     return actor;
 }
@@ -29,11 +34,7 @@ void dWmDemoActor_c::setCutEndSpecific(int csId, bool p2) {
     if (csId == -1) {
         return;
     }
-    mIsCutEnd = true;
-}
-
-void dWmDemoActor_c::setCutEnd() {
-    mIsCutEnd = true;
+    dWmDemoActor_c::setCutEnd();
 }
 
 bool dWmDemoActor_c::isStaff() {
@@ -134,7 +135,7 @@ bool dWmDemoActor_c::checkArriveTargetXZ(const mVec3_c &v1, const mVec3_c &v2) {
     return false;
 }
 
-void dWmDemoActor_c::FUN_800f6820(const char *arc, const char *path, const char *mdlName) {
+void dWmDemoActor_c::CreateShadowModel(const char *arc, const char *path, const char *mdlName, bool b) {
     mHeapAllocator.createHeapRestoreCurrent(-1, mHeap::g_gameHeaps[0], nullptr, 0x20, 0);
 
     nw4r::g3d::ResFile resFile = dResMng_c::m_instance->mRes.getRes(arc, path);
@@ -282,7 +283,7 @@ void dWmDemoActor_c::adjustHeightBase(const mVec3_c &v1, const mVec3_c &v2, int 
     CsSPosSimple(i, GetBgPosY(v1, v2, i));
 }
 
-bool dWmDemoActor_c::FUN_800f6e70(int *csList, int csCount) {
+bool dWmDemoActor_c::isCutscenePlaying(int *csList, int csCount) {
     int cutName = dCsSeqMng_c::ms_instance->GetCutName();
     bool found = false;
     for (int i = 0; i < csCount; i++) {
@@ -292,28 +293,4 @@ bool dWmDemoActor_c::FUN_800f6e70(int *csList, int csCount) {
         }
     }
     return found;
-}
-
-void dWmDemoActor_c::clearCutEnd() {
-    mIsCutEnd = false;
-}
-
-bool dWmDemoActor_c::checkCutEnd() {
-    return mIsCutEnd;
-}
-
-int dWmDemoActor_c::GetActorType() {
-    return ACTOR_MAP_DEMO;
-}
-
-int dWmDemoActor_c::doDelete() {
-    return SUCCEEDED;
-}
-
-int dWmDemoActor_c::draw() {
-    return SUCCEEDED;
-}
-
-int dWmDemoActor_c::create() {
-    return SUCCEEDED;
 }
