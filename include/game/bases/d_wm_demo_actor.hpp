@@ -8,17 +8,20 @@ class dWmDemoActor_c : public dWmActor_c {
 public:
     dWmDemoActor_c();
 
-    ~dWmDemoActor_c();
+    ~dWmDemoActor_c() {}
 
     dWmDemoActor_c *FUN_800f6130(dWmDemoActor_c **outActor); ///< @unofficial
 
     virtual int doDelete();
     virtual int draw();
     virtual int create();
+    virtual int execute() = 0;
     virtual int GetActorType();
 
     virtual void setCutEndSpecific(int csId, bool p2); ///< @unofficial
+    virtual bool checkCutEnd();
     virtual void setCutEnd();
+    virtual void clearCutEnd();
 
     bool isStaff();
 
@@ -45,8 +48,6 @@ public:
     void clearSpeedAll();
     void adjustHeightBase(const mVec3_c &v1, const mVec3_c &v2, int i);
     bool FUN_800f6e70(int *csList, int csCount);
-    void clearCutEnd();
-    bool checkCutEnd();
 
 private:
     bool m_00;

@@ -10,9 +10,6 @@
 
 dWmDemoActor_c::dWmDemoActor_c() {}
 
-dWmDemoActor_c::~dWmDemoActor_c() {}
-
-
 dWmDemoActor_c *dWmDemoActor_c::FUN_800f6130(dWmDemoActor_c **outActor) {
     dWmDemoActor_c *actor = (dWmDemoActor_c *) fManager_c::searchBaseByGroupType(fBase_c::ACTOR, this);
     if (actor == nullptr) {
@@ -57,10 +54,8 @@ void dWmDemoActor_c::InitJumpParam(const mVec3_c &v1, const mVec3_c &v2, int p3,
 }
 
 void dWmDemoActor_c::__initJumpParam1(const mVec3_c &v1, const mVec3_c &v2, int p3, float p4, float p5) {
-    // TODO: Not fully matching
-    float f2 = -(p4 * 2.0f) / p5;
     float f = p3;
-    // float len = (v2 - v1).xzLen();
+    float f2 = -(p4 * 2.0f) / f;
     mSpeedF = (v2 - v1).xzLen() / f;
     mMaxFallSpeed = p5;
     mAccelY = f2;
@@ -68,8 +63,12 @@ void dWmDemoActor_c::__initJumpParam1(const mVec3_c &v1, const mVec3_c &v2, int 
 }
 
 void dWmDemoActor_c::__initJumpParam2(const mVec3_c &v1, const mVec3_c &v2, int p3, float p4, float p5) {
-    // TODO
-    float f = -2.0f;
+    float f = p3;
+    float f2 = ((p4 * f - (v2.y - v1.y)) * -2.0f) / (f*f);
+    mSpeedF = (v2 - v1).xzLen() / f;
+    mMaxFallSpeed = p5;
+    mAccelY = f2;
+    mSpeed.y = p4;
 }
 
 void dWmDemoActor_c::initJumpBase(mVec3_c v, int i, float f) {

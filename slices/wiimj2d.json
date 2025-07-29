@@ -234,7 +234,6 @@
         },
         {
             "source": "dol/bases/d_wm_demo_actor.cpp",
-            "nonMatching": true,
             "memoryRanges": {
                 ".text": "0xef960-0xf08d0",
                 ".ctors": "0x174-0x178",
