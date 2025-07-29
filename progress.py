@@ -71,7 +71,7 @@ def calculate_decompiled_bytes(slice_file: SliceFile, filter_sections: list[str]
             byte_count = slice_sec.end_offs - slice_sec.start_offs
 
             count_total_bytes += byte_count
-            if slice.source:
+            if slice.source and not slice.nonMatching:
                 count_compiled_bytes += byte_count
 
     return count_compiled_bytes, count_total_bytes
