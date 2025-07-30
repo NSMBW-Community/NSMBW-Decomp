@@ -383,11 +383,12 @@ void dCourseSelectGuide_c::CourseSelectSet(dWmLib::PointType_e type) {
     dInfo_c *info = dInfo_c::m_instance;
     MsgRes_c *msgRes = dMessage_c::getMesRes();
     int actualWNo = mWorldNo + 1;
+    int actualLevelNo;
     if (type == dWmLib::POINT_TYPE_PATH) {
         mCourseNo = -2;
         return;
     } else if (type == dWmLib::POINT_TYPE_REGULAR_COURSE || type == dWmLib::POINT_TYPE_OTHER) {
-        type = (dWmLib::PointType_e) (mCourseNo + 1);
+        actualLevelNo = mCourseNo + 1;
     } else if (type == dWmLib::POINT_TYPE_START_NODE) {
         mCourseType = dWmLib::COURSE_TYPE_INVALID; /// [Why not use COURSE_TYPE_KINOKO_START here?]
     } else {
@@ -399,7 +400,7 @@ void dCourseSelectGuide_c::CourseSelectSet(dWmLib::PointType_e type) {
     int messageID;
     switch (mCourseType) {
         default:
-            info->field_3b8 = type;
+            info->field_3b8 = actualLevelNo;
             mpTextBoxes[T_cSelect_00]->setMessage(msgRes, BMG_CATEGORY_COURSE_SELECT_GUIDE, MSG_CS_COURSE_NUM, 0);
             mpTextBoxes[T_cSelect_00]->setVisible(true);
             mpTextBoxes[T_cSelect_pic]->setVisible(false);
