@@ -10,9 +10,7 @@
 #include <game/bases/d_info.hpp>
 #include <game/sLib/s_GlobalData.hpp>
 
-/**
- * @brief The world map HUD.
- */
+/// @brief The world map HUD.
 class dCourseSelectGuide_c {
 
     /// @brief The text boxes used in the layout.
@@ -93,9 +91,18 @@ class dCourseSelectGuide_c {
         ANIM_COUNT
     };
 
+    /// @brief The fixed panes used in the layout.
+    /// @unofficial
+    enum T_FIXED_PANE_e {
+        T_guideViewC_00,
+        T_guideViewR_00,
+        T_world_00,
+        T_FIXED_COUNT
+    };
+
     /// @unofficial
     struct GlobalData_t {
-        short mDispWaitTimer;
+        short mDispWaitTimer; ///< @copydoc dCourseSelectGuide_c::c_DISP_WAIT_TIMER
         short mUnk; ///< @unused
     };
 
@@ -114,11 +121,8 @@ private:
 
     void CollectionCoinSet(); ///< Updates the star coin icons.
 
-    /**
-     * @brief Updates the player icons in the remaining lives info to the active player.
-     *
-     * @unofficial
-     */
+    /// @brief Updates the player icons in the remaining lives info to the active player.
+    /// @unofficial
     void PlayerIconSet();
 
     /**
@@ -129,23 +133,20 @@ private:
      */
     void CourseSelectSet(dWmLib::CourseType_e type);
 
-    bool IsDirectionAllowed(int dir); ///< Returns the arrow for direction @p dir should be shown. @unofficial
+    bool IsDirectionAllowed(int dir); ///< Returns whether the arrow for direction @p dir should be shown. @unofficial
 
     /**
      * @brief Updates the course-related parts of the course info guide.
      * @param courseNo The course number.
      * @param type The course type.
      *
-     * -> Course name, star coins collected, checkpoint status
+     * The updated elements include the course name, the star coins collected and the checkpoint status.
      * @unofficial
      */
     void UpdateGuide(short courseNo, dWmLib::CourseType_e type);
 
-    /**
-     * @brief Checks for attached Nunchuck and updates the BMG messages where the button icon would change.
-     *
-     * -> "View Map" and "Items"
-     */
+    /// @brief Checks for attached controller extensions and updates the button hints with the correct icon.
+    /// @details The updated elements include the "View Map" and "Items" button legends.
     void ControllerConnectCheck();
 
     u32 mUnk; ///< @unused
@@ -226,7 +227,7 @@ private:
      * Set to -1 if the player is not present. This is stored here so that the game doesn't have to
      * recalculate the textbox each frame.
      */
-    int mRest[4];
+    int mRest[PLAYER_COUNT];
 
     int mWorldCourseOnStageTimer; ///< Cooldown for showing the course info.
     int mGuideOnStageTimer; ///< Cooldown for showing the remaining guide HUD.
@@ -235,9 +236,9 @@ private:
      * @brief The current transparency for the player remaining lives HUD.
      *
      * This should be changed via mRestAlphaTarget, which will cause mRestAlpha to smoothly
-     * transition to mRestAlphaTarget. [This transition effect goes unused though, because even
+     * transition to mRestAlphaTarget. @decompnote{This transition effect goes unused, because even
      * though stepping on Peach's castle performs this transition, it happens before the
-     * remaining lives counter would appear again on-screen.]
+     * remaining lives counter appears again on-screen.}
      */
     int mRestAlpha;
     int mRestAlphaTarget; ///< The target transparency for mRestAlpha.
@@ -248,12 +249,12 @@ private:
 
     bool mShowCourseInfo; ///< Set this to @p true to show the course info.
     bool mHideCourseInfo; ///< Set this to @p true to hide the course info.
-    bool mIsCourseInfoOutAnime; ///< Automatically set to false after the course info has been hidden.
+    bool mIsCourseInfoOutAnime; ///< Automatically set to @p false after the course info has been hidden.
     bool mNoAnimCourseInfoIn; ///< Whether the course info should simply appear instead of sliding in.
 
     bool mBeginGuide; ///< Set this to @p true to show the remaining guide.
     bool mEndGuide; ///< Set this to @p true to hide the remaining guide.
-    bool mGuideRelated; ///< [@todo Figure out what this does].
+    bool mGuideRelated; ///< @todo Figure out what this does.
     bool mNoHUDAppearAnim; ///< Whether the HUD should be shown without an animation.
 
     bool mEnableAllArrows; ///< Whether to show all map view arrows. Gets reset after 1 frame.
@@ -268,9 +269,9 @@ private:
 
     bool mInMapView; ///< Whether the HUD is in the map view mode.
 
-    bool mShowScrollGuide; ///< Set this to @p true to show the scroll guide [@todo What is this?].
-    bool mEndScrollGuide; ///< Set this to @p true to show the scroll guide [@todo What is this?].
-    bool mScrollGuideRelated; ///< [@todo Figure out what this does].
+    bool mShowScrollGuide; ///< Set this to @p true to show the button legends for the map view mode.
+    bool mEndScrollGuide; ///< Set this to @p true to hide the button legends for the map view mode.
+    bool mScrollGuideRelated; ///< @todo Figure out what this does.
 
     bool mCourseInfoAnim; ///< Whether the course information is in an animation.
     bool mUpAnim; ///< Whether the up arrow is in an animation.

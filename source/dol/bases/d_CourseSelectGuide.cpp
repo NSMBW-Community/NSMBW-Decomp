@@ -118,12 +118,12 @@ bool dCourseSelectGuide_c::createLayout() {
         "T_guideViewLS_00", "T_guideViewL_01"
     };
 
-    static const int MESSAGE_DATA_TBL[] = {
+    static const int MESSAGE_DATA_TBL[T_FIXED_COUNT] = {
         MSG_CS_SELECT_WORLD,
         MSG_CS_MENU,
         MSG_CS_WORLD
     };
-    static const char *T_PANE_FIXED_NAME_TBL[] = {
+    static const char *T_PANE_FIXED_NAME_TBL[T_FIXED_COUNT] = {
         "T_guideViewC_00",
         "T_guideViewR_00",
         "T_world_00"
@@ -151,13 +151,13 @@ bool dCourseSelectGuide_c::createLayout() {
         return false;
     }
     mLayout.build("corseSelectUIGuide_37.brlyt", 0);
-    mLayout.AnimeResRegister(AnmNameTbl, ARRAY_SIZE(AnmNameTbl));
-    mLayout.GroupRegister(GROUP_NAME_DT, ANIME_INDEX_TBL, ARRAY_SIZE(ANIME_INDEX_TBL));
+    mLayout.AnimeResRegister(AnmNameTbl, ANIM_NAME_COUNT);
+    mLayout.GroupRegister(GROUP_NAME_DT, ANIME_INDEX_TBL, ANIM_COUNT);
     mpRootPane = mLayout.getRootPane();
-    mLayout.NPaneRegister(NPANE_NAME_DT, &mpNullPanes[N_IconPos1P_00], ARRAY_SIZE(NPANE_NAME_DT));
-    mLayout.TPaneRegister(T_PANE_NAME_TBL, &mpTextBoxes[T_worldNum_00], ARRAY_SIZE(T_PANE_NAME_TBL));
-    mLayout.TPaneNameRegister(T_PANE_FIXED_NAME_TBL, MESSAGE_DATA_TBL, BMG_CATEGORY_COURSE_SELECT_GUIDE, ARRAY_SIZE(MESSAGE_DATA_TBL));
-    mLayout.PPaneRegister(P_PANE_NAME_TBL, &mpPicturePanes[P_cC_1_00], ARRAY_SIZE(P_PANE_NAME_TBL));
+    mLayout.NPaneRegister(NPANE_NAME_DT, &mpNullPanes[N_IconPos1P_00], N_COUNT);
+    mLayout.TPaneRegister(T_PANE_NAME_TBL, &mpTextBoxes[T_worldNum_00], T_COUNT);
+    mLayout.TPaneNameRegister(T_PANE_FIXED_NAME_TBL, MESSAGE_DATA_TBL, BMG_CATEGORY_COURSE_SELECT_GUIDE, T_FIXED_COUNT);
+    mLayout.PPaneRegister(P_PANE_NAME_TBL, &mpPicturePanes[P_cC_1_00], P_COUNT);
 
     mLayout.mDrawOrder = 2;
     mpRootPane->setVisible(true);
@@ -261,7 +261,7 @@ void dCourseSelectGuide_c::PlayerIconSet() {
 
     int currPane = N_IconPos1P_00;
     int playerCount = -1;
-    for (int i = 0; i < 4; i++) {
+    for (int i = 0; i < PLAYER_COUNT; i++) {
         daPyMng_c::PyType playerType = daPyCom_c::sc_PLAYER_ORDER[i];
         int playerIndex = daPyMng_c::getPlayerIndex(playerType);
         if (dGameCom::PlayerEnterCheck(playerIndex)) {
@@ -273,14 +273,14 @@ void dCourseSelectGuide_c::PlayerIconSet() {
         }
     }
 
-    for (int i = 0; i < 4; i++) {
+    for (int i = 0; i < PLAYER_COUNT; i++) {
         mpNullPanes[N_IconPos1P_00 + i]->setVisible(false);
     }
     mpNullPanes[N_IconPos1P_00 + playerCount]->setVisible(true);
 }
 
 void dCourseSelectGuide_c::RestNumberDisp() {
-    static const int textBoxIdxs[] = { T_lifeNumber_00, T_lifeNumber_01, T_lifeNumber_03, T_lifeNumber_02 };
+    static const int textBoxIdxs[PLAYER_COUNT] = { T_lifeNumber_00, T_lifeNumber_01, T_lifeNumber_03, T_lifeNumber_02 };
 
     for (int i = 0; i < PLAYER_COUNT; i++) {
         daPyMng_c::PyType playerType = daPyCom_c::sc_PLAYER_ORDER[i];
@@ -313,14 +313,10 @@ void dCourseSelectGuide_c::RestAlphaDisp() {
     }
 
     u8 alpha = mRestAlpha;
-    mpNullPanes[N_IconPos1P_00]->setAlpha(alpha);
-    mpPicturePanes[P_marioFace_00]->setAlpha(alpha);
-    mpNullPanes[N_IconPos2P_00]->setAlpha(alpha);
-    mpPicturePanes[P_luigiFace_00]->setAlpha(alpha);
-    mpNullPanes[N_IconPos3P_00]->setAlpha(alpha);
-    mpPicturePanes[P_BkinoFace_00]->setAlpha(alpha);
-    mpNullPanes[N_IconPos4P_00]->setAlpha(alpha);
-    mpPicturePanes[P_YkinoFace_00]->setAlpha(alpha);
+    for (int i = 0; i < PLAYER_COUNT; i++) {
+        mpNullPanes[N_IconPos1P_00 + i]->setAlpha(alpha);
+        mpPicturePanes[P_marioFace_00 + i]->setAlpha(alpha);
+    }
 }
 
 void dCourseSelectGuide_c::execute() {
@@ -373,7 +369,7 @@ void dCourseSelectGuide_c::doDelete() {
 }
 
 void dCourseSelectGuide_c::CourseSelectSet(dWmLib::CourseType_e type) {
-    static const int sc_startPointIcons[] = {
+    static const int sc_startPointIcons[WORLD_USED_COUNT] = {
         MSG_CS_ICON_START_RIGHT, // W1
         MSG_CS_ICON_START_UP,    // W2
         MSG_CS_ICON_START_RIGHT, // W3
@@ -441,7 +437,7 @@ void dCourseSelectGuide_c::CourseSelectSet(dWmLib::CourseType_e type) {
             messageID = MSG_CS_ICON_PEACH_CASTLE;
             break;
         case 11:
-            if (dWmLib::getStartPointKinokoHouseKindNum() == 0 || dWmLib::IsCourseClear(mWorldNo, STAGE_RESCUE)) {
+            if (dWmLib::getStartPointKinokoHouseKindNum() == 0 || dWmLib::IsCourseClear(mWorldNo, STAGE_START_KINOKO_HOUSE)) {
                 messageID = sc_startPointIcons[mWorldNo];
                 break;
             }
@@ -892,12 +888,12 @@ void dCourseSelectGuide_c::executeState_ScrollGuideOnStageWait() {
         mScrollGuideRelated = false;
         mGuideRelated = false;
         mInMapView = false;
-#if !(defined(VERSION_K) || defined(VERSION_W))
-    } else if (mShowScrollGuide) {
-#else
+#if (defined(VERSION_K) || defined(VERSION_W))
     // Don't transition to the next state until the animation is finished.
     // Otherwise, the "View Map" text would change to "Back to Mario" too early.
     } else if (mShowScrollGuide && !mLayout.isAnime(ANIM_OUT_UNDER)) {
+#else
+    } else if (mShowScrollGuide) {
 #endif
         mStateMgrScrollGuide.changeState(StateID_ScrollGuideOnStageAnimeEndCheck);
     }
@@ -920,6 +916,8 @@ void dCourseSelectGuide_c::executeState_ScrollGuideOnStageAnimeEndCheck() {
         mLayout.AnimeEndSetup(ANIM_IN_UNDER);
         mStateMgrScrollGuide.changeState(StateID_ScrollGuideExitAnimeEndCheck);
     } else if (!mLayout.isAnime(-1)) {
+        // [Bug: The above should probably be !mLayout.isAnime(ANIM_IN_UNDER).
+        // But since ScrollGuideDisp doesn't really do anything, no difference is visible.]
         mStateMgrScrollGuide.changeState(StateID_ScrollGuideDisp);
     }
 }
@@ -965,12 +963,10 @@ void dCourseSelectGuide_c::UpdateGuide(short courseNo, dWmLib::CourseType_e type
         CollectionCoinSet();
     }
     dInfo_c *info = dInfo_c::m_instance;
-    dCyuukan_c *checkpoint;
-    u8 wNo, cNo;
-    cNo = courseNo;
-    wNo = mWorldNo;
+    dCyuukan_c *checkpoint = &info->mCyuukan;
+    u8 wNo = mWorldNo;
+    u8 cNo = courseNo;
     mpPicturePanes[P_flagSkull_00]->setVisible(false);
-    checkpoint = &info->mCyuukan;
     for (int i = 0; i < 2; i++) {
         if (checkpoint->isCyuukanStart(i, wNo, cNo)) {
             mpPicturePanes[P_flagSkull_00]->setVisible(true);

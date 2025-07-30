@@ -14,9 +14,9 @@ void dMj2dGame_c::initialize() {
     mRevision[1] = SAVE_REVISION_MINOR;
     mGameCompletion |= SAVE_EMPTY;
 
-    // Unlock the rescue stage for each world
+    // Mark the starting toad house stage as cleared for each world
     for (int world = 0; world <= NORMAL_WORLD_COUNT; world++) {
-        onCourseDataFlag(world, STAGE_RESCUE, GOAL_MASK);
+        onCourseDataFlag(world, STAGE_START_KINOKO_HOUSE, GOAL_MASK);
     }
 
     // Initialize the player data
