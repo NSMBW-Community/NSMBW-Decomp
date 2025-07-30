@@ -368,7 +368,7 @@ void dCourseSelectGuide_c::doDelete() {
     mLayout.doDelete();
 }
 
-void dCourseSelectGuide_c::CourseSelectSet(dWmLib::CourseType_e type) {
+void dCourseSelectGuide_c::CourseSelectSet(dWmLib::PointType_e type) {
     static const int sc_startPointIcons[WORLD_USED_COUNT] = {
         MSG_CS_ICON_START_RIGHT, // W1
         MSG_CS_ICON_START_UP,    // W2
@@ -383,16 +383,15 @@ void dCourseSelectGuide_c::CourseSelectSet(dWmLib::CourseType_e type) {
     dInfo_c *info = dInfo_c::m_instance;
     MsgRes_c *msgRes = dMessage_c::getMesRes();
     int actualWNo = mWorldNo + 1;
-    if (type == 1) {
+    if (type == dWmLib::POINT_TYPE_PATH) {
         mCourseNo = -2;
         return;
-    }
-    if (type == 3 || type == 4) {
-        type = (dWmLib::CourseType_e) (mCourseNo + 1);
-    } else if (type == 2) {
-        mCourseType = 11;
+    } else if (type == dWmLib::POINT_TYPE_REGULAR_COURSE || type == dWmLib::POINT_TYPE_OTHER) {
+        type = (dWmLib::PointType_e) (mCourseNo + 1);
+    } else if (type == dWmLib::POINT_TYPE_START_NODE) {
+        mCourseType = dWmLib::COURSE_TYPE_INVALID; /// [Why not use COURSE_TYPE_KINOKO_START here?]
     } else {
-        mCourseType = 5;
+        mCourseType = dWmLib::COURSE_TYPE_JUNCTION;
     }
     info->field_3b4 = actualWNo;
     mpTextBoxes[T_worldNum_00]->setMessage(msgRes, BMG_CATEGORY_COURSE_SELECT_GUIDE, MSG_CS_CURR_WORLD, 0);
@@ -405,16 +404,16 @@ void dCourseSelectGuide_c::CourseSelectSet(dWmLib::CourseType_e type) {
             mpTextBoxes[T_cSelect_00]->setVisible(true);
             mpTextBoxes[T_cSelect_pic]->setVisible(false);
             return;
-        case 1: messageID = MSG_CS_ICON_GHOST_HOUSE; break;
-        case 2: messageID = MSG_CS_ICON_TOWER; break;
-        case 3:
+        case dWmLib::COURSE_TYPE_GHOST: messageID = MSG_CS_ICON_GHOST_HOUSE; break;
+        case dWmLib::COURSE_TYPE_TOWER: messageID = MSG_CS_ICON_TOWER; break;
+        case dWmLib::COURSE_TYPE_CASTLE:
             if (mWorldNo != WORLD_8) {
                 messageID = MSG_CS_ICON_CASTLE;
             } else {
                 messageID = MSG_CS_ICON_W8_CASTLE;
             }
             break;
-        case 4:
+        case dWmLib::COURSE_TYPE_KINOKO:
             if (dScWMap_c::IsCourseType(mWorldNo, mCourseNo, dScWMap_c::COURSE_TYPE_KINOKO_HOUSE_1UP)) {
                 messageID = MSG_CS_ICON_KINOKO_HOUSE_1UP;
             } else if (dScWMap_c::IsCourseType(mWorldNo, mCourseNo, dScWMap_c::COURSE_TYPE_KINOKO_HOUSE_STAR)) {
@@ -423,20 +422,20 @@ void dCourseSelectGuide_c::CourseSelectSet(dWmLib::CourseType_e type) {
                 messageID = MSG_CS_ICON_KINOKO_HOUSE_RED;
             }
             break;
-        case 5: messageID = MSG_CS_ICON_JUNCTION; break;
-        case 6: messageID = MSG_CS_ICON_CANNON; break;
-        case 8:
+        case dWmLib::COURSE_TYPE_JUNCTION: messageID = MSG_CS_ICON_JUNCTION; break;
+        case dWmLib::COURSE_TYPE_CANNON: messageID = MSG_CS_ICON_CANNON; break;
+        case dWmLib::COURSE_TYPE_KOOPA_SHIP:
             if (dWmLib::isKoopaShipAnchor()) {
                 messageID = MSG_CS_ICON_ANCHOR;
             } else {
                 messageID = MSG_CS_ICON_AIRSHIP;
             }
             break;
-        case 10:
+        case dWmLib::COURSE_TYPE_PEACH_CASTLE:
             mRestAlphaTarget = 0;
             messageID = MSG_CS_ICON_PEACH_CASTLE;
             break;
-        case 11:
+        case dWmLib::COURSE_TYPE_INVALID:
             if (dWmLib::getStartPointKinokoHouseKindNum() == 0 || dWmLib::IsCourseClear(mWorldNo, STAGE_START_KINOKO_HOUSE)) {
                 messageID = sc_startPointIcons[mWorldNo];
                 break;
@@ -462,7 +461,7 @@ void dCourseSelectGuide_c::CollectionCoinSet() {
         mpPicturePanes[P_cC_1s_00 + i]->setVisible(true);
         mpPicturePanes[P_cC_1s_00 + i]->setAlpha(255);
         mpPicturePanes[P_cC_1_00 + i]->setAlpha(255);
-        if (mCourseNo < 0 || !dScWMap_c::IsCourseType(mWorldNo, mCourseNo, dScWMap_c::COURSE_TYPE_2)) {
+        if (mCourseNo < 0 || !dScWMap_c::IsCourseType(mWorldNo, mCourseNo, dScWMap_c::COURSE_TYPE_NO_STAR_COINS)) {
             mpPicturePanes[P_cC_1s_00 + i]->setVisible(false);
         } else {
             u8 collectCoin = saveGame->isCollectCoin(mWorldNo, mCourseNo, i);
@@ -952,14 +951,14 @@ void dCourseSelectGuide_c::finalizeState_ScrollGuideExitAnimeEndCheck() {
     mInMapView = false;
 }
 
-void dCourseSelectGuide_c::UpdateGuide(short courseNo, dWmLib::CourseType_e type) {
+void dCourseSelectGuide_c::UpdateGuide(short courseNo, dWmLib::PointType_e type) {
     if (mCourseNo == courseNo) {
         return;
     }
     mCourseType = dWmLib::GetCourseTypeFromCourseNo(courseNo);
     mCourseNo = courseNo;
     CourseSelectSet(type);
-    if (type != 1) {
+    if (type != dWmLib::POINT_TYPE_PATH) {
         CollectionCoinSet();
     }
     dInfo_c *info = dInfo_c::m_instance;
@@ -967,7 +966,7 @@ void dCourseSelectGuide_c::UpdateGuide(short courseNo, dWmLib::CourseType_e type
     u8 wNo = mWorldNo;
     u8 cNo = courseNo;
     mpPicturePanes[P_flagSkull_00]->setVisible(false);
-    for (int i = 0; i < 2; i++) {
+    for (int i = 0; i < CHECKPOINT_COUNT; i++) {
         if (checkpoint->isCyuukanStart(i, wNo, cNo)) {
             mpPicturePanes[P_flagSkull_00]->setVisible(true);
             break;

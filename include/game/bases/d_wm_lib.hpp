@@ -24,7 +24,29 @@ namespace dWmLib {
     static int someCourseNo = dCsvData_c::c_START_ID;
 
     /// @unofficial
-    enum CourseType_e {};
+    enum CourseType_e {
+        COURSE_TYPE_NORMAL,
+        COURSE_TYPE_GHOST,
+        COURSE_TYPE_TOWER,
+        COURSE_TYPE_CASTLE,
+        COURSE_TYPE_KINOKO,
+        COURSE_TYPE_JUNCTION,
+        COURSE_TYPE_CANNON,
+        COURSE_TYPE_STAGE_37,
+        COURSE_TYPE_KOOPA_SHIP,
+        COURSE_TYPE_KINOKO_START,
+        COURSE_TYPE_PEACH_CASTLE,
+        COURSE_TYPE_INVALID
+    };
+
+    /// @unofficial
+    enum PointType_e {
+        POINT_TYPE_INTERSECTION,
+        POINT_TYPE_PATH,
+        POINT_TYPE_START_NODE,
+        POINT_TYPE_REGULAR_COURSE,
+        POINT_TYPE_OTHER
+    };
 
     int GetCourseTypeFromCourseNo(int courseNo);
     bool isKoopaShipAnchor();

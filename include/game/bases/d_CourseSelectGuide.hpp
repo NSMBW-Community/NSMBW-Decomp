@@ -127,23 +127,23 @@ private:
 
     /**
      * @brief Updates the textbox that displays the current course.
-     * @param type The course type.
+     * @param type The point type.
      *
      * @unofficial
      */
-    void CourseSelectSet(dWmLib::CourseType_e type);
+    void CourseSelectSet(dWmLib::PointType_e type);
 
     bool IsDirectionAllowed(int dir); ///< Returns whether the arrow for direction @p dir should be shown. @unofficial
 
     /**
      * @brief Updates the course-related parts of the course info guide.
      * @param courseNo The course number.
-     * @param type The course type.
+     * @param type The point type.
      *
      * The updated elements include the course name, the star coins collected and the checkpoint status.
      * @unofficial
      */
-    void UpdateGuide(short courseNo, dWmLib::CourseType_e type);
+    void UpdateGuide(short courseNo, dWmLib::PointType_e type);
 
     /// @brief Checks for attached controller extensions and updates the button hints with the correct icon.
     /// @details The updated elements include the "View Map" and "Items" button legends.
