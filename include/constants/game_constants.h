@@ -9,6 +9,8 @@
 
 #define AMBUSH_ENEMY_COUNT 4 ///< The maximum amount of ambush enemies per world map.
 
+#define CHECKPOINT_COUNT 2 ///< The maximum number of checkpoints supported.
+
 #define HINT_MOVIE_COUNT 70 ///< The total hint movie count.
 
 #define MAX_LIVES 99 ///< The maximum life count.
@@ -23,12 +25,19 @@
 
 #define SUPER_GUIDE_DEATH_COUNT 8 ///< The amount of deaths required for the Super Guide to show.
 
+enum DIRECTION_e {
+    DIR_UP,
+    DIR_DOWN,
+    DIR_LEFT,
+    DIR_RIGHT
+};
+
 /// @brief The identifiers for each character.
 enum PLAYER_CHARACTER_e {
     PLAYER_MARIO,
     PLAYER_LUIGI,
-    PLAYER_BLUE_TOAD,
     PLAYER_YELLOW_TOAD,
+    PLAYER_BLUE_TOAD,
     PLAYER_COUNT
 };
 
@@ -79,7 +88,7 @@ enum STAGE_e {
     STAGE_ENEMY_3,
     STAGE_CANNON,
     STAGE_DOOMSHIP = 37,
-    STAGE_RESCUE, ///< When used, it loads the Toad Rescue level for the corresponding world.
+    STAGE_START_KINOKO_HOUSE, ///< The toad house on the starting node of each world.
     STAGE_TITLE,
     STAGE_PEACH_CASTLE,
     STAGE_STAFFROLL,
@@ -103,7 +112,8 @@ enum WORLD_e {
     LAST_WORLD = WORLD_8,
     LAST_SPECIAL_WORLD = WORLD_9,
     NORMAL_WORLD_COUNT = LAST_WORLD + 1,
-    SPECIAL_WORLD_COUNT = LAST_SPECIAL_WORLD - LAST_WORLD
+    SPECIAL_WORLD_COUNT = LAST_SPECIAL_WORLD - LAST_WORLD,
+    WORLD_USED_COUNT = NORMAL_WORLD_COUNT + SPECIAL_WORLD_COUNT
 };
 
 /// @}

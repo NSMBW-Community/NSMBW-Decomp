@@ -269,7 +269,7 @@ void dYesNoWindow_c::populateLayout() {
 
     int mainMsgID = MainMsgIDs[mType];
     if (mType == WATCH_HINT_MOVIE) {
-        LytTextBox_c::SetTextInt(&mStarCoinsRequired, &fillLeftReqStarCoins, T_needCoin_00, true);
+        dGameCom::LayoutDispNumber(mStarCoinsRequired, fillLeftReqStarCoins, T_needCoin_00, true);
 
         T_otehonTextS_01->setMessage(msgRes, BMG_CATEGORY_HINT_MOVIES, MSG_STAR_COINS_REQUIRED, 0);
         T_otehonText_01->setMessage(msgRes, BMG_CATEGORY_HINT_MOVIES, MSG_STAR_COINS_REQUIRED, 0);

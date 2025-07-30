@@ -9,6 +9,7 @@
 
 namespace d2d {
 
+/// @unofficial
 struct ClipSettings {
     ClipSettings() : mPos(0.0f, 0.0f), mSize(0.0f, 0.0f), mEnabled(false) {}
 

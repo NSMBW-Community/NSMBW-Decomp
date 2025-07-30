@@ -55,7 +55,6 @@ public:
     void setVisible(bool visible) {
         detail::SetBit(&mFlags, BIT_VISIBLE, visible);
     }
-
     void setScale(const math::VEC2 &scale) { mScale = scale; }
     void setAlpha(u8 alpha) { mAlpha = alpha; }
 
