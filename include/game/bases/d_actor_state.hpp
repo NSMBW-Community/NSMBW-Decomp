@@ -33,6 +33,8 @@ public:
     /// @brief Changes the actor's state to the given state.
     /// @param newState The state ID of the new state.
     virtual void changeState(const sStateIDIf_c &newState) { mStateMgr.changeState(newState); }
+    bool isState(sStateIDIf_c &other) { return *mStateMgr.getStateID() == other; }
+
     STATE_VIRTUAL_FUNC_DECLARE(dActorMultiState_c, GegnericMulti);
 
     sFStateStateMgr_c<dActorMultiState_c, sStateMethodUsr_FI_c, sStateMethodUsr_FI_c> mStateMgr; ///< The state manager.
