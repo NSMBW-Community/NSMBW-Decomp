@@ -1,8 +1,7 @@
 #include <types.h>
 #include <lib/MSL_C/string.h>
 #include <game/bases/d_mj2d_data.hpp>
-
-const u32 dMj2dGame_c::sDefaultCharacters[PLAYER_COUNT] = {PLAYER_MARIO, PLAYER_LUIGI, PLAYER_YELLOW_TOAD, PLAYER_BLUE_TOAD};
+#include <game/bases/d_a_player_com.hpp>
 
 dMj2dGame_c::dMj2dGame_c() {}
 
@@ -21,7 +20,7 @@ void dMj2dGame_c::initialize() {
 
     // Initialize the player data
     for (int player = 0; player < PLAYER_COUNT; player++) {
-        setPlrID(player, sDefaultCharacters[player]);
+        setPlrID(player, daPyCom_c::sc_PLAYER_ORDER[player]);
         setPlrMode(player, POWERUP_NONE);
         setRest(player, STARTING_LIVES_COUNT);
         setCreateItem(player, CREATE_ITEM_NONE);

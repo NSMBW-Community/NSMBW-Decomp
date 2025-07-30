@@ -1,15 +1,16 @@
 #pragma once
 #include <game/bases/d_a_player_manager.hpp>
+#include <constants/game_constants.h>
 
 /// @unofficial
 namespace daPyCom_c {
 
 /// @unofficial
-static const daPyMng_c::PyType sc_PLAYER_ORDER[] = {
-    daPyMng_c::TYPE_MARIO,
-    daPyMng_c::TYPE_LUIGI,
-    daPyMng_c::TYPE_BLUE_TOAD,
-    daPyMng_c::TYPE_YELLOW_TOAD
+static const PLAYER_CHARACTER_e sc_PLAYER_ORDER[] = {
+    PLAYER_MARIO,
+    PLAYER_LUIGI,
+    PLAYER_BLUE_TOAD,
+    PLAYER_YELLOW_TOAD
 };
 
 }

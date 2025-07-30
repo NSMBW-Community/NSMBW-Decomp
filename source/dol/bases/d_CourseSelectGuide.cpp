@@ -262,7 +262,7 @@ void dCourseSelectGuide_c::PlayerIconSet() {
     int currPane = N_IconPos1P_00;
     int playerCount = -1;
     for (int i = 0; i < PLAYER_COUNT; i++) {
-        daPyMng_c::PyType playerType = daPyCom_c::sc_PLAYER_ORDER[i];
+        PLAYER_CHARACTER_e playerType = daPyCom_c::sc_PLAYER_ORDER[i];
         int playerIndex = daPyMng_c::getPlayerIndex(playerType);
         if (dGameCom::PlayerEnterCheck(playerIndex)) {
             mVec3_c pos = mpNullPanes[currPane]->mPos;
@@ -283,7 +283,7 @@ void dCourseSelectGuide_c::RestNumberDisp() {
     static const int textBoxIdxs[PLAYER_COUNT] = { T_lifeNumber_00, T_lifeNumber_01, T_lifeNumber_03, T_lifeNumber_02 };
 
     for (int i = 0; i < PLAYER_COUNT; i++) {
-        daPyMng_c::PyType playerType = daPyCom_c::sc_PLAYER_ORDER[i];
+        PLAYER_CHARACTER_e playerType = daPyCom_c::sc_PLAYER_ORDER[i];
         int playerIndex = daPyMng_c::getPlayerIndex(playerType);
         int rest = daPyMng_c::getRest(playerType);
         if (mRest[i] != rest) {

@@ -1,19 +1,16 @@
 #pragma once
 #include <game/bases/d_a_player.hpp>
+#include <constants/game_constants.h>
 
 class daPyMng_c {
 public:
-    /// @unofficial
-    enum PyType {
-        TYPE_MARIO, TYPE_LUIGI, TYPE_YELLOW_TOAD, TYPE_BLUE_TOAD
-    };
 
-    static int getPlayerIndex(PyType); ///< @unofficial
+    static int getPlayerIndex(PLAYER_CHARACTER_e); ///< @unofficial
     static dAcPy_c *getPlayer(int);
     static void addScore(int, int);
 
     static bool checkPlayer(u8 plrNo) { return mActPlayerInfo & (1 << plrNo); }
-    static int getRest(PyType plrNo) { return mRest[plrNo]; }
+    static int getRest(PLAYER_CHARACTER_e plrNo) { return mRest[plrNo]; }
 
     static int mNum;
     static u8 mActPlayerInfo;
