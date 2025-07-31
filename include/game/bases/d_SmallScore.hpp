@@ -4,15 +4,23 @@
 #include <game/mLib/m_vec.hpp>
 #include <nw4r/lyt.h>
 
-
+/**
+ * @brief Displays a small popup score indicator.
+ * @ingroup bases
+ * @details The class handles the creation, animation, and rendering of a single small score popup,
+ * which appears when performing actions such as stomping enemies, collecting coins, or earning 1-UPs.
+ */
 class dSmallScore_c {
 public:
+
+    /// @brief The possible states of the score popup.
     enum STATE_e {
-        STATE_MAKE_START = 0,
-        STATE_UP_MOVE = 1,
-        STATE_DISP_WAIT = 2,
-        STATE_GOAL_DISP = 3,
-        STATE_NONE = 4
+        STATE_MAKE_START,
+        STATE_UP_MOVE,
+        STATE_DISP_WAIT,
+        STATE_GOAL_DISP,
+        STATE_NONE,
+        STATE_COUNT = STATE_NONE,
     };
 
     /// @brief The different types of the small score popups.
@@ -47,12 +55,29 @@ public:
         POPUP_TYPE_INVALID = -1 ///< Invalid popup type.
     };
 
+    /// @brief The text boxes used for the layout.
+    enum T_PANE_e {
+        T_100_00,
+        T_1000_00,
+        T_red2_00,
+        T_1UP_00,
+        T_coin_x_00,
+        T_coinPoint_00,
+        T_COUNT
+    };
+
+    /// @brief The null panes used for the layout.
+    enum N_PANE_e {
+        N_coin_00,
+        N_COUNT
+    };
+
     typedef void (dSmallScore_c::*ProcFunc)();
 
-    dSmallScore_c();
-    virtual ~dSmallScore_c();
+    dSmallScore_c(); ///< Constructs a new score popup creator.
+    virtual ~dSmallScore_c(); ///< Destroys the score popup creator.
 
-    bool createLayout(d2d::ResAccMultLoader_c *);
+    bool createLayout(d2d::ResAccMultLoader_c *res);
     void execute();
     void draw();
     bool doDelete();
@@ -78,7 +103,7 @@ public:
 
     void setClipScale(mVec2_c v) { mClipScale = v; }
 
-    LytBase_c mLayout;
+    LytBase_c mLayout; ///< The layout for the score popup.
     mVec2_c mPos;
     mVec2_c mPosDelta;
     mVec2_c mPosDeceleration;
@@ -86,34 +111,25 @@ public:
     mVec2_c mScale;
     mVec2_c mClipScale;
     mVec2_c mAnimScale;
-    nw4r::lyt::Pane *mpRootPane;
-    LytTextBox_c *T_100_00;
-    LytTextBox_c *T_1000_00;
-    LytTextBox_c *T_red2_00;
-    LytTextBox_c *T_1UP_00;
-    LytTextBox_c *T_coin_x_00;
-    LytTextBox_c *T_coinPoint_00;
-    nw4r::lyt::Pane *N_coin_00;
-    float mMaxHeight;
-    STATE_e mState; ///< Determines the state the score popup is in
-    int mPopupType;
-    int mDispWaitCounter; ///< Counter that is incremented every frame while in the 'DispWait' state
-    int mDispWaitTime; ///< Number of frames to wait in 'DispWait' (unless mPlayerType is 4, in which case the default value is 60)
+    nw4r::lyt::Pane *mpRootPane; ///< The root pane of the layout.
+    LytTextBox_c *mpTextBoxes[T_COUNT]; ///< The text boxes used for the layout.
+    nw4r::lyt::Pane *mpNullPanes[N_COUNT]; ///< The null panes used for the layout.
+    float mMaxHeight; ///< The maximum height the score popup can be displayed at.
+    STATE_e mState; ///< The state the score popup is in.
+    int mPopupType; ///< The popup type. Value is a ::POPUP_TYPE_e.
+    int mDispWaitCounter; ///< The amount of frames the @p DispWait state has been active.
+    int mDispWaitTime; ///< The number of frames to wait in the @p DispWait state.
     int mPlayerType;
-    int mChgColorCounter; ///< Counter that is incremented every call to dSmallScore_c::chgColor(), which ensures that the 1-up color is only set once every 10 calls.
+    int mChgColorCounter; ///< Counter that is incremented every call to ::chgColor, which ensures that the 1-UP color is only set once every 10 calls.
     u32 mPlayerColor;
     int mAnimCounter;
-    u32 mCurTextbox;
+    u32 mCurTextbox; ///< The textbox currently displayed. Value is a ::T_PANE_e.
     bool mIsGoalScore;
-    bool mInitialized;
+    bool mInitialized; ///< Whether the layout has been initialized.
     bool mEnableColorChange;
     bool mEnableBigSmallAnim;
     bool mAnimIsShrinking;
-    bool mHasBlueColor;
+    bool mHasBlueColor; ///< Whether counter type score popups should be colored blue instead of red.
 
-    /// @brief Gets the n-th text box.
-    LytTextBox_c *getTextBox(int n) { return (&T_100_00)[n]; }
-
-    static dSmallScore_c *m_instance;
-
+    static dSmallScore_c *m_instance; ///< The instance of the score popup creator. @unused
 };
