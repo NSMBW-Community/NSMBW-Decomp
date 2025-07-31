@@ -7,7 +7,7 @@ namespace g3d {
 
 class ScnGroup : public ScnObj {
 public:
-    virtual bool Insert(unsigned long, nw4r::g3d::ScnObj *);
+    virtual bool Insert(unsigned long, ScnObj *);
     virtual void Remove(unsigned long);
 
     NW4R_G3D_TYPE_OBJ_DECL(ScnGroup);

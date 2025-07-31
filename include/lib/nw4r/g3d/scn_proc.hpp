@@ -9,7 +9,7 @@ class ScnProc : public ScnLeaf {
 public:
     virtual ~ScnProc();
 
-    static ScnProc *Construct(MEMAllocator *, size_t *, void (*)( nw4r::g3d::ScnProc *, bool ), bool, bool, unsigned long);
+    static ScnProc *Construct(MEMAllocator *, size_t *, void (*)( ScnProc *, bool ), bool, bool, unsigned long);
 
     NW4R_G3D_TYPE_OBJ_DECL(ScnProc);
 

@@ -46,9 +46,9 @@ struct ChrAnmResult {
     };
 
     u32 mFlags; ///< The attributes held by the character animation result data. See Flag.
-    nw4r::math::VEC3 mScale; ///< The result scale.
-    nw4r::math::VEC3 mRotation; ///< The result rotation.
-    nw4r::math::MTX34 mMtx; ///< The matrix for rotation and translation.
+    math::VEC3 mScale; ///< The result scale.
+    math::VEC3 mRotation; ///< The result rotation.
+    math::MTX34 mMtx; ///< The matrix for rotation and translation.
 };
 
 class AnmObjChr : public AnmObj {
@@ -62,14 +62,14 @@ public:
 
 class AnmObjChrRes : public AnmObjChr {
 public:
-    static AnmObjChrRes *Construct(MEMAllocator*, size_t*, nw4r::g3d::ResAnmChr, nw4r::g3d::ResMdl, bool);
+    static AnmObjChrRes *Construct(MEMAllocator*, size_t*, ResAnmChr, ResMdl, bool);
 
     NW4R_G3D_TYPE_OBJ_DECL(AnmObjChr);
 };
 
 class AnmObjChrNode : public AnmObjChr {
 public:
-    static AnmObjChrNode *Construct(MEMAllocator*, size_t*, nw4r::g3d::ResAnmChr, nw4r::g3d::ResMdl, bool);
+    static AnmObjChrNode *Construct(MEMAllocator*, size_t*, ResAnmChr, ResMdl, bool);
 
     NW4R_G3D_TYPE_OBJ_DECL(AnmObjChrNode);
 
@@ -82,7 +82,7 @@ public:
 
 class AnmObjChrBlend : public AnmObjChr {
 public:
-    static AnmObjChrBlend *Construct(MEMAllocator*, size_t*, nw4r::g3d::ResMdl, int);
+    static AnmObjChrBlend *Construct(MEMAllocator*, size_t*, ResMdl, int);
 
     NW4R_G3D_TYPE_OBJ_DECL(AnmObjChrBlend);
 };

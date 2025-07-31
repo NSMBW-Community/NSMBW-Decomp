@@ -46,10 +46,10 @@ public:
         CALLBACK_TIMING_ALL = CALLBACK_TIMING_A | CALLBACK_TIMING_B | CALLBACK_TIMING_C
     };
 
-    virtual void CalcWorldMtx(const nw4r::math::MTX34 *, unsigned long *) const;
+    virtual void CalcWorldMtx(const math::MTX34 *, unsigned long *) const;
 
-    void SetMtx(ScnObjMtxType, const nw4r::math::MTX34 *);
-    void GetMtx(ScnObjMtxType, nw4r::math::MTX34 *) const;
+    void SetMtx(ScnObjMtxType, const math::MTX34 *);
+    void GetMtx(ScnObjMtxType, math::MTX34 *) const;
 
     NW4R_G3D_TYPE_OBJ_DECL(ScnObj);
 

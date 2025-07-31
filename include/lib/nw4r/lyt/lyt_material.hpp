@@ -14,7 +14,7 @@ public:
     s16 a;
 
     GXColorS10(s16 r, s16 g, s16 b, s16 a) : r(r), g(g), b(b), a(a) { }
-    GXColorS10(const nw4r::ut::Color &color) {
+    GXColorS10(const ut::Color &color) {
         r = color.r;
         g = color.g;
         b = color.b;
@@ -28,7 +28,7 @@ public:
 
     ut::detail::LinkListImpl mAnimList;
     GXColorS10 mTevCols[3];
-    nw4r::ut::Color mTevKCols[4];
+    ut::Color mTevKCols[4];
     u32 mGXMemCap; // [actually a bitfield]
     u32 mGXMemNum; // [actually a bitfield]
     void *mpGXMem;

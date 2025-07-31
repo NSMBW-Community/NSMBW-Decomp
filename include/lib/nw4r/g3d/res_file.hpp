@@ -10,7 +10,7 @@ namespace nw4r {
             void Init();
             void Bind(ResFile);
 
-            nw4r::g3d::ResMdl GetResMdl(const char *name) const;
+            ResMdl GetResMdl(const char *name) const;
 
             void *data;
         };

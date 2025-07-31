@@ -21,17 +21,17 @@ public:
         ANMOBJTYPE_VTX = ANMOBJTYPE_SHP
     };
 
-    virtual void SetAnmObj(nw4r::g3d::AnmObj *, nw4r::g3d::ScnMdlSimple::AnmObjType);
-    virtual void RemoveAnmObj(nw4r::g3d::AnmObj *);
-    virtual void RemoveAnmObj(nw4r::g3d::ScnMdlSimple::AnmObjType);
-    virtual nw4r::g3d::AnmObj *GetAnmObj(nw4r::g3d::ScnMdlSimple::AnmObjType) const;
-    virtual nw4r::g3d::AnmObj *GetAnmObj(nw4r::g3d::ScnMdlSimple::AnmObjType);
+    virtual void SetAnmObj(AnmObj *, ScnMdlSimple::AnmObjType);
+    virtual void RemoveAnmObj(AnmObj *);
+    virtual void RemoveAnmObj(ScnMdlSimple::AnmObjType);
+    virtual AnmObj *GetAnmObj(ScnMdlSimple::AnmObjType) const;
+    virtual AnmObj *GetAnmObj(ScnMdlSimple::AnmObjType);
 
     static ScnMdlSimple *Construct(MEMAllocator *, size_t *, ResMdl, int);
 
     void EnableScnMdlCallbackTiming(ScnObj::Timing);
 
-    bool GetScnMtxPos(nw4r::math::MTX34 *, nw4r::g3d::ScnObj::ScnObjMtxType, unsigned long) const;
+    bool GetScnMtxPos(math::MTX34 *, ScnObj::ScnObjMtxType, unsigned long) const;
 
     ResMdl mpResMdl;
     char pad2[0x30]; // not sure how much of the pad is in here vs in ObjMdl

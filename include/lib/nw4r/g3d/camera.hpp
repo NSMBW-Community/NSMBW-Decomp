@@ -4,14 +4,14 @@
 
 namespace nw4r {
 namespace g3d {
-    
+
 struct CameraData {
     char pad[0x10c];
 };
 
 class Camera {
 public:
-    void GetCameraMtx(nw4r::math::MTX34 *) const;
+    void GetCameraMtx(math::MTX34 *) const;
 
     CameraData *mpData;
 };

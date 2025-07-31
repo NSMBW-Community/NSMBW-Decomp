@@ -20,9 +20,7 @@ private:
     };
 
 public:
-
     Pane(const res::Pane *);
-
     virtual ~Pane();
 
     virtual int *GetRuntimeTypeInfo() const { return &typeInfo; }
@@ -50,10 +48,10 @@ public:
     virtual bool GetMaterialNum() const;
     virtual Material *GetMaterial() const;
     virtual Material *GetMaterial(unsigned long) const;
-    virtual void LoadMtx(const nw4r::lyt::DrawInfo &);
+    virtual void LoadMtx(const DrawInfo &);
 
-    void AppendChild(nw4r::lyt::Pane *);
-    void RemoveChild(nw4r::lyt::Pane *);
+    void AppendChild(Pane *);
+    void RemoveChild(Pane *);
 
     math::VEC2 GetVtxPos() const;
     unsigned short GetExtUserDataNum() const;

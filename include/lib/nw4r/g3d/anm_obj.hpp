@@ -19,10 +19,10 @@ public:
     virtual void UpdateFrame();
     virtual void SetUpdateRate(float rate);
     virtual float GetUpdateRate() const;
-    virtual bool Bind(nw4r::g3d::ResMdl resMdl);
+    virtual bool Bind(ResMdl resMdl);
     virtual void Release();
-    virtual int GetResult(nw4r::g3d::ClrAnmResult *, unsigned long);
-    virtual void Attach(int, nw4r::g3d::AnmObj *);
+    virtual int GetResult(ClrAnmResult *, unsigned long);
+    virtual void Attach(int, AnmObj *);
     virtual void Detach(int);
 
     enum AnmFlag {
@@ -38,35 +38,35 @@ public:
 
 class AnmObjVisRes : public AnmObj {
 public:
-    static AnmObjVisRes *Construct(MEMAllocator*, size_t*, nw4r::g3d::ResAnmVis, nw4r::g3d::ResMdl);
+    static AnmObjVisRes *Construct(MEMAllocator*, size_t*, ResAnmVis, ResMdl);
 
     NW4R_G3D_TYPE_OBJ_DECL(AnmObjVisRes);
 };
 
 class AnmObjMatClrRes : public AnmObj {
 public:
-    static AnmObjMatClrRes *Construct(MEMAllocator*, size_t*, nw4r::g3d::ResAnmClr, nw4r::g3d::ResMdl, bool);
+    static AnmObjMatClrRes *Construct(MEMAllocator*, size_t*, ResAnmClr, ResMdl, bool);
 
     NW4R_G3D_TYPE_OBJ_DECL(AnmObjMatClrRes);
 };
 
 class AnmObjTexPatRes : public AnmObj {
 public:
-    static AnmObjTexPatRes *Construct(MEMAllocator*, size_t*, nw4r::g3d::ResAnmTexPat, nw4r::g3d::ResMdl, bool);
+    static AnmObjTexPatRes *Construct(MEMAllocator*, size_t*, ResAnmTexPat, ResMdl, bool);
 
     NW4R_G3D_TYPE_OBJ_DECL(AnmObjTexPatRes);
 };
 
 class AnmObjTexSrtRes : public AnmObj {
 public:
-    static AnmObjTexSrtRes *Construct(MEMAllocator*, size_t*, nw4r::g3d::ResAnmTexSrt, nw4r::g3d::ResMdl, bool);
+    static AnmObjTexSrtRes *Construct(MEMAllocator*, size_t*, ResAnmTexSrt, ResMdl, bool);
 
     NW4R_G3D_TYPE_OBJ_DECL(AnmObjTexSrtRes);
 };
 
 class AnmObjTexSrtOverride : public AnmObj {
 public:
-    static AnmObjTexSrtOverride *Construct(MEMAllocator*, size_t*, nw4r::g3d::ResMdl, int);
+    static AnmObjTexSrtOverride *Construct(MEMAllocator*, size_t*, ResMdl, int);
 
     int getCount() const { return count; }
 
@@ -79,7 +79,7 @@ public:
 
 class AnmObjTexPatOverride : public AnmObj {
 public:
-    static AnmObjTexPatOverride *Construct(MEMAllocator*, size_t*, nw4r::g3d::ResMdl, int);
+    static AnmObjTexPatOverride *Construct(MEMAllocator*, size_t*, ResMdl, int);
 
     int getCount() const { return count; }
 
@@ -92,7 +92,7 @@ public:
 
 class AnmObjMatClrOverride : public AnmObj {
 public:
-    static AnmObjMatClrOverride *Construct(MEMAllocator*, size_t*, nw4r::g3d::ResMdl, int);
+    static AnmObjMatClrOverride *Construct(MEMAllocator*, size_t*, ResMdl, int);
 
     int getCount() const { return count; }
 
