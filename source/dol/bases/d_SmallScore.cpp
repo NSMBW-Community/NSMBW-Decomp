@@ -21,7 +21,11 @@ dSmallScore_c::~dSmallScore_c() {
 
 bool dSmallScore_c::createLayout(d2d::ResAccMultLoader_c *res) {
     static const char *T_PANE_NAME_TBL[T_COUNT] = {
-        "T_100_00", "T_1000_00", "T_red2_00", "T_1UP_00", "T_coin_x_00",
+        "T_100_00",
+        "T_1000_00",
+        "T_red2_00",
+        "T_1UP_00",
+        "T_coin_x_00",
         "T_coinPoint_00",
     };
 
@@ -39,7 +43,6 @@ bool dSmallScore_c::createLayout(d2d::ResAccMultLoader_c *res) {
 
     mLayout.TPaneRegister(T_PANE_NAME_TBL, mpTextBoxes, T_COUNT);
     mpTextBoxes[T_coin_x_00]->setMessage(dMessage_c::getMesRes(), BMG_CATEGORY_SMALL_SCORE, MSG_LOWERCASE_X, 0);
-
     mLayout.NPaneRegister(N_PANE_NAME_TBL, mpNullPanes, N_COUNT);
 
     for (int i = 0; i < T_COUNT; i++) {
@@ -64,7 +67,7 @@ bool dSmallScore_c::createLayout(d2d::ResAccMultLoader_c *res) {
 
 void dSmallScore_c::execute() {
 
-    static const ProcFunc Proc_tbl[] = {
+    static const ProcFunc Proc_tbl[STATE_COUNT] = {
         &dSmallScore_c::MakeStart,
         &dSmallScore_c::UpMove,
         &dSmallScore_c::DispWait,
@@ -186,7 +189,7 @@ void dSmallScore_c::ScissorMaskSet() {
     if (dGameCom::GetAspectRatio() == 0) {
         clip.mPos.y = (mVideo::m_video->mRenderModeObj.mEFBHeight - mClipScale.y) * 0.5f;
         clip.mSize = mClipScale;
-        clip.mEnabled = 1;
+        clip.mEnabled = true;
     }
 
     mLayout.mClipSettings = clip;
@@ -273,7 +276,7 @@ void dSmallScore_c::MakeStart() {
         mState = dSmallScore_c::STATE_UP_MOVE;
     }
 
-    if (mPopupType == 20) {
+    if (mPopupType == POPUP_TYPE_1UP_COLORED) {
         mEnableColorChange = true;
     } else {
         mEnableColorChange = false;
@@ -291,9 +294,9 @@ void dSmallScore_c::UpMove() {
 
     chgColor();
 
-    if (mPosDelta.y == EGG::Math<float>::zero()) {
+    if (mPosDelta.y == EGG::Mathf::zero()) {
         mState = dSmallScore_c::STATE_DISP_WAIT;
-        if (mPopupType >= 21) {
+        if (mPopupType >= POPUP_TYPE_COIN_2) {
             mDispWaitTime = 30;
         }
     }
@@ -364,7 +367,7 @@ void dSmallScore_c::PositionSet() {
 void dSmallScore_c::CreateSmallScore(const mVec3_c &pos, int popupType, int playerType) {
     mpRootPane->SetVisible(false);
 
-    if ((dInfo_c::mGameFlag & 0x40) && (popupType <= 7))
+    if ((dInfo_c::mGameFlag & dInfo_c::GAME_FLAG_COIN_BATTLE) && popupType <= POPUP_TYPE_8000)
         return;
 
     mPopupType = popupType;

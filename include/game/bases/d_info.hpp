@@ -34,6 +34,11 @@ public:
         u8 mLevel2;
     };
 
+    /// @todo Fill out this enum.
+    enum GAME_FLAG_e {
+        GAME_FLAG_COIN_BATTLE = 0x40,
+    };
+
     dCyuukan_c *getCyuukan() { return &mCyuukan; }
 
     char pad1[0x8];
