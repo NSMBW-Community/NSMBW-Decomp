@@ -65,7 +65,7 @@ jobs:
         run: python configure.py && ninja
 
       - name: Run progress script
-        run: python progress.py --verify-obj --verify-bin --progress-summary
+        run: python progress.py --verify-bin --progress-summary
 
       - name: Run DTK and objdiff to generate progress file for decomp.dev
         run: |

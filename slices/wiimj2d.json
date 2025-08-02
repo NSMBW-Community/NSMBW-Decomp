@@ -41,7 +41,8 @@
         "getType__Q23m3d6bmdl_cCFv",
         "getType__Q23m3d13anmChrBlend_cCFv",
         "getType__Q23m3d8anmChr_cCFv",
-        "getType__Q23m3d8anmVis_cCFv"
+        "getType__Q23m3d8anmVis_cCFv",
+        "dummy__10daPlBase_cFv"
     ],
     "keepWeak": [
         "changeState__99sStateStateMgr_c<18dActorMultiState_c,12sFStateMgr_c,20sStateMethodUsr_FI_c,20sStateMethodUsr_FI_c>FRC12sStateIDIf_c",
@@ -109,6 +110,19 @@
                 ".sdata": "0x168-0x180",
                 ".sbss": "0x88-0x90",
                 ".sdata2": "0x180-0x188"
+            }
+        },
+        {
+            "source": "dol/bases/d_a_player_base.cpp",
+            "nonMatching": true,
+            "memoryRanges": {
+                ".text": "0x3f950-0x54c20",
+                ".ctors": "0x7c-0x80",
+                ".bss": "0x2b90-0x35a0",
+                ".data": "0x9898-0xb268",
+                ".rodata": "0xc98-0xec0",
+                ".sbss": "0xc8-0xd0",
+                ".sdata2": "0x7c0-0x998"
             }
         },
         {
@@ -230,6 +244,18 @@
                 ".sdata": "0x1278-0x1288",
                 ".sbss": "0x568-0x570",
                 ".sdata2": "0x1eb0-0x1ec8"
+            }
+        },
+        {
+            "source": "dol/bases/d_wm_demo_actor.cpp",
+            "memoryRanges": {
+                ".text": "0xef960-0xf08d0",
+                ".ctors": "0x174-0x178",
+                ".data": "0x1daa8-0x1db40",
+                ".bss": "0x22660-0x22670",
+                ".sdata": "0x1428-0x1438",
+                ".sbss": "0x590-0x598",
+                ".sdata2": "0x1f18-0x1f50"
             }
         },
         {

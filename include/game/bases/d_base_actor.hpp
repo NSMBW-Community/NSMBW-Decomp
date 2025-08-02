@@ -53,8 +53,10 @@ protected:
     /// for details.
     virtual void draw2D_lyt2();
 
+public:
     virtual int GetActorType() { return ACTOR_GENERIC; } ///< Gets the actor kind. See ::ACTOR_KIND_e.
 
+protected:
     virtual void finalUpdate() {} ///< Code to be executed after all actors' @p execute operation has run.
 
 public:
@@ -107,6 +109,14 @@ public:
      * @return A pointer to the instantiated actor, or @p nullptr .
      */
     static dBaseActor_c *construct(ProfileName profName, dBase_c *parent, unsigned long param, const mVec3_c *position, const mAng3_c *rotation);
+
+    // Getters / setters
+    float getAccelF() const { return mAccelF; }
+    void setAccelF(float accelF) { mAccelF = accelF; }
+    float absSpeedF() { return EGG::Mathf::abs(mSpeedF); }
+    float absMaxSpeedF() { return fabs(mMaxSpeedF); }
+
+    float getYCenter() const { return mPos.y + mCenterOffs.y; }
 
 private:
     /**

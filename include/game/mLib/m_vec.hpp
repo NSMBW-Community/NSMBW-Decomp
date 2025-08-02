@@ -36,6 +36,10 @@ public:
     /// @param y The value to increment by.
     void incY(float y) { this->y += y; }
 
+    float getLength() const {
+        return EGG::Mathf::sqrt(x * x + y * y);
+    }
+
     // mVec2_c &operator=(const mVec2_c &v) { set(v.x, v.y); return *this; }
     mVec2_c &operator=(const mVec2_c &v) { x = v.x; y = v.y; return *this; }
 
@@ -173,13 +177,29 @@ public:
     mVec3_c operator*(f32 f) const { return mVec3_c(f * x, f * y, f * z); }
 
     /// @brief Scalar division operator.
-    mVec3_c operator/(f32 f) const { f32 r = 1.0f / f; return operator*(r); }
+    mVec3_c operator/(f32 f) const { f32 r = 1.0f / f; return mVec3_c(x * r, y * r, z * r); }
 
     /// @brief Equality operator.
     bool operator==(const mVec3_c &v) const { return x == v.x && y == v.y && z == v.z; }
 
     /// @brief Inequality operator.
     bool operator!=(const mVec3_c &v) const { return x != v.x || y != v.y || z != v.z; }
+
+    float xzLen() const {
+        return EGG::Mathf::sqrt(x * x + z * z);
+    }
+
+    float distTo(const mVec3_c &other) const {
+        return EGG::Mathf::sqrt(PSVECSquareDistance((const Vec*) this, (const Vec*) &other));
+    }
+
+    friend mVec3_c operator*(f32 f, const mVec3_c &v) {
+        return mVec3_c(v.x * f, v.y * f, v.z * f);
+    }
+
+    bool isSmallerThan1() const {
+        return PSVECMag(*this) <= 1.0f;
+    }
 
     /// @brief Normalizes the vector.
     /// @return The vector's magnitude.
