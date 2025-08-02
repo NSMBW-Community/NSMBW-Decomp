@@ -7,7 +7,10 @@
 /// @brief The minimum required implementation for a world map actor.
 /// @ingroup bases
 class dWmActor_c : public dBaseActor_c {
+public:
     dWmActor_c(); ///< @copydoc dBaseActor_c::dBaseActor_c
+
+protected:
 
     virtual int preCreate();
     virtual void postCreate(fBase_c::MAIN_STATE_e status);

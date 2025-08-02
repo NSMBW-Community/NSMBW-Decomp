@@ -141,8 +141,8 @@ dBaseActor_c *dBaseActor_c::construct(ProfileName profName, dBase_c *parent, uns
 }
 
 void dBaseActor_c::calcSpeed() {
-    float sin = nw4r::math::SinS(mAngle3D.y);
-    float cos = nw4r::math::CosS(mAngle3D.y);
+    float sin = mAngle3D.y.sin();
+    float cos = mAngle3D.y.cos();
 
     // Distribute mSpeedF on the X and Z axes according to the actor's rotation and use the regular Y speed
     // [Defining newZ is required for matching]
@@ -154,8 +154,7 @@ void dBaseActor_c::calcSpeed() {
 
 void dBaseActor_c::makeMtx() {
     mMatrix.trans(mPos.x, mPos.y, mPos.z);
-    mAng rot = mAng(mAngle.y);
-    mMatrix.YrotM(rot);
+    mMatrix.YrotM(mAngle.y);
 }
 
 void dBaseActor_c::posMove(mVec3_c &delta) {

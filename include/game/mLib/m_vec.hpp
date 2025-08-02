@@ -181,6 +181,14 @@ public:
     /// @brief Inequality operator.
     bool operator!=(const mVec3_c &v) const { return x != v.x || y != v.y || z != v.z; }
 
+    float xzLen() const {
+        return EGG::Mathf::sqrt(x * x + z * z);
+    }
+
+    float distTo(const mVec3_c &other) const {
+        return EGG::Mathf::sqrt(PSVECSquareDistance((const Vec*) this, (const Vec*) &other));
+    }
+
     /// @brief Normalizes the vector.
     /// @return The vector's magnitude.
     float normalize();
