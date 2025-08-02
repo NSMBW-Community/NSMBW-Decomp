@@ -55,8 +55,20 @@ void dWmDemoActor_c::InitJumpParam(const mVec3_c &start, const mVec3_c &end, int
 }
 
 void dWmDemoActor_c::__initJumpParam1(const mVec3_c &start, const mVec3_c &end, int numFrames, float jumpSpeed, float maxYSpeed) {
+    // The formula is derived from s = v₀ * t + ½ * a * t².
+    // In this case, we land at the same height we started, so we have
+    // 0 = v₀ * t + ½ * a * t², where
+    // t  = numFrames
+    // v₀ = jumpSpeed
+
+    // Rearrange for a:
+    // ½ * a * t² = -v₀ * t
+    // a = (2 * -v₀ * t) / t²
+    // a = (2 * -v₀) / t
+    // a = -(2 * v₀) / t
+
     float numFramesF = numFrames;
-    float accel = -(jumpSpeed * 2.0f) / numFramesF;
+    float accel = -(2.0f * jumpSpeed) / numFramesF;
     mSpeedF = (end - start).xzLen() / numFramesF;
     mMaxFallSpeed = maxYSpeed;
     mAccelY = accel;
@@ -64,6 +76,16 @@ void dWmDemoActor_c::__initJumpParam1(const mVec3_c &start, const mVec3_c &end, 
 }
 
 void dWmDemoActor_c::__initJumpParam2(const mVec3_c &start, const mVec3_c &end, int numFrames, float jumpSpeed, float maxYSpeed) {
+    // The formula is derived from s = v₀ * t + ½ * a * t², where:
+    // s  = end.y - start.y
+    // t  = numFrames
+    // v₀ = jumpSpeed
+
+    // Rearrange for a:
+    // ½ * a * t² = s - v₀ * t
+    // a = (s - v₀ * t) * 2 / t²
+    // a = (v₀ * t - s) * -2 / t² [(not sure why this step was done)]
+
     float numFramesF = numFrames;
     float accel = ((jumpSpeed * numFramesF - (end.y - start.y)) * -2.0f) / (numFramesF * numFramesF);
     mSpeedF = (end - start).xzLen() / numFramesF;
