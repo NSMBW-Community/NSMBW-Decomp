@@ -1,32 +1,34 @@
 #include <lib/egg/core/eggColorFader.h>
+
 #include <lib/rvl/gx/GX.h>
 
-EGG::ColorFader::ColorFader(float x, float y, float w, float h, nw4r::ut::Color color, Fader::EStatus initialStatus) :
-    mFlag(0),
-    mFrameCount(20),
-    mFrame(0),
-    mCurrColor(),
-    mLeft(x),
-    mTop(y),
-    mRight(x + w),
-    mBottom(y + h) {
+namespace EGG {
+
+ColorFader::ColorFader(float x, float y, float w, float h, nw4r::ut::Color color,
+        Fader::EStatus initialStatus)
+    : mFlag(),
+      mFrameCount(20),
+      mFrame(0),
+      mCurrColor(),
+      mDims(x, y, x + w, y + h) {
     setColor(color);
     setStatus(initialStatus);
-    mFlag |= 2;
+    mFlag.setBit(ColorFader::SIGNAL_ON_FADE_OUT);
 }
 
-void EGG::ColorFader::setFrame(u16 frame) {
+void ColorFader::setFrame(u16 frame) {
+    EGG_ASSERT(frame != 0);
     mFrameCount = frame;
 }
 
-void EGG::ColorFader::setColor(nw4r::ut::Color color) {
+void ColorFader::setColor(nw4r::ut::Color color) {
     mCurrColor.r = color.r;
     mCurrColor.g = color.g;
     mCurrColor.b = color.b;
     // Don't set alpha
 }
 
-void EGG::ColorFader::setStatus(Fader::EStatus status) {
+void ColorFader::setStatus(Fader::EStatus status) {
     if (status == Fader::OPAQUE) {
         mStatus = Fader::OPAQUE;
         mCurrColor.a = 255;
@@ -36,27 +38,27 @@ void EGG::ColorFader::setStatus(Fader::EStatus status) {
     }
 }
 
-bool EGG::ColorFader::fadeIn() {
-    bool doFadeIn = mStatus == Fader::OPAQUE;
-    if (doFadeIn) {
+bool ColorFader::fadeIn() {
+    bool start = mStatus == Fader::OPAQUE;
+    if (start) {
         mStatus = Fader::FADE_IN;
         mFrame = 0;
     }
 
-    return doFadeIn;
+    return start;
 }
 
-bool EGG::ColorFader::fadeOut() {
-    bool doFadeIn = mStatus == Fader::HIDDEN;
-    if (doFadeIn) {
+bool ColorFader::fadeOut() {
+    bool start = mStatus == Fader::HIDDEN;
+    if (start) {
         mStatus = Fader::FADE_OUT;
         mFrame = 0;
     }
 
-    return doFadeIn;
+    return start;
 }
 
-bool EGG::ColorFader::calc() {
+bool ColorFader::calc() {
     bool result = false;
 
     if (mStatus == Fader::HIDDEN) {
@@ -64,44 +66,47 @@ bool EGG::ColorFader::calc() {
     } else if (mStatus == Fader::OPAQUE) {
         mCurrColor.a = 255;
     } else if (mStatus == Fader::FADE_IN) {
-        u16 currFrame = mFrame;
         u16 endFrame = mFrameCount;
-        mFrame++;
+        u16 currFrame = mFrame++;
+
         if (currFrame > endFrame) {
             mStatus = Fader::HIDDEN;
-            result = (mFlag & ColorFader::FLAG_1) != 0;
+            result = mFlag.onBit(ColorFader::SIGNAL_ON_FADE_IN);
             currFrame = endFrame;
         }
+
         mCurrColor.a = 255 - (currFrame * 255 / mFrameCount);
     } else if (mStatus == Fader::FADE_OUT) {
         u16 endFrame = mFrameCount;
-        u16 currFrame = mFrame;
-        mFrame++;
+        u16 currFrame = mFrame++;
+
         if (currFrame > endFrame) {
             if (currFrame > endFrame + 1) {
                 mStatus = Fader::OPAQUE;
-                result = (mFlag & ColorFader::FLAG_2) != 0;
+                result = mFlag.onBit(ColorFader::SIGNAL_ON_FADE_OUT);
             }
+
             endFrame = mFrameCount;
             currFrame = endFrame;
         }
+
         mCurrColor.a = currFrame * 255 / endFrame;
     }
 
     return result;
 }
 
-void EGG::ColorFader::draw() {
+void ColorFader::draw() {
     if (mCurrColor.a == 0) {
         return;
     }
 
     Mtx44 projMtx;
-    C_MTXOrtho(&projMtx, mTop, mBottom, mLeft, mRight, 0, 1);
-    GXSetProjection(&projMtx, 1);
+    C_MTXOrtho(&projMtx, mDims.top, mDims.bottom, mDims.left, mDims.right, 0.0f, 1.0f);
+    GXSetProjection(&projMtx, GX_ORTHOGRAPHIC);
 
-    GXSetViewport(mLeft, mTop, getWidth(), getHeight(), 0, 1);
-    GXSetScissor(mLeft, mTop, getWidth(), getHeight());
+    GXSetViewport(mDims.left, mDims.top, mDims.GetWidth(), mDims.GetHeight(), 0.0f, 1.0f);
+    GXSetScissor(mDims.left, mDims.top, mDims.GetWidth(), mDims.GetHeight());
 
     Mtx posMtx;
     PSMTXIdentity(&posMtx);
@@ -112,7 +117,7 @@ void EGG::ColorFader::draw() {
     GXInvalidateVtxCache();
 
     GXSetVtxDesc(GX_VA_POS, GX_VA_TEX0MTXIDX);
-    GXSetVtxAttrFmt(0, GX_VA_POS, 1, 4, 0);
+    GXSetVtxAttrFmt(GX_VTXFMT0, GX_VA_POS, GX_POS_XYZ, GX_F32, 0);
 
     GXSetNumChans(1);
     GXSetChanMatColor(GX_COLOR0A0, mCurrColor);
@@ -139,12 +144,12 @@ void EGG::ColorFader::draw() {
 
     GXBegin(GX_QUADS, GX_VTXFMT0, 4);
 
-    GXPosition3f32(mLeft, mTop, 0.0f);
-    GXPosition3f32(mRight, mTop, 0.0f);
-    GXPosition3f32(mRight, mBottom, 0.0f);
-    GXPosition3f32(mLeft, mBottom, 0.0f);
+    GXPosition3f32(mDims.left, mDims.top, 0.0f);
+    GXPosition3f32(mDims.right, mDims.top, 0.0f);
+    GXPosition3f32(mDims.right, mDims.bottom, 0.0f);
+    GXPosition3f32(mDims.left, mDims.bottom, 0.0f);
 
     GXEnd();
 }
 
-EGG::ColorFader::~ColorFader() {}
+} // namespace EGG

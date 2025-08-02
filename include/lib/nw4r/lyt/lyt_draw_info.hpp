@@ -2,7 +2,7 @@
 #include <types.h>
 #include <lib/nw4r/math/vec.hpp>
 #include <lib/nw4r/math/mtx.hpp>
-#include <lib/nw4r/ut/rect.hpp>
+#include <lib/nw4r/ut/Rect.h>
 
 namespace nw4r {
 namespace lyt {

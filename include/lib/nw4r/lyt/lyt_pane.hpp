@@ -1,7 +1,7 @@
 #pragma once
 #include <lib/nw4r/lyt/lyt_types.hpp>
 #include <lib/nw4r/lyt/lyt_draw_info.hpp>
-#include <lib/nw4r/ut/color.hpp>
+#include <lib/nw4r/ut/Color.h>
 #include <lib/nw4r/math/vec.hpp>
 #include <_dummy_classes.hpp>
 

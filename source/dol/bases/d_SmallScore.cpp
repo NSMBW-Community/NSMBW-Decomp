@@ -2,7 +2,7 @@
 #include <constants/message_list.h>
 #include <game/bases/d_info.hpp>
 #include <game/bases/d_game_com.hpp>
-#include <lib/nw4r/ut/color.hpp>
+#include <lib/nw4r/ut/Color.h>
 #include <lib/nw4r/lyt/lyt_material.hpp>
 #include <game/mLib/m_video.hpp>
 #include <game/mLib/m_vec.hpp>

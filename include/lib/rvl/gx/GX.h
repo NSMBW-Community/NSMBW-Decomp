@@ -59,9 +59,9 @@ typedef enum _GXMtxType {
     GX_MTX_2x4,
 } GXMtxType;
 
-typedef enum _GXVtxFmtIdx {
+typedef enum _GXVtxFmt {
     GX_VTXFMT0,
-} GXVtxFmtIdx;
+} GXVtxFmt;
 
 typedef enum _GXPrimitive {
     GX_POINTS = 0xB8,
@@ -83,6 +83,36 @@ typedef enum _GXCompare {
     GX_GEQUAL,
     GX_ALWAYS
 } GXCompare;
+
+typedef enum _GXCompCnt {
+    GX_POS_XY = 0,
+    GX_POS_XYZ,
+
+    GX_NRM_XYZ = 0,
+    GX_NRM_NBT,
+    GX_NRM_NBT3,
+
+    GX_CLR_RGB = 0,
+    GX_CLR_RGBA,
+
+    GX_TEX_S = 0,
+    GX_TEX_ST
+} GXCompCnt;
+
+typedef enum _GXCompType {
+    GX_U8,
+    GX_S8,
+    GX_U16,
+    GX_S16,
+    GX_F32,
+
+    GX_RGB565 = 0,
+    GX_RGB8,
+    GX_RGBX8,
+    GX_RGBA4,
+    GX_RGBA6,
+    GX_RGBA8
+} GXCompType;
 
 typedef enum _GXTevStageID {
     GX_TEVSTAGE0,
@@ -442,7 +472,7 @@ extern volatile GXFifo WGPIPE : 0xcc008000;
 extern volatile GXFifo WGPIPE;
 #endif
 
-void GXSetProjection(const Mtx44 *, int);
+void GXSetProjection(const Mtx44 *, GXProjectionType);
 void GXLoadPosMtxImm(const Mtx *, u32);
 void GXSetCurrentMtx(u32 id);
 void GXLoadTexMtxImm(const Mtx *, u32, GXMtxType);
@@ -451,11 +481,11 @@ void GXSetScissor(u32, u32, u32, u32);
 
 void GXSetVtxDesc(GXAttr, GXAttr);
 void GXClearVtxDesc();
-void GXSetVtxAttrFmt(u32, GXAttr, u32, u32, u8);
+void GXSetVtxAttrFmt(GXVtxFmt, GXAttr, GXCompCnt, GXCompType, u8);
 void GXSetNumTexGens(u8);
 void GXSetTexCoordGen2(GXTexCoordID, GXTexGenType, GXTexGenSrc, u8, u8, u32);
 
-void GXBegin(GXPrimitive, GXVtxFmtIdx, u16);
+void GXBegin(GXPrimitive, GXVtxFmt, u16);
 void GXSetCullMode(int);
 
 inline static void GXEnd() {}

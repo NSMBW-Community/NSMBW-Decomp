@@ -3,7 +3,7 @@
 #include <lib/nw4r/lyt/lyt_pane.hpp>
 #include <lib/nw4r/lyt/lyt_resource.hpp>
 #include <lib/nw4r/math/vec.hpp>
-#include <lib/nw4r/ut/rect.hpp>
+#include <lib/nw4r/ut/Rect.h>
 #include <lib/nw4r/ut/detail/link_list_impl.hpp>
 #include <_dummy_classes.hpp>
 
