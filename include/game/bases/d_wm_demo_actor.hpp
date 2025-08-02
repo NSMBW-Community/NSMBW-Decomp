@@ -25,28 +25,30 @@ public:
 
     bool isStaff();
 
-    void InitJumpParam(const mVec3_c &v1, const mVec3_c &v2, int p3, float p4, float p5);
-    void __initJumpParam1(const mVec3_c &v1, const mVec3_c &v2, int p3, float p4, float p5);
-    void __initJumpParam2(const mVec3_c &v1, const mVec3_c &v2, int p3, float p4, float p5);
-
-    void initJumpBase(mVec3_c v, int i, float f);
+    void InitJumpParam(const mVec3_c &start, const mVec3_c &end, int numFrames, float jumpSpeed, float maxYSpeed);
+    void __initJumpParam1(const mVec3_c &start, const mVec3_c &end, int numFrames, float jumpSpeed, float maxYSpeed);
+    void __initJumpParam2(const mVec3_c &start, const mVec3_c &end, int numFrames, float jumpSpeed, float maxYSpeed);
+    void initJumpBase(mVec3_c pos, int numFrames, float jumpSpeed);
     bool procJumpBase();
-    void setDirection(const mVec3_c &v);
-    void rotDirectionY(short s, bool b);
-    void rotDirectionX(short s, bool b);
-    bool checkArriveTargetXYZ(const mVec3_c &v1, const mVec3_c &v2);
-    bool checkArriveTargetXZ(const mVec3_c &v1, const mVec3_c &v2);
+    void _initDemoJumpBaseCore(const mVec3_c &pos, int delay, int frames, float jumpSpeed, float start, float target, const short &angY);
+    void _initDemoJumpBase(const mVec3_c &pos, int delay, int frames, float jumpSpeed, float start, float target, const mVec3_c &dir);
+    bool _procDemoJumpBase();
+
+    void setDirection(const mVec3_c &dir);
+    void rotDirectionY(short angle, bool is3D);
+    void rotDirectionX(short angle, bool is3D);
+    bool checkArriveTargetXYZ(const mVec3_c &start, const mVec3_c &target);
+    bool checkArriveTargetXZ(const mVec3_c &start, const mVec3_c &target);
+
     void CreateShadowModel(const char *arc, const char *path, const char *mdlName, bool b);
     void CalcShadow(float yOffs, float scaleX, float scaleY, float scaleZ);
     void CalcShadow(float yOffs, float scale);
     void DrawShadow(bool b);
-    void _initDemoJumpBaseCore(const mVec3_c &, int, int, float, float, float, const short &);
-    void _initDemoJumpBase(const mVec3_c &, int, int, float, float, float, const mVec3_c &);
-    bool _procDemoJumpBase();
-    float GetBgPosY(const mVec3_c &, const mVec3_c &, int);
-    void CsSPosSimple(int i, float f);
+
+    float GetBgPosY(const mVec3_c &start, const mVec3_c &target, int directionType);
+    void CsSPosSimple(int directionType, float yTarget);
     void clearSpeedAll();
-    void adjustHeightBase(const mVec3_c &v1, const mVec3_c &v2, int i);
+    void adjustHeightBase(const mVec3_c &start, const mVec3_c &target, int directionType);
     bool isCutscenePlaying(int *csList, int csCount); ///< @unofficial
 
 private:
@@ -55,9 +57,9 @@ private:
     mHeapAllocator_c mHeapAllocator;
     m3d::smdl_c mModel;
     dWmSVMdl_c *mSvMdl;
-    mVec3_c m_30;
-    float m_3c;
-    float m_40;
-    float m_44;
-    int m_48;
+    mVec3_c mTargetPos;
+    float mScaleCurr;
+    float mScaleDelta;
+    float mScaleTarget;
+    int mScaleDelay;
 };

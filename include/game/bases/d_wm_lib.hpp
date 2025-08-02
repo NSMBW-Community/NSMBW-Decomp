@@ -16,14 +16,14 @@ struct ForceListElement {
 };
 
 namespace dWmLib {
-    static ForceListElement sc_ForceList[] = {
-        {WORLD_7, "F7C0", WORLD_7, dCsvData_c::c_CASTLE_ID, 4, "W7C0", mVec3_c(2160, -30, -478)}
+    enum Direction3D_e {
+        DIR3D_UP,
+        DIR3D_DOWN,
+        DIR3D_FRONT,
+        DIR3D_BACK,
+        DIR3D_LEFT,
+        DIR3D_RIGHT
     };
-
-    int getPointDir(const mVec3_c &v1, const mVec3_c &v2);
-
-    /// @unofficial
-    static int someCourseNo = dCsvData_c::c_START_ID;
 
     /// @unofficial
     enum CourseType_e {
@@ -56,4 +56,13 @@ namespace dWmLib {
     bool isStartPointKinokoHouseStar();
     bool isStartPointKinokoHouseRed();
     bool IsCourseClear(int world, int course);
+    int getPointDir(const mVec3_c &v1, const mVec3_c &v2);
+
+    /// @unofficial
+    static ForceListElement sc_ForceList[] = {
+        {WORLD_7, "F7C0", WORLD_7, dCsvData_c::c_CASTLE_ID, 4, "W7C0", mVec3_c(2160, -30, -478)}
+    };
+
+    /// @unofficial
+    static int someCourseNo = dCsvData_c::c_START_ID;
 };

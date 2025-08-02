@@ -4,7 +4,7 @@ class dWmSVMdl_c : public m3d::proc_c {
 public:
     virtual ~dWmSVMdl_c() {}
 
-    u32 m_00;
+    virtual void create(mAllocator_c *, m3d::smdl_c &);
 
-    virtual void vf20(mAllocator_c *, m3d::smdl_c *);
+    u32 m_00;
 };

@@ -46,36 +46,36 @@ bool dWmDemoActor_c::isStaff() {
     return false;
 }
 
-void dWmDemoActor_c::InitJumpParam(const mVec3_c &v1, const mVec3_c &v2, int p3, float p4, float p5) {
-  if (v1.y == v2.y) {
-    __initJumpParam1(v1, v2, p3, p4, p5);
-  } else {
-    __initJumpParam2(v1, v2, p3, p4, p5);
-  }
+void dWmDemoActor_c::InitJumpParam(const mVec3_c &start, const mVec3_c &end, int numFrames, float jumpSpeed, float maxYSpeed) {
+    if (start.y == end.y) {
+        __initJumpParam1(start, end, numFrames, jumpSpeed, maxYSpeed);
+    } else {
+        __initJumpParam2(start, end, numFrames, jumpSpeed, maxYSpeed);
+    }
 }
 
-void dWmDemoActor_c::__initJumpParam1(const mVec3_c &v1, const mVec3_c &v2, int p3, float p4, float p5) {
-    float f = p3;
-    float f2 = -(p4 * 2.0f) / f;
-    mSpeedF = (v2 - v1).xzLen() / f;
-    mMaxFallSpeed = p5;
-    mAccelY = f2;
-    mSpeed.y = p4;
+void dWmDemoActor_c::__initJumpParam1(const mVec3_c &start, const mVec3_c &end, int numFrames, float jumpSpeed, float maxYSpeed) {
+    float numFramesF = numFrames;
+    float accel = -(jumpSpeed * 2.0f) / numFramesF;
+    mSpeedF = (end - start).xzLen() / numFramesF;
+    mMaxFallSpeed = maxYSpeed;
+    mAccelY = accel;
+    mSpeed.y = jumpSpeed;
 }
 
-void dWmDemoActor_c::__initJumpParam2(const mVec3_c &v1, const mVec3_c &v2, int p3, float p4, float p5) {
-    float f = p3;
-    float f2 = ((p4 * f - (v2.y - v1.y)) * -2.0f) / (f*f);
-    mSpeedF = (v2 - v1).xzLen() / f;
-    mMaxFallSpeed = p5;
-    mAccelY = f2;
-    mSpeed.y = p4;
+void dWmDemoActor_c::__initJumpParam2(const mVec3_c &start, const mVec3_c &end, int numFrames, float jumpSpeed, float maxYSpeed) {
+    float numFramesF = numFrames;
+    float accel = ((jumpSpeed * numFramesF - (end.y - start.y)) * -2.0f) / (numFramesF * numFramesF);
+    mSpeedF = (end - start).xzLen() / numFramesF;
+    mMaxFallSpeed = maxYSpeed;
+    mAccelY = accel;
+    mSpeed.y = jumpSpeed;
 }
 
-void dWmDemoActor_c::initJumpBase(mVec3_c v, int i, float f) {
-    m_30 = v;
-    InitJumpParam(mPos, m_30, i, f, -50.0);
-    s16 ang = cLib::targetAngleY(mPos, m_30);
+void dWmDemoActor_c::initJumpBase(mVec3_c pos, int numFrames, float jumpSpeed) {
+    mTargetPos = pos;
+    InitJumpParam(mPos, mTargetPos, numFrames, jumpSpeed, -50.0);
+    s16 ang = cLib::targetAngleY(mPos, mTargetPos);
     mAngle.y = ang;
     mAngle3D.y = ang;
 }
@@ -83,15 +83,15 @@ void dWmDemoActor_c::initJumpBase(mVec3_c v, int i, float f) {
 bool dWmDemoActor_c::procJumpBase() {
     calcSpeed();
     posMove();
-    if (mLastPos.y >= m_30.y && mPos.y <= m_30.y) {
-        mPos = m_30;
+    if (mLastPos.y >= mTargetPos.y && mPos.y <= mTargetPos.y) {
+        mPos = mTargetPos;
         return true;
     }
     return false;
 }
 
-void dWmDemoActor_c::setDirection(const mVec3_c &v) {
-    mVec3_c copy = v;
+void dWmDemoActor_c::setDirection(const mVec3_c &dir) {
+    mVec3_c copy = dir;
     copy.normalize();
     if (EGG::Mathf::abs(copy.x) < 0.1f && EGG::Mathf::abs(copy.z) < 0.1f) {
         copy = mVec3_c(0.0f, 0.0f, -1.0f);
@@ -101,35 +101,35 @@ void dWmDemoActor_c::setDirection(const mVec3_c &v) {
     mAngle3D.y = ang;
 }
 
-void dWmDemoActor_c::rotDirectionY(short s, bool b) {
-    mAngle.y += s;
-    if (b) {
+void dWmDemoActor_c::rotDirectionY(short angle, bool is3D) {
+    mAngle.y += angle;
+    if (is3D) {
         mAngle3D.y = mAngle.y;
     }
 }
 
-void dWmDemoActor_c::rotDirectionX(short s, bool b) {
-    mAngle.x += s;
-    if (b) {
+void dWmDemoActor_c::rotDirectionX(short angle, bool is3D) {
+    mAngle.x += angle;
+    if (is3D) {
         mAngle3D.x = mAngle.x;
     }
 }
 
-bool dWmDemoActor_c::checkArriveTargetXYZ(const mVec3_c &v1, const mVec3_c &v2) {
-    float dist1 = v1.distTo(v2);
-    float dist2 = v1.distTo(mLastPos);
-    float dist3 = v1.distTo(mPos);
-    if (dist2 - dist1 < 0 && dist3 - dist1 >= 0) {
+bool dWmDemoActor_c::checkArriveTargetXYZ(const mVec3_c &start, const mVec3_c &target) {
+    float dist = start.distTo(target);
+    float distToLast = start.distTo(mLastPos);
+    float distToCurr = start.distTo(mPos);
+    if (distToLast - dist < 0 && distToCurr - dist >= 0) {
         return true;
     }
     return false;
 }
 
-bool dWmDemoActor_c::checkArriveTargetXZ(const mVec3_c &v1, const mVec3_c &v2) {
-    float dist1 = (v2 - v1).xzLen();
-    float dist2 = (mLastPos - v1).xzLen();
-    float dist3 = (mPos - v1).xzLen();
-    if (dist2 - dist1 < 0 && dist3 - dist1 >= 0) {
+bool dWmDemoActor_c::checkArriveTargetXZ(const mVec3_c &start, const mVec3_c &target) {
+    float dist = (target - start).xzLen();
+    float distToLast = (mLastPos - start).xzLen();
+    float distToCurr = (mPos - start).xzLen();
+    if (distToLast - dist < 0 && distToCurr - dist >= 0) {
         return true;
     }
     return false;
@@ -142,7 +142,7 @@ void dWmDemoActor_c::CreateShadowModel(const char *arc, const char *path, const 
     mModel.create(resFile.GetResMdl(mdlName), &mHeapAllocator, 0x20, 1, 0);
 
     mSvMdl = new dWmSVMdl_c();
-    mSvMdl->vf20(&mHeapAllocator, &mModel);
+    mSvMdl->create(&mHeapAllocator, mModel);
 
     mHeapAllocator.adjustFrmHeapRestoreCurrent();
 }
@@ -168,41 +168,41 @@ void dWmDemoActor_c::DrawShadow(bool b) {
     }
 }
 
-void dWmDemoActor_c::_initDemoJumpBaseCore(const mVec3_c &pos, int i, int i2, float f1, float scale, float f3, const short &angY) {
-    m_3c = scale;
-    mScale.x = scale * 1.0;
-    mScale.y = scale * 1.0;
-    mScale.z = scale * 1.0;
-    m_40 = (f3 - scale) / i2;
-    m_44 = f3;
-    m_48 = i;
-    initJumpBase(pos, i2, f1);
+void dWmDemoActor_c::_initDemoJumpBaseCore(const mVec3_c &pos, int delay, int frames, float jumpSpeed, float start, float target, const short &angY) {
+    mScaleCurr = start;
+    mScale.x = start * 1.0;
+    mScale.y = start * 1.0;
+    mScale.z = start * 1.0;
+    mScaleDelta = (target - start) / frames;
+    mScaleTarget = target;
+    mScaleDelay = delay;
+    initJumpBase(pos, frames, jumpSpeed);
     mAngle.y = angY;
 }
 
-void dWmDemoActor_c::_initDemoJumpBase(const mVec3_c &pos, int i, int i2, float f1, float scale, float f3, const mVec3_c &vec) {
-    short ang = cM::atan2s(vec.x, vec.z);
-    _initDemoJumpBaseCore(pos, i, i2, f1, scale, f3, ang);
+void dWmDemoActor_c::_initDemoJumpBase(const mVec3_c &pos, int delay, int frames, float jumpSpeed, float start, float target, const mVec3_c &dir) {
+    short ang = cM::atan2s(dir.x, dir.z);
+    _initDemoJumpBaseCore(pos, delay, frames, jumpSpeed, start, target, ang);
 }
 
 bool dWmDemoActor_c::_procDemoJumpBase() {
-    if (m_48 > 0) {
-        m_48--;
+    if (mScaleDelay > 0) {
+        mScaleDelay--;
     } else {
-        m_3c += m_40;
-        if (m_40 > 0) {
-            if (m_3c < m_44) {
-                mScale.set(m_3c, m_3c, m_3c);
+        mScaleCurr += mScaleDelta;
+        if (mScaleDelta > 0.0f) {
+            if (mScaleCurr < mScaleTarget) {
+                mScale.set(mScaleCurr, mScaleCurr, mScaleCurr);
             } else {
-                m_3c = m_44;
-                mScale.set(m_44, m_44, m_44);
+                mScaleCurr = mScaleTarget;
+                mScale.set(mScaleTarget, mScaleTarget, mScaleTarget);
             }
         } else {
-            if (m_3c > m_44) {
-                mScale.set(m_3c, m_3c, m_3c);
+            if (mScaleCurr > mScaleTarget) {
+                mScale.set(mScaleCurr, mScaleCurr, mScaleCurr);
             } else {
-                m_3c = m_44;
-                mScale.set(m_44, m_44, m_44);
+                mScaleCurr = mScaleTarget;
+                mScale.set(mScaleTarget, mScaleTarget, mScaleTarget);
             }
         }
         return procJumpBase();
@@ -210,60 +210,60 @@ bool dWmDemoActor_c::_procDemoJumpBase() {
     return false;
 }
 
-float dWmDemoActor_c::GetBgPosY(const mVec3_c &v1, const mVec3_c &v2, int i) {
+float dWmDemoActor_c::GetBgPosY(const mVec3_c &start, const mVec3_c &target, int directionType) {
     float res = 0.0f;
-    switch (i) {
-        case 2:
-        case 3: {
-            float diffz = EGG::Mathf::abs(v1.z - v2.z);
-            float diffpz = EGG::Mathf::abs(mPos.z - v1.z);
+    switch (directionType) {
+        case dWmLib::DIR3D_FRONT:
+        case dWmLib::DIR3D_BACK: {
+            float diffz = EGG::Mathf::abs(start.z - target.z);
+            float diffpz = EGG::Mathf::abs(mPos.z - start.z);
             float ratio = diffpz / diffz;
 
-            float scale = v2.y - v1.y;
+            float scale = target.y - start.y;
             if (EGG::Mathf::abs(scale) < 5.0f) {
                 scale = 0.0f;
             }
-            res = scale * ratio + v1.y;
+            res = scale * ratio + start.y;
             break;
         }
-        case 4:
-        case 5: {
-            float diffx = EGG::Mathf::abs(v1.x - v2.x);
-            float diffpx = EGG::Mathf::abs(mPos.x - v1.x);
+        case dWmLib::DIR3D_LEFT:
+        case dWmLib::DIR3D_RIGHT: {
+            float diffx = EGG::Mathf::abs(start.x - target.x);
+            float diffpx = EGG::Mathf::abs(mPos.x - start.x);
             float ratio = diffpx / diffx;
 
-            float scale = v2.y - v1.y;
+            float scale = target.y - start.y;
             if (EGG::Mathf::abs(scale) < 5.0f) {
                 scale = 0.0f;
             }
-            res = scale * ratio + v1.y;
+            res = scale * ratio + start.y;
             break;
         }
-        case 0:
-        case 1:
-            res = v2.y;
+        case dWmLib::DIR3D_UP:
+        case dWmLib::DIR3D_DOWN:
+            res = target.y;
     }
     return res;
 }
 
-void dWmDemoActor_c::CsSPosSimple(int i, float y) {
-    switch (i) {
-        case 2:
-        case 3:
-        case 4:
-        case 5:
-            if (mSpeed.y < 0.0f && mPos.y < y) {
-                mPos.y = y;
+void dWmDemoActor_c::CsSPosSimple(int directionType, float yTarget) {
+    switch (directionType) {
+        case dWmLib::DIR3D_FRONT:
+        case dWmLib::DIR3D_BACK:
+        case dWmLib::DIR3D_LEFT:
+        case dWmLib::DIR3D_RIGHT:
+            if (mSpeed.y < 0.0f && mPos.y < yTarget) {
+                mPos.y = yTarget;
             }
             break;
-        case 0:
-            if (mPos.y > y) {
-                mPos.y = y;
+        case dWmLib::DIR3D_UP:
+            if (mPos.y > yTarget) {
+                mPos.y = yTarget;
             }
             break;
-        case 1:
-            if (mPos.y < y) {
-                mPos.y = y;
+        case dWmLib::DIR3D_DOWN:
+            if (mPos.y < yTarget) {
+                mPos.y = yTarget;
             }
             break;
     }
@@ -276,11 +276,11 @@ void dWmDemoActor_c::clearSpeedAll() {
     mMaxFallSpeed = 0.0f;
 }
 
-void dWmDemoActor_c::adjustHeightBase(const mVec3_c &v1, const mVec3_c &v2, int i) {
-    if (i < 0) {
-        i = dWmLib::getPointDir(v1, v2);
+void dWmDemoActor_c::adjustHeightBase(const mVec3_c &start, const mVec3_c &target, int directionType) {
+    if (directionType < 0) {
+        directionType = dWmLib::getPointDir(start, target);
     }
-    CsSPosSimple(i, GetBgPosY(v1, v2, i));
+    CsSPosSimple(directionType, GetBgPosY(start, target, directionType));
 }
 
 bool dWmDemoActor_c::isCutscenePlaying(int *csList, int csCount) {
