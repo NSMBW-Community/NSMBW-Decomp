@@ -15,8 +15,8 @@ public:
 
     char pad[0x1198];
     u8 mCurrWorld;
-    u8 m_119a;
     u8 mCurrCourse;
+    u8 mCurrFile;
     u8 mCurrAreaNo;
     u8 mCurrLayer;
 

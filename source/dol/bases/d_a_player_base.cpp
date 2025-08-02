@@ -608,7 +608,7 @@ void daPlBase_c::setSlipActionViewLimitEnd() {
     offStatus(STATUS_30);
     if (!mKey.buttonCrouch()) {
         setSlipAction_ToEnd();
-    } else if (dScStage_c::m_instance->mCurrWorld == WORLD_1 && dScStage_c::m_instance->mCurrCourse == STAGE_6 && dScStage_c::m_instance->mCurrAreaNo == 1) {
+    } else if (dScStage_c::m_instance->mCurrWorld == WORLD_1 && dScStage_c::m_instance->mCurrCourse == STAGE_6 && dScStage_c::m_instance->mCurrFile == 1) {
         if (m_d44 & 2) {
             setSlipAction_ToEnd();
         }
@@ -3104,7 +3104,7 @@ bool daPlBase_c::setDokanIn(DokanDir_e dir) {
 
 bool daPlBase_c::setDemoOutDokanAction(int param1, DokanDir_e dir) {
     mDokanNextGoto = param1;
-    dCdFile_c *cdFile = dCd_c::m_instance->getFileP(dScStage_c::m_instance->mCurrCourse);
+    dCdFile_c *cdFile = dCd_c::m_instance->getFileP(dScStage_c::m_instance->mCurrFile);
     dNextGoto_c *nextGoto = cdFile->getNextGotoP(mDokanNextGoto);
     m_80 = 1;
     if (nextGoto->mFlags & 8) {
@@ -3122,13 +3122,13 @@ bool daPlBase_c::setDemoOutDokanAction(int param1, DokanDir_e dir) {
     };
     switch (m_80) {
         case 1:
-            if (dNext_c::m_instance->fn_800cfed0(dScStage_c::m_instance->mCurrCourse, mDokanNextGoto)) {
+            if (dNext_c::m_instance->fn_800cfed0(dScStage_c::m_instance->mCurrFile, mDokanNextGoto)) {
                 return false;
             }
             if (daPyDemoMng_c::mspInstance->m_5c) {
                 return false;
             }
-            dNext_c::m_instance->setChangeSceneNextDat(dScStage_c::m_instance->mCurrCourse, mDokanNextGoto, dFader_c::FADER_CIRCLE_TARGET);
+            dNext_c::m_instance->setChangeSceneNextDat(dScStage_c::m_instance->mCurrFile, mDokanNextGoto, dFader_c::FADER_CIRCLE_TARGET);
             if (nextGoto->m_0b == 22) {
                 changeDemoState(StateID_DemoOutWaterTank, 0);
             } else {
@@ -3540,13 +3540,13 @@ void daPlBase_c::executeState_DemoOutWaterTank() {
 void daPlBase_c::initializeState_DemoRailDokan() {
     onStatus(STATUS_BB);
     dNextGoto_c *nextGoto = dCd_c::m_instance->
-        getFileP(dScStage_c::m_instance->mCurrCourse)->
+        getFileP(dScStage_c::m_instance->mCurrFile)->
         getNextGotoP(mDokanNextGoto);
 
     dRailInfo_s *rail = dRail_c::getRailInfoP(nextGoto->m_0f);
 
     dRailNode_s *node = &dCd_c::m_instance->
-        getFileP(dScStage_c::m_instance->mCurrCourse)->
+        getFileP(dScStage_c::m_instance->mCurrFile)->
         mpRailNodes[rail->mStartNodeIdx + m_98];
 
     if (nextGoto->mFlags & 1) {
@@ -3567,7 +3567,7 @@ void daPlBase_c::finalizeState_DemoRailDokan() {
 }
 
 void daPlBase_c::setExitRailDokan() {
-    dCdFile_c *cdFile = dCd_c::m_instance->getFileP(dScStage_c::m_instance->mCurrCourse);
+    dCdFile_c *cdFile = dCd_c::m_instance->getFileP(dScStage_c::m_instance->mCurrFile);
     dNextGoto_c *nextGoto = cdFile->getNextGotoP(mDokanNextGoto);
     mLayer = nextGoto->mLayer;
     switch (nextGoto->m_0b) {
@@ -3590,12 +3590,12 @@ void daPlBase_c::executeState_DemoRailDokan() {
     m_9a--;
     if (m_9a < 0) {
         dNextGoto_c *ngt = dCd_c::m_instance->
-            getFileP(dScStage_c::m_instance->mCurrCourse)->
+            getFileP(dScStage_c::m_instance->mCurrFile)->
             getNextGotoP(mDokanNextGoto & 0xFF);
         dRailInfo_s *rail = dRail_c::getRailInfoP(ngt->m_0f);
 
         dRailNode_s *node = &dCd_c::m_instance->
-            getFileP(dScStage_c::m_instance->mCurrCourse)->
+            getFileP(dScStage_c::m_instance->mCurrFile)->
             mpRailNodes[rail->mStartNodeIdx + m_98];
 
         mPos.x = node->x;
@@ -3620,7 +3620,7 @@ void daPlBase_c::executeState_DemoRailDokan() {
         }
 
         dRailNode_s *node2 = &dCd_c::m_instance->
-            getFileP(dScStage_c::m_instance->mCurrCourse)->
+            getFileP(dScStage_c::m_instance->mCurrFile)->
             mpRailNodes[rail->mStartNodeIdx + m_98];
 
         mVec2_c delta(node2->x - mPos.x, -node2->y - mPos.y);
@@ -4399,7 +4399,7 @@ void daPlBase_c::executeState_DemoNextGotoBlock() {
         if (upper == 3) {
             f = dFader_c::FADER_CIRCLE_TARGET;
         }
-        dNext_c::m_instance->setChangeSceneNextDat(dScStage_c::m_instance->mCurrCourse, lower, f);
+        dNext_c::m_instance->setChangeSceneNextDat(dScStage_c::m_instance->mCurrFile, lower, f);
         changeNextScene(0);
         mDemoSubstate = DEMO_IN_DOKAN_ACTION_1;
     }
@@ -5672,7 +5672,7 @@ void daPlBase_c::checkDispOver() {
         float adj = dBgParameter_c::ms_Instance_p->yStart() + 96.0f;
         if (dScStage_c::m_instance->mCurrWorld == WORLD_1 &&
             dScStage_c::m_instance->mCurrCourse == STAGE_CASTLE &&
-            dScStage_c::m_instance->mCurrAreaNo == 0
+            dScStage_c::m_instance->mCurrFile == 0
         ) {
             adj = dBgParameter_c::ms_Instance_p->yStart() + 192.0f;
         }
@@ -5820,7 +5820,7 @@ bool daPlBase_c::checkPressBg() {
     }
     if (dScStage_c::m_instance->mCurrWorld == WORLD_6 &&
         dScStage_c::m_instance->mCurrCourse == STAGE_CASTLE &&
-        dScStage_c::m_instance->mCurrAreaNo == 1 &&
+        dScStage_c::m_instance->mCurrFile == 1 &&
         mPos.y >= -1420.0f
     ) {
         if (setPressBgDamage(DAMAGE_B, 1)) {
