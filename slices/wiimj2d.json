@@ -545,10 +545,17 @@
             }
         },
         {
-            "source": "lib/nw4r/ut/list.cpp",
+            "source": "lib/nw4r/ut/ut_list.cpp",
             "compilerFlags": "-proc gekko -fp hard -O4 -Cpp_exceptions off -enum int -RTTI off",
             "memoryRanges": {
                 ".text": "0x222790-0x2229f0"
+            }
+        },
+        {
+            "source": "lib/egg/core/eggDisposer.cpp",
+            "memoryRanges": {
+                ".text": "0x2b3c90-0x2b3d70",
+                ".data": "0x51ac0-0x51ad0"
             }
         },
         {

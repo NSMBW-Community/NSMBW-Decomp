@@ -7,20 +7,20 @@ namespace ut {
 
 /// @brief A doubly-linked list node. See List.
 struct Link {
-    void *mpPrev; ///< The previous linked object.
-    void *mpNext; ///< The next linked object.
+    void *prevObject; ///< The previous linked object.
+    void *nextObject; ///< The next linked object.
 };
 
 /// @brief A doubly-linked list container. See Link.
 struct List {
-    void *mpHead; ///< The first linked object.
-    void *mpTail; ///< The last linked object.
-    u16 mCount; ///< The linked object count.
-    u16 mOffset; ///< The offset of the Link structure in each object.
+    void *headObject; ///< The first linked object.
+    void *tailObject; ///< The last linked object.
+    u16 numObjects;   ///< The linked object count.
+    u16 offset;       ///< The offset of the Link structure in each object.
 };
 
-void List_Init(List *list, u16 offset); ///< Initializes the list.
-void List_Append(List *list, void *obj); ///< Adds an object to the end of the list.
+void List_Init(List *list, u16 offset);   ///< Initializes the list.
+void List_Append(List *list, void *obj);  ///< Adds an object to the end of the list.
 void List_Prepend(List *list, void *obj); ///< Adds an object to the beginning of the list.
 
 /// @brief Inserts an object at a specified position in the list.

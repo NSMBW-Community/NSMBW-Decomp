@@ -259,6 +259,7 @@ saveCurrentHeap__5mHeapFv=8016eab0
 __ct__Q23EGG8DisposerFv=802ba410
 __dt__Q23EGG8DisposerFv=802ba470
 __dt__Q23EGG4HeapFv=802b8d60
+findContainHeap__Q23EGG4HeapFPCv=802b9070
 __nwa__FUlPQ23EGG4Heapi=802b93b0
 G3dInit__Q24nw4r3g3dFb=8025eff0
 G3dReset__Q24nw4r3g3dFv=8025f0e0

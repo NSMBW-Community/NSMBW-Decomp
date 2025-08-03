@@ -19,10 +19,10 @@ struct List {
     u16 mOffset;
 };
 
-void List_Init(List *list, u16 offset); ///< See include/lib/nw4r/ut/list.hpp.
-void List_Append(List *list, void *obj); ///< See include/lib/nw4r/ut/list.hpp.
-void List_Remove(List *list, void *obj); ///< See include/lib/nw4r/ut/list.hpp.
-void *List_GetNext(const List *list, const void *obj); ///< See include/lib/nw4r/ut/list.hpp.
+void List_Init(List *list, u16 offset); ///< See include/lib/nw4r/ut/list.h.
+void List_Append(List *list, void *obj); ///< See include/lib/nw4r/ut/list.h.
+void List_Remove(List *list, void *obj); ///< See include/lib/nw4r/ut/list.h.
+void *List_GetNext(const List *list, const void *obj); ///< See include/lib/nw4r/ut/list.h.
 
 /// @brief Gets the nth linked object, starting from the top of the list.
 /// @details Returns @p nullptr if the index is not valid.

@@ -1,64 +1,64 @@
-#include <lib/nw4r/ut/list.hpp>
+#include <lib/nw4r/ut/list.h>
 
 namespace nw4r {
 namespace ut {
 
-#define GET_OBJ_NODE(list, obj) ((Link*)(((u32)(obj)) + (list)->mOffset))
+#define GET_OBJ_NODE(list, obj) ((Link *)(((u32)(obj)) + (list)->offset))
 
 void List_Init(List *list, u16 offset) {
-    list->mpHead = nullptr;
-    list->mpTail = nullptr;
-    list->mCount = 0;
-    list->mOffset = offset;
+    list->headObject = nullptr;
+    list->tailObject = nullptr;
+    list->numObjects = 0;
+    list->offset = offset;
 }
 
 void List_Append(List *list, void *obj) {
     // If only one node is in the list, set it as both head and tail
     // Else place it at the end
-    if (list->mpHead == nullptr) {
+    if (list->headObject == nullptr) {
         Link *node = GET_OBJ_NODE(list, obj);
-        node->mpNext = nullptr;
-        node->mpPrev = nullptr;
-        list->mpHead = obj;
-        list->mpTail = obj;
-        list->mCount++;
+        node->nextObject = nullptr;
+        node->prevObject = nullptr;
+        list->headObject = obj;
+        list->tailObject = obj;
+        list->numObjects++;
 
     } else {
         Link *node = GET_OBJ_NODE(list, obj);
-        node->mpPrev = list->mpTail;
-        node->mpNext = nullptr;
+        node->prevObject = list->tailObject;
+        node->nextObject = nullptr;
 
         // Link the previous node
-        GET_OBJ_NODE(list, list->mpTail)->mpNext = obj;
+        GET_OBJ_NODE(list, list->tailObject)->nextObject = obj;
 
         // Set the new tail
-        list->mpTail = obj;
-        list->mCount++;
+        list->tailObject = obj;
+        list->numObjects++;
     }
 }
 
 void List_Prepend(List *list, void *obj) {
     // If only one node is in the list, set it as both head and tail
     // Else place it at the start
-    if (list->mpHead == nullptr) {
+    if (list->headObject == nullptr) {
         Link *node = GET_OBJ_NODE(list, obj);
-        node->mpNext = nullptr;
-        node->mpPrev = nullptr;
-        list->mpHead = obj;
-        list->mpTail = obj;
-        list->mCount++;
+        node->nextObject = nullptr;
+        node->prevObject = nullptr;
+        list->headObject = obj;
+        list->tailObject = obj;
+        list->numObjects++;
 
     } else {
         Link *node = GET_OBJ_NODE(list, obj);
-        node->mpPrev = nullptr;
-        node->mpNext = list->mpHead;
+        node->prevObject = nullptr;
+        node->nextObject = list->headObject;
 
         // Link the following node
-        GET_OBJ_NODE(list, list->mpHead)->mpPrev = obj;
+        GET_OBJ_NODE(list, list->headObject)->prevObject = obj;
 
         // Set the new head
-        list->mpHead = obj;
-        list->mCount++;
+        list->headObject = obj;
+        list->numObjects++;
     }
 }
 
@@ -69,24 +69,24 @@ void List_Insert(List *list, void *target, void *obj) {
     if (target == nullptr) {
         List_Append(list, obj);
 
-    } else if (target == list->mpHead) {
+    } else if (target == list->headObject) {
         List_Prepend(list, obj);
 
     } else {
         Link *node = GET_OBJ_NODE(list, obj);
-        void *prevObj = GET_OBJ_NODE(list, target)->mpPrev;
+        void *prevObj = GET_OBJ_NODE(list, target)->prevObject;
         Link *prevNode = GET_OBJ_NODE(list, prevObj);
 
         // Update the node to be inserted
-        node->mpPrev = prevObj;
-        node->mpNext = target;
+        node->prevObject = prevObj;
+        node->nextObject = target;
 
         // Update its neighbors
-        prevNode->mpNext = obj;
-        GET_OBJ_NODE(list, target)->mpPrev = obj;
+        prevNode->nextObject = obj;
+        GET_OBJ_NODE(list, target)->prevObject = obj;
 
         // Update the list
-        list->mCount++;
+        list->numObjects++;
     }
 }
 
@@ -95,42 +95,42 @@ void List_Remove(List *list, void *obj) {
 
     // If the node is the list head, set the next node as the new head
     // Else punch a hole in the list
-    if (node->mpPrev == nullptr) {
-        list->mpHead = node->mpNext;
+    if (node->prevObject == nullptr) {
+        list->headObject = node->nextObject;
     } else {
-        GET_OBJ_NODE(list, node->mpPrev)->mpNext = node->mpNext;
+        GET_OBJ_NODE(list, node->prevObject)->nextObject = node->nextObject;
     }
 
     // If the node is the list tail, set the previous node as the new tail
     // Else punch a hole in the list
-    if (node->mpNext == nullptr) {
-        list->mpTail = node->mpPrev;
+    if (node->nextObject == nullptr) {
+        list->tailObject = node->prevObject;
     } else {
-        GET_OBJ_NODE(list, node->mpNext)->mpPrev = node->mpPrev;
+        GET_OBJ_NODE(list, node->nextObject)->prevObject = node->prevObject;
     }
 
     // Reset the node
-    node->mpPrev = nullptr;
-    node->mpNext = nullptr;
+    node->prevObject = nullptr;
+    node->nextObject = nullptr;
 
     // Update the list
-    list->mCount--;
+    list->numObjects--;
 }
 
 void *List_GetNext(const List *list, const void *obj) {
     if (obj == nullptr) {
-        return list->mpHead;
+        return list->headObject;
     }
 
-    return GET_OBJ_NODE(list, obj)->mpNext;
+    return GET_OBJ_NODE(list, obj)->nextObject;
 }
 
 void *List_GetPrev(const List *list, const void *obj) {
     if (obj == nullptr) {
-        return list->mpTail;
+        return list->tailObject;
     }
 
-    return GET_OBJ_NODE(list, obj)->mpPrev;
+    return GET_OBJ_NODE(list, obj)->prevObject;
 }
 
 } // namespace ut
