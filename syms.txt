@@ -480,3 +480,4 @@ targetAngleY__4cLibFRC7mVec3_cRC7mVec3_c=80160fc0
 PSVECSquareDistance=801c1790
 getPointDir__6dWmLibFRC7mVec3_cRC7mVec3_c=800fc300
 __ct__7mVec3_cFv=80015e30
+GetPointFromIndex__12dWmConnect_cFi=800f3400
