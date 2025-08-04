@@ -496,3 +496,4 @@ OSResumeThread=801b59a0
 OSSetThreadPriority=801b5fc0
 OSSuspendThread=801b5c40
 __ct__7mVec3_cFv=80015e30
+GetPointFromIndex__12dWmConnect_cFi=800f3400
