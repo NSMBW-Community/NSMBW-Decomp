@@ -175,7 +175,7 @@ bool dCourseSelectGuide_c::createLayout() {
 
     mWorldNo = dScWMap_c::getWorldNo();
     mCourseNo = -10;
-    mCourseType = 11;
+    mCourseType = dWmLib::COURSE_TYPE_INVALID;
 
     mLayout.AllAnimeEndSetup();
 

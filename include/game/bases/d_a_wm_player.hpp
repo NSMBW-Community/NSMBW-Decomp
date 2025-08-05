@@ -4,7 +4,7 @@
 
 class daWmPlayer_c : public dWmDemoActor_c {
 public:
-    void FUN_80101280(dWmEnemy_c *); ///< @unofficial
+    void setEnemyDieByStar(dWmEnemy_c *);
 
     static bool checkWalkPlayers();
     static bool isPlayerStarMode();

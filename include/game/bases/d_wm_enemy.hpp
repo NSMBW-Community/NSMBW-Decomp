@@ -40,10 +40,10 @@ public:
     virtual void initDemoBgmDance();
     virtual bool procDemoBgmDance();
     virtual mVec3_c calcBlowOffPos(float offsetX) { return mVec3_c(mPos.x + offsetX, mPos.y, mPos.z); }
-    virtual mVec3_c getPointOffset(int);
+    virtual mVec3_c getPointOffset(int index);
     virtual short getWaitAngle() { return 0; }
     virtual float getWalkAnmRate() { return 1.0f; }
-    virtual void setWalkAnm(float) {}
+    virtual void setWalkAnm(float anmRate) {}
     virtual bool IsHitToWaitPlayer();
     virtual int getStartPoint();
     virtual int vfc4(int pointNo) { return pointNo; } ///< @unofficial
@@ -58,9 +58,9 @@ public:
     virtual short GetWalkWaitFrame() { return 20; }
     virtual void PostWaitWalk() {}
     virtual void updateBgmAnimRate();
-    virtual int isWaitWalkEnd() { return m_6c4 != 4; }
+    virtual int isWaitWalkEnd() { return mCurrProc != 4; }
 
-    void initializeBase(const char **, int, bool);
+    void initializeBase(const char **names, int count, bool cyclic);
     void initShapeAngle();
     bool IsExecEnable();
     bool IsNeedChasePlayer();
@@ -77,7 +77,7 @@ public:
     void demoJump(const mVec3_c &pos, JumpData_s &jumpData, float scale); ///< @unofficial
     bool isThroughPoint(int);
     bool isDead();
-    void ModelCalc(m3d::mdl_c *mdl, float f1, float f2, float f3);
+    void ModelCalc(m3d::mdl_c *mdl, float yOffset, float shadowYOffset, float shadowScale);
     bool IsPlayerComingCore();
     bool IsHitToMovePlayer();
     bool isAllEnemyMoveEnd();
@@ -104,26 +104,32 @@ private:
         mAng3_c mAngle2;
     };
 
+    enum PROC_TYPE_e {
+        PROC_TYPE_EXEC,
+        PROC_TYPE_DEMO_CONTINUE,
+        PROC_TYPE_BGM_DANCE,
+        PROC_TYPE_LOSE,
+        PROC_TYPE_WAIT_WALK
+    };
+
     dWmEnPath_c mPath;
-    mVec3_c m_698;
-    mVec3_c m_6a4;
-    u8 mPad1[2];
-    short m_6b2;
-    u8 mPad2[2];
-    bool m_6b6;
-    bool m_6b7;
-    int m_6b8;
-    int m_6bc;
-    unk_s *m_6c0;
-    int m_6c4;
-    int m_6c8;
-    int m_6cc;
+    mVec3_c mNextPoint;
+    mVec3_c mPrevPoint;
+    mAng3_c mDemoAngle;
+    bool mArrivedAtTarget;
+    bool mEnWalk;
+    int mNextPointType; ///< 0 = stop point, 1 = through point
+    int mRotateTimer;
+    unk_s *mpUnkData;
+    PROC_TYPE_e mCurrProc;
+    int mWalkWaitTimer;
+    int mDemoContinueRelated;
     dWmBgmSync_c *mpBgmSync;
-    int m_6d4;
-    bool m_6d8;
-    int m_6dc;
-    int m_6e0;
-    bool m_6e4;
+    int mBgmDanceRelated;
+    bool mNotAnger;
+    int mSeID;
+    int mEfID;
+    bool mHitPlayer;
 
 public:
     static const char *smc_PathPointA[];

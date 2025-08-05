@@ -15,12 +15,12 @@ dWmEnPath_c::dWmEnPath_c() {
 
 dWmEnPath_c::~dWmEnPath_c() {}
 
-bool dWmEnPath_c::init(const char **names, int count, dWmConnect_c *connect, bool circular, int dir) {
+bool dWmEnPath_c::init(const char **names, int count, dWmConnect_c *connect, bool cyclic, int dir) {
     for (int i = 0; i < count; i++) {
         mPoints[i].mpName = names[i];
         mPoints[i].mIndex = i;
         if (i == 0) {
-            if (circular) {
+            if (cyclic) {
                 mPoints[i].mpPrev = &mPoints[count - 1];
             } else {
                 mPoints[i].mpPrev = nullptr;
@@ -29,7 +29,7 @@ bool dWmEnPath_c::init(const char **names, int count, dWmConnect_c *connect, boo
             mPoints[i].mpPrev = &mPoints[i - 1];
         }
         if (i == count - 1) {
-            if (circular) {
+            if (cyclic) {
                 mPoints[i].mpNext = &mPoints[0];
             } else {
                 mPoints[i].mpNext = nullptr;
