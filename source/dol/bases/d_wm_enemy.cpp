@@ -298,16 +298,14 @@ mVec3_c dWmEnemy_c::getNextPointInfo() {
     dWmConnect_c *connect = &wmMap->mWmConnect[wmMap->currIdx];
     dWmConnect_c::Point_s *point = connect->GetPointFromIndex(mPath.GetNextPointIdx());
     int idx = mPath.GetNextPointInfo(false)->mIndex;
-    mVec3_c res = point->pos + getPointOffset(idx);
-    return res;
+    return point->pos + getPointOffset(idx);
 }
 
 mVec3_c dWmEnemy_c::getCurrentPointInfo() {
     daWmMap_c *wmMap = daWmMap_c::m_instance;
     dWmConnect_c *connect = &wmMap->mWmConnect[wmMap->currIdx];
     dWmConnect_c::Point_s *point = connect->GetPointFromIndex(mPath.mpCurrentPoint->mPointIndex);
-    mVec3_c res = point->pos + getPointOffset(mPath.mpCurrentPoint->mIndex);
-    return res;
+    return point->pos + getPointOffset(mPath.mpCurrentPoint->mIndex);
 }
 
 void dWmEnemy_c::initShapeAngle() {
