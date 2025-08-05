@@ -80,6 +80,16 @@
             }
         },
         {
+            "source": "dol/bases/d_wipe_circle.cpp",
+            "nonMatching": true,
+            "memoryRanges": {
+                ".text": "0x14c20-0x15410",
+                ".data": "0x2e00-0x2ec0",
+                ".sdata": "0x130-0x148",
+                ".sbss": "0x70-0x78"
+            }
+        },
+        {
             "source": "dol/bases/d_wipe_dokan.cpp",
             "memoryRanges": {
                 ".text": "0x15410-0x159f0",
