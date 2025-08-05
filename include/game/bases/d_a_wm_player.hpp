@@ -13,7 +13,7 @@ public:
     bool m_18c;
     u8 mPad2[0x9f];
     int m_22c;
-    u8 mPad3[0x4];
+    int m_230;
     int m_234;
     u8 mPad4[0xc4];
     bool m_2fc;
