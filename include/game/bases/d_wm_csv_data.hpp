@@ -2,6 +2,11 @@
 
 class dCsvData_c {
 public:
+    const char *GetPointName(int) const;
+
+    u8 mPad[0x16518];
+
+public:
     static int c_COURSE_ID;
     static int c_GHOST_ID;
     static int c_TOWER_ID;

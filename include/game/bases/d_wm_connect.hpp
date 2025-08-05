@@ -12,4 +12,6 @@ public:
     };
 
     Point_s *GetPointFromIndex(int);
+
+    u8 mPad[0x3f08];
 };
