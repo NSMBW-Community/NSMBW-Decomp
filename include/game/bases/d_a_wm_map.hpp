@@ -16,8 +16,5 @@ public:
     dCsvData_c mCsvData[4];
     dWmConnect_c mWmConnect[4];
 
-    dCsvData_c *GetCsvData() { return &mCsvData[currIdx]; }
-    dWmConnect_c *GetWmConnect() { return &mWmConnect[currIdx]; }
-
     static daWmMap_c *m_instance;
 };

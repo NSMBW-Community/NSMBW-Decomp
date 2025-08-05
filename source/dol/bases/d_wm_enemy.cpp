@@ -57,7 +57,7 @@ void dWmEnemy_c::initializeBase(const char **names, int count, bool circular) {
     daWmMap_c *wmMap = daWmMap_c::m_instance;
     dInfo_c::enemy_s enData;
     dInfo_c::m_instance->GetMapEnemyInfo(dScWMap_c::m_WorldNo, mParam & 0xf, enData);
-    dWmConnect_c *connect = wmMap->GetWmConnect();
+    dWmConnect_c *connect = &wmMap->mWmConnect[wmMap->currIdx];
     if (count < 0) {
         count = wmMap->FUN_80100830(mParam & 0xf);
     }
@@ -71,11 +71,11 @@ void dWmEnemy_c::initializeBase(const char **names, int count, bool circular) {
     }
     m_6b7 = enWalk;
     initShapeAngle();
-    mpBgmSync = new dWmBgmSync_c();
-    const mAng3_c *ang = &m_6c0->mAngle2;
-    mpBgmSync->mAngle = ang;
-    mpBgmSync->m_04 = ang->x.mAngle - 1;
-    mpBgmSync->m_08 = ang->y.mAngle;
+    dWmBgmSync_c *bgmSync = new dWmBgmSync_c();
+    mpBgmSync = bgmSync;
+    bgmSync->mAngle = &m_6c0->mAngle2;
+    bgmSync->m_04 = bgmSync->mAngle->x.mAngle - 1;
+    bgmSync->m_08 = bgmSync->mAngle->y.mAngle;
     m_6dc = -1;
     m_6e0 = -1;
     m_6d8 = true;
@@ -294,7 +294,8 @@ bool dWmEnemy_c::doWalk() {
 }
 
 mVec3_c dWmEnemy_c::getNextPointInfo() {
-    dWmConnect_c *connect = daWmMap_c::m_instance->GetWmConnect();
+    daWmMap_c *wmMap = daWmMap_c::m_instance;
+    dWmConnect_c *connect = &wmMap->mWmConnect[wmMap->currIdx];
     dWmConnect_c::Point_s *point = connect->GetPointFromIndex(mPath.GetNextPointIdx());
     int idx = mPath.GetNextPointInfo(false)->mIndex;
     mVec3_c res = point->pos + getPointOffset(idx);
@@ -302,7 +303,8 @@ mVec3_c dWmEnemy_c::getNextPointInfo() {
 }
 
 mVec3_c dWmEnemy_c::getCurrentPointInfo() {
-    dWmConnect_c *connect = daWmMap_c::m_instance->GetWmConnect();
+    daWmMap_c *wmMap = daWmMap_c::m_instance;
+    dWmConnect_c *connect = &wmMap->mWmConnect[wmMap->currIdx];
     dWmConnect_c::Point_s *point = connect->GetPointFromIndex(mPath.mpCurrentPoint->mPointIndex);
     mVec3_c res = point->pos + getPointOffset(mPath.mpCurrentPoint->mIndex);
     return res;
@@ -454,7 +456,8 @@ bool dWmEnemy_c::isNextThroughPoint() {
 }
 
 bool dWmEnemy_c::isThroughPoint(int idx) {
-    return daWmMap_c::m_instance->GetCsvData()->GetPointName(idx)[0] == 'K';
+    daWmMap_c *wmMap = daWmMap_c::m_instance;
+    return wmMap->mCsvData[wmMap->currIdx].GetPointName(idx)[0] == 'K';
 }
 
 bool dWmEnemy_c::FUN_800f88d0() {
