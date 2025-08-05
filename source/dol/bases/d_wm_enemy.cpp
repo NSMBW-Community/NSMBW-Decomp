@@ -69,17 +69,20 @@ void dWmEnemy_c::initializeBase(const char **names, int count, bool circular) {
     if (dWmEnemy::isEnemyWalk() && dWmLib::getEnemyRevivalCount(dScWMap_c::m_WorldNo, mParam & 0xf) == 0) {
         enWalk = true;
     }
-    mEnWalk = enWalk;
+    m_6b7 = enWalk;
     initShapeAngle();
     mpBgmSync = new dWmBgmSync_c();
-    mpBgmSync->mAngle = &m_6c0->mAngle2;
-    mpBgmSync->m_04 = m_6c0->mAngle1.y.mAngle;
+    const mAng3_c *ang = &m_6c0->mAngle2;
+    mpBgmSync->mAngle = ang;
+    mpBgmSync->m_04 = ang->x.mAngle - 1;
+    mpBgmSync->m_08 = ang->y.mAngle;
     m_6dc = -1;
     m_6e0 = -1;
     m_6d8 = true;
-    mScale.x = m_6c0->m_04;
-    mScale.y = m_6c0->m_04;
-    mScale.z = m_6c0->m_04;
+    float scale = m_6c0->m_04;
+    mScale.x = scale;
+    mScale.y = scale;
+    mScale.z = scale;
     m_6b6 = true;
     m_6e4 = false;
 }
@@ -293,13 +296,16 @@ bool dWmEnemy_c::doWalk() {
 mVec3_c dWmEnemy_c::getNextPointInfo() {
     dWmConnect_c *connect = daWmMap_c::m_instance->GetWmConnect();
     dWmConnect_c::Point_s *point = connect->GetPointFromIndex(mPath.GetNextPointIdx());
-    return getPointOffset(mPath.GetNextPointInfo(false)->mIndex) + point->pos;
+    int idx = mPath.GetNextPointInfo(false)->mIndex;
+    mVec3_c res = point->pos + getPointOffset(idx);
+    return res;
 }
 
 mVec3_c dWmEnemy_c::getCurrentPointInfo() {
     dWmConnect_c *connect = daWmMap_c::m_instance->GetWmConnect();
-    dWmConnect_c::Point_s *point = connect->GetPointFromIndex(mPath.mpCurrentPoint->mIndex);
-    return getPointOffset(mPath.mpCurrentPoint->mIndex) + point->pos;
+    dWmConnect_c::Point_s *point = connect->GetPointFromIndex(mPath.mpCurrentPoint->mPointIndex);
+    mVec3_c res = point->pos + getPointOffset(mPath.mpCurrentPoint->mIndex);
+    return res;
 }
 
 void dWmEnemy_c::initShapeAngle() {

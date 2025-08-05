@@ -124,7 +124,6 @@ private:
     int m_6dc;
     int m_6e0;
     bool m_6e4;
-    bool mEnWalk;
 
 public:
     static const char *smc_PathPointA[];
