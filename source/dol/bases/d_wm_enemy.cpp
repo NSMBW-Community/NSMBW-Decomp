@@ -466,9 +466,15 @@ bool dWmEnemy_c::isDead() {
 }
 
 void dWmEnemy_c::ModelCalc(m3d::mdl_c *mdl, float f1, float f2, float f3) {
-    mdl->entry();
-    mMatrix.trans(mPos).ZXYrotM(mAngle);
-    mMatrix.trans(mVec3_c(-f1, 0.0f, 0.0f));
+    mdl->play();
+    mVec3_c pos1 = mPos;
+    mAng3_c ang = mAngle;
+    pos1.y += f1;
+    mMatrix.trans(pos1).ZXYrotM(ang);
+    mMtx_c mtx;
+    mVec3_c pos(0.0f, -f1, 0.0f);
+    mtx.trans(pos);
+    mMatrix.concat(mtx);
     mdl->setLocalMtx(&mMatrix);
     mdl->setScale(mScale);
     mdl->calc(false);
