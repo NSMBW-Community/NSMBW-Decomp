@@ -169,6 +169,14 @@
             }
         },
         {
+            "source": "dol/bases/d_main.cpp",
+            "memoryRanges": {
+                ".text": "0xc3880-0xc39d0",
+                ".bss": "0x82b8-0x85d0",
+                ".sbss": "0x3d8-0x3e0"
+            }
+        },
+        {
             "source": "dol/bases/d_md_actor.cpp",
             "memoryRanges": {
                 ".text": "0xc7080-0xc73e0",

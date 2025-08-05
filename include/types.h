@@ -32,6 +32,9 @@ typedef volatile u64 vu64;
 typedef volatile f32 vf32;
 typedef volatile f64 vf64;
 
+enum { FALSE, TRUE };
+typedef int BOOL;
+
 // Macros
 #define ARRAY_SIZE(a) (sizeof(a) / sizeof(a[0]))
 #define BIT_FLAG(bit) ((bit) < 0 ? 0 : 1 << (bit))
@@ -42,6 +45,8 @@ typedef volatile f64 vf64;
 
 #ifdef __CWCC__
 #define NOINLINE __attribute__((noinline))
+#define ALIGNED(x) __attribute__((aligned(x)))
 #else
 #define NOINLINE
+#define ALIGNED(x)
 #endif
