@@ -8,7 +8,7 @@ public:
     struct Point_s {
         u32 m_00;
         char name[8];
-        mVec3_c pos;
+        nw4r::math::VEC3 pos;
     };
 
     Point_s *GetPointFromIndex(int);

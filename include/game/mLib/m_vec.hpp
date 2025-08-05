@@ -127,6 +127,7 @@ public:
 
     /// @brief Assignment operator.
     mVec3_c &operator=(const mVec3_c &v) { x = v.x; y = v.y; z = v.z; return *this; }
+    mVec3_c &operator=(const nw4r::math::VEC3 &v) { x = v.x; y = v.y; z = v.z; return *this; }
 
     /// @brief Float cast operator.
     operator f32*() { return &x; }
@@ -192,6 +193,22 @@ public:
 
     float distTo(const mVec3_c &other) const {
         return EGG::Mathf::sqrt(PSVECSquareDistance((const Vec*) this, (const Vec*) &other));
+    }
+
+    static mVec3_c psAdd(const register mVec3_c &vec1, const register mVec3_c &vec2) {
+        mVec3_c res;
+        register mVec3_c &resRef = res;
+        asm {
+            psq_l  fp0, mVec3_c.x(vec1), 0, 0
+            psq_l  fp1, mVec3_c.x(vec2), 0, 0
+            ps_add fp2, fp0, fp1
+            psq_st fp2, mVec3_c.x(resRef), 0, 0
+            psq_l  fp0, mVec3_c.z(vec1), 1, 0
+            psq_l  fp1, mVec3_c.z(vec2), 1, 0
+            ps_add fp2, fp0, fp1
+            psq_st fp2, mVec3_c.z(resRef), 1, 0
+        }
+        return res;
     }
 
     /// @brief Normalizes the vector.

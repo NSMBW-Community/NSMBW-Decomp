@@ -18,5 +18,5 @@ public:
     bool m_0d;
     bool m_0e;
     u8 mPad2[0x8];
-    mAng3_c *mAngle;
+    const mAng3_c *mAngle;
 };
