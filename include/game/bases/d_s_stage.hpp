@@ -20,6 +20,7 @@ public:
     static int m_loopType;
 
     static bool m_isCourseOut; ///< Whether the game is transitioning from a stage scene to a non-stage scene.
+    static bool m_KoopaJrEscape;
 
     typedef void (*changePosFunc)(mVec3_c *);
     static void setChangePosFunc(int);
