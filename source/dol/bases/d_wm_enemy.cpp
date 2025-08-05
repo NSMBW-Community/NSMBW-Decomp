@@ -57,11 +57,11 @@ void dWmEnemy_c::initializeBase(const char **names, int count, bool circular) {
     daWmMap_c *wmMap = daWmMap_c::m_instance;
     dInfo_c::enemy_s enData;
     dInfo_c::m_instance->GetMapEnemyInfo(dScWMap_c::m_WorldNo, mParam & 0xf, enData);
+    dWmConnect_c *connect = wmMap->GetWmConnect();
     if (count < 0) {
-
+        count = wmMap->FUN_80100830(mParam & 0xf);
     }
-    dWmConnect_c *connect;
-    mPath.init(names, count, connect, circular, enData.mRandomMove);
+    mPath.init(names, count, connect, circular, enData.m_08);
     mPath.SetStartPoint(getStartPoint());
     dWmConnect_c::Point_s *point = connect->GetPointFromIndex(mPath.mpCurrentPoint->mPointIndex);
     mPos = point->pos + getPointOffset(mPath.mpCurrentPoint->mIndex);
@@ -72,6 +72,16 @@ void dWmEnemy_c::initializeBase(const char **names, int count, bool circular) {
     mEnWalk = enWalk;
     initShapeAngle();
     mpBgmSync = new dWmBgmSync_c();
+    mpBgmSync->mAngle = &m_6c0->mAngle2;
+    mpBgmSync->m_04 = m_6c0->mAngle1.y.mAngle;
+    m_6dc = -1;
+    m_6e0 = -1;
+    m_6d8 = true;
+    mScale.x = m_6c0->m_04;
+    mScale.y = m_6c0->m_04;
+    mScale.z = m_6c0->m_04;
+    m_6b6 = true;
+    m_6e4 = false;
 }
 
 int dWmEnemy_c::getStartPoint() {
@@ -281,13 +291,15 @@ bool dWmEnemy_c::doWalk() {
 }
 
 mVec3_c dWmEnemy_c::getNextPointInfo() {
-    // TODO
-    return getPointOffset(mPath.GetNextPointInfo(false)->mIndex);
+    dWmConnect_c *connect = daWmMap_c::m_instance->GetWmConnect();
+    dWmConnect_c::Point_s *point = connect->GetPointFromIndex(mPath.GetNextPointIdx());
+    return getPointOffset(mPath.GetNextPointInfo(false)->mIndex) + point->pos;
 }
 
 mVec3_c dWmEnemy_c::getCurrentPointInfo() {
-    // TODO
-    return getPointOffset(mPath.GetNextPointInfo(false)->mIndex);
+    dWmConnect_c *connect = daWmMap_c::m_instance->GetWmConnect();
+    dWmConnect_c::Point_s *point = connect->GetPointFromIndex(mPath.mpCurrentPoint->mIndex);
+    return getPointOffset(mPath.mpCurrentPoint->mIndex) + point->pos;
 }
 
 void dWmEnemy_c::initShapeAngle() {
@@ -436,12 +448,11 @@ bool dWmEnemy_c::isNextThroughPoint() {
 }
 
 bool dWmEnemy_c::isThroughPoint(int idx) {
-    // TODO
-    return true;
+    return daWmMap_c::m_instance->GetCsvData()->GetPointName(idx)[0] == 'K';
 }
 
 bool dWmEnemy_c::FUN_800f88d0() {
-    return (mParam & 0xf) == dInfo_c::m_instance->m_9c;
+    return dInfo_c::m_instance->m_9c == (mParam & 0xf);
 }
 
 bool dWmEnemy_c::isDead() {
@@ -459,12 +470,16 @@ void dWmEnemy_c::ModelCalc(m3d::mdl_c *mdl, float f1, float f2, float f3) {
 }
 
 void dWmEnemy_c::updatePathInfo(bool b) {
+    dInfo_c *info = dInfo_c::m_instance;
     mPath.UpdatePoint();
     m_6b2 = (getNextPointInfo() - mPos).xzAng();
     if (b) {
+        int wNo = dScWMap_c::m_WorldNo;
+        int sNo = dScWMap_c::m_SceneNo;
+        int param = mParam & 0xf;
         int v = vfc4(mPath.GetPathPointNo(mPath.mpCurrentPoint->mpName));
-        dInfo_c::m_instance->SetMapEnemyInfo(dScWMap_c::m_WorldNo, mParam & 0xf, dScWMap_c::m_SceneNo, v);
-        dInfo_c::m_instance->FUN_800bbc40(dScWMap_c::m_WorldNo, mParam & 0xf, mPath.mDir1);
+        info->SetMapEnemyInfo(wNo, param, sNo, v);
+        info->FUN_800bbc40(wNo, param, mPath.mDir1);
     }
 }
 
@@ -500,7 +515,7 @@ int dWmEnemy_c::getEnemyWalkSeID() {
 }
 
 bool dWmEnemy_c::IsExecEnable() {
-    const int cutsceneIDs[] = {
+    static const int cutsceneIDs[] = {
         -1, 56, 136, 86, 87
     };
     return isCutscenePlaying(cutsceneIDs, ARRAY_SIZE(cutsceneIDs));
@@ -603,14 +618,17 @@ bool dWmEnemy_c::CheckIsHitToPlayer() {
 }
 
 bool dWmEnemy_c::isAllEnemyMoveEnd(void) {
+    dWmEnemy_c *en;
+    bool res = true;
     for (int i = 0; i < ARRAY_SIZE(dWmEnemy::sc_EnemyProfName); i++) {
-        dWmEnemy_c *en = (dWmEnemy_c *) fManager_c::searchBaseByProfName(dWmEnemy::sc_EnemyProfName[i], nullptr);
-        bool res = true;
-        while (en != nullptr) {
-            en = (dWmEnemy_c *) fManager_c::searchBaseByProfName(dWmEnemy::sc_EnemyProfName[i], en);
-            res &= en->isWaitWalkEnd();
+        en = (dWmEnemy_c *) fManager_c::searchBaseByProfName(dWmEnemy::sc_EnemyProfName[i], nullptr);
+        if (en != nullptr) {
+            while (en != nullptr) {
+                res &= en->isWaitWalkEnd();
+                en = (dWmEnemy_c *) fManager_c::searchBaseByProfName(dWmEnemy::sc_EnemyProfName[i], en);
+            }
+            break;
         }
-        return res;
     }
-    return true;
+    return res;
 }

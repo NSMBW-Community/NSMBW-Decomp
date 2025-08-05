@@ -61,9 +61,9 @@ public:
     dCyuukan_c mCyuukan;
     char pad2[0x18];
     int m_54;
-    u8 pad3[0x48];
+    u8 pad3[0x44];
     int m_9c;
-    u8 pad4[0x2e0];
+    u8 pad4[0x2e4];
     int mCharIDs[4];
     bool mIsWorldSelect; ///< Whether the World Select Menu is being displayed.
     int pad5[7];

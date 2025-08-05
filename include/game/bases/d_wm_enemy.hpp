@@ -2,15 +2,16 @@
 
 #include <game/bases/d_wm_demo_actor.hpp>
 #include <game/bases/d_wm_en_path.hpp>
-#include <game/bases/d_wm_bg_sync.hpp>
+#include <game/bases/d_wm_bgm_sync.hpp>
 
 /// @ingroup bases
 class dWmEnemy_c : public dWmDemoActor_c {
 public:
     /// @unofficial
     struct JumpData_s {
-        int mFrames;
+        int m_00;
         float mJumpSpeed;
+        short mFrames;
         float mStartScale;
         float mEndScale;
     };
@@ -96,6 +97,13 @@ public:
     typedef void (dWmEnemy_c::*ProcFunc)();
 
 private:
+    struct unk_s {
+        float m_00, m_04, m_08, m_0c;
+        u8 mPad[0x42];
+        mAng3_c mAngle1;
+        mAng3_c mAngle2;
+    };
+
     dWmEnPath_c mPath;
     mVec3_c m_698;
     mVec3_c m_6a4;
@@ -106,7 +114,7 @@ private:
     bool m_6b7;
     int m_6b8;
     int m_6bc;
-    int m_6c0;
+    unk_s *m_6c0;
     int m_6c4;
     int m_6c8;
     int m_6cc;
