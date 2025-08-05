@@ -584,15 +584,24 @@ bool dWmEnemy_c::IsHitToWaitPlayer() {
 }
 
 bool dWmEnemy_c::IsHitToMovePlayer() {
-    if (m_6e4) {
-        return false;
-    }
-    if (daWmPlayer_c::ms_instance->m_22c == mPath.GetNextPointIdx() && !daWmPlayer_c::ms_instance->m_18c) {
-        if (mPos.distTo(daWmPlayer_c::ms_instance->mPos) < GetTerritory() * 2.0f) {
-            return true;
+    bool res = false;
+    if (!m_6e4) {
+        bool b1 = false;
+        bool b2 = false;
+        int nextPointIdx = daWmPlayer_c::ms_instance->m_230;
+        if (mPath.GetNextPointIdx() == nextPointIdx && daWmPlayer_c::ms_instance->m_18c) {
+            b2 = true;
+        }
+        if (b2) {
+            if (mPos.distTo(daWmPlayer_c::ms_instance->mPos) < GetTerritory() * 2.0f) {
+                b1 = true;
+            }
+        }
+        if (b1) {
+            res = true;
         }
     }
-    return false;
+    return res;
 }
 
 bool dWmEnemy_c::CheckIsHitToPlayer() {
