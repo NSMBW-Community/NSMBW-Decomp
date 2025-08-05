@@ -261,7 +261,6 @@
         },
         {
             "source": "dol/bases/d_wm_enemy.cpp",
-            "nonMatching": true,
             "memoryRanges": {
                 ".text": "0xf0d90-0xf2c00",
                 ".ctors": "0x178-0x17c",
