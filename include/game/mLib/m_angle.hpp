@@ -46,12 +46,6 @@ struct mAng {
     /// @brief Subtraction operator.
     mAng operator-(const mAng &v) const { return mAng(mAngle - v.mAngle); }
 
-    /// @brief Equality operator.
-    bool operator==(const mAng &v) const { return mAngle == v.mAngle; }
-
-    /// @brief Inequality operator.
-    bool operator!=(const mAng &v) const { return mAngle != v.mAngle; }
-
     /// @brief Computes the sine of the angle.
     float sin() const { return nw4r::math::SinS(mAngle); }
 
@@ -114,12 +108,6 @@ public:
 
     /// @brief Subtraction operator.
     mAng3_c operator-(const mAng3_c &v) const { return mAng3_c(x - v.x, y - v.y, z - v.z); }
-
-    /// @brief Equality operator.
-    bool operator==(const mAng3_c &v) const { return x == v.x && y == v.y && z == v.z; }
-
-    /// @brief Inequality operator.
-    bool operator!=(const mAng3_c &v) const { return x != v.x || y != v.y || z != v.z; }
 
     mAng x; ///< The rotation on the X axis.
     mAng y; ///< The rotation on the Y axis.

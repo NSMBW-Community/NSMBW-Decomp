@@ -175,7 +175,7 @@ bool dCourseSelectGuide_c::createLayout() {
 
     mWorldNo = dScWMap_c::getWorldNo();
     mCourseNo = -10;
-    mCourseType = 11;
+    mCourseType = dWmLib::COURSE_TYPE_INVALID;
 
     mLayout.AllAnimeEndSetup();
 
@@ -265,7 +265,8 @@ void dCourseSelectGuide_c::PlayerIconSet() {
         PLAYER_CHARACTER_e playerType = daPyCom_c::sc_PLAYER_ORDER[i];
         int playerIndex = daPyMng_c::getPlayerIndex(playerType);
         if (dGameCom::PlayerEnterCheck(playerIndex)) {
-            mVec3_c pos = mpNullPanes[currPane]->mPos;
+            mVec3_c pos;
+            pos = mpNullPanes[currPane]->mPos;
             mpPicturePanes[picPaneNums[playerType]]->mPos = pos;
             mpPicturePanes[picPaneNums[playerType]]->setVisible(true);
             currPane++;
