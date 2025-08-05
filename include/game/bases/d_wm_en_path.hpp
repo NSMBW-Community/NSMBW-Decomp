@@ -17,7 +17,7 @@ public:
     virtual ~dWmEnPath_c();
 
     /// @unofficial
-    bool init(const char **names, int count, dWmConnect_c *connect, bool circular, int dir);
+    bool init(const char **names, int count, dWmConnect_c *connect, bool cyclic, int dir);
 
     void SetStartPoint(int index);
     int GetNextPointIdx();

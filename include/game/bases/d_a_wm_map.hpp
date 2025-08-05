@@ -6,7 +6,7 @@
 
 class daWmMap_c : public dWmDemoActor_c {
 public:
-    int FUN_80100830(int); ///< @unofficial
+    int GetNodeCount(int); ///< @unofficial
 
     dHeapAllocator_c mAllocator;
     dWmMapModel_c mModels[4];

@@ -38,7 +38,11 @@ bool isEnemyWalk() {
         dScWMap_c::m_SceneNo == dScWMap_c::m_PrevSceneNo &&
         dWmLib::GetCurrentPlayResultStatus() != 0 &&
         dWmLib::GetCurrentPlayResultStatus() != 9 &&
-        courseType != 9 && courseType != 10 && courseType != 11 && courseType != 4 && courseType != 6
+        courseType != dWmLib::COURSE_TYPE_KINOKO_START &&
+        courseType != dWmLib::COURSE_TYPE_PEACH_CASTLE &&
+        courseType != dWmLib::COURSE_TYPE_INVALID &&
+        courseType != dWmLib::COURSE_TYPE_KINOKO &&
+        courseType != dWmLib::COURSE_TYPE_CANNON
     ) {
         return true;
     }
@@ -53,15 +57,15 @@ dWmEnemy_c::~dWmEnemy_c() {
     }
 }
 
-void dWmEnemy_c::initializeBase(const char **names, int count, bool circular) {
+void dWmEnemy_c::initializeBase(const char **names, int count, bool cyclic) {
     daWmMap_c *wmMap = daWmMap_c::m_instance;
     dInfo_c::enemy_s enData;
     dInfo_c::m_instance->GetMapEnemyInfo(dScWMap_c::m_WorldNo, mParam & 0xf, enData);
     dWmConnect_c *connect = &wmMap->mWmConnect[wmMap->currIdx];
     if (count < 0) {
-        count = wmMap->FUN_80100830(mParam & 0xf);
+        count = wmMap->GetNodeCount(mParam & 0xf);
     }
-    mPath.init(names, count, connect, circular, enData.m_08);
+    mPath.init(names, count, connect, cyclic, enData.m_08);
     mPath.SetStartPoint(getStartPoint());
     dWmConnect_c::Point_s *point = connect->GetPointFromIndex(mPath.mpCurrentPoint->mPointIndex);
     mPos = point->pos + getPointOffset(mPath.mpCurrentPoint->mIndex);
@@ -69,22 +73,22 @@ void dWmEnemy_c::initializeBase(const char **names, int count, bool circular) {
     if (dWmEnemy::isEnemyWalk() && dWmLib::getEnemyRevivalCount(dScWMap_c::m_WorldNo, mParam & 0xf) == 0) {
         enWalk = true;
     }
-    m_6b7 = enWalk;
+    mEnWalk = enWalk;
     initShapeAngle();
     dWmBgmSync_c *bgmSync = new dWmBgmSync_c();
     mpBgmSync = bgmSync;
-    bgmSync->mAngle = &m_6c0->mAngle2;
+    bgmSync->mAngle = &mpUnkData->mAngle2;
     bgmSync->m_04 = bgmSync->mAngle->x.mAngle - 1;
     bgmSync->m_08 = bgmSync->mAngle->y.mAngle;
-    m_6dc = -1;
-    m_6e0 = -1;
-    m_6d8 = true;
-    float scale = m_6c0->m_04;
+    mSeID = -1;
+    mEfID = -1;
+    mNotAnger = true;
+    float scale = mpUnkData->m_04;
     mScale.x = scale;
     mScale.y = scale;
     mScale.z = scale;
-    m_6b6 = true;
-    m_6e4 = false;
+    mArrivedAtTarget = true;
+    mHitPlayer = false;
 }
 
 int dWmEnemy_c::getStartPoint() {
@@ -111,7 +115,7 @@ int dWmEnemy_c::execute() {
             mode_lose,
             mode_waitWalk
         };
-        (this->*ProcTbl[m_6c4])();
+        (this->*ProcTbl[mCurrProc])();
     }
     calculateEffect();
     calc();
@@ -125,11 +129,11 @@ void dWmEnemy_c::calculateEffect() {}
 void dWmEnemy_c::calc() {}
 
 void dWmEnemy_c::init_exec() {
-    m_6c4 = 0;
+    mCurrProc = PROC_TYPE_EXEC;
 }
 
 void dWmEnemy_c::mode_exec() {
-    if (IsExecEnable() && m_6d8 && mpBgmSync->m_0d) {
+    if (IsExecEnable() && mNotAnger && mpBgmSync->m_0d) {
         init_bgmDance();
     } else {
         if (IsNeedChasePlayer()) {
@@ -140,7 +144,7 @@ void dWmEnemy_c::mode_exec() {
 
 void dWmEnemy_c::init_lose() {
     initDemoStarLose();
-    m_6c4 = 3;
+    mCurrProc = PROC_TYPE_LOSE;
 }
 
 void dWmEnemy_c::initDemoStarLose() {
@@ -158,8 +162,8 @@ bool dWmEnemy_c::procDemoStarLose() {
 }
 
 void dWmEnemy_c::init_bgmDance() {
-    m_6c4 = 2;
-    m_6d4 = 1;
+    mCurrProc = PROC_TYPE_BGM_DANCE;
+    mBgmDanceRelated = 1;
     initDemoBgmDance();
 }
 
@@ -176,9 +180,9 @@ bool dWmEnemy_c::procDemoBgmDance() {
 }
 
 void dWmEnemy_c::init_DemoContinue() {
-    m_6c4 = 1;
-    m_6cc = 2;
-    m_6c8 = 10;
+    mCurrProc = PROC_TYPE_DEMO_CONTINUE;
+    mDemoContinueRelated = 2;
+    mWalkWaitTimer = 10;
 }
 
 void dWmEnemy_c::mode_DemoContinue() {
@@ -186,14 +190,14 @@ void dWmEnemy_c::mode_DemoContinue() {
 }
 
 void dWmEnemy_c::init_waitWalk() {
-    m_6c4 = 4;
-    m_6c8 = GetWalkWaitFrame() + 1;
+    mCurrProc = PROC_TYPE_WAIT_WALK;
+    mWalkWaitTimer = GetWalkWaitFrame() + 1;
 }
 
 void dWmEnemy_c::mode_waitWalk() {
-    if (!m_6e4) {
-        if (m_6c8 > 0) {
-            if (m_6c8 == 1) {
+    if (!mHitPlayer) {
+        if (mWalkWaitTimer > 0) {
+            if (mWalkWaitTimer == 1) {
                 mPath.mAdvancePoint = IsRandomMove();
                 int dir;
                 bool randomWalk = IsRandomWalk();
@@ -208,10 +212,10 @@ void dWmEnemy_c::mode_waitWalk() {
                 mPath.mDir1 = dir;
                 initWalk();
             }
-            m_6c8--;
+            mWalkWaitTimer--;
         } else {
-            if (doWalk() && m_6c4 == 4) {
-                if (!m_6e4) {
+            if (doWalk() && mCurrProc == PROC_TYPE_WAIT_WALK) {
+                if (!mHitPlayer) {
                     PostWaitWalk();
                     mPath.mAdvancePoint = true;
                     mPath.mDir1 = mPath.mDir2;
@@ -225,46 +229,46 @@ void dWmEnemy_c::mode_waitWalk() {
 }
 
 void dWmEnemy_c::initWalk(float f) {
-    m_698 = getNextPointInfo();
-    m_6a4 = mPos;
+    mNextPoint = getNextPointInfo();
+    mPrevPoint = mPos;
     mSpeedF = f;
     mAccelY = -5.0f;
     mMaxFallSpeed = -10.0f;
-    m_6b6 = false;
-    m_6b2 = (getNextPointInfo() - mPos).xzAng();
+    mArrivedAtTarget = false;
+    mDemoAngle.y = (getNextPointInfo() - mPos).xzAng();
     if (isNextThroughPoint()) {
-        m_6b8 = 1;
+        mNextPointType = 1;
     } else {
-        m_6b8 = 0;
+        mNextPointType = 0;
     }
 }
 
 bool dWmEnemy_c::doWalk() {
-    if (!m_6b6) {
-        if (m_6b2 != mAngle3D.y) {
-            sLib::addCalcAngle(&mAngle3D.y.mAngle, m_6b2, 10, 0x2000, 0x400);
+    if (!mArrivedAtTarget) {
+        if (mDemoAngle.y != mAngle3D.y) {
+            sLib::addCalcAngle(&mAngle3D.y.mAngle, mDemoAngle.y, 10, 0x2000, 0x400);
             mAngle = mAngle3D;
         } else {
-            if (m_6dc < 0) {
+            if (mSeID < 0) {
                 dWmSeManager_c *seManager = dWmSeManager_c::m_pInstance;
-                m_6dc = seManager->playSound(getEnemyWalkSeID(), 0, mPos, (mParam & 0xf) + 1, 1);
+                mSeID = seManager->playSound(getEnemyWalkSeID(), 0, mPos, (mParam & 0xf) + 1, 1);
             }
             setWalkAnm(getWalkAnmRate());
             calcSpeed();
             posMove();
-            adjustHeightBase(m_6a4, m_698, -1);
+            adjustHeightBase(mPrevPoint, mNextPoint, -1);
             bool hitToPlayer = false;
             if (CheckIsHitToPlayer()) {
                 hitToPlayer = true;
             }
-            if (!m_6b6 && checkArriveTargetXYZ(m_6a4, m_698)) {
+            if (!mArrivedAtTarget && checkArriveTargetXYZ(mPrevPoint, mNextPoint)) {
                 bool tmp = false;
-                if (m_6b8 == 1) {
+                if (mNextPointType == 1) {
                     tmp = true;
                 }
-                mPos = m_698;
+                mPos = mNextPoint;
                 mSpeedF = 0.0f;
-                m_6b6 = true;
+                mArrivedAtTarget = true;
                 updatePathInfo(!tmp);
             }
             if (hitToPlayer) {
@@ -272,18 +276,18 @@ bool dWmEnemy_c::doWalk() {
             }
         }
     }
-    if (m_6b6) {
+    if (mArrivedAtTarget) {
         setWalkAnm(1.0f);
-        if (m_6b8 == 0) {
+        if (mNextPointType == 0) {
             deleteSound();
-            m_6b2 = getWaitAngle();
-            sLib::addCalcAngle(&mAngle3D.y.mAngle, m_6b2, 10, 0x2000, 0x400);
+            mDemoAngle.y = getWaitAngle();
+            sLib::addCalcAngle(&mAngle3D.y.mAngle, mDemoAngle.y, 10, 0x2000, 0x400);
         } else {
-            mAngle3D.y = m_6b2;
+            mAngle3D.y = mDemoAngle.y;
         }
         mAngle = mAngle3D;
-        if (m_6b2 == mAngle3D.y) {
-            if (m_6b8 == 1) {
+        if (mDemoAngle.y == mAngle3D.y) {
+            if (mNextPointType == 1) {
                 initWalk();
                 return false;
             }
@@ -323,7 +327,7 @@ bool dWmEnemy_c::csCommand(int id, bool b) {
     if (b) {
         switch (id) {
             case 4:
-                if (m_6b7) {
+                if (mEnWalk) {
                     initWalk();
                 }
                 break;
@@ -338,13 +342,13 @@ bool dWmEnemy_c::csCommand(int id, bool b) {
                 }
                 break;
             case 91:
-                m_6bc = 5;
+                mRotateTimer = 5;
                 break;
         }
     }
     switch (id) {
         case 4:
-            if (m_6b7) {
+            if (mEnWalk) {
                 isEnd = true;
                 if (doWalk()) {
                     isEnd = false;
@@ -368,14 +372,14 @@ bool dWmEnemy_c::csCommand(int id, bool b) {
             }
             break;
         case 91:
-            if (m_6e4 && dScWMap_c::m_WorldNo != WORLD_4) {
+            if (mHitPlayer && dScWMap_c::m_WorldNo != WORLD_4) {
                 isEnd = true;
-                if (m_6bc > 0) {
+                if (mRotateTimer > 0) {
                     doWalk();
-                    m_6bc--;
+                    mRotateTimer--;
                 }
-                if (m_6b6 || m_6bc == 0) {
-                    if (!m_6b6) {
+                if (mArrivedAtTarget || mRotateTimer == 0) {
+                    if (!mArrivedAtTarget) {
                         updatePathInfo(true);
                     }
                     setWalkAnm(1.0f);
@@ -384,7 +388,7 @@ bool dWmEnemy_c::csCommand(int id, bool b) {
                     isEnd = false;
                     mPath.mAdvancePoint = true;
                     mPath.mDir1 = mPath.mDir2;
-                    m_6bc--;
+                    mRotateTimer--;
                 }
             }
             break;
@@ -394,20 +398,20 @@ bool dWmEnemy_c::csCommand(int id, bool b) {
 
 void dWmEnemy_c::initDemoAnger() {
     mVec3_c playerPos = daWmPlayer_c::ms_instance->mPos;
-    m_6b2 = (playerPos - mPos).xzAng();
-    m_6d8 = 0;
-    m_6bc = 10;
+    mDemoAngle.y = (playerPos - mPos).xzAng();
+    mNotAnger = false;
+    mRotateTimer = 10;
 }
 
 bool dWmEnemy_c::procDemoAnger() {
     bool res = false;
-    if (m_6c4 != 2) {
-        if (m_6bc > 0) {
-            m_6bc--;
+    if (mCurrProc != PROC_TYPE_BGM_DANCE) {
+        if (mRotateTimer > 0) {
+            mRotateTimer--;
         } else {
-            sLib::addCalcAngle(&mAngle3D.y.mAngle, m_6b2, 100, 0x4000, 0x800);
+            sLib::addCalcAngle(&mAngle3D.y.mAngle, mDemoAngle.y, 100, 0x4000, 0x800);
             mAngle = mAngle3D;
-            if (m_6b2 == mAngle3D.y) {
+            if (mDemoAngle.y == mAngle3D.y) {
                 res = true;
             }
         }
@@ -466,26 +470,23 @@ bool dWmEnemy_c::isDead() {
     return dWmLib::getEnemyRevivalCount(dScWMap_c::m_WorldNo, mParam & 0xf) != 0;
 }
 
-void dWmEnemy_c::ModelCalc(m3d::mdl_c *mdl, float f1, float f2, float f3) {
+void dWmEnemy_c::ModelCalc(m3d::mdl_c *mdl, float yOffset, float shadowYOffset, float shadowScale) {
     mdl->play();
-    mVec3_c pos1 = mPos;
+    mVec3_c selfPos = mPos;
     mAng3_c ang = mAngle;
-    pos1.y += f1;
-    mMatrix.trans(pos1).ZXYrotM(ang);
-    mMtx_c mtx;
-    mVec3_c pos(0.0f, -f1, 0.0f);
-    mtx.trans(pos);
-    mMatrix.concat(mtx);
+    selfPos.y += yOffset;
+    mMatrix.trans(selfPos).ZXYrotM(ang);
+    mMatrix.concat(mMtx_c::createTrans(mVec3_c(0.0f, -yOffset, 0.0f)));
     mdl->setLocalMtx(&mMatrix);
     mdl->setScale(mScale);
     mdl->calc(false);
-    CalcShadow(f2, f3);
+    CalcShadow(shadowYOffset, shadowScale);
 }
 
 void dWmEnemy_c::updatePathInfo(bool b) {
     dInfo_c *info = dInfo_c::m_instance;
     mPath.UpdatePoint();
-    m_6b2 = (getNextPointInfo() - mPos).xzAng();
+    mDemoAngle.y = (getNextPointInfo() - mPos).xzAng();
     if (b) {
         int wNo = dScWMap_c::m_WorldNo;
         int sNo = dScWMap_c::m_SceneNo;
@@ -497,19 +498,19 @@ void dWmEnemy_c::updatePathInfo(bool b) {
 }
 
 void dWmEnemy_c::deleteSound() {
-    if (m_6dc < 0) {
+    if (mSeID < 0) {
         return;
     }
-    dWmSeManager_c::m_pInstance->endSound(m_6dc);
-    m_6dc = -1;
+    dWmSeManager_c::m_pInstance->endSound(mSeID);
+    mSeID = -1;
 }
 
 void dWmEnemy_c::deleteEffect() {
-    if (m_6e0 < 0) {
+    if (mEfID < 0) {
         return;
     }
-    dWmEffectManager_c::m_pInstance->endEffect(m_6e0);
-    m_6e0 = -1;
+    dWmEffectManager_c::m_pInstance->endEffect(mEfID);
+    mEfID = -1;
 }
 
 int dWmEnemy_c::getEnemyWalkSeID() {
@@ -549,7 +550,7 @@ bool dWmEnemy_c::IsPlayerComingCore() {
 
 bool dWmEnemy_c::IsNeedChasePlayer() {
     bool res = false;
-    if (!m_6e4 && !isDead() && IsPlayerComing()) {
+    if (!mHitPlayer && !isDead() && IsPlayerComing()) {
         res = true;
     }
     return res;
@@ -563,7 +564,7 @@ bool dWmEnemy_c::IsRandomWalk() {
         count--;
     }
     bool randomWalk = false;
-    if (m_6c4 == 4 && randomNumber <= GetChangeDirRate()) {
+    if (mCurrProc == PROC_TYPE_WAIT_WALK && randomNumber <= GetChangeDirRate()) {
         randomWalk = true;
     }
     return randomWalk;
@@ -571,7 +572,7 @@ bool dWmEnemy_c::IsRandomWalk() {
 
 bool dWmEnemy_c::IsHitToWaitPlayer() {
     bool res = false;
-    if (!m_6e4) {
+    if (!mHitPlayer) {
         bool b1 = false;
         bool b2 = false;
         int nextPointIdx = daWmPlayer_c::ms_instance->m_22c;
@@ -592,7 +593,7 @@ bool dWmEnemy_c::IsHitToWaitPlayer() {
 
 bool dWmEnemy_c::IsHitToMovePlayer() {
     bool res = false;
-    if (!m_6e4) {
+    if (!mHitPlayer) {
         bool b1 = false;
         bool b2 = false;
         int nextPointIdx = daWmPlayer_c::ms_instance->m_230;
@@ -615,9 +616,9 @@ bool dWmEnemy_c::CheckIsHitToPlayer() {
     bool hitWait = IsHitToWaitPlayer();
     bool hitMove = IsHitToMovePlayer();
     if (hitWait || hitMove) {
-        m_6e4 = true;
+        mHitPlayer = true;
         if (daWmPlayer_c::isPlayerStarMode()) {
-            daWmPlayer_c::ms_instance->FUN_80101280(this);
+            daWmPlayer_c::ms_instance->setEnemyDieByStar(this);
             deleteSound();
             return true;
         }
