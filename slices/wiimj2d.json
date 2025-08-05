@@ -84,8 +84,11 @@
             "nonMatching": true,
             "memoryRanges": {
                 ".text": "0x14c20-0x15410",
+                ".rodata": "0x358-0x380",
                 ".data": "0x2e00-0x2ec0",
+                ".bss": "0xf68-0xfd8",
                 ".sdata": "0x130-0x148",
+                ".sdata2": "0x168-0x178",
                 ".sbss": "0x70-0x78"
             }
         },

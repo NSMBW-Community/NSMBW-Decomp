@@ -18,18 +18,18 @@ dWipeCircle_c::~dWipeCircle_c() {
 }
 
 bool dWipeCircle_c::createLayout() {
-    static const char *animeNames[] = {
+    static const char *AnmNameTbl[] = {
         "wipeCircle_00_inWindow.brlan",
         "wipeCircle_00_outWindow.brlan"
     };
 
-    static const int groupIdxs[] = {0, 1};
-    static const char *groupNames[] = {
+    static const char *GROUP_NAME_DT[] = {
         "A00_inWindow",
         "B00_outWindow"
     };
+    static const int ANIME_INDEX_TBL[] = {0, 1};
 
-    static const char *windowNames[] = {
+    static const char *WPANE_NAME_DT[] = {
         "W_circle_00"
     };
 
@@ -43,10 +43,10 @@ bool dWipeCircle_c::createLayout() {
     }
 
     mLyt.build("wipeCircle_00.brlyt", 0);
-    mLyt.AnimeResRegister(animeNames, 2);
-    mLyt.GroupRegister(groupNames, groupIdxs, 2);
+    mLyt.AnimeResRegister(AnmNameTbl, 2);
+    mLyt.GroupRegister(GROUP_NAME_DT, ANIME_INDEX_TBL, 2);
     mpRootPane = mLyt.getRootPane();
-    mLyt.WPaneRegister(windowNames, mpWnd, 1);
+    mLyt.WPaneRegister(WPANE_NAME_DT, mpWnd, 1);
 
     mCenterPos.x = 0.0;
     mCenterPos.y = 0.0;
@@ -66,7 +66,7 @@ bool dWipeCircle_c::createLayout() {
 typedef void (dWipeCircle_c::*actMeth)();
 
 int dWipeCircle_c::calc() {
-    static const actMeth ProcTbl[] = {
+    static const actMeth Proc_tbl[] = {
         dWipeCircle_c::OpenSetup,
         dWipeCircle_c::AnimeEndCheck,
         dWipeCircle_c::CloseSetup
@@ -75,7 +75,7 @@ int dWipeCircle_c::calc() {
         return 1;
     }
     if (mAction != 3) {
-        (this->*ProcTbl[mAction])();
+        (this->*Proc_tbl[mAction])();
         mLyt.AnimePlay();
         mLyt.calc();
     }
