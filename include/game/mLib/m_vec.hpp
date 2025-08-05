@@ -3,6 +3,7 @@
 #include <lib/rvl/mtx/vec.h>
 #include <game/mLib/m_angle.hpp>
 #include <lib/egg/math/eggVector.h>
+#include <game/cLib/c_math.hpp>
 
 /// @brief A two-dimensional floating point vector.
 /// @ingroup mlib
@@ -183,6 +184,10 @@ public:
 
     float xzLen() const {
         return EGG::Mathf::sqrt(x * x + z * z);
+    }
+
+    short xzAng() const {
+        return cM::atan2s(x, z);
     }
 
     float distTo(const mVec3_c &other) const {

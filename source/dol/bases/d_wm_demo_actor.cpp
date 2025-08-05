@@ -311,7 +311,7 @@ void dWmDemoActor_c::adjustHeightBase(const mVec3_c &startPos, const mVec3_c &ta
     CsSPosSimple(directionType, GetBgPosY(startPos, targetPos, directionType));
 }
 
-bool dWmDemoActor_c::isCutscenePlaying(int *csList, int csCount) {
+bool dWmDemoActor_c::isCutscenePlaying(const int *csList, int csCount) {
     int cutName = dCsSeqMng_c::ms_instance->GetCutName();
     bool found = false;
     for (int i = 0; i < csCount; i++) {

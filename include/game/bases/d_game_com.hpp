@@ -16,6 +16,7 @@ namespace dGameCom {
     //////////////////////////////////
 
     u32 getRandomSeed(); ///< Gets a seed used for randomness.
+    int rndInt(size_t max);
 
     ////////////////////
     // Game Pause API //

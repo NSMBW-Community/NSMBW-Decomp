@@ -15,4 +15,7 @@ public:
     static bool IsCourseType(int, int, CourseType_e);
 
     static u8 m_WorldNo;
+    static u8 m_PrevWorldNo;
+    static u8 m_SceneNo;
+    static u8 m_PrevSceneNo;
 };
