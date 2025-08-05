@@ -26,7 +26,7 @@ struct VEC3 : public _VEC3 {
     VEC3() {}
     VEC3(float fx, float fy, float fz) { x = fx; y = fy; z = fz; }
 
-    VEC3 operator+(const VEC3& rRhs) const {
+    VEC3 operator+(const VEC3 &rRhs) const {
         VEC3 out;
         VEC3Add(&out, this, &rRhs);
         return out;
