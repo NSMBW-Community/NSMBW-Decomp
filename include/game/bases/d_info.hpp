@@ -37,6 +37,9 @@ public:
 
     dCyuukan_c *getCyuukan() { return &mCyuukan; }
 
+    int getCourse() { return m_startGameInfo.mLevel1; }
+    int getWorld() { return m_startGameInfo.mWorld1; }
+
     char pad1[0x8];
     dCyuukan_c mCyuukan;
     char pad2[0x348];
@@ -47,7 +50,10 @@ public:
     int field_3b8;
     u8 pad4[0x1d];
     bool mExtensionAttached;
-    u8 pad5[0x724];
+    u8 pad5[0x8];
+    int field_3e4;
+    int field_3e8;
+    u8 pad6[0x712];
     bool mFukidashiActionPerformed[4][0x16];
 
     static dInfo_c *m_instance;

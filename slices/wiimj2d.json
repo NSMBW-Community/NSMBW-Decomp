@@ -245,6 +245,20 @@
             }
         },
         {
+            "source": "dol/bases/d_pausewindow.cpp",
+            "nonMatching": true,
+            "memoryRanges": {
+                ".text": "0x153d00-0x1552f0",
+                ".ctors": "0x1f8-0x1fc",
+                ".data": "0x29660-0x29d38",
+                ".rodata": "0x7d00-0x7d50",
+                ".bss": "0x25ae8-0x25c70",
+                ".sdata": "0x1d50-0x1d68",
+                ".sbss": "0x778-0x780",
+                ".sdata2": "0x2b58-0x2b70"
+            }
+        },
+        {
             "source": "dol/sLib/s_Phase.cpp",
             "memoryRanges": {
                 ".text": "0x158fc0-0x159090"
