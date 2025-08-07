@@ -1120,7 +1120,7 @@ void dBg_c::calcAutoScroll() {
             mAutoscrolls[0].mPos.x += idk.x * mAutoscrolls[0].m_0c;
             mAutoscrolls[0].mPos.y += idk.y * mAutoscrolls[0].m_0c;
             mAutoscrolls[0].mPos.z = 0.0f;
-            float dist = mAutoscrolls[0].mPos.distanceTo(bgThingVec);
+            float dist = mAutoscrolls[0].mPos.distTo(bgThingVec);
             bool cond3 = false;
             bool cond4 = false;
             if (mAutoscrolls[0].m_18 == 1) {
