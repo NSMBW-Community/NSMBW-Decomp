@@ -222,7 +222,7 @@ dAcPy_c *dActor_c::searchNearPlayerNormal(mVec2_c &delta, const mVec2_c &pos) {
 dAcPy_c *dActor_c::searchNearPlayerLoop(mVec2_c &delta, const mVec2_c &pos) {
     dAcPy_c *closestPlayer = nullptr;
 
-    float loopOffset = dBg_c::m_bg_p->mLoopOffset;
+    float loopOffset = dBg_c::m_bg_p->mLoopOffsetX;
 
     mVec2_c loopPos;
     loopPos.x = dScStage_c::getLoopPosX(pos.x);
@@ -287,7 +287,7 @@ bool dActor_c::getTrgToSrcDirLoop(float trgX, float srcX) {
     float loopSrcX = dScStage_c::getLoopPosX(srcX);
     float diffX = loopTrgX - loopSrcX;
 
-    float loopOffset = dBg_c::m_bg_p->mLoopOffset / 2;
+    float loopOffset = dBg_c::m_bg_p->mLoopOffsetX / 2;
     if (diffX < 0.0f) {
         return !(diffX < -loopOffset);
     } else {
@@ -378,7 +378,7 @@ void dActor_c::deleteActor(u8 deleteForever) {
 
 bool dActor_c::areaCullCheck(const mVec3_c &pos, const mBoundBox &bound, u8 areaID) const {
     dCdFile_c *course = dCd_c::m_instance->getFileP(dScStage_c::m_instance->mCurrCourse);
-    AreaBoundU16 *area = course->getAreaP(areaID, nullptr);
+    dCdArea_c *area = course->getAreaP(areaID, nullptr);
     if (area == nullptr) {
         return true;
     }
@@ -388,8 +388,8 @@ bool dActor_c::areaCullCheck(const mVec3_c &pos, const mBoundBox &bound, u8 area
     mVec2_c bt = bound.withPos(pos);
     b.set(bt.x, bt.y);
 
-    b.x -= area->x;
-    b.y += area->y;
+    b.x -= area->bound.x;
+    b.y += area->bound.y;
 
     mVec2_c doubleBoundSize = bound.getSize();
     doubleBoundSize.x = 2.0f * doubleBoundSize.x;
@@ -398,11 +398,11 @@ bool dActor_c::areaCullCheck(const mVec3_c &pos, const mBoundBox &bound, u8 area
     mVec2_c maxBoundSize = mMaxBound.getSize();
 
     if (!(course->mpCourseSettings->mFlags & dCdCourseSettings_c::WRAP_AROUND_EDGES)) {
-        if (b.x + doubleBoundSize.x < -maxBoundSize.x || b.x > area->width + maxBoundSize.x) {
+        if (b.x + doubleBoundSize.x < -maxBoundSize.x || b.x > area->bound.width + maxBoundSize.x) {
             return true;
         }
     }
-    if (b.y - doubleBoundSize.y > maxBoundSize.y || b.y < -(area->height + maxBoundSize.y)) {
+    if (b.y - doubleBoundSize.y > maxBoundSize.y || b.y < -(area->bound.height + maxBoundSize.y)) {
         return true;
     }
 
@@ -711,7 +711,7 @@ void dActor_c::slideComboSE(int multiplier, bool shortCombo) {
 
     if ((u8) mPlayerNo <= 3) {
         int combo = multiplier;
-        if (combo >= ARRAY_SIZE(cs_combo_se)) {
+        if (combo >= (size_t) ARRAY_SIZE(cs_combo_se)) {
             combo = ARRAY_SIZE(cs_combo_se) - 1;
         }
         int comboNeededForClaps = shortCombo ? 4 : 7;

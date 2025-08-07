@@ -31,6 +31,7 @@ namespace dAudio {
     void pauseOffGameWithReset(); ///< @unofficial
 
     int getRemotePlayer(int);
+    nw4r::math::VEC2 cvtSndObjctPos(const mVec2_c &);
     nw4r::math::VEC2 cvtSndObjctPos(const mVec3_c &);
 
     class SndObjctCmnEmy_c : SndObjctCmnEmy {
@@ -55,6 +56,21 @@ namespace dAudio {
 
     extern SndObjctCmnEmy_c *g_pSndObjEmy;
     extern SndObjctCmnMap_c *g_pSndObjMap;
+
+    template<class T, class V>
+    inline void playObjSound(T *obj, int i, const V &pos, int playerNo) {
+        obj->startSound(i, cvtSndObjctPos(pos), playerNo);
+    }
+
+    template<class V>
+    inline void playEmySound(int i, const V &pos, int playerNo) {
+        playObjSound(g_pSndObjEmy, i, pos, playerNo);
+    }
+
+    template<class V>
+    inline void playMapSound(int i, const V &pos, int playerNo) {
+        playObjSound(g_pSndObjMap, i, pos, playerNo);
+    }
 
     /// @unofficial
     class SoundEffectID_t {

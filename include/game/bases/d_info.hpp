@@ -39,15 +39,16 @@ public:
 
     char pad1[0x8];
     dCyuukan_c mCyuukan;
-    char pad2[0x348];
+    char pad2[0x344];
+    bool mIsWmSwitchHit;
     int mCharIDs[4];
     bool mIsWorldSelect; ///< Whether the World Select Menu is being displayed.
-    int pad3[7];
+    int pad4[7];
     int field_3b4;
     int field_3b8;
-    u8 pad4[0x1d];
+    u8 pad5[0x1d];
     bool mExtensionAttached;
-    u8 pad5[0x724];
+    u8 pad6[0x724];
     bool mFukidashiActionPerformed[4][0x16];
 
     static dInfo_c *m_instance;
