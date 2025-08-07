@@ -37,8 +37,12 @@ public:
 
     dCyuukan_c *getCyuukan() { return &mCyuukan; }
 
-    int getCourse() { return m_startGameInfo.mLevel1; }
-    int getWorld() { return m_startGameInfo.mWorld1; }
+    u8 getCourse() const { return m_startGameInfo.mLevel1; }
+    u8 getWorld() const { return m_startGameInfo.mWorld1; }
+
+    static dInfo_c *getInstance() {
+        return m_instance;
+    }
 
     char pad1[0x8];
     dCyuukan_c mCyuukan;

@@ -178,15 +178,13 @@ int Pausewindow_c::doDelete() {
 
 void Pausewindow_c::setWorldCourseWrite() {
     MsgRes_c *msgRes = dMessage_c::getMesRes();
-    dInfo_c *info = dInfo_c::m_instance;
-    u32 world = info->m_startGameInfo.mWorld1;
-    u8 w = world;
-    u32 course = info->m_startGameInfo.mLevel1;
-    u8 c = course;
-    if (world > WORLD_USED_COUNT) {
+    dInfo_c *info = dInfo_c::getInstance();
+    u8 w = info->getWorld();
+    u8 c = info->getCourse();
+    if (info->getWorld() > WORLD_USED_COUNT) {
         w = WORLD_USED_COUNT;
     }
-    dInfo_c::m_instance->field_3b4 = w + 1;
+    info->field_3b4 = w + 1;
     mpTextBoxes[T_worldNum_00]->setMessage(msgRes, 2, 0x51, 0);
     int icon;
     switch (c) {
@@ -350,7 +348,7 @@ void Pausewindow_c::finalizeState_ButtonChangeAnimeEndWait() {
 }
 
 void Pausewindow_c::initializeState_PauseDisp() {
-    dGameCom::SelectCursorSetup();
+    SelectCursorSetup();
 }
 void Pausewindow_c::executeState_PauseDisp() {
     if (m_292) {

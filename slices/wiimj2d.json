@@ -246,7 +246,6 @@
         },
         {
             "source": "dol/bases/d_pausewindow.cpp",
-            "nonMatching": true,
             "memoryRanges": {
                 ".text": "0x153d00-0x1552f0",
                 ".ctors": "0x1f8-0x1fc",
