@@ -394,13 +394,13 @@ void dCourseSelectGuide_c::CourseSelectSet(dWmLib::PointType_e type) {
     } else {
         mCourseType = dWmLib::COURSE_TYPE_JUNCTION;
     }
-    info->field_3b4 = actualWNo;
+    info->mDisplayCourseWorld = actualWNo;
     mpTextBoxes[T_worldNum_00]->setMessage(msgRes, BMG_CATEGORY_COURSE_SELECT_GUIDE, MSG_CS_CURR_WORLD, 0);
     mRestAlphaTarget = 255;
     int messageID;
     switch (mCourseType) {
         default:
-            info->field_3b8 = actualLevelNo;
+            info->mDisplayCourseNum = actualLevelNo;
             mpTextBoxes[T_cSelect_00]->setMessage(msgRes, BMG_CATEGORY_COURSE_SELECT_GUIDE, MSG_CS_COURSE_NUM, 0);
             mpTextBoxes[T_cSelect_00]->setVisible(true);
             mpTextBoxes[T_cSelect_pic]->setVisible(false);

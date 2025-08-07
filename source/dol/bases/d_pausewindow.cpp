@@ -58,22 +58,20 @@ int Pausewindow_c::create() {
         hitButton, hitButton
     };
 
-    static const int MESSAGE_DATA_TBL_1[] = {
-        0, 0,
-        1, 1
-    };
-    static const char *T_PANE_FIXED_NAME_TBL_1[] = {
+    static const char *textBox[] = {
         "T_tuzukeru_00", "T_tuzukeru_01",
         "T_modoru_00", "T_modoru_01"
     };
-
-    static const int MESSAGE_DATA_TBL_2[] = {
-        0x50, 0x60, 0x62
+    static const int msgIdTbl[] = {
+        MSG_PAUSE_CONTINUE, MSG_PAUSE_CONTINUE,
+        MSG_PAUSE_EXIT, MSG_PAUSE_EXIT
     };
-    static const char *T_PANE_FIXED_NAME_TBL_2[] = {
-        "T_world_00",
-        "T_hyphen_00",
-        "T_multiText_00"
+
+    static const char *textBox2[] = {
+        "T_world_00", "T_hyphen_00", "T_multiText_00"
+    };
+    static const int msgIdTbl2[] = {
+        MSG_WM_WORLD, MSG_WM_HYPHEN, MSG_WM_FREE_MODE
     };
 
     static const char *PPANE_NAME_DT[P_COUNT] = {
@@ -88,12 +86,9 @@ int Pausewindow_c::create() {
     };
 
     static const char *T_PANE_NAME_TBL[T_COUNT] = {
-        "T_tuzukeru_00",
-        "T_tuzukeru_01",
-        "T_modoru_00",
-        "T_modoru_01",
-        "T_worldNum_00",
-        "T_corseNum_00",
+        "T_tuzukeru_00", "T_tuzukeru_01",
+        "T_modoru_00", "T_modoru_01",
+        "T_worldNum_00", "T_corseNum_00",
         "T_corsePic_00",
         "T_osusumeText_00"
     };
@@ -115,8 +110,8 @@ int Pausewindow_c::create() {
     mLayout.build("pauseMenu_16.brlyt", nullptr);
     mLayout.AnimeResRegister(AnmNameTbl, ANIM_NAME_COUNT);
     mLayout.GroupRegister(GROUP_NAME_DT, ANIME_INDEX_TBL, ANIM_COUNT);
-    mLayout.TPaneNameRegister(T_PANE_FIXED_NAME_TBL_1, MESSAGE_DATA_TBL_1, 1, ARRAY_SIZE(T_PANE_FIXED_NAME_TBL_1));
-    mLayout.TPaneNameRegister(T_PANE_FIXED_NAME_TBL_2, MESSAGE_DATA_TBL_2, 2, ARRAY_SIZE(T_PANE_FIXED_NAME_TBL_2));
+    mLayout.TPaneNameRegister(textBox, msgIdTbl, BMG_CATEGORY_PAUSE_WINDOW, ARRAY_SIZE(textBox));
+    mLayout.TPaneNameRegister(textBox2, msgIdTbl2, BMG_CATEGORY_WORLD_MAP, ARRAY_SIZE(textBox2));
     mLayout.PPaneRegister(PPANE_NAME_DT, mpPicturePanes, P_COUNT);
     mLayout.WPaneRegister(WPANE_NAME_DT, mpWindowPanes, W_COUNT);
     mLayout.TPaneRegister(T_PANE_NAME_TBL, mpTextBoxes, T_COUNT);
@@ -125,10 +120,10 @@ int Pausewindow_c::create() {
     mLayout.mDrawOrder = 141;
     mIsActive = false;
     mHasLoadedLayout = true;
-    m_294 = false;
+    mIsAnimating = false;
     mColor = 0;
-    m_295 = false;
-    m_293 = false;
+    mToTitle = false;
+    mButtonHit = false;
 
     if (
         dGameCom::isNowCourseClear() ||
@@ -184,23 +179,23 @@ void Pausewindow_c::setWorldCourseWrite() {
     if (info->getWorld() > WORLD_USED_COUNT) {
         w = WORLD_USED_COUNT;
     }
-    info->field_3b4 = w + 1;
-    mpTextBoxes[T_worldNum_00]->setMessage(msgRes, 2, 0x51, 0);
-    int icon;
+    info->mDisplayCourseWorld = w + 1;
+    mpTextBoxes[T_worldNum_00]->setMessage(msgRes, BMG_CATEGORY_WORLD_MAP, MSG_WM_WORLD_NUM, 0);
+    int msgID;
     switch (c) {
         case STAGE_GHOST_HOUSE:
-            icon = 0x55;
+            msgID = MSG_WM_ICON_GHOST_HOUSE;
             break;
         case STAGE_TOWER:
         case STAGE_TOWER_2:
-            icon = 0x54;
+            msgID = MSG_WM_ICON_TOWER;
             break;
         case STAGE_CASTLE:
         case STAGE_CASTLE_2:
             if (w != WORLD_8) {
-                icon = 0x53;
+                msgID = MSG_WM_ICON_CASTLE;
             } else {
-                icon = 0x5d;
+                msgID = MSG_WM_ICON_W8_CASTLE;
             }
             break;
         case STAGE_KINOKO_HOUSE:
@@ -211,53 +206,53 @@ void Pausewindow_c::setWorldCourseWrite() {
         case STAGE_KINOKO_HOUSE_6:
         case STAGE_KINOKO_HOUSE_7:
             if (dScWMap_c::IsCourseType(w, c, dScWMap_c::COURSE_TYPE_KINOKO_HOUSE_1UP)) {
-                icon = 0x5b;
+                msgID = MSG_WM_ICON_KINOKO_HOUSE_1UP;
             } else if (dScWMap_c::IsCourseType(w, c, dScWMap_c::COURSE_TYPE_KINOKO_HOUSE_STAR)) {
-                icon = 0x5c;
+                msgID = MSG_WM_ICON_KINOKO_HOUSE_STAR;
             } else {
-                icon = 0x58;
+                msgID = MSG_WM_ICON_KINOKO_HOUSE;
             }
             break;
         case STAGE_START_KINOKO_HOUSE:
             if (dWmLib::isStartPointKinokoHouseStar()) {
-                icon = 0x5c;
+                msgID = MSG_WM_ICON_KINOKO_HOUSE_STAR;
             } else if (dWmLib::isStartPointKinokoHouseRed()) {
-                icon = 0x58;
+                msgID = MSG_WM_ICON_KINOKO_HOUSE;
             } else {
-                icon = 0x5b;
+                msgID = MSG_WM_ICON_KINOKO_HOUSE_1UP;
             }
             break;
         case STAGE_ENEMY:
         case STAGE_ENEMY_2:
         case STAGE_ENEMY_3:
-            icon = 0x5e;
+            msgID = MSG_WM_ICON_RESCUE;
             break;
         case STAGE_CANNON:
-            icon = 0x56;
+            msgID = MSG_WM_ICON_CANNON;
             break;
         case STAGE_PEACH_CASTLE:
-            icon = 0x5a;
+            msgID = MSG_WM_ICON_PEACH_CASTLE;
             break;
         case STAGE_UNK37:
-            icon = 0x5f;
+            msgID = MSG_WM_ICON_ANCHOR;
             break;
         case STAGE_DOOMSHIP:
             if (dWmLib::isKoopaShipAnchor()) {
-                icon = 0x5f;
+                msgID = MSG_WM_ICON_ANCHOR;
             } else {
-                icon = 0x57;
+                msgID = MSG_WM_ICON_AIRSHIP;
             }
             break;
         default:
-            info->field_3b8 = c + 1;
+            info->mDisplayCourseNum = c + 1;
             mpTextBoxes[T_corseNum_00]->setVisible(true);
-            mpTextBoxes[T_corseNum_00]->setMessage(msgRes, 2, 0x52, 0);
+            mpTextBoxes[T_corseNum_00]->setMessage(msgRes, BMG_CATEGORY_WORLD_MAP, MSG_WM_COURSE_NUM, 0);
             mpTextBoxes[T_corsePic_00]->setVisible(false);
             return;
     }
     mpTextBoxes[T_corseNum_00]->setVisible(false);
     mpTextBoxes[T_corsePic_00]->setVisible(true);
-    mpTextBoxes[T_corsePic_00]->setMessage(msgRes, 2, icon, 0);
+    mpTextBoxes[T_corsePic_00]->setMessage(msgRes, BMG_CATEGORY_WORLD_MAP, msgID, 0);
 }
 
 void Pausewindow_c::TitleDispChkWrite() {
@@ -266,20 +261,22 @@ void Pausewindow_c::TitleDispChkWrite() {
     mpNullPanes[N_multiText_00]->setVisible(false);
     MsgRes_c *msgRes = dMessage_c::getMesRes();
     dInfo_c *info = dInfo_c::m_instance;
-    int tmp = info->field_3e8;
-    if (tmp >= 10) {
-        tmp -= 10;
+    int pageIndex = info->mCourseSelectIndexInPage;
+    if (pageIndex >= 10) {
+        pageIndex -= 10;
     }
     if (
-        (dInfo_c::mGameFlag & 0x40) != 0 &&
-        info->field_3e4 == 0 &&
-        tmp < 5
+        dInfo_c::mGameFlag & dInfo_c::GAME_FLAG_IS_COIN_COURSE &&
+        info->mCourseSelectPageNum == 0 &&
+        pageIndex < 5
     ) {
         mpTextBoxes[T_corseNum_00]->setVisible(true);
         mpTextBoxes[T_corsePic_00]->setVisible(false);
+        // [Bug: This should also do the following so that the world number isn't shown too:]
+        // mpTextBoxes[T_worldNum_00]->setVisible(false);
         mpPicturePanes[P_coin_00]->setVisible(true);
-        info->field_3b8 = tmp + 1;
-        mpTextBoxes[T_corseNum_00]->setMessage(msgRes, 2, 0x52, 0);
+        info->mDisplayCourseNum = pageIndex + 1;
+        mpTextBoxes[T_corseNum_00]->setMessage(msgRes, BMG_CATEGORY_WORLD_MAP, MSG_WM_COURSE_NUM, 0);
     } else {
         mpPicturePanes[P_coin_00]->setVisible(false);
         setWorldCourseWrite();
@@ -287,31 +284,31 @@ void Pausewindow_c::TitleDispChkWrite() {
 }
 
 void Pausewindow_c::SelectCursorSetup() {
-    static const int idxs[] = {
+    static const int PANE_IDX_TBL[] = {
         P_SBBase_00,
         P_SBBase_02
     };
-    dGameCom::SelectCursorSetup(mpPicturePanes[idxs[mCursor]], 0, false);
+    dGameCom::SelectCursorSetup(mpPicturePanes[PANE_IDX_TBL[mNextButton]], 0, false);
 }
 
 void Pausewindow_c::initializeState_InitWait() {}
 void Pausewindow_c::executeState_InitWait() {
-    mCursor = 0;
+    mNextButton = 0;
     mIsActive = true;
     dGameCom::WindowPaneColorSet(mpWindowPanes[W_N_pauseMenu_00], mColor);
-    if (m_295) {
+    if (mToTitle) {
         MsgRes_c *msgRes = dMessage_c::getMesRes();
-        mpTextBoxes[T_tuzukeru_00]->setMessage(msgRes, 0x32, 0x17, 0);
-        mpTextBoxes[T_tuzukeru_01]->setMessage(msgRes, 0x32, 0x17, 0);
-        mpTextBoxes[T_modoru_00]->setMessage(msgRes, 0x32, 0x18, 0);
-        mpTextBoxes[T_modoru_01]->setMessage(msgRes, 0x32, 0x18, 0);
+        mpTextBoxes[T_tuzukeru_00]->setMessage(msgRes, BMG_CATEGORY_MAIN_MENU, MSG_MAIN_MENU_CONTINUE, 0);
+        mpTextBoxes[T_tuzukeru_01]->setMessage(msgRes, BMG_CATEGORY_MAIN_MENU, MSG_MAIN_MENU_CONTINUE, 0);
+        mpTextBoxes[T_modoru_00]->setMessage(msgRes, BMG_CATEGORY_MAIN_MENU, MSG_MAIN_MENU_TITLE_SCREEN, 0);
+        mpTextBoxes[T_modoru_01]->setMessage(msgRes, BMG_CATEGORY_MAIN_MENU, MSG_MAIN_MENU_TITLE_SCREEN, 0);
     }
     mStateMgr.changeState(StateID_OpenAnimeEndWait);
 }
 void Pausewindow_c::finalizeState_InitWait() {}
 
 void Pausewindow_c::initializeState_OpenAnimeEndWait() {
-    m_294 = true;
+    mIsAnimating = true;
     mLayout.AllAnimeEndSetup();
     mLayout.ReverseAnimeStartSetup(ANIM_ON_TUZUKU, false);
     mLayout.ReverseAnimeStartSetup(ANIM_ON_MENU, false);
@@ -323,20 +320,20 @@ void Pausewindow_c::executeState_OpenAnimeEndWait() {
     }
 }
 void Pausewindow_c::finalizeState_OpenAnimeEndWait() {
-    m_294 = false;
-    m_292 = false;
-    m_293 = false;
-    mCursor2 = -1;
+    mIsAnimating = false;
+    mClose = false;
+    mButtonHit = false;
+    mActiveButton = -1;
 }
 
 void Pausewindow_c::initializeState_ButtonChangeAnimeEndWait() {
     mLayout.AllAnimeEndSetup();
-    m_294 = true;
-    if (mCursor2 >= 0) {
-        mLayout.AnimeStartSetup(ANIM_OFF_TUZUKU + mCursor2, false);
+    mIsAnimating = true;
+    if (mActiveButton >= 0) {
+        mLayout.AnimeStartSetup(ANIM_OFF_TUZUKU + mActiveButton, false);
     }
-    mCursor2 = mCursor;
-    mLayout.AnimeStartSetup(ANIM_ON_TUZUKU + mCursor, false);
+    mActiveButton = mNextButton;
+    mLayout.AnimeStartSetup(ANIM_ON_TUZUKU + mNextButton, false);
 }
 void Pausewindow_c::executeState_ButtonChangeAnimeEndWait() {
     if (!mLayout.isAnime(-1)) {
@@ -344,19 +341,19 @@ void Pausewindow_c::executeState_ButtonChangeAnimeEndWait() {
     }
 }
 void Pausewindow_c::finalizeState_ButtonChangeAnimeEndWait() {
-    m_294 = false;
+    mIsAnimating = false;
 }
 
 void Pausewindow_c::initializeState_PauseDisp() {
     SelectCursorSetup();
 }
 void Pausewindow_c::executeState_PauseDisp() {
-    if (m_292) {
+    if (mClose) {
         mStateMgr.changeState(StateID_ClouseAnimeEndWait);
-    } else if (m_293) {
+    } else if (mButtonHit) {
         mStateMgr.changeState(StateID_HitAnimeEndWait);
     } else {
-        if (mCursor2 != mCursor) {
+        if (mActiveButton != mNextButton) {
             SndAudioMgr::sInstance->startSystemSe(SE_SYS_CURSOR, 1);
             mStateMgr.changeState(StateID_ButtonChangeAnimeEndWait);
         }
@@ -367,8 +364,8 @@ void Pausewindow_c::finalizeState_PauseDisp() {
 }
 
 void Pausewindow_c::initializeState_HitAnimeEndWait() {
-    m_294 = true;
-    mLayout.AnimeStartSetup(ANIM_HIT_TUZUKU + mCursor, false);
+    mIsAnimating = true;
+    mLayout.AnimeStartSetup(ANIM_HIT_TUZUKU + mNextButton, false);
 }
 void Pausewindow_c::executeState_HitAnimeEndWait() {
     if (!mLayout.isAnime(-1)) {
@@ -376,11 +373,11 @@ void Pausewindow_c::executeState_HitAnimeEndWait() {
     }
 }
 void Pausewindow_c::finalizeState_HitAnimeEndWait() {
-    m_294 = false;
+    mIsAnimating = false;
 }
 
 void Pausewindow_c::initializeState_ClouseAnimeEndWait() {
-    m_294 = true;
+    mIsAnimating = true;
     mLayout.AnimeStartSetup(ANIM_OUT_WINDOW, false);
 }
 void Pausewindow_c::executeState_ClouseAnimeEndWait() {
@@ -390,5 +387,5 @@ void Pausewindow_c::executeState_ClouseAnimeEndWait() {
     }
 }
 void Pausewindow_c::finalizeState_ClouseAnimeEndWait() {
-    m_294 = false;
+    mIsAnimating = false;
 }
