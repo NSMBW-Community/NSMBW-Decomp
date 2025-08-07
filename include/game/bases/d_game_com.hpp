@@ -1,6 +1,7 @@
 #pragma once
 #include <types.h>
 #include <lib/nw4r/lyt/lyt_picture.hpp>
+#include <lib/nw4r/lyt/lyt_window.hpp>
 #include <game/mLib/m_3d.hpp>
 #include <game/mLib/m_vec.hpp>
 #include <game/bases/d_lyttextBox.hpp>
@@ -96,4 +97,9 @@ namespace dGameCom {
     void DispSizeScale(nw4r::math::VEC2 &scale);
 
     void LayoutDispNumber(const int &value, const int &fillLeft, LytTextBox_c *textBox, bool fillWidth);
+
+    bool isNowCourseClear();
+    void SelectCursorSetup();
+    void SelectCursorSetup(nw4r::lyt::Pane *, int, bool);
+    void WindowPaneColorSet(nw4r::lyt::Window *, int);
 }

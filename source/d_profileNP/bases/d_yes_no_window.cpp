@@ -279,7 +279,7 @@ void dYesNoWindow_c::populateLayout() {
         N_otehonText_00->setVisible(true);
     } else {
         if (mType == GOT_ALL_STAR_COINS_ALL_WORLDS) {
-            dInfo_c::m_instance->field_3b4 = dScWMap_c::m_WorldNo + 1;
+            dInfo_c::m_instance->mDisplayCourseWorld = dScWMap_c::m_WorldNo + 1;
         }
         if (mType == SKIP_COURSE_CONFIRM &&
             dInfo_c::m_startGameInfo.mWorld1 == WORLD_8 &&

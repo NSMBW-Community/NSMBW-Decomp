@@ -4,5 +4,5 @@
 
 class LytTextBox_c : public nw4r::lyt::TextBox {
 public:
-    void setMessage(MsgRes_c *bmg, unsigned long messageID, unsigned long messageGroup, long, ...);
+    void setMessage(MsgRes_c *bmg, unsigned long messageGroup, unsigned long messageID, long, ...);
 };
