@@ -1,9 +1,7 @@
-#include <lib/nw4r/ut/list.h>
+#include <nw4r/ut.h>
 
 namespace nw4r {
 namespace ut {
-
-#define GET_OBJ_NODE(list, obj) ((Link *)(((u32)(obj)) + (list)->offset))
 
 void List_Init(List *list, u16 offset) {
     list->headObject = nullptr;
@@ -16,7 +14,7 @@ void List_Append(List *list, void *obj) {
     // If only one node is in the list, set it as both head and tail
     // Else place it at the end
     if (list->headObject == nullptr) {
-        Link *node = GET_OBJ_NODE(list, obj);
+        Link *node = NW4R_UT_LIST_GET_LINK(*list, obj);
         node->nextObject = nullptr;
         node->prevObject = nullptr;
         list->headObject = obj;
@@ -24,12 +22,12 @@ void List_Append(List *list, void *obj) {
         list->numObjects++;
 
     } else {
-        Link *node = GET_OBJ_NODE(list, obj);
+        Link *node = NW4R_UT_LIST_GET_LINK(*list, obj);
         node->prevObject = list->tailObject;
         node->nextObject = nullptr;
 
         // Link the previous node
-        GET_OBJ_NODE(list, list->tailObject)->nextObject = obj;
+        NW4R_UT_LIST_GET_LINK(*list, list->tailObject)->nextObject = obj;
 
         // Set the new tail
         list->tailObject = obj;
@@ -41,7 +39,7 @@ void List_Prepend(List *list, void *obj) {
     // If only one node is in the list, set it as both head and tail
     // Else place it at the start
     if (list->headObject == nullptr) {
-        Link *node = GET_OBJ_NODE(list, obj);
+        Link *node = NW4R_UT_LIST_GET_LINK(*list, obj);
         node->nextObject = nullptr;
         node->prevObject = nullptr;
         list->headObject = obj;
@@ -49,12 +47,12 @@ void List_Prepend(List *list, void *obj) {
         list->numObjects++;
 
     } else {
-        Link *node = GET_OBJ_NODE(list, obj);
+        Link *node = NW4R_UT_LIST_GET_LINK(*list, obj);
         node->prevObject = nullptr;
         node->nextObject = list->headObject;
 
         // Link the following node
-        GET_OBJ_NODE(list, list->headObject)->prevObject = obj;
+        NW4R_UT_LIST_GET_LINK(*list, list->headObject)->prevObject = obj;
 
         // Set the new head
         list->headObject = obj;
@@ -73,9 +71,9 @@ void List_Insert(List *list, void *target, void *obj) {
         List_Prepend(list, obj);
 
     } else {
-        Link *node = GET_OBJ_NODE(list, obj);
-        void *prevObj = GET_OBJ_NODE(list, target)->prevObject;
-        Link *prevNode = GET_OBJ_NODE(list, prevObj);
+        Link *node = NW4R_UT_LIST_GET_LINK(*list, obj);
+        void *prevObj = NW4R_UT_LIST_GET_LINK(*list, target)->prevObject;
+        Link *prevNode = NW4R_UT_LIST_GET_LINK(*list, prevObj);
 
         // Update the node to be inserted
         node->prevObject = prevObj;
@@ -83,7 +81,7 @@ void List_Insert(List *list, void *target, void *obj) {
 
         // Update its neighbors
         prevNode->nextObject = obj;
-        GET_OBJ_NODE(list, target)->prevObject = obj;
+        NW4R_UT_LIST_GET_LINK(*list, target)->prevObject = obj;
 
         // Update the list
         list->numObjects++;
@@ -91,14 +89,14 @@ void List_Insert(List *list, void *target, void *obj) {
 }
 
 void List_Remove(List *list, void *obj) {
-    Link *node = GET_OBJ_NODE(list, obj);
+    Link *node = NW4R_UT_LIST_GET_LINK(*list, obj);
 
     // If the node is the list head, set the next node as the new head
     // Else punch a hole in the list
     if (node->prevObject == nullptr) {
         list->headObject = node->nextObject;
     } else {
-        GET_OBJ_NODE(list, node->prevObject)->nextObject = node->nextObject;
+        NW4R_UT_LIST_GET_LINK(*list, node->prevObject)->nextObject = node->nextObject;
     }
 
     // If the node is the list tail, set the previous node as the new tail
@@ -106,7 +104,7 @@ void List_Remove(List *list, void *obj) {
     if (node->nextObject == nullptr) {
         list->tailObject = node->prevObject;
     } else {
-        GET_OBJ_NODE(list, node->nextObject)->prevObject = node->prevObject;
+        NW4R_UT_LIST_GET_LINK(*list, node->nextObject)->prevObject = node->prevObject;
     }
 
     // Reset the node
@@ -122,7 +120,7 @@ void *List_GetNext(const List *list, const void *obj) {
         return list->headObject;
     }
 
-    return GET_OBJ_NODE(list, obj)->nextObject;
+    return NW4R_UT_LIST_GET_LINK(*list, obj)->nextObject;
 }
 
 void *List_GetPrev(const List *list, const void *obj) {
@@ -130,7 +128,7 @@ void *List_GetPrev(const List *list, const void *obj) {
         return list->tailObject;
     }
 
-    return GET_OBJ_NODE(list, obj)->prevObject;
+    return NW4R_UT_LIST_GET_LINK(*list, obj)->prevObject;
 }
 
 } // namespace ut

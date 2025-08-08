@@ -130,16 +130,16 @@ int Pausewindow_c::create() {
         dScene_c::m_nowScene != fProfile::STAGE ||
         dInfo_c::m_startGameInfo.mLevel1 == STAGE_CANNON
     ) {
-        mpPicturePanes[P_shadowBlack]->setVisible(false);
+        mpPicturePanes[P_shadowBlack]->SetVisible(false);
     } else {
-        mpPicturePanes[P_shadowBlack]->setVisible(true);
+        mpPicturePanes[P_shadowBlack]->SetVisible(true);
     }
     if (
         dInfo_c::m_startGameInfo.mLevel1 == STAGE_ENEMY ||
         dInfo_c::m_startGameInfo.mLevel1 == STAGE_ENEMY_2 ||
         dInfo_c::m_startGameInfo.mLevel1 == STAGE_ENEMY_3
     ) {
-        mpPicturePanes[P_shadowBlack]->setVisible(true);
+        mpPicturePanes[P_shadowBlack]->SetVisible(true);
     }
     TitleDispChkWrite();
 
@@ -245,20 +245,20 @@ void Pausewindow_c::setWorldCourseWrite() {
             break;
         default:
             info->mDisplayCourseNum = course + 1;
-            mpTextBoxes[T_corseNum_00]->setVisible(true);
+            mpTextBoxes[T_corseNum_00]->SetVisible(true);
             mpTextBoxes[T_corseNum_00]->setMessage(msgRes, BMG_CATEGORY_WORLD_MAP, MSG_WM_COURSE_NUM, 0);
-            mpTextBoxes[T_corsePic_00]->setVisible(false);
+            mpTextBoxes[T_corsePic_00]->SetVisible(false);
             return;
     }
-    mpTextBoxes[T_corseNum_00]->setVisible(false);
-    mpTextBoxes[T_corsePic_00]->setVisible(true);
+    mpTextBoxes[T_corseNum_00]->SetVisible(false);
+    mpTextBoxes[T_corsePic_00]->SetVisible(true);
     mpTextBoxes[T_corsePic_00]->setMessage(msgRes, BMG_CATEGORY_WORLD_MAP, msgID, 0);
 }
 
 void Pausewindow_c::TitleDispChkWrite() {
-    mpNullPanes[N_worldText_00]->setVisible(true);
-    mpNullPanes[N_osusumeText_00]->setVisible(false);
-    mpNullPanes[N_multiText_00]->setVisible(false);
+    mpNullPanes[N_worldText_00]->SetVisible(true);
+    mpNullPanes[N_osusumeText_00]->SetVisible(false);
+    mpNullPanes[N_multiText_00]->SetVisible(false);
     MsgRes_c *msgRes = dMessage_c::getMesRes();
     dInfo_c *info = dInfo_c::m_instance;
     int pageIndex = info->mCourseSelectIndexInPage;
@@ -270,15 +270,15 @@ void Pausewindow_c::TitleDispChkWrite() {
         info->mCourseSelectPageNum == 0 &&
         pageIndex < 5
     ) {
-        mpTextBoxes[T_corseNum_00]->setVisible(true);
-        mpTextBoxes[T_corsePic_00]->setVisible(false);
+        mpTextBoxes[T_corseNum_00]->SetVisible(true);
+        mpTextBoxes[T_corsePic_00]->SetVisible(false);
         // [Bug: This should also do the following so that the world number isn't shown too:]
-        // mpTextBoxes[T_worldNum_00]->setVisible(false);
-        mpPicturePanes[P_coin_00]->setVisible(true);
+        // mpTextBoxes[T_worldNum_00]->SetVisible(false);
+        mpPicturePanes[P_coin_00]->SetVisible(true);
         info->mDisplayCourseNum = pageIndex + 1;
         mpTextBoxes[T_corseNum_00]->setMessage(msgRes, BMG_CATEGORY_WORLD_MAP, MSG_WM_COURSE_NUM, 0);
     } else {
-        mpPicturePanes[P_coin_00]->setVisible(false);
+        mpPicturePanes[P_coin_00]->SetVisible(false);
         setWorldCourseWrite();
     }
 }

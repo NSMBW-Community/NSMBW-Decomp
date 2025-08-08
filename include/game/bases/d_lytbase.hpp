@@ -1,9 +1,7 @@
 #pragma once
 #include <game/bases/d_2d.hpp>
 #include <game/bases/d_lyttextBox.hpp>
-#include <lib/nw4r/lyt/lyt_pane.hpp>
-#include <lib/nw4r/lyt/lyt_window.hpp>
-#include <lib/nw4r/lyt/lyt_picture.hpp>
+#include <nw4r/lyt.h>
 #include <_dummy_classes.hpp>
 
 class LytBase_c : public d2d::Multi_c {

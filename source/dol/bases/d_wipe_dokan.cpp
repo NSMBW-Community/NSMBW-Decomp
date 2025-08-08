@@ -7,7 +7,7 @@
 dWipeDokan_c *dWipeDokan_c::m_instance;
 
 dWipeDokan_c::dWipeDokan_c(nw4r::ut::Color color, mFaderBase_c::EStatus stat) :
-mFaderBase_c(mColor(color.rgba), stat) {
+mFaderBase_c(mColor(color), stat) {
     m_instance = this;
     mIsCreated = false;
 }
@@ -55,7 +55,7 @@ bool dWipeDokan_c::createLayout() {
 
     mLyt.AllAnimeEndSetup();
 
-    mpRootPane->setVisible(false);
+    mpRootPane->SetVisible(false);
     mLyt.mDrawOrder = 154;
     mAction = IDLE;
 
@@ -102,7 +102,7 @@ void dWipeDokan_c::AnimeEndCheck() {
         if (getStatus() == FADE_IN) {
             mStatus = HIDDEN;
             mFlag |= FADE_IN_COMPLETE;
-            mpRootPane->setVisible(false);
+            mpRootPane->SetVisible(false);
         } else {
             mStatus = OPAQUE;
             mFlag |= FADE_OUT_COMPLETE;
@@ -137,19 +137,19 @@ void dWipeDokan_c::setStatus(mFaderBase_c::EStatus stat) {
     if (stat == OPAQUE) {
         mStatus = OPAQUE;
 
-        mpPic[0]->setAlpha(255);
+        mpPic[0]->SetAlpha(255);
         mLyt.ReverseAnimeStartSetup(OUT_UP, false);
 
-        mpRootPane->setVisible(true);
+        mpRootPane->SetVisible(true);
         mLyt.AnimePlay();
         mLyt.calc();
     } else if (stat == HIDDEN) {
         mStatus = HIDDEN;
 
-        mpPic[0]->setAlpha(0);
+        mpPic[0]->SetAlpha(0);
         mLyt.ReverseAnimeStartSetup(IN_DOWN, false);
 
-        mpRootPane->setVisible(true);
+        mpRootPane->SetVisible(true);
         mLyt.AnimePlay();
         mLyt.calc();
     }

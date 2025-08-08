@@ -1,5 +1,5 @@
 #pragma once
-#include <lib/nw4r/lyt/lyt_resource.hpp>
+#include <nw4r/lyt.h>
 
 namespace m2d {
 

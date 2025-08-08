@@ -6,7 +6,7 @@
 #include <game/cLib/c_lib.hpp>
 #include <game/cLib/c_math.hpp>
 #include <game/mLib/m_heap.hpp>
-#include <lib/nw4r/g3d/res_file.hpp>
+#include <nw4r/g3d.h>
 
 dWmDemoActor_c::dWmDemoActor_c() {}
 
@@ -119,7 +119,7 @@ bool dWmDemoActor_c::procJumpBase() {
 void dWmDemoActor_c::setDirection(const mVec3_c &dir) {
     mVec3_c direction = dir;
     direction.normalize();
-    if (EGG::Mathf::abs(direction.x) < 0.1f && EGG::Mathf::abs(direction.z) < 0.1f) {
+    if (std::fabs(direction.x) < 0.1f && std::fabs(direction.z) < 0.1f) {
         direction = mVec3_c(0.0f, 0.0f, -1.0f);
     }
     s16 ang = cM::atan2s(direction.x, direction.z);
@@ -164,7 +164,7 @@ bool dWmDemoActor_c::checkArriveTargetXZ(const mVec3_c &startPos, const mVec3_c 
 void dWmDemoActor_c::CreateShadowModel(const char *arc, const char *path, const char *mdlName, bool param4) {
     mHeapAllocator.createHeapRestoreCurrent(-1, mHeap::g_gameHeaps[0], nullptr, 0x20, 0);
 
-    nw4r::g3d::ResFile resFile = dResMng_c::m_instance->mRes.getRes(arc, path);
+    nw4r::g3d::ResFile resFile = (nw4r::g3d::ResFile) dResMng_c::m_instance->mRes.getRes(arc, path);
     mModel.create(resFile.GetResMdl(mdlName), &mHeapAllocator, 0x20, 1, 0);
 
     mSvMdl = new dWmSVMdl_c();
@@ -243,12 +243,12 @@ float dWmDemoActor_c::GetBgPosY(const mVec3_c &startPos, const mVec3_c &targetPo
     switch (directionType) {
         case dWmLib::DIR3D_FRONT:
         case dWmLib::DIR3D_BACK: {
-            float diffz = EGG::Mathf::abs(startPos.z - targetPos.z);
-            float diffpz = EGG::Mathf::abs(mPos.z - startPos.z);
+            float diffz = std::fabs(startPos.z - targetPos.z);
+            float diffpz = std::fabs(mPos.z - startPos.z);
             float ratio = diffpz / diffz;
 
             float delta = targetPos.y - startPos.y;
-            if (EGG::Mathf::abs(delta) < 5.0f) {
+            if (std::fabs(delta) < 5.0f) {
                 delta = 0.0f;
             }
             yPos = delta * ratio + startPos.y;
@@ -256,12 +256,12 @@ float dWmDemoActor_c::GetBgPosY(const mVec3_c &startPos, const mVec3_c &targetPo
         }
         case dWmLib::DIR3D_LEFT:
         case dWmLib::DIR3D_RIGHT: {
-            float diffx = EGG::Mathf::abs(startPos.x - targetPos.x);
-            float diffpx = EGG::Mathf::abs(mPos.x - startPos.x);
+            float diffx = std::fabs(startPos.x - targetPos.x);
+            float diffpx = std::fabs(mPos.x - startPos.x);
             float ratio = diffpx / diffx;
 
             float delta = targetPos.y - startPos.y;
-            if (EGG::Mathf::abs(delta) < 5.0f) {
+            if (std::fabs(delta) < 5.0f) {
                 delta = 0.0f;
             }
             yPos = delta * ratio + startPos.y;

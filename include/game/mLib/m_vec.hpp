@@ -1,6 +1,5 @@
 #pragma once
-#include <lib/nw4r/math/vec.hpp>
-#include <lib/rvl/mtx/vec.h>
+#include <nw4r/math.h>
 #include <game/mLib/m_angle.hpp>
 #include <lib/egg/math/eggVector.h>
 #include <game/cLib/c_math.hpp>

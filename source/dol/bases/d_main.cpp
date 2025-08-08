@@ -31,7 +31,7 @@ extern "C" {
 #define STACK_SIZE 0xf000
 
 void main(int argc, char *argv[]) {
-    u8 stack[STACK_SIZE] ALIGNED(32);
+    u8 stack[STACK_SIZE] ALIGN(32);
     DVDDiskCheck();
     dMain::g_InitialTime = OSGetTime();
     dSystem::fixArena();

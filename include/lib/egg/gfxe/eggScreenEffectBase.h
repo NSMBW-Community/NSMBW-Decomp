@@ -1,7 +1,7 @@
 #pragma once
 
 #include <lib/egg/gfxe/eggScreen.h>
-#include <lib/nw4r/math/mtx.hpp>
+#include <nw4r/math.h>
 
 namespace EGG {
 

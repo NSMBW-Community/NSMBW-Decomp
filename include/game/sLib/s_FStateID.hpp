@@ -1,6 +1,6 @@
 #pragma once
 #include <game/sLib/s_StateID.hpp>
-#include <lib/MSL_C/string.h>
+#include <string.h>
 
 /// @brief An implementation of a state ID for a given class.
 /// @details It adds the ability to call the three state methods on a state owner class.

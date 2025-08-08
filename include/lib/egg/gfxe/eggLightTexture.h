@@ -1,6 +1,7 @@
 #pragma once
 
 #include <types.h>
+#include <egg/core/eggHeap.h>
 
 namespace EGG {
 

@@ -1,8 +1,7 @@
 #pragma once
 #include <game/mLib/m_3d/calc_ratio.hpp>
 #include <game/mLib/m_3d/smdl.hpp>
-#include <lib/nw4r/g3d/anm_obj_chr.hpp>
-#include <lib/nw4r/g3d/world.hpp>
+#include <nw4r/g3d.h>
 
 namespace m3d {
     class mdl_c : public smdl_c {

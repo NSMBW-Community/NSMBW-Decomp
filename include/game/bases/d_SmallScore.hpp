@@ -2,7 +2,7 @@
 #include <game/bases/d_resource.hpp>
 #include <game/bases/d_lytbase.hpp>
 #include <game/mLib/m_vec.hpp>
-#include <lib/nw4r/lyt/lyt_pane.hpp>
+#include <nw4r/lyt.h>
 
 
 class dSmallScore_c {

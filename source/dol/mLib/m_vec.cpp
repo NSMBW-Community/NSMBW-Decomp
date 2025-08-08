@@ -1,18 +1,16 @@
 #include <game/mLib/m_angle.hpp>
 #include <game/mLib/m_vec.hpp>
-#include <lib/MSL_C/float.h>
-#include <lib/MSL_C/math.h>
-#include <lib/nw4r/math/trigonometry.hpp>
-#include <lib/rvl/mtx/vec.h>
+#include <float.h>
+#include <nw4r/math.h>
 
 // [This is required to ensure correct sdata2 ordering]
 // [It will be deadstripped by the linker later]
 float DUMMY_M_VEC(s16 val) {
-    return nw4r::math::CosS(val);
+    return nw4r::math::SinIdx(val);
 }
 
 inline bool isZero(float val) {
-    return (fabsf(val) <= FLT_EPSILON);
+    return (std::fabs(val) <= FLT_EPSILON);
 }
 
 float mVec3_c::normalize() {

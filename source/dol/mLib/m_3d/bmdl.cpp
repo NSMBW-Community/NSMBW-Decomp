@@ -1,6 +1,6 @@
 #include <game/mLib/m_3d.hpp>
 
-#include <lib/nw4r/g3d/scn_mdl.hpp>
+#include <nw4r/g3d.h>
 #include <game/mLib/m_mtx.hpp>
 
 m3d::bmdl_c::~bmdl_c() {
@@ -9,7 +9,7 @@ m3d::bmdl_c::~bmdl_c() {
 
 bool m3d::bmdl_c::getNodeWorldMtx(ulong idx, nw4r::math::MTX34 *mtx) const {
     nw4r::g3d::ScnMdlSimple *scnMdl = nw4r::g3d::G3dObj::DynamicCast<nw4r::g3d::ScnMdlSimple>(mpScn);
-    return scnMdl->GetScnMtxPos(mtx, nw4r::g3d::ScnObj::TYPE_UNK, idx);
+    return scnMdl->GetScnMtxPos(mtx, nw4r::g3d::ScnObj::MTX_WORLD, idx);
 }
 
 bool m3d::bmdl_c::getNodeWorldMtxMultVecZero(ulong idx, nw4r::math::VEC3 &vec) const {
@@ -47,12 +47,12 @@ void m3d::bmdl_c::play() {
 
 nw4r::g3d::ResMdl m3d::bmdl_c::getResMdl() const {
     nw4r::g3d::ScnMdlSimple *scnMdl = nw4r::g3d::G3dObj::DynamicCast<nw4r::g3d::ScnMdlSimple>(mpScn);
-    return scnMdl->mpResMdl;
+    return scnMdl->GetResMdl();
 }
 
-nw4r::g3d::ResMat *m3d::bmdl_c::getResMat(ulong idx) const {
+nw4r::g3d::ResMat m3d::bmdl_c::getResMat(size_t idx) const {
     nw4r::g3d::ScnMdlSimple *scnMdl = nw4r::g3d::G3dObj::DynamicCast<nw4r::g3d::ScnMdlSimple>(mpScn);
-    nw4r::g3d::ResMdl mdl = scnMdl->mpResMdl;
+    nw4r::g3d::ResMdl mdl = scnMdl->GetResMdl();
     return mdl.GetResMat(idx);
 }
 
@@ -74,8 +74,8 @@ void m3d::bmdl_c::setTevColor(ulong idx, _GXTevRegID regID, _GXColor color, bool
         tevColor.GXSetTevColor(regID, color);
         tevColor.DCStore(false);
     } else {
-        nw4r::g3d::ResMat *resMat = getResMat(idx);
-        nw4r::g3d::ResMatTevColor tevColor = resMat->GetResMatTevColor();
+        nw4r::g3d::ResMat resMat = getResMat(idx);
+        nw4r::g3d::ResMatTevColor tevColor = resMat.GetResMatTevColor();
 
         tevColor.GXSetTevColor(regID, color);
         tevColor.DCStore(false);
@@ -94,9 +94,9 @@ void m3d::bmdl_c::setTevColorAll(_GXTevRegID regID, _GXColor color, bool markDir
             tevColor.DCStore(false);
         }
     } else {
-        for (ulong i = 0; i < resMdl.GetResMatNumEntries(); i++) {
-            nw4r::g3d::ResMat *resMat = resMdl.GetResMat(i);
-            nw4r::g3d::ResMatTevColor tevColor = resMat->GetResMatTevColor();
+        for (size_t i = 0; i < resMdl.GetResMatNumEntries(); i++) {
+            nw4r::g3d::ResMat resMat = resMdl.GetResMat(i);
+            nw4r::g3d::ResMatTevColor tevColor = resMat.GetResMatTevColor();
 
             tevColor.GXSetTevColor(regID, color);
             tevColor.DCStore(false);
@@ -113,8 +113,8 @@ void m3d::bmdl_c::setTevKColor(ulong idx, _GXTevKColorID colID, _GXColor color, 
         tevColor.GXSetTevKColor(colID, color);
         tevColor.DCStore(false);
     } else {
-        nw4r::g3d::ResMat *resMat = getResMat(idx);
-        nw4r::g3d::ResMatTevColor tevColor = resMat->GetResMatTevColor();
+        nw4r::g3d::ResMat resMat = getResMat(idx);
+        nw4r::g3d::ResMatTevColor tevColor = resMat.GetResMatTevColor();
 
         tevColor.GXSetTevKColor(colID, color);
         tevColor.DCStore(false);
@@ -133,9 +133,9 @@ void m3d::bmdl_c::setTevKColorAll(_GXTevKColorID colID, _GXColor color, bool mar
             tevColor.DCStore(false);
         }
     } else {
-        for (ulong i = 0; i < resMdl.GetResMatNumEntries(); i++) {
-            nw4r::g3d::ResMat *resMat = resMdl.GetResMat(i);
-            nw4r::g3d::ResMatTevColor tevColor = resMat->GetResMatTevColor();
+        for (size_t i = 0; i < resMdl.GetResMatNumEntries(); i++) {
+            nw4r::g3d::ResMat resMat = resMdl.GetResMat(i);
+            nw4r::g3d::ResMatTevColor tevColor = resMat.GetResMatTevColor();
 
             tevColor.GXSetTevKColor(colID, color);
             tevColor.DCStore(false);

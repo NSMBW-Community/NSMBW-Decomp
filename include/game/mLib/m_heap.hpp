@@ -1,7 +1,7 @@
 #pragma once
 #include <types.h>
 #include <lib/egg/core/eggFrmHeap.h>
-#include <lib/nw4r/ut/inlines.hpp>
+#include <nw4r/ut.h>
 
 namespace mHeap {
     void restoreCurrentHeap();
