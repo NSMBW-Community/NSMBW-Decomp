@@ -1,8 +1,7 @@
 #pragma once
 #include <types.h>
 #include <game/sLib/s_math.hpp>
-#include <lib/nw4r/math/trigonometry.hpp>
-#include <lib/rvl/mtx/vec.h>
+#include <nw4r/math.h>
 
 extern "C" {
     int abs(int);
@@ -53,10 +52,10 @@ struct mAng {
     bool operator!=(const mAng &v) const { return mAngle != v.mAngle; }
 
     /// @brief Computes the sine of the angle.
-    float sin() const { return nw4r::math::SinS(mAngle); }
+    float sin() const { return nw4r::math::SinIdx(mAngle); }
 
     /// @brief Computes the cosine of the angle.
-    float cos() const { return nw4r::math::CosS(mAngle); }
+    float cos() const { return nw4r::math::CosIdx(mAngle); }
 
     s16 mAngle; ///< The rotation.
 };
@@ -83,9 +82,6 @@ public:
 
     /// @brief Constructs a vector from three mAng values.
     mAng3_c(mAng fx, mAng fy, mAng fz) : x(fx), y(fy), z(fz) {}
-
-    /// @brief Constructs a new vector from an existing vector from the MTX library.
-    mAng3_c(const S16Vec &v) { x = v.x; y = v.y; z = v.z; }
 
     /// @brief Copy constructor.
     mAng3_c(const mAng3_c &v) : x(v.x), y(v.y), z(v.z) {}

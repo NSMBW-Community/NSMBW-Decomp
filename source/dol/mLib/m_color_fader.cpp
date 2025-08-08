@@ -1,6 +1,6 @@
 #include <game/mLib/m_color_fader.hpp>
-#include <lib/rvl/sc/SC.h>
-#include <lib/rvl/vi/VI.h>
+#include <revolution/VI.h>
+#include <revolution/SC.h>
 
 mColorFader_c::mColorFader_c(mColor col, mFaderBase_c::EStatus status) : mFaderBase_c(col, status) {
     mAspectRatio = SCGetAspectRatio();
@@ -49,18 +49,18 @@ void mColorFader_c::draw() {
     }
 
     Mtx44 projMtx;
-    C_MTXOrtho(&projMtx, -VI_VIRTUAL_HALF_HEIGHT, VI_VIRTUAL_HALF_HEIGHT, -h, h, 0, 1);
-    GXSetProjection(&projMtx, GX_ORTHOGRAPHIC);
+    C_MTXOrtho(projMtx, -VI_VIRTUAL_HALF_HEIGHT, VI_VIRTUAL_HALF_HEIGHT, -h, h, 0.0f, 1.0f);
+    GXSetProjection(projMtx, GX_ORTHOGRAPHIC);
 
     Mtx posMtx;
-    PSMTXIdentity(&posMtx);
-    GXLoadPosMtxImm(&posMtx, 0);
+    PSMTXIdentity(posMtx);
+    GXLoadPosMtxImm(posMtx, 0);
     GXSetCurrentMtx(0);
 
     GXClearVtxDesc();
     GXInvalidateVtxCache();
 
-    GXSetVtxDesc(GX_VA_POS, GX_VA_TEX0MTXIDX);
+    GXSetVtxDesc(GX_VA_POS, GX_DIRECT);
     GXSetVtxAttrFmt(GX_VTXFMT0, GX_VA_POS, GX_POS_XYZ, GX_F32, 0);
 
     GXSetNumChans(1);
@@ -72,7 +72,7 @@ void mColorFader_c::draw() {
     __GXSetIndirectMask(0);
 
     GXSetNumTevStages(1);
-    GXSetTevOp(GX_TEVSTAGE0, 4);
+    GXSetTevOp(GX_TEVSTAGE0, GX_PASSCLR);
     GXSetTevOrder(GX_TEVSTAGE0, GX_TEXCOORD_NULL, GX_TEXMAP_NULL, GX_COLOR0A0);
 
     if (mFaderColor.a == 255) {
@@ -84,7 +84,7 @@ void mColorFader_c::draw() {
     GXSetColorUpdate(1);
     GXSetAlphaUpdate(1);
     GXSetZMode(0, GX_NEVER, 0);
-    GXSetCullMode(2);
+    GXSetCullMode(GX_CULL_BACK);
 
     GXBegin(GX_QUADS, GX_VTXFMT0, 4);
 

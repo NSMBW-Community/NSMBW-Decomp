@@ -14,7 +14,7 @@
 #include <game/bases/d_score_manager.hpp>
 #include <game/bases/d_SmallScore.hpp>
 #include <game/mLib/m_effect.hpp>
-#include <lib/nw4r/g3d/scn_mdl.hpp>
+#include <nw4r/g3d.h>
 #include <constants/sjis_constants.h>
 #include <constants/sound_list.h>
 /// @file
@@ -347,7 +347,7 @@ void dActor_c::setSoftLight_Item(m3d::bmdl_c &mdl) {
     for (size_t i = 0; i < resMdl.GetResMatNumEntries(); i++) {
         nw4r::g3d::ScnMdl::CopiedMatAccess cma(nw4r::g3d::G3dObj::DynamicCast<nw4r::g3d::ScnMdl>(mdl.getScn()), i);
         nw4r::g3d::ResMatMisc mat = cma.GetResMatMisc(false);
-        if (mat.mZCompLoc != 0) {
+        if (mat.IsValid()) {
             mat.SetLightSetIdx(6);
         }
     }

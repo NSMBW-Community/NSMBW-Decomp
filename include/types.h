@@ -1,5 +1,14 @@
 #pragma once
 
+#ifdef __cplusplus
+#include <cstdarg>
+#include <cstddef>
+#include <new>
+#else
+#include <stdarg.h>
+#include <stddef.h>
+#endif
+
 // Codewarrior-specific pragmas
 #ifdef __CWCC__
 #pragma cpp1x on
@@ -17,9 +26,6 @@ typedef signed int s32;
 typedef signed long long s64;
 typedef float f32;
 typedef double f64;
-#ifdef __CWCC__
-typedef unsigned long size_t;
-#endif
 typedef unsigned long ulong;
 typedef volatile s8 vs8;
 typedef volatile s16 vs16;
@@ -32,16 +38,43 @@ typedef volatile u64 vu64;
 typedef volatile f32 vf32;
 typedef volatile f64 vf64;
 
+typedef int UNKWORD;
+typedef void UNKTYPE;
+
+enum { FALSE, TRUE };
+typedef int BOOL;
+
 // Macros
 #define ARRAY_SIZE(a) (sizeof(a) / sizeof(a[0]))
 #define BIT_FLAG(bit) ((bit) < 0 ? 0 : 1 << (bit))
+#define ROUND_UP(x, align) (((x) + (align) - 1) & (-(align)))
+#define ROUND_UP_PTR(x, align)  ((void*)((((u32)(x)) + (align) - 1) & (~((align) - 1))))
 
 // No-op on release
 #define EGG_ASSERT(...)
 #define EGG_ASSERT_MSG(...)
 
+#ifndef NULL
+#define NULL 0
+#endif // NULL
+
+#ifndef nullptr
+#define nullptr 0
+#endif // nullptr
+
+#define DECL_SECTION(x) __declspec(section x)
+#define DECL_WEAK __declspec(weak)
+
 #ifdef __CWCC__
 #define NOINLINE __attribute__((noinline))
+#define ALIGN(x) __attribute__((aligned(x)))
+#define DECOMP_INLINE inline
+#define DECOMP_DONT_INLINE __attribute__((never_inline))
+#define AT_ADDRESS(x) : x
 #else
 #define NOINLINE
+#define ALIGN(x)
+#define DECOMP_INLINE
+#define DECOMP_DONT_INLINE
+#define AT_ADDRESS(x)
 #endif

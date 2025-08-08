@@ -1,13 +1,12 @@
 #pragma once
 
 #include <lib/egg/core/eggHeap.h>
-#include <revolution/MEM.h>
 
 // [TODO: extend this]
 
 namespace EGG {
-    class FrmHeap : public Heap {
+    class ExpHeap : public Heap {
     public:
-        void free(long);
+        static EGG::ExpHeap *create(size_t, EGG::Heap *, u16);
     };
 }

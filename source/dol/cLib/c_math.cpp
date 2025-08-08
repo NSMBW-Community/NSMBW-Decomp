@@ -1,7 +1,6 @@
 #include <types.h>
-#include <lib/MSL_C/float.h>
-#include <lib/MSL_C/math.h>
-#include <lib/nw4r/math/constant.hpp>
+#include <math.h>
+#include <nw4r/math.h>
 #include <game/cLib/c_random.hpp>
 /// @file
 
@@ -94,16 +93,16 @@ static u16 atntable[1025] = { 0x0, 0xA, 0x14, 0x1F, 0x29, 0x33, 0x3D, 0x47, 0x51
 namespace cM {
 
 inline float getCircleUnit() {
-    return 65536 / (2 * nw4r::math::F_PI);
+    return 65536 / (2 * M_PI);
 }
 
 inline bool isZero(float val) {
-    return (fabsf(val) < FLT_EPSILON);
+    return (std::fabs(val) < FLT_EPSILON);
 }
 
 s16 rad2s(float rad) {
     // Clamp the value between -65535 and 65535
-    int mod = (float)fmod(rad, 2 * nw4r::math::F_PI) * getCircleUnit();
+    int mod = (float)fmod(rad, 2 * M_PI) * getCircleUnit();
 
     if (mod < -0x8000) {
         mod += 0x10000;

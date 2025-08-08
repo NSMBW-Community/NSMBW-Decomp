@@ -1,5 +1,5 @@
 #include <game/mLib/m_3d.hpp>
-#include <lib/nw4r/g3d/state.hpp>
+#include <nw4r/g3d.h>
 #include <game/mLib/m_fader.hpp>
 #include <game/mLib/m_fader_base.hpp>
 

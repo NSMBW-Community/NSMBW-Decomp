@@ -1,6 +1,6 @@
 #pragma once
 #include <types.h>
-#include <lib/nw4r/lyt/lyt_picture.hpp>
+#include <nw4r/lyt.h>
 #include <game/mLib/m_3d.hpp>
 #include <game/mLib/m_vec.hpp>
 #include <game/bases/d_lyttextBox.hpp>

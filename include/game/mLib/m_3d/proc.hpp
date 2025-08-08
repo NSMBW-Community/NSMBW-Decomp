@@ -2,7 +2,7 @@
 
 #include <game/mLib/m_3d/scn_leaf.hpp>
 #include <game/mLib/m_3d/bmdl.hpp>
-#include <lib/nw4r/g3d/scn_proc.hpp>
+#include <nw4r/g3d.h>
 
 namespace m3d {
     class proc_c : public scnLeaf_c {

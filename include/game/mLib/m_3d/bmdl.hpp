@@ -1,8 +1,7 @@
 #pragma once
 #include <game/mLib/m_3d/banm.hpp>
 #include <game/mLib/m_3d/scn_leaf.hpp>
-#include <lib/nw4r/g3d/res_anm.hpp>
-#include <lib/nw4r/g3d/scn_mdl_simple.hpp>
+#include <nw4r/g3d.h>
 
 namespace m3d {
     class bmdl_c : public scnLeaf_c {
@@ -19,7 +18,7 @@ namespace m3d {
         bool getNodeWorldMtxMultVecZero(ulong idx, nw4r::math::VEC3 &vec) const;
 
         nw4r::g3d::ResMdl getResMdl() const;
-        nw4r::g3d::ResMat *getResMat(ulong idx) const;
+        nw4r::g3d::ResMat getResMat(size_t idx) const;
         void removeAnm(nw4r::g3d::ScnMdlSimple::AnmObjType objType);
 
         void setTevColor(ulong idx, _GXTevRegID regID, _GXColor color, bool markDirty);

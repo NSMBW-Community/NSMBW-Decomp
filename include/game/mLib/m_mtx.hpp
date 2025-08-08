@@ -2,9 +2,7 @@
 #include <types.h>
 #include <game/mLib/m_angle.hpp>
 #include <game/mLib/m_vec.hpp>
-#include <lib/nw4r/math/vec.hpp>
-#include <lib/nw4r/math/mtx.hpp>
-#include <lib/rvl/mtx/mtx.h>
+#include <nw4r/math.h>
 
 /// @brief A 3x4 matrix.
 /// @ingroup mlib
@@ -37,9 +35,9 @@ public:
     void zero(); ///< Zeroes out the matrix.
 
     mVec3_c getTranslation() const {
-        float x = mData[0][3];
-        float y = mData[1][3];
-        float z = mData[2][3];
+        float x = m[0][3];
+        float y = m[1][3];
+        float z = m[2][3];
         return mVec3_c(x, y, z);
     }
 
