@@ -323,7 +323,7 @@ bool m2d::AnmResV2_c::create(const char *name, m2d::ResAccIf_c *resAcc, m2d::Lay
     const nw4r::lyt::AnimationGroupRef *groupArray = mAnimResource.GetGroupArray();
     for (int i = 0; i < mGroupNum; i++) {
         nw4r::lyt::AnimTransform *transform = nullptr;
-        nw4r::lyt::Group *group = layout->GetGroupContainer()->FindGroupByName(groupArray[i].GetName());
+        nw4r::lyt::Group *group = layout->GetGroupContainer()->FindGroupByName(groupArray->GetName());
         mGroupAnim[i].mpGroup = group;
         nw4r::lyt::detail::PaneLinkList &list = group->GetPaneList();
         for (
@@ -338,6 +338,7 @@ bool m2d::AnmResV2_c::create(const char *name, m2d::ResAccIf_c *resAcc, m2d::Lay
             }
         }
         mGroupAnim[i].mpAnimTransform = transform;
+        groupArray++;
     }
     return true;
 }
