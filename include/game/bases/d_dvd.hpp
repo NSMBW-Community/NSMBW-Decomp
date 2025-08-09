@@ -2,13 +2,16 @@
 #include <types.h>
 #include <lib/egg/core/eggHeap.h>
 
-namespace d2d {
 namespace dDvd {
 
 class loader_c {
 public:
+    loader_c();
     virtual ~loader_c();
     virtual void freeHeap();
+
+    void *request(const char *, u8, EGG::Heap *);
+    void remove();
 
 private:
     u32 mSize;
@@ -20,4 +23,3 @@ private:
 void create(long, EGG::Heap *, EGG::Heap *);
 
 } // namespace dDvd
-} // namespace d2d

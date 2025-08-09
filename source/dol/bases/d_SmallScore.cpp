@@ -182,6 +182,11 @@ void dSmallScore_c::setNormalOrBlueColor() {
 
 void dSmallScore_c::ScissorMaskSet() {
     d2d::ClipSettings clip;
+    clip.mPos.x = 0.0f;
+    clip.mPos.y = 0.0f;
+    clip.mSize.x = 0.0f;
+    clip.mSize.y = 0.0f;
+    clip.mEnabled = false;
 
     if (dGameCom::GetAspectRatio() == 0) {
         clip.mPos.y = (mVideo::m_video->mRenderModeObj.efbHeight - mClipScale.y) * 0.5f;

@@ -1,5 +1,5 @@
 #pragma once
-#include <game/bases/d_resource.hpp>
+#include <game/bases/d_2d.hpp>
 #include <game/bases/d_lytbase.hpp>
 #include <game/mLib/m_vec.hpp>
 #include <nw4r/lyt.h>

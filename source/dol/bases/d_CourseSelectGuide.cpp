@@ -243,6 +243,11 @@ bool dCourseSelectGuide_c::createLayout() {
 
 void dCourseSelectGuide_c::ScissorMaskSet() {
     d2d::ClipSettings clipSettings;
+    clipSettings.mPos.x = 0.0f;
+    clipSettings.mPos.y = 0.0f;
+    clipSettings.mSize.x = 0.0f;
+    clipSettings.mSize.y = 0.0f;
+    clipSettings.mEnabled = false;
     if (dGameCom::GetAspectRatio() == 0) {
         clipSettings.mPos.y = mVideo::getSmth(330.0f);
         clipSettings.mSize.x = 640.0f;
