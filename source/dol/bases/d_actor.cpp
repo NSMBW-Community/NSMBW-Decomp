@@ -385,7 +385,9 @@ bool dActor_c::areaCullCheck(const mVec3_c &pos, const mBoundBox &bound, u8 area
 
     // [Probably some more inlining going on here]
     mVec2_c b;
-    mVec2_c bt = bound.withPos(pos);
+    mVec2_c bt;
+    bt.x = pos.x + bound.mOffset.x - bound.mSize.x;
+    bt.y = pos.y + bound.mOffset.y + bound.mSize.y;
     b.set(bt.x, bt.y);
 
     b.x -= area->x;

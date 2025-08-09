@@ -2,6 +2,7 @@
 #include <types.h>
 #include <nw4r/lyt.h>
 #include <game/mLib/m_3d.hpp>
+#include <game/mLib/m_bound_box.hpp>
 #include <game/mLib/m_vec.hpp>
 #include <game/bases/d_lyttextBox.hpp>
 

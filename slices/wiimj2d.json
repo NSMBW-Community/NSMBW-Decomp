@@ -59,7 +59,6 @@
     "slices": [
         {
             "source": "dol/bases/d_2d.cpp",
-            "nonMatching": true,
             "memoryRanges": {
                 ".text": "0x10-0xd90",
                 ".data": "0x0-0x88",
