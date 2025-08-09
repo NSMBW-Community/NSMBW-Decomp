@@ -16,7 +16,6 @@ namespace lyt {
 // Forward declarations
 class DrawInfo;
 class Material;
-class AnimResource;
 
 /******************************************************************************
  *

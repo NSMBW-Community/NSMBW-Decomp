@@ -8,7 +8,11 @@ extern "C" {
 #define NULL 0
 #endif // NULL
 
+#ifdef __CWCC__
 #define offsetof(ST, M) ((size_t) & (((ST*)0)->M))
+#else
+#define offsetof(ST, M) __builtin_offsetof(ST, M)
+#endif
 
 typedef signed long intptr_t;
 typedef unsigned long uintptr_t;

@@ -6,7 +6,8 @@ namespace m2d {
 
 class Base_c : nw4r::ut::Link {
 public:
-    virtual ~Base_c();
+    Base_c() : mDrawOrder(128) {}
+    virtual ~Base_c() {}
     virtual void draw();
 
     void entry();

@@ -71,6 +71,19 @@ struct Size {
     }
 };
 
+struct AnimationShareInfo {
+    const char *GetTargetGroupName() const {
+        return targetGroupName;
+    }
+    const char *GetSrcPaneName() const {
+        return srcPaneName;
+    }
+
+    char srcPaneName[17];     // at 0x00
+    char targetGroupName[17]; // at 0x11
+    u8 padding[2];            // at 0x12
+};
+
 /******************************************************************************
  *
  * AnimationLink
@@ -115,6 +128,16 @@ private:
 };
 
 NW4R_UT_LINKLIST_TYPEDEF_DECL(AnimationLink);
+
+struct AnimationGroupRef {
+    const char *GetName() const {
+        return name;
+    }
+
+    char name[17]; // at 0x00
+    u8 flag;       // at 0x11
+    u8 padding[2]; // at 0x12
+};
 
 /******************************************************************************
  *

@@ -12,8 +12,8 @@ public:
     ResourceAccessor();
     virtual ~ResourceAccessor(); // at 0x8
 
-    virtual void* GetResource(u32 type, const char* pName,
-                              u32* pSize) = 0; // at 0xC
+    virtual void* GetResource(ulong type, const char* pName,
+                              size_t* pSize) = 0; // at 0xC
 
     virtual ut::Font* GetFont(const char* pName); // at 0x10
 };

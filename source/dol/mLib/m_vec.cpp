@@ -5,8 +5,9 @@
 
 // [This is required to ensure correct sdata2 ordering]
 // [It will be deadstripped by the linker later]
-float DUMMY_M_VEC(s16 val) {
-    return nw4r::math::SinIdx(val);
+DECL_WEAK
+void DUMMY_ORDERING() {
+    nw4r::math::SinIdx(0);
 }
 
 inline bool isZero(float val) {

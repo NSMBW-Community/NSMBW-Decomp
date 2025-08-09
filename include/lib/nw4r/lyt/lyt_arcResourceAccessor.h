@@ -54,12 +54,13 @@ public:
 public:
     ArcResourceAccessor();
 
-    virtual void* GetResource(u32 type, const char* pName,
-                              u32* pSize); // at 0xC
+    virtual void* GetResource(ulong type, const char* pName,
+                              size_t* pSize); // at 0xC
 
     virtual ut::Font* GetFont(const char* pName); // at 0x10
 
     bool Attach(void* pArchive, const char* pRootDir);
+    void *Detach();
 
     bool IsAttached() const {
         return mArcBuf != NULL;
