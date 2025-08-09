@@ -1,5 +1,5 @@
 #pragma once
-#include <lib/nw4r/g3d/anm_obj_chr.hpp>
+#include <nw4r/g3d.h>
 #include <game/mLib/m_3d/anm_chr.hpp>
 #include <game/mLib/m_3d/fanm.hpp>
 

@@ -1,5 +1,5 @@
 #pragma once
-#include <lib/nw4r/lyt/lyt_textBox.hpp>
+#include <nw4r/lyt.h>
 #include <game/bases/d_message.hpp>
 
 class LytTextBox_c : public nw4r::lyt::TextBox {

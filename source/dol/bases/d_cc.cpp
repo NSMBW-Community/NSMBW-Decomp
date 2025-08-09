@@ -1,8 +1,7 @@
 #include <game/bases/d_cc.hpp>
 #include <game/bases/d_s_stage.hpp>
 #include <game/bases/d_bg.hpp>
-#include <lib/MSL_C/math.h>
-#include <lib/nw4r/math/trigonometry.hpp>
+#include <nw4r/math.h>
 #include <game/cLib/c_math.hpp>
 
 dCc_c *dCc_c::mEntryN;
@@ -150,12 +149,12 @@ bool dCc_c::isInside(dCc_c *other) {
         return true;
     }
     float xDist = getCenterPosX() - other->getCenterPosX();
-    if (EGG::Mathf::abs(xDist) > EGG::Mathf::abs(mCcData.mWidth - other->mCcData.mWidth)) {
+    if (std::fabs(xDist) > std::fabs(mCcData.mWidth - other->mCcData.mWidth)) {
         return false;
     }
 
     float yDist = getCenterPosY() - other->getCenterPosY();
-    if (EGG::Mathf::abs(yDist) > EGG::Mathf::abs(mCcData.mHeight - other->mCcData.mHeight)) {
+    if (std::fabs(yDist) > std::fabs(mCcData.mHeight - other->mCcData.mHeight)) {
         return false;
     }
     return true;
@@ -275,7 +274,7 @@ bool dCc_c::_hitCheckSquare(dCc_c *c1, dCc_c *c2, mVec2_c pos1, mVec2_c pos2) {
     float yDist = pos1.y - pos2.y;
     float collSizeY = ci1.mHeight + ci2.mHeight;
 
-    if (EGG::Mathf::abs(xDist) < collSizeX && EGG::Mathf::abs(yDist) < collSizeY) {
+    if (std::fabs(xDist) < collSizeX && std::fabs(yDist) < collSizeY) {
         c1->mCollPos = pos1;
         c2->mCollPos = pos2;
 
@@ -288,12 +287,12 @@ bool dCc_c::_hitCheckSquare(dCc_c *c1, dCc_c *c2, mVec2_c pos1, mVec2_c pos2) {
         // The offset is half the amount of overlap since we distribute the
         // shifting between the two colliders
 
-        float offsetX = (collSizeX - EGG::Mathf::abs(xDist)) / 2;
+        float offsetX = (collSizeX - std::fabs(xDist)) / 2;
         if (xDist < 0.0f) {
             offsetX = -offsetX;
         }
 
-        float offsetY = (collSizeY - EGG::Mathf::abs(yDist)) / 2;
+        float offsetY = (collSizeY - std::fabs(yDist)) / 2;
         if (yDist < 0.0f) {
             offsetY = -offsetY;
         }
@@ -353,11 +352,11 @@ bool dCc_c::_hitCheckCircle(dCc_c *c1, dCc_c *c2) {
     if (distVec.length() <= collSizeRadius) {
         // Push the circles apart in the direction of the collision
         float dist = collSizeRadius - distVec.length();
-        s16 ang = cM::atan2s(distVec.y, EGG::Mathf::abs(distVec.x));
+        s16 ang = cM::atan2s(distVec.y, std::fabs(distVec.x));
         // [This calculation is incorrect. It should be dist / 2 * ...
         // so that the shifting is distributed between the two colliders]
-        float offsetX = dist * nw4r::math::CosS(ang);
-        float offsetY = -dist * nw4r::math::SinS(ang);
+        float offsetX = dist * nw4r::math::CosIdx(ang);
+        float offsetY = -dist * nw4r::math::SinIdx(ang);
 
         c1->mCollOffsetX[c2->mCcData.mCategory] = offsetX;
         c1->mCollOffsetY[c2->mCcData.mCategory] = offsetY;
@@ -514,7 +513,7 @@ bool dCc_c::_hitCheckDaikeiUD(dCc_c *ccTrp, dCc_c * ccBox) {
 
     float collSizeX = ccTrp->mCcData.mWidth + ccBox->mCcData.mWidth;
 
-    if (EGG::Mathf::abs(trpCenter.x - boxCenter.x) >= collSizeX) {
+    if (std::fabs(trpCenter.x - boxCenter.x) >= collSizeX) {
         return false;
     }
 
@@ -586,7 +585,7 @@ bool dCc_c::_hitCheckDaikeiLR(dCc_c *ccTrp, dCc_c *ccBox) {
 
     float heightSum = ccTrp->mCcData.mHeight + ccBox->mCcData.mHeight;
 
-    if (EGG::Mathf::abs(p1.y - p2.y) >= heightSum) {
+    if (std::fabs(p1.y - p2.y) >= heightSum) {
         return false;
     }
 

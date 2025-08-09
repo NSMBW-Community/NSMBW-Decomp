@@ -12,7 +12,20 @@ from pathlib import Path
 SRCDIR = Path('source')
 
 # Include directory
-INCDIR = Path('include')
+INCDIRS = [
+    Path('include'),
+    Path('include/lib'),
+    Path('include/lib/MSL'),
+    Path('include/lib/MSL/internal'),
+    # Yuck. Fix this later...
+    Path('include/lib/revolution/BTE/include'),
+    Path('include/lib/revolution/BTE/stack/include'),
+    Path('include/lib/revolution/BTE/stack/btm'),
+    Path('include/lib/revolution/BTE/bta/include'),
+    Path('include/lib/revolution/BTE/bta/sys'),
+    Path('include/lib/revolution/BTE/gki/common'),
+    Path('include/lib/revolution/BTE/gki/platform'),
+]
 
 # Slice directory
 SLICEDIR = Path('slices')

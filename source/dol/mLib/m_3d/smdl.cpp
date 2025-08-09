@@ -1,5 +1,5 @@
 #include <game/mLib/m_3d.hpp>
-#include <lib/nw4r/g3d/scn_mdl.hpp>
+#include <nw4r/g3d.h>
 
 m3d::smdl_c::smdl_c() {}
 

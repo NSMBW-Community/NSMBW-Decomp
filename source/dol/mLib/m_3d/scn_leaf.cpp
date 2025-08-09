@@ -37,15 +37,15 @@ void m3d::scnLeaf_c::setScale(const nw4r::math::VEC3 &scale) {
 }
 
 void m3d::scnLeaf_c::setLocalMtx(const nw4r::math::MTX34 *mtx) {
-    mpScn->SetMtx(nw4r::g3d::ScnObj::TYPE_LOCAL, mtx);
+    mpScn->SetMtx(nw4r::g3d::ScnObj::MTX_LOCAL, mtx);
 }
 
 void m3d::scnLeaf_c::getLocalMtx(nw4r::math::MTX34 *mtx) const {
-    mpScn->GetMtx(nw4r::g3d::ScnObj::TYPE_LOCAL, mtx);
+    mpScn->GetMtx(nw4r::g3d::ScnObj::MTX_LOCAL, mtx);
 }
 
 void m3d::scnLeaf_c::getViewMtx(nw4r::math::MTX34 *mtx) const {
-    mpScn->GetMtx(nw4r::g3d::ScnObj::TYPE_VIEW, mtx);
+    mpScn->GetMtx(nw4r::g3d::ScnObj::MTX_VIEW, mtx);
 }
 
 void m3d::scnLeaf_c::calc(bool keepEnabledAfter) {

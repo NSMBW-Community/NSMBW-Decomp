@@ -7,7 +7,7 @@
 dWipeMario_c *dWipeMario_c::m_instance;
 
 dWipeMario_c::dWipeMario_c(nw4r::ut::Color color, mFaderBase_c::EStatus stat) :
-mFaderBase_c(mColor(color.rgba), stat) {
+mFaderBase_c(mColor(color), stat) {
     m_instance = this;
     mIsCreated = false;
 }
@@ -51,7 +51,7 @@ bool dWipeMario_c::createLayout() {
 
     mLyt.AllAnimeEndSetup();
 
-    mpRootPane->setVisible(false);
+    mpRootPane->SetVisible(false);
     mLyt.mDrawOrder = 154;
     mAction = IDLE;
 
@@ -94,7 +94,7 @@ void dWipeMario_c::AnimeEndCheck() {
         if (getStatus() == FADE_IN) {
             mStatus = HIDDEN;
             mFlag |= FADE_IN_COMPLETE;
-            mpRootPane->setVisible(false);
+            mpRootPane->SetVisible(false);
         } else {
             mStatus = OPAQUE;
             mFlag |= FADE_OUT_COMPLETE;
@@ -113,19 +113,19 @@ void dWipeMario_c::setStatus(mFaderBase_c::EStatus stat) {
     if (stat == OPAQUE) {
         mStatus = OPAQUE;
 
-        mpWnd[0]->setAlpha(255);
+        mpWnd[0]->SetAlpha(255);
         mLyt.ReverseAnimeStartSetup(OUT, false);
 
-        mpRootPane->setVisible(true);
+        mpRootPane->SetVisible(true);
         mLyt.AnimePlay();
         mLyt.calc();
     } else if (stat == HIDDEN) {
         mStatus = HIDDEN;
 
-        mpWnd[0]->setAlpha(0);
+        mpWnd[0]->SetAlpha(0);
         mLyt.ReverseAnimeStartSetup(IN, false);
 
-        mpRootPane->setVisible(true);
+        mpRootPane->SetVisible(true);
         mLyt.AnimePlay();
         mLyt.calc();
     }

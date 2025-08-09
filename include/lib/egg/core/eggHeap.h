@@ -1,7 +1,8 @@
 #pragma once
 
+#include <types.h>
 #include <lib/egg/core/eggDisposer.h>
-#include <lib/rvl/mem/MEMHeapCommon.h>
+#include <revolution/MEM.h>
 
 // [TODO: extend this]
 
@@ -37,7 +38,7 @@ public:
     u16 mFlag; // [TODO: TBitFlag<u16>]
     u8 mPad1[0xa];
     nw4r::ut::List mChildren;
-    u8 mPad2[0x4];
+    const char *mpName;
 
     static FrmHeap *dynamicCastToFrm(Heap *heap) {
         if (heap != nullptr && heap->getHeapKind() == 2) {

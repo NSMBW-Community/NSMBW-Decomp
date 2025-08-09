@@ -2,7 +2,7 @@
 
 #include <types.h>
 
-#include <lib/rvl/gx/GX.h>
+#include <revolution/GX.h>
 
 namespace EGG {
 

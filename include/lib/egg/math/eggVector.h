@@ -1,7 +1,7 @@
 #pragma once
 
 #include <lib/egg/math/eggMath.h>
-#include <lib/nw4r/math/vec.hpp>
+#include <nw4r/math.h>
 #include <types.h>
 
 namespace EGG {

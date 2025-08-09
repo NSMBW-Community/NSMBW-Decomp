@@ -1,6 +1,6 @@
 #pragma once
 
-#include <lib/nw4r/g3d/scn_obj.hpp>
+#include <nw4r/g3d.h>
 
 namespace EGG {
 

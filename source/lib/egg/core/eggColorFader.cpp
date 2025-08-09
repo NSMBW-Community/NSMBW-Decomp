@@ -1,6 +1,6 @@
 #include <lib/egg/core/eggColorFader.h>
 
-#include <lib/rvl/gx/GX.h>
+#include <revolution/GX.h>
 
 namespace EGG {
 
@@ -102,21 +102,21 @@ void ColorFader::draw() {
     }
 
     Mtx44 projMtx;
-    C_MTXOrtho(&projMtx, mDims.top, mDims.bottom, mDims.left, mDims.right, 0.0f, 1.0f);
-    GXSetProjection(&projMtx, GX_ORTHOGRAPHIC);
+    C_MTXOrtho(projMtx, mDims.top, mDims.bottom, mDims.left, mDims.right, 0.0f, 1.0f);
+    GXSetProjection(projMtx, GX_ORTHOGRAPHIC);
 
     GXSetViewport(mDims.left, mDims.top, mDims.GetWidth(), mDims.GetHeight(), 0.0f, 1.0f);
     GXSetScissor(mDims.left, mDims.top, mDims.GetWidth(), mDims.GetHeight());
 
     Mtx posMtx;
-    PSMTXIdentity(&posMtx);
-    GXLoadPosMtxImm(&posMtx, 0);
+    PSMTXIdentity(posMtx);
+    GXLoadPosMtxImm(posMtx, 0);
     GXSetCurrentMtx(0);
 
     GXClearVtxDesc();
     GXInvalidateVtxCache();
 
-    GXSetVtxDesc(GX_VA_POS, GX_VA_TEX0MTXIDX);
+    GXSetVtxDesc(GX_VA_POS, GX_DIRECT);
     GXSetVtxAttrFmt(GX_VTXFMT0, GX_VA_POS, GX_POS_XYZ, GX_F32, 0);
 
     GXSetNumChans(1);
@@ -128,7 +128,7 @@ void ColorFader::draw() {
     __GXSetIndirectMask(0);
 
     GXSetNumTevStages(1);
-    GXSetTevOp(GX_TEVSTAGE0, 4);
+    GXSetTevOp(GX_TEVSTAGE0, GX_PASSCLR);
     GXSetTevOrder(GX_TEVSTAGE0, GX_TEXCOORD_NULL, GX_TEXMAP_NULL, GX_COLOR0A0);
 
     if (mCurrColor.a == 255) {
@@ -140,7 +140,7 @@ void ColorFader::draw() {
     GXSetColorUpdate(1);
     GXSetAlphaUpdate(1);
     GXSetZMode(0, GX_NEVER, 0);
-    GXSetCullMode(2);
+    GXSetCullMode(GX_CULL_BACK);
 
     GXBegin(GX_QUADS, GX_VTXFMT0, 4);
 

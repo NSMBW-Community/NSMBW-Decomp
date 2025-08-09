@@ -1,9 +1,8 @@
 #include <game/bases/d_base_actor.hpp>
 #include <game/bases/d_reset.hpp>
 #include <game/bases/d_scene.hpp>
-#include <lib/nw4r/math/trigonometry.hpp>
-#include <lib/nw4r/ut/inlines.hpp>
-#include <lib/rvl/mtx/mtx.h>
+#include <nw4r/math.h>
+#include <nw4r/ut.h>
 
 const mVec3_c *dBaseActor_c::m_tmpCtPosP;
 const mAng3_c *dBaseActor_c::m_tmpCtAngleP;

@@ -1,7 +1,7 @@
 #pragma once
 #include <game/mLib/m_fader_base.hpp>
 #include <game/bases/d_lytbase.hpp>
-#include <lib/nw4r/ut/Color.h>
+#include <nw4r/ut.h>
 
 /// @brief A fader that animates a wavy texture across the screen.
 /// @details Seen when entering a cloud area, for example.

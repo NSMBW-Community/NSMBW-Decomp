@@ -1,5 +1,5 @@
 #include <types.h>
-#include <lib/MSL_C/string.h>
+#include <string.h>
 #include <game/bases/d_mj2d_data.hpp>
 #include <game/bases/d_a_player_com.hpp>
 

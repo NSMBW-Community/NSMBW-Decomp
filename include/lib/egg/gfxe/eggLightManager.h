@@ -1,8 +1,8 @@
 #pragma once
 
 #include <lib/egg/gfxe/eggLightTextureManager.h>
-#include <lib/nw4r/math/vec.hpp>
-#include <lib/nw4r/g3d/scn_root.hpp>
+#include <nw4r/math.h>
+#include <nw4r/g3d.h>
 
 namespace EGG {
 

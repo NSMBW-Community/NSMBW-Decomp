@@ -2,8 +2,7 @@
 #include <constants/message_list.h>
 #include <game/bases/d_info.hpp>
 #include <game/bases/d_game_com.hpp>
-#include <lib/nw4r/ut/Color.h>
-#include <lib/nw4r/lyt/lyt_material.hpp>
+#include <nw4r/ut.h>
 #include <game/mLib/m_video.hpp>
 #include <game/mLib/m_vec.hpp>
 #include <game/bases/d_bg_parameter.hpp>
@@ -42,15 +41,15 @@ bool dSmallScore_c::createLayout(d2d::ResAccMultLoader_c *res) {
 
     mLayout.NPaneRegister(N_PANE_NAME_TBL, &N_coin_00, ARRAY_SIZE(N_PANE_NAME_TBL));
 
-    T_100_00->setVisible(false);
-    T_1000_00->setVisible(false);
-    T_red2_00->setVisible(false);
-    T_1UP_00->setVisible(false);
-    T_coin_x_00->setVisible(false);
-    T_coinPoint_00->setVisible(false);
+    T_100_00->SetVisible(false);
+    T_1000_00->SetVisible(false);
+    T_red2_00->SetVisible(false);
+    T_1UP_00->SetVisible(false);
+    T_coin_x_00->SetVisible(false);
+    T_coinPoint_00->SetVisible(false);
 
-    N_coin_00->setVisible(false);
-    mpRootPane->setVisible(false);
+    N_coin_00->SetVisible(false);
+    mpRootPane->SetVisible(false);
 
     mLayout.mDrawOrder = 7;
     mState = dSmallScore_c::STATE_NONE;
@@ -131,7 +130,8 @@ void dSmallScore_c::setPlayer100Color(int playerType) {
     };
 
     nw4r::lyt::Material *mat = T_100_00->GetMaterial();
-    mat->setTev(1, nw4r::lyt::GXColorS10(COLOR_DATA_TBL[playerType]));
+    GXColorS10 col = nw4r::g3d::detail::GetRGBAS10(COLOR_DATA_TBL[playerType]);
+    mat->SetTevColor(1, col);
 }
 
 void dSmallScore_c::chgColor() {
@@ -184,7 +184,7 @@ void dSmallScore_c::ScissorMaskSet() {
     d2d::ClipSettings clip;
 
     if (dGameCom::GetAspectRatio() == 0) {
-        clip.mPos.y = (mVideo::m_video->mRenderModeObj.mEFBHeight - mClipScale.y) * 0.5f;
+        clip.mPos.y = (mVideo::m_video->mRenderModeObj.efbHeight - mClipScale.y) * 0.5f;
         clip.mSize = mClipScale;
         clip.mEnabled = 1;
     }
@@ -197,7 +197,7 @@ void dSmallScore_c::BigSmallAnime() {
     mVec2_c delta(0.08f, 0.08f);
     sum += mAnimScale;
 
-    getTextBox(mCurTextbox)->setScale(sum);
+    getTextBox(mCurTextbox)->SetScale(sum);
     if (++mAnimCounter >= 10) {
         mAnimCounter = 0;
 
@@ -229,9 +229,9 @@ void dSmallScore_c::MakeStart() {
     if (temp >= 21) {
         temp = 5;
 
-        T_coin_x_00->setVisible(true);
-        T_coinPoint_00->setVisible(true);
-        N_coin_00->setVisible(true);
+        T_coin_x_00->SetVisible(true);
+        T_coinPoint_00->SetVisible(true);
+        N_coin_00->SetVisible(true);
     } else {
         if (temp <= 3) {
             setPlayer100Color(mPlayerType);
@@ -247,16 +247,16 @@ void dSmallScore_c::MakeStart() {
             temp = 3;
         }
 
-        getTextBox(temp)->setVisible(true);
+        getTextBox(temp)->SetVisible(true);
     }
 
     MsgRes_c *bmg = dMessage_c::getMesRes();
 
     getTextBox(temp)->setMessage(bmg, BMG_CATEGORY_SMALL_SCORE, SUB_ID_TBL[mPopupType], 0);
-    getTextBox(temp)->setScale(mScale);
+    getTextBox(temp)->SetScale(mScale);
     mCurTextbox = temp;
     mMaxHeight = dBgParameter_c::ms_Instance_p->mPos.y - 20.0f;
-    mpRootPane->setVisible(true);
+    mpRootPane->SetVisible(true);
 
     if (mIsGoalScore) {
         mState = dSmallScore_c::STATE_GOAL_DISP;
@@ -315,23 +315,23 @@ void dSmallScore_c::DispWait() {
     }
 
     mDispWaitCounter = 0;
-    mpRootPane->setVisible(false);
-    T_100_00->setVisible(false);
-    T_1000_00->setVisible(false);
-    T_red2_00->setVisible(false);
-    T_1UP_00->setVisible(false);
-    T_coin_x_00->setVisible(false);
-    T_coinPoint_00->setVisible(false);
-    N_coin_00->setVisible(false);
+    mpRootPane->SetVisible(false);
+    T_100_00->SetVisible(false);
+    T_1000_00->SetVisible(false);
+    T_red2_00->SetVisible(false);
+    T_1UP_00->SetVisible(false);
+    T_coin_x_00->SetVisible(false);
+    T_coinPoint_00->SetVisible(false);
+    N_coin_00->SetVisible(false);
     mEnableBigSmallAnim = false;
-    getTextBox(mCurTextbox)->setScale(mScale);
+    getTextBox(mCurTextbox)->SetScale(mScale);
     mState = dSmallScore_c::STATE_NONE;
 }
 
 void dSmallScore_c::GoalScoreDisp() {}
 
 void dSmallScore_c::PositionSet() {
-    if (!(mpRootPane->mFlags & 1)) {
+    if (!mpRootPane->IsVisible()) {
         return;
     }
 
@@ -355,11 +355,11 @@ void dSmallScore_c::PositionSet() {
     pos.x = globalPos.x;
     pos.y = globalPos.y;
 
-    mpRootPane->mPos = mVec3_c(pos, 0.0f);
+    mpRootPane->SetTranslate(mVec3_c(pos, 0.0f));
 }
 
 void dSmallScore_c::CreateSmallScore(const mVec3_c &pos, int popupType, int playerType) {
-    mpRootPane->setVisible(false);
+    mpRootPane->SetVisible(false);
 
     if ((dInfo_c::mGameFlag & 0x40) && (popupType <= 7))
         return;

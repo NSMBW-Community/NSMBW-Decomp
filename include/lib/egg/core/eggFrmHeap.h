@@ -1,7 +1,7 @@
 #pragma once
 
 #include <lib/egg/core/eggHeap.h>
-#include <lib/rvl/mem/MEMFrmHeap.h>
+#include <revolution/MEM.h>
 
 // [TODO: extend this]
 

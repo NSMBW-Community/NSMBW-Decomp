@@ -1,5 +1,5 @@
 #include <game/mLib/m_3d.hpp>
-#include <lib/nw4r/ut/inlines.hpp>
+#include <nw4r/ut.h>
 
 m3d::mdl_c::mdlCallback_c::mdlCallback_c() :
     mNodeCount(0), mpNodeResults(nullptr), mpCallback(nullptr), mpAllocator(nullptr) {}
@@ -7,7 +7,7 @@ m3d::mdl_c::mdlCallback_c::mdlCallback_c() :
 m3d::mdl_c::mdlCallback_c::~mdlCallback_c() {}
 
 void m3d::mdl_c::mdlCallback_c::ExecCallbackA(nw4r::g3d::ChrAnmResult *anmRes, nw4r::g3d::ResMdl resMdl, nw4r::g3d::FuncObjCalcWorld *cw) {
-    u16 nodeID = cw->mNodeID;
+    u16 nodeID = cw->GetNodeID();
     nw4r::g3d::ChrAnmResult *result = &mpNodeResults[nodeID];
 
     if (mCalcRatio.isActive() && !mCalcRatio.isEnd()) {
@@ -18,22 +18,22 @@ void m3d::mdl_c::mdlCallback_c::ExecCallbackA(nw4r::g3d::ChrAnmResult *anmRes, n
             float scaleFrom = mCalcRatio.getScaleFrom();
             float scaleTo = mCalcRatio.getScaleTo();
 
-            u32 flags = anmRes->mFlags;
+            u32 flags = anmRes->flags;
 
             if ((flags & nw4r::g3d::ChrAnmResult::FLAG_SCALE_ONE) == 0) {
-                anmRes->mScale.x = anmRes->mScale.x * scaleTo + result->mScale.x * scaleFrom;
-                anmRes->mScale.y = anmRes->mScale.y * scaleTo + result->mScale.y * scaleFrom;
-                anmRes->mScale.z = anmRes->mScale.z * scaleTo + result->mScale.z * scaleFrom;
+                anmRes->s.x = anmRes->s.x * scaleTo + result->s.x * scaleFrom;
+                anmRes->s.y = anmRes->s.y * scaleTo + result->s.y * scaleFrom;
+                anmRes->s.z = anmRes->s.z * scaleTo + result->s.z * scaleFrom;
             } else {
-                anmRes->mScale.x = scaleTo + result->mScale.x * scaleFrom;
-                anmRes->mScale.y = scaleTo + result->mScale.y * scaleFrom;
-                anmRes->mScale.z = scaleTo + result->mScale.z * scaleFrom;
+                anmRes->s.x = scaleTo + result->s.x * scaleFrom;
+                anmRes->s.y = scaleTo + result->s.y * scaleFrom;
+                anmRes->s.z = scaleTo + result->s.z * scaleFrom;
             }
 
-            QUAT p, q;
-            C_QUATMtx(&p, &result->mMtx.mtx);
-            if ((flags & nw4r::g3d::ChrAnmResult::FLAG_ROTATE_ZERO) == 0) {
-                C_QUATMtx(&q, &anmRes->mMtx.mtx);
+            Quaternion p, q;
+            C_QUATMtx(&p, result->rt.m);
+            if ((flags & nw4r::g3d::ChrAnmResult::FLAG_ROT_ZERO) == 0) {
+                C_QUATMtx(&q, anmRes->rt.m);
             } else {
                 q.x = 0;
                 q.y = 0;
@@ -44,28 +44,28 @@ void m3d::mdl_c::mdlCallback_c::ExecCallbackA(nw4r::g3d::ChrAnmResult *anmRes, n
             C_QUATSlerp(&p, &q, &p, slerpParam);
 
             nw4r::math::VEC3 cpy;
-            cpy.x = anmRes->mMtx.mData[0][3];
-            cpy.y = anmRes->mMtx.mData[1][3];
-            cpy.z = anmRes->mMtx.mData[2][3];
-            PSMTXQuat(&anmRes->mMtx.mtx, &p);
-            anmRes->mMtx.mData[0][3] = cpy.x;
-            anmRes->mMtx.mData[1][3] = cpy.y;
-            anmRes->mMtx.mData[2][3] = cpy.z;
+            cpy.x = anmRes->rt.m[0][3];
+            cpy.y = anmRes->rt.m[1][3];
+            cpy.z = anmRes->rt.m[2][3];
+            PSMTXQuat(anmRes->rt.m, &p);
+            anmRes->rt.m[0][3] = cpy.x;
+            anmRes->rt.m[1][3] = cpy.y;
+            anmRes->rt.m[2][3] = cpy.z;
 
             if ((flags & nw4r::g3d::ChrAnmResult::FLAG_TRANS_ZERO) == 0) {
-                anmRes->mMtx.mData[0][3] = cpy.x * scaleTo;
-                anmRes->mMtx.mData[1][3] = cpy.y * scaleTo;
-                anmRes->mMtx.mData[2][3] = cpy.z * scaleTo;
+                anmRes->rt.m[0][3] = cpy.x * scaleTo;
+                anmRes->rt.m[1][3] = cpy.y * scaleTo;
+                anmRes->rt.m[2][3] = cpy.z * scaleTo;
             }
 
-            anmRes->mMtx.mData[0][3] += result->mMtx.mData[0][3] * scaleFrom;
-            anmRes->mMtx.mData[1][3] += result->mMtx.mData[1][3] * scaleFrom;
-            anmRes->mMtx.mData[2][3] += result->mMtx.mData[2][3] * scaleFrom;
+            anmRes->rt.m[0][3] += result->rt.m[0][3] * scaleFrom;
+            anmRes->rt.m[1][3] += result->rt.m[1][3] * scaleFrom;
+            anmRes->rt.m[2][3] += result->rt.m[2][3] * scaleFrom;
 
-            anmRes->mFlags &= ~(nw4r::g3d::ChrAnmResult::FLAG_RAW_ROTATE_VALID |
-                                nw4r::g3d::ChrAnmResult::FLAG_TRANS_ZERO |
-                                nw4r::g3d::ChrAnmResult::FLAG_ROTATE_ZERO |
-                                nw4r::g3d::ChrAnmResult::FLAG_SCALE_ONE);
+            anmRes->flags &= ~(nw4r::g3d::ChrAnmResult::FLAG_ROT_RAW_FMT |
+                               nw4r::g3d::ChrAnmResult::FLAG_TRANS_ZERO |
+                               nw4r::g3d::ChrAnmResult::FLAG_ROT_ZERO |
+                               nw4r::g3d::ChrAnmResult::FLAG_SCALE_ONE);
 
             *result = *anmRes;
         }
@@ -79,13 +79,13 @@ void m3d::mdl_c::mdlCallback_c::ExecCallbackA(nw4r::g3d::ChrAnmResult *anmRes, n
 }
 
 void m3d::mdl_c::mdlCallback_c::ExecCallbackB(nw4r::g3d::WorldMtxManip *manip, nw4r::g3d::ResMdl resMdl, nw4r::g3d::FuncObjCalcWorld *cw) {
-    u16 nodeID = cw->mNodeID;
+    u16 nodeID = cw->GetNodeID();
     if (mpCallback != nullptr) {
         mpCallback->timingB(nodeID, manip, resMdl);
     }
 
     u32 nodeCount = resMdl.GetResNodeNumEntries();
-    cw->mNodeID = (nodeID + 1) % nodeCount;
+    cw->SetNodeID((nodeID + 1) % nodeCount);
 }
 
 void m3d::mdl_c::mdlCallback_c::ExecCallbackC(nw4r::math::MTX34 *mtx, nw4r::g3d::ResMdl resMdl, nw4r::g3d::FuncObjCalcWorld *cw) {
@@ -117,10 +117,10 @@ bool m3d::mdl_c::mdlCallback_c::create(nw4r::g3d::ResMdl resMdl, mAllocator_c *a
 
     nw4r::g3d::ChrAnmResult *curr = mpNodeResults;
     for (int i = 0; i < mNodeCount; i++) {
-        curr->mScale.x = 1.0f;
-        curr->mScale.y = 1.0f;
-        curr->mScale.z = 1.0f;
-        PSMTXIdentity(&curr->mMtx.mtx);
+        curr->s.x = 1.0f;
+        curr->s.y = 1.0f;
+        curr->s.z = 1.0f;
+        PSMTXIdentity(curr->rt.m);
         curr++;
     }
 
@@ -180,7 +180,7 @@ bool m3d::mdl_c::create(nw4r::g3d::ResMdl resMdl, mAllocator_c *allocator, ulong
     }
 
     nw4r::g3d::ScnMdlSimple *scnMdl = nw4r::g3d::G3dObj::DynamicCast<nw4r::g3d::ScnMdlSimple>(mpScn);
-    scnMdl->mpCallback = &mCallback;
+    scnMdl->SetScnMdlCallback((nw4r::g3d::ICalcWorldCallback *) &mCallback);
     scnMdl->EnableScnMdlCallbackTiming(nw4r::g3d::ScnObj::CALLBACK_TIMING_ALL);
 
     setCallback(nullptr);

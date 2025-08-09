@@ -1,6 +1,6 @@
 #include <game/bases/d_res_mng.hpp>
-#include <lib/nw4r/g3d/res_file.hpp>
-#include <lib/rvl/mem/MEMExpHeap.h>
+#include <nw4r/g3d.h>
+#include <revolution/MEM.h>
 
 dResMng_c *dResMng_c::m_instance;
 
@@ -30,10 +30,10 @@ void *dResMng_c::resCallback_c::execute(void *data, u32 folderSig, const char *p
 
 void dResMng_c::setRes(const char *path, const char **names, int count, EGG::Heap *heap) {
     for (int i = 0; i < count; i++) {
-        mRes.setRes(names[i], path, MEM_EXPHEAP_ALLOC_DIR_FRONT, heap);
+        mRes.setRes(names[i], path, MEM_EXP_HEAP_ALLOC_FAST, heap);
     }
 }
 
 bool dResMng_c::setRes(const char *path, const char *name, EGG::Heap *heap) {
-    return mRes.setRes(name, path, MEM_EXPHEAP_ALLOC_DIR_FRONT, heap);
+    return mRes.setRes(name, path, MEM_EXP_HEAP_ALLOC_FAST, heap);
 }

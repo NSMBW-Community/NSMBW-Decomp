@@ -100,13 +100,13 @@ class dCourseSelectGuide_c {
         T_FIXED_COUNT
     };
 
+public:
     /// @unofficial
     struct GlobalData_t {
         short mDispWaitTimer; ///< @copydoc dCourseSelectGuide_c::c_DISP_WAIT_TIMER
         short mUnk; ///< @unused
     };
 
-public:
     dCourseSelectGuide_c(); ///< Constructs a new course select guide instance.
     virtual ~dCourseSelectGuide_c(); ///< Destroys the instance.
 

@@ -1,6 +1,6 @@
 #pragma once
 #include <game/framework/f_profile.hpp>
-#include <lib/nw4r/math/vec.hpp>
+#include <nw4r/math.h>
 #include <game/mLib/m_vec.hpp>
 
 /// @file
@@ -31,7 +31,7 @@ namespace dAudio {
     void pauseOffGameWithReset(); ///< @unofficial
 
     int getRemotePlayer(int);
-    nw4r::math::VEC2 cvtSndObjctPos(const mVec3_c &);
+    mVec2_c cvtSndObjctPos(const mVec3_c &);
 
     class SndObjctCmnEmy_c : SndObjctCmnEmy {
     public:

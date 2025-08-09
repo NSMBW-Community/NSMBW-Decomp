@@ -1,7 +1,6 @@
 #pragma once
-#include <lib/nw4r/g3d/scn_leaf.hpp>
-#include <lib/nw4r/math/vec.hpp>
-#include <lib/nw4r/math/mtx.hpp>
+#include <nw4r/g3d.h>
+#include <nw4r/math.h>
 
 namespace m3d {
     class scnLeaf_c {

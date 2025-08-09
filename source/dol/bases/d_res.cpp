@@ -1,6 +1,6 @@
 #include <game/bases/d_res.hpp>
-#include <lib/MSL_C/string.h>
-#include <lib/rvl/cx/CXUncompression.h>
+#include <revolution/CX.h>
+#include <string.h>
 
 void (*dRes_c::mSetCallback)(const char *arcName, EGG::Heap *heap);
 
@@ -61,16 +61,16 @@ bool dRes_c::deleteRes(const char *arcName) {
     return true;
 }
 
-void *dRes_c::getRes(const char *arcName, const char *resPath) const {
+nw4r::g3d::ResFile dRes_c::getRes(const char *arcName, const char *resPath) const {
     void *data = nullptr;
     info_c *info = getResInfoLoaded(arcName);
     if (info != nullptr && info->getArchive() != nullptr) {
         data = info->getArchive()->getFile(resPath, nullptr);
     }
-    return data;
+    return nw4r::g3d::ResFile(data);
 }
 
-void *dRes_c::getRes(const char *arcName, const char *resPath, unsigned long *size) const {
+nw4r::g3d::ResFile dRes_c::getRes(const char *arcName, const char *resPath, unsigned long *size) const {
     void *data = nullptr;
     int newSize = 0;
     info_c *info = getResInfoLoaded(arcName);
@@ -81,7 +81,7 @@ void *dRes_c::getRes(const char *arcName, const char *resPath, unsigned long *si
         newSize = fi.mFileSize;
     }
     *size = newSize;
-    return data;
+    return nw4r::g3d::ResFile(data);
 }
 
 void *dRes_c::getRes(const char *arcName, const char *resPath, unsigned long *size, int *compressionType) const {

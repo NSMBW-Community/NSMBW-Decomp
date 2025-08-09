@@ -1,6 +1,6 @@
 #pragma once
 
-#include <lib/MSL_C/math.h>
+#include <math.h>
 
 namespace EGG {
     /// @note Unfinished
@@ -15,12 +15,6 @@ namespace EGG {
 
         static T zero() { return 0; }
     };
-
-    // [TODO: This overload likely doesn't exist]
-    template <>
-    float Math<float>::abs(float v) {
-        return fabs(v);
-    }
 
     typedef Math<float> Mathf;
 }

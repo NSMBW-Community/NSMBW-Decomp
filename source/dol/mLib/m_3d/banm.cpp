@@ -34,7 +34,7 @@ bool m3d::banm_c::IsBound() const {
     if (mpObj == nullptr) {
         return false;
     }
-    return mpObj->TestAnmFlag(nw4r::g3d::AnmObj::IS_BOUND);
+    return mpObj->TestAnmFlag(nw4r::g3d::AnmObj::FLAG_ANM_BOUND);
 }
 
 float m3d::banm_c::getFrame() const {

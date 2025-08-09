@@ -1,5 +1,5 @@
 #include <game/mLib/m_3d.hpp>
-#include <lib/nw4r/math/arithmetic.hpp>
+#include <nw4r/math.h>
 
 m3d::calcRatio_c::calcRatio_c() {
     mWeight = 0;

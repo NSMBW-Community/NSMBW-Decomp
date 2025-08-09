@@ -46,15 +46,15 @@ void m3d::anmMatClr_c::child_c::releaseAnm() {
         return;
     }
     mpObj->Release();
-    mpHeap->free(MEM_FRMHEAP_FREE_ALL);
+    mpHeap->free(MEM_FRM_HEAP_FREE_ALL);
     mpObj = nullptr;
 }
 
 void m3d::anmMatClr_c::child_c::setFrmCtrlDefault(nw4r::g3d::ResAnmClr &anmClr, m3d::playMode_e playMode) {
     if (playMode == PLAYMODE_INHERIT) {
-        playMode = (anmClr.p->mAnimateType == nw4r::g3d::ANM_POLICY_ONCE) ? FORWARD_ONCE : FORWARD_LOOP;
+        playMode = (anmClr.GetAnmPolicy() == nw4r::g3d::ANM_POLICY_ONETIME) ? FORWARD_ONCE : FORWARD_LOOP;
     }
-    fanm_c::set(anmClr.getDuration(), playMode, 1.0f, -1.0f);
+    fanm_c::set(anmClr.GetNumFrame(), playMode, 1.0f, -1.0f);
 }
 
 size_t m3d::anmMatClr_c::heapCost(nw4r::g3d::ResMdl mdl, nw4r::g3d::ResAnmClr anmClr, long count, bool calcAligned) {
@@ -113,7 +113,7 @@ m3d::anmMatClr_c::~anmMatClr_c() {
 void m3d::anmMatClr_c::remove() {
     nw4r::g3d::AnmObjMatClrOverride *matClr = nw4r::g3d::G3dObj::DynamicCast<nw4r::g3d::AnmObjMatClrOverride>(mpObj);
     if (matClr != nullptr && children != nullptr) {
-        int count = matClr->getCount();
+        int count = matClr->Size();
         for (int i = 0; i < count; i++) {
             children[i].remove();
         }
@@ -138,7 +138,7 @@ void m3d::anmMatClr_c::releaseAnm(long idx) {
 
 void m3d::anmMatClr_c::play() {
     nw4r::g3d::AnmObjMatClrOverride *matClr = nw4r::g3d::G3dObj::DynamicCast<nw4r::g3d::AnmObjMatClrOverride>(mpObj);
-    int count = matClr->getCount();
+    int count = matClr->Size();
     for (int i = 0; i < count; i++) {
         play(i);
     }

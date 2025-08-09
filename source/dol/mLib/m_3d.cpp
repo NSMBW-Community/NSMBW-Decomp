@@ -7,9 +7,8 @@
 #include <lib/egg/gfxe/eggScreen.h>
 #include <lib/egg/gfxe/eggDrawGX.h>
 #include <lib/egg/gfxe/eggLightTexture.h>
-#include <lib/nw4r/g3d/g3d.hpp>
-#include <lib/nw4r/g3d/g3d_state.hpp>
-#include <lib/MSL_C/string.h>
+#include <nw4r/g3d.h>
+#include <string.h>
 
 mAllocator_c *m3d::internal::l_allocator_p;
 nw4r::g3d::ScnRoot *m3d::internal::l_scnRoot_p;
@@ -193,7 +192,7 @@ nw4r::g3d::Camera m3d::getCurrentCamera() {
 }
 
 int m3d::getCurrentCameraID() {
-    return internal::l_scnRoot_p->currCameraID;
+    return internal::l_scnRoot_p->GetCurrentCameraID();
 }
 
 void m3d::setCurrentCamera(int id) {
@@ -201,7 +200,7 @@ void m3d::setCurrentCamera(int id) {
 }
 
 nw4r::g3d::LightSetting *m3d::getLightSettingP() {
-    return &internal::l_scnRoot_p->lightSetting;
+    return &internal::l_scnRoot_p->GetLightSetting();
 }
 
 EGG::LightManager *m3d::getLightMgr(int idx) {
@@ -280,13 +279,13 @@ void m3d::drawXlu() {
 }
 
 void m3d::pushBack(nw4r::g3d::ScnObj *obj) {
-    internal::l_scnRoot_p->Insert(internal::l_scnRoot_p->count, obj);
+    internal::l_scnRoot_p->PushBack(obj);
 }
 
 void m3d::clear() {
     nw4r::g3d::ScnRoot *scnRoot = internal::l_scnRoot_p;
-    while (scnRoot->count != 0) {
-        scnRoot->Remove(scnRoot->count - 1);
+    while (scnRoot->Size() != 0) {
+        scnRoot->Remove(scnRoot->Size() - 1);
     }
 }
 
@@ -310,12 +309,12 @@ int m3d::getNodeID(nw4r::g3d::ResMdl mdl, char const *name) {
 void m3d::resetMaterial() {
     GXSetNumIndStages(0);
     for (int i = 0; i < GX_MAX_TEVSTAGE; i++) {
-        GXSetTevDirect(i);
+        GXSetTevDirect((GXTevStageID) i);
     }
 }
 
 void m3d::proc_c_drawProc(nw4r::g3d::ScnProc *proc, bool drawOpa) {
-    m3d::proc_c *m3dProc = (m3d::proc_c *) proc->mpHolder;
+    m3d::proc_c *m3dProc = (m3d::proc_c *) proc->GetUserData();
     if (drawOpa) {
         m3dProc->drawOpa();
     } else {
@@ -342,6 +341,6 @@ bool m3d::proc_c::create(mAllocator_c *allocator, size_t *objSize) {
     mpScn->SetPriorityDrawXlu(127);
 
     nw4r::g3d::ScnProc *p = nw4r::g3d::G3dObj::DynamicCast<nw4r::g3d::ScnProc>(mpScn);
-    p->mpHolder = this;
+    p->SetUserData(this);
     return true;
 }

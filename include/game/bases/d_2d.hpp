@@ -2,10 +2,8 @@
 #include <game/bases/d_resource.hpp>
 #include <game/mLib/m_2d/base.hpp>
 #include <game/mLib/m_vec.hpp>
-#include <lib/nw4r/lyt/lyt_layout.hpp>
-#include <lib/nw4r/lyt/lyt_resource.hpp>
-#include <lib/nw4r/lyt/lyt_draw_info.hpp>
-#include <lib/nw4r/math/vec.hpp>
+#include <nw4r/lyt.h>
+#include <nw4r/math.h>
 
 namespace d2d {
 

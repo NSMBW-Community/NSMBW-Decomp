@@ -1,12 +1,12 @@
 #include <game/mLib/m_wipe_fader.hpp>
-#include <lib/rvl/sc/SC.h>
-#include <lib/rvl/vi/VI.h>
+#include <revolution/SC.h>
+#include <revolution/VI.h>
 
 mWipeFader_c::mWipeFader_c(mColor col, mFaderBase_c::EStatus status) :
     mFaderBase_c(col, status),
     mpTextureData(nullptr) {
 
-    PSMTXIdentity(&mTexMtx);
+    PSMTXIdentity(mTexMtx);
     mTexWidth = 0;
     mTexHeight = 0;
     if (SCGetAspectRatio() == 1) {
@@ -62,17 +62,17 @@ void mWipeFader_c::calcMtx() {
     float scale = 128.0f / (256 - mProgress);
 
     // Move to center, scale, move back
-    PSMTXTrans(&mTexMtx, 0.5f, 0.5f, 0.0f);
+    PSMTXTrans(mTexMtx, 0.5f, 0.5f, 0.0f);
 
     Mtx scaleMtx;
     float scrW = mAspectRatioFactor * VI_VIRTUAL_WIDTH_STD;
     float scrH = VI_VIRTUAL_HEIGHT;
-    PSMTXScale(&scaleMtx, scale, scale * scrH / scrW, 0.0f);
-    PSMTXConcat(&mTexMtx, &scaleMtx, &mTexMtx);
+    PSMTXScale(scaleMtx, scale, scale * scrH / scrW, 0.0f);
+    PSMTXConcat(mTexMtx, scaleMtx, mTexMtx);
 
     Mtx transMtx;
-    PSMTXTrans(&transMtx, -0.5f, -0.5f, 0.0f);
-    PSMTXConcat(&mTexMtx, &transMtx, &mTexMtx);
+    PSMTXTrans(transMtx, -0.5f, -0.5f, 0.0f);
+    PSMTXConcat(mTexMtx, transMtx, mTexMtx);
 }
 
 void mWipeFader_c::draw() {
@@ -82,18 +82,18 @@ void mWipeFader_c::draw() {
     }
 
     Mtx44 projMtx;
-    C_MTXOrtho(&projMtx, -VI_VIRTUAL_HALF_HEIGHT, VI_VIRTUAL_HALF_HEIGHT, -width, width, 0.0, 1.0);
-    GXSetProjection(&projMtx, GX_ORTHOGRAPHIC);
+    C_MTXOrtho(projMtx, -VI_VIRTUAL_HALF_HEIGHT, VI_VIRTUAL_HALF_HEIGHT, -width, width, 0.0, 1.0);
+    GXSetProjection(projMtx, GX_ORTHOGRAPHIC);
 
     Mtx posMtx;
-    PSMTXIdentity(&posMtx);
-    GXLoadPosMtxImm(&posMtx, 0);
+    PSMTXIdentity(posMtx);
+    GXLoadPosMtxImm(posMtx, 0);
     GXSetCurrentMtx(0);
     if (mProgress >= 255) {
         GXClearVtxDesc();
         GXInvalidateVtxCache();
 
-        GXSetVtxDesc(GX_VA_POS, GX_VA_TEX0MTXIDX);
+        GXSetVtxDesc(GX_VA_POS, GX_DIRECT);
         GXSetVtxAttrFmt(GX_VTXFMT0, GX_VA_POS, GX_POS_XYZ, GX_F32, 0);
 
         GXSetNumChans(1);
@@ -105,7 +105,7 @@ void mWipeFader_c::draw() {
         __GXSetIndirectMask(0);
 
         GXSetNumTevStages(1);
-        GXSetTevOp(GX_TEVSTAGE0, 4);
+        GXSetTevOp(GX_TEVSTAGE0, GX_PASSCLR);
         GXSetTevOrder(GX_TEVSTAGE0, GX_TEXCOORD_NULL, GX_TEXMAP_NULL, GX_COLOR0A0);
 
         GXSetBlendMode(GX_BM_NONE, GX_BL_ONE, GX_BL_ZERO, GX_LO_SET);
@@ -113,7 +113,7 @@ void mWipeFader_c::draw() {
         GXSetColorUpdate(1);
         GXSetAlphaUpdate(1);
         GXSetZMode(0, GX_NEVER, 0);
-        GXSetCullMode(2);
+        GXSetCullMode(GX_CULL_BACK);
 
         GXBegin(GX_QUADS, GX_VTXFMT0, 4);
 
@@ -127,8 +127,8 @@ void mWipeFader_c::draw() {
         GXClearVtxDesc();
         GXInvalidateVtxCache();
 
-        GXSetVtxDesc(GX_VA_POS, GX_VA_TEX0MTXIDX);
-        GXSetVtxDesc(GX_VA_TEX0, GX_VA_TEX0MTXIDX);
+        GXSetVtxDesc(GX_VA_POS, GX_DIRECT);
+        GXSetVtxDesc(GX_VA_TEX0, GX_DIRECT);
         GXSetVtxAttrFmt(GX_VTXFMT0, GX_VA_POS, GX_POS_XYZ, GX_F32, 0);
         GXSetVtxAttrFmt(GX_VTXFMT0, GX_VA_TEX0, GX_POS_XYZ, GX_F32, 0);
 
@@ -141,8 +141,8 @@ void mWipeFader_c::draw() {
         GXLoadTexObj(&texObj, GX_TEXMAP0);
 
         Mtx texMtx;
-        PSMTXCopy(&mTexMtx, &texMtx);
-        GXLoadTexMtxImm(&texMtx, 30, GX_MTX_2x4);
+        PSMTXCopy(mTexMtx, texMtx);
+        GXLoadTexMtxImm(texMtx, 30, GX_MTX_2x4);
         GXSetTexCoordGen2(GX_TEXCOORD0, GX_TG_MTX2x4, GX_TG_TEX0, 30, 0, 125);
 
         GXSetNumTexGens(1);
@@ -151,9 +151,9 @@ void mWipeFader_c::draw() {
 
         GXSetNumTevStages(1);
         GXSetTevColorIn(GX_TEVSTAGE0, GX_CC_ZERO, GX_CC_ZERO, GX_CC_ZERO, GX_CC_ZERO);
-        GXSetTevColorOp(GX_TEVSTAGE0, GX_TEV_ADD, GX_TB_ZERO, GX_TEV_SCALE_0, 1, GX_TEVPREV);
+        GXSetTevColorOp(GX_TEVSTAGE0, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, 1, GX_TEVPREV);
         GXSetTevAlphaIn(GX_TEVSTAGE0, GX_CA_ZERO, GX_CA_ZERO, GX_CA_ZERO, GX_CA_TEXA);
-        GXSetTevAlphaOp(GX_TEVSTAGE0, GX_TEV_ADD, GX_TB_ZERO, GX_TEV_SCALE_0, 1, GX_TEVPREV);
+        GXSetTevAlphaOp(GX_TEVSTAGE0, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, 1, GX_TEVPREV);
         GXSetTevOrder(GX_TEVSTAGE0, GX_TEXCOORD0, GX_TEXMAP0, GX_COLOR_NULL);
 
         GXSetBlendMode(GX_BM_BLEND, GX_BL_SRCALPHA, GX_BL_INVSRCALPHA, GX_LO_SET);
@@ -161,7 +161,7 @@ void mWipeFader_c::draw() {
         GXSetZCompLoc(1);
         GXSetAlphaCompare(GX_GREATER, 0, GX_AOP_OR, GX_GREATER, 0);
         GXSetZMode(0, GX_NEVER, 0);
-        GXSetCullMode(2);
+        GXSetCullMode(GX_CULL_BACK);
 
         GXBegin(GX_QUADS, GX_VTXFMT0, 4);
 

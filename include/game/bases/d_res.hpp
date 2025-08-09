@@ -1,9 +1,10 @@
 #pragma once
 #include <types.h>
-#include <lib/rvl/arc/ARC.h>
+#include <game/mLib/m_dvd.hpp>
 #include <lib/egg/core/eggFrmHeap.h>
 #include <lib/egg/core/eggArchive.h>
-#include <game/mLib/m_dvd.hpp>
+#include <revolution/ARC.h>
+#include <nw4r/g3d.h>
 
 /// @brief An archive resource management class.
 /// @ingroup bases
@@ -168,7 +169,7 @@ public:
      * @param resPath The path to the resource within the archive. See the [path notes](#path-notes).
      * @return A pointer to the contents of the resource.
      */
-    void *getRes(const char *arcName, const char *resPath) const;
+    nw4r::g3d::ResFile getRes(const char *arcName, const char *resPath) const;
 
     /**
      * @brief Gets a resource.
@@ -178,7 +179,7 @@ public:
      * @param size A pointer where the size of the resource will be written to.
      * @return A pointer to the contents of the resource.
      */
-    void *getRes(const char *arcName, const char *resPath, unsigned long *size) const;
+    nw4r::g3d::ResFile getRes(const char *arcName, const char *resPath, unsigned long *size) const;
 
     /**
      * @brief Gets a resource which may optionally be compressed.
