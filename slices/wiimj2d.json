@@ -182,6 +182,13 @@
             }
         },
         {
+            "source": "dol/bases/d_lyttextbox.cpp",
+            "nonMatching": true,
+            "memoryRanges": {
+                ".text": "0xc33d0-0xc3880"
+            }
+        },
+        {
             "source": "dol/bases/d_md_actor.cpp",
             "memoryRanges": {
                 ".text": "0xc7080-0xc73e0",

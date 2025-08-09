@@ -36,6 +36,7 @@ public:
     };
 
     dCyuukan_c *getCyuukan() { return &mCyuukan; }
+    static dInfo_c *getInstance() { return m_instance; }
 
     char pad1[0x8];
     dCyuukan_c mCyuukan;
@@ -45,9 +46,13 @@ public:
     int pad3[7];
     int field_3b4;
     int field_3b8;
-    u8 pad4[0x1d];
+    u8 pad4[0x14];
+    int field_3d0;
+    int field_3d4;
+    u8 pad5[0x1];
     bool mExtensionAttached;
-    u8 pad5[0x724];
+    u8 field_3da;
+    u8 pad7[0x723];
     bool mFukidashiActionPerformed[4][0x16];
 
     static dInfo_c *m_instance;
