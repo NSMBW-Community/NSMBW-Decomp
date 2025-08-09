@@ -181,15 +181,20 @@ void dSmallScore_c::setNormalOrBlueColor() {
 }
 
 void dSmallScore_c::ScissorMaskSet() {
-    d2d::ClipSettings clip;
+    d2d::ScissorMask scissorMask;
+    scissorMask.mPos.x = 0.0f;
+    scissorMask.mPos.y = 0.0f;
+    scissorMask.mSize.x = 0.0f;
+    scissorMask.mSize.y = 0.0f;
+    scissorMask.mEnabled = false;
 
     if (dGameCom::GetAspectRatio() == 0) {
-        clip.mPos.y = (mVideo::m_video->mRenderModeObj.efbHeight - mClipScale.y) * 0.5f;
-        clip.mSize = mClipScale;
-        clip.mEnabled = 1;
+        scissorMask.mPos.y = (mVideo::m_video->mRenderModeObj.efbHeight - mClipScale.y) * 0.5f;
+        scissorMask.mSize = mClipScale;
+        scissorMask.mEnabled = 1;
     }
 
-    mLayout.mClipSettings = clip;
+    mLayout.mScissorMask = scissorMask;
 }
 
 void dSmallScore_c::BigSmallAnime() {

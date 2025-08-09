@@ -2,7 +2,7 @@
 #include <types.h>
 #include <constants/game_constants.h>
 #include <game/bases/d_cd_blocks.hpp>
-#include <game/mLib/m_vec.hpp>
+#include <game/sLib/s_RangeData.hpp>
 #include <lib/egg/core/eggHeap.h>
 
 /// @brief Course data file holder.

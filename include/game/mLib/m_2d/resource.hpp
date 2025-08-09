@@ -5,13 +5,15 @@ namespace m2d {
 
 class ResAccIf_c {
 public:
-    virtual ~ResAccIf_c() = 0;
+    ResAccIf_c() : mpResAccessor(nullptr), mpResource(nullptr) {}
+    virtual ~ResAccIf_c() {}
     virtual void creater() = 0;
 
-    bool attach(void *, const char *);
+    bool attach(void *resource, const char *rootDir);
     void detach();
-    void *getResource(unsigned long, const char *);
+    void *getResource(ulong type, const char *name);
 
+    void setResAccessor(nw4r::lyt::ArcResourceAccessor *resAccessor) { mpResAccessor = resAccessor; }
     nw4r::lyt::ArcResourceAccessor *getResAccessor() const { return mpResAccessor; }
 
 private:

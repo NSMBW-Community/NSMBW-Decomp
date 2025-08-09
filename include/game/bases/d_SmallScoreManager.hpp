@@ -1,6 +1,6 @@
 #pragma once
 #include <game/bases/d_base.hpp>
-#include <game/bases/d_resource.hpp>
+#include <game/bases/d_2d.hpp>
 #include <game/bases/d_SmallScore.hpp>
 #include <game/sLib/s_GlobalData.hpp>
 #include <constants/game_constants.h>
