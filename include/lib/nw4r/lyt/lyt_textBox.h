@@ -148,22 +148,22 @@ public:
     u32 MakeDrawFlag() const;
 
 protected:
-    wchar_t* mTextBuf;                    // at 0xD4
-    ut::Color mTextColors[TEXTCOLOR_MAX]; // at 0xD8
+    wchar_t* mTextBuf;                    // at 0xD8
+    ut::Color mTextColors[TEXTCOLOR_MAX]; // at 0xDC
 
-    const ut::Font* mpFont; // at 0xE0
-    Size mFontSize;         // at 0xE4
-    f32 mLineSpace;         // at 0xEC
-    f32 mCharSpace;         // at 0xF0
+    const ut::Font* mpFont; // at 0xE4
+    Size mFontSize;         // at 0xE8
+    f32 mLineSpace;         // at 0xF0
+    f32 mCharSpace;         // at 0xF4
 
-    ut::WideTagProcessor* mpTagProcessor; // at 0xF4
-    u16 mTextBufBytes;                    // at 0xF8
-    u16 mTextLen;                         // at 0xFA
-    u8 mTextPosition;                     // at 0xFC
+    ut::WideTagProcessor* mpTagProcessor; // at 0xF8
+    u16 mTextBufBytes;                    // at 0xFC
+    u16 mTextLen;                         // at 0xFE
+    u8 mTextPosition;                     // at 0x100
 
     struct {
         u8 bAllocFont : 1;
-    } mBits; // at 0xFD
+    } mBits; // at 0x101
 
 private:
     void Init(u16 len);
