@@ -362,7 +362,6 @@
         },
         {
             "source": "dol/mLib/m_2d.cpp",
-            "nonMatching": true,
             "memoryRanges": {
                 ".text": "0x15cb30-0x15deb0",
                 ".data": "0x2b148-0x2b1c0",
