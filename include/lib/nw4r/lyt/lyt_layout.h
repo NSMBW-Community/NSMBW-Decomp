@@ -65,21 +65,27 @@ public:
     virtual bool Build(const void* pLytBinary,
                        ResourceAccessor* pAccessor); // at 0xC
 
+    virtual AnimTransform* CreateAnimTransform(); // at 0x10
     virtual AnimTransform*
     CreateAnimTransform(const void* pAnmBinary,
-                        ResourceAccessor* pAccessor); // at 0x10
+                        ResourceAccessor* pAccessor); // at 0x14
+    virtual AnimTransform*
+    CreateAnimTransform(const nw4r::lyt::AnimResource&,
+                        nw4r::lyt::ResourceAccessor*); // at 0x18
 
-    virtual void BindAnimation(AnimTransform* pAnimTrans);   // at 0x14
-    virtual void UnbindAnimation(AnimTransform* pAnimTrans); // at 0x18
-    virtual void UnbindAllAnimation();                       // at 0x1C
+    virtual void BindAnimation(AnimTransform* pAnimTrans);   // at 0x1C
+    virtual void UnbindAnimation(AnimTransform* pAnimTrans); // at 0x20
+    virtual void UnbindAllAnimation();                       // at 0x24
+    virtual bool BindAnimationAuto(const nw4r::lyt::AnimResource&,
+                                   nw4r::lyt::ResourceAccessor*); // at 0x28
     virtual void SetAnimationEnable(AnimTransform* pAnimTrans,
-                                    bool enable); // at 0x20
+                                    bool enable); // at 0x2C
 
-    virtual void CalculateMtx(const DrawInfo& rInfo); // at 0x24
-    virtual void Draw(const DrawInfo& rInfo);         // at 0x28
-    virtual void Animate(u32 option);                 // at 0x2C
+    virtual void CalculateMtx(const DrawInfo& rInfo); // at 0x30
+    virtual void Draw(const DrawInfo& rInfo);         // at 0x34
+    virtual void Animate(ulong option);               // at 0x38
 
-    virtual void SetTagProcessor(ut::WideTagProcessor* pProcessor); // at 0x30
+    virtual void SetTagProcessor(ut::WideTagProcessor* pProcessor); // at 0x3C
 
     ut::Rect GetLayoutRect() const;
 

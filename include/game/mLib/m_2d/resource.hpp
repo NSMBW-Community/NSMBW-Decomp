@@ -12,8 +12,10 @@ public:
     void detach();
     void *getResource(unsigned long, const char *);
 
+    nw4r::lyt::ArcResourceAccessor *getResAccessor() const { return mpResAccessor; }
+
 private:
-    nw4r::lyt::ResourceAccessor *mpResAccessor;
+    nw4r::lyt::ArcResourceAccessor *mpResAccessor;
     void *mpResource;
 };
 

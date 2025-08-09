@@ -35,7 +35,7 @@
         "__vt__Q26dRes_c10callback_c",
         "List_Prepend__Q24nw4r2utFPQ34nw4r2ut4ListPv",
         "__vt__Q23EGG5Fader",
-        "DUMMY_M_VEC__Fs",
+        "DUMMY_ORDERING__Fv",
         "__destroy_global_chain_reference",
         "play__Q23m3d6banm_cFv",
         "getType__Q23m3d6bmdl_cCFv",
@@ -358,6 +358,18 @@
             "source": "dol/framework/f_tree.cpp",
             "memoryRanges": {
                 ".text": "0x15c9c0-0x15cb30"
+            }
+        },
+        {
+            "source": "dol/mLib/m_2d.cpp",
+            "nonMatching": true,
+            "memoryRanges": {
+                ".text": "0x15cb30-0x15deb0",
+                ".data": "0x2b148-0x2b1c0",
+                ".sdata2": "0x2bb0-0x2bd0",
+                ".bss": "0x26430-0x26440",
+                ".sbss": "0x800-0x808",
+                ".sbss2": "0x30-0x38"
             }
         },
         {

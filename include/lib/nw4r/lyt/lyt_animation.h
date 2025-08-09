@@ -4,6 +4,7 @@
 
 #include <nw4r/lyt/lyt_common.h>
 #include <nw4r/lyt/lyt_resources.h>
+#include <nw4r/lyt/lyt_group.h>
 #include <nw4r/lyt/lyt_types.h>
 
 #include <nw4r/ut.h>
@@ -31,6 +32,25 @@ struct AnimationBlock {
     u16 fileNum;                 // at 0xC
     u16 animContNum;             // at 0xE
     u32 animContOffsetsOffset;   // at 0x10
+};
+
+struct AnimationTagBlock {
+    DataBlockHeader blockHeader; // at 0x00
+    u16 tagOrder;                // at 0x08
+    u16 groupNum;                // at 0x0A
+    u32 nameOffset;              // at 0x0C
+    u32 groupsOffset;            // at 0x10
+    u16 startFrame;              // at 0x14
+    u16 endFrame;                // at 0x16
+    u8 flag;                     // at 0x18
+    u8 padding[3];               // at 0x19
+};
+
+struct AnimationShareBlock {
+    DataBlockHeader blockHeader; // at 0x00
+    u32 animShareInfoOffset;     // at 0x04
+    u16 shareNum;                // at 0x0C
+    u8 padding[2];               // at 0x0E
 };
 
 /******************************************************************************
@@ -67,12 +87,16 @@ public:
 
     virtual void SetResource(const res::AnimationBlock* pBlock,
                              ResourceAccessor* pAccessor) = 0; // at 0xC
+    virtual void SetResource(
+        const res::AnimationBlock *pRes, ResourceAccessor *pResAccessor,
+        u16 animNum
+    ) = 0;                                              // at 0x10
 
-    virtual void Bind(Pane* pPane, bool recursive) = 0; // at 0x10
-    virtual void Bind(Material* pMaterial) = 0;         // at 0x14
+    virtual void Bind(Pane* pPane, bool recursive) = 0; // at 0x14
+    virtual void Bind(Material* pMaterial) = 0;         // at 0x18
 
-    virtual void Animate(u32 idx, Pane* pPane) = 0;         // at 0x18
-    virtual void Animate(u32 idx, Material* pMaterial) = 0; // at 0x1C
+    virtual void Animate(u32 idx, Pane* pPane) = 0;         // at 0x1C
+    virtual void Animate(u32 idx, Material* pMaterial) = 0; // at 0x20
 
     u16 GetFrameSize() const;
 
@@ -99,6 +123,40 @@ protected:
 
 NW4R_UT_LINKLIST_TYPEDEF_DECL(AnimTransform);
 
+class AnimResource {
+public:
+    AnimResource();
+    AnimResource(const void *anmResBuf) {
+        Set(anmResBuf);
+    }
+    void Set(const void *anmResBuf);
+    void Init();
+    u16 GetGroupNum() const;
+    const AnimationGroupRef *GetGroupArray() const;
+    bool IsDescendingBind() const;
+    u16 GetAnimationShareInfoNum() const;
+    const AnimationShareInfo *GetAnimationShareInfoArray() const;
+    u16 CalcAnimationNum(Pane *pPane, bool bRecursive) const;
+    u16 CalcAnimationNum(Group *pGroup, bool bRecursive) const;
+    u16 CalcAnimationNum(res::Group *pGroup, bool bRecursive) const;
+
+    const res::AnimationBlock *GetResourceBlock() const {
+        return mpResBlock;
+    }
+    const res::AnimationTagBlock *GetTagBlock() const {
+        return mpTagBlock;
+    }
+    const res::AnimationShareBlock *GetShareBlock() const {
+        return mpShareBlock;
+    }
+
+private:
+    const res::BinaryFileHeader *mpFileHeader;    // at 0x00
+    const res::AnimationBlock *mpResBlock;        // at 0x04
+    const res::AnimationTagBlock *mpTagBlock;     // at 0x08
+    const res::AnimationShareBlock *mpShareBlock; // at 0x0C
+};
+
 /******************************************************************************
  *
  * AnimTransformBasic
@@ -111,12 +169,13 @@ public:
 
     virtual void SetResource(const res::AnimationBlock* pBlock,
                              ResourceAccessor* pAccessor); // at 0xC
+    virtual void SetResource(const res::AnimationBlock *pRes, ResourceAccessor *pResAccessor, u16 animNum); // at 0x10
 
-    virtual void Bind(Pane* pPane, bool recursive); // at 0x10
-    virtual void Bind(Material* pMaterial);         // at 0x14
+    virtual void Bind(Pane* pPane, bool recursive); // at 0x14
+    virtual void Bind(Material* pMaterial);         // at 0x18
 
-    virtual void Animate(u32 idx, Pane* pPane);         // at 0x18
-    virtual void Animate(u32 idx, Material* pMaterial); // at 0x1C
+    virtual void Animate(u32 idx, Pane* pPane);         // at 0x1C
+    virtual void Animate(u32 idx, Material* pMaterial); // at 0x20
 
 protected:
     void** mpFileResAry;         // at 0x14
@@ -267,6 +326,8 @@ enum AnimTargetTexPat {
 
     ANIMTARGET_TEXPATTURN_MAX
 };
+
+void BindAnimation(Group *pGroup, AnimTransform *pAnimTrans, bool bRecursive, bool bDisable);
 
 } // namespace lyt
 } // namespace nw4r

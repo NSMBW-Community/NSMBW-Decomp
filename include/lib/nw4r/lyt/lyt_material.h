@@ -3,6 +3,7 @@
 #include <nw4r/types_nw4r.h>
 
 #include <nw4r/lyt/lyt_common.h>
+#include <nw4r/lyt/lyt_animation.h>
 #include <nw4r/lyt/lyt_texMap.h>
 #include <nw4r/lyt/lyt_types.h>
 
@@ -76,9 +77,13 @@ public:
 
     virtual AnimationLink*
     FindAnimationLink(AnimTransform* pAnimTrans); // at 0x20
+    virtual AnimationLink*
+    FindAnimationLink(const AnimResource& animRes); // at 0x24
 
     virtual void SetAnimationEnable(AnimTransform* pAnimTrans,
-                                    bool enable); // at 0x24
+                                    bool enable); // at 0x28
+    virtual void SetAnimationEnable(const AnimResource& animRes,
+                                    bool enable); // at 0x2C
 
     void AddAnimationLink(AnimationLink* pAnimLink);
 
