@@ -26,7 +26,7 @@ public:
     virtual ~Multi_c();
     virtual void draw();
     virtual void calc();
-    virtual bool build(const char *, ResAccMult_c *);
+    virtual bool build(const char *name, ResAccMult_c *resAcc);
 
     void entry();
     void calcBefore();
@@ -37,7 +37,7 @@ public:
     nw4r::lyt::Picture *findPictureByName(const char *name);
     nw4r::lyt::Window *findWindowByName(const char *name);
 
-private:
+protected:
     m2d::Layout_c mLayout;
     nw4r::lyt::DrawInfo mDrawInfo;
 

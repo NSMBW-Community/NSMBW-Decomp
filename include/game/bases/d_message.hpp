@@ -5,8 +5,8 @@
 
 class MsgRes_c : public EGG::MsgRes {
 public:
-    u8 getFont(ulong messageID, ulong messageGroup);
-    u16 getScale(ulong messageID, ulong messageGroup);
+    u8 getFont(ulong messageGroup, ulong messageID);
+    u16 getScale(ulong messageGroup, ulong messageID);
 };
 
 class dMessage_c {
