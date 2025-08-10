@@ -44,7 +44,7 @@ public:
     nw4r::lyt::Picture *findPictureByName(const char *name); ///< Finds a picture pane by name.
     nw4r::lyt::Window *findWindowByName(const char *name); ///< Finds a window pane by name.
 
-private:
+protected:
     m2d::Layout_c mLayout; ///< The layout instance.
     nw4r::lyt::DrawInfo mDrawInfo; ///< The parameters for drawing the layout.
 
