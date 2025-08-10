@@ -104,4 +104,5 @@ namespace dGameCom {
     bool isNowCourseClear();
 
     void AreaLanguageFolder(const char *, char *);
+    void fn_800B37E0(mVec3_c &, bool);
 }
