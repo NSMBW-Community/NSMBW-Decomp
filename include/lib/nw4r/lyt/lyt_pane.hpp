@@ -63,15 +63,25 @@ public:
     math::VEC3 mPos;
     math::VEC3 mRot;
     math::VEC2 mScale;
-private:
     float width;
     float height;
-    char mFill2[0x64]; // To be RE'd
+    char mFill2[0x30]; // To be RE'd
+    u32 m_80;
+    u32 m_84;
+    u32 m_88;
+    float m_8c;
+    u32 m_90;
+    u32 m_94;
+    u32 m_98;
+    float m_9c;
+    u32 m_a0;
+    u32 m_a4;
+    u32 m_a8;
+    u32 m_ac;
+    char mFill3[4]; // To be RE'd
     u8 mAlpha;
     u8 mField_b9;
     u8 mOriginType;
-
-public:
     u8 mFlags;
 
     static int typeInfo;

@@ -13,7 +13,8 @@ public:
         LOOP_COUNT,
     };
 
-    char pad[0x119a];
+    char pad[0x1199];
+    u8 mCurrWorld;
     u8 mCurrCourse;
 
     static float getLoopPosX(float x);
@@ -26,4 +27,8 @@ public:
 
     static changePosFunc changePos;
     static dScStage_c *m_instance;
+    static s32 m_gameMode;
+    static u32 m_miniGame;
+    static bool m_isStaffCredit;
+    static s32 mCollectionCoin[3];
 };

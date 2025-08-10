@@ -245,6 +245,18 @@
             }
         },
         {
+            "source": "dol/bases/d_gamedisplay.cpp",
+            "memoryRanges": {
+                ".text": "0x1510a0-0x153d00",
+                ".data": "0x28fc8-0x29660",
+                ".sbss2": "0x28-0x30",
+                ".rodata": "0x7c48-0x7d00",
+                ".sdata": "0x1d28-0x1d50",
+                ".sdata2": "0x2b30-0x2b48",
+                ".bss": "0x259e8-0x25ae8"
+            }
+        },
+        {
             "source": "dol/sLib/s_Phase.cpp",
             "memoryRanges": {
                 ".text": "0x158fc0-0x159090"

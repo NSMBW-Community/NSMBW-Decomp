@@ -28,7 +28,7 @@ public:
         u8 mEntrance;
         u8 mArea;
         bool mIsReplay;
-        u32 mScreenType;
+        int mScreenType;
         u8 mWorld1;
         u8 mLevel1;
         u8 mWorld2;
