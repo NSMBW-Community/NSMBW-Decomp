@@ -246,6 +246,7 @@
         },
         {
             "source": "dol/bases/d_gamedisplay.cpp",
+            "nonMatching": true,
             "memoryRanges": {
                 ".text": "0x1510a0-0x153d00",
                 ".data": "0x28fc8-0x29660",
