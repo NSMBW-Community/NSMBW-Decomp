@@ -58,6 +58,10 @@ public:
     void setScale(const math::VEC2 &scale) { mScale = scale; }
     void setAlpha(u8 alpha) { mAlpha = alpha; }
 
+    const math::MTX34& GetGlobalMtx() const {
+        return mGlbMtx;
+    }
+
 public:
     char mFill1[0x28]; // To be RE'd
     math::VEC3 mPos;
@@ -65,20 +69,9 @@ public:
     math::VEC2 mScale;
     float width;
     float height;
-    char mFill2[0x30]; // To be RE'd
-    u32 m_80;
-    u32 m_84;
-    u32 m_88;
-    float m_8c;
-    u32 m_90;
-    u32 m_94;
-    u32 m_98;
-    float m_9c;
-    u32 m_a0;
-    u32 m_a4;
-    u32 m_a8;
-    u32 m_ac;
-    char mFill3[4]; // To be RE'd
+    math::MTX34 mMtx;
+    math::MTX34 mGlbMtx; // m_80
+    u32 mExtUserDataNum;
     u8 mAlpha;
     u8 mField_b9;
     u8 mOriginType;

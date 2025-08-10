@@ -296,19 +296,21 @@ void dGameDisplay_c::OtehonPosChange() {
     N_time_00->mPos.z = m_598.z + a;
 }
 
-// ???
+
 void dGameDisplay_c::AreaSetup(int a, int b) {
-    // ...
-    m_458[a].left = (&N_otasukeInfo_00)[b]->m_8c;
-    m_458[a].top = (&N_otasukeInfo_00)[b]->m_8c;
-    m_458[a].right = (&N_otasukeInfo_00)[b]->m_9c;
-    m_458[a].bottom = (&N_otasukeInfo_00)[b]->m_9c;
-    // ...
+    nw4r::math::MTX34 mtx = (&N_otasukeInfo_00)[b]->GetGlobalMtx();
+
+    m_458[a].right = mtx.mData[1][3];
+    m_458[a].bottom = mtx.mData[1][3];
+    m_458[a].left = mtx.mData[0][3];
+    m_458[a].top = mtx.mData[0][3];
+
     float w = (&N_otasukeInfo_00)[b]->width;
     float h = (&N_otasukeInfo_00)[b]->height;
+
     switch ((u8)((&N_otasukeInfo_00)[b]->mOriginType % 3)) {
         case 0:
-            m_458[a].right += w;
+            m_458[a].bottom += w;
             break;
         case 1:
             m_458[a].right -= w * 0.5f;
@@ -324,15 +326,15 @@ void dGameDisplay_c::AreaSetup(int a, int b) {
             m_458[a].top -= h;
             break;
         case 1:
-            m_458[a].left += h * 0.5f;
-            m_458[a].top -= h * 0.5f;
+            float half = 0.5f;
+            m_458[a].left += h * half;
+            m_458[a].top -= h * half;
             break;
         case 2:
-            m_458[a].top += h;
+            m_458[a].left += h;
             break;
     }
 }
-
 
 
 void dGameDisplay_c::fn_801585c0() {
@@ -342,7 +344,9 @@ void dGameDisplay_c::fn_801585c0() {
 
     if (m_414 != 6) {
         nw4r::lyt::Pane * pane = (&P_collectOff_00)[m_414];
-        m_458[0].right = pane->m_8c + pane->width * 0.5f + 60.0f;
+        nw4r::math::MTX34 mtx = pane->GetGlobalMtx();
+
+        m_458[0].right = mtx.mData[0][3] + pane->width * 0.5f + 60.0f;
     }
 }
 
@@ -759,37 +763,33 @@ void dGameDisplay_c::finalizeState_ProcGoalEnd() {}
 
 
 void dGameDisplay_c::Effect1UP(int a) {
-    mVec3_c vec;
-    if (
-        (mFader_c::mFader->getStatus() == mFaderBase_c::HIDDEN) &&
-        !PauseManager_c::m_OtasukeAfter &&
-        !dScStage_c::m_miniGame
-    ) {
-        if (dInfo_c::m_startGameInfo.mScreenType == 3) {
-
-        } else if (m_424[a] == 0) {
-            m_424[a] = 0xF;
-
-            nw4r::lyt::Pane * icon = &N_otasukeInfo_00[9 + a];
-
-            vec.x = icon->m_8c;
-            vec.y = icon->m_9c;
-            vec.z = 0.0f;
-
-            // TODO: useless matrix copy?
-
-            float b = vec.x;
-            float c = vec.y;
-            dGameCom::fn_800B37E0(vec, false);
-            mEf::createEffect("Wm_2d_1up01", 0, &vec, nullptr, nullptr);
-
-            vec.x = b;
-            vec.y = c;
-            vec.z = 0.0f;
-            dGameCom::fn_800B37E0(vec, true);
-            mEf::createEffect("Wm_2d_1up02", 0, &vec, nullptr, nullptr);
-        }
+    if (! mFader_c::mFader->isHidden()) {
+        return;
     }
+    if (PauseManager_c::m_OtasukeAfter || dScStage_c::m_miniGame || (dInfo_c::m_startGameInfo.mScreenType == 3)) {
+        return;
+    }
+    if (m_424[a] != 0) {
+        return;
+    }
+
+    m_424[a] = 15;
+
+    nw4r::math::MTX34 mtx = (&N_otasukeInfo_00)[9 + a]->GetGlobalMtx();
+
+    mVec3_c vec;
+    vec.x = mtx.mData[0][3];
+    vec.y = mtx.mData[1][3];
+    vec.z = 0.0f;
+
+    dGameCom::fn_800B37E0(vec, false);
+    mEf::createEffect("Wm_2d_1up01", 0, &vec, nullptr, nullptr);
+
+    vec.x = mtx.mData[0][3];
+    vec.y = mtx.mData[1][3];
+    vec.z = 0.0f;
+    dGameCom::fn_800B37E0(vec, true);
+    mEf::createEffect("Wm_2d_1up02", 0, &vec, nullptr, nullptr);
 }
 
 void dGameDisplay_c::GrayColorSet(int) {
@@ -807,17 +807,13 @@ void dGameDisplay_c::EffectCollectionCoinClear() {
     for (int i = 0; i < 3; i++) {
         (&P_collectOff_00)[lbl_802f5cb8[i]]->setVisible(true);
         if ((&P_collectOff_00)[lbl_802f5cc4[i]]->mFlags & 1) { // isVisible
-            nw4r::lyt::Pane * icon = &N_coin1st_00[i];
+            nw4r::math::MTX34 mtx = (&N_coin1st_00)[i]->GetGlobalMtx();
 
             mVec3_c vec;
-            vec.x = icon->m_8c;
-            vec.y = icon->m_9c;
+            vec.x = mtx.mData[0][3];
+            vec.y = mtx.mData[1][3];
             vec.z = 0.0f;
 
-            // TODO: useless matrix copy?
-
-            float b = vec.x;
-            float c = vec.y;
             dGameCom::fn_800B37E0(vec, false);
             mEf::createEffect("Wm_2d_starcoinvanish", 0, &vec, nullptr, nullptr);
         }
@@ -825,17 +821,13 @@ void dGameDisplay_c::EffectCollectionCoinClear() {
 }
 
 void dGameDisplay_c::EffectCollectionCoinGet(int i) {
-    nw4r::lyt::Pane * icon = &N_coin1st_00[i];
+    nw4r::math::MTX34 mtx = (&N_coin1st_00)[i]->GetGlobalMtx();
 
     mVec3_c vec;
-    vec.x = icon->m_8c;
-    vec.y = icon->m_9c;
+    vec.x = mtx.mData[0][3];
+    vec.y = mtx.mData[1][3];
     vec.z = 0.0f;
 
-    // TODO: useless matrix copy?
-
-    float b = vec.x;
-    float c = vec.y;
     dGameCom::fn_800B37E0(vec, false);
     mEf::createEffect("Wm_2d_starcoinget", 0, &vec, nullptr, nullptr);
 }
@@ -867,26 +859,23 @@ void dGameDisplay_c::setCoinNum(int num_coins) {
         mCoins = num_coins;
         dGameCom::LayoutDispNumber(mCoins, c_COINNUM_DIGIT, mpTextBoxes[8], false);
 
-        // The fader status check doesn't match...
-        if (!num_coins && !m_444 && (mFader_c::mFader->getStatus() == mFaderBase_c::HIDDEN)) {
-            if (dInfo_c::m_startGameInfo.mScreenType == 2 || dInfo_c::m_startGameInfo.mScreenType == 3) {
-                return;
-            }
-
-            nw4r::lyt::Pane * pane = N_coin_01;
-            mVec3_c vec;
-
-            vec.x = pane->m_8c;
-            vec.y = pane->m_9c;
-            vec.z = 0.0f;
-
-            // TODO: useless matrix copy?
-
-            float b = vec.x;
-            float c = vec.y;
-            dGameCom::fn_800B37E0(vec, false);
-            mEf::createEffect("Wm_2d_coin100", 0, &vec, nullptr, nullptr);
+        if (num_coins || m_444 || !mFader_c::mFader->isHidden()) {
+            return;
         }
+
+        if (dInfo_c::m_startGameInfo.mScreenType == 2 || dInfo_c::m_startGameInfo.mScreenType == 3) {
+            return;
+        }
+
+        nw4r::math::MTX34 mtx = N_coin_01->GetGlobalMtx();
+        mVec3_c vec;
+
+        vec.x = mtx.mData[0][3];
+        vec.y = mtx.mData[1][3];
+        vec.z = 0.0f;
+
+        dGameCom::fn_800B37E0(vec, false);
+        mEf::createEffect("Wm_2d_coin100", 0, &vec, nullptr, nullptr);
     }
 }
 

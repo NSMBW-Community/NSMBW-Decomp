@@ -51,6 +51,10 @@ public:
     void setFrame(u16 duration); ///< Sets the duration of the fade. Duration must not be zero.
     void setColor(const mColor &color); ///< Sets the fader's color. Alpha is not modified.
 
+    inline bool isHidden() {
+        return getStatus() == HIDDEN;
+    }
+
 protected:
     EStatus mStatus; ///< The fader's status.
     u8 mFlag; ///< The fader's flags.
