@@ -88,13 +88,13 @@ bool d2d::ResAccMultLoader_c::request(const char *name) {
     return requestEx(name, 0);
 }
 
-void d2d::ResAccMultLoader_c::remove() {
+bool d2d::ResAccMultLoader_c::remove() {
     if (mpResource != nullptr) {
         detach();
         ms_res_allocator->free(mpResource);
         mpResource = nullptr;
     }
-    mLoader.remove();
+    return mLoader.remove();
 }
 
 bool d2d::ResAccMultLoader_c::create(EGG::Heap *parent, ulong size) {

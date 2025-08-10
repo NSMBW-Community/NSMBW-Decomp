@@ -55,6 +55,10 @@ public:
         mFrameCtrl.mRate = 0.0f;
     }
 
+    void play() { mpFrameCtrl->play(); updateFrame(); }
+    void setStart() { mpFrameCtrl->setFrame(1.0f); updateFrame(); }
+    void setEnd() { mpFrameCtrl->setFrame(mpFrameCtrl->getLastActiveFrame()); updateFrame(); }
+
     FrameCtrl_c mFrameCtrl;
 };
 
