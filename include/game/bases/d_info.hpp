@@ -71,8 +71,8 @@ public:
     int mDisplayCourseWorld;
     int mDisplayCourseNum;
     u8 pad6[0x14];
-    int field_3d0;
-    int field_3d4;
+    int mTextBoxMessageID;
+    int mTextBoxMessageGroup;
     u8 pad7[0x1];
     bool mExtensionAttached;
     u8 field_3da;

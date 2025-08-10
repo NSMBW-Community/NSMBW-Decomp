@@ -7,6 +7,6 @@ public:
     void setMessage(MsgRes_c *bmg, ulong messageGroup, ulong messageID, long param, ...);
     void setMessage(MsgRes_c *bmg, ulong messageGroup, ulong messageID, long param, va_list *vargs);
     void ExtensionUserDataSetup();
-    void setText(const wchar_t *text, long, ...);
-    void setText(const wchar_t *text, long, va_list *vargs, MsgRes_c *bmg);
+    void setText(const wchar_t *text, long param, ...);
+    void setText(const wchar_t *text, long param, va_list *vargs, MsgRes_c *bmg);
 };
