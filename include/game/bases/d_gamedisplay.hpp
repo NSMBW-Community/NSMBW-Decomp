@@ -114,6 +114,10 @@ public:
     static dStageTimer_c * m_instance;
 };
 
+struct mRect_c {
+    float left, top, right, bottom;
+};
+
 class dGameDisplay_c : public dBase_c {
 private:
 
@@ -194,7 +198,7 @@ public:
     u8 m_455;
     u8 m_456;
     u8 m_457;
-    nw4r::ut::Rect m_458[3];
+    mRect_c m_458[3];
     u32 m_488;
     u32 m_48C;
 
