@@ -8,6 +8,18 @@ namespace d2d {
 
 /// @unofficial
 struct ClipSettings {
+    ClipSettings() {}
+    ClipSettings(const mVec2_c &pos, const mVec2_c &size) : mPos(pos), mSize(size) {
+        mEnabled = true;
+    }
+    void setPos(const mVec2_c &pos) { mPos = pos; }
+    void setSize(const mVec2_c &size) { mSize = size; }
+    void set(const mVec2_c &pos, const mVec2_c &size) {
+        mPos = pos;
+        mSize = size;
+    }
+    void enable() { mEnabled = true; }
+
     ClipSettings &operator=(const ClipSettings &other) {
         mPos = other.mPos;
         mSize = other.mSize;
@@ -15,8 +27,8 @@ struct ClipSettings {
         return *this;
     }
 
-    nw4r::math::VEC2 mPos;
-    nw4r::math::VEC2 mSize;
+    mVec2_c mPos;
+    mVec2_c mSize;
     bool mEnabled;
 };
 
@@ -26,7 +38,7 @@ public:
     virtual ~Multi_c();
     virtual void draw();
     virtual void calc();
-    virtual bool build(const char *, ResAccMult_c *);
+    virtual bool build(const char *name, ResAccMult_c *resAcc);
 
     void entry();
     void calcBefore();
@@ -37,7 +49,7 @@ public:
     nw4r::lyt::Picture *findPictureByName(const char *name);
     nw4r::lyt::Window *findWindowByName(const char *name);
 
-private:
+protected:
     m2d::Layout_c mLayout;
     nw4r::lyt::DrawInfo mDrawInfo;
 

@@ -194,6 +194,24 @@
             }
         },
         {
+            "source": "dol/bases/d_lytbase.cpp",
+            "nonMatching": true,
+            "memoryRanges": {
+                ".text": "0xc2220-0xc33d0",
+                ".ctors": "0x11c-0x120",
+                ".rodata": "0x3338-0x33a0"
+            }
+        },
+        {
+            "source": "dol/bases/d_lyttextbox.cpp",
+            "memoryRanges": {
+                ".text": "0xc33d0-0xc3880",
+                ".sdata": "0x598-0x5a0",
+                ".sdata2": "0x1898-0x18b8",
+                ".bss": "0x7eb8-0x82b8"
+            }
+        },
+        {
             "source": "dol/bases/d_main.cpp",
             "memoryRanges": {
                 ".text": "0xc3880-0xc39d0",

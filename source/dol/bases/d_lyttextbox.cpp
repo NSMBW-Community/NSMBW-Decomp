@@ -4,14 +4,14 @@
 #include <game/bases/d_info.hpp>
 #include <game/bases/d_lytbase.hpp>
 
-void LytTextBox_c::setMessage(MsgRes_c *bmg, ulong messageID, ulong messageGroup, long param, ...) {
+void LytTextBox_c::setMessage(MsgRes_c *bmg, ulong messageGroup, ulong messageID, long param, ...) {
     dInfo_c *info = dInfo_c::getInstance();
-    info->mTextBoxMessageID = messageID;
     info->mTextBoxMessageGroup = messageGroup;
+    info->mTextBoxMessageID = messageID;
 
     va_list args;
     va_start(args, param);
-    setMessage(bmg, messageID, messageGroup, param, &args);
+    setMessage(bmg, messageGroup, messageID, param, &args);
     va_end(args);
 }
 
@@ -23,10 +23,10 @@ void LytTextBox_c::ExtensionUserDataSetup() {
     }
 }
 
-void LytTextBox_c::setMessage(MsgRes_c *bmg, ulong messageID, ulong messageGroup, long param, va_list *vargs) {
+void LytTextBox_c::setMessage(MsgRes_c *bmg, ulong messageGroup, ulong messageID, long param, va_list *vargs) {
     nw4r::lyt::Size fontSize = GetFontSize();
 
-    u8 fontIndex = bmg->getFont(messageID, messageGroup);
+    u8 fontIndex = bmg->getFont(messageGroup, messageID);
     SetFont(dFontMng_c::getFont(fontIndex));
     LytBase_c::s_TagPrc.mFontIndex = fontIndex;
 
@@ -37,11 +37,11 @@ void LytTextBox_c::setMessage(MsgRes_c *bmg, ulong messageID, ulong messageGroup
     if (extUserDataNum != 0) {
         ExtensionUserDataSetup();
     }
-    info->mTextBoxMessageID = messageID;
     info->mTextBoxMessageGroup = messageGroup;
-    setText(bmg->getMsg(messageID, messageGroup), param, vargs, bmg);
+    info->mTextBoxMessageID = messageID;
+    setText(bmg->getMsg(messageGroup, messageID), param, vargs, bmg);
 
-    float charWScale = bmg->getScale(messageID, messageGroup) * 0.01f;
+    float charWScale = bmg->getScale(messageGroup, messageID) * 0.01f;
     fontSize.width = GetFont()->GetWidth() * charWScale;
     SetFontSize(fontSize);
 

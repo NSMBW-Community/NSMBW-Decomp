@@ -98,9 +98,10 @@ namespace dGameCom {
     void DispSizeScale(nw4r::math::VEC2 &scale);
 
     void LayoutDispNumber(const int &value, const int &fillLeft, LytTextBox_c *textBox, bool fillWidth);
-
-    bool isNowCourseClear();
     void SelectCursorSetup();
     void SelectCursorSetup(nw4r::lyt::Pane *, int, bool);
     void WindowPaneColorSet(nw4r::lyt::Window *, int);
+    bool isNowCourseClear();
+
+    void AreaLanguageFolder(const char *, char *);
 }
