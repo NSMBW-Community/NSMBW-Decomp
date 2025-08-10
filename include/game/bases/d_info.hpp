@@ -47,8 +47,8 @@ public:
     int field_3b4;
     int field_3b8;
     u8 pad4[0x14];
-    int field_3d0;
-    int field_3d4;
+    int mTextBoxMessageID;
+    int mTextBoxMessageGroup;
     u8 pad5[0x1];
     bool mExtensionAttached;
     u8 field_3da;
