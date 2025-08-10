@@ -31,7 +31,7 @@ public:
 
     bool requestEx(const char *, int);
     bool request(const char *);
-    void remove();
+    bool remove();
 
     static bool create(EGG::Heap *heap, ulong size);
 

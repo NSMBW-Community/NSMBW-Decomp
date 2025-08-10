@@ -11,7 +11,7 @@ public:
     virtual void freeHeap();
 
     void *request(const char *, u8, EGG::Heap *);
-    void remove();
+    bool remove();
 
 private:
     u32 mSize;
