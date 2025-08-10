@@ -182,6 +182,15 @@
             }
         },
         {
+            "source": "dol/bases/d_lytbase.cpp",
+            "nonMatching": true,
+            "memoryRanges": {
+                ".text": "0xc2220-0xc33d0",
+                ".ctors": "0x11c-0x120",
+                ".rodata": "0x3338-0x33a0"
+            }
+        },
+        {
             "source": "dol/bases/d_lyttextbox.cpp",
             "memoryRanges": {
                 ".text": "0xc33d0-0xc3880",

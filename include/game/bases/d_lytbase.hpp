@@ -9,15 +9,15 @@ class LytBase_c : public d2d::Multi_c {
 public:
     LytBase_c();
     ~LytBase_c();
-    virtual bool build(const char *, d2d::ResAccMult_c *);
+    virtual bool build(const char *name, d2d::ResAccMult_c *resAcc);
 
-    LytTextBox_c *findTextBox(const char *);
-    void allocStringBuffer(nw4r::lyt::Pane *);
+    LytTextBox_c *findTextBox(const char *name);
+    void allocStringBuffer(nw4r::lyt::Pane *pane);
 
     bool ReadResourceEx(const char *, int, bool);
     bool ReadResource(const char *, bool);
     bool ReadResource2(const char *, int);
-    bool ReadResource3(const char *, int); ///< @unofficial Not in Shield version.
+    bool ReadResource3(const char *, int); ///< @unofficial [Not in Shield version].
 
     void NPaneRegister(const char **, nw4r::lyt::Pane **, int);
     void WPaneRegister(const char **, nw4r::lyt::Window **, int);
