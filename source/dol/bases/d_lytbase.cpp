@@ -249,24 +249,24 @@ void LytBase_c::FUN_800c9770(const nw4r::lyt::Pane *pane, d2d::ClipSettings &cli
     float tmpx = mtx._03 / actualScaleX;
     float tmpy = mtx._13 * -1.0f;
 
-    float scaledW = mVideo::m_video->mRenderModeObj.fbWidth / width;
-    float scaledH = mVideo::m_video->mRenderModeObj.efbHeight / height;
+    float sx = mVideo::m_video->getScaledWidth(width);
+    float sy = mVideo::m_video->getScaledHeight(height);
 
-    float scX = paneScale.x * scaledW;
-    float scY = paneScale.y * scaledH;
+    float scX = paneScale.x * sx;
+    float scY = paneScale.y * sy;
 
-    scX = mtx._11 * scX;
-    scY = mtx._11 * scY;
+    float scX2 = mtx._11 * scX;
+    float scY2 = mtx._11 * scY;
 
-    tmpx *= scaledW;
-    tmpy *= scaledH;
+    tmpx *= sx;
+    tmpy *= sy;
 
     u32 x, y, w, h;
     GXGetScissor(&x, &y, &w, &h);
-    pos.x = x + w * 0.5f + (tmpx - scX * 0.5f);
-    pos.y = y + h * 0.5f + (tmpy - scY * 0.5f);
-    clipSize.x = scX + 0.5f;
-    clipSize.y = scY + 0.5f;
+    pos.x = x + w * 0.5f + (tmpx - scX2 * 0.5f);
+    pos.y = y + h * 0.5f + (tmpy - scY2 * 0.5f);
+    clipSize.x = scX2 + 0.5f;
+    clipSize.y = scY2 + 0.5f;
     clipData.setSize(clipSize);
     clipData.setPos(pos);
     clipData.mEnabled = true;
