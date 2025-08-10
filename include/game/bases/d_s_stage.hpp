@@ -21,7 +21,15 @@ public:
         LOOP_COUNT,
     };
 
+    u8 getCurrWorld() const { return mCurrWorld; }
+    u8 getCurrArea() const { return mCurrArea; }
+    u8 getCurrCourse() const { return mCurrCourse; }
+    u8 getCurrFile() const { return mCurrFile; }
+
+
     static void play();
+
+    static float getLoopPosX(float x);
 
     typedef void (*changePosFunc)(mVec3_c *);
     static void setChangePosFunc(int);
@@ -30,17 +38,15 @@ public:
 
     static void createReplayDataHeap(EGG::Heap *heap, ulong size, int options);
 
+    static dScStage_c *getInstance() { return m_instance; }
+
+
     char pad[0x1198];
     u8 mCurrWorld;
     u8 mCurrCourse;
     u8 mCurrFile;
     u8 mCurrArea;
 
-    u8 getCurrWorld() const { return mCurrWorld; }
-    u8 getCurrArea() const { return mCurrArea; }
-
-    static dScStage_c *getInstance() { return m_instance; }
-    static float getLoopPosX(float x);
     static u32 m_exeFrame;
     static int m_loopType;
     static PLAYER_TYPE_e mCollectionCoin[STAR_COIN_COUNT];
@@ -51,6 +57,8 @@ public:
     static bool m_KoopaJrEscape;
     static dInfo_c::GameMode_e m_gameMode;
     static Exit_e m_exitMode;
+    static u32 m_miniGame;
+    static bool m_isStaffCredit;
 
     static changePosFunc changePos;
     static dScStage_c *m_instance;

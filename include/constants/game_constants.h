@@ -21,6 +21,8 @@
 
 #define MAX_MAP_ACTOR_COUNT 1000 ///< The maximum number of map actors that can exist simultaneously.
 
+#define MAX_SCORE 99999950 ///< The maximum score that can be achieved.
+
 #define MAX_STOCK_ITEM 99 ///< The maximum inventory amount per item.
 
 #define MAX_EXTRA_MODE_SCORE 1000000 ///< The maximum possible score in Free Mode and Coin Battle.
