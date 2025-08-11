@@ -11,14 +11,14 @@
 #include <game/bases/d_multi_manager.hpp>
 #include <game/mLib/m_fader.hpp>
 
-BASE_PROFILE(GAMEDISPLAY, dGameDisplay_c)
+ACTOR_PROFILE(GAMEDISPLAY, dGameDisplay_c, 0);
 
 STATE_DEFINE(dGameDisplay_c, ProcMainGame);
 STATE_DEFINE(dGameDisplay_c, ProcMainPause);
 STATE_DEFINE(dGameDisplay_c, ProcGoalSettleUp);
 STATE_DEFINE(dGameDisplay_c, ProcGoalEnd);
 
-dGameDisplay_c* dGameDisplay_c::m_instance;
+dGameDisplay_c *dGameDisplay_c::m_instance;
 const int dGameDisplay_c::c_COINNUM_DIGIT = 2;
 const int dGameDisplay_c::c_PLAYNUM_DIGIT = 2;
 const int dGameDisplay_c::c_TIME_DIGIT = 3;
@@ -42,25 +42,19 @@ int dGameDisplay_c::create() {
         return 1;
     }
 
-    if (! createLayout()) {
+    if (!createLayout()) {
         return 0;
     }
 
     mLayout.mDrawOrder = 0x11;
 
-    mPlayNum[0] = -1;
-    m_424[0] = 0;
-    m_454 = 0;
-    mPlayNum[1] = -1;
-    m_424[1] = 0;
-    m_455 = 0;
-    mPlayNum[2] = -1;
-    m_424[2] = 0;
-    m_456 = 0;
-    mPlayNum[3] = -1;
-    m_424[3] = 0;
+    for (int i = 0; i < PLAYER_COUNT; i++) {
+        mPlayNum[i] = -1;
+        m_424[i] = 0;
+        m_454[i] = 0;
+    }
 
-    m_457 = 0;
+    m_454[3] = 0;
     mScore = 1;
     m_3E4 = 1;
     mCoins = 1;
@@ -98,41 +92,41 @@ int dGameDisplay_c::create() {
     }
 
     if (dScStage_c::m_gameMode == 1) {
-        N_otasukeInfo_00->SetVisible(true);
+        mpNullPanes[N_otasukeInfo_00]->SetVisible(true);
     } else {
-        N_otasukeInfo_00->SetVisible(false);
+        mpNullPanes[N_otasukeInfo_00]->SetVisible(false);
     }
 
     if (PauseManager_c::m_OtasukeAfter) {
         m_448 = 1;
-        N_otasukeChu_00->SetVisible(true);
-        N_left_00->SetVisible(false);
+        mpNullPanes[N_otasukeChu_00]->SetVisible(true);
+        mpNullPanes[N_left_00]->SetVisible(false);
         mLayout.ReverseAnimeStartSetup(0, false);
     } else {
         m_448 = 0;
-        N_otasukeChu_00->SetVisible(false);
-        N_left_00->SetVisible(true);
+        mpNullPanes[N_otasukeChu_00]->SetVisible(false);
+        mpNullPanes[N_left_00]->SetVisible(true);
     }
 
     if (dInfo_c::m_startGameInfo.mLevel1 == STAGE_CANNON) {
-        N_collection_00->SetVisible(false);
-        N_score_00->SetVisible(false);
-        N_time_00->SetVisible(false);
+        mpNullPanes[N_collection_00]->SetVisible(false);
+        mpNullPanes[N_score_00]->SetVisible(false);
+        mpNullPanes[N_time_00]->SetVisible(false);
     } else {
-        N_collection_00->SetVisible(true);
-        N_score_00->SetVisible(true);
-        N_time_00->SetVisible(true);
+        mpNullPanes[N_collection_00]->SetVisible(true);
+        mpNullPanes[N_score_00]->SetVisible(true);
+        mpNullPanes[N_time_00]->SetVisible(true);
     }
 
     if (dInfo_c::mGameFlag & 0x40) {
-        N_score_00->SetVisible(false);
+        mpNullPanes[N_score_00]->SetVisible(false);
     }
 
 
     dMj2dGame_c *save = dSaveMng_c::m_instance->getSaveGame(-1);
     u32 w = dInfo_c::m_startGameInfo.mWorld1;
     u32 l = dInfo_c::m_startGameInfo.mLevel1;
-    if (w > 9) {
+    if (w > WORLD_USED_COUNT) {
         w = 0;
     }
     if (l > STAGE_STAFFROLL) {
@@ -140,34 +134,31 @@ int dGameDisplay_c::create() {
     }
 
     if (!(dInfo_c::mGameFlag & 0x10) && !(dInfo_c::mGameFlag & 0x80000000) && !dScWMap_c::IsCourseType(w, l, dScWMap_c::COURSE_TYPE_NO_STAR_COINS)) {
-        N_collection_00->SetVisible(false);
+        mpNullPanes[N_collection_00]->SetVisible(false);
     }
 
     for (u32 i = 0; i < 3; i++) {
         m_3EC[i] = 3;
         if ((dScStage_c::mCollectionCoin[i] != 4) || save->isCollectCoin(w, l, i)) {
-            (&P_collectOff_00)[2 * i]->SetVisible(false);
-            (&P_collection_00)[2 * i]->SetVisible(true);
+            mpPicturePanes[P_collectOff_00 + 2 * i]->SetVisible(false);
+            mpPicturePanes[P_collection_00 + 2 * i]->SetVisible(true);
             m_3EC[i] = 2;
         }
     }
 
     mVec2_c disp_scale;
     dGameCom::DispSizeScale(disp_scale);
-    N_proportionL_00->SetScale(disp_scale);
-    N_proportionR_00->SetScale(disp_scale);
+    mpNullPanes[N_proportionL_00]->SetScale(disp_scale);
+    mpNullPanes[N_proportionR_00]->SetScale(disp_scale);
 
-    nw4r::lyt::Pane * a = N_proportionL_00;
-    nw4r::lyt::Pane * b = N_proportionR_00;
-
-    m_544 = a->GetTranslate();
-    m_550 = b->GetTranslate();
-    m_55C = N_otasukeChu_00->GetTranslate();
-    m_568 = N_areaZanki_00->GetTranslate();
-    m_574 = N_otasukeInfo_00->GetTranslate();
-    m_580 = N_areaCoin_00->GetTranslate();
-    m_58C = N_areaScore_00->GetTranslate();
-    m_598 = N_time_00->GetTranslate();
+    m_544 = mpNullPanes[N_proportionL_00]->GetTranslate();
+    m_550 = mpNullPanes[N_proportionR_00]->GetTranslate();
+    m_55C = mpNullPanes[N_otasukeChu_00]->GetTranslate();
+    m_568 = mpNullPanes[N_areaZanki_00]->GetTranslate();
+    m_574 = mpNullPanes[N_otasukeInfo_00]->GetTranslate();
+    m_580 = mpNullPanes[N_areaCoin_00]->GetTranslate();
+    m_58C = mpNullPanes[N_areaScore_00]->GetTranslate();
+    m_598 = mpNullPanes[N_time_00]->GetTranslate();
 
     OtehonPosChange();
 
@@ -175,18 +166,16 @@ int dGameDisplay_c::create() {
     m_44A = 0;
     mHasLoadedLayout = true;
     m_44C = 0;
-    mAreaZankiAlpha = 0xFF;
-    m_44D = 0;
-    mAreaCoinAlpha = 0xFF;
-    m_44E = 0;
-    mAreaScoreAlpha = 0xFF;
-    m_44F = 0;
+    for (int i = 0; i < 3; i++) {
+        mAreaAlpha[i] = 0xFF;
+        m_44D[i] = 0;
+    }
     m_450 = 0;
     m_451 = 0;
 
     mLayout.calc();
 
-    return 1;
+    return SUCCEEDED;
 }
 
 int dGameDisplay_c::execute() {
@@ -203,27 +192,18 @@ int dGameDisplay_c::execute() {
         AreaCheck();
         AlphaEnterAndExit();
 
-        // This doesn't match... the assembly seems to imply that this is some
-        // kind of int[2][2], but that also doesn't match...
-        if (m_424[0]) {
-            m_424[0]--;
-        }
-        if (m_424[1]) {
-            m_424[1]--;
-        }
-        if (m_424[2]) {
-            m_424[2]--;
-        }
-        if (m_424[3]) {
-            m_424[3]--;
+        for (int i = 0; i < PLAYER_COUNT; i++) {
+            if (m_424[i]) {
+                m_424[i]--;
+            }
         }
     }
 
-    return 1;
+    return SUCCEEDED;
 }
 
 int dGameDisplay_c::draw() {
-    if (! m_452) {
+    if (!m_452) {
         return 1;
     }
 
@@ -231,7 +211,7 @@ int dGameDisplay_c::draw() {
         mLayout.entry();
     }
 
-    return 1;
+    return SUCCEEDED;
 }
 
 int dGameDisplay_c::doDelete() {
@@ -245,74 +225,80 @@ void dGameDisplay_c::OtehonPosChange() {
     }
 
     float a = 0.0f;
-    float b = 16.0f;
-    float c = 23.0f;
+    float offs1 = 16.0f;
+    float offs2 = 23.0f;
 
-    float d = a - c; // -23.0f
-    float e = a - b; // -16.0f
+    float x = a + offs1; // 16.0f
+    float e = a - offs1; // -16.0f
+
+    float d = a - offs2; // -23.0f
+    float f = a + offs2; // 23.0f
 
     mVec3_c v;
 
-    v.set(m_544.x + b, m_544.y + a, m_544.z + a);
-    N_proportionL_00->SetTranslate(v);
+    v.setToShifted(m_544, x, 0.0f, 0.0f);
+    mpNullPanes[N_proportionL_00]->SetTranslate(v);
 
-    v.set(m_550.x + e, m_550.y + a, m_550.z + a);
-    N_proportionR_00->SetTranslate(v);
+    v.setToShifted(m_550, e, 0.0f, 0.0f);
+    mpNullPanes[N_proportionR_00]->SetTranslate(v);
 
-    v.set(m_55C.x + a, m_55C.y + d, m_55C.z + a);
-    N_otasukeChu_00->SetTranslate(v);
+    v.setToShifted(m_55C, 0.0f, d, 0.0f);
+    mpNullPanes[N_otasukeChu_00]->SetTranslate(v);
 
-    v.set(m_568.x + a, m_568.y + d, m_568.z + a);
-    N_areaZanki_00->SetTranslate(v);
+    v.setToShifted(m_568, 0.0f, d, 0.0f);
+    mpNullPanes[N_areaZanki_00]->SetTranslate(v);
 
-    v.set(m_574.x + a, m_574.y + c, m_574.z + a);
-    N_otasukeInfo_00->SetTranslate(v);
+    v.setToShifted(m_574, 0.0f, f, 0.0f);
+    mpNullPanes[N_otasukeInfo_00]->SetTranslate(v);
 
-    v.set(m_580.x + a, m_580.y + d, m_580.z + a);
-    N_areaCoin_00->SetTranslate(v);
+    v.setToShifted(m_580, 0.0f, d, 0.0f);
+    mpNullPanes[N_areaCoin_00]->SetTranslate(v);
 
-    v.set(m_58C.x + a, m_58C.y + d, m_58C.z + a);
-    N_areaScore_00->SetTranslate(v);
+    v.setToShifted(m_58C, 0.0f, d, 0.0f);
+    mpNullPanes[N_areaScore_00]->SetTranslate(v);
 
-    v.set(m_598.x + a, m_598.y + d, m_598.z + a);
-    N_time_00->SetTranslate(v);
+    v.setToShifted(m_598, 0.0f, d, 0.0f);
+    mpNullPanes[N_time_00]->SetTranslate(v);
 
     mLayout.calc();
 }
 
 // ???
 void dGameDisplay_c::AreaSetup(int a, int b) {
-    nw4r::math::MTX34 mtx = (&N_otasukeInfo_00)[b]->GetGlobalMtx();
-    m_458[a].left = mtx._03;
-    m_458[a].top = mtx._13;
-    m_458[a].right = mtx._13;
+    nw4r::math::MTX34 mtx = mpNullPanes[b]->GetGlobalMtx();
+    m_458[a].right = mtx._03;
     m_458[a].bottom = mtx._03;
-    // ...
-    float w = (&N_otasukeInfo_00)[b]->GetSize().width;
-    float h = (&N_otasukeInfo_00)[b]->GetSize().height;
-    switch ((&N_otasukeInfo_00)[b]->GetBasePositionH()) {
+    m_458[a].left = mtx._13;
+    m_458[a].top = mtx._13;
+    nw4r::lyt::Size size = mpNullPanes[b]->GetSize();
+
+    float w = size.width;
+    switch (mpNullPanes[b]->GetBasePositionH()) {
         case 0:
-            m_458[a].right += w;
+            m_458[a].bottom += w;
             break;
         case 1:
-            m_458[a].right -= w * 0.5f;
-            m_458[a].bottom += w * 0.5f;
+            w /= 2;
+            m_458[a].right -= w;
+            m_458[a].bottom += w;
             break;
         case 2:
             m_458[a].right -= w;
             break;
     }
 
-    switch ((&N_otasukeInfo_00)[b]->GetBasePositionV()) {
+    float h = size.height;
+    switch (mpNullPanes[b]->GetBasePositionV()) {
         case 0:
             m_458[a].top -= h;
             break;
         case 1:
-            m_458[a].left += h * 0.5f;
-            m_458[a].top -= h * 0.5f;
+            h /= 2;
+            m_458[a].left += h;
+            m_458[a].top -= h;
             break;
         case 2:
-            m_458[a].top += h;
+            m_458[a].left += h;
             break;
     }
 }
@@ -325,9 +311,13 @@ void dGameDisplay_c::fn_801585c0() {
     }
 
     if (m_414 != 6) {
-        nw4r::lyt::Pane * pane = (&P_collectOff_00)[m_414];
+        nw4r::lyt::Pane *pane = mpPicturePanes[P_collectOff_00 + m_414];
         nw4r::math::MTX34 mtx = pane->GetGlobalMtx();
-        m_458[0].right = mtx._03 + pane->GetSize().width * 0.5f + 60.0f;
+        nw4r::lyt::Size size = pane->GetSize();
+
+        float f = mtx._03 + size.width * 0.5f;
+        f += 60.0f;
+        m_458[0].bottom = f;
     }
 }
 
@@ -343,57 +333,76 @@ void dGameDisplay_c::RestDispSetup() {
     };
 
     static const u32 lbl_802F5C38[PLAYER_COUNT] = {
-        6, 7, 9, 8
+        P_marioIcon_00, P_luijiIcon_00, P_kinoB_00, P_kinoY_00,
     };
 
-    iconPos[PLAYER_MARIO] = P_marioIcon_00->GetTranslate();
-    P_marioIcon_00->SetVisible(false);
-    iconPos[PLAYER_LUIGI] = P_luijiIcon_00->GetTranslate();
-    P_luijiIcon_00->SetVisible(false);
-    iconPos[PLAYER_YELLOW_TOAD] = P_kinoB_00->GetTranslate();
-    P_kinoB_00->SetVisible(false);
-    iconPos[PLAYER_BLUE_TOAD] = P_kinoY_00->GetTranslate();
-    P_kinoY_00->SetVisible(false);
+    iconPos[PLAYER_MARIO] = mpPicturePanes[P_marioIcon_00]->GetTranslate();
+    mpPicturePanes[P_marioIcon_00]->SetVisible(false);
+    iconPos[PLAYER_LUIGI] = mpPicturePanes[P_luijiIcon_00]->GetTranslate();
+    mpPicturePanes[P_luijiIcon_00]->SetVisible(false);
+    iconPos[PLAYER_YELLOW_TOAD] = mpPicturePanes[P_kinoB_00]->GetTranslate();
+    mpPicturePanes[P_kinoB_00]->SetVisible(false);
+    iconPos[PLAYER_BLUE_TOAD] = mpPicturePanes[P_kinoY_00]->GetTranslate();
+    mpPicturePanes[P_kinoY_00]->SetVisible(false);
 
     int iconPosIdx = 0;
-
     for (int i = 0; i < PLAYER_COUNT; i++) {
         int idx = daPyMng_c::getPlayerIndex(lbl_802F5C28[i]);
-        if (! daPyMng_c::mPlayerEntry[idx]) {
+        if (!daPyMng_c::mPlayerEntry[idx]) {
             continue;
         }
 
-        (&P_collectOff_00)[lbl_802F5C38[i]]->SetVisible(true);
-        (&P_collectOff_00)[lbl_802F5C38[i]]->SetTranslate(iconPos[iconPosIdx]);
+        mpPicturePanes[lbl_802F5C38[i]]->SetVisible(true);
+        mpPicturePanes[lbl_802F5C38[i]]->SetTranslate(iconPos[iconPosIdx]);
         iconPosIdx++;
-        m_414 = i + 6;
+        m_414 = P_marioIcon_00 + i;
     }
 }
 
-// Almost matches - up to static local offsets
+// // Almost matches - up to static local offsets
 bool dGameDisplay_c::createLayout() {
-    static const char * AnmNameTbl[] = { "gameScene_37_inMarioCoin.brlan" };
-    static const char * GROUP_NAME_DT[] = { "C00_inMarioCoin" };
-    static const int MESSAGE_DATA_TBL[] = { 0x14, 0x14, 0x13, 0x13 };
+    static const char *AnmNameTbl[] = {
+        "gameScene_37_inMarioCoin.brlan"
+    };
+
+    static const char *GROUP_NAME_DT[] = {
+        "C00_inMarioCoin"
+    };
     static const int ANIME_INDEX_TBL[] = {
         0
-    }; // ???
-    static const char * NPANE_NAME_DT[] = {
+    };
+
+    static const int MESSAGE_DATA_TBL[] = {
+        0x14, 0x14, 0x13, 0x13
+    };
+
+    static const char *NPANE_NAME_DT[] = {
         "N_otasukeInfo_00", "N_otasukeChu_00", "N_left_00", "N_coin_00",
         "N_collection_00", "N_score_00", "N_areaZanki_00", "N_areaCoin_00",
         "N_areaScore_00", "N_marioIcon_00", "N_luigiIcon_00", "N_kinoB_00",
         "N_kinoY_00", "N_coin_01", "N_time_00", "N_proportionL_00",
         "N_proportionR_00", "N_coin1st_00", "N_coin2nd_00", "N_coin3rd_00",
     };
-    static const char * PPANE_NAME_DT[] = {
+
+    static const char *PPANE_NAME_DT[] = {
         "P_collectOff_00", "P_collection_00",
         "P_collectOff_01", "P_collection_01",
         "P_collectOff_02", "P_collection_02",
         "P_marioIcon_00", "P_luijiIcon_00",
         "P_kinoB_00", "P_kinoY_00",
     };
-    static const char * T_PANE_NAME_DT[] = { "T_left_00", "T_left_01", "T_left_02", "T_left_03", "T_coin_00", "T_time_00", "T_score_00" };
-    static const char * T_PANE_NAME_TBL[] = { "T_otaChuS_00", "T_otaChu_01", "T_InfoS_00", "T_Info_00" };
+
+    static const char *T_PANE_NAME_DT[] = {
+        "T_left_00", "T_x_01",
+        "T_left_01", "T_x_02",
+        "T_left_02", "T_x_03",
+        "T_left_03", "T_x_04",
+        "T_coin_00",
+        "T_time_00",
+        "T_score_00"
+    };
+
+    static const char *T_PANE_NAME_TBL[] = { "T_otaChuS_00", "T_otaChu_01", "T_InfoS_00", "T_Info_00" };
 
     bool ok = mLayout.ReadResource("gameScene/gameScene.arc", false);
     if (! ok) {
@@ -405,21 +414,21 @@ bool dGameDisplay_c::createLayout() {
     mLayout.GroupRegister(GROUP_NAME_DT, ANIME_INDEX_TBL, 1);
 
     mpRootPane = mLayout.getRootPane();
-    mLayout.NPaneRegister(NPANE_NAME_DT, &N_otasukeInfo_00, 20);
-    mLayout.PPaneRegister(PPANE_NAME_DT, &P_collectOff_00, 10);
+    mLayout.NPaneRegister(NPANE_NAME_DT, mpNullPanes, N_COUNT);
+    mLayout.PPaneRegister(PPANE_NAME_DT, mpPicturePanes, P_COUNT);
 
-    P_collectOff_00->SetVisible(true);
-    P_collection_00->SetVisible(false);
-    P_collectOff_01->SetVisible(false); // [???]
-    P_collectOff_01->SetVisible(true);
-    P_collection_01->SetVisible(false);
-    P_collectOff_02->SetVisible(false); // [???]
-    P_collectOff_02->SetVisible(true);
-    P_collection_02->SetVisible(false);
+    mpPicturePanes[P_collectOff_00]->SetVisible(true);
+    mpPicturePanes[P_collection_00]->SetVisible(false);
+    mpPicturePanes[P_collectOff_01]->SetVisible(false); // [???]
+    mpPicturePanes[P_collectOff_01]->SetVisible(true);
+    mpPicturePanes[P_collection_01]->SetVisible(false);
+    mpPicturePanes[P_collectOff_02]->SetVisible(false); // [???]
+    mpPicturePanes[P_collectOff_02]->SetVisible(true);
+    mpPicturePanes[P_collection_02]->SetVisible(false);
 
-    P_marioIcon_00->SetVisible(false);
+    mpPicturePanes[P_marioIcon_00]->SetVisible(false);
 
-    mLayout.TPaneRegister(T_PANE_NAME_DT, mpTextBoxes, 11);
+    mLayout.TPaneRegister(T_PANE_NAME_DT, mpTextBoxes, T_COUNT);
     mLayout.TPaneNameRegister(T_PANE_NAME_TBL, MESSAGE_DATA_TBL, 1, 4);
 
     return true;
@@ -430,7 +439,7 @@ void dGameDisplay_c::RestCoinAnimeCheck() {
     if (m_44A) {
         m_449 = 0;
     }
-    if (! m_449) {
+    if (!m_449) {
         return;
     }
 
@@ -449,31 +458,31 @@ void dGameDisplay_c::AreaCheck() {
         return;
     }
 
-    for (int i = 0; i < 4; i++) {
-        if (! daPyMng_c::checkPlayer(i)) {
+    for (int i = 0; i < PLAYER_COUNT; i++) {
+        if (!daPyMng_c::checkPlayer(i)) {
             continue;
         }
 
-        dAcPy_c * player = daPyMng_c::getPlayer(i);
-        if (! player) {
+        dAcPy_c *player = daPyMng_c::getPlayer(i);
+        if (player == nullptr) {
             continue;
         }
 
         mVec3_c pos = player->getCenterPos();
         dGameCom::getGlbPosToLyt(pos);
 
-        if (!m_44D && m_458[0].right < pos.x && m_458[0].bottom > pos.x && m_458[0].left > pos.y && m_458[0].top < pos.y) {
-            m_44D = 1;
+        if (!m_44D[0] && m_458[0].right < pos.x && m_458[0].bottom > pos.x && m_458[0].left > pos.y && m_458[0].top < pos.y) {
+            m_44D[0] = 1;
             m_450 = 1;
         }
 
-        if (!m_44E && m_458[1].right < pos.x && m_458[1].bottom > pos.x && m_458[1].left > pos.y && m_458[1].top < pos.y) {
-            m_44E = 1;
+        if (!m_44D[1] && m_458[1].right < pos.x && m_458[1].bottom > pos.x && m_458[1].left > pos.y && m_458[1].top < pos.y) {
+            m_44D[1] = 1;
             m_450 = 1;
         }
 
-        if (!m_44F && m_458[2].right < pos.x && m_458[2].bottom > pos.x && m_458[2].left > pos.y && m_458[2].top < pos.y) {
-            m_44F = 1;
+        if (!m_44D[2] && m_458[2].right < pos.x && m_458[2].bottom > pos.x && m_458[2].left > pos.y && m_458[2].top < pos.y) {
+            m_44D[2] = 1;
             m_450 = 1;
         }
     }
@@ -486,31 +495,15 @@ void dGameDisplay_c::AlphaEnterAndExit() {
     }
 
     int x = 0;
-    int a = N_areaZanki_00->GetAlpha();
-    if (m_44D) {
-        if (a <= 70) {
+    for (int i = 0; i < 3; i++) {
+        int a = mpNullPanes[N_areaZanki_00 + i]->GetAlpha();
+        if (m_44D[i]) {
+            if (a <= 70) {
+                x++;
+            }
+        } else if (a >= 0xFF) {
             x++;
         }
-    } else if (a >= 0xFF) {
-        x++;
-    }
-
-    a = N_areaCoin_00->GetAlpha();
-    if (m_44E) {
-        if (a <= 70) {
-            x++;
-        }
-    } else if (a >= 0xFF) {
-        x++;
-    }
-
-    a = N_areaScore_00->GetAlpha();
-    if (m_44F) {
-        if (a <= 70) {
-            x++;
-        }
-    } else if (a >= 0xFF) {
-        x++;
     }
 
     if (x >= 3) {
@@ -523,51 +516,22 @@ void dGameDisplay_c::AlphaEnterAndExit() {
     int min_alpha = 70;
     int step = 12;
 
-    // Doesn't match - maybe uses an inline function?
-    int d = step;
-    if (m_44D) {
-        d = -d;
-    }
-    mAreaZankiAlpha += d;
-    if (mAreaZankiAlpha <= min_alpha) {
-        mAreaZankiAlpha = min_alpha;
-    }
-    if (mAreaZankiAlpha >= max_alpha) {
-        mAreaZankiAlpha = max_alpha;
-    }
+    for (int i = 0; i < 3; i++) {
+        int d = step;
+        if (m_44D[i]) {
+            d *= -1;
+        }
+        mAreaAlpha[i] += d;
+        if (mAreaAlpha[i] <= min_alpha) {
+            mAreaAlpha[i] = min_alpha;
+        }
+        if (mAreaAlpha[i] >= max_alpha) {
+            mAreaAlpha[i] = max_alpha;
+        }
 
-    N_areaZanki_00->SetAlpha(mAreaZankiAlpha);
-    m_44D = 0;
-
-    int e = step;
-    if (m_44E) {
-        e = -e;
+        mpNullPanes[N_areaZanki_00 + i]->SetAlpha(mAreaAlpha[i]);
+        m_44D[i] = 0;
     }
-    mAreaCoinAlpha += e;
-    if (mAreaCoinAlpha <= min_alpha) {
-        mAreaCoinAlpha = min_alpha;
-    }
-    if (mAreaCoinAlpha >= max_alpha) {
-        mAreaCoinAlpha = max_alpha;
-    }
-
-    N_areaCoin_00->SetAlpha(mAreaCoinAlpha);
-    m_44E = 0;
-
-    int f = step;
-    if (m_44F) {
-        f = -f;
-    }
-    mAreaScoreAlpha += f;
-    if (mAreaScoreAlpha <= min_alpha) {
-        mAreaScoreAlpha = min_alpha;
-    }
-    if (mAreaScoreAlpha >= max_alpha) {
-        mAreaScoreAlpha = max_alpha;
-    }
-
-    N_areaScore_00->SetAlpha(mAreaScoreAlpha);
-    m_44F = 0;
 }
 
 bool dGameDisplay_c::NormalSettle() {
@@ -601,7 +565,7 @@ bool dGameDisplay_c::NormalSettle() {
 }
 
 bool dGameDisplay_c::OtasukeSettle() {
-    dStageTimer_c * timer = dStageTimer_c::m_instance;
+    dStageTimer_c *timer = dStageTimer_c::m_instance;
     short t = ((int)(timer->mPreciseTime + 0xFFF) >> 12);
     int score = daPyMng_c::mScore;
 
@@ -616,7 +580,7 @@ bool dGameDisplay_c::OtasukeSettle() {
         }
     }
 
-    dGameCom::LayoutDispNumber(mCoins, c_COINNUM_DIGIT, mpCoinTextBox, false);
+    dGameCom::LayoutDispNumber(mCoins, c_COINNUM_DIGIT, mpTextBoxes[N_areaScore_00], false);
 
     if (t) {
         t -= m_40C;
@@ -637,8 +601,6 @@ bool dGameDisplay_c::OtasukeSettle() {
     SndAudioMgr::sInstance->holdSystemSe(SE_SYS_SCORE_COUNT, 1);
 
     return false;
-
-
 }
 
 // ----------------
@@ -752,7 +714,7 @@ void dGameDisplay_c::Effect1UP(int a) {
         if (dInfo_c::m_startGameInfo.mScreenType == 3 && m_424[a] == 0) {
             m_424[a] = 0xF;
 
-            nw4r::lyt::Pane * icon = (&N_otasukeInfo_00)[9 + a];
+            nw4r::lyt::Pane *icon = mpNullPanes[N_marioIcon_00 + a];
 
             nw4r::math::MTX34 mtx = icon->GetGlobalMtx();
 
@@ -772,12 +734,52 @@ void dGameDisplay_c::Effect1UP(int a) {
     }
 }
 
-void dGameDisplay_c::GrayColorSet(int) {
-    // ??? Ghidra hangs
+void dGameDisplay_c::GrayColorSet(int player) {
+    static const int lbl_802f5ca8[] = { P_marioIcon_00, P_luijiIcon_00, P_kinoB_00, P_kinoY_00 };
+    static const int lbl_802f5c88[] = {
+        T_left_00, T_x_01,
+        T_left_01, T_x_02,
+        T_left_02, T_x_03,
+        T_left_03, T_x_04
+    };
+
+
+    if (m_454[player] == 0) {
+        static nw4r::ut::Color grayColor(160, 160, 160, 255);
+        m_454[player] = true;
+        nw4r::lyt::Pane *icon1 = mpPicturePanes[lbl_802f5ca8[player]];
+        nw4r::lyt::Material *mat1 = icon1->GetMaterial();
+        mColorBackup[0][player] = mat1->GetTevColor(1);
+        mat1->SetTevColor(1, nw4r::g3d::detail::GetRGBAS10(grayColor));
+        nw4r::lyt::Pane *icon2 = mpTextBoxes[lbl_802f5c88[player * 2]];
+        nw4r::lyt::Material *mat2 = icon2->GetMaterial();
+        mColorBackup[1][player] = mat2->GetTevColor(1);
+        mat2->SetTevColor(1, nw4r::g3d::detail::GetRGBAS10(grayColor));
+        nw4r::lyt::Pane *icon3 = mpTextBoxes[lbl_802f5c88[player * 2 + 1]];
+        nw4r::lyt::Material *mat3 = icon3->GetMaterial();
+        mColorBackup[2][player] = mat3->GetTevColor(1);
+        mat3->SetTevColor(1, nw4r::g3d::detail::GetRGBAS10(grayColor));
+    }
 }
 
-void dGameDisplay_c::ReturnGrayColorSet(int) {
-    // ??? Ghidra hangs
+void dGameDisplay_c::ReturnGrayColorSet(int player) {
+    static const int lbl_802f5ca8[] = { P_marioIcon_00, P_luijiIcon_00, P_kinoB_00, P_kinoY_00 };
+    static const int lbl_802f5c88[] = {
+        T_left_00, T_x_01,
+        T_left_01, T_x_02,
+        T_left_02, T_x_03,
+        T_left_03, T_x_04
+    };
+
+    if (m_454[player] != 0) {
+        m_454[player] = 0;
+        nw4r::lyt::Pane *icon1 = mpPicturePanes[lbl_802f5ca8[player]];
+        icon1->GetMaterial()->SetTevColor(1, mColorBackup[0][player]);
+        nw4r::lyt::Pane *icon2 = mpTextBoxes[lbl_802f5c88[player * 2]];
+        icon2->GetMaterial()->SetTevColor(1, mColorBackup[1][player]);
+        nw4r::lyt::Pane *icon3 = mpTextBoxes[lbl_802f5c88[player * 2 + 1]];
+        icon3->GetMaterial()->SetTevColor(1, mColorBackup[2][player]);
+    }
 }
 
 void dGameDisplay_c::EffectCollectionCoinClear() {
@@ -785,9 +787,9 @@ void dGameDisplay_c::EffectCollectionCoinClear() {
     static const int lbl_802f5cc4[] = { 1, 3, 5 };
 
     for (int i = 0; i < 3; i++) {
-        (&P_collectOff_00)[lbl_802f5cb8[i]]->SetVisible(true);
-        if ((&P_collectOff_00)[lbl_802f5cc4[i]]->IsVisible()) {
-            nw4r::lyt::Pane * icon = (&N_coin1st_00)[i];
+        mpPicturePanes[lbl_802f5cb8[i]]->SetVisible(true);
+        if (mpPicturePanes[lbl_802f5cc4[i]]->IsVisible()) {
+            nw4r::lyt::Pane *icon = mpNullPanes[N_coin1st_00 + i];
 
             nw4r::math::MTX34 mtx = icon->GetGlobalMtx();
 
@@ -798,12 +800,12 @@ void dGameDisplay_c::EffectCollectionCoinClear() {
             dGameCom::fn_800B37E0(tmp, false);
             mEf::createEffect("Wm_2d_starcoinvanish", 0, &tmp, nullptr, nullptr);
         }
-        (&P_collectOff_00)[lbl_802f5cc4[i]]->SetVisible(false);
+        mpPicturePanes[lbl_802f5cc4[i]]->SetVisible(false);
     }
 }
 
 void dGameDisplay_c::EffectCollectionCoinGet(int i) {
-    nw4r::lyt::Pane * icon = (&N_coin1st_00)[17 + i];
+    nw4r::lyt::Pane *icon = mpNullPanes[N_coin1st_00 + i];
 
     nw4r::math::MTX34 mtx = icon->GetGlobalMtx();
 
@@ -815,7 +817,7 @@ void dGameDisplay_c::EffectCollectionCoinGet(int i) {
     mEf::createEffect("Wm_2d_starcoinget", 0, &tmp, nullptr, nullptr);
 }
 
-void dGameDisplay_c::setPlayNum(int* life_nums) {
+void dGameDisplay_c::setPlayNum(int *life_nums) {
     static const int PANE_INDEX_TBL[PLAYER_COUNT] = { 0, 2, 4, 6 };
 
     for (int i = 0; i < PLAYER_COUNT; i++) {
@@ -842,13 +844,12 @@ void dGameDisplay_c::setCoinNum(int num_coins) {
         mCoins = num_coins;
         dGameCom::LayoutDispNumber(mCoins, c_COINNUM_DIGIT, mpTextBoxes[8], false);
 
-        // The fader status check doesn't match...
         if (!num_coins && !m_444 && (mFader_c::mFader->isHidden())) {
             if (dInfo_c::m_startGameInfo.mScreenType == 2 || dInfo_c::m_startGameInfo.mScreenType == 3) {
                 return;
             }
 
-            nw4r::lyt::Pane * pane = N_coin_01;
+            nw4r::lyt::Pane *pane = mpNullPanes[N_coin_01];
 
             nw4r::math::MTX34 mtx = pane->GetGlobalMtx();
 
@@ -881,7 +882,7 @@ void dGameDisplay_c::setCollect() {
 
     u8 w = dScStage_c::m_instance->mCurrWorld;
     u8 l = dScStage_c::m_instance->mCurrCourse;
-    if ((w >= 10) || (l >= STAGE_COUNT)) {
+    if ((w >= WORLD_COUNT) || (l >= STAGE_COUNT)) {
         return;
     }
 
@@ -891,21 +892,21 @@ void dGameDisplay_c::setCollect() {
 
     for (u32 coin_id = 0; coin_id < 3; coin_id++) {
         if (save->isCollectCoin(w, l, coin_id) && (dInfo_c::m_startGameInfo.mScreenType == 0)) {
-            (&P_collectOff_00)[coin_id]->SetVisible(false);
-            (&P_collection_00)[coin_id]->SetVisible(true);
+            mpPicturePanes[P_collectOff_00 + 2 * coin_id]->SetVisible(false);
+            mpPicturePanes[P_collection_00 + 2 * coin_id]->SetVisible(true);
             if (m_3EC[coin_id] != 2) {
                 m_3EC[coin_id] = 2;
             }
         } else if (dScStage_c::mCollectionCoin[coin_id] != 4) {
-            (&P_collectOff_00)[coin_id]->SetVisible(false);
-            (&P_collection_00)[coin_id]->SetVisible(true);
+            mpPicturePanes[P_collectOff_00 + 2 * coin_id]->SetVisible(false);
+            mpPicturePanes[P_collection_00 + 2 * coin_id]->SetVisible(true);
             if (m_3EC[coin_id] != 2) {
                 m_3EC[coin_id] = 2;
                 EffectCollectionCoinGet(coin_id);
             }
         } else {
-            (&P_collectOff_00)[coin_id]->SetVisible(true);
-            (&P_collection_00)[coin_id]->SetVisible(false);
+            mpPicturePanes[P_collectOff_00 + 2 * coin_id]->SetVisible(true);
+            mpPicturePanes[P_collection_00 + 2 * coin_id]->SetVisible(false);
             if (m_3EC[coin_id] != 0) {
                 m_3EC[coin_id] = 0;
             }
