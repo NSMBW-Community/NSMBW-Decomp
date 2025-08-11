@@ -263,17 +263,16 @@ void dGameDisplay_c::OtehonPosChange() {
     mLayout.calc();
 }
 
-// ???
-void dGameDisplay_c::AreaSetup(int a, int b) {
-    nw4r::math::MTX34 mtx = mpNullPanes[b]->GetGlobalMtx();
+void dGameDisplay_c::AreaSetup(int a, int areaPane) {
+    nw4r::math::MTX34 mtx = mpNullPanes[areaPane]->GetGlobalMtx();
     m_458[a].right = mtx._03;
     m_458[a].bottom = mtx._03;
     m_458[a].left = mtx._13;
     m_458[a].top = mtx._13;
-    nw4r::lyt::Size size = mpNullPanes[b]->GetSize();
+    nw4r::lyt::Size size = mpNullPanes[areaPane]->GetSize();
 
     float w = size.width;
-    switch (mpNullPanes[b]->GetBasePositionH()) {
+    switch (mpNullPanes[areaPane]->GetBasePositionH()) {
         case 0:
             m_458[a].bottom += w;
             break;
@@ -288,7 +287,7 @@ void dGameDisplay_c::AreaSetup(int a, int b) {
     }
 
     float h = size.height;
-    switch (mpNullPanes[b]->GetBasePositionV()) {
+    switch (mpNullPanes[areaPane]->GetBasePositionV()) {
         case 0:
             m_458[a].top -= h;
             break;
@@ -307,11 +306,11 @@ void dGameDisplay_c::AreaSetup(int a, int b) {
 
 void dGameDisplay_c::fn_801585c0() {
     for (int i = 0; i < 3; i++) {
-        AreaSetup(i, i + 6);
+        AreaSetup(i, N_areaZanki_00 + i);
     }
 
-    if (m_414 != 6) {
-        nw4r::lyt::Pane *pane = mpPicturePanes[P_collectOff_00 + m_414];
+    if (m_414 != P_marioIcon_00) {
+        nw4r::lyt::Pane *pane = mpPicturePanes[m_414];
         nw4r::math::MTX34 mtx = pane->GetGlobalMtx();
         nw4r::lyt::Size size = pane->GetSize();
 
@@ -333,7 +332,7 @@ void dGameDisplay_c::RestDispSetup() {
     };
 
     static const u32 lbl_802F5C38[PLAYER_COUNT] = {
-        P_marioIcon_00, P_luijiIcon_00, P_kinoB_00, P_kinoY_00,
+        P_marioIcon_00, P_luijiIcon_00, P_kinoY_00, P_kinoB_00,
     };
 
     iconPos[PLAYER_MARIO] = mpPicturePanes[P_marioIcon_00]->GetTranslate();
@@ -359,7 +358,6 @@ void dGameDisplay_c::RestDispSetup() {
     }
 }
 
-// // Almost matches - up to static local offsets
 bool dGameDisplay_c::createLayout() {
     static const char *AnmNameTbl[] = {
         "gameScene_37_inMarioCoin.brlan"
@@ -377,11 +375,17 @@ bool dGameDisplay_c::createLayout() {
     };
 
     static const char *NPANE_NAME_DT[] = {
-        "N_otasukeInfo_00", "N_otasukeChu_00", "N_left_00", "N_coin_00",
-        "N_collection_00", "N_score_00", "N_areaZanki_00", "N_areaCoin_00",
-        "N_areaScore_00", "N_marioIcon_00", "N_luigiIcon_00", "N_kinoB_00",
-        "N_kinoY_00", "N_coin_01", "N_time_00", "N_proportionL_00",
-        "N_proportionR_00", "N_coin1st_00", "N_coin2nd_00", "N_coin3rd_00",
+        "N_otasukeInfo_00", "N_otasukeChu_00",
+        "N_left_00",
+        "N_coin_00",
+        "N_collection_00",
+        "N_score_00",
+        "N_areaZanki_00", "N_areaCoin_00", "N_areaScore_00",
+        "N_marioIcon_00", "N_luigiIcon_00", "N_kinoB_00", "N_kinoY_00",
+        "N_coin_01",
+        "N_time_00",
+        "N_proportionL_00", "N_proportionR_00",
+        "N_coin1st_00", "N_coin2nd_00", "N_coin3rd_00"
     };
 
     static const char *PPANE_NAME_DT[] = {
@@ -389,7 +393,7 @@ bool dGameDisplay_c::createLayout() {
         "P_collectOff_01", "P_collection_01",
         "P_collectOff_02", "P_collection_02",
         "P_marioIcon_00", "P_luijiIcon_00",
-        "P_kinoB_00", "P_kinoY_00",
+        "P_kinoB_00", "P_kinoY_00"
     };
 
     static const char *T_PANE_NAME_DT[] = {
@@ -402,10 +406,12 @@ bool dGameDisplay_c::createLayout() {
         "T_score_00"
     };
 
-    static const char *T_PANE_NAME_TBL[] = { "T_otaChuS_00", "T_otaChu_01", "T_InfoS_00", "T_Info_00" };
+    static const char *T_PANE_NAME_TBL[] = {
+        "T_otaChuS_00", "T_otaChu_01",
+        "T_InfoS_00", "T_Info_00"
+    };
 
-    bool ok = mLayout.ReadResource("gameScene/gameScene.arc", false);
-    if (! ok) {
+    if (!mLayout.ReadResource("gameScene/gameScene.arc", false)) {
         return false;
     }
 
@@ -471,19 +477,11 @@ void dGameDisplay_c::AreaCheck() {
         mVec3_c pos = player->getCenterPos();
         dGameCom::getGlbPosToLyt(pos);
 
-        if (!m_44D[0] && m_458[0].right < pos.x && m_458[0].bottom > pos.x && m_458[0].left > pos.y && m_458[0].top < pos.y) {
-            m_44D[0] = 1;
-            m_450 = 1;
-        }
-
-        if (!m_44D[1] && m_458[1].right < pos.x && m_458[1].bottom > pos.x && m_458[1].left > pos.y && m_458[1].top < pos.y) {
-            m_44D[1] = 1;
-            m_450 = 1;
-        }
-
-        if (!m_44D[2] && m_458[2].right < pos.x && m_458[2].bottom > pos.x && m_458[2].left > pos.y && m_458[2].top < pos.y) {
-            m_44D[2] = 1;
-            m_450 = 1;
+        for (int i = 0; i < 3; i++) {
+            if (!m_44D[i] && m_458[i].right < pos.x && m_458[i].bottom > pos.x && m_458[i].left > pos.y && m_458[i].top < pos.y) {
+                m_44D[i] = 1;
+                m_450 = 1;
+            }
         }
     }
 }
@@ -551,7 +549,7 @@ bool dGameDisplay_c::NormalSettle() {
 
         dStageTimer_c::m_instance->setTimer((short) t);
 
-        if (! (dInfo_c::mGameFlag & 0x40)) {
+        if (!(dInfo_c::mGameFlag & 0x40)) {
             SndAudioMgr::sInstance->holdSystemSe(SE_SYS_SCORE_COUNT, 1);
         }
 
@@ -705,43 +703,44 @@ void dGameDisplay_c::finalizeState_ProcGoalEnd() {}
 
 
 void dGameDisplay_c::Effect1UP(int a) {
-    // mVec3_c vec;
     if (
-        (mFader_c::mFader->isHidden()) &&
-        !PauseManager_c::m_OtasukeAfter &&
-        !dScStage_c::m_miniGame
+        !mFader_c::mFader->isHidden() ||
+        PauseManager_c::m_OtasukeAfter ||
+        dScStage_c::m_miniGame ||
+        dInfo_c::m_startGameInfo.mScreenType == 3
     ) {
-        if (dInfo_c::m_startGameInfo.mScreenType == 3 && m_424[a] == 0) {
-            m_424[a] = 0xF;
+        return;
+    }
+    if (m_424[a] == 0) {
+        m_424[a] = 0xF;
 
-            nw4r::lyt::Pane *icon = mpNullPanes[N_marioIcon_00 + a];
+        nw4r::lyt::Pane *icon = mpNullPanes[N_marioIcon_00 + a];
 
-            nw4r::math::MTX34 mtx = icon->GetGlobalMtx();
+        nw4r::math::MTX34 mtx = icon->GetGlobalMtx();
 
-            mVec3_c tmp;
-            tmp.x = mtx._03;
-            tmp.y = mtx._13;
-            tmp.z = 0.0f;
-            dGameCom::fn_800B37E0(tmp, false);
-            mEf::createEffect("Wm_2d_1up01", 0, &tmp, nullptr, nullptr);
+        mVec3_c tmp;
+        tmp.x = mtx._03;
+        tmp.y = mtx._13;
+        tmp.z = 0.0f;
+        dGameCom::fn_800B37E0(tmp, false);
+        mEf::createEffect("Wm_2d_1up01", 0, &tmp, nullptr, nullptr);
 
-            tmp.x = mtx._03;
-            tmp.y = mtx._13;
-            tmp.z = 0.0f;
-            dGameCom::fn_800B37E0(tmp, true);
-            mEf::createEffect("Wm_2d_1up02", 0, &tmp, nullptr, nullptr);
-        }
+        tmp.x = mtx._03;
+        tmp.y = mtx._13;
+        tmp.z = 0.0f;
+        dGameCom::fn_800B37E0(tmp, true);
+        mEf::createEffect("Wm_2d_1up02", 0, &tmp, nullptr, nullptr);
     }
 }
 
 void dGameDisplay_c::GrayColorSet(int player) {
-    static const int lbl_802f5ca8[] = { P_marioIcon_00, P_luijiIcon_00, P_kinoB_00, P_kinoY_00 };
     static const int lbl_802f5c88[] = {
         T_left_00, T_x_01,
         T_left_01, T_x_02,
         T_left_02, T_x_03,
         T_left_03, T_x_04
     };
+    static const int lbl_802f5ca8[] = { P_marioIcon_00, P_luijiIcon_00, P_kinoB_00, P_kinoY_00 };
 
 
     if (m_454[player] == 0) {
@@ -763,13 +762,13 @@ void dGameDisplay_c::GrayColorSet(int player) {
 }
 
 void dGameDisplay_c::ReturnGrayColorSet(int player) {
-    static const int lbl_802f5ca8[] = { P_marioIcon_00, P_luijiIcon_00, P_kinoB_00, P_kinoY_00 };
     static const int lbl_802f5c88[] = {
         T_left_00, T_x_01,
         T_left_01, T_x_02,
         T_left_02, T_x_03,
         T_left_03, T_x_04
     };
+    static const int lbl_802f5ca8[] = { P_marioIcon_00, P_luijiIcon_00, P_kinoB_00, P_kinoY_00 };
 
     if (m_454[player] != 0) {
         m_454[player] = 0;
@@ -818,7 +817,9 @@ void dGameDisplay_c::EffectCollectionCoinGet(int i) {
 }
 
 void dGameDisplay_c::setPlayNum(int *life_nums) {
-    static const int PANE_INDEX_TBL[PLAYER_COUNT] = { 0, 2, 4, 6 };
+    static const int PANE_INDEX_TBL[PLAYER_COUNT] = {
+        T_left_00, T_left_01, T_left_02, T_left_03
+    };
 
     for (int i = 0; i < PLAYER_COUNT; i++) {
         if (mPlayNum[i] == life_nums[i]) {
@@ -842,25 +843,26 @@ void dGameDisplay_c::setPlayNum(int *life_nums) {
 void dGameDisplay_c::setCoinNum(int num_coins) {
     if (!m_453 && (mCoins != num_coins)) {
         mCoins = num_coins;
-        dGameCom::LayoutDispNumber(mCoins, c_COINNUM_DIGIT, mpTextBoxes[8], false);
+        dGameCom::LayoutDispNumber(mCoins, c_COINNUM_DIGIT, mpTextBoxes[T_coin_00], false);
 
-        if (!num_coins && !m_444 && (mFader_c::mFader->isHidden())) {
-            if (dInfo_c::m_startGameInfo.mScreenType == 2 || dInfo_c::m_startGameInfo.mScreenType == 3) {
-                return;
-            }
-
-            nw4r::lyt::Pane *pane = mpNullPanes[N_coin_01];
-
-            nw4r::math::MTX34 mtx = pane->GetGlobalMtx();
-
-            mVec3_c tmp;
-            tmp.x = mtx._03;
-            tmp.y = mtx._13;
-            tmp.z = 0.0f;
-
-            dGameCom::fn_800B37E0(tmp, false);
-            mEf::createEffect("Wm_2d_coin100", 0, &tmp, nullptr, nullptr);
+        if (num_coins || m_444 || !mFader_c::mFader->isHidden()) {
+            return;
         }
+        if (dInfo_c::m_startGameInfo.mScreenType == 2 || dInfo_c::m_startGameInfo.mScreenType == 3) {
+            return;
+        }
+
+        nw4r::lyt::Pane *pane = mpNullPanes[N_coin_01];
+
+        nw4r::math::MTX34 mtx = pane->GetGlobalMtx();
+
+        mVec3_c tmp;
+        tmp.x = mtx._03;
+        tmp.y = mtx._13;
+        tmp.z = 0.0f;
+
+        dGameCom::fn_800B37E0(tmp, false);
+        mEf::createEffect("Wm_2d_coin100", 0, &tmp, nullptr, nullptr);
     }
 }
 
@@ -879,14 +881,13 @@ void dGameDisplay_c::setCollect() {
     }
 
     dMj2dGame_c *save = dSaveMng_c::m_instance->getSaveGame(-1);
-
-    u8 w = dScStage_c::m_instance->mCurrWorld;
-    u8 l = dScStage_c::m_instance->mCurrCourse;
-    if ((w >= WORLD_COUNT) || (l >= STAGE_COUNT)) {
+    u8 l = dScStage_c::m_instance->getCourse();
+    u8 w = dScStage_c::m_instance->getWorld();
+    if (w >= WORLD_COUNT || l >= STAGE_COUNT) {
         return;
     }
 
-    if ((dInfo_c::m_startGameInfo.mScreenType == 2) || (dInfo_c::m_startGameInfo.mScreenType == 3)) {
+    if (dInfo_c::m_startGameInfo.mScreenType == 2 || dInfo_c::m_startGameInfo.mScreenType == 3) {
         return;
     }
 
@@ -932,7 +933,7 @@ void dGameDisplay_c::setScore(int score) {
         mScore = MAX_SCORE;
     }
 
-    dGameCom::LayoutDispNumber(mScore, c_SCORE_DIGIT, mpTextBoxes[10], true);
+    dGameCom::LayoutDispNumber(mScore, c_SCORE_DIGIT, mpTextBoxes[T_score_00], true);
 }
 
 void dGameDisplay_c::RestCoinAnimeSetup() {

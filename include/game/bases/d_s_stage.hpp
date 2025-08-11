@@ -18,6 +18,10 @@ public:
     u8 mCurrCourse;
     u8 mCurrFile;
 
+    u8 getWorld() { return mCurrWorld; }
+    u8 getCourse() { return mCurrCourse; }
+    u8 getFile() { return mCurrFile; }
+
     static float getLoopPosX(float x);
     static int m_loopType;
 
