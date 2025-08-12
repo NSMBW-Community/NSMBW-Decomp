@@ -1,6 +1,7 @@
 #include <game/bases/d_gamedisplay.hpp>
 #include <game/framework/f_profile_name.hpp>
 #include <game/bases/d_a_player_manager.hpp>
+#include <game/bases/d_a_player_com.hpp>
 #include <game/bases/d_game_com.hpp>
 #include <game/bases/d_info.hpp>
 #include <game/bases/d_s_stage.hpp>
@@ -324,13 +325,6 @@ void dGameDisplay_c::fn_801585c0() {
 void dGameDisplay_c::RestDispSetup() {
     mVec3_c iconPos[4];
 
-    static const PLAYER_CHARACTER_e lbl_802F5C28[PLAYER_COUNT] = {
-        PLAYER_MARIO,
-        PLAYER_LUIGI,
-        PLAYER_BLUE_TOAD,
-        PLAYER_YELLOW_TOAD,
-    };
-
     static const u32 lbl_802F5C38[PLAYER_COUNT] = {
         P_marioIcon_00, P_luijiIcon_00, P_kinoY_00, P_kinoB_00,
     };
@@ -346,7 +340,7 @@ void dGameDisplay_c::RestDispSetup() {
 
     int iconPosIdx = 0;
     for (int i = 0; i < PLAYER_COUNT; i++) {
-        int idx = daPyMng_c::getPlayerIndex(lbl_802F5C28[i]);
+        int idx = daPyMng_c::getPlayerIndex(daPyCom_c::sc_PLAYER_ORDER[i]);
         if (!daPyMng_c::mPlayerEntry[idx]) {
             continue;
         }
@@ -734,49 +728,48 @@ void dGameDisplay_c::Effect1UP(int a) {
 }
 
 void dGameDisplay_c::GrayColorSet(int player) {
-    static const int lbl_802f5c88[] = {
-        T_left_00, T_x_01,
-        T_left_01, T_x_02,
-        T_left_02, T_x_03,
-        T_left_03, T_x_04
-    };
-    static const int lbl_802f5ca8[] = { P_marioIcon_00, P_luijiIcon_00, P_kinoB_00, P_kinoY_00 };
-
-
     if (m_454[player] == 0) {
-        static nw4r::ut::Color grayColor(160, 160, 160, 255);
+        static nw4r::ut::Color GrayColor(160, 160, 160, 255);
+        static const int TPANE_IDX_TBL[] = {
+            T_left_00, T_x_01,
+            T_left_01, T_x_02,
+            T_left_02, T_x_03,
+            T_left_03, T_x_04
+        };
+        static const int PPANE_IDX_TBL[] = { P_marioIcon_00, P_luijiIcon_00, P_kinoB_00, P_kinoY_00 };
+
         m_454[player] = true;
-        nw4r::lyt::Pane *icon1 = mpPicturePanes[lbl_802f5ca8[player]];
+        nw4r::lyt::Pane *icon1 = mpPicturePanes[PPANE_IDX_TBL[player]];
         nw4r::lyt::Material *mat1 = icon1->GetMaterial();
         mColorBackup[0][player] = mat1->GetTevColor(1);
-        mat1->SetTevColor(1, nw4r::g3d::detail::GetRGBAS10(grayColor));
-        nw4r::lyt::Pane *icon2 = mpTextBoxes[lbl_802f5c88[player * 2]];
+        mat1->SetTevColor(1, nw4r::g3d::detail::GetRGBAS10(GrayColor));
+        nw4r::lyt::Pane *icon2 = mpTextBoxes[TPANE_IDX_TBL[player * 2]];
         nw4r::lyt::Material *mat2 = icon2->GetMaterial();
         mColorBackup[1][player] = mat2->GetTevColor(1);
-        mat2->SetTevColor(1, nw4r::g3d::detail::GetRGBAS10(grayColor));
-        nw4r::lyt::Pane *icon3 = mpTextBoxes[lbl_802f5c88[player * 2 + 1]];
+        mat2->SetTevColor(1, nw4r::g3d::detail::GetRGBAS10(GrayColor));
+        nw4r::lyt::Pane *icon3 = mpTextBoxes[TPANE_IDX_TBL[player * 2 + 1]];
         nw4r::lyt::Material *mat3 = icon3->GetMaterial();
         mColorBackup[2][player] = mat3->GetTevColor(1);
-        mat3->SetTevColor(1, nw4r::g3d::detail::GetRGBAS10(grayColor));
+        mat3->SetTevColor(1, nw4r::g3d::detail::GetRGBAS10(GrayColor));
     }
 }
 
 void dGameDisplay_c::ReturnGrayColorSet(int player) {
-    static const int lbl_802f5c88[] = {
-        T_left_00, T_x_01,
-        T_left_01, T_x_02,
-        T_left_02, T_x_03,
-        T_left_03, T_x_04
-    };
-    static const int lbl_802f5ca8[] = { P_marioIcon_00, P_luijiIcon_00, P_kinoB_00, P_kinoY_00 };
-
     if (m_454[player] != 0) {
+        static const int TPANE_IDX_TBL[] = {
+            T_left_00, T_x_01,
+            T_left_01, T_x_02,
+            T_left_02, T_x_03,
+            T_left_03, T_x_04
+        };
+        static const int PPANE_IDX_TBL[] = { P_marioIcon_00, P_luijiIcon_00, P_kinoB_00, P_kinoY_00 };
+
         m_454[player] = 0;
-        nw4r::lyt::Pane *icon1 = mpPicturePanes[lbl_802f5ca8[player]];
+        nw4r::lyt::Pane *icon1 = mpPicturePanes[PPANE_IDX_TBL[player]];
         icon1->GetMaterial()->SetTevColor(1, mColorBackup[0][player]);
-        nw4r::lyt::Pane *icon2 = mpTextBoxes[lbl_802f5c88[player * 2]];
+        nw4r::lyt::Pane *icon2 = mpTextBoxes[TPANE_IDX_TBL[player * 2]];
         icon2->GetMaterial()->SetTevColor(1, mColorBackup[1][player]);
-        nw4r::lyt::Pane *icon3 = mpTextBoxes[lbl_802f5c88[player * 2 + 1]];
+        nw4r::lyt::Pane *icon3 = mpTextBoxes[TPANE_IDX_TBL[player * 2 + 1]];
         icon3->GetMaterial()->SetTevColor(1, mColorBackup[2][player]);
     }
 }
