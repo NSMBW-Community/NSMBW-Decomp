@@ -748,6 +748,7 @@ g_profile_PLAYER_ICE=0x80326960
 g_profile_YOSHI=0x80326A50
 g_profile_FUKIDASHI_MANAGER=0x803275E0
 g_profile_GAMEDISPLAY=0x80327668
+__vt__Q23mEf13levelEffect_c=0x80329CA0
 sTVModeInfo__Q23EGG6Screen=0x80350820
 mPlayerEntry__9daPyMng_c=0x80355150
 mPlayerType__9daPyMng_c=0x80355160
