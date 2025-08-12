@@ -692,3 +692,4 @@ mCollectionCoin__10dScStage_c=0x803744B0
 setTimer__13dStageTimer_cFs=0x800E3A00
 m_instance__14PauseManager_c=0x8042A2B8
 holdSystemSe__11SndAudioMgrFUiUl=0x801954E0
+__vt__Q23mEf13levelEffect_c=80329ca0
