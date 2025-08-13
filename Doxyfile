@@ -452,8 +452,8 @@ MACRO_EXPANSION        = YES
 # recursively expanded use the := operator instead of the = operator.
 # This tag requires that the tag ENABLE_PREPROCESSING is set to YES.
 
-PREDEFINED             += "STATE_VIRTUAL_FUNC_DECLARE(class,name)=/** \brief Initialization function for the \c name state. */ virtual void initializeState_##name(); /** \brief Execution function for the \c name state. */ virtual void executeState_##name(); /** \brief Finalization function for the \c name state. */ virtual void finalizeState_##name(); static sFStateVirtualID_c<class> StateID_##name"
-PREDEFINED             += "STATE_FUNC_DECLARE(class, name)=/** \brief Initialization function for the \c name state. */ void initializeState_##name(); /** \brief Execution function for the \c name state. */ void executeState_##name(); /** \brief Finalization function for the \c name state. */ void finalizeState_##name(); static sFStateID_c<class> StateID_##name"
+PREDEFINED             += "STATE_VIRTUAL_FUNC_DECLARE(class,name)=static sFStateVirtualID_c<class> StateID_##name"
+PREDEFINED             += "STATE_FUNC_DECLARE(class, name)=static sFStateID_c<class> StateID_##name"
 
 #---------------------------------------------------------------------------
 # Configuration options related to diagram generator tools
