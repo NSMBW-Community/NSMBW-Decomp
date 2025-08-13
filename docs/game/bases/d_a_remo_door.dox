@@ -7,30 +7,6 @@ The door is otherwise non-functional and is always drawn over the player.
 <em>No settings available.</em>
 
 ## States
-<table>
-<thead>
-  <tr>
-    <th>State Name</th>
-    <th>State Description</th>
-  </tr>
-</thead>
-<tbody>
-  <tr>
-    <td>@ref daRemoDoor_c::StateID_OpenReady "OpenReady"</td>
-    <td>The door is ready to be opened.</td>
-  </tr>
-  <tr>
-    <td>@ref daRemoDoor_c::StateID_Open "Open"</td>
-    <td>The door is opening or has been opened.</td>
-  </tr>
-  <tr>
-    <td>@ref daRemoDoor_c::StateID_Close "Close"</td>
-    <td>The door is closing.</td>
-  </tr>
-  <tr>
-    <td>@ref dActorState_c::StateID_Gegneric "Gegneric" (inherited)</td>
-    <td>An example state that does nothing.</td>
-  </tr>
-</tbody>
-</table>
+@statetable
+
 */

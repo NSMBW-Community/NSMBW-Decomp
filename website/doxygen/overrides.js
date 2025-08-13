@@ -207,6 +207,47 @@ document.querySelectorAll('dl.tparams').forEach(dl => {
     dl.remove();
 });
 
+///////////////////////////
+// Create State ID table //
+///////////////////////////
+
+const stateIDList = [...document.querySelectorAll('.memberdecls .memItemRight a')].filter(row => {
+    return row.innerText.startsWith('StateID_');
+}).map(r => {
+    const isInherited = r.closest('.inherit') != null;
+    const name = r.innerText.replace('StateID_', '');
+    const href = r.getAttribute('href');
+    const id = href.split("#")[1];
+    const descriptionElement = document.getElementsByClassName(`memdesc:${id}`);
+    let description = '';
+    if (descriptionElement.length == 1) {
+        description = descriptionElement[0].querySelector('.mdescRight').innerText.trim();
+    }
+    return { name, description, href, isInherited };
+});
+
+const tablePlaceholder = document.getElementById('state-table-placeholder');
+if (tablePlaceholder) {
+    let stateIDTable = document.createElement('table');
+    stateIDTable.className = 'doxtable';
+
+    let stateIDTBody = document.createElement('tbody');
+    stateIDTable.appendChild(stateIDTBody);
+
+    let stateIDHeader = document.createElement('tr');
+    stateIDHeader.innerHTML = `<th>State Name</th><th>Description</th>`;
+    stateIDTBody.appendChild(stateIDHeader);
+
+    stateIDList.forEach(state => {
+        let row = document.createElement('tr');
+        const inhText = state.isInherited ? ' (inherited)' : '';
+        row.innerHTML = `<td><a href=${state.href}>${state.name}</a>${inhText}</td><td>${state.description}</td>`;
+        stateIDTBody.appendChild(row);
+    });
+
+    tablePlaceholder.appendChild(stateIDTable);
+}
+
 ////////////////////////////////////////
 // Fix Inherited Types Ignoring Close //
 ////////////////////////////////////////
