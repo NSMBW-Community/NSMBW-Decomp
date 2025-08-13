@@ -4,6 +4,7 @@
 #include <lib/rvl/os/OSTime.h>
 
 /// @brief A wrapper class for the top-level game loop.
+/// @ingroup bases
 class dMain {
 public:
     static void Create(); ///< The function that initializes the main game loop.
