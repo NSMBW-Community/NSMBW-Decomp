@@ -1,3 +1,4 @@
+#pragma once
 #include <constants/game_constants.h>
 #include <game/mLib/m_vec.hpp>
 #include <game/bases/d_wm_csv_data.hpp>

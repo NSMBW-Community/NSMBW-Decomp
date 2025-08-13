@@ -78,6 +78,7 @@ ALIASES                += imagecaption{1}="<div class=\"image caption\">\1</div>
 ALIASES                += decompnote{1}="<dl class=\"decompnote\"><dt>Decompilation Note</dt><dd>\1</dd></dl>"
 ALIASES                += hint{1}="<dl class=\"hint\"><dt>Hint</dt><dd>\1</dd></dl>"
 ALIASES                += xlink{2}="<a class=\"el\" href=\"\1\">\2</a>"
+ALIASES                += statetable="<div id=\"state-table-placeholder\"></div>"
 
 # The MARKDOWN_ID_STYLE tag can be used to specify the algorithm used to
 # generate identifiers for the Markdown headings. Note: Every identifier is
@@ -451,8 +452,8 @@ MACRO_EXPANSION        = YES
 # recursively expanded use the := operator instead of the = operator.
 # This tag requires that the tag ENABLE_PREPROCESSING is set to YES.
 
-PREDEFINED             += "STATE_VIRTUAL_FUNC_DECLARE(class,name)=/** \brief Initialization function for the \c name state. */ virtual void initializeState_##name(); /** \brief Execution function for the \c name state. */ virtual void executeState_##name(); /** \brief Finalization function for the \c name state. */ virtual void finalizeState_##name(); /** \brief The state ID for the \c name state. */ static sFStateVirtualID_c<class> StateID_##name;"
-PREDEFINED             += "STATE_FUNC_DECLARE(class, name)=/** \brief Initialization function for the \c name state. */ void initializeState_##name(); /** \brief Execution function for the \c name state. */ void executeState_##name(); /** \brief Finalization function for the \c name state. */ void finalizeState_##name(); /** \brief The state ID for the \c name state. */ static sFStateID_c<class> StateID_##name;"
+PREDEFINED             += "STATE_VIRTUAL_FUNC_DECLARE(class,name)=static sFStateVirtualID_c<class> StateID_##name"
+PREDEFINED             += "STATE_FUNC_DECLARE(class, name)=static sFStateID_c<class> StateID_##name"
 
 #---------------------------------------------------------------------------
 # Configuration options related to diagram generator tools

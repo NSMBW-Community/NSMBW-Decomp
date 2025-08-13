@@ -19,9 +19,9 @@ public:
 
     void init(); ///< Initializes the resources for the actor.
 
-    STATE_FUNC_DECLARE(daRemoDoor_c, OpenReady);
-    STATE_FUNC_DECLARE(daRemoDoor_c, Open);
-    STATE_FUNC_DECLARE(daRemoDoor_c, Close);
+    STATE_FUNC_DECLARE(daRemoDoor_c, OpenReady); ///< The door is ready to be opened.
+    STATE_FUNC_DECLARE(daRemoDoor_c, Open); ///< The door is opening or has been opened.
+    STATE_FUNC_DECLARE(daRemoDoor_c, Close); ///< The door is closing.
 
     dHeapAllocator_c mAllocator; ///< The allocator.
     nw4r::g3d::ResFile mRes; ///< The resource file.
