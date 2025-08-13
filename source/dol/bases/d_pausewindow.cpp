@@ -62,7 +62,7 @@ int Pausewindow_c::create() {
         "T_tuzukeru_00", "T_tuzukeru_01",
         "T_modoru_00", "T_modoru_01"
     };
-    static const int msgIdTbl[] = {
+    static const int msgIdTbl[ARRAY_SIZE(textBox)] = {
         MSG_PAUSE_CONTINUE, MSG_PAUSE_CONTINUE,
         MSG_PAUSE_EXIT, MSG_PAUSE_EXIT
     };
@@ -70,7 +70,7 @@ int Pausewindow_c::create() {
     static const char *textBox2[] = {
         "T_world_00", "T_hyphen_00", "T_multiText_00"
     };
-    static const int msgIdTbl2[] = {
+    static const int msgIdTbl2[ARRAY_SIZE(textBox2)] = {
         MSG_WM_WORLD, MSG_WM_HYPHEN, MSG_WM_FREE_MODE
     };
 
@@ -174,15 +174,15 @@ int Pausewindow_c::doDelete() {
 void Pausewindow_c::setWorldCourseWrite() {
     MsgRes_c *msgRes = dMessage_c::getMesRes();
     dInfo_c *info = dInfo_c::getInstance();
-    u8 w = info->getWorld();
-    u8 c = info->getCourse();
+    u8 world = info->getWorld();
+    u8 course = info->getCourse();
     if (info->getWorld() > WORLD_USED_COUNT) {
-        w = WORLD_USED_COUNT;
+        world = WORLD_USED_COUNT;
     }
-    info->mDisplayCourseWorld = w + 1;
+    info->mDisplayCourseWorld = world + 1;
     mpTextBoxes[T_worldNum_00]->setMessage(msgRes, BMG_CATEGORY_WORLD_MAP, MSG_WM_WORLD_NUM, 0);
     int msgID;
-    switch (c) {
+    switch (course) {
         case STAGE_GHOST_HOUSE:
             msgID = MSG_WM_ICON_GHOST_HOUSE;
             break;
@@ -192,10 +192,10 @@ void Pausewindow_c::setWorldCourseWrite() {
             break;
         case STAGE_CASTLE:
         case STAGE_CASTLE_2:
-            if (w != WORLD_8) {
+            if (world != LAST_WORLD) {
                 msgID = MSG_WM_ICON_CASTLE;
             } else {
-                msgID = MSG_WM_ICON_W8_CASTLE;
+                msgID = MSG_WM_ICON_LAST_WORLD_CASTLE;
             }
             break;
         case STAGE_KINOKO_HOUSE:
@@ -205,9 +205,9 @@ void Pausewindow_c::setWorldCourseWrite() {
         case STAGE_KINOKO_HOUSE_5:
         case STAGE_KINOKO_HOUSE_6:
         case STAGE_KINOKO_HOUSE_7:
-            if (dScWMap_c::IsCourseType(w, c, dScWMap_c::COURSE_TYPE_KINOKO_HOUSE_1UP)) {
+            if (dScWMap_c::IsCourseType(world, course, dScWMap_c::COURSE_TYPE_KINOKO_HOUSE_1UP)) {
                 msgID = MSG_WM_ICON_KINOKO_HOUSE_1UP;
-            } else if (dScWMap_c::IsCourseType(w, c, dScWMap_c::COURSE_TYPE_KINOKO_HOUSE_STAR)) {
+            } else if (dScWMap_c::IsCourseType(world, course, dScWMap_c::COURSE_TYPE_KINOKO_HOUSE_STAR)) {
                 msgID = MSG_WM_ICON_KINOKO_HOUSE_STAR;
             } else {
                 msgID = MSG_WM_ICON_KINOKO_HOUSE;
@@ -244,7 +244,7 @@ void Pausewindow_c::setWorldCourseWrite() {
             }
             break;
         default:
-            info->mDisplayCourseNum = c + 1;
+            info->mDisplayCourseNum = course + 1;
             mpTextBoxes[T_corseNum_00]->setVisible(true);
             mpTextBoxes[T_corseNum_00]->setMessage(msgRes, BMG_CATEGORY_WORLD_MAP, MSG_WM_COURSE_NUM, 0);
             mpTextBoxes[T_corsePic_00]->setVisible(false);

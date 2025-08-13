@@ -110,7 +110,7 @@ private:
     bool mIsActive; ///< Whether the window is currently open.
 
 public:
-    bool mClose; ///< Whether the window was closed via the 1 button.
+    bool mClose; ///< Whether the window was closed via the back button.
     bool mButtonHit; ///< Whether one of the buttons was hit.
     bool mIsAnimating; ///< Whether an animation is currently playing.
     bool mToTitle; ///< Whether to show "Title Screen" instead of "Exit". [This seems to never be set in-game].
