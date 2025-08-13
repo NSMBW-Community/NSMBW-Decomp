@@ -26,9 +26,11 @@ void *dMain::main01(void *arg) {
     return nullptr;
 }
 
+extern "C" {
+
 #define STACK_SIZE 0xf000
 
-void main() {
+void main(int argc, char *argv[]) {
     u8 stack[STACK_SIZE] ALIGNED(32);
     DVDDiskCheck();
     dMain::g_InitialTime = OSGetTime();
@@ -40,3 +42,5 @@ void main() {
     OSSetThreadPriority(thread, 0x1f);
     OSSuspendThread(thread);
 }
+
+} // extern "C"
