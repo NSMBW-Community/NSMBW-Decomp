@@ -58,7 +58,7 @@ public:
     virtual short GetWalkWaitFrame() { return 20; }
     virtual void PostWaitWalk() {}
     virtual void updateBgmAnimRate();
-    virtual int isWaitWalkEnd() { return mCurrProc != 4; }
+    virtual int isWaitWalkEnd() { return mCurrProc != PROC_TYPE_WAIT_WALK; }
 
     void initializeBase(const char **names, int count, bool cyclic);
     void initShapeAngle();
@@ -109,7 +109,13 @@ private:
         PROC_TYPE_DEMO_CONTINUE,
         PROC_TYPE_BGM_DANCE,
         PROC_TYPE_LOSE,
-        PROC_TYPE_WAIT_WALK
+        PROC_TYPE_WAIT_WALK,
+        PROC_COUNT
+    };
+
+    enum POINT_TYPE_e {
+        POINT_TYPE_STOP,
+        POINT_TYPE_THROUGH
     };
 
     dWmEnPath_c mPath;
@@ -118,7 +124,7 @@ private:
     mAng3_c mDemoAngle;
     bool mArrivedAtTarget;
     bool mEnWalk;
-    int mNextPointType; ///< 0 = stop point, 1 = through point
+    POINT_TYPE_e mNextPointType; ///< 0 = stop point, 1 = through point
     int mRotateTimer;
     unk_s *mpUnkData;
     PROC_TYPE_e mCurrProc;

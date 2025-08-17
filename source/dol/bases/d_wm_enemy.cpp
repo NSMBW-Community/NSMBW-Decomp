@@ -9,15 +9,15 @@
 #include <game/bases/d_game_com.hpp>
 #include <game/bases/d_info.hpp>
 
-const char *dWmEnemy_c::smc_PathPointA[] = {
+const char *dWmEnemy_c::smc_PathPointA[WORLD_USED_COUNT] = {
     "Fa00", "Fa01", "Fa02", "Fa03", "Fa04",
     "Fa05", "Fa06", "Fa07", "Fa08"
 };
-const char *dWmEnemy_c::smc_PathPointB[] = {
+const char *dWmEnemy_c::smc_PathPointB[WORLD_USED_COUNT] = {
     "Fb00", "Fb01", "Fb02", "Fb03", "Fb04",
     "Fb05", "Fb06", "Fb07", "Fb08"
 };
-const char *dWmEnemy_c::smc_PathPointC[] = {
+const char *dWmEnemy_c::smc_PathPointC[WORLD_USED_COUNT] = {
     "Fc00", "Fc01", "Fc02", "Fc03", "Fc04",
     "Fc05", "Fc06", "Fc07", "Fc08"
 };
@@ -65,7 +65,7 @@ void dWmEnemy_c::initializeBase(const char **names, int count, bool cyclic) {
     if (count < 0) {
         count = wmMap->GetNodeCount(mParam & 0xf);
     }
-    mPath.init(names, count, connect, cyclic, enData.m_08);
+    mPath.init(names, count, connect, cyclic, enData.mWalkDirection);
     mPath.SetStartPoint(getStartPoint());
     dWmConnect_c::Point_s *point = connect->GetPointFromIndex(mPath.mpCurrentPoint->mPointIndex);
     mPos = point->pos + getPointOffset(mPath.mpCurrentPoint->mIndex);
@@ -108,7 +108,7 @@ int dWmEnemy_c::execute() {
     }
     setCutEndSpecific(dCsSeqMng_c::ms_instance->GetCutName(), dCsSeqMng_c::ms_instance->m_164);
     if (IsExecEnable() || dCsSeqMng_c::ms_instance->GetCutName() == 0x57) {
-        static const ProcFunc ProcTbl[] = {
+        static const ProcFunc ProcTbl[PROC_COUNT] = {
             mode_exec,
             mode_DemoContinue,
             mode_bgmDance,
@@ -237,9 +237,9 @@ void dWmEnemy_c::initWalk(float f) {
     mArrivedAtTarget = false;
     mDemoAngle.y = (getNextPointInfo() - mPos).xzAng();
     if (isNextThroughPoint()) {
-        mNextPointType = 1;
+        mNextPointType = POINT_TYPE_THROUGH;
     } else {
-        mNextPointType = 0;
+        mNextPointType = POINT_TYPE_STOP;
     }
 }
 
@@ -263,7 +263,7 @@ bool dWmEnemy_c::doWalk() {
             }
             if (!mArrivedAtTarget && checkArriveTargetXYZ(mPrevPoint, mNextPoint)) {
                 bool tmp = false;
-                if (mNextPointType == 1) {
+                if (mNextPointType == POINT_TYPE_THROUGH) {
                     tmp = true;
                 }
                 mPos = mNextPoint;
@@ -278,7 +278,7 @@ bool dWmEnemy_c::doWalk() {
     }
     if (mArrivedAtTarget) {
         setWalkAnm(1.0f);
-        if (mNextPointType == 0) {
+        if (mNextPointType == POINT_TYPE_STOP) {
             deleteSound();
             mDemoAngle.y = getWaitAngle();
             sLib::addCalcAngle(&mAngle3D.y.mAngle, mDemoAngle.y, 10, 0x2000, 0x400);
@@ -287,7 +287,7 @@ bool dWmEnemy_c::doWalk() {
         }
         mAngle = mAngle3D;
         if (mDemoAngle.y == mAngle3D.y) {
-            if (mNextPointType == 1) {
+            if (mNextPointType == POINT_TYPE_THROUGH) {
                 initWalk();
                 return false;
             }
@@ -437,7 +437,7 @@ void dWmEnemy_c::procDemoLoseEnd() {
     mVisible = false;
     dInfo_c::enemy_s enData;
     dInfo_c::m_instance->GetMapEnemyInfo(dScWMap_c::m_WorldNo, mParam & 0xf, enData);
-    enData.m_04 = -1;
+    enData.mPathIndex = -1;
 }
 
 bool dWmEnemy_c::procDemoLoseBase(short angle) {

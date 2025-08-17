@@ -1,6 +1,7 @@
 #pragma once
 #include <game/bases/d_wm_connect.hpp>
 #include <game/mLib/m_vec.hpp>
+#include <constants/game_constants.h>
 
 /// @unofficial
 struct dWmPathPoint_s {
@@ -26,7 +27,7 @@ public:
     void UpdatePoint();
     bool isPointIn(int pointIndex);
 
-    dWmPathPoint_s mPoints[64];
+    dWmPathPoint_s mPoints[WM_ENEMY_PATH_MAX_POINT_COUNT];
     dWmPathPoint_s *mpCurrentPoint;
     int mDir1;
     int mDir2;

@@ -1,8 +1,7 @@
 #include <game/bases/d_wm_en_path.hpp>
 #include <lib/MSL_C/string.h>
 
-dWmEnPath_c::dWmEnPath_c() {
-    mpCurrentPoint = nullptr;
+dWmEnPath_c::dWmEnPath_c() : mpCurrentPoint(nullptr) {
     for (int i = 0; i < ARRAY_SIZE(mPoints); i++) {
         mPoints[i].mpName = nullptr;
         mPoints[i].mPointIndex = -1;

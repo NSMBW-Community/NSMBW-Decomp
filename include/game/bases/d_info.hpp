@@ -40,9 +40,10 @@ public:
     };
 
     struct enemy_s {
-        bool mRandomMove;
-        int m_04;
-        int m_08;
+        int mSubworld;
+        int mPathIndex;
+        int mWalkDirection;
+        bool m_0c;
     };
 
     dCyuukan_c *getCyuukan() { return &mCyuukan; }

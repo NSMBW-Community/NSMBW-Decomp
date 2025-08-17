@@ -25,6 +25,10 @@
 
 #define SUPER_GUIDE_DEATH_COUNT 8 ///< The amount of deaths required for the Super Guide to show.
 
+#define WM_ENEMY_PATH_MAX_POINT_COUNT 64 ///< The maximum number of keypoints for world map enemy paths.
+
+#define WM_PATH_MAX_POINT_COUNT 32 ///< The maximum number of keypoints for generic world map paths.
+
 enum DIRECTION_e {
     DIR_UP,
     DIR_DOWN,
