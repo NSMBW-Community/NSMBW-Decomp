@@ -14,7 +14,7 @@ dWmEnPath_c::dWmEnPath_c() : mpCurrentPoint(nullptr) {
 
 dWmEnPath_c::~dWmEnPath_c() {}
 
-bool dWmEnPath_c::init(const char **names, int count, dWmConnect_c *connect, bool cyclic, int dir) {
+bool dWmEnPath_c::init(const char **names, int count, dWmConnect_c *connect, bool cyclic, PATH_DIRECTION_e dir) {
     for (int i = 0; i < count; i++) {
         mPoints[i].mpName = names[i];
         mPoints[i].mIndex = i;
@@ -76,20 +76,20 @@ dWmPathPoint_s *dWmEnPath_c::GetNextPointInfo(bool updateDirection) {
         return mpCurrentPoint;
     }
     dWmPathPoint_s *res = nullptr;
-    if (mDir1 == 0) {
+    if (mDir1 == PATH_DIR_NORMAL) {
         res = mpCurrentPoint->mpNext;
         if (res == nullptr) {
             res = mpCurrentPoint->mpPrev;
             if (updateDirection) {
-                mDir1 = 1;
+                mDir1 = PATH_DIR_REVERSE;
             }
         }
-    } else if (mDir1 == 1) {
+    } else if (mDir1 == PATH_DIR_REVERSE) {
         res = mpCurrentPoint->mpPrev;
         if (res == nullptr) {
             res = mpCurrentPoint->mpNext;
             if (updateDirection) {
-                mDir1 = 0;
+                mDir1 = PATH_DIR_NORMAL;
             }
         }
     }

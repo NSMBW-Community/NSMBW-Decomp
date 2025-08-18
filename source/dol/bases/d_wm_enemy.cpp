@@ -60,17 +60,17 @@ dWmEnemy_c::~dWmEnemy_c() {
 void dWmEnemy_c::initializeBase(const char **names, int count, bool cyclic) {
     daWmMap_c *wmMap = daWmMap_c::m_instance;
     dInfo_c::enemy_s enData;
-    dInfo_c::m_instance->GetMapEnemyInfo(dScWMap_c::m_WorldNo, mParam & 0xf, enData);
+    dInfo_c::m_instance->GetMapEnemyInfo(dScWMap_c::m_WorldNo, ACTOR_PARAM(enemyNo), enData);
     dWmConnect_c *connect = &wmMap->mWmConnect[wmMap->currIdx];
     if (count < 0) {
-        count = wmMap->GetNodeCount(mParam & 0xf);
+        count = wmMap->GetNodeCount(ACTOR_PARAM(enemyNo));
     }
     mPath.init(names, count, connect, cyclic, enData.mWalkDirection);
     mPath.SetStartPoint(getStartPoint());
     dWmConnect_c::Point_s *point = connect->GetPointFromIndex(mPath.mpCurrentPoint->mPointIndex);
     mPos = point->pos + getPointOffset(mPath.mpCurrentPoint->mIndex);
     bool enWalk = false;
-    if (dWmEnemy::isEnemyWalk() && dWmLib::getEnemyRevivalCount(dScWMap_c::m_WorldNo, mParam & 0xf) == 0) {
+    if (dWmEnemy::isEnemyWalk() && dWmLib::getEnemyRevivalCount(dScWMap_c::m_WorldNo, ACTOR_PARAM(enemyNo)) == 0) {
         enWalk = true;
     }
     mEnWalk = enWalk;
@@ -92,7 +92,7 @@ void dWmEnemy_c::initializeBase(const char **names, int count, bool cyclic) {
 }
 
 int dWmEnemy_c::getStartPoint() {
-    return (mParam >> 4) & 0xf;
+    return ACTOR_PARAM(startPoint);
 }
 
 mVec3_c dWmEnemy_c::getPointOffset(int index) {
@@ -199,13 +199,13 @@ void dWmEnemy_c::mode_waitWalk() {
         if (mWalkWaitTimer > 0) {
             if (mWalkWaitTimer == 1) {
                 mPath.mAdvancePoint = IsRandomMove();
-                int dir;
+                PATH_DIRECTION_e dir;
                 bool randomWalk = IsRandomWalk();
                 if (randomWalk) {
                     mPath.mDir2 = mPath.mDir1;
                 }
                 if (randomWalk) {
-                    dir = mPath.mDir1 == 0;
+                    dir = mPath.mDir1 == PATH_DIR_NORMAL ? PATH_DIR_REVERSE : PATH_DIR_NORMAL;
                 } else {
                     dir = mPath.mDir1;
                 }
@@ -251,7 +251,7 @@ bool dWmEnemy_c::doWalk() {
         } else {
             if (mSeID < 0) {
                 dWmSeManager_c *seManager = dWmSeManager_c::m_pInstance;
-                mSeID = seManager->playSound(getEnemyWalkSeID(), 0, mPos, (mParam & 0xf) + 1, 1);
+                mSeID = seManager->playSound(getEnemyWalkSeID(), 0, mPos, ACTOR_PARAM(enemyNo) + 1, 1);
             }
             setWalkAnm(getWalkAnmRate());
             calcSpeed();
@@ -436,7 +436,7 @@ bool dWmEnemy_c::procDemoLose() {
 void dWmEnemy_c::procDemoLoseEnd() {
     mVisible = false;
     dInfo_c::enemy_s enData;
-    dInfo_c::m_instance->GetMapEnemyInfo(dScWMap_c::m_WorldNo, mParam & 0xf, enData);
+    dInfo_c::m_instance->GetMapEnemyInfo(dScWMap_c::m_WorldNo, ACTOR_PARAM(enemyNo), enData);
     enData.mPathIndex = -1;
 }
 
@@ -444,8 +444,8 @@ bool dWmEnemy_c::procDemoLoseBase(short angle) {
     bool res = false;
     rotDirectionX(angle, false);
     if (_procDemoJumpBase()) {
-        dWmEffectManager_c::m_pInstance->playEffect(dWmEffectManager_c::EFFECT_ENEMY_DEATH, &mPos, nullptr, nullptr);
-        dWmSeManager_c::m_pInstance->playSound(0x56, mPos, 1);
+        dWmEffectManager_c::m_pInstance->playEffect(dWmEffectManager_c::WM_EFFECT_ENEMY_DEATH, &mPos, nullptr, nullptr);
+        dWmSeManager_c::m_pInstance->playSound(dWmSeManager_c::WM_SE_EMY_CS_ENEMY_BYE, mPos, 1);
         mPos.y -= 10000.0f;
         res = true;
         procDemoLoseEnd();
@@ -463,11 +463,11 @@ bool dWmEnemy_c::isThroughPoint(int idx) {
 }
 
 bool dWmEnemy_c::FUN_800f88d0() {
-    return dInfo_c::m_instance->m_9c == (mParam & 0xf);
+    return dInfo_c::m_instance->m_9c == ACTOR_PARAM(enemyNo);
 }
 
 bool dWmEnemy_c::isDead() {
-    return dWmLib::getEnemyRevivalCount(dScWMap_c::m_WorldNo, mParam & 0xf) != 0;
+    return dWmLib::getEnemyRevivalCount(dScWMap_c::m_WorldNo, ACTOR_PARAM(enemyNo)) != 0;
 }
 
 void dWmEnemy_c::ModelCalc(m3d::mdl_c *mdl, float yOffset, float shadowYOffset, float shadowScale) {
@@ -490,7 +490,7 @@ void dWmEnemy_c::updatePathInfo(bool b) {
     if (b) {
         int wNo = dScWMap_c::m_WorldNo;
         int sNo = dScWMap_c::m_SceneNo;
-        int param = mParam & 0xf;
+        int param = ACTOR_PARAM(enemyNo);
         int v = vfc4(mPath.GetPathPointNo(mPath.mpCurrentPoint->mpName));
         info->SetMapEnemyInfo(wNo, param, sNo, v);
         info->FUN_800bbc40(wNo, param, mPath.mDir1);
@@ -516,15 +516,15 @@ void dWmEnemy_c::deleteEffect() {
 int dWmEnemy_c::getEnemyWalkSeID() {
     switch (dScWMap_c::m_WorldNo) {
         case WORLD_1:
-            return 87;
+            return dWmSeManager_c::WM_SE_EMY_CS_MOVE_W1_KURIBO;
         case WORLD_3:
-            return 89;
+            return dWmSeManager_c::WM_SE_EMY_CS_MOVE_W3_ICEBROS;
         case WORLD_5:
-            return 91;
+            return dWmSeManager_c::WM_SE_EMY_CS_MOVE_W5_PAKKUN;
         case WORLD_7:
-            return 93;
+            return dWmSeManager_c::WM_SE_EMY_CS_MOVE_W7_JUGEM;
         default:
-            return 121;
+            return dWmSeManager_c::WM_SE_INVALID;
     }
 }
 

@@ -6,7 +6,7 @@ class dWmEffectManager_c {
 public:
     /// @unofficial
     enum EffectID_e {
-        EFFECT_ENEMY_DEATH = 0xe
+        WM_EFFECT_ENEMY_DEATH = 0xe
     };
 
     /// @unofficial

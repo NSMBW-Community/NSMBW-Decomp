@@ -1,6 +1,7 @@
 #pragma once
 #include <types.h>
 #include <game/mLib/m_vec.hpp>
+#include <constants/game_constants.h>
 
 class dCyuukan_c {
 public:
@@ -42,7 +43,7 @@ public:
     struct enemy_s {
         int mSubworld;
         int mPathIndex;
-        int mWalkDirection;
+        PATH_DIRECTION_e mWalkDirection;
         bool m_0c;
     };
 

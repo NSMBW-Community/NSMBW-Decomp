@@ -36,6 +36,11 @@ enum DIRECTION_e {
     DIR_RIGHT
 };
 
+enum PATH_DIRECTION_e {
+    PATH_DIR_NORMAL,
+    PATH_DIR_REVERSE
+};
+
 /// @brief The identifiers for each character.
 enum PLAYER_CHARACTER_e {
     PLAYER_MARIO,

@@ -18,7 +18,7 @@ public:
     virtual ~dWmEnPath_c();
 
     /// @unofficial
-    bool init(const char **names, int count, dWmConnect_c *connect, bool cyclic, int dir);
+    bool init(const char **names, int count, dWmConnect_c *connect, bool cyclic, PATH_DIRECTION_e dir);
 
     void SetStartPoint(int index);
     int GetNextPointIdx();
@@ -29,7 +29,7 @@ public:
 
     dWmPathPoint_s mPoints[WM_ENEMY_PATH_MAX_POINT_COUNT];
     dWmPathPoint_s *mpCurrentPoint;
-    int mDir1;
-    int mDir2;
+    PATH_DIRECTION_e mDir1;
+    PATH_DIRECTION_e mDir2;
     bool mAdvancePoint;
 };

@@ -137,6 +137,9 @@ private:
     int mEfID;
     bool mHitPlayer;
 
+    ACTOR_PARAM_CONFIG(enemyNo, 0, 4);
+    ACTOR_PARAM_CONFIG(startPoint, 4, 4);
+
 public:
     static const char *smc_PathPointA[];
     static const char *smc_PathPointB[];
