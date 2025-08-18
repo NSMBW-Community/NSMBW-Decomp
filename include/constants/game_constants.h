@@ -38,7 +38,8 @@ enum DIRECTION_e {
 
 enum PATH_DIRECTION_e {
     PATH_DIR_NORMAL,
-    PATH_DIR_REVERSE
+    PATH_DIR_REVERSE,
+    PATH_DIR_INITIAL,
 };
 
 /// @brief The identifiers for each character.
