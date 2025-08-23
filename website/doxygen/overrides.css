@@ -482,3 +482,34 @@ h1.glow, h2.glow, h3.glow, h4.glow, h5.glow, h6.glow {
 #MSearchField {
     color: var(--page-foreground-color);
 }
+
+/* Parameter table styles */
+
+table.paramtable {
+    text-align: center;
+}
+
+table.paramtable td {
+    width: 25px;
+}
+
+td.param-name {
+    font-size: 11pt;
+}
+
+td.param-empty {
+    background-color: var(--side-nav-background);
+}
+
+td.param-inherit {
+    background-image: linear-gradient(-45deg,
+        rgba(255, 255, 255, 0.1) 25%,
+        transparent 25%,
+        transparent 50%,
+        rgba(255, 255, 255, 0.1) 50%,
+        rgba(255, 255, 255, 0.1) 75%,
+        transparent 75%,
+        transparent 100%
+    );
+    background-size: 15px 15px;
+}

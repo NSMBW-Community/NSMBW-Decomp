@@ -5,6 +5,7 @@
 #include <game/bases/d_wm_bgm_sync.hpp>
 
 /// @ingroup bases
+/// @paramtable
 class dWmEnemy_c : public dWmDemoActor_c {
 public:
     /// @unofficial

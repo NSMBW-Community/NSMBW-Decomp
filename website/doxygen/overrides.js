@@ -248,6 +248,86 @@ if (tablePlaceholder) {
     tablePlaceholder.appendChild(stateIDTable);
 }
 
+////////////////////////////
+// Create parameter table //
+////////////////////////////
+
+const paramEntries = new Array(32).fill(null).map(() => ({ name: "", empty: true, isInherited: false }));
+
+[...document.querySelectorAll('.memberdecls .memItemRight')].filter(row => {
+    return row.innerText.startsWith('ACTOR_PARAM_CONFIG');
+}).forEach(r => {
+    const m = r.innerText.match(/ACTOR_PARAM_CONFIG\s*\(([^,]+),\s*([^,]+),\s*([^,]+)\)/);
+    const isInherited = r.closest('.inherit') != null;
+    if (m) {
+        const offset = parseInt(m[2]);
+        const size = parseInt(m[3]);
+        for (let i = offset; i < offset + size; i++) {
+            paramEntries[i] = {
+                name: m[1],
+                empty: false,
+                isInherited
+            };
+        }
+    }
+});
+
+const paramTablePlaceholder = document.getElementById('param-table-placeholder');
+
+// Only generate if placeholder was found and at least one field is present
+if (paramTablePlaceholder != null && paramEntries.some(e => !e.empty)) {
+    let paramTable = document.createElement('table');
+    paramTable.classList.add('doxtable');
+    paramTable.classList.add('paramtable');
+
+    let paramTBody = document.createElement('tbody');
+    paramTable.appendChild(paramTBody);
+
+    let paramHeader = document.createElement('tr');
+    paramHeader.innerHTML = `<th colspan="16">Parameter usage</th>`;
+    paramTBody.appendChild(paramHeader);
+
+    for (let rowNum = 1; rowNum >= 0; rowNum--) {
+        let paramHeaderRow = document.createElement('tr');
+        for (let i = 15; i >= 0; i--) {
+            let td = document.createElement('td');
+            td.innerHTML = `${rowNum * 16 + i}`;
+            paramHeaderRow.appendChild(td);
+        }
+        paramTBody.appendChild(paramHeaderRow);
+        let paramRow = document.createElement('tr');
+        let idx = 15;
+        let currTD = document.createElement('td');
+        while (idx >= 0) {
+            const entry = paramEntries[rowNum * 16 + idx];
+
+            // Handle fields spanning multiple columns
+            let count = 0;
+            do {
+                idx--;
+                count++;
+            } while (idx >= 0 && paramEntries[rowNum * 16 + idx].name == entry.name);
+            currTD.setAttribute('colspan', count);
+
+            currTD.classList.add('param-name');
+            currTD.innerHTML = entry.name;
+            if (entry.isInherited) {
+                currTD.classList.add('param-inherit');
+            }
+            if (entry.empty) {
+                currTD.classList.add('param-empty');
+                currTD.innerHTML = '&nbsp;';
+            }
+            paramRow.appendChild(currTD);
+            currTD = document.createElement('td');
+        }
+        paramTBody.appendChild(paramRow);
+    }
+    paramTablePlaceholder.appendChild(paramTable);
+} else if (paramTablePlaceholder) {
+    paramTablePlaceholder.innerHTML = '<em>No parameter fields available.</em>';
+}
+
 ////////////////////////////////////////
 // Fix Inherited Types Ignoring Close //
 ////////////////////////////////////////
