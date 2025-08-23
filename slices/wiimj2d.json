@@ -81,7 +81,6 @@
         },
         {
             "source": "dol/bases/d_wipe_circle.cpp",
-            "nonMatching": true,
             "memoryRanges": {
                 ".text": "0x14c20-0x15410",
                 ".rodata": "0x358-0x380",

@@ -88,6 +88,10 @@ void dWipeCircle_c::draw() {
     }
 }
 
+// [Fakematch]
+#pragma push
+#pragma ppc_iro_level 2
+
 void dWipeCircle_c::CenterPosSet() {
     mVec2_c newPos(0.0f, 0.0f);
     mpRootPane->mPos = mVec3_c(0.0f, 0.0f, 0.0f);
@@ -111,7 +115,7 @@ void dWipeCircle_c::CenterPosSet() {
         if (player == nullptr) {
             return;
         }
-        static float offsets[4][7] = {
+        static float PLAYER_OFFSET_Y_DATA_TBL[4][7] = {
             {
                 dfukidashiInfo_c::c_MARIO_NORMAL_OFFSET_Y,
                 dfukidashiInfo_c::c_MARIO_SUPER_OFFSET_Y,
@@ -149,14 +153,13 @@ void dWipeCircle_c::CenterPosSet() {
                 dfukidashiInfo_c::c_KINOPIO_ICE_OFFSET_Y
             }
         };
-        mVec3_c pos;
-        pos.x = player->mPos.x;
-        pos.y = player->mPos.y;
-        float offset = 0.5f;
         int plType = daPyMng_c::getPlayerType(plNo);
         int plMode = daPyMng_c::getPlayerMode(plType);
-        offset *= offsets[plType][plMode];
-        pos.y += offset;
+
+        mVec3_c pos;
+        pos.x = player->mPos.x;
+        float offs = PLAYER_OFFSET_Y_DATA_TBL[plType][plMode];
+        pos.y = player->mPos.y + offs * 0.5f;
         pos.z = player->mPos.z;
         dGameCom::getGlbPosToLyt(pos);
         newPos.x = pos.x;
@@ -164,6 +167,8 @@ void dWipeCircle_c::CenterPosSet() {
     }
     mpRootPane->mPos = mVec3_c(newPos, 0.0f);
 }
+
+#pragma pop
 
 void dWipeCircle_c::OpenSetup() {
     mLyt.AllAnimeEndSetup();
