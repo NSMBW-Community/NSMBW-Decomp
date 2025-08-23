@@ -32,7 +32,7 @@ void dMj2dGame_c::initialize() {
 
         for (int enemy = 0; enemy < AMBUSH_ENEMY_COUNT; enemy++) {
             setCSEnemyPosIndex(world, enemy, -1);
-            setCSEnemyWalkDir(world, enemy, 2);
+            setCSEnemyWalkDir(world, enemy, PATH_DIR_INITIAL);
         }
     }
 

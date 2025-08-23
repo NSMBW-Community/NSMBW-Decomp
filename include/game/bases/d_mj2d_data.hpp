@@ -216,8 +216,7 @@ public:
     u8 getCSEnemyPosIndex(int world, int enemy) const;
 
     /// @brief Sets the path direction for the given map enemy.
-    /// @details Values are: 0 (forwards), 1 (backwards) and 2 (initial value).
-    /// @todo Turn the value list into an enum and move it to the appropriate section once decompiled.
+    /// @param direction The path direction. Value is a ::PATH_DIRECTION_e.
     void setCSEnemyWalkDir(int world, int enemy, u8 direction);
 
     /// @brief Gets the path direction for the given map enemy.
@@ -283,7 +282,9 @@ private:
 
     u8 mEnemySceneNo[WORLD_COUNT][AMBUSH_ENEMY_COUNT]; ///< The subworld number for each map enemy.
     u8 mEnemyPosIndex[WORLD_COUNT][AMBUSH_ENEMY_COUNT]; ///< The path node for each map enemy.
-    u8 mEnemyWalkDir[WORLD_COUNT][AMBUSH_ENEMY_COUNT]; ///< The movement direction for each map enemy.
+
+    /// @brief The movement direction for each map enemy. Value is a ::PATH_DIRECTION_e.
+    u8 mEnemyWalkDir[WORLD_COUNT][AMBUSH_ENEMY_COUNT];
 
     /// @brief The death count for each level.
     /// @details The value is cumulative, and not reset after clearing the level.

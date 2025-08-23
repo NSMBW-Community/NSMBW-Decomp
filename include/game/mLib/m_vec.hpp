@@ -3,6 +3,7 @@
 #include <lib/rvl/mtx/vec.h>
 #include <game/mLib/m_angle.hpp>
 #include <lib/egg/math/eggVector.h>
+#include <game/cLib/c_math.hpp>
 
 /// @brief A two-dimensional floating point vector.
 /// @ingroup mlib
@@ -114,11 +115,11 @@ public:
     /// @brief Constructs a new vector from an existing vector from the MTX library.
     mVec3_c(const Vec &v) { x = v.x; y = v.y; z = v.z; }
 
-    /// @brief Constructs a new vector from an existing vector from the NW4R library.
-    mVec3_c(const nw4r::math::VEC3 &v) { x = v.x; y = v.y; z = v.z; }
-
     /// @brief Copy constructor.
     mVec3_c(const mVec3_c &v) { set(v.x, v.y, v.z); }
+
+    /// @brief Constructs a new vector from an existing vector from the NW4R library.
+    mVec3_c(const nw4r::math::VEC3 &v) { set(v.x, v.y, v.z); }
 
     /// @brief Copy constructor with a different Z value.
     mVec3_c(const mVec3_c &v, float fz) { x = v.x; y = v.y; z = fz; }
@@ -126,6 +127,7 @@ public:
 
     /// @brief Assignment operator.
     mVec3_c &operator=(const mVec3_c &v) { x = v.x; y = v.y; z = v.z; return *this; }
+    mVec3_c &operator=(const nw4r::math::VEC3 &v) { x = v.x; y = v.y; z = v.z; return *this; }
 
     /// @brief Float cast operator.
     operator f32*() { return &x; }
@@ -183,6 +185,10 @@ public:
 
     float xzLen() const {
         return EGG::Mathf::sqrt(x * x + z * z);
+    }
+
+    short xzAng() const {
+        return cM::atan2s(x, z);
     }
 
     float distTo(const mVec3_c &other) const {

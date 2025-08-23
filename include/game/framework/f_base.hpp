@@ -7,6 +7,9 @@
 #include <game/framework/f_manager.hpp>
 #include <game/framework/f_list_mg.hpp>
 
+#define ACTOR_PARAM_CONFIG(name, offset, size) static const u16 PARAM_##name = ((offset << 8) | size)
+#define ACTOR_PARAM(name) ((mParam >> (PARAM_##name >> 8)) & ((1 << (PARAM_##name & 0xff)) - 1))
+
 /// @brief The base class for all scenes, actors and various other processes.
 /// @ingroup framework
 class fBase_c {

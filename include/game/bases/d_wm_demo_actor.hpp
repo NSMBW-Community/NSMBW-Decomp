@@ -49,9 +49,9 @@ public:
     void CsSPosSimple(int directionType, float yTarget);
     void clearSpeedAll();
     void adjustHeightBase(const mVec3_c &startPos, const mVec3_c &targetPos, int directionType);
-    bool isCutscenePlaying(int *csList, int csCount); ///< @unofficial
+    bool isCutscenePlaying(const int *csList, int csCount); ///< @unofficial
 
-private:
+protected:
     bool m_00;
     bool mIsCutEnd;
     mHeapAllocator_c mHeapAllocator;

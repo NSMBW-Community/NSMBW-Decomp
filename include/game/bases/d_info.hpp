@@ -1,6 +1,7 @@
 #pragma once
 #include <types.h>
 #include <game/mLib/m_vec.hpp>
+#include <constants/game_constants.h>
 
 class dCyuukan_c {
 public:
@@ -39,7 +40,17 @@ public:
         GAME_FLAG_IS_COIN_COURSE = BIT_FLAG(6)
     };
 
+    struct enemy_s {
+        int mSubworld;
+        int mPathIndex;
+        PATH_DIRECTION_e mWalkDirection;
+        bool m_0c;
+    };
+
     dCyuukan_c *getCyuukan() { return &mCyuukan; }
+    void GetMapEnemyInfo(int, int, enemy_s &);
+    void SetMapEnemyInfo(int, int, int, int);
+    void FUN_800bbc40(int, int, int);
 
     u8 getCourse() const { return m_startGameInfo.mLevel1; }
     u8 getWorld() const { return m_startGameInfo.mWorld1; }
@@ -50,18 +61,22 @@ public:
 
     char pad1[0x8];
     dCyuukan_c mCyuukan;
-    char pad2[0x348];
+    char pad2[0x18];
+    int m_54;
+    u8 pad3[0x44];
+    int m_9c;
+    u8 pad4[0x2e4];
     int mCharIDs[4];
     bool mIsWorldSelect; ///< Whether the World Select Menu is being displayed.
-    int pad3[7];
+    int pad5[7];
     int mDisplayCourseWorld;
     int mDisplayCourseNum;
-    u8 pad4[0x1d];
+    u8 pad6[0x1d];
     bool mExtensionAttached;
-    u8 pad5[0x8];
+    u8 pad7[0x8];
     int mCourseSelectPageNum;
     int mCourseSelectIndexInPage;
-    u8 pad6[0x712];
+    u8 pad8[0x712];
     bool mFukidashiActionPerformed[4][0x16];
 
     static dInfo_c *m_instance;

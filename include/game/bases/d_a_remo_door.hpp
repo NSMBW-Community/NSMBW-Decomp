@@ -6,6 +6,9 @@
 #include <lib/nw4r/g3d/res_file.hpp>
 
 /// @brief A door that can be opened by tilting the Wii Remote.
+/// @details The door is otherwise non-functional and is always drawn over the player.
+/// @paramtable
+/// @statetable
 /// @ingroup bases
 /// @unused
 class daRemoDoor_c : public dActorState_c {

@@ -6,7 +6,6 @@
 /// @brief Display a menu that appears when the game is paused inside a course.
 /// @details Note that this is not responsible for the confirmation menu,
 /// just for the two menu buttons "Continue" and "Exit".
-/// ## States
 /// @statetable
 /// @ingroup bases
 class Pausewindow_c : public dBase_c {
