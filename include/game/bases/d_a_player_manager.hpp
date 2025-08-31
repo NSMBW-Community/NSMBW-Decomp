@@ -11,6 +11,8 @@ public:
 
     static bool checkPlayer(u8 plrNo) { return mActPlayerInfo & (1 << plrNo); }
     static int getRest(PLAYER_CHARACTER_e plrNo) { return mRest[plrNo]; }
+    static int getPlayerType(int plrNo) { return mPlayerType[plrNo]; }
+    static int getPlayerMode(int plrNo) { return mPlayerMode[plrNo]; }
 
     static int mNum;
     static u8 mActPlayerInfo;

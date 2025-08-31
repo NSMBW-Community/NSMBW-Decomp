@@ -63,7 +63,6 @@ public:
     math::VEC3 mPos;
     math::VEC3 mRot;
     math::VEC2 mScale;
-private:
     float width;
     float height;
     char mFill2[0x64]; // To be RE'd
