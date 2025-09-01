@@ -1,5 +1,5 @@
 #pragma once
-#include <lib/nw4r/lyt/lyt_resource.hpp>
+#include <nw4r/lyt.h>
 
 namespace m2d {
 
@@ -12,8 +12,10 @@ public:
     void detach();
     void *getResource(unsigned long, const char *);
 
+    nw4r::lyt::ArcResourceAccessor *getResAccessor() const { return mpResAccessor; }
+
 private:
-    nw4r::lyt::ResourceAccessor *mpResAccessor;
+    nw4r::lyt::ArcResourceAccessor *mpResAccessor;
     void *mpResource;
 };
 

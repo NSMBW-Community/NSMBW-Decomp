@@ -8,7 +8,7 @@
 dWipeCircle_c *dWipeCircle_c::m_instance;
 
 dWipeCircle_c::dWipeCircle_c(nw4r::ut::Color color, mFaderBase_c::EStatus status) :
-mFaderBase_c(mColor(color.rgba), status) {
+mFaderBase_c(mColor(color), status) {
     m_instance = this;
     mIsCreated = false;
 }
@@ -58,7 +58,7 @@ bool dWipeCircle_c::createLayout() {
 
     mLyt.AllAnimeEndSetup();
 
-    mpRootPane->setVisible(false);
+    mpRootPane->SetVisible(false);
     mLyt.mDrawOrder = 154;
     mAction = IDLE;
 
@@ -98,7 +98,7 @@ void dWipeCircle_c::draw() {
 
 void dWipeCircle_c::CenterPosSet() {
     mVec2_c centerPos(0.0f, 0.0f);
-    mpRootPane->mPos = mVec3_c(0.0f, 0.0f, 0.0f);
+    mpRootPane->SetTranslate(mVec3_c(0.0f, 0.0f, 0.0f));
     if (!mHasTarget) {
         return;
     }
@@ -173,7 +173,7 @@ void dWipeCircle_c::CenterPosSet() {
         centerPos.y = targetPos.y;
     }
 
-    mpRootPane->mPos = mVec3_c(centerPos, 0.0f);
+    mpRootPane->SetTranslate(mVec3_c(centerPos, 0.0f));
 }
 
 #pragma pop
@@ -190,7 +190,7 @@ void dWipeCircle_c::AnimeEndCheck() {
         if (getStatus() == FADE_IN) {
             mStatus = HIDDEN;
             mFlag |= FADE_IN_COMPLETE;
-            mpRootPane->setVisible(false);
+            mpRootPane->SetVisible(false);
         } else {
             mStatus = OPAQUE;
             mFlag |= FADE_OUT_COMPLETE;
@@ -211,16 +211,16 @@ void dWipeCircle_c::CloseSetup() {
 void dWipeCircle_c::setStatus(mFaderBase_c::EStatus status) {
     if (status == OPAQUE) {
         mStatus = OPAQUE;
-        mpWnd[W_circle_00]->mAlpha = 255;
+        mpWnd[W_circle_00]->SetAlpha(255);
         mLyt.ReverseAnimeStartSetup(outWindow, false);
-        mpRootPane->setVisible(true);
+        mpRootPane->SetVisible(true);
         mLyt.AnimePlay();
         mLyt.calc();
     } else if (status == HIDDEN) {
         mStatus = HIDDEN;
-        mpWnd[W_circle_00]->mAlpha = 0;
+        mpWnd[W_circle_00]->SetAlpha(0);
         mLyt.ReverseAnimeStartSetup(inWindow, false);
-        mpRootPane->setVisible(true);
+        mpRootPane->SetVisible(true);
         mLyt.AnimePlay();
         mLyt.calc();
     }

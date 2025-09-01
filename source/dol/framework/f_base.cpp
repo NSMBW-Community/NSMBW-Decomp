@@ -1,6 +1,6 @@
 #include <game/framework/f_base.hpp>
 #include <game/mLib/m_heap.hpp>
-#include <lib/MSL_C/string.h>
+#include <string.h>
 #include <constants/sjis_constants.h>
 
 fBaseID_e fBase_c::m_rootUniqueID = BASE_ID_FIRST;

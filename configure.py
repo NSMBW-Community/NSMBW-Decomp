@@ -186,8 +186,9 @@ writer.variable('ld', f'{WINDOWS_WRAPPER} {LD}' if sys.platform != 'win32' else 
 writer.newline()
 
 # Ninja build rules
+inc_dir_str = ' '.join([f'-i {i}' for i in INCDIRS])
 writer.rule('cw',
-            command=f'$cc -c $ccflags $in -o $out -MD -gccdep -I- -i {INCDIR}',
+            command=f'$cc -c $ccflags $in -o $out -MD -gccdep -DREVOLUTION -I- {inc_dir_str}',
             deps='gcc',
             depfile='$depfile',
             description='Compile $in')

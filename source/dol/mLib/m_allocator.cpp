@@ -23,10 +23,10 @@ int mAllocatorDummyHeap_c::getHeapKind() const {
 
 void mAllocatorDummyHeap_c::initAllocator(EGG::Allocator *allocator, long alignment) {
     const static MEMAllocatorFuncs funcs = { dummyHeapAlloc, dummyHeapFree };
-    allocator->mpFuncs = &funcs;
-    allocator->mpHeapHandle = mHeapHandle;
-    allocator->mAlignment = alignment;
-    allocator->mUnused = 0;
+    allocator->funcs = &funcs;
+    allocator->heap = mHeapHandle;
+    allocator->heapParam1 = alignment;
+    allocator->heapParam2 = 0;
 }
 
 void *mAllocatorDummyHeap_c::alloc(size_t bytes, long alignment) {

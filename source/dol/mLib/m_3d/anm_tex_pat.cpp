@@ -47,15 +47,15 @@ void m3d::anmTexPat_c::child_c::releaseAnm() {
         return;
     }
     mpObj->Release();
-    mpHeap->free(MEM_FRMHEAP_FREE_ALL);
+    mpHeap->free(MEM_FRM_HEAP_FREE_ALL);
     mpObj = nullptr;
 }
 
 void m3d::anmTexPat_c::child_c::setFrmCtrlDefault(nw4r::g3d::ResAnmTexPat &anmTexPat, m3d::playMode_e playMode) {
     if (playMode == PLAYMODE_INHERIT) {
-        playMode = (anmTexPat.p->mAnimateType == nw4r::g3d::ANM_POLICY_ONCE) ? FORWARD_ONCE : FORWARD_LOOP;
+        playMode = (anmTexPat.GetAnmPolicy() == nw4r::g3d::ANM_POLICY_ONETIME) ? FORWARD_ONCE : FORWARD_LOOP;
     }
-    fanm_c::set(anmTexPat.getDuration(), playMode, 1.0f, -1.0f);
+    fanm_c::set(anmTexPat.GetNumFrame(), playMode, 1.0f, -1.0f);
 }
 
 size_t m3d::anmTexPat_c::heapCost(nw4r::g3d::ResMdl mdl, nw4r::g3d::ResAnmTexPat anmTexPat, long count, bool calcAligned) {
@@ -114,7 +114,7 @@ m3d::anmTexPat_c::~anmTexPat_c() {
 void m3d::anmTexPat_c::remove() {
     nw4r::g3d::AnmObjTexPatOverride *texPat = nw4r::g3d::G3dObj::DynamicCast<nw4r::g3d::AnmObjTexPatOverride>(mpObj);
     if (texPat != nullptr && children != nullptr) {
-        int count = texPat->getCount();
+        int count = texPat->Size();
         for (int i = 0; i < count; i++) {
             children[i].remove();
         }
@@ -139,7 +139,7 @@ void m3d::anmTexPat_c::releaseAnm(long idx) {
 
 void m3d::anmTexPat_c::play() {
     nw4r::g3d::AnmObjTexPatOverride *texPat = nw4r::g3d::G3dObj::DynamicCast<nw4r::g3d::AnmObjTexPatOverride>(mpObj);
-    int count = texPat->getCount();
+    int count = texPat->Size();
     for (int i = 0; i < count; i++) {
         play(i);
     }

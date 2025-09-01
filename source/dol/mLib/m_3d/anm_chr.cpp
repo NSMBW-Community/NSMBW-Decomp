@@ -1,6 +1,6 @@
 #include <game/mLib/m_3d.hpp>
 #include <game/mLib/m_heap.hpp>
-#include <lib/nw4r/g3d/anm_obj_chr.hpp>
+#include <nw4r/g3d.h>
 
 bool m3d::anmChr_c::create(nw4r::g3d::ResMdl mdl, nw4r::g3d::ResAnmChr anmChr, mAllocator_c *allocator, size_t *objSize) {
     if (allocator == nullptr) {
@@ -34,7 +34,7 @@ void m3d::anmChr_c::setAnm(m3d::bmdl_c &mdl, nw4r::g3d::ResAnmChr anmChr, m3d::p
 }
 
 void m3d::anmChr_c::setAnmAfter(m3d::bmdl_c &mdl, nw4r::g3d::ResAnmChr anmChr, m3d::playMode_e playMode) {
-    nw4r::g3d::AnmObj *n = mpObj->getNode();
+    nw4r::g3d::G3dObj *n = mpObj->GetParent();
 
     nw4r::g3d::AnmObjChrNode *chrNode;
     int nodeIdx;
@@ -43,8 +43,8 @@ void m3d::anmChr_c::setAnmAfter(m3d::bmdl_c &mdl, nw4r::g3d::ResAnmChr anmChr, m
         chrNode = nw4r::g3d::G3dObj::DynamicCast<nw4r::g3d::AnmObjChrNode>(n);
 
         nodeIdx = 0;
-        while (nodeIdx < chrNode->getCount()) {
-            if (chrNode->arr[nodeIdx] != mpObj) {
+        while (nodeIdx < chrNode->Size()) {
+            if (chrNode->GetChild(nodeIdx) != mpObj) {
                 nodeIdx++;
             } else {
                 break;
@@ -56,7 +56,7 @@ void m3d::anmChr_c::setAnmAfter(m3d::bmdl_c &mdl, nw4r::g3d::ResAnmChr anmChr, m
     }
 
     mpObj->Release();
-    mpHeap->free(MEM_FRMHEAP_FREE_ALL);
+    mpHeap->free(MEM_FRM_HEAP_FREE_ALL);
 
     size_t size;
     mpObj = nw4r::g3d::AnmObjChrRes::Construct(&mAllocator, &size, anmChr, mdl.getResMdl(), false);
@@ -74,7 +74,7 @@ void m3d::anmChr_c::setAnmAfter(m3d::bmdl_c &mdl, nw4r::g3d::ResAnmChr anmChr, m
 
 void m3d::anmChr_c::setFrmCtrlDefault(nw4r::g3d::ResAnmChr &anmChr, m3d::playMode_e playMode) {
     if (playMode == PLAYMODE_INHERIT) {
-        playMode = (anmChr.p->mAnimateType == nw4r::g3d::ANM_POLICY_ONCE) ? FORWARD_ONCE : FORWARD_LOOP;
+        playMode = (anmChr.GetAnmPolicy() == nw4r::g3d::ANM_POLICY_ONETIME) ? FORWARD_ONCE : FORWARD_LOOP;
     }
-    fanm_c::set(anmChr.getDuration(), playMode, 1.0f, -1.0f);
+    fanm_c::set(anmChr.GetNumFrame(), playMode, 1.0f, -1.0f);
 }

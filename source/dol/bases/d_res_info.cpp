@@ -1,8 +1,7 @@
 #include <game/bases/d_res.hpp>
 #include <game/mLib/m_heap.hpp>
-#include <lib/rvl/vi/VI.h>
-#include <lib/rvl/os/OSCache.h>
-#include <lib/MSL_C/string.h>
+#include <revolution/VI.h>
+#include <string.h>
 
 dRes_c::info_c::info_c() :
     mRefCount(0),
@@ -114,16 +113,16 @@ dRes_c::info_c::LOAD_STATUS_e dRes_c::info_c::setRes(callback_c *callback) {
         }
 
         // Ensure data is written to main memory
-        DCStoreRangeNoSync(mDataHeap, (size_t) mDataHeap->mHeapHandle->mpHeapEnd - (size_t) mDataHeap);
+        DCStoreRangeNoSync(mDataHeap, (size_t) mDataHeap->mHeapHandle->end - (size_t) mDataHeap);
     }
 
     return LOAD_SUCCESS;
 }
 
 void dRes_c::searchCallback_c::callback(void *file, const ARCDirEntry *dirEntry, const char *path) {
-    if (dirEntry->mIsDirectory) {
+    if (dirEntry->isDir) {
         // Copy the first 4 characters of the folder name and pad with spaces
-        const char *name = dirEntry->mpName;
+        const char *name = dirEntry->name;
         mFolderSig = '    ';
         int nameLen = strlen(name);
         memcpy(&mFolderSig, name, (nameLen <= 4) ? nameLen : 4);

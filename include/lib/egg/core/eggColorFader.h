@@ -2,9 +2,7 @@
 
 #include <lib/egg/core/eggBitFlag.h>
 #include <lib/egg/core/eggFader.h>
-
-#include <lib/nw4r/ut/Color.h>
-#include <lib/nw4r/ut/Rect.h>
+#include <nw4r/ut.h>
 
 namespace EGG {
 

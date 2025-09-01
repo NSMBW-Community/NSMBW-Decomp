@@ -205,7 +205,7 @@ for slice_file in slices:
         unit['scratch'] = {
             'platform': 'gc_wii',
             'compiler': 'mwcc_43_151',
-            'c_flags': c_flags + ' -lang=c++',
+            'c_flags': c_flags + ' -lang=c++ -DREVOLUTION',
             'ctx_path': ctx_path.as_posix(),
             'build_ctx': True
         }

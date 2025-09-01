@@ -3,7 +3,7 @@
 #include <game/bases/d_audio.hpp>
 #include <game/bases/d_heap_allocator.hpp>
 #include <game/mLib/m_3d.hpp>
-#include <lib/nw4r/g3d/res_file.hpp>
+#include <nw4r/g3d.h>
 
 /// @brief A door that can be opened by tilting the Wii Remote.
 /// @details The door is otherwise non-functional and is always drawn over the player.

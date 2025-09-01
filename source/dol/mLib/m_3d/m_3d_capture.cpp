@@ -38,7 +38,7 @@ bool m3d::capture_c::create(
     mTexFilter = texFilter;
 
     GXInitTexObj(&mTexObj, mTexBuffer, width, height, texFmt, GX_CLAMP, GX_CLAMP, 0);
-    GXInitTexObjLOD(&mTexObj, mTexFilter, mTexFilter, 0.0f, 0.0f, 0.0f, 0, 0, 0);
+    GXInitTexObjLOD(&mTexObj, mTexFilter, mTexFilter, 0.0f, 0.0f, 0.0f, 0, 0, GX_ANISO_1);
     return true;
 }
 
@@ -70,7 +70,7 @@ void m3d::capture_c::captureEx(
     }
 
     GXInitTexObj(&mTexObj, mTexBuffer, actualW, actualH, tex2Fmt, GX_CLAMP, GX_CLAMP, 0);
-    GXInitTexObjLOD(&mTexObj, texFilter, texFilter, 0, 0, 0, 0.0f, 0.0f, 0.0f);
+    GXInitTexObjLOD(&mTexObj, texFilter, texFilter, 0, 0, 0, 0.0f, 0.0f, GX_ANISO_1);
     GXSetCopyFilter(0, nullptr, 0, nullptr);
 
     GXSetTexCopySrc(srcTexWidth, srcTexHeight, width, height);
@@ -78,5 +78,5 @@ void m3d::capture_c::captureEx(
     GXCopyTex(mTexBuffer, srcTexHalfSize);
 
     GXRenderModeObj &s = mVideo::m_video->mRenderModeObj;
-    GXSetCopyFilter(s.mAntialias, &s.mSamplePattern, 1, s.mFilterWeights);
+    GXSetCopyFilter(s.aa, s.sample_pattern, TRUE, s.vfilter);
 }
