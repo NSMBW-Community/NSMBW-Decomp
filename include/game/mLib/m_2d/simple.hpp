@@ -11,19 +11,23 @@ namespace m2d {
 
 class Simple_c : public Base_c {
 public:
-    typedef int (*patrolPaneFunc1)(nw4r::lyt::Pane*, void*);
-    typedef bool (*patrolPaneFunc2)(nw4r::lyt::Pane*);
+    enum FLAG_e {
+        SKIP_INVISIBLE = BIT_FLAG(0),
+    };
+
+    typedef int (*patrolPaneFunc1)(nw4r::lyt::Pane *pane, void *arg);
+    typedef bool (*patrolPaneFunc2)(nw4r::lyt::Pane *pane);
 
     Simple_c();
     virtual ~Simple_c() {}
     virtual void draw();
     virtual void calc();
-    virtual bool build(const char *, m2d::ResAccIf_c *);
+    virtual bool build(const char *lytName, m2d::ResAccIf_c *resAcc);
 
     void calcBefore();
     void calcAfter();
-    int patrolPane_local(nw4r::lyt::Pane *, patrolPaneFunc1, patrolPaneFunc2, void *);
-    bool patrolPane(patrolPaneFunc1, patrolPaneFunc2, void *);
+    int patrolPane_local(nw4r::lyt::Pane *pane, patrolPaneFunc1 func1, patrolPaneFunc2 func2, void *arg);
+    bool patrolPane(patrolPaneFunc1 func1, patrolPaneFunc2 func2, void *arg);
 
     Layout_c mLayout;
     nw4r::lyt::DrawInfo mDrawInfo;

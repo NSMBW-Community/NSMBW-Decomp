@@ -9,9 +9,9 @@ namespace m2d {
     bool create(EGG::Heap *, size_t);
     void defaultSet();
     void draw();
-    void drawBefore(u8);
-    void drawAfter(u8);
-    void drawBtween(u8, u8);
+    void drawBefore(u8 maxDrawOrder);
+    void drawAfter(u8 minDrawOrder);
+    void drawBtween(u8 minDrawOrder, u8 maxDrawOrder);
     mAllocator_c *getAllocator();
 
     extern nw4r::ut::List l_list;

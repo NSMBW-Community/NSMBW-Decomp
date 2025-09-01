@@ -49,10 +49,10 @@ void m2d::draw() {
     m2d::reset();
 }
 
-void m2d::drawBefore(u8 before) {
+void m2d::drawBefore(u8 maxDrawOrder) {
     m2d::Base_c *next = (m2d::Base_c *) nw4r::ut::List_GetNext(&m2d::l_list, nullptr);
     while (next != nullptr) {
-        if (next->mDrawOrder >= before) {
+        if (next->mDrawOrder >= maxDrawOrder) {
             break;
         }
         next->draw();
@@ -60,23 +60,23 @@ void m2d::drawBefore(u8 before) {
     }
 }
 
-void m2d::drawAfter(u8 after) {
+void m2d::drawAfter(u8 minDrawOrder) {
     m2d::Base_c *next = (m2d::Base_c *) nw4r::ut::List_GetNext(&m2d::l_list, nullptr);
     while (next != nullptr) {
-        if (next->mDrawOrder > after) {
+        if (next->mDrawOrder > minDrawOrder) {
             next->draw();
         }
         next = (m2d::Base_c *) nw4r::ut::List_GetNext(&m2d::l_list, next);
     }
 }
 
-void m2d::drawBtween(u8 after, u8 before) {
+void m2d::drawBtween(u8 minDrawOrder, u8 maxDrawOrder) {
     m2d::Base_c *next = (m2d::Base_c *) nw4r::ut::List_GetNext(&m2d::l_list, nullptr);
     while (next != nullptr) {
-        if (next->mDrawOrder > before) {
+        if (next->mDrawOrder > maxDrawOrder) {
             break;
         }
-        if (next->mDrawOrder >= after) {
+        if (next->mDrawOrder >= minDrawOrder) {
             next->draw();
         }
         next = (m2d::Base_c *) nw4r::ut::List_GetNext(&m2d::l_list, next);
@@ -147,17 +147,17 @@ void *m2d::ResAccIf_c::getResource(ulong type, const char *name) {
 void m2d::FrameCtrl_c::play() {
     mPrevFrame = mCurrFrame;
     float frame = mCurrFrame;
-    if (mFlags & 2) {
+    if (mFlags & REVERSE) {
         if (frame >= mRate) {
             frame -= mRate;
-        } else if (mFlags & 1) {
+        } else if (mFlags & NO_LOOP) {
             frame = 0;
         } else {
             frame += mEndFrame - mRate;
         }
     } else {
         frame += mRate;
-        if (mFlags & 1) {
+        if (mFlags & NO_LOOP) {
             if (frame > getLastActiveFrame()) {
                 frame = getLastActiveFrame();
             }
@@ -190,9 +190,9 @@ void m2d::FrameCtrl_c::setRate(float rate) {
 
 bool m2d::FrameCtrl_c::isStop() const {
     switch (mFlags) {
-        case 1:
+        case NO_LOOP:
             return mCurrFrame >= getLastActiveFrame();
-        case 3:
+        case NO_LOOP | REVERSE:
             return mCurrFrame <= 0.0f;
         default:
             return false;
@@ -233,8 +233,8 @@ void m2d::Simple_c::calc() {
 
 void m2d::Simple_c::calcBefore() {
     u32 option = 0;
-    if (mFlags & 1) {
-        option = 1;
+    if (mFlags & SKIP_INVISIBLE) {
+        option = nw4r::lyt::ANIMOPTION_SKIP_INVISIBLE;
     }
     mLayout.Animate(option);
 }
@@ -250,14 +250,14 @@ void m2d::Simple_c::draw() {
     float far = 500.0f;
     EGG::Screen screen;
     bool isWide = EGG::Screen::sTVMode == EGG::Screen::TV_MODE_16_9;
-    float w_16_9 = EGG::Screen::sTVModeInfo[EGG::Screen::TV_MODE_16_9].width;
-    float w_4_3 = EGG::Screen::sTVModeInfo[EGG::Screen::TV_MODE_4_3].width;
-    float left = isWide ? w_16_9 * rect.left / w_4_3 : rect.left;
-    float right = isWide ? w_16_9 * rect.right / w_4_3 : rect.right;
+    float width_16_9 = EGG::Screen::sTVModeInfo[EGG::Screen::TV_MODE_16_9].width;
+    float width_4_3 = EGG::Screen::sTVModeInfo[EGG::Screen::TV_MODE_4_3].width;
+    float left = isWide ? width_16_9 * rect.left / width_4_3 : rect.left;
+    float right = isWide ? width_16_9 * rect.right / width_4_3 : rect.right;
     screen.mProjType = EGG::Frustum::PROJ_ORTHO;
     screen.ResetOrthographic(rect.top, rect.bottom, left, right, near, far);
     if (isWide) {
-        screen.mScale = nw4r::math::VEC3(w_4_3 / w_16_9, 1.0f, 1.0f);
+        screen.mScale = nw4r::math::VEC3(width_4_3 / width_16_9, 1.0f, 1.0f);
     }
     screen.SetProjectionGX();
     mLayout.Draw(mDrawInfo);
@@ -319,7 +319,7 @@ bool m2d::AnmResV2_c::create(const char *name, m2d::ResAccIf_c *resAcc, m2d::Lay
         layout->BindAnimationAuto(mAnimResource, resAcc->getResAccessor());
     }
     mGroupNum = mAnimResource.GetGroupNum();
-    mGroupAnim = new(getAllocator()->mpHeap, 4) GroupAnimTransform_c[mGroupNum];
+    mGroupAnim = new(getAllocator()->mpHeap, 4) GroupAnimTransform_s[mGroupNum];
     const nw4r::lyt::AnimationGroupRef *groupArray = mAnimResource.GetGroupArray();
     for (int i = 0; i < mGroupNum; i++) {
         nw4r::lyt::AnimTransform *transform = nullptr;
@@ -349,8 +349,8 @@ bool m2d::AnmResV2_c::remove() {
     return true;
 }
 
-m2d::GroupAnimTransform_c *m2d::AnmResV2_c::getGroupAnimTransform(const char *name) {
-    GroupAnimTransform_c *res = nullptr;
+m2d::GroupAnimTransform_s *m2d::AnmResV2_c::getGroupAnimTransform(const char *name) {
+    GroupAnimTransform_s *res = nullptr;
     for (int i = 0; i < mGroupNum; i++) {
         if (strcmp(name, mGroupAnim[i].mpGroup->GetName()) == 0) {
             res = &mGroupAnim[i];
@@ -432,11 +432,11 @@ bool m2d::AnmGroupBase_c::create(AnmResV2_c *anmRes, const char *name) {
     mpAnmRes = anmRes;
     mpGroupAnim = mpAnmRes->getGroupAnimTransform(name);
     if (mpGroupAnim != nullptr) {
-        bool noLoop = true;
+        u8 flags = FrameCtrl_c::NO_LOOP;
         if (mpGroupAnim->mpAnimTransform->IsLoopData()) {
-            noLoop = false;
+            flags &= ~FrameCtrl_c::NO_LOOP;
         }
-        mpFrameCtrl->set(mpGroupAnim->mpAnimTransform->GetFrameSize(), noLoop, 1.0f, -1.0f);
+        mpFrameCtrl->set(mpGroupAnim->mpAnimTransform->GetFrameSize(), flags, 1.0f, -1.0f);
         updateFrame();
     }
     return true;
@@ -445,9 +445,9 @@ bool m2d::AnmGroupBase_c::create(AnmResV2_c *anmRes, const char *name) {
 void m2d::AnmGroupBase_c::setAnmEnable(bool enable) {
     mpAnmRes->setAnmEnable(mpGroupAnim->mpGroup, enable);
     if (enable) {
-        mFlags |= 1;
+        mFlags |= FLAG_ENABLED;
     } else {
-        mFlags &= ~1;
+        mFlags &= ~FLAG_ENABLED;
     }
 }
 

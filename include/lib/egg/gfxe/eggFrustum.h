@@ -36,13 +36,13 @@ public:
     nw4r::math::VEC3 mScale;
     mutable u16 mFlags;
 
-    Frustum(ProjectionType, const nw4r::math::VEC2 &, f32, f32, CanvasMode);
-    Frustum(const Frustum &);
+    Frustum(ProjectionType projType, const nw4r::math::VEC2 &scale, f32 nearZ, f32 farZ, CanvasMode canvasMode);
+    Frustum(const Frustum &frustum);
 
     virtual ~Frustum() {}
     virtual void SetProjectionGX() const;
-    virtual void CopyToG3D(nw4r::g3d::Camera) const;
-    void ResetOrthographic(f32, f32, f32, f32, f32, f32);
+    virtual void CopyToG3D(nw4r::g3d::Camera camera) const;
+    void ResetOrthographic(f32 top, f32 bottom, f32 left, f32 right, f32 nearZ, f32 farZ);
 };
 
 } // namespace EGG

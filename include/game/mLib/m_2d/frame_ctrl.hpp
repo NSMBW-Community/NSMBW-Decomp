@@ -6,6 +6,11 @@ namespace m2d {
 
 class FrameCtrl_c {
 public:
+    enum ANM_FLAG_e {
+        NO_LOOP = BIT_FLAG(0),
+        REVERSE = BIT_FLAG(1),
+    };
+
     virtual ~FrameCtrl_c() {}
 
     void play();

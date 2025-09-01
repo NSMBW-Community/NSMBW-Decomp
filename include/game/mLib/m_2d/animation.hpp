@@ -9,7 +9,7 @@
 namespace m2d {
 
 /// @unofficial
-struct GroupAnimTransform_c {
+struct GroupAnimTransform_s {
     nw4r::lyt::Group *mpGroup;
     nw4r::lyt::AnimTransform *mpAnimTransform;
 };
@@ -21,19 +21,23 @@ public:
 
     bool create(const char *name, m2d::ResAccIf_c *resAcc, m2d::Layout_c *layout, bool useOverride);
     bool remove();
-    GroupAnimTransform_c *getGroupAnimTransform(const char *);
-    void setAnmEnable(nw4r::lyt::Group*, bool);
-    void updateFrame(nw4r::lyt::Group*, float);
-    nw4r::lyt::AnimationLink *findAnmLink(nw4r::lyt::Pane*, bool);
-    void setAnmFrame(nw4r::lyt::Pane*, float);
+    GroupAnimTransform_s *getGroupAnimTransform(const char *name);
+    void setAnmEnable(nw4r::lyt::Group *group, bool enable);
+    void updateFrame(nw4r::lyt::Group *group, float frame);
+    nw4r::lyt::AnimationLink *findAnmLink(nw4r::lyt::Pane *pane, bool recursive);
+    void setAnmFrame(nw4r::lyt::Pane *pane, float frame);
 
     nw4r::lyt::AnimResource mAnimResource;
-    GroupAnimTransform_c *mGroupAnim;
+    GroupAnimTransform_s *mGroupAnim;
     int mGroupNum;
 };
 
 class AnmGroupBase_c {
 public:
+    enum FLAG_e {
+        FLAG_ENABLED = BIT_FLAG(0),
+    };
+
     AnmGroupBase_c() {}
 
     bool create(AnmResV2_c *anmRes, const char *name);
@@ -42,7 +46,7 @@ public:
 
     FrameCtrl_c *mpFrameCtrl;
     AnmResV2_c *mpAnmRes;
-    GroupAnimTransform_c *mpGroupAnim;
+    GroupAnimTransform_s *mpGroupAnim;
     u8 mFlags;
 };
 

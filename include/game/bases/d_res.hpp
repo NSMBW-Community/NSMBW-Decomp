@@ -167,7 +167,7 @@ public:
      *
      * @param arcName The name of the archive which contains the resource. See the [path notes](#path-notes).
      * @param resPath The path to the resource within the archive. See the [path notes](#path-notes).
-     * @return A pointer to the contents of the resource.
+     * @return The resource file.
      */
     nw4r::g3d::ResFile getRes(const char *arcName, const char *resPath) const;
 
@@ -177,7 +177,7 @@ public:
      * @param arcName The name of the archive which contains the resource. See the [path notes](#path-notes).
      * @param resPath The path to the resource within the archive. See the [path notes](#path-notes).
      * @param size A pointer where the size of the resource will be written to.
-     * @return A pointer to the contents of the resource.
+     * @return The resource file.
      */
     nw4r::g3d::ResFile getRes(const char *arcName, const char *resPath, unsigned long *size) const;
 
