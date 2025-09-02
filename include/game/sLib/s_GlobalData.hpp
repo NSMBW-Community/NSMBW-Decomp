@@ -8,5 +8,5 @@
 template <typename T>
 class sGlobalData_c {
 public:
-    static T::GlobalData_t mData; ///< @unofficial
+    static typename T::GlobalData_t mData; ///< @unofficial
 };

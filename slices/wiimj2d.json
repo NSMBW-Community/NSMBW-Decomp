@@ -292,6 +292,17 @@
             }
         },
         {
+            "source": "dol/bases/d_SmallScoreManager.cpp",
+            "memoryRanges": {
+                ".text": "0x106360-0x106af0",
+                ".ctors": "0x1c0-0x1c4",
+                ".bss": "0x23800-0x23838",
+                ".data": "0x24478-0x244f8",
+                ".sbss": "0x710-0x718",
+                ".sdata2": "0x2290-0x22d0"
+            }
+        },
+        {
             "source": "dol/bases/d_pausewindow.cpp",
             "memoryRanges": {
                 ".text": "0x153d00-0x1552f0",

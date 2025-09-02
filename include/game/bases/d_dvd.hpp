@@ -2,7 +2,6 @@
 #include <types.h>
 #include <lib/egg/core/eggHeap.h>
 
-namespace d2d {
 namespace dDvd {
 
 class loader_c {
@@ -20,4 +19,3 @@ private:
 void create(long, EGG::Heap *, EGG::Heap *);
 
 } // namespace dDvd
-} // namespace d2d
