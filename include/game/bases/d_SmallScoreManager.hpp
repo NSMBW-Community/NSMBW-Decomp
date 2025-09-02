@@ -19,10 +19,32 @@ public:
     virtual int draw();
     virtual int doDelete();
 
+    /// @brief Creates a blue small score popup.
+    /// @param pos The position of the popup.
+    /// @param popupType The type of popup to create. A value from dSmallScore_c::POPUP_TYPE_e.
+    /// @param playerType The player type. A value from PLAYER_CHARACTER_e.
     void CreateBlueNumber(const mVec3_c &pos, int popupType, int playerType);
+
+    /// @brief Creates a red number popup.
+    /// @param pos The position of the popup.
+    /// @param playerType The player type. A value from PLAYER_CHARACTER_e.
     void CreateRedNumber(const mVec3_c &pos, int playerType);
+
+    /// @brief Creates a small score popup.
+    /// @param pos The position of the popup.
+    /// @param popupType The type of popup to create. A value from dSmallScore_c::POPUP_TYPE_e.
+    /// @param playerType The player type. A value from PLAYER_CHARACTER_e.
     void CreateSmallScore(const mVec3_c &pos, int popupType, int playerType);
+
+    /// @brief Creates a goal score popup.
+    /// @param pos The position of the popup.
+    /// @param popupType The type of popup to create. A value from dSmallScore_c::POPUP_TYPE_e.
+    /// @param playerType The player type. A value from PLAYER_CHARACTER_e.
     void CreateGoalScore(const mVec3_c &pos, int popupType, int playerType);
+
+    /// @brief Updates the position of a goal score popup.
+    /// @param pos The new position.
+    /// @param playerType The player type. A value from PLAYER_CHARACTER_e.
     void GoalScoreExecute(const mVec3_c &pos, int playerType);
 
 private:
@@ -46,14 +68,9 @@ public:
         float mScissorSizeX, mScissorSizeY;
     };
 
-    static const float c_SMALL_SCORE_SIZE_4_3_X;
-    static const float c_SMALL_SCORE_SIZE_4_3_Y;
-    static const float c_SMALL_SCORE_SIZE_16_9_X;
-    static const float c_SMALL_SCORE_SIZE_16_9_Y;
-    static const float c_SMALL_GOAL_SCORE_SIZE_4_3_X;
-    static const float c_SMALL_GOAL_SCORE_SIZE_4_3_Y;
-    static const float c_SMALL_GOAL_SCORE_SIZE_16_9_X;
-    static const float c_SMALL_GOAL_SCORE_SIZE_16_9_Y;
-    static const float c_SCISSOR_SIZE_X;
-    static const float c_SCISSOR_SIZE_Y;
+    static const float c_SMALL_SCORE_SIZE_4_3_X, c_SMALL_SCORE_SIZE_4_3_Y;
+    static const float c_SMALL_SCORE_SIZE_16_9_X, c_SMALL_SCORE_SIZE_16_9_Y;
+    static const float c_SMALL_GOAL_SCORE_SIZE_4_3_X, c_SMALL_GOAL_SCORE_SIZE_4_3_Y;
+    static const float c_SMALL_GOAL_SCORE_SIZE_16_9_X, c_SMALL_GOAL_SCORE_SIZE_16_9_Y;
+    static const float c_SCISSOR_SIZE_X, c_SCISSOR_SIZE_Y;
 };

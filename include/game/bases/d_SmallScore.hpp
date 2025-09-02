@@ -15,34 +15,35 @@ public:
         STATE_NONE = 4
     };
 
+    /// @brief The different types of the small score popups.
     enum POPUP_TYPE_e {
-        POPUP_TYPE_100,
-        POPUP_TYPE_200,
-        POPUP_TYPE_400,
-        POPUP_TYPE_800,
-        POPUP_TYPE_1000,
-        POPUP_TYPE_2000,
-        POPUP_TYPE_4000,
-        POPUP_TYPE_8000,
-        POPUP_TYPE_ONE,
-        POPUP_TYPE_TWO,
-        POPUP_TYPE_THREE,
-        POPUP_TYPE_FOUR,
-        POPUP_TYPE_FIVE,
-        POPUP_TYPE_SIX,
-        POPUP_TYPE_SEVEN,
-        POPUP_TYPE_EIGHT,
-        POPUP_TYPE_1UP,
-        POPUP_TYPE_2UP,
-        POPUP_TYPE_3UP,
-        POPUP_TYPE_4UP,
-        POPUP_TYPE_1UP_DUPE,
-        POPUP_TYPE_COIN_2,
-        POPUP_TYPE_COIN_3,
-        POPUP_TYPE_COIN_5,
-        POPUP_TYPE_COIN_10,
-        POPUP_TYPE_COIN_15,
-        POPUP_TYPE_COIN_20
+        POPUP_TYPE_100, ///< The number 100.
+        POPUP_TYPE_200, ///< The number 200.
+        POPUP_TYPE_400, ///< The number 400.
+        POPUP_TYPE_800, ///< The number 800.
+        POPUP_TYPE_1000, ///< The number 1000.
+        POPUP_TYPE_2000, ///< The number 2000.
+        POPUP_TYPE_4000, ///< The number 4000.
+        POPUP_TYPE_8000, ///< The number 8000.
+        POPUP_TYPE_1, ///< The number 1, used for red coins and toad balloons.
+        POPUP_TYPE_2, ///< The number 2, used for red coins and toad balloons.
+        POPUP_TYPE_3, ///< The number 3, used for red coins and toad balloons.
+        POPUP_TYPE_4, ///< The number 4, used for red coins and toad balloons.
+        POPUP_TYPE_5, ///< The number 5, used for red coins and toad balloons.
+        POPUP_TYPE_6, ///< The number 6, used for red coins and toad balloons.
+        POPUP_TYPE_7, ///< The number 7, used for red coins and toad balloons.
+        POPUP_TYPE_8, ///< The number 8, used for red coins and toad balloons.
+        POPUP_TYPE_1UP, ///< The text "1-UP".
+        POPUP_TYPE_2UP, ///< The text "2-UP".
+        POPUP_TYPE_3UP, ///< The text "3-UP".
+        POPUP_TYPE_4UP, ///< The text "4-UP".
+        POPUP_TYPE_1UP_COLOR_CHANGE, ///< The text "1-UP", but changes color (see chgColor). @unused
+        POPUP_TYPE_COIN_2, ///< [Coin icon]x2. Used in Coin Battle.
+        POPUP_TYPE_COIN_3, ///< [Coin icon]x3. Used in Coin Battle.
+        POPUP_TYPE_COIN_5, ///< [Coin icon]x5. Used in Coin Battle.
+        POPUP_TYPE_COIN_10, ///< [Coin icon]x10. Used in Coin Battle.
+        POPUP_TYPE_COIN_15, ///< [Coin icon]x15. Used in Coin Battle.
+        POPUP_TYPE_COIN_20 ///< [Coin icon]x20. Used in Coin Battle.
     };
 
     typedef void (dSmallScore_c::*ProcFunc)();
