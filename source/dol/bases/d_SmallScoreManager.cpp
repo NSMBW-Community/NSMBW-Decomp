@@ -7,7 +7,7 @@ ACTOR_PROFILE(SMALL_SCORE_MANAGER, dSmallScoreManager_c, 0);
 dSmallScoreManager_c *dSmallScoreManager_c::m_instance = nullptr;
 
 template <>
-dSmallScoreManager_c::GlobalData_s dGlobalData_c<dSmallScoreManager_c>::data = {
+dSmallScoreManager_c::GlobalData_t sGlobalData_c<dSmallScoreManager_c>::mData = {
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     dSmallScoreManager_c::c_SMALL_SCORE_SIZE_4_3_X, dSmallScoreManager_c::c_SMALL_SCORE_SIZE_4_3_Y,
     dSmallScoreManager_c::c_SMALL_SCORE_SIZE_16_9_X, dSmallScoreManager_c::c_SMALL_SCORE_SIZE_16_9_Y,
@@ -123,7 +123,7 @@ void dSmallScoreManager_c::CreateBlueNumber(const mVec3_c &pos, int popupType, i
 
 void dSmallScoreManager_c::CreateRedNumber(const mVec3_c &pos, int playerType) {
     mSmallScores[mSmallScoresIdx].mEnableBigSmallAnim = true;
-    CreateSmallScore(pos, dSmallScore_c::POPUP_TYPE_EIGHT, playerType);
+    CreateSmallScore(pos, dSmallScore_c::POPUP_TYPE_8, playerType);
 }
 
 

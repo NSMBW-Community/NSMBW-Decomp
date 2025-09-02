@@ -1,8 +1,8 @@
 #pragma once
 #include <game/bases/d_base.hpp>
-#include <game/bases/d_global.hpp>
 #include <game/bases/d_resource.hpp>
 #include <game/bases/d_SmallScore.hpp>
+#include <game/sLib/s_GlobalData.hpp>
 #include <constants/game_constants.h>
 
 /// @brief A manager for the small score popups.
@@ -59,7 +59,7 @@ public:
     static dSmallScoreManager_c *m_instance; ///< The instance of the small score manager.
 
     /// @unofficial
-    struct GlobalData_s {
+    struct GlobalData_t {
         u8 mUnk[12];
         float mSmallScoreSize_4_3_X, mSmallScoreSize_4_3_Y;
         float mSmallScoreSize_16_9_X, mSmallScoreSize_16_9_Y;
