@@ -37,7 +37,7 @@ public:
         POPUP_TYPE_2UP, ///< The text "2-UP".
         POPUP_TYPE_3UP, ///< The text "3-UP".
         POPUP_TYPE_4UP, ///< The text "4-UP".
-        POPUP_TYPE_1UP_COLOR_CHANGE, ///< The text "1-UP", but changes color (see chgColor). @unused
+        POPUP_TYPE_1UP_COLOR_CHANGE, ///< The text "1-UP", but changes color (see chgColor). Used when a 1-UP is awarded to multiple players.
         POPUP_TYPE_COIN_2, ///< [Coin icon]x2. Used in Coin Battle.
         POPUP_TYPE_COIN_3, ///< [Coin icon]x3. Used in Coin Battle.
         POPUP_TYPE_COIN_5, ///< [Coin icon]x5. Used in Coin Battle.
