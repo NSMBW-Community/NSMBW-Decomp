@@ -37,18 +37,18 @@ dSmallScoreManager_c::~dSmallScoreManager_c() {
 
 int dSmallScoreManager_c::create() {
     if (!mResLoader.request("Layout/pointGet/pointGet.arc")) {
-        return fBase_c::NOT_READY;
+        return NOT_READY;
     }
 
     for (int i = 0; i < SMALL_SCORE_COUNT; i++) {
         if (!mSmallScores[i].createLayout(&mResLoader)) {
-            return fBase_c::NOT_READY;
+            return NOT_READY;
         }
     }
 
     for (int i = 0; i < PLAYER_COUNT; i++) {
         if (!mGoalScores[i].createLayout(&mResLoader)) {
-            return fBase_c::NOT_READY;
+            return NOT_READY;
         }
     }
 
@@ -64,12 +64,12 @@ int dSmallScoreManager_c::create() {
 
     mSmallScoresIdx = 0;
     mGoalScoresIdx = 0;
-    return fBase_c::SUCCEEDED;
+    return SUCCEEDED;
 }
 
 int dSmallScoreManager_c::execute() {
     if (dGameCom::isGameStop(dGameCom::GAME_STOP_ANY)) {
-        return fBase_c::SUCCEEDED;
+        return SUCCEEDED;
     }
 
     for (int i = 0; i < SMALL_SCORE_COUNT; i++) {
@@ -81,7 +81,7 @@ int dSmallScoreManager_c::execute() {
     }
 
     mGoalScoresIdx = 0;
-    return fBase_c::SUCCEEDED;
+    return SUCCEEDED;
 }
 
 int dSmallScoreManager_c::draw() {
@@ -93,27 +93,27 @@ int dSmallScoreManager_c::draw() {
         mGoalScores[i].draw();
     }
 
-    return fBase_c::SUCCEEDED;
+    return SUCCEEDED;
 }
 
 int dSmallScoreManager_c::doDelete() {
     if (!mResLoader.remove()) {
-        return fBase_c::NOT_READY;
+        return NOT_READY;
     }
 
     for (int i = 0; i < SMALL_SCORE_COUNT; i++) {
         if (!mSmallScores[i].doDelete()) {
-            return fBase_c::NOT_READY;
+            return NOT_READY;
         }
     }
 
     for (int i = 0; i < PLAYER_COUNT; i++) {
         if (!mGoalScores[i].doDelete()) {
-            return fBase_c::NOT_READY;
+            return NOT_READY;
         }
     }
 
-    return fBase_c::SUCCEEDED;
+    return SUCCEEDED;
 }
 
 void dSmallScoreManager_c::CreateBlueNumber(const mVec3_c &pos, int popupType, int playerType) {
