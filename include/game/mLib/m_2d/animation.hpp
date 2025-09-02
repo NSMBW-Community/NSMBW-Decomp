@@ -16,7 +16,7 @@ struct GroupAnimTransform_s {
 
 class AnmResV2_c {
 public:
-    AnmResV2_c() {}
+    AnmResV2_c() : mGroupAnim(nullptr), mGroupNum(0) {}
     virtual ~AnmResV2_c() {}
 
     bool create(const char *name, m2d::ResAccIf_c *resAcc, m2d::Layout_c *layout, bool useOverride);
@@ -38,7 +38,7 @@ public:
         FLAG_ENABLED = BIT_FLAG(0),
     };
 
-    AnmGroupBase_c() {}
+    AnmGroupBase_c(FrameCtrl_c *fc) : mpFrameCtrl(fc), mpAnmRes(nullptr), mpGroupAnim(nullptr), mFlags(0) {}
 
     bool create(AnmResV2_c *anmRes, const char *name);
     void setAnmEnable(bool enable);
@@ -52,6 +52,18 @@ public:
 
 class AnmGroup_c : public AnmGroupBase_c {
 public:
+    AnmGroup_c() : AnmGroupBase_c(&mFrameCtrl) {
+        mFrameCtrl.mEndFrame = 1.0f;
+        mFrameCtrl.mCurrFrame = 1.0f;
+        mFrameCtrl.mPrevFrame = 1.0f;
+        mFrameCtrl.mRate = 0.0f;
+    }
+
+    void play() { mpFrameCtrl->play(); updateFrame(); }
+    void setStart() { mpFrameCtrl->setFrame(1.0f); updateFrame(); }
+    void setEnd() { mpFrameCtrl->setFrame(mpFrameCtrl->getLastActiveFrame()); updateFrame(); }
+
+    FrameCtrl_c mFrameCtrl;
 };
 
 } // namespace m2d

@@ -51,9 +51,22 @@
         "__dt__87sStateMgr_c<18dActorMultiState_c,20sStateMethodUsr_FI_c,12sFStateFct_c,13sStateIDChk_c>Fv",
         "__dt__34sFStateFct_c<18dActorMultiState_c>Fv",
         "__dt__31sFState_c<18dActorMultiState_c>Fv",
-        "__dt__7mVec3_cFv"
+        "__dt__7mVec2_cFv",
+        "__dt__7mVec3_cFv",
+        "__dt__Q34nw4r3lyt19ArcResourceAccessorFv",
+        "GetRuntimeTypeInfo__Q34nw4r3lyt4PaneCFv"
     ],
     "slices": [
+        {
+            "source": "dol/bases/d_2d.cpp",
+            "memoryRanges": {
+                ".text": "0x10-0xd90",
+                ".data": "0x0-0x88",
+                ".sbss": "0x0-0x8",
+                ".sdata": "0x0-0x8",
+                ".sdata2": "0x0-0x18"
+            }
+        },
         {
             "source": "dol/bases/d_CourseSelectGuide.cpp",
             "memoryRanges": {
@@ -181,6 +194,24 @@
             }
         },
         {
+            "source": "dol/bases/d_lytbase.cpp",
+            "nonMatching": true,
+            "memoryRanges": {
+                ".text": "0xc2220-0xc33d0",
+                ".ctors": "0x11c-0x120",
+                ".rodata": "0x3338-0x33a0"
+            }
+        },
+        {
+            "source": "dol/bases/d_lyttextbox.cpp",
+            "memoryRanges": {
+                ".text": "0xc33d0-0xc3880",
+                ".sdata": "0x598-0x5a0",
+                ".sdata2": "0x1898-0x18b8",
+                ".bss": "0x7eb8-0x82b8"
+            }
+        },
+        {
             "source": "dol/bases/d_main.cpp",
             "memoryRanges": {
                 ".text": "0xc3880-0xc39d0",
@@ -289,6 +320,19 @@
             "memoryRanges": {
                 ".text": "0xf73e0-0xf74c0",
                 ".data": "0x1de58-0x1de68"
+            }
+        },
+        {
+            "source": "dol/bases/d_gamedisplay.cpp",
+            "nonMatching": true,
+            "memoryRanges": {
+                ".text": "0x1510a0-0x153d00",
+                ".data": "0x28fc8-0x29660",
+                ".sbss2": "0x28-0x30",
+                ".rodata": "0x7c48-0x7d00",
+                ".sdata": "0x1d28-0x1d50",
+                ".sdata2": "0x2b30-0x2b48",
+                ".bss": "0x259e8-0x25ae8"
             }
         },
         {

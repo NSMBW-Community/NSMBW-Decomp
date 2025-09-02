@@ -2,6 +2,7 @@
 #include <types.h>
 #include <nw4r/lyt.h>
 #include <game/mLib/m_3d.hpp>
+#include <game/mLib/m_bound_box.hpp>
 #include <game/mLib/m_vec.hpp>
 #include <game/bases/d_lyttextBox.hpp>
 
@@ -97,9 +98,11 @@ namespace dGameCom {
     void DispSizeScale(nw4r::math::VEC2 &scale);
 
     void LayoutDispNumber(const int &value, const int &fillLeft, LytTextBox_c *textBox, bool fillWidth);
-
-    bool isNowCourseClear();
     void SelectCursorSetup();
     void SelectCursorSetup(nw4r::lyt::Pane *, int, bool);
     void WindowPaneColorSet(nw4r::lyt::Window *, int);
+    bool isNowCourseClear();
+
+    void AreaLanguageFolder(const char *, char *);
+    void fn_800B37E0(mVec3_c &, bool);
 }

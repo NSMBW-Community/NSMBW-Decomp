@@ -48,8 +48,10 @@ inline TDerived DynamicCast(TBase* pPtr) {
         detail::GetTypeInfoFromPtr_(static_cast<TDerived>(NULL));
 
     // Downcast only if possible
-    if (pPtr->GetRuntimeTypeInfo()->IsDerivedFrom(pDerivedTypeInfo)) {
-        return static_cast<TDerived>(pPtr);
+    if (pPtr) {
+        if (pPtr->GetRuntimeTypeInfo()->IsDerivedFrom(pDerivedTypeInfo)) {
+            return static_cast<TDerived>(pPtr);
+        }
     }
 
     return NULL;
