@@ -19,9 +19,13 @@ int daIceBall_c::sm_IceBallAliveCount[4] = {0, 0, 0, 0};
 
 const float lbl_802F5000[4] = {0.75f, 1.05f, 0.6f, 120.0f};
 
-dBcSensor_c l_iceball_foot = { 0, 0, -0x3000 };
-dBcSensor_c l_iceball_head = { 0, 0, 0x3000 };
-dBcSensor_c l_iceball_wall = { 0, 0x3000, 0 };
+inline float mul_lbl_802F5000_2(float x) {
+    return x * lbl_802F5000[2];
+}
+
+const dBcSensor_c l_iceball_foot = { 0, 0, -0x3000 };
+const dBcSensor_c l_iceball_head = { 0, 0, 0x3000 };
+const dBcSensor_c l_iceball_wall = { 0, 0x3000, 0 };
 
 const sCcDatNewF l_fball_cc_data = {
     0.0f, 0.0f,
@@ -33,7 +37,7 @@ const sCcDatNewF l_fball_cc_data = {
     daIceBall_c::ccCallback_Iceball
 };
 
-const float l_cull_data[] = { 0.0f, 0.0f, 8.0f, 8.0f };
+const float l_cull_data[4] = { 0.0f, 0.0f, 8.0f, 8.0f };
 
 STATE_DEFINE(daIceBall_c, FireMove);
 STATE_DEFINE(daIceBall_c, Move);
@@ -219,9 +223,8 @@ void daIceBall_c::ccCallback_Iceball(dCc_c * self, dCc_c * other) {
         iceball->m_3d4 = 1;
     } else if (other->mCcData.mAttackCategory == dCc_c::ATTACK_KOOPA_FIRE) {
         if ((thing->mProfName == fProfile::KOOPA_FIRE) && ((int)(thing->mParam & 0xF) == 1)) {
-            dAudio::SndObjctCmnMap_c* v0 = dAudio::g_pSndObjMap;
-            nw4r::math::VEC2 y = dAudio::cvtSndObjctPos(iceball->mPos);
-            v0->startSound(SE_OBJ_PNGN_ICEBALL_DISAPP, y, 0);
+            dAudio::SndObjctCmnMap_c* map = dAudio::g_pSndObjMap;
+            dAudio::SoundEffectID_t(SE_OBJ_PNGN_ICEBALL_DISAPP).playObjSound(map, iceball->mPos, 0);
         }
 
         iceball->setDeleteEffect();
@@ -433,8 +436,8 @@ void daIceBall_c::executeState_FireMove() {
 
 void daIceBall_c::initializeState_Move() {
 
-    static const float x_speed_a[] = {3.0f, -3.0f};
-    static const float x_speed_b[] = {1.5f, -1.5f};
+    static const float cs_speed_x[] = {3.0f, -3.0f};
+    static const float cs_max_speed_x[] = {1.5f, -1.5f};
 
     dAcPy_c * v0 = daPyMng_c::getPlayer(mPlayerNo);
     float v1 = v0->mSpeed.x;
@@ -444,18 +447,20 @@ void daIceBall_c::initializeState_Move() {
 
     float resX;
     if (v1 > v2) {
-        resX = (v3 * v2) + (v1 - v2) * lbl_802F5000[2];
+        float tmp = (v3 * v2);
+        resX = tmp + mul_lbl_802F5000_2(v1 - v2);
     } else if (v1 < -v2) {
-        resX = (-v3 * v2) + (v1 + v2) * lbl_802F5000[2];
+        float tmp = (-v3 * v2);
+        resX = tmp + mul_lbl_802F5000_2(v1 + v2);
     } else {
         resX = v3 * v1;
     }
 
-    mSpeed.x = resX + x_speed_b[mDirection];
+    mSpeed.x = resX + cs_max_speed_x[mDirection];
     mSpeed.y = 3.7f;
     mSpeed.z = 0.0f;
     mAccelY = -0.15f;
-    mSpeedMax.x = x_speed_a[mDirection];
+    mSpeedMax.x = cs_speed_x[mDirection];
     mMaxFallSpeed = -3.0f;
     mAccelF = 0.04f;
 }
