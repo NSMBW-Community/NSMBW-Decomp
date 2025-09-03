@@ -122,7 +122,7 @@ public:
     static bool checkGround(const mVec3_c *, float *, u8, u8, signed char);
     static bool findGround(mVec3_c *, float *, u32, u32); ///< @unofficial
     static u32 findWall(mVec3_c *, mVec3_c *, float *, u8, u32, dActor_c *); ///< @unofficial
-    void set(dActor_c *, dBcSensor_c *, dBcSensor_c *, dBcSensor_c *); ///< @unofficial
+    void set(dActor_c *, const dBcSensor_c *, const dBcSensor_c *, const dBcSensor_c *); ///< @unofficial
 
     bool isHead()  { return mFlags & 0b00000000000000000000000000010101; }
     bool isWallL() { return mFlags & 0b00000000000000000000000000101010; }
