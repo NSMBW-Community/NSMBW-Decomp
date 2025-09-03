@@ -1,14 +1,22 @@
 #pragma once
 #include <game/framework/f_profile.hpp>
-#include <nw4r/math.h>
 #include <game/mLib/m_vec.hpp>
+#include <nw4r/snd.h>
+#include <nw4r/math.h>
 
 /// @file
 
 /// @ingroup bases
 
+class NMSndObjectBase : nw4r::snd::SoundActor {
+    u32 mNumHandles;
+    u32 mRemotePlayer;
+    void * mSnd2DCalc; // TODO: Snd2DCalc *
+    u32 mObjType;
+};
+
 template<int T>
-class NMSndObject { // : NMSndObjectBase
+class NMSndObject : NMSndObjectBase {
 public:
     virtual void startSound(unsigned long, const nw4r::math::VEC2 &, unsigned long);
 };

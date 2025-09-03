@@ -127,7 +127,7 @@ typedef struct WPADDevConfig {
 
 typedef struct WPADExtConfig {
     union {
-        struct WPADFSConfig {
+        struct { /* WPADFSConfig */
             s16 stickXCenter; // at 0x0
             s16 at_0x02;      // at 0x2
             s16 at_0x04;      // at 0x4
@@ -144,7 +144,7 @@ typedef struct WPADExtConfig {
             s16 accZ1g; // at 0x16
         } fs;
 
-        struct WPADCLConfig {
+        struct { /* WPADCLConfig */
             s16 lStickXCenter; // at 0x0
             s16 at_0x02;       // at 0x2
             s16 at_0x04;       // at 0x4

@@ -26,7 +26,8 @@ public:
     enum GROUP_TYPE_e {
         OTHER, ///< The base is a @ref dBase_c "generic process".
         SCENE, ///< The base is a @ref dScene_c "scene".
-        ACTOR ///< The base is an @ref dBaseActor_c "actor".
+        ACTOR, ///< The base is an @ref dBaseActor_c "actor".
+        ENTITY ///< The base is an @ref dEn_c "entity".
     };
 
     /// @brief The possible operation results.
@@ -76,7 +77,9 @@ protected:
     /// @details If true, rescheduling will be deferred to the next @p connect operation.
     bool mDeferRetryCreate;
 
+public:
     u8 mGroupType; ///< The base's group type. Value is a ::GROUP_TYPE_e.
+protected:
     u8 mProcControl; ///< The operations to be skipped. Value is a ::PROC_DISABLE_e.
 
     /// @brief Checks if a flag is set in ::mProcControl.
