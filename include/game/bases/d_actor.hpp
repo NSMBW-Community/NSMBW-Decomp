@@ -6,8 +6,6 @@
 #include <game/bases/d_bc.hpp>
 #include <game/bases/d_rc.hpp>
 
-class dBg_ctr_c;
-
 class dAcPy_c;
 class dPropelParts_c;
 
