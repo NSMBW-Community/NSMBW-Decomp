@@ -4,18 +4,17 @@
 #include <game/bases/d_scene.hpp>
 #include <game/bases/d_movie.hpp>
 #include <game/bases/d_effectmanager.hpp>
-
 #include <game/framework/f_profile.hpp>
-#include <lib/egg/effectmanager.hpp>
+#include <lib/egg/util/eggEffectManager.hpp>
 
 BASE_PROFILE(LASTACTOR, dLastActor_c);
 
 int dLastActor_c::create() {
-    return fBase_c::SUCCEEDED;
+    return SUCCEEDED;
 }
 
 int dLastActor_c::doDelete() {
-    return fBase_c::SUCCEEDED;
+    return SUCCEEDED;
 }
 
 int dLastActor_c::execute() {
@@ -35,11 +34,11 @@ int dLastActor_c::execute() {
     dActor_c::mExecStop = dActor_c::mExecStopReq;
     dActor_c::mDrawStop = dActor_c::mDrawStopReq;
 
-    return fBase_c::SUCCEEDED;
+    return SUCCEEDED;
 }
 
 int dLastActor_c::draw() {
-    return fBase_c::SUCCEEDED;
+    return SUCCEEDED;
 }
 
 dLastActor_c::~dLastActor_c() {}

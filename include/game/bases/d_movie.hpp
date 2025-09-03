@@ -8,9 +8,9 @@ class dScMovie_c : public dScene_c {
 public:
     sPhase_c mChain;
     dQuake_c mQuake;
-    void * mMovieData; // TODO
-    void * mMovieSound; // TODO
-    void * mDemoMessage; // TODO
+    void *mMovieData; // TODO
+    void *mMovieSound; // TODO
+    void *mDemoMessage; // TODO
     NMSndObjectBase mSndObject;
     u32 m_130[7];
     int mFrameCounter;
@@ -32,5 +32,5 @@ public:
     u8 mPaddingMaybe[2];
     float m_1A0;
 
-    static dScMovie_c * m_instance;
+    static dScMovie_c *m_instance;
 };
