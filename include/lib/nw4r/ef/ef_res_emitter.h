@@ -188,8 +188,8 @@ struct EmitterDesc {
         EMIT_FLAG_26 = (1 << 26),
     };
 
-    u32 commonFlag;                 // at 0x0
-    u32 emitFlag;                   // at 0x4
+    ulong commonFlag;                 // at 0x0
+    ulong emitFlag;                   // at 0x4
     u16 emitLife;                   // at 0x8
     u16 ptclLife;                   // at 0xA
     s8 ptclLifeRandom;              // at 0xC
@@ -221,7 +221,7 @@ struct EmitterDesc {
     u8 lodFar;                      // at 0x85
     u8 lodMinEmit;                  // at 0x86
     u8 lodAlpha;                    // at 0x87
-    u32 randomSeed;                 // at 0x88
+    ulong randomSeed;                 // at 0x88
     u8 userdata[8];                 // at 0x8C
     EmitterDrawSetting drawSetting; // at 0x94
 
@@ -233,7 +233,7 @@ struct EmitterDesc {
 struct EmitterResource {
 private:
     char* name;     // at 0x0
-    u32 headersize; // at 0x4
+    ulong headersize; // at 0x4
 
 public:
     /******************************************************************************
@@ -267,7 +267,7 @@ public:
     }
     u8* SkipParticleParameterDesc() {
         u8* pPtr = SkipEmitterDesc();
-        pPtr += *reinterpret_cast<u32*>(pPtr) + sizeof(u32);
+        pPtr += *reinterpret_cast<ulong*>(pPtr) + sizeof(ulong);
         return pPtr;
     }
 
@@ -332,22 +332,22 @@ public:
         pTail += NumPtclTrack() * 8 + 4;
         pTail += NumEmitTrack() * 8 + 4;
 
-        u32* pPtclPtrTbl = reinterpret_cast<u32*>(GetPtclTrackTbl());
-        u32* pEmitPtrTbl = reinterpret_cast<u32*>(GetEmitTrackTbl());
+        ulong* pPtclPtrTbl = reinterpret_cast<ulong*>(GetPtclTrackTbl());
+        ulong* pEmitPtrTbl = reinterpret_cast<ulong*>(GetEmitTrackTbl());
 
-        u32* pPtclSizeTbl =
-            reinterpret_cast<u32*>(GetPtclTrackTbl()) + NumPtclTrack();
-        u32* pEmitSizeTbl =
-            reinterpret_cast<u32*>(GetEmitTrackTbl()) + NumEmitTrack();
+        ulong* pPtclSizeTbl =
+            reinterpret_cast<ulong*>(GetPtclTrackTbl()) + NumPtclTrack();
+        ulong* pEmitSizeTbl =
+            reinterpret_cast<ulong*>(GetEmitTrackTbl()) + NumEmitTrack();
 
         int i;
         for (i = 0; i < NumPtclTrack(); i++) {
-            pPtclPtrTbl[i] = reinterpret_cast<u32>(pTail);
+            pPtclPtrTbl[i] = reinterpret_cast<ulong>(pTail);
             pTail += pPtclSizeTbl[i];
         }
 
         for (i = 0; i < NumEmitTrack(); i++) {
-            pEmitPtrTbl[i] = reinterpret_cast<u32>(pTail);
+            pEmitPtrTbl[i] = reinterpret_cast<ulong>(pTail);
             pTail += pEmitSizeTbl[i];
         }
     }

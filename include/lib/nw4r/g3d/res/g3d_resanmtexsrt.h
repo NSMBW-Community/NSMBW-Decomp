@@ -62,8 +62,8 @@ struct TexSrtAnmResult : ResAnmTexSrtDataTypedef, TexSrtTypedef {
         NUM_OF_FLAGS = 4
     };
 
-    u32 flags;                  // at 0x0
-    u32 indFlags;               // at 0x4
+    ulong flags;                  // at 0x0
+    ulong indFlags;               // at 0x4
     TexMatrixMode texMtxMode;   // at 0x8
     TexSrt srt[NUM_OF_TEX_MTX]; // at 0xC
 };
@@ -89,7 +89,7 @@ struct ResAnmTexSrtTexData {
         FLAG_TRANS_V_CONST = (1 << 9),
     };
 
-    u32 flags;          // at 0x0
+    ulong flags;          // at 0x0
     ResAnmData anms[1]; // at 0x4
 };
 
@@ -101,8 +101,8 @@ struct ResAnmTexSrtMatData : ResAnmTexSrtDataTypedef {
     };
 
     s32 name;                     // at 0x0
-    u32 flags;                    // at 0x4
-    u32 indFlags;                 // at 0x8
+    ulong flags;                    // at 0x4
+    ulong indFlags;                 // at 0x8
     s32 toResAnmTexSrtTexData[1]; // at 0xC
 };
 
@@ -115,7 +115,7 @@ struct ResAnmTexSrtInfoData : TexSrtTypedef {
 
 struct ResAnmTexSrtData {
     ResBlockHeaderData header; // at 0x0
-    u32 revision;              // at 0x8
+    ulong revision;              // at 0x8
     s32 toResFileData;         // at 0xC
     s32 toTexSrtDataDic;       // at 0x10
     s32 toResUserData;         // at 0x14
@@ -126,13 +126,13 @@ struct ResAnmTexSrtData {
 
 class ResAnmTexSrt : public ResCommon<ResAnmTexSrtData> {
 public:
-    static const u32 SIGNATURE = 'SRT0';
+    static const ulong SIGNATURE = 'SRT0';
     static const int REVISION = 4;
 
 public:
     NW4R_G3D_RESOURCE_FUNC_DEF(ResAnmTexSrt);
 
-    u32 GetRevision() const {
+    ulong GetRevision() const {
         return ref().revision;
     }
 
@@ -140,13 +140,13 @@ public:
         return GetRevision() == REVISION;
     }
 
-    void GetAnmResult(TexSrtAnmResult* pResult, u32 idx, f32 frame) const;
+    void GetAnmResult(TexSrtAnmResult* pResult, ulong idx, f32 frame) const;
 
     const ResAnmTexSrtMatData* GetMatAnm(int idx) const {
         return static_cast<ResAnmTexSrtMatData*>(
             ofs_to_obj<ResDic>(ref().toTexSrtDataDic)[idx]);
     }
-    const ResAnmTexSrtMatData* GetMatAnm(u32 idx) const {
+    const ResAnmTexSrtMatData* GetMatAnm(ulong idx) const {
         return static_cast<ResAnmTexSrtMatData*>(
             ofs_to_obj<ResDic>(ref().toTexSrtDataDic)[idx]);
     }

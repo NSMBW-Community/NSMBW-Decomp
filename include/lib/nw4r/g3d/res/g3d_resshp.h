@@ -49,23 +49,23 @@ public:
  ******************************************************************************/
 struct ResCacheVtxDescv {
     union {
-        u32 data_u32[0xC / sizeof(u32)];
+        ulong data_ulong[0xC / sizeof(ulong)];
         u8 data[0xC / sizeof(u8)];
     }; // at 0x0
 
     void Clear() {
-        data_u32[0] = data_u32[1] = data_u32[2] = 0;
+        data_ulong[0] = data_ulong[1] = data_ulong[2] = 0;
     }
 
     bool operator==(const ResCacheVtxDescv& rRhs) const {
-        return data_u32[0] == rRhs.data_u32[0] &&
-               data_u32[1] == rRhs.data_u32[1] &&
-               data_u32[2] == rRhs.data_u32[2];
+        return data_ulong[0] == rRhs.data_ulong[0] &&
+               data_ulong[1] == rRhs.data_ulong[1] &&
+               data_ulong[2] == rRhs.data_ulong[2];
     }
 };
 
 struct ResMtxSetUsed {
-    u32 numMtxID;    // at 0x0
+    ulong numMtxID;    // at 0x0
     u16 vecMtxID[2]; // at 0x4
 };
 
@@ -78,18 +78,18 @@ struct ResShpData {
         FLAG_INVISIBLE = (1 << 1),
     };
 
-    u32 size;                                         // at 0x0
+    ulong size;                                         // at 0x0
     s32 toResMdlData;                                 // at 0x4
     s32 curMtxIdx;                                    // at 0x8
     ResCacheVtxDescv cache;                           // at 0xC
     ResTagDLData tagPrePrimDL;                        // at 0x18
     ResTagDLData tagPrimDL;                           // at 0x24
-    u32 vcdBitmap;                                    // at 0x30
-    u32 flag;                                         // at 0x34
+    ulong vcdBitmap;                                    // at 0x30
+    ulong flag;                                         // at 0x34
     s32 name;                                         // at 0x38
-    u32 id;                                           // at 0x3C
-    u32 numVtx;                                       // at 0x40
-    u32 numPolygon;                                   // at 0x44
+    ulong id;                                           // at 0x3C
+    ulong numVtx;                                       // at 0x40
+    ulong numPolygon;                                   // at 0x44
     s16 idVtxPosition;                                // at 0x48
     s16 idVtxNormal;                                  // at 0x4A
     s16 idVtxColor[GX_VA_TEX0 - GX_VA_CLR0];          // at 0x4C
@@ -114,8 +114,8 @@ public:
 
     ResVtxPos GetResVtxPos() const;
     ResVtxNrm GetResVtxNrm() const;
-    ResVtxClr GetResVtxClr(u32 idx) const;
-    ResVtxTexCoord GetResVtxTexCoord(u32 idx) const;
+    ResVtxClr GetResVtxClr(ulong idx) const;
+    ResVtxTexCoord GetResVtxTexCoord(ulong idx) const;
 
     void CallPrePrimitiveDisplayList(bool sync, bool cacheIsSame) const;
     void CallPrimitiveDisplayList(bool sync) const;

@@ -79,10 +79,10 @@ public:
         mTabWidth = width;
     }
 
-    u32 GetDrawFlag() const {
+    ulong GetDrawFlag() const {
         return mDrawFlag;
     }
-    void SetDrawFlag(u32 flag) {
+    void SetDrawFlag(ulong flag) {
         mDrawFlag = flag;
     }
 
@@ -102,33 +102,33 @@ public:
     f32 CalcStringWidth(const T* pStr, int len) const;
     void CalcStringRect(Rect* pRect, const T* pStr, int len) const;
 
-    int VSNPrintf(T* buffer, u32 count, const T* pStr, std::va_list args);
+    int VSNPrintf(T* buffer, ulong count, const T* pStr, std::va_list args);
     f32 VPrintf(const T* pStr, std::va_list args);
     f32 Print(const T* pStr, int len);
 
     static T* GetBuffer() {
         return mFormatBuffer;
     }
-    static T* SetBuffer(T* pBuffer, u32 size) {
+    static T* SetBuffer(T* pBuffer, ulong size) {
         T* pOldBuffer = mFormatBuffer;
         mFormatBuffer = pBuffer;
         mFormatBufferSize = size;
         return pOldBuffer;
     }
 
-    static u32 GetBufferSize() {
+    static ulong GetBufferSize() {
         return mFormatBufferSize;
     }
 
 private:
     static const int DEFAULT_FORMAT_BUFFER_SIZE = 256;
 
-    static const u32 DRAWFLAG_MASK_ALL = DRAWFLAG_MASK_ALIGN_TEXT |
+    static const ulong DRAWFLAG_MASK_ALL = DRAWFLAG_MASK_ALIGN_TEXT |
                                          DRAWFLAG_MASK_ALIGN_H |
                                          DRAWFLAG_MASK_ALIGN_V;
 
 private:
-    bool IsDrawFlagSet(u32 mask, u32 flag) const {
+    bool IsDrawFlagSet(ulong mask, ulong flag) const {
         return (mDrawFlag & mask) == flag;
     }
 
@@ -143,16 +143,16 @@ private:
     f32 mCharSpace;                     // at 0x50
     f32 mLineSpace;                     // at 0x54
     int mTabWidth;                      // at 0x58
-    u32 mDrawFlag;                      // at 0x5C
+    ulong mDrawFlag;                      // at 0x5C
     TagProcessorBase<T>* mTagProcessor; // at 0x60
 
     static T* mFormatBuffer;
-    static u32 mFormatBufferSize;
+    static ulong mFormatBufferSize;
     static TagProcessorBase<T> mDefaultTagProcessor;
 };
 
 template <>
-inline int TextWriterBase<char>::VSNPrintf(char* pBuffer, u32 count,
+inline int TextWriterBase<char>::VSNPrintf(char* pBuffer, ulong count,
                                            const char* pStr,
                                            std::va_list args) {
 
@@ -160,7 +160,7 @@ inline int TextWriterBase<char>::VSNPrintf(char* pBuffer, u32 count,
 }
 
 template <>
-inline int TextWriterBase<wchar_t>::VSNPrintf(wchar_t* pBuffer, u32 count,
+inline int TextWriterBase<wchar_t>::VSNPrintf(wchar_t* pBuffer, ulong count,
                                               const wchar_t* pStr,
                                               std::va_list args) {
 

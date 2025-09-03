@@ -1,71 +1,78 @@
 #ifndef NW4R_SND_EXTERNAL_SOUND_PLAYER_H
 #define NW4R_SND_EXTERNAL_SOUND_PLAYER_H
-#include <nw4r/types_nw4r.h>
 
-#include <nw4r/snd/snd_BasicSound.h>
+/*******************************************************************************
+ * headers
+ */
 
-namespace nw4r {
-namespace snd {
-namespace detail {
+#include "nw4r/snd/snd_BasicSound.h"
+#include "nw4r/snd/snd_SoundHandle.h"
+#include "nw4r/snd/snd_global.h"
 
-class ExternalSoundPlayer {
-public:
-    ExternalSoundPlayer();
-    ~ExternalSoundPlayer();
+/*******************************************************************************
+ * classes and functions
+ */
 
-    int GetPlayableSoundCount() const {
-        return mPlayableCount;
-    }
-    void SetPlayableSoundCount(int count);
+namespace nw4r { namespace snd { class SoundActor; }}
 
-    int GetPlayingSoundCount() const {
-        return mSoundList.GetSize();
-    }
+namespace nw4r { namespace snd { namespace detail
+{
+	// [R89JEL]:/bin/RVL/Debug/mainD.elf:.debug::0x27049
+	class ExternalSoundPlayer
+	{
+	// methods
+	public:
+		// methods
+		ExternalSoundPlayer();
+		~ExternalSoundPlayer();
+		int GetPlayingSoundCount() const { return mSoundList.GetSize(); }
+		int GetPlayableSoundCount() const { return mPlayableCount; }
+		void SetPlayableSoundCount(int count);
+		void StopAllSound(int fadeFrames);
+		void PauseAllSound(bool flag, int fadeFrames);
+		void DetachSoundActorAll(SoundActor *sound);
 
-    f32 detail_GetVolume() const {
-        return mVolume;
-    }
-    BasicSound* GetLowestPrioritySound();
+		bool AppendSound(BasicSound *sound);
+		void RemoveSound(BasicSound *sound);
 
-    void InsertSoundList(BasicSound* pSound);
-    void RemoveSoundList(BasicSound* pSound);
+		bool detail_CanPlaySound(int startPriority);
 
-    template <typename TForEachFunc>
-    TForEachFunc ForEachSound(TForEachFunc pFunc, bool reverse) {
-        if (reverse) {
-            BasicSoundExtPlayList::RevIterator it =
-                mSoundList.GetBeginReverseIter();
+		template <typename TForEachFunc>
+		TForEachFunc ForEachSound(TForEachFunc pFunc, bool reverse) {
+			if (reverse) {
+				detail::BasicSound::ExtSoundPlayerPlayLinkList::ReverseIterator it = mSoundList.GetBeginReverseIter();
 
-            while (it != mSoundList.GetEndReverseIter()) {
-                BasicSoundExtPlayList::RevIterator curr = it;
+				while (it != mSoundList.GetEndReverseIter()) {
+					detail::BasicSound::ExtSoundPlayerPlayLinkList::ReverseIterator curr = it;
 
-                SoundHandle handle;
-                handle.detail_AttachSoundAsTempHandle(&*curr);
-                pFunc(handle);
+					SoundHandle handle;
+					handle.detail_AttachSoundAsTempHandle(&*curr);
+					pFunc(handle);
 
-                if (handle.IsAttachedSound()) {
-                    ++it;
-                }
-            }
-        } else {
-            NW4R_UT_LINKLIST_FOREACH_SAFE(it, mSoundList, {
-                SoundHandle handle;
-                handle.detail_AttachSoundAsTempHandle(&*it);
-                pFunc(handle);
-            });
-        }
+					if (handle.IsAttachedSound()) {
+						++it;
+					}
+				}
+			} else {
+				NW4R_RANGE_FOR_NO_AUTO_INC(it, mSoundList) {
+					decltype(it) curItr = it++;
+					SoundHandle handle;
+					handle.detail_AttachSoundAsTempHandle(&*curItr);
+					pFunc(handle);
+				}
+			}
 
-        return pFunc;
-    }
+			return pFunc;
+		}
 
-private:
-    BasicSoundExtPlayList mSoundList; // at 0x0
-    u16 mPlayableCount;               // at 0xC
-    f32 mVolume;                      // at 0x10
-};
+	private:
+		BasicSound *GetLowestPrioritySound();
 
-} // namespace detail
-} // namespace snd
-} // namespace nw4r
+	// members
+	private:
+		BasicSound::ExtSoundPlayerPlayLinkList	mSoundList;		// size 0x0c, offset 0x00
+		int										mPlayableCount;	// size 0x04, offset 0x0c
+	}; // size 0x10
+}}} // namespace nw4r::snd::detail
 
-#endif
+#endif // NW4R_SND_EXTERNAL_SOUND_PLAYER_H

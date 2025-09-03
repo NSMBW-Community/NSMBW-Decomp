@@ -1,56 +1,71 @@
 #ifndef NW4R_SND_TASK_MANAGER_H
 #define NW4R_SND_TASK_MANAGER_H
-#include <nw4r/types_nw4r.h>
 
-#include <nw4r/snd/snd_Task.h>
+/*******************************************************************************
+ * headers
+ */
 
-#include <nw4r/ut.h>
+#include "nw4r/snd/snd_Task.h"
 
-#include <revolution/OS.h>
+#include <revolution/OS/OSThread.h> // OSThreadQueue
 
-namespace nw4r {
-namespace snd {
-namespace detail {
+/*******************************************************************************
+ * classes and functions
+ */
 
-class TaskManager {
-public:
-    enum TaskPriority {
-        PRIORITY_LOW = 0,
-        PRIORITY_MIDDLE = 1,
-        PRIORITY_HIGH = 2,
+namespace nw4r { namespace snd { namespace detail
+{
+	// [R89JEL]:/bin/RVL/Debug/mainD.elf:.debug::0x2fd1de
+	class TaskManager
+	{
+	// enums
+	public:
+		// [R89JEL]:/bin/RVL/Debug/mainD.elf:.debug::0x2fd480
+		enum TaskPriority
+		{
+			PRIORITY_LOW,
+			PRIORITY_MIDDLE,
+			PRIORITY_HIGH,
+		};
 
-        PRIORITY_MAX
-    };
+	// methods
+	public:
+		// instance accessors
+		static TaskManager &GetInstance();
 
-public:
-    static TaskManager& GetInstance();
+		// methods
+		void AppendTask(Task *task, TaskPriority priority);
 
-    void AppendTask(Task* pTask, TaskPriority priority = PRIORITY_MIDDLE);
+		Task *ExecuteTask();
+		void CancelTask(Task *task);
+		void CancelAllTask();
 
-    Task* ExecuteTask();
-    void CancelTask(Task* pTask);
-    void CancelAllTask();
+		void WaitTask();
+		void CancelWaitTask();
 
-    void WaitTask();
-    void CancelWaitTask();
+	private:
+		// cdtors
+		TaskManager();
 
-private:
-    TaskManager();
+		// methods
+		Task *GetNextTask();
+		Task *GetNextTask(TaskPriority priority, bool doRemove);
 
-    Task* PopTask();
-    Task* GetNextTask();
-    Task* GetNextTask(TaskPriority priority, bool remove);
+		Task *PopTask();
 
-private:
-    TaskList mTaskList[PRIORITY_MAX]; // at 0x0
-    Task* volatile mCurrentTask;      // at 0x24
-    bool mCancelWaitTaskFlag;         // at 0x28
-    OSThreadQueue mAppendThreadQueue; // at 0x2C
-    OSThreadQueue mDoneThreadQueue;   // at 0x34
-};
+	// static members
+	public:
+		static int const PRIORITY_NUM = 3;
 
-} // namespace detail
-} // namespace snd
-} // namespace nw4r
+	// members
+	private:
+		Task::LinkList	mTaskList[PRIORITY_NUM];	// size 0x24, offset 0x00
+		Task			* volatile mCurrentTask;	// size 0x04, offset 0x24
+		bool			mCancelWaitTaskFlag;		// size 0x01, offset 0x28 // TODO: volatile? (see WaitTask)
+		/* 3 bytes padding */
+		OSThreadQueue	mAppendThreadQueue;			// size 0x08, offset 0x2c
+		OSThreadQueue	mDoneThreadQueue;			// size 0x08, offset 0x34
+	}; // size 0x3c
+}}} // namespace nw4r::snd::detail
 
-#endif
+#endif // NW4R_SND_TASK_MANAGER_H

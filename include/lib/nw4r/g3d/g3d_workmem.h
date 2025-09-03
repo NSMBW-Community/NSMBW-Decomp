@@ -57,7 +57,7 @@ static const int WORKMEM_NUMSHPANMRESULT =
  *
  ******************************************************************************/
 math::VEC3* GetScaleTemporary();
-u32* GetMtxIDTemporary();
+ulong* GetMtxIDTemporary();
 MdlZ* GetMdlZTemporary();
 math::MTX34* GetSkinningMtxTemporary();
 math::MTX34* GetBillboardMtxTemporary();

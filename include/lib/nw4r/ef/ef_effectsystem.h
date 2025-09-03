@@ -26,7 +26,7 @@ public:
     DrawStrategyBuilder* mDrawStrategyBuilder; // at 0x8
     EmitFormBuilder* mEmitFormBuilder;         // at 0xC
     CreationQueue mCreationQueue;              // at 0x10
-    u32 mMaxGroupID;                           // at 0x5014
+    ulong mMaxGroupID;                           // at 0x5014
     ActivityList* mActivityList;               // at 0x5018
     Random mRandom;                            // at 0x501C
     math::VEC3 mProcessCameraPos;              // at 0x5020
@@ -41,23 +41,23 @@ public:
 public:
     static EffectSystem* GetInstance();
 
-    bool Initialize(u32 maxGroupID);
+    bool Initialize(ulong maxGroupID);
     bool Closing(Effect* pEffect);
 
-    Effect* CreateEffect(const char* pName, u32 groupID, u16 calcRemain);
-    u32 RetireEffect(Effect* pEffect);
+    Effect* CreateEffect(const char* pName, ulong groupID, u16 calcRemain);
+    ulong RetireEffect(Effect* pEffect);
 
-    u32 RetireEffectAll(u32 groupID);
-    u32 RetireEmitterAll(u32 groupID);
-    u32 RetireParticleAll(u32 groupID);
+    ulong RetireEffectAll(ulong groupID);
+    ulong RetireEmitterAll(ulong groupID);
+    ulong RetireParticleAll(ulong groupID);
 
-    void Calc(u32 groupID, bool onlyBillboard);
-    void Draw(const DrawInfo& rInfo, u32 groupID);
+    void Calc(ulong groupID, bool onlyBillboard);
+    void Draw(const DrawInfo& rInfo, ulong groupID);
 
     MemoryManagerBase* GetMemoryManager() const {
         return mMemoryManager;
     }
-    void SetMemoryManager(MemoryManagerBase* pManager, u32 maxGroupID) {
+    void SetMemoryManager(MemoryManagerBase* pManager, ulong maxGroupID) {
         mMemoryManager = pManager;
 
         if (mMemoryManager != NULL) {

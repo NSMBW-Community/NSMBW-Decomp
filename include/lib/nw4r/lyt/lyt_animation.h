@@ -31,15 +31,15 @@ struct AnimationBlock {
     u8 PADDING_0xB;              // at 0xB
     u16 fileNum;                 // at 0xC
     u16 animContNum;             // at 0xE
-    u32 animContOffsetsOffset;   // at 0x10
+    ulong animContOffsetsOffset;   // at 0x10
 };
 
 struct AnimationTagBlock {
     DataBlockHeader blockHeader; // at 0x00
     u16 tagOrder;                // at 0x08
     u16 groupNum;                // at 0x0A
-    u32 nameOffset;              // at 0x0C
-    u32 groupsOffset;            // at 0x10
+    ulong nameOffset;              // at 0x0C
+    ulong groupsOffset;            // at 0x10
     u16 startFrame;              // at 0x14
     u16 endFrame;                // at 0x16
     u8 flag;                     // at 0x18
@@ -48,7 +48,7 @@ struct AnimationTagBlock {
 
 struct AnimationShareBlock {
     DataBlockHeader blockHeader; // at 0x00
-    u32 animShareInfoOffset;     // at 0x04
+    ulong animShareInfoOffset;     // at 0x04
     u16 shareNum;                // at 0x0C
     u8 padding[2];               // at 0x0E
 };
@@ -59,18 +59,18 @@ struct AnimationShareBlock {
  *
  ******************************************************************************/
 struct AnimationInfo {
-    u32 kind;                  // at 0x0
+    ulong kind;                  // at 0x0
     u8 num;                    // at 0x4
     u8 PADDING_0x5[0x8 - 0x5]; // at 0x5
 
-    static const u32 SIGNATURE_ANMPANESRT = 'RLPA';
-    static const u32 SIGNATURE_ANMPANEVIS = 'RLVI';
-    static const u32 SIGNATURE_ANMVTXCLR = 'RLVC';
+    static const ulong SIGNATURE_ANMPANESRT = 'RLPA';
+    static const ulong SIGNATURE_ANMPANEVIS = 'RLVI';
+    static const ulong SIGNATURE_ANMVTXCLR = 'RLVC';
 
-    static const u32 SIGNATURE_ANMMATCLR = 'RLMC';
-    static const u32 SIGNATURE_ANMTEXSRT = 'RLTS';
-    static const u32 SIGNATURE_ANMTEXPAT = 'RLTP';
-    static const u32 SIGNATURE_ANMINDTEXSRT = 'RLIM';
+    static const ulong SIGNATURE_ANMMATCLR = 'RLMC';
+    static const ulong SIGNATURE_ANMTEXSRT = 'RLTS';
+    static const ulong SIGNATURE_ANMTEXPAT = 'RLTP';
+    static const ulong SIGNATURE_ANMINDTEXSRT = 'RLIM';
 };
 
 } // namespace res
@@ -95,8 +95,8 @@ public:
     virtual void Bind(Pane* pPane, bool recursive) = 0; // at 0x14
     virtual void Bind(Material* pMaterial) = 0;         // at 0x18
 
-    virtual void Animate(u32 idx, Pane* pPane) = 0;         // at 0x1C
-    virtual void Animate(u32 idx, Material* pMaterial) = 0; // at 0x20
+    virtual void Animate(ulong idx, Pane* pPane) = 0;         // at 0x1C
+    virtual void Animate(ulong idx, Material* pMaterial) = 0; // at 0x20
 
     u16 GetFrameSize() const;
 
@@ -174,8 +174,8 @@ public:
     virtual void Bind(Pane* pPane, bool recursive); // at 0x14
     virtual void Bind(Material* pMaterial);         // at 0x18
 
-    virtual void Animate(u32 idx, Pane* pPane);         // at 0x1C
-    virtual void Animate(u32 idx, Material* pMaterial); // at 0x20
+    virtual void Animate(ulong idx, Pane* pPane);         // at 0x1C
+    virtual void Animate(ulong idx, Material* pMaterial); // at 0x20
 
 protected:
     void** mpFileResAry;         // at 0x14

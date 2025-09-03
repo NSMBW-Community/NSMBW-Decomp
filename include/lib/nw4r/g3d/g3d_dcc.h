@@ -28,65 +28,65 @@ public:
     };
 
 public:
-    static ResNodeData::Billboard GetBillboard(u32 attr) {
+    static ResNodeData::Billboard GetBillboard(ulong attr) {
         return static_cast<ResNodeData::Billboard>(attr & ATTR_BILLBOARD_MASK);
     }
-    static u32 SetBillboard(u32 attr, ResNodeData::Billboard billboard) {
+    static ulong SetBillboard(ulong attr, ResNodeData::Billboard billboard) {
         return (attr & ~ATTR_BILLBOARD_MASK) | billboard;
     }
 
-    static bool IsIgnoreTrans(u32 attr) {
+    static bool IsIgnoreTrans(ulong attr) {
         return (attr & ATTR_T_IGNORE) ? true : false;
     }
-    static u32 AnmIgnoreTrans(u32 attr) {
+    static ulong AnmIgnoreTrans(ulong attr) {
         return attr | ATTR_T_IGNORE;
     }
-    static u32 AnmNotIgnoreTrans(u32 attr) {
+    static ulong AnmNotIgnoreTrans(ulong attr) {
         return attr & ~ATTR_T_IGNORE;
     }
 
-    static bool IsScaleUniform(u32 attr) {
+    static bool IsScaleUniform(ulong attr) {
         return (attr & ATTR_S_UNIFORM) ? true : false;
     }
-    static u32 AnmScaleUniform(u32 attr) {
+    static ulong AnmScaleUniform(ulong attr) {
         return attr | ATTR_S_UNIFORM;
     }
-    static u32 AnmNotScaleUniform(u32 attr) {
+    static ulong AnmNotScaleUniform(ulong attr) {
         return attr & ~(ATTR_S_UNIFORM | ATTR_ALL_S_UNIFORM | ATTR_S_ONE |
                         ATTR_ALL_S_ONE);
     }
 
-    static bool IsAllScaleUniform(u32 attr) {
+    static bool IsAllScaleUniform(ulong attr) {
         return (attr & ATTR_ALL_S_UNIFORM) ? true : false;
     }
-    static u32 AnmAllScaleUniform(u32 attr) {
+    static ulong AnmAllScaleUniform(ulong attr) {
         return attr | ATTR_ALL_S_UNIFORM;
     }
-    static u32 AnmNotAllScaleUniform(u32 attr) {
+    static ulong AnmNotAllScaleUniform(ulong attr) {
         return attr & ~(ATTR_ALL_S_UNIFORM | ATTR_ALL_S_ONE);
     }
 
-    static bool IsScaleOne(u32 attr) {
+    static bool IsScaleOne(ulong attr) {
         return (attr & ATTR_S_ONE) ? true : false;
     }
-    static u32 AnmScaleOne(u32 attr) {
+    static ulong AnmScaleOne(ulong attr) {
         return attr | ATTR_S_ONE;
     }
-    static u32 AnmNotScaleOne(u32 attr) {
+    static ulong AnmNotScaleOne(ulong attr) {
         return attr & ~(ATTR_S_ONE | ATTR_ALL_S_ONE);
     }
 
-    static bool IsAllScaleOne(u32 attr) {
+    static bool IsAllScaleOne(ulong attr) {
         return (attr & ATTR_ALL_S_ONE) ? true : false;
     }
-    static u32 AnmAllScaleOne(u32 attr) {
+    static ulong AnmAllScaleOne(ulong attr) {
         return attr | ATTR_ALL_S_ONE;
     }
-    static u32 AnmNotAllScaleOne(u32 attr) {
+    static ulong AnmNotAllScaleOne(ulong attr) {
         return attr & ~ATTR_ALL_S_ONE;
     }
 
-    static u32 GetRootMtxAttr() {
+    static ulong GetRootMtxAttr() {
         return ATTR_S_UNIFORM | ATTR_ALL_S_UNIFORM | ATTR_S_ONE |
                ATTR_ALL_S_ONE;
     }

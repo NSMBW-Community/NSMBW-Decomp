@@ -66,7 +66,7 @@ struct ResAnmTexPatMatData {
     };
 
     s32 name;        // at 0x0
-    u32 flags;       // at 0x4
+    ulong flags;       // at 0x4
     AnmData anms[1]; // at 0x8
 };
 
@@ -80,7 +80,7 @@ struct ResAnmTexPatInfoData {
 
 struct ResAnmTexPatData {
     ResBlockHeaderData header; // at 0x0
-    u32 revision;              // at 0x8
+    ulong revision;              // at 0x8
     s32 toResFileData;         // at 0xC
     s32 toTexPatDataDic;       // at 0x10
     s32 toTexNameArray;        // at 0x14
@@ -95,7 +95,7 @@ struct ResAnmTexPatData {
 
 class ResAnmTexPat : public ResCommon<ResAnmTexPatData> {
 public:
-    static const u32 SIGNATURE = 'PAT0';
+    static const ulong SIGNATURE = 'PAT0';
     static const int REVISION = 3;
 
 public:
@@ -106,7 +106,7 @@ public:
 
     ResFile GetParent() const;
 
-    u32 GetRevision() const {
+    ulong GetRevision() const {
         return ref().revision;
     }
 
@@ -114,13 +114,13 @@ public:
         return GetRevision() == REVISION;
     }
 
-    void GetAnmResult(TexPatAnmResult* pResult, u32 idx, f32 frame) const;
+    void GetAnmResult(TexPatAnmResult* pResult, ulong idx, f32 frame) const;
 
     const ResAnmTexPatMatData* GetMatAnm(int idx) const {
         return static_cast<ResAnmTexPatMatData*>(
             ofs_to_obj<ResDic>(ref().toTexPatDataDic)[idx]);
     }
-    const ResAnmTexPatMatData* GetMatAnm(u32 idx) const {
+    const ResAnmTexPatMatData* GetMatAnm(ulong idx) const {
         return static_cast<ResAnmTexPatMatData*>(
             ofs_to_obj<ResDic>(ref().toTexPatDataDic)[idx]);
     }

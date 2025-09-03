@@ -14,7 +14,7 @@ namespace ef {
 struct EmitterResource;
 
 struct EffectProject {
-    u32 headersize;       // at 0x0
+    ulong headersize;       // at 0x0
     ut::Link projectlink; // at 0x4
     u16 projectnameLen;   // at 0xC
     u16 PADDING_0xE;      // at 0xE
@@ -22,7 +22,7 @@ struct EffectProject {
 };
 
 struct TextureProject {
-    u32 headersize;       // at 0x0
+    ulong headersize;       // at 0x0
     ut::Link projectlink; // at 0x4
     u16 projectnameLen;   // at 0xC
     u16 PADDING_0xE;      // at 0xE
@@ -35,9 +35,9 @@ private:
 
 public:
     ut::List mBREFFList; // at 0x0
-    u32 mNumEmitter;     // at 0xC
+    ulong mNumEmitter;     // at 0xC
     ut::List mBREFTList; // at 0x10
-    u32 mNumTexture;     // at 0x1C
+    ulong mNumTexture;     // at 0x1C
 
 public:
     static u16 GetVersion() {
@@ -53,8 +53,8 @@ public:
     EmitterResource* _FindEmitter(const char* pName,
                                   EffectProject* pEffProject) const;
 
-    u32 NumEmitter(EffectProject* pEffProject) const;
-    EmitterResource* _GetEmitterIndexOf(u32 idx,
+    ulong NumEmitter(EffectProject* pEffProject) const;
+    EmitterResource* _GetEmitterIndexOf(ulong idx,
                                         EffectProject* pEffProject) const;
 
     ResTexture FindTexture(const char* pName,
@@ -62,7 +62,7 @@ public:
     TextureData* _FindTexture(const char* pName,
                               TextureProject* pTexProject) const;
 
-    u32 RelocateCommand();
+    ulong RelocateCommand();
 
     bool RemoveEffectProject(EffectProject* pEffProject);
     bool RemoveTextureProject(TextureProject* pTexProject);
@@ -72,8 +72,8 @@ private:
 
     void Initialize();
 
-    u32 relocateCurveTexture(u8* pCmdList);
-    u32 relocateCurveChild(u8* pCmdList);
+    ulong relocateCurveTexture(u8* pCmdList);
+    ulong relocateCurveChild(u8* pCmdList);
 
 private:
     static Resource mResource;

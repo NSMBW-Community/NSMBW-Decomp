@@ -50,7 +50,7 @@ public:
 public:
     Emitter* mManagerEM;         // at 0x20
     EmitterResource* mResource;  // at 0x24
-    u32 mFlag;                   // at 0x28
+    ulong mFlag;                   // at 0x28
     DrawStrategy* mDrawStrategy; // at 0x2C
     ut::Link mDrawOrderLink;     // at 0x30
     ActivityList mActivityList;  // at 0x38

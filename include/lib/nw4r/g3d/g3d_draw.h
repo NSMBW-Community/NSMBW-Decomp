@@ -45,7 +45,7 @@ void DrawResMdlDirectly(const ResMdl mdl, const math::MTX34* pViewPosMtxArray,
                         const math::MTX33* pViewNrmMtxArray,
                         const math::MTX34* pViewEnvMtxArray,
                         const u8* pByteCodeOpa, const u8* pByteCodeXlu,
-                        DrawResMdlReplacement* pReplacement, u32 drawMode);
+                        DrawResMdlReplacement* pReplacement, ulong drawMode);
 
 } // namespace g3d
 } // namespace nw4r

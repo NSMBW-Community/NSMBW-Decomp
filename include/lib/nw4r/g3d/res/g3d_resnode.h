@@ -56,14 +56,14 @@ struct ResNodeData : ResNodeDataTypedef {
         FLAG_BILLBOARD_PARENT = (1 << 10)
     };
 
-    u32 size;                 // at 0x0
+    ulong size;                 // at 0x0
     s32 toResMdlData;         // at 0x4
     s32 name;                 // at 0x8
-    u32 id;                   // at 0xC
-    u32 mtxID;                // at 0x10
-    u32 flags;                // at 0x14
+    ulong id;                   // at 0xC
+    ulong mtxID;                // at 0x10
+    ulong flags;                // at 0x14
     Billboard bbmode;         // at 0x18
-    u32 bbref_nodeid;         // at 0x1C
+    ulong bbref_nodeid;         // at 0x1C
     math::_VEC3 scale;        // at 0x20
     math::_VEC3 rot;          // at 0x2C
     math::_VEC3 translate;    // at 0x38
@@ -95,7 +95,7 @@ public:
         return ResName(NULL);
     }
 
-    u32 GetID() const {
+    ulong GetID() const {
         if (IsValid()) {
             return ptr()->id;
         }
@@ -103,7 +103,7 @@ public:
         return 0;
     }
 
-    u32 GetMtxID() const {
+    ulong GetMtxID() const {
         if (IsValid()) {
             return ptr()->mtxID;
         }

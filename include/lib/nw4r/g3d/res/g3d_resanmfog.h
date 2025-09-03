@@ -36,12 +36,12 @@ struct ResAnmFogData {
         FLAG_COLOR_CONST = (1 << 31)
     };
 
-    u32 size;              // at 0x0
+    ulong size;              // at 0x0
     s32 toResAnmScnData;   // at 0x4
     s32 name;              // at 0x8
-    u32 id;                // at 0xC
-    u32 refNumber;         // at 0x10
-    u32 flags;             // at 0x14
+    ulong id;                // at 0xC
+    ulong refNumber;         // at 0x10
+    ulong flags;             // at 0x14
     GXFogType type;        // at 0x18
     ResAnmData startz;     // at 0x1C
     ResAnmData endz;       // at 0x20
@@ -54,7 +54,7 @@ public:
 
     void GetAnmResult(FogAnmResult* pResult, f32 frame) const;
 
-    u32 GetID() const {
+    ulong GetID() const {
         return ref().id;
     }
 };

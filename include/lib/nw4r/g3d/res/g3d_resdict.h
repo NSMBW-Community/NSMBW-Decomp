@@ -17,8 +17,8 @@ struct ResDicNodeData {
 };
 
 struct ResDicData {
-    u32 size;               // at 0x0
-    u32 numData;            // at 0x4
+    ulong size;               // at 0x0
+    ulong numData;            // at 0x4
     ResDicNodeData data[1]; // at 0x8
 };
 
@@ -42,7 +42,7 @@ public:
 
     s32 GetIndex(const ResName name) const;
 
-    u32 GetNumData() const {
+    ulong GetNumData() const {
         if (IsValid()) {
             return ptr()->numData;
         }
@@ -52,7 +52,7 @@ public:
 
 private:
     ResDicNodeData* Get(const ResName name) const;
-    ResDicNodeData* Get(const char* pName, u32 len) const;
+    ResDicNodeData* Get(const char* pName, ulong len) const;
 };
 
 } // namespace g3d

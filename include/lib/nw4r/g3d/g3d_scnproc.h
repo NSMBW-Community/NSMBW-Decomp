@@ -31,7 +31,7 @@ public:
         }
     }
 
-    virtual void G3dProc(u32 task, u32 param, void* pInfo); // at 0xC
+    virtual void G3dProc(ulong task, ulong param, void* pInfo); // at 0xC
     virtual ~ScnProc() {}                                   // at 0x10
 
     void SetDrawProc(DrawProc pProc, bool opa, bool xlu) {
@@ -64,7 +64,7 @@ private:
     };
 
 private:
-    u32 mFlag;           // at 0xE8
+    ulong mFlag;           // at 0xE8
     DrawProc mpDrawProc; // at 0xEC
     void* mpUserData;    // at 0xF0
 

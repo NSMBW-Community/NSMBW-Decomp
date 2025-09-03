@@ -46,8 +46,8 @@ public:
     };
 
 public:
-    u32 mComFlags;                  // at 0x0
-    u32 mEmitFlags;                 // at 0x4
+    ulong mComFlags;                  // at 0x0
+    ulong mEmitFlags;                 // at 0x4
     f32 mEmitRatio;                 // at 0x8
     f32 mEmitRandom;                // at 0xC
     u16 mEmitInterval;              // at 0x10
@@ -88,7 +88,7 @@ public:
     bool mIsFirstEmission;                 // at 0xDC
     u16 mWaitTime;                         // at 0xDE
     u16 mEmitIntervalWait;                 // at 0xE0
-    u32 mTick;                             // at 0xE4
+    ulong mTick;                             // at 0xE4
     u16 mCalcRemain;                       // at 0xE8
     u16 mRandSeed;                         // at 0xEA
     Random mRandom;                        // at 0xEC
@@ -125,9 +125,9 @@ public:
 
     bool Closing(ParticleManager* pManager);
 
-    u32 RetireParticleAll();
-    u32 RetireParticleManager(ParticleManager* pManager);
-    u32 RetireParticleManagerAll();
+    ulong RetireParticleAll();
+    ulong RetireParticleManager(ParticleManager* pManager);
+    ulong RetireParticleManagerAll();
 
     void UpdateDatas(EmitterResource* pResource);
     bool InitializeDatas(EmitterResource* pResource, Effect* pEffect);
@@ -148,9 +148,9 @@ public:
     u16 GetNumParticleManager() const;
     ParticleManager* GetParticleManager(u16 idx);
 
-    u32 ForeachEmitter(ForEachFunc pFunc, ForEachParam param,
+    ulong ForeachEmitter(ForEachFunc pFunc, ForEachParam param,
                        bool ignoreLifeStatus);
-    u32 ForeachParticleManager(ForEachFunc pFunc, ForEachParam param,
+    ulong ForeachParticleManager(ForEachFunc pFunc, ForEachParam param,
                                bool ignoreLifeStatus, bool propogate);
 
     static math::MTX34* RestructMatrix(math::MTX34* pResult, math::MTX34* pOrig,

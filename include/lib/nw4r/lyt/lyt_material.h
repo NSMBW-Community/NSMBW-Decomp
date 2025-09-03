@@ -26,17 +26,17 @@ namespace detail {
  *
  ******************************************************************************/
 struct BitGXNums {
-    u32 texMap : 4;
-    u32 texSRT : 4;
-    u32 texCoordGen : 4;
-    u32 indSRT : 2;
-    u32 indStage : 3;
-    u32 tevSwap : 1;
-    u32 tevStage : 5;
-    u32 chanCtrl : 1;
-    u32 matCol : 1;
-    u32 alpComp : 1;
-    u32 blendMode : 1;
+    ulong texMap : 4;
+    ulong texSRT : 4;
+    ulong texCoordGen : 4;
+    ulong indSRT : 2;
+    ulong indStage : 3;
+    ulong tevSwap : 1;
+    ulong tevStage : 5;
+    ulong chanCtrl : 1;
+    ulong matCol : 1;
+    ulong alpComp : 1;
+    ulong blendMode : 1;
 };
 
 } // namespace detail
@@ -87,17 +87,17 @@ public:
 
     void AddAnimationLink(AnimationLink* pAnimLink);
 
-    GXColorS10 GetTevColor(u32 idx) {
+    GXColorS10 GetTevColor(ulong idx) {
         return mTevCols[idx];
     }
-    void SetTevColor(u32 idx, const GXColorS10& rColor) {
+    void SetTevColor(ulong idx, const GXColorS10& rColor) {
         mTevCols[idx] = rColor;
     }
 
-    ut::Color GetTevKColor(u32 idx) {
+    ut::Color GetTevKColor(ulong idx) {
         return mTevKCols[idx];
     }
-    void SetTevKColor(u32 idx, ut::Color color) {
+    void SetTevKColor(ulong idx, ut::Color color) {
         mTevKCols[idx] = color;
     }
 
@@ -129,7 +129,7 @@ public:
 
     void SetIndStageNum(u8 num);
 
-    void SetColorElement(u32 idx, s16 value);
+    void SetColorElement(ulong idx, s16 value);
 
     bool IsTevSwapCap() const {
         return mGXMemCap.tevSwap;
@@ -193,19 +193,19 @@ public:
         GetTexMapAry()[idx].SetNoWrap(rTexMap);
     }
 
-    const TexSRT& GetTexSRT(u32 idx) const {
+    const TexSRT& GetTexSRT(ulong idx) const {
         return GetTexSRTAry()[idx];
     }
-    void SetTexSRT(const TexSRT& rTexSRT, u32 idx) {
+    void SetTexSRT(const TexSRT& rTexSRT, ulong idx) {
         GetTexSRTAry()[idx] = rTexSRT;
     }
 
-    void SetTexSRTElement(u32 srt, u32 idx, f32 value) {
+    void SetTexSRTElement(ulong srt, ulong idx, f32 value) {
         f32* const pArray = reinterpret_cast<f32*>(&GetTexSRTAry()[srt]);
         pArray[idx] = value;
     }
 
-    void SetTexCoordGen(u32 idx, TexCoordGen gen) {
+    void SetTexCoordGen(ulong idx, TexCoordGen gen) {
         GetTexCoordGenAry()[idx] = gen;
     }
 
@@ -213,7 +213,7 @@ public:
         return GetMatColAry()[0];
     }
 
-    void SetIndTexSRTElement(u32 srt, u32 idx, f32 value) {
+    void SetIndTexSRTElement(ulong srt, ulong idx, f32 value) {
         f32* const pArray = reinterpret_cast<f32*>(&GetIndTexSRTAry()[srt]);
         pArray[idx] = value;
     }

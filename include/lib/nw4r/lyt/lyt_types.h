@@ -24,10 +24,10 @@ namespace detail {
  * Pointer operations
  *
  ******************************************************************************/
-template <typename T> T* ConvertOffsToPtr(void* pBase, u32 offset) {
+template <typename T> T* ConvertOffsToPtr(void* pBase, ulong offset) {
     return reinterpret_cast<T*>(reinterpret_cast<u8*>(pBase) + offset);
 }
-template <typename T> const T* ConvertOffsToPtr(const void* pBase, u32 offset) {
+template <typename T> const T* ConvertOffsToPtr(const void* pBase, ulong offset) {
     return reinterpret_cast<const T*>(reinterpret_cast<const u8*>(pBase) +
                                       offset);
 }
@@ -578,7 +578,7 @@ struct TexCoordGen {
         Set(GX_TG_MTX2x4, GX_TG_TEX0, GX_IDENTITY);
     }
 
-    void Set(GXTexGenType type, GXTexGenSrc src, u32 mtxID) {
+    void Set(GXTexGenType type, GXTexGenSrc src, ulong mtxID) {
         texGenType = type;
         texGenSrc = src;
         texMtx = mtxID;
@@ -592,7 +592,7 @@ struct TexCoordGen {
         return static_cast<GXTexGenSrc>(texGenSrc);
     }
 
-    u32 GetTexMtx() const {
+    ulong GetTexMtx() const {
         return texMtx;
     }
 

@@ -13,13 +13,13 @@ namespace g3d {
 class ResAnmScn;
 
 struct ResLightSetData {
-    static const u32 INVALID_ID = 0xFFFF;
+    static const ulong INVALID_ID = 0xFFFF;
 
-    u32 size;                                         // at 0x0
+    ulong size;                                         // at 0x0
     s32 toResAnmScnData;                              // at 0x4
     s32 name;                                         // at 0x8
-    u32 id;                                           // at 0xC
-    u32 refNumber;                                    // at 0x10
+    ulong id;                                           // at 0xC
+    ulong refNumber;                                    // at 0x10
     s32 ambLightName;                                 // at 0x14
     u16 ambLightId;                                   // at 0x18
     u8 numLight;                                      // at 0x1A
@@ -48,11 +48,11 @@ public:
         return ResName(NULL);
     }
 
-    u32 GetAmbLightID() const {
+    ulong GetAmbLightID() const {
         return ref().ambLightId;
     }
 
-    u32 GetNumLight() const {
+    ulong GetNumLight() const {
         return ref().numLight;
     }
 
@@ -60,7 +60,7 @@ public:
         return !HasAmbLight() || GetAmbLightID() != ResLightSetData::INVALID_ID;
     }
 
-    ResName GetLightResName(u32 idx) const {
+    ResName GetLightResName(ulong idx) const {
         const ResLightSetData& r = ref();
 
         const s32* pNames = r.lightNames;

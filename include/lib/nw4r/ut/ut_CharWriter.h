@@ -173,8 +173,8 @@ private:
         }
     };
 
-    static const u32 DEFAULT_COLOR_MAPPING_MIN = 0x00000000;
-    static const u32 DEFAULT_COLOR_MAPPING_MAX = 0xFFFFFFFF;
+    static const ulong DEFAULT_COLOR_MAPPING_MIN = 0x00000000;
+    static const ulong DEFAULT_COLOR_MAPPING_MAX = 0xFFFFFFFF;
 
 private:
     static void SetupVertexFormat();

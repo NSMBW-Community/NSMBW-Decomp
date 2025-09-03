@@ -88,7 +88,7 @@ public:
 public:
     explicit ScnObj(MEMAllocator* pAllocator);
 
-    virtual void G3dProc(u32 task, u32 param, void* pInfo) = 0; // at 0xC
+    virtual void G3dProc(ulong task, ulong param, void* pInfo) = 0; // at 0xC
     virtual ~ScnObj();                                          // at 0x10
 
     virtual ForEachResult ForEach(ForEachFunc pFunc, void* pInfo,
@@ -101,7 +101,7 @@ public:
     virtual f32 GetValueForSortXlu() const; // at 0x2C
 
     virtual void CalcWorldMtx(const math::MTX34* pParent,
-                              u32* pParam); // at 0x30
+                              ulong* pParam); // at 0x30
 
     void CalcViewMtx(const math::MTX34* pCamera);
 
@@ -155,18 +155,18 @@ protected:
     };
 
 protected:
-    void SetScnObjFlag(ScnObjFlag flag, u32 on) {
+    void SetScnObjFlag(ScnObjFlag flag, ulong on) {
         if (on) {
             mScnObjFlags |= flag;
         } else {
             mScnObjFlags &= ~flag;
         }
     }
-    u32 TestScnObjFlag(ScnObjFlag flag) const {
+    ulong TestScnObjFlag(ScnObjFlag flag) const {
         return (mScnObjFlags & flag) != 0;
     }
 
-    bool IsG3dProcDisabled(u32 task) const {
+    bool IsG3dProcDisabled(ulong task) const {
         if (task < __G3DPROC_OPTIONAL_END && ((1 << task - 1) & mScnObjFlags)) {
             return true;
         }
@@ -177,18 +177,18 @@ protected:
     /**
      * Defined elsewhere to resolve circular dependency with IScnObjCallback
      */
-    inline void CheckCallback_CALC_VIEW(Timing timing, u32 param, void* pInfo);
-    inline void CheckCallback_CALC_MAT(Timing timing, u32 param, void* pInfo);
-    inline void CheckCallback_CALC_WORLD(Timing timing, u32 param, void* pInfo);
-    inline void CheckCallback_DRAW_OPA(Timing timing, u32 param, void* pInfo);
-    inline void CheckCallback_DRAW_XLU(Timing timing, u32 param, void* pInfo);
+    inline void CheckCallback_CALC_VIEW(Timing timing, ulong param, void* pInfo);
+    inline void CheckCallback_CALC_MAT(Timing timing, ulong param, void* pInfo);
+    inline void CheckCallback_CALC_WORLD(Timing timing, ulong param, void* pInfo);
+    inline void CheckCallback_DRAW_OPA(Timing timing, ulong param, void* pInfo);
+    inline void CheckCallback_DRAW_XLU(Timing timing, ulong param, void* pInfo);
 
 protected:
     math::MTX34 mMtxArray[MTX_TYPE_MAX];  // at 0xC
     math::AABB mAABB[BOUNDINGVOLUME_MAX]; // at 0x9C
 
 private:
-    u32 mScnObjFlags;               // at 0xCC
+    ulong mScnObjFlags;               // at 0xCC
     u8 mPriorityDrawOpa;            // at 0xD0
     u8 mPriorityDrawXlu;            // at 0xD1
     u8 PADDING_0xD2;                // at 0xD2
@@ -242,23 +242,23 @@ public:
     virtual ~IScnObjCallback() {} // at 0x8
 
     virtual void ExecCallback_CALC_WORLD(ScnObj::Timing /* timing */,
-                                         ScnObj* /* pObj */, u32 /* param */,
+                                         ScnObj* /* pObj */, ulong /* param */,
                                          void* /* pInfo */) {} // at 0xC
 
     virtual void ExecCallback_CALC_MAT(ScnObj::Timing /* timing */,
-                                       ScnObj* /* pObj */, u32 /* param */,
+                                       ScnObj* /* pObj */, ulong /* param */,
                                        void* /* pInfo */) {} // at 0x10
 
     virtual void ExecCallback_CALC_VIEW(ScnObj::Timing /* timing */,
-                                        ScnObj* /* pObj */, u32 /* param */,
+                                        ScnObj* /* pObj */, ulong /* param */,
                                         void* /* pInfo */) {} // at 0x14
 
     virtual void ExecCallback_DRAW_OPA(ScnObj::Timing /* timing */,
-                                       ScnObj* /* pObj */, u32 /* param */,
+                                       ScnObj* /* pObj */, ulong /* param */,
                                        void* /* pInfo */) {} // at 0x18
 
     virtual void ExecCallback_DRAW_XLU(ScnObj::Timing /* timing */,
-                                       ScnObj* /* pObj */, u32 /* param */,
+                                       ScnObj* /* pObj */, ulong /* param */,
                                        void* /* pInfo */) {} // at 0x1C
 };
 
@@ -267,7 +267,7 @@ public:
  * ScnObj implementation
  *
  ******************************************************************************/
-void ScnObj::CheckCallback_CALC_VIEW(Timing timing, u32 param, void* pInfo) {
+void ScnObj::CheckCallback_CALC_VIEW(Timing timing, ulong param, void* pInfo) {
     if (mpFuncObjExec != NULL && (mCallbackExecOpMask & EXECOP_CALC_VIEW) &&
         (mCallbackTiming & timing)) {
 
@@ -275,7 +275,7 @@ void ScnObj::CheckCallback_CALC_VIEW(Timing timing, u32 param, void* pInfo) {
     }
 }
 
-void ScnObj::CheckCallback_CALC_MAT(Timing timing, u32 param, void* pInfo) {
+void ScnObj::CheckCallback_CALC_MAT(Timing timing, ulong param, void* pInfo) {
     if (mpFuncObjExec != NULL && (mCallbackExecOpMask & EXECOP_CALC_MAT) &&
         (mCallbackTiming & timing)) {
 
@@ -283,7 +283,7 @@ void ScnObj::CheckCallback_CALC_MAT(Timing timing, u32 param, void* pInfo) {
     }
 }
 
-void ScnObj::CheckCallback_CALC_WORLD(Timing timing, u32 param, void* pInfo) {
+void ScnObj::CheckCallback_CALC_WORLD(Timing timing, ulong param, void* pInfo) {
     if (mpFuncObjExec != NULL && (mCallbackExecOpMask & EXECOP_CALC_WORLD) &&
         (mCallbackTiming & timing)) {
 
@@ -291,7 +291,7 @@ void ScnObj::CheckCallback_CALC_WORLD(Timing timing, u32 param, void* pInfo) {
     }
 }
 
-void ScnObj::CheckCallback_DRAW_OPA(Timing timing, u32 param, void* pInfo) {
+void ScnObj::CheckCallback_DRAW_OPA(Timing timing, ulong param, void* pInfo) {
     if (mpFuncObjExec != NULL && (mCallbackExecOpMask & EXECOP_DRAW_OPA) &&
         (mCallbackTiming & timing)) {
 
@@ -299,7 +299,7 @@ void ScnObj::CheckCallback_DRAW_OPA(Timing timing, u32 param, void* pInfo) {
     }
 }
 
-void ScnObj::CheckCallback_DRAW_XLU(Timing timing, u32 param, void* pInfo) {
+void ScnObj::CheckCallback_DRAW_XLU(Timing timing, ulong param, void* pInfo) {
     if (mpFuncObjExec != NULL && (mCallbackExecOpMask & EXECOP_DRAW_XLU) &&
         (mCallbackTiming & timing)) {
 
@@ -331,7 +331,7 @@ public:
     explicit ScnLeaf(MEMAllocator* pAllocator)
         : ScnObj(pAllocator), mScale(1.0f, 1.0f, 1.0f) {}
 
-    virtual void G3dProc(u32 task, u32 param, void* pInfo) = 0; // at 0xC
+    virtual void G3dProc(ulong task, ulong param, void* pInfo) = 0; // at 0xC
     virtual ~ScnLeaf() {}                                       // at 0x10
 
     virtual ForEachResult ForEach(ForEachFunc pFunc, void* pInfo,
@@ -341,7 +341,7 @@ public:
     virtual bool GetScnObjOption(ulong option, ulong* pValue) const; // at 0x24
 
     virtual void CalcWorldMtx(const math::MTX34* pParent,
-                              u32* pParam); // at 0x30
+                              ulong* pParam); // at 0x30
 
     ScaleProperty GetScaleProperty() const;
 
@@ -356,7 +356,7 @@ public:
     }
 
 protected:
-    void DefG3dProcScnLeaf(u32 task, u32 param, void* pInfo);
+    void DefG3dProcScnLeaf(ulong task, ulong param, void* pInfo);
 
 private:
     math::VEC3 mScale; // at 0xDC
@@ -371,16 +371,16 @@ private:
  ******************************************************************************/
 class ScnGroup : public ScnObj {
 public:
-    ScnGroup(MEMAllocator* pAllocator, ScnObj** ppObj, u32 capacity);
+    ScnGroup(MEMAllocator* pAllocator, ScnObj** ppObj, ulong capacity);
 
-    virtual void G3dProc(u32 task, u32 param, void* pInfo); // at 0xC
+    virtual void G3dProc(ulong task, ulong param, void* pInfo); // at 0xC
     virtual ~ScnGroup();                                    // at 0x10
 
     virtual ForEachResult ForEach(ForEachFunc pFunc, void* pInfo,
                                   bool postOrder); // at 0x1C
 
-    virtual bool Insert(u32 idx, ScnObj* pObj); // at 0x34
-    virtual ScnObj* Remove(u32 idx);            // at 0x38
+    virtual bool Insert(ulong idx, ScnObj* pObj); // at 0x34
+    virtual ScnObj* Remove(ulong idx);            // at 0x38
     virtual bool Remove(ScnObj* pObj);          // at 0x3C
 
     ScnObj** Begin() {
@@ -390,11 +390,11 @@ public:
         return mpScnObjArray + mNumScnObj;
     }
 
-    ScnObj* operator[](u32 idx) {
+    ScnObj* operator[](ulong idx) {
         return mpScnObjArray[idx];
     }
 
-    u32 Size() const {
+    ulong Size() const {
         return mNumScnObj;
     }
     bool Empty() const {
@@ -419,18 +419,18 @@ public:
     }
 
 protected:
-    void DefG3dProcScnGroup(u32 task, u32 param, void* pInfo);
+    void DefG3dProcScnGroup(ulong task, ulong param, void* pInfo);
 
 private:
-    void ScnGroup_G3DPROC_GATHER_SCNOBJ(u32 param, IScnObjGather* pCollection);
-    void ScnGroup_G3DPROC_CALC_WORLD(u32 param, const math::MTX34* pParent);
-    void ScnGroup_G3DPROC_CALC_MAT(u32 param, void* pInfo);
-    void ScnGroup_G3DPROC_CALC_VIEW(u32 param, const math::MTX34* pCamera);
+    void ScnGroup_G3DPROC_GATHER_SCNOBJ(ulong param, IScnObjGather* pCollection);
+    void ScnGroup_G3DPROC_CALC_WORLD(ulong param, const math::MTX34* pParent);
+    void ScnGroup_G3DPROC_CALC_MAT(ulong param, void* pInfo);
+    void ScnGroup_G3DPROC_CALC_VIEW(ulong param, const math::MTX34* pCamera);
 
 private:
     ScnObj** mpScnObjArray; // at 0xDC
-    u32 mSizeScnObj;        // at 0xE0
-    u32 mNumScnObj;         // at 0xE4
+    ulong mSizeScnObj;        // at 0xE0
+    ulong mNumScnObj;         // at 0xE4
 
     NW4R_G3D_RTTI_DECL_DERIVED(ScnGroup, ScnObj);
 };

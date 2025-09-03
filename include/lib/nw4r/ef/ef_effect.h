@@ -36,7 +36,7 @@ private:
     struct CallBack {
         typedef void (*PrevEmissionFunc)(Emitter* pEmitter,
                                          ParticleManager* pManager, int* pCount,
-                                         u32* pFlags,
+                                         ulong* pFlags,
                                          f32 (*pParams)[NUM_PARAMS], u16* pLife,
                                          f32* pLifeRnd, math::MTX34* pSpace);
 
@@ -51,11 +51,11 @@ private:
 public:
     EffectSystem* mManagerES;   // at 0x20
     ActivityList mActivityList; // at 0x24
-    u32 mGroupID;               // at 0x40
+    ulong mGroupID;               // at 0x40
     CallBack mCallBack;         // at 0x44
 
 protected:
-    u32 mFlags;                    // at 0x50
+    ulong mFlags;                    // at 0x50
     math::MTX34 mRootMtx;          // at 0x54
     math::VEC3 mVelocity;          // at 0x84
     ut::List mParticleManager;     // at 0x90
@@ -82,17 +82,17 @@ public:
 
     Emitter* CreateEmitter(EmitterResource* pResource, u8 drawWeight,
                            u16 calcRemain);
-    u32 RetireEmitter(Emitter* pEmitter);
+    ulong RetireEmitter(Emitter* pEmitter);
 
-    u32 RetireEmitterAll();
-    u32 RetireParticleAll();
+    ulong RetireEmitterAll();
+    ulong RetireParticleAll();
 
     u16 GetNumEmitter() const;
     Emitter* GetEmitter(u16 idx);
 
-    u32 ForeachParticleManager(ForEachFunc pFunc, ForEachParam param,
+    ulong ForeachParticleManager(ForEachFunc pFunc, ForEachParam param,
                                bool ignoreLifeStatus);
-    u32 ForeachEmitterFrom(ForEachFunc pFunc, ForEachParam param,
+    ulong ForeachEmitterFrom(ForEachFunc pFunc, ForEachParam param,
                            bool ignoreLifeStatus, Emitter* pEmitter);
 
     void ParticleManagerAdd(ParticleManager* pManager) {
@@ -105,26 +105,26 @@ public:
     void Modifier_SetSimpleLightType(u8 type, bool ignoreLifeStatus) {
         ForeachParticleManager(
             ParticleManager::ModifierTravFunc_SetSimpleLightType,
-            static_cast<u32>(type), ignoreLifeStatus);
+            static_cast<ulong>(type), ignoreLifeStatus);
     }
 
     void Modifier_SetSimpleLightAmbient(const GXColor& rColor,
                                         bool ignoreLifeStatus) {
         ForeachParticleManager(
             ParticleManager::ModifierTravFunc_SetSimpleLightAmbient,
-            reinterpret_cast<u32>(&rColor), ignoreLifeStatus);
+            reinterpret_cast<ulong>(&rColor), ignoreLifeStatus);
     }
 
     // @bug Surely meant to be a const reference...
     void Modifier_SetScale(math::VEC2& rScale, bool ignoreLifeStatus) {
         ForeachParticleManager(ParticleManager::ModifierTravFunc_SetScale,
-                               reinterpret_cast<u32>(&rScale),
+                               reinterpret_cast<ulong>(&rScale),
                                ignoreLifeStatus);
     }
 
     void Modifier_SetRotate(const math::VEC3& rRot, bool ignoreLifeStatus) {
         ForeachParticleManager(ParticleManager::ModifierTravFunc_SetRotate,
-                               reinterpret_cast<u32>(&rRot), ignoreLifeStatus);
+                               reinterpret_cast<ulong>(&rRot), ignoreLifeStatus);
     }
 
     bool GetFlagDisableCalc() const {

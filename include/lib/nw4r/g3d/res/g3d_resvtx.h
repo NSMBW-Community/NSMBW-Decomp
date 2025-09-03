@@ -17,11 +17,11 @@ namespace g3d {
  *
  ******************************************************************************/
 struct ResVtxPosData {
-    u32 size;          // at 0x0
+    ulong size;          // at 0x0
     s32 toResMdlData;  // at 0x4
     s32 toVtxPosArray; // at 0x8
     s32 name;          // at 0xC
-    u32 id;            // at 0x10
+    ulong id;            // at 0x10
     GXCompCnt cmpcnt;  // at 0x14
     GXCompType tp;     // at 0x18
     u8 frac;           // at 0x1C
@@ -45,7 +45,7 @@ public:
     void CopyTo(void* pDst) const;
     void DCStore(bool sync);
 
-    u32 GetSize() const {
+    ulong GetSize() const {
         return ref().size;
     }
 
@@ -56,7 +56,7 @@ public:
         return ofs_to_ptr<void>(ref().toVtxPosArray);
     }
 
-    u32 GetID() const {
+    ulong GetID() const {
         return ref().id;
     }
 
@@ -71,11 +71,11 @@ public:
  *
  ******************************************************************************/
 struct ResVtxNrmData {
-    u32 size;          // at 0x0
+    ulong size;          // at 0x0
     s32 toResMdlData;  // at 0x4
     s32 toVtxNrmArray; // at 0x8
     s32 name;          // at 0xC
-    u32 id;            // at 0x10
+    ulong id;            // at 0x10
     GXCompCnt cmpcnt;  // at 0x14
     GXCompType tp;     // at 0x18
     u8 frac;           // at 0x1C
@@ -97,7 +97,7 @@ public:
     void CopyTo(void* pDst) const;
     void DCStore(bool);
 
-    u32 GetSize() const {
+    ulong GetSize() const {
         return ref().size;
     }
 
@@ -108,7 +108,7 @@ public:
         return ofs_to_ptr<void>(ref().toVtxNrmArray);
     }
 
-    u32 GetID() const {
+    ulong GetID() const {
         return ref().id;
     }
 
@@ -123,11 +123,11 @@ public:
  *
  ******************************************************************************/
 struct ResVtxClrData {
-    u32 size;          // at 0x0
+    ulong size;          // at 0x0
     s32 toResMdlData;  // at 0x4
     s32 toVtxClrArray; // at 0x8
     s32 name;          // at 0xC
-    u32 id;            // at 0x10
+    ulong id;            // at 0x10
     GXCompCnt cmpcnt;  // at 0x14
     GXCompType tp;     // at 0x18
     u8 stride;         // at 0x1C
@@ -149,7 +149,7 @@ public:
     void CopyTo(void* pDst) const;
     void DCStore(bool sync);
 
-    u32 GetSize() const {
+    ulong GetSize() const {
         return ref().size;
     }
 
@@ -160,7 +160,7 @@ public:
         return ofs_to_ptr<void>(ref().toVtxClrArray);
     }
 
-    u32 GetID() const {
+    ulong GetID() const {
         return ref().id;
     }
 
@@ -175,11 +175,11 @@ public:
  *
  ******************************************************************************/
 struct ResVtxTexCoordData {
-    u32 size;            // at 0x0
+    ulong size;            // at 0x0
     s32 toResMdlData;    // at 0x4
     s32 toTexCoordArray; // at 0x8
     s32 name;            // at 0xC
-    u32 id;              // at 0x10
+    ulong id;              // at 0x10
     GXCompCnt cmpcnt;    // at 0x14
     GXCompType tp;       // at 0x18
     u8 frac;             // at 0x1C
@@ -200,7 +200,7 @@ public:
     void GetArray(const void** ppBase, u8* pStride) const;
     void DCStore(bool sync);
 
-    u32 GetSize() const {
+    ulong GetSize() const {
         return ref().size;
     }
 
@@ -211,7 +211,7 @@ public:
         return ofs_to_ptr<void>(ref().toTexCoordArray);
     }
 
-    u32 GetID() const {
+    ulong GetID() const {
         return ref().id;
     }
 

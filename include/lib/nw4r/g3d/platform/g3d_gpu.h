@@ -13,18 +13,18 @@ namespace fifo {
 // Swap bits to get hardware representation
 static const u8 cm2hw[] = {0b0000, 0b0010, 0b0001, 0b0011};
 
-inline void LoadBPCmd(u32 reg) {
+inline void LoadBPCmd(ulong reg) {
     GXCmd1u8(GX_FIFO_CMD_LOAD_BP_REG);
     GXCmd1u32(reg);
 }
 
-inline void LoadCPCmd(u8 addr, u32 value) {
+inline void LoadCPCmd(u8 addr, ulong value) {
     GXCmd1u8(GX_FIFO_CMD_LOAD_CP_REG);
     GXCmd1u8(addr);
     GXCmd1u32(value);
 }
 
-inline void LoadXFCmd(u16 addr, u32 value) {
+inline void LoadXFCmd(u16 addr, ulong value) {
     GXCmd1u8(GX_FIFO_CMD_LOAD_XF_REG);
     GXCmd1u16(0); // No size (single write)
     GXCmd1u16(addr);
@@ -69,14 +69,14 @@ void GDSetCullMode(GXCullMode cullMode);
 void GDSetTexCoordScale2(GXTexCoordID coord, u16 scaleS, GXBool biasS,
                          GXBool wrapS, u16 scaleT, GXBool biasT, GXBool wrapT);
 
-void GDSetIndTexMtx(u32 id, const math::MTX34& rMtx);
+void GDSetIndTexMtx(ulong id, const math::MTX34& rMtx);
 
 void GDResetCurrentMtx();
-void GDSetCurrentMtx(const u32* pIdArray);
+void GDSetCurrentMtx(const ulong* pIdArray);
 
-void GDLoadTexMtxImm3x3(const math::MTX33& rMtx, u32 id);
+void GDLoadTexMtxImm3x3(const math::MTX33& rMtx, ulong id);
 
-inline void GDSetChanCtrl(GXChannelID chan, u32 param, u32 lightMask) {
+inline void GDSetChanCtrl(GXChannelID chan, ulong param, ulong lightMask) {
     param &= ~(GX_XF_COLOR0CNTRL_LMASKLO_MASK | GX_XF_COLOR0CNTRL_LMASKHI_MASK);
 
     param |= (lightMask & 0b1111) << GX_XF_COLOR0CNTRL_LMASKLO_SHIFT |
@@ -85,7 +85,7 @@ inline void GDSetChanCtrl(GXChannelID chan, u32 param, u32 lightMask) {
     LoadXFCmd(GX_XF_REG_COLOR0CNTRL + (chan & 3), param);
 }
 
-inline void GDSetChanCtrlLightOff(GXChannelID chan, u32 param, u32 lightMask) {
+inline void GDSetChanCtrlLightOff(GXChannelID chan, ulong param, ulong lightMask) {
     param &= ~(GX_XF_COLOR0CNTRL_LMASKLO_MASK | GX_XF_COLOR0CNTRL_LMASKHI_MASK |
                GX_XF_COLOR0CNTRL_LIGHT_MASK);
 
@@ -96,11 +96,11 @@ inline void GDSetChanCtrlLightOff(GXChannelID chan, u32 param, u32 lightMask) {
 }
 
 inline void GDSetChanAmbColor(GXChannelID chan, GXColor color) {
-    LoadXFCmd(GX_XF_REG_AMBIENT0 + chan, *reinterpret_cast<u32*>(&color));
+    LoadXFCmd(GX_XF_REG_AMBIENT0 + chan, *reinterpret_cast<ulong*>(&color));
 }
 
 inline void GDSetChanMatColor(GXChannelID chan, GXColor color) {
-    LoadXFCmd(GX_XF_REG_MATERIAL0 + chan, *reinterpret_cast<u32*>(&color));
+    LoadXFCmd(GX_XF_REG_MATERIAL0 + chan, *reinterpret_cast<ulong*>(&color));
 }
 
 } // namespace fifo

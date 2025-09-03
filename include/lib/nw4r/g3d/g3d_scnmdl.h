@@ -32,7 +32,7 @@ public:
 
     private:
         ScnMdl* mpScnMdl;                     // at 0x0
-        u32 mMatID;                           // at 0x4
+        ulong mMatID;                           // at 0x4
         ResTexObj mTexObj;                    // at 0x8
         ResTlutObj mTlutObj;                  // at 0xC
         ResTexSrt mTexSrt;                    // at 0x10
@@ -48,14 +48,14 @@ public:
 
     class CopiedVisAccess {
     public:
-        CopiedVisAccess(ScnMdl* pScnMdl, u32 id);
+        CopiedVisAccess(ScnMdl* pScnMdl, ulong id);
 
         bool IsVisible() const;
         bool SetVisibilityEx(bool visible);
 
     private:
         ScnMdl* mpScnMdl; // at 0x0
-        u32 mNodeID;      // at 0x4
+        ulong mNodeID;      // at 0x4
         u8* mpVis;        // at 0x8
     };
 
@@ -95,12 +95,12 @@ public:
                              size_t bufferOption, int numView);
 
     ScnMdl(MEMAllocator* pAllocator, ResMdl mdl, math::MTX34* pWorldMtxArray,
-           u32* pWorldMtxAttribArray, math::MTX34* pViewPosMtxArray,
+           ulong* pWorldMtxAttribArray, math::MTX34* pViewPosMtxArray,
            math::MTX33* pViewNrmMtxArray, math::MTX34* pViewTexMtxArray,
            int numView, int numViewMtx, DrawResMdlReplacement* pReplacement,
-           u32* pMatBufferDirtyFlag);
+           ulong* pMatBufferDirtyFlag);
 
-    virtual void G3dProc(u32 task, u32 param, void* pInfo); // at 0xC
+    virtual void G3dProc(ulong task, ulong param, void* pInfo); // at 0xC
     virtual ~ScnMdl();                                      // at 0x10
 
     virtual bool SetScnObjOption(ulong option, ulong value);         // at 0x20
@@ -113,7 +113,7 @@ public:
     virtual const AnmObj* GetAnmObj(AnmObjType type) const; // at 0x44
 
     void InitBuffer();
-    void CleanMatBuffer(u32 idx, u32 option);
+    void CleanMatBuffer(ulong idx, ulong option);
     void CleanVisBuffer();
 
     AnmObjShp* GetAnmObjShp() {
@@ -125,11 +125,11 @@ public:
     }
 
 protected:
-    void ScnMdl_G3DPROC_CALC_WORLD(u32 param, const math::MTX34* pParent);
-    void ScnMdl_G3DPROC_CALC_MAT(u32 param, void* pInfo);
-    void ScnMdl_G3DPROC_CALC_VTX(u32 param, void* pInfo);
-    void ScnMdl_G3DPROC_DRAW_OPA(u32 param, void* pInfo);
-    void ScnMdl_G3DPROC_DRAW_XLU(u32 param, void* pInfo);
+    void ScnMdl_G3DPROC_CALC_WORLD(ulong param, const math::MTX34* pParent);
+    void ScnMdl_G3DPROC_CALC_MAT(ulong param, void* pInfo);
+    void ScnMdl_G3DPROC_CALC_VTX(ulong param, void* pInfo);
+    void ScnMdl_G3DPROC_DRAW_OPA(ulong param, void* pInfo);
+    void ScnMdl_G3DPROC_DRAW_XLU(ulong param, void* pInfo);
 
 private:
     enum VisBufferFlag {
@@ -148,17 +148,17 @@ private:
         mFlagVisBuffer |= VISBUFFER_DIRTY;
     }
 
-    bool IsMatBufferDirty(u32 idx, u32 option) const {
+    bool IsMatBufferDirty(ulong idx, ulong option) const {
         return option & mpMatBufferDirtyFlag[idx];
     }
-    void MatBufferDirty(u32 idx, u32 option) {
+    void MatBufferDirty(ulong idx, ulong option) {
         mpMatBufferDirtyFlag[idx] |= option;
     }
 
 private:
     AnmObjShp* mpAnmObjShp;             // at 0x138
-    u32 mFlagVisBuffer;                 // at 0x13C
-    u32* mpMatBufferDirtyFlag;          // at 0x140
+    ulong mFlagVisBuffer;                 // at 0x13C
+    ulong* mpMatBufferDirtyFlag;          // at 0x140
     DrawResMdlReplacement mReplacement; // at 0x144
 
     NW4R_G3D_RTTI_DECL_DERIVED(ScnMdl, ScnMdlSimple);

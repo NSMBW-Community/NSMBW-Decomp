@@ -1,53 +1,71 @@
 #ifndef NW4R_SND_SEQ_SOUND_HANDLE_H
 #define NW4R_SND_SEQ_SOUND_HANDLE_H
-#include <nw4r/types_nw4r.h>
 
-#include <nw4r/snd/snd_SeqSound.h>
+/*******************************************************************************
+ * headers
+ */
 
-#include <nw4r/ut.h>
+#include <types.h>
 
-namespace nw4r {
-namespace snd {
+#include "nw4r/snd/snd_SeqSound.h"
+#include "nw4r/snd/snd_SeqTrack.h"
+#include "nw4r/ut/ut_NonCopyable.h" // ut::NonCopyable
 
-// Forward declarations
-class SoundHandle;
+/*******************************************************************************
+ * types
+ */
 
-class SeqSoundHandle : private ut::NonCopyable {
-public:
-    explicit SeqSoundHandle(SoundHandle* pHandle);
-    ~SeqSoundHandle() {
-        DetachSound();
-    }
+// forward declarations
+namespace nw4r { namespace snd { namespace detail { class SeqSound; }}}
 
-    bool IsAttachedSound() const {
-        return mSound != NULL;
-    }
+/*******************************************************************************
+ * classes and functions
+ */
 
-    void DetachSound();
+namespace nw4r { namespace snd
+{
+	// [R89JEL]:/bin/RVL/Debug/mainD.elf:.debug::0x2e9b6
+	class SeqSoundHandle : private ut::NonCopyable
+	{
+	// methods
+	public:
+		SeqSoundHandle(SoundHandle*);
+		~SeqSoundHandle() { DetachSound(); }
+		// methods
+		bool IsAttachedSound() const { return mSound != nullptr; }
 
-    void SetTempoRatio(f32 tempo) {
-        if (IsAttachedSound()) {
-            mSound->SetTempoRatio(tempo);
-        }
-    }
+		void DetachSound();
 
-    void SetTrackVolume(u32 trackFlags, f32 volume) {
-        if (IsAttachedSound()) {
-            mSound->SetTrackVolume(trackFlags, volume);
-        }
-    }
+		void WriteVariable(int varNo, s16 value) {
+			if (IsAttachedSound())
+				mSound->WriteVariable(varNo, value);
+		}
 
-    void WriteVariable(int idx, s16 value) {
-        if (IsAttachedSound()) {
-            mSound->WriteVariable(idx, value);
-        }
-    }
+		void ReadVariable(int varNo, s16 *value) {
+			if (IsAttachedSound())
+				mSound->ReadVariable(varNo, value);
+		}
 
-private:
-    detail::SeqSound* mSound; // at 0x0
-};
+		void SetTrackMute(ulong trackFlags, SeqMute mute) {
+			if (IsAttachedSound())
+				mSound->SetTrackMute(trackFlags, mute);
+		}
 
-} // namespace snd
-} // namespace nw4r
+		void SetTempoRatio(f32 tempoRatio) {
+			if (IsAttachedSound())
+				mSound->SetTempoRatio(tempoRatio);
+		}
 
-#endif
+		void SetVolume(ulong trackFlags, f32 volume) {
+			if (IsAttachedSound())
+				mSound->SetTrackVolume(trackFlags, volume);
+		}
+
+	// members
+	private:
+		/* base ut::NonCopyable */		// size 0x00, offset 0x00
+		detail::SeqSound	*mSound;	// size 0x04, offset 0x00
+	}; // size 0x04
+}} // namespace nw4r::snd
+
+#endif // NW4R_SND_SEQ_SOUND_HANDLE_H

@@ -8,7 +8,7 @@ namespace nw4r {
 namespace g3d {
 namespace detail {
 
-inline void* AllocFromAllocator(MEMAllocator* pAllocator, u32 size) {
+inline void* AllocFromAllocator(MEMAllocator* pAllocator, ulong size) {
     return MEMAllocFromAllocator(pAllocator, size);
 }
 inline void FreeToAllocator(MEMAllocator* pAllocator, void* pBlock) {

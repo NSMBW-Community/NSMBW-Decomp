@@ -20,12 +20,12 @@ public:
 
     virtual void Close() = 0; // at 0x10
 
-    virtual s32 Read(void* pDst, u32 size) = 0; // at 0x14
-    virtual bool ReadAsync(void* pDst, u32 size, StreamCallback pCallback,
+    virtual s32 Read(void* pDst, ulong size) = 0; // at 0x14
+    virtual bool ReadAsync(void* pDst, ulong size, StreamCallback pCallback,
                            void* pCallbackArg); // at 0x18
 
-    virtual void Write(const void* pSrc, u32 size); // at 0x1C
-    virtual bool WriteAsync(const void* pSrc, u32 size,
+    virtual void Write(const void* pSrc, ulong size); // at 0x1C
+    virtual bool WriteAsync(const void* pSrc, ulong size,
                             StreamCallback pCallback,
                             void* pCallbackArg); // at 0x20
 
@@ -35,13 +35,13 @@ public:
     virtual bool CanRead() const = 0;  // at 0x2C
     virtual bool CanWrite() const = 0; // at 0x30
 
-    virtual u32 GetOffsetAlign() const {
+    virtual ulong GetOffsetAlign() const {
         return 1;
     } // at 0x34
-    virtual u32 GetSizeAlign() const {
+    virtual ulong GetSizeAlign() const {
         return 1;
     } // at 0x38
-    virtual u32 GetBufferAlign() const {
+    virtual ulong GetBufferAlign() const {
         return 1;
     } // at 0x3C
 

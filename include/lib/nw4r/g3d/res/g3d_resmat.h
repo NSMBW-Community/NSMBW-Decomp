@@ -141,9 +141,9 @@ public:
 
     bool GXGetTexCoordGen2(GXTexCoordID id, GXTexGenType* pFunc,
                            GXTexGenSrc* pParam, GXBool* pNormalize,
-                           u32* pPostMtx) const;
+                           ulong* pPostMtx) const;
     void GXSetTexCoordGen2(GXTexCoordID id, GXTexGenType func,
-                           GXTexGenSrc param, GXBool normalize, u32 postMtx);
+                           GXTexGenSrc param, GXBool normalize, ulong postMtx);
 
     void EndEdit() {
         DCStore(false);
@@ -156,7 +156,7 @@ public:
  *
  ******************************************************************************/
 struct ResTexObjData {
-    u32 flagUsedTexMapID;           // at 0x0
+    ulong flagUsedTexMapID;           // at 0x0
     GXTexObj texObj[GX_MAX_TEXMAP]; // at 0x4
 };
 
@@ -183,7 +183,7 @@ public:
  *
  ******************************************************************************/
 struct ResTlutObjData {
-    u32 flagUsedTlutID;                     // at 0x0
+    ulong flagUsedTlutID;                     // at 0x0
     GXTlutObj tlutObj[GX_TLUT8 - GX_TLUT0]; // at 0x4
 };
 
@@ -224,7 +224,7 @@ struct TexMtxEffect : TexSrtTypedef {
 struct ResTexSrtData : TexSrtTypedef {
     static const int NUM_OF_TEXTURE = 8;
 
-    u32 flag;                            // at 0x0
+    ulong flag;                            // at 0x0
     TexMatrixMode texMtxMode;            // at 0x4
     TexSrt texSrt[NUM_OF_TEXTURE];       // at 0x8
     TexMtxEffect effect[NUM_OF_TEXTURE]; // at 0xA8
@@ -236,20 +236,20 @@ public:
 
     ResTexSrt CopyTo(void* pDst) const;
 
-    bool GetEffectMtx(u32 id, math::MTX34* pMtx) const;
-    bool SetEffectMtx(u32 id, const math::MTX34* pMtx);
+    bool GetEffectMtx(ulong id, math::MTX34* pMtx) const;
+    bool SetEffectMtx(ulong id, const math::MTX34* pMtx);
 
-    bool GetMapMode(u32 id, u32* pMode, int* pCamRef, int* pLightRef) const;
-    bool SetMapMode(u32 id, u32 mode, int camRef, int lightRef);
+    bool GetMapMode(ulong id, ulong* pMode, int* pCamRef, int* pLightRef) const;
+    bool SetMapMode(ulong id, ulong mode, int camRef, int lightRef);
 
-    TexSrt::Flag GetTexSrtFlag(u32 id) const {
+    TexSrt::Flag GetTexSrtFlag(ulong id) const {
         return static_cast<TexSrt::Flag>(
             (ref().flag >> id * TexSrt::NUM_OF_FLAGS) &
             (TexSrt::FLAG_ANM_EXISTS | TexSrt::FLAG_SCALE_ONE |
              TexSrt::FLAG_ROT_ZERO | TexSrt::FLAG_TRANS_ZERO));
     }
 
-    bool IsExist(u32 id) const {
+    bool IsExist(ulong id) const {
         if (IsValid()) {
             return ptr()->flag & (1 << id * TexSrt::NUM_OF_FLAGS);
         } else {
@@ -257,7 +257,7 @@ public:
         }
     }
 
-    bool IsIdentity(u32 id) const {
+    bool IsIdentity(ulong id) const {
         return (((ref().flag >> id * TexSrt::NUM_OF_FLAGS) &
                  TexSrt::FLAGSET_IDENTITY) == TexSrt::FLAGSET_IDENTITY) &&
                (ref().effect[id].misc_flag & TexMtxEffect::FLAG_IDENT);
@@ -287,11 +287,11 @@ struct Chan {
         FLAG_CTRL_ALPHA_ENABLE = (1 << 5),
     };
 
-    u32 flag;           // at 0x0
+    ulong flag;           // at 0x0
     GXColor matColor;   // at 0x4
     GXColor ambColor;   // at 0x8
-    u32 paramChanCtrlC; // at 0xC
-    u32 paramChanCtrlA; // at 0x10
+    ulong paramChanCtrlC; // at 0xC
+    ulong paramChanCtrlA; // at 0x10
 };
 
 struct ResChanData {
@@ -520,15 +520,15 @@ struct ResMatDLData {
 };
 
 struct ResMatData {
-    u32 size;                   // at 0x0
+    ulong size;                   // at 0x0
     s32 toResMdlData;           // at 0x4
     s32 name;                   // at 0x8
-    u32 id;                     // at 0xC
-    u32 flag;                   // at 0x10
+    ulong id;                     // at 0xC
+    ulong flag;                   // at 0x10
     ResGenModeData genMode;     // at 0x14
     ResMatMiscData misc;        // at 0x1C
     s32 toResTevData;           // at 0x28
-    u32 numResTexPlttInfo;      // at 0x2C
+    ulong numResTexPlttInfo;      // at 0x2C
     s32 toResTexPlttInfo;       // at 0x30
     s32 toResMatFurData;        // at 0x34
     s32 toResUserData;          // at 0x38
@@ -550,7 +550,7 @@ public:
 
     ResMdl GetParent();
 
-    u32 GetID() const {
+    ulong GetID() const {
         return ref().id;
     }
 
@@ -565,11 +565,11 @@ public:
     ResTev GetResTev();
     ResTev GetResTev() const;
 
-    u32 GetNumResTexPlttInfo() const {
+    ulong GetNumResTexPlttInfo() const {
         return ref().numResTexPlttInfo;
     }
 
-    ResTexPlttInfo GetResTexPlttInfo(u32 id) {
+    ResTexPlttInfo GetResTexPlttInfo(ulong id) {
         ResTexPlttInfoData* pData =
             ofs_to_ptr<ResTexPlttInfoData>(ref().toResTexPlttInfo);
 

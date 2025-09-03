@@ -1,17 +1,34 @@
 #ifndef NW4R_SND_SOUND_MEMORY_ALLOCATABLE_H
 #define NW4R_SND_SOUND_MEMORY_ALLOCATABLE_H
-#include <nw4r/types_nw4r.h>
 
-namespace nw4r {
-namespace snd {
+/*******************************************************************************
+ * headers
+ */
 
-class SoundMemoryAllocatable {
-public:
-    virtual ~SoundMemoryAllocatable() {} // at 0x8
-    virtual void* Alloc(u32 size) = 0;   // at 0xC
-};
+#include <types.h>
 
-} // namespace snd
-} // namespace nw4r
+/*******************************************************************************
+ * classes and functions
+ */
 
-#endif
+namespace nw4r { namespace snd
+{
+	// [R89JEL]:/bin/RVL/Debug/mainD.elf:.debug::0x269c0
+	class SoundMemoryAllocatable
+	{
+	// methods
+	public:
+		// cdtors
+		virtual ~SoundMemoryAllocatable() {}
+
+		// virtual function ordering
+		// vtable SoundMemoryAllocatable
+		virtual void *Alloc(ulong size) = 0;
+
+	// members
+	private:
+		/* vtable */	// size 0x04, offset 0x00
+	}; // size 0x04
+}} // namespace nw4r::snd
+
+#endif // NW4R_SND_SOUND_MEMORY_ALLOCATABLE_H

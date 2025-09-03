@@ -40,7 +40,7 @@ public:
     virtual void GetGlyph(Glyph* pGlyph, u16 ch) const; // at 0x50
     virtual FontEncoding GetEncoding() const;           // at 0x54
 
-    u32 GetRequireBufferSize();
+    ulong GetRequireBufferSize();
     bool Load(void* pBuffer);
 
 private:

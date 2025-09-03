@@ -137,7 +137,7 @@ protected:
     Iterator Erase(Iterator begin, Iterator end);
 
 public:
-    u32 GetSize() const {
+    ulong GetSize() const {
         return mSize;
     }
     bool IsEmpty() const {
@@ -161,7 +161,7 @@ private:
     }
 
 private:
-    u32 mSize;          // at 0x0
+    ulong mSize;          // at 0x0
     LinkListNode mNode; // at 0x4
 };
 

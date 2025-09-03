@@ -34,7 +34,7 @@ namespace res {
  *
  ******************************************************************************/
 struct TextBox : Pane {
-    static const u32 SIGNATURE = 'txt1';
+    static const ulong SIGNATURE = 'txt1';
 
     u16 textBufBytes;             // at 0x4C
     u16 textStrBytes;             // at 0x4E
@@ -43,8 +43,8 @@ struct TextBox : Pane {
     u8 textPosition;              // at 0x54
     u8 textAlignment;             // at 0x55
     u8 PADDING_0x56[0x58 - 0x56]; // at 0x56
-    u32 textStrOffset;            // at 0x58
-    u32 textCols[TEXTCOLOR_MAX];  // at 0x5C
+    ulong textStrOffset;            // at 0x58
+    ulong textCols[TEXTCOLOR_MAX];  // at 0x5C
     Size fontSize;                // at 0x64
     f32 charSpace;                // at 0x6C
     f32 lineSpace;                // at 0x70
@@ -67,11 +67,11 @@ public:
 
     virtual void DrawSelf(const DrawInfo& rInfo); // at 0x18
 
-    virtual ut::Color GetVtxColor(u32 idx) const;       // at 0x24
-    virtual void SetVtxColor(u32 idx, ut::Color color); // at 0x28
+    virtual ut::Color GetVtxColor(ulong idx) const;       // at 0x24
+    virtual void SetVtxColor(ulong idx, ut::Color color); // at 0x28
 
-    virtual u8 GetVtxColorElement(u32 idx) const;       // at 0x34
-    virtual void SetVtxColorElement(u32 idx, u8 value); // at 0x38
+    virtual u8 GetVtxColorElement(ulong idx) const;       // at 0x34
+    virtual void SetVtxColorElement(ulong idx, u8 value); // at 0x38
 
     virtual void AllocStringBuffer(u16 len); // at 0x64
     virtual void FreeStringBuffer();         // at 0x68
@@ -93,10 +93,10 @@ public:
     const ut::Font* GetFont() const;
     void SetFont(const ut::Font* pFont);
 
-    ut::Color GetTextColor(u32 idx) const {
+    ut::Color GetTextColor(ulong idx) const {
         return mTextColors[idx];
     }
-    void SetTextColor(u32 idx, ut::Color color) {
+    void SetTextColor(ulong idx, ut::Color color) {
         mTextColors[idx] = color;
     }
 
@@ -145,7 +145,7 @@ public:
     f32 GetTextMagH() const;
     f32 GetTextMagV() const;
 
-    u32 MakeDrawFlag() const;
+    ulong MakeDrawFlag() const;
 
 protected:
     wchar_t* mTextBuf;                    // at 0xD4

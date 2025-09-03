@@ -59,8 +59,8 @@ template <typename T> inline bool TestBit(T t, int pos) {
  * Pointer arithmetic
  *
  ******************************************************************************/
-inline u32 GetIntPtr(const void* pPtr) {
-    return reinterpret_cast<u32>(pPtr);
+inline ulong GetIntPtr(const void* pPtr) {
+    return reinterpret_cast<ulong>(pPtr);
 }
 
 template <typename T>
@@ -89,8 +89,8 @@ template <typename T> inline T RoundUp(T t, unsigned int alignment) {
 }
 
 template <typename T> inline void* RoundUp(T* pPtr, unsigned int alignment) {
-    u32 value = reinterpret_cast<u32>(pPtr);
-    u32 rounded = (alignment + value - 1) & ~(alignment - 1);
+    ulong value = reinterpret_cast<ulong>(pPtr);
+    ulong rounded = (alignment + value - 1) & ~(alignment - 1);
     return reinterpret_cast<void*>(rounded);
 }
 
@@ -99,8 +99,8 @@ template <typename T> inline T RoundDown(T t, unsigned int alignment) {
 }
 
 template <typename T> inline void* RoundDown(T* pPtr, unsigned int alignment) {
-    u32 value = reinterpret_cast<u32>(pPtr);
-    u32 rounded = value & ~(alignment - 1);
+    ulong value = reinterpret_cast<ulong>(pPtr);
+    ulong rounded = value & ~(alignment - 1);
     return reinterpret_cast<void*>(rounded);
 }
 

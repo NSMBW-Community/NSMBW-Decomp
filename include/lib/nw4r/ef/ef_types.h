@@ -17,7 +17,7 @@
 namespace nw4r {
 namespace ef {
 
-static const u32 NUM_PARAMS = 6;
+static const ulong NUM_PARAMS = 6;
 
 enum Axis {
     AXIS_X,
@@ -56,7 +56,7 @@ enum EvaluateStatus {
     NW4R_EF_ES_SKIP,
 };
 
-typedef u32 ForEachParam;
+typedef ulong ForEachParam;
 typedef void (*ForEachFunc)(void* pObject, ForEachParam param);
 
 inline u8 ConvertF32RadToU8(f32 rad) {

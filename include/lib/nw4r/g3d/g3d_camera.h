@@ -28,7 +28,7 @@ struct CameraData {
 
     math::MTX34 cameraMtx;     // at 0x0
     math::MTX44 projMtx;       // at 0x30
-    u32 flags;                 // at 0x70
+    ulong flags;                 // at 0x70
     math::VEC3 cameraPos;      // at 0x74
     math::VEC3 cameraUp;       // at 0x80
     math::VEC3 cameraTarget;   // at 0x8C
@@ -51,10 +51,10 @@ struct CameraData {
     math::VEC2 viewportSize;   // at 0xE4
     f32 viewportNear;          // at 0xEC
     f32 viewportFar;           // at 0xF0
-    u32 scissorX;              // at 0xF4
-    u32 scissorY;              // at 0xF8
-    u32 scissorWidth;          // at 0xFC
-    u32 scissorHeight;         // at 0x100
+    ulong scissorX;              // at 0xF4
+    ulong scissorY;              // at 0xF8
+    ulong scissorWidth;          // at 0xFC
+    ulong scissorHeight;         // at 0x100
     s32 scissorOffsetX;        // at 0x104
     s32 scissorOffsetY;        // at 0x108
 };
@@ -87,7 +87,7 @@ public:
     void SetOrtho(f32 top, f32 bottom, f32 left, f32 right, f32 near, f32 far);
     void SetProjectionMtxDirectly(const math::MTX44* pMtx);
 
-    void SetScissor(u32 x, u32 y, u32 width, u32 height);
+    void SetScissor(ulong x, ulong y, ulong width, ulong height);
     void SetScissorBoxOffset(s32 ox, s32 oy);
 
     void SetViewport(f32 x, f32 y, f32 width, f32 height);

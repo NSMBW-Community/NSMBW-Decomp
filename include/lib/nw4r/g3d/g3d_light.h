@@ -97,7 +97,7 @@ private:
     };
 
 private:
-    u32 mFlag;       // at 0x0
+    ulong mFlag;       // at 0x0
     GXLightObj mObj; // at 0x4
 };
 
@@ -124,7 +124,7 @@ public:
         return mpSetting != NULL && mpLightSetData != NULL;
     }
 
-    bool SelectLightObj(u32 lightIdx, int lightObjIdx);
+    bool SelectLightObj(ulong lightIdx, int lightObjIdx);
     bool SelectAmbLightObj(int lightObjIdx);
 
 private:
@@ -144,17 +144,17 @@ struct AmbLightObj {
 class LightSetting {
 public:
     LightSetting(LightObj* pLightObjArray, AmbLightObj* pAmbLightObjArray,
-                 u32 numLight, LightSetData* pLightSetDataArray,
-                 u32 numLightSet);
+                 ulong numLight, LightSetData* pLightSetDataArray,
+                 ulong numLightSet);
     ~LightSetting() {}
 
     bool Import(const LightSetting& rSetting);
-    void ApplyViewMtx(const math::MTX34& rCamera, u32 numLight);
+    void ApplyViewMtx(const math::MTX34& rCamera, ulong numLight);
 
-    u32 GetNumLightObj() const {
+    ulong GetNumLightObj() const {
         return mNumLight;
     }
-    u32 GetNumLightSet() const {
+    ulong GetNumLightSet() const {
         return mNumLightSet;
     }
 

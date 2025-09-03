@@ -27,7 +27,7 @@ public:
         SetPaletteEntryNum(0);
     }
 
-    TexMap(TPLPalette* pPalette, u32 id) {
+    TexMap(TPLPalette* pPalette, ulong id) {
         Set(pPalette, id);
         SetBiasClampEnable(false);
         SetAnisotropy(GX_ANISO_1);
@@ -39,7 +39,7 @@ public:
     void Set(const TexMap& rOther) {
         *this = rOther;
     }
-    void Set(TPLPalette* pPalette, u32 id);
+    void Set(TPLPalette* pPalette, ulong id);
     void Set(const TPLDescriptor* pDesc);
 
     void SetNoWrap(const TexMap& rOther);
@@ -173,16 +173,16 @@ private:
     u16 mPaletteEntryNum; // at 0x16
 
     struct {
-        u32 textureFormat : 4;
-        u32 mipmap : 1;
-        u32 wrapS : 2;
-        u32 wrapT : 2;
-        u32 minFilter : 3;
-        u32 magFilter : 3;
-        u32 biasClampEnable : 1;
-        u32 edgeLODEnable : 1;
-        u32 anisotropy : 2;
-        u32 paletteFormat : 2;
+        ulong textureFormat : 4;
+        ulong mipmap : 1;
+        ulong wrapS : 2;
+        ulong wrapT : 2;
+        ulong minFilter : 3;
+        ulong magFilter : 3;
+        ulong biasClampEnable : 1;
+        ulong edgeLODEnable : 1;
+        ulong anisotropy : 2;
+        ulong paletteFormat : 2;
     } mBits; // at 0x18
 };
 

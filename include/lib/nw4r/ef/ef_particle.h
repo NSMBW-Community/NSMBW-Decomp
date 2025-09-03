@@ -161,8 +161,8 @@ public:
             (mParameter.mTextureReverse >> (layer * NUM_OF_TEX_REVERSE) &
              TEX_REVERSE_ST);
 
-        if (static_cast<u32>(reverse) == TEX_REVERSE_S ||
-            static_cast<u32>(reverse) == TEX_REVERSE_ST) {
+        if (static_cast<ulong>(reverse) == TEX_REVERSE_S ||
+            static_cast<ulong>(reverse) == TEX_REVERSE_ST) {
             scale -= scale * 2;
         }
 
@@ -179,8 +179,8 @@ public:
             (mParameter.mTextureReverse >> (layer * NUM_OF_TEX_REVERSE) &
              TEX_REVERSE_ST);
 
-        if (static_cast<u32>(reverse) == TEX_REVERSE_T ||
-            static_cast<u32>(reverse) == TEX_REVERSE_ST) {
+        if (static_cast<ulong>(reverse) == TEX_REVERSE_T ||
+            static_cast<ulong>(reverse) == TEX_REVERSE_ST) {
             scale -= scale * 2;
         }
 
@@ -194,8 +194,8 @@ public:
             (mParameter.mTextureReverse >> (layer * NUM_OF_TEX_REVERSE) &
              TEX_REVERSE_ST);
 
-        if (static_cast<u32>(reverse) == TEX_REVERSE_S ||
-            static_cast<u32>(reverse) == TEX_REVERSE_ST) {
+        if (static_cast<ulong>(reverse) == TEX_REVERSE_S ||
+            static_cast<ulong>(reverse) == TEX_REVERSE_ST) {
             trans = 1;
         }
 
@@ -212,8 +212,8 @@ public:
             (mParameter.mTextureReverse >> (layer * NUM_OF_TEX_REVERSE) &
              TEX_REVERSE_ST);
 
-        if (static_cast<u32>(reverse) == TEX_REVERSE_T ||
-            static_cast<u32>(reverse) == TEX_REVERSE_ST) {
+        if (static_cast<ulong>(reverse) == TEX_REVERSE_T ||
+            static_cast<ulong>(reverse) == TEX_REVERSE_ST) {
             trans = 1;
         }
 

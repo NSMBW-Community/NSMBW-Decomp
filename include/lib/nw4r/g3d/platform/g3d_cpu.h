@@ -124,19 +124,19 @@ inline void Init() {
  ******************************************************************************/
 namespace DC {
 
-inline void StoreRange(void* pBase, u32 size) {
+inline void StoreRange(void* pBase, ulong size) {
     DCStoreRange(pBase, size);
 }
 
-inline void StoreRangeNoSync(void* pBase, u32 size) {
+inline void StoreRangeNoSync(void* pBase, ulong size) {
     DCStoreRangeNoSync(pBase, size);
 }
 
-inline void FlushRangeNoSync(void* pBase, u32 size) {
+inline void FlushRangeNoSync(void* pBase, ulong size) {
     DCFlushRangeNoSync(pBase, size);
 }
 
-inline void InvalidateRange(void* pBase, u32 size) {
+inline void InvalidateRange(void* pBase, ulong size) {
     DCInvalidateRange(pBase, size);
 }
 
@@ -149,8 +149,8 @@ inline void InvalidateRange(void* pBase, u32 size) {
  ******************************************************************************/
 namespace detail {
 
-void Copy32ByteBlocks(void* pDst, const void* pSrc, u32 size);
-void ZeroMemory32ByteBlocks(void* pDst, u32 size);
+void Copy32ByteBlocks(void* pDst, const void* pSrc, ulong size);
+void ZeroMemory32ByteBlocks(void* pDst, ulong size);
 
 } // namespace detail
 

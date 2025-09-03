@@ -11,7 +11,7 @@ namespace g3d {
 
 struct ResPlttData {
     ResBlockHeaderData header; // at 0x0
-    u32 revision;              // at 0x8
+    ulong revision;              // at 0x8
     s32 toResFileData;         // at 0xC
     s32 toPlttData;            // at 0x10
     s32 name;                  // at 0x14
@@ -24,7 +24,7 @@ struct ResPlttData {
 
 class ResPltt : public ResCommon<ResPlttData> {
 public:
-    static const u32 SIGNATURE = 'PLT0';
+    static const ulong SIGNATURE = 'PLT0';
     static const int REVISION = 1;
 
 public:
@@ -34,7 +34,7 @@ public:
         DCStore(false);
     }
 
-    u32 GetRevision() const {
+    ulong GetRevision() const {
         return ref().revision;
     }
 
@@ -68,7 +68,7 @@ public:
         return ref().fmt;
     }
 
-    u32 GetNumEntries() const {
+    ulong GetNumEntries() const {
         return ref().numEntries;
     }
 };

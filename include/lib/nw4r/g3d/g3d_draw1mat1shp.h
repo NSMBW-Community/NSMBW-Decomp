@@ -43,7 +43,7 @@ struct Draw1Mat1ShpSwap {
 };
 
 void Draw1Mat1ShpDirectly(ResMat mat, ResShp shp, const math::MTX34* pViewPos,
-                          const math::MTX34* pViewNrm, u32 ctrl,
+                          const math::MTX34* pViewNrm, ulong ctrl,
                           Draw1Mat1ShpSwap* pSwap,
                           G3DState::IndMtxOp* pIndMtxOp);
 

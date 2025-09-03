@@ -1,28 +1,20 @@
 #ifndef NW4R_SND_SOUND_ARCHIVE_LOADER_H
 #define NW4R_SND_SOUND_ARCHIVE_LOADER_H
-#include <nw4r/types_nw4r.h>
-
-#include <nw4r/ut.h>
-
-#include <revolution/OS.h>
+#include "nw4r/types_nw4r.h"
+#include "nw4r/ut.h" // IWYU pragma: export
+#include <revolution/OS.h>  // IWYU pragma: export
 
 namespace nw4r {
 namespace snd {
 
 // Forward declarations
-class SoundArchive;
 class SoundMemoryAllocatable;
 
 namespace detail {
 
-/******************************************************************************
- *
- * FileStreamHandle
- *
- ******************************************************************************/
 class FileStreamHandle {
 public:
-    FileStreamHandle(ut::FileStream* pStream) : mStream(pStream) {}
+    FileStreamHandle(ut::FileStream *pFileStream) : mStream(pFileStream) {}
 
     ~FileStreamHandle() {
         if (mStream != NULL) {
@@ -30,11 +22,11 @@ public:
         }
     }
 
-    ut::FileStream* GetFileStream() {
+    ut::FileStream *GetFileStream() {
         return mStream;
     }
 
-    ut::FileStream* operator->() {
+    ut::FileStream *operator->() {
         return mStream;
     }
 
@@ -43,27 +35,23 @@ public:
     }
 
 private:
-    ut::FileStream* mStream; // at 0x0
+    ut::FileStream *mStream; // at 0x0
 };
 
-/******************************************************************************
- *
- * SoundArchiveLoader
- *
- ******************************************************************************/
 class SoundArchiveLoader {
 public:
-    explicit SoundArchiveLoader(const SoundArchive& rArchive);
+    explicit SoundArchiveLoader(const SoundArchive &rArchive);
     ~SoundArchiveLoader();
 
-    void* LoadGroup(u32 id, SoundMemoryAllocatable* pAllocatable,
-                    void** ppWaveBuffer, u32 blockSize);
+    void *LoadGroup(ulong id, SoundMemoryAllocatable *pAllocatable, void **ppWaveBuffer, ulong blockSize);
+    s32 ReadFile(ulong, void *, s32, s32);
+    void *LoadFile(ulong id, SoundMemoryAllocatable* pAllocatable);
 
 private:
     mutable OSMutex mMutex;   // at 0x0
-    const SoundArchive& mArc; // at 0x18
+    const SoundArchive &mArc; // at 0x18
     u8 mStreamArea[512];      // at 0x1C
-    ut::FileStream* mStream;  // at 0x21C
+    ut::FileStream *mStream;  // at 0x21C
 };
 
 } // namespace detail

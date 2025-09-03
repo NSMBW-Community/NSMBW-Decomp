@@ -49,56 +49,56 @@ public:
 
     ResMdl GetResMdl(const char* pName) const;
     ResMdl GetResMdl(int idx) const;
-    ResMdl GetResMdl(u32 idx) const;
+    ResMdl GetResMdl(ulong idx) const;
 
     ResPltt GetResPltt(const char* pName) const;
     ResPltt GetResPltt(const ResName name) const;
     ResPltt GetResPltt(int idx) const;
-    ResPltt GetResPltt(u32 idx) const;
+    ResPltt GetResPltt(ulong idx) const;
 
     ResTex GetResTex(const char* pName) const;
     ResTex GetResTex(const ResName name) const;
     ResTex GetResTex(int idx) const;
-    ResTex GetResTex(u32 idx) const;
+    ResTex GetResTex(ulong idx) const;
 
     ResAnmChr GetResAnmChr(const char* pName) const;
     ResAnmChr GetResAnmChr(int idx) const;
-    ResAnmChr GetResAnmChr(u32 idx) const;
+    ResAnmChr GetResAnmChr(ulong idx) const;
 
     ResAnmVis GetResAnmVis(const char* pName) const;
     ResAnmVis GetResAnmVis(int idx) const;
-    ResAnmVis GetResAnmVis(u32 idx) const;
+    ResAnmVis GetResAnmVis(ulong idx) const;
 
     ResAnmClr GetResAnmClr(const char* pName) const;
     ResAnmClr GetResAnmClr(int idx) const;
-    ResAnmClr GetResAnmClr(u32 idx) const;
+    ResAnmClr GetResAnmClr(ulong idx) const;
 
     ResAnmTexPat GetResAnmTexPat(const char* pName) const;
     ResAnmTexPat GetResAnmTexPat(int idx) const;
-    ResAnmTexPat GetResAnmTexPat(u32 idx) const;
+    ResAnmTexPat GetResAnmTexPat(ulong idx) const;
 
     ResAnmTexSrt GetResAnmTexSrt(const char* pName) const;
     ResAnmTexSrt GetResAnmTexSrt(int idx) const;
-    ResAnmTexSrt GetResAnmTexSrt(u32 idx) const;
+    ResAnmTexSrt GetResAnmTexSrt(ulong idx) const;
 
     ResAnmShp GetResAnmShp(const char* pName) const;
     ResAnmShp GetResAnmShp(int idx) const;
-    ResAnmShp GetResAnmShp(u32 idx) const;
+    ResAnmShp GetResAnmShp(ulong idx) const;
 
     ResAnmScn GetResAnmScn(const char* pName) const;
     ResAnmScn GetResAnmScn(int idx) const;
-    ResAnmScn GetResAnmScn(u32 idx) const;
+    ResAnmScn GetResAnmScn(ulong idx) const;
 
-    u32 GetResMdlNumEntries() const;
-    u32 GetResPlttNumEntries() const;
-    u32 GetResTexNumEntries() const;
-    u32 GetResAnmChrNumEntries() const;
-    u32 GetResAnmVisNumEntries() const;
-    u32 GetResAnmClrNumEntries() const;
-    u32 GetResAnmTexPatNumEntries() const;
-    u32 GetResAnmTexSrtNumEntries() const;
-    u32 GetResAnmShpNumEntries() const;
-    u32 GetResAnmScnNumEntries() const;
+    ulong GetResMdlNumEntries() const;
+    ulong GetResPlttNumEntries() const;
+    ulong GetResTexNumEntries() const;
+    ulong GetResAnmChrNumEntries() const;
+    ulong GetResAnmVisNumEntries() const;
+    ulong GetResAnmClrNumEntries() const;
+    ulong GetResAnmTexPatNumEntries() const;
+    ulong GetResAnmTexSrtNumEntries() const;
+    ulong GetResAnmShpNumEntries() const;
+    ulong GetResAnmScnNumEntries() const;
 };
 
 } // namespace g3d

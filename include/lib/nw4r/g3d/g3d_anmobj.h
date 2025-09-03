@@ -32,7 +32,7 @@ public:
     AnmObj(MEMAllocator* pAllocator, G3dObj* pParent)
         : G3dObj(pAllocator, pParent), mFlags(0) {}
 
-    virtual void G3dProc(u32 task, u32 param, void* pInfo) = 0; // at 0xC
+    virtual void G3dProc(ulong task, ulong param, void* pInfo) = 0; // at 0xC
     virtual ~AnmObj() {}                                        // at 0x10
 
     virtual void SetFrame(f32 frame) = 0; // at 0x1C
@@ -53,7 +53,7 @@ public:
     }
 
 private:
-    u32 mFlags; // at 0xC
+    ulong mFlags; // at 0xC
 };
 
 /******************************************************************************

@@ -70,10 +70,10 @@ namespace detail {
  * Vertex colors
  *
  ******************************************************************************/
-inline u8 GetVtxColorElement(const ut::Color* pColors, u32 idx) {
+inline u8 GetVtxColorElement(const ut::Color* pColors, ulong idx) {
     return reinterpret_cast<const u8*>(&pColors[idx / 4])[idx % 4];
 }
-inline void SetVtxColorElement(ut::Color* pColors, u32 idx, u8 value) {
+inline void SetVtxColorElement(ut::Color* pColors, ulong idx, u8 value) {
     reinterpret_cast<u8*>(&pColors[idx / 4])[idx % 4] = value;
 }
 
@@ -144,13 +144,13 @@ inline s32 GetSignatureInt(const char* pSignature) {
 }
 
 inline const char* GetStrTableStr(const void* pTable, int index) {
-    const u32* pOffsetTbl = static_cast<const u32*>(pTable);
+    const ulong* pOffsetTbl = static_cast<const ulong*>(pTable);
     const char* pStringPool = static_cast<const char*>(pTable);
     return pStringPool + pOffsetTbl[index];
 }
 
 bool TestFileHeader(const res::BinaryFileHeader& rHeader);
-bool TestFileHeader(const res::BinaryFileHeader& rHeader, u32 signature);
+bool TestFileHeader(const res::BinaryFileHeader& rHeader, ulong signature);
 
 bool EqualsResName(const char* pLhs, const char* pRhs);
 bool EqualsMaterialName(const char* pLhs, const char* pRhs);

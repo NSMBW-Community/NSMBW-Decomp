@@ -52,7 +52,7 @@ namespace res {
  *
  ******************************************************************************/
 struct Pane {
-    static const u32 SIGNATURE = 'pan1';
+    static const ulong SIGNATURE = 'pan1';
 
     DataBlockHeader blockHeader;               // at 0x0
     u8 flag;                                   // at 0x8
@@ -98,15 +98,15 @@ public:
     virtual void Draw(const DrawInfo& rInfo);     // at 0x14
     virtual void DrawSelf(const DrawInfo& rInfo); // at 0x18
 
-    virtual void Animate(u32 option);     // at 0x1C
-    virtual void AnimateSelf(u32 option); // at 0x20
+    virtual void Animate(ulong option);     // at 0x1C
+    virtual void AnimateSelf(ulong option); // at 0x20
 
-    virtual ut::Color GetVtxColor(u32 idx) const;       // at 0x24
-    virtual void SetVtxColor(u32 idx, ut::Color color); // at 0x28
-    virtual u8 GetColorElement(u32 idx) const;          // at 0x2C
-    virtual void SetColorElement(u32 idx, u8 value);    // at 0x30
-    virtual u8 GetVtxColorElement(u32 idx) const;       // at 0x34
-    virtual void SetVtxColorElement(u32 idx, u8 value); // at 0x38
+    virtual ut::Color GetVtxColor(ulong idx) const;       // at 0x24
+    virtual void SetVtxColor(ulong idx, ut::Color color); // at 0x28
+    virtual u8 GetColorElement(ulong idx) const;          // at 0x2C
+    virtual void SetColorElement(ulong idx, u8 value);    // at 0x30
+    virtual u8 GetVtxColorElement(ulong idx) const;       // at 0x34
+    virtual void SetVtxColorElement(ulong idx, u8 value); // at 0x38
 
     virtual Pane* FindPaneByName(const char* pName, bool recursive); // at 0x3C
     virtual Material* FindMaterialByName(const char* pName,
@@ -132,7 +132,7 @@ public:
 
     virtual bool GetMaterialNum() const;         // at 0x64
     virtual Material* GetMaterial() const;       // at 0x68
-    virtual Material* GetMaterial(u32) const;    // at 0x6C
+    virtual Material* GetMaterial(ulong) const;    // at 0x6C
     virtual void LoadMtx(const DrawInfo& rInfo); // at 0x70
 
     void AppendChild(Pane* pChild);
@@ -152,7 +152,7 @@ public:
         return mChildList;
     }
 
-    void SetSRTElement(u32 idx, f32 value) {
+    void SetSRTElement(ulong idx, f32 value) {
         reinterpret_cast<f32*>(&mTranslate)[idx] = value;
     }
 
@@ -279,7 +279,7 @@ protected:
     math::MTX34 mMtx;    // at 0x54
     math::MTX34 mGlbMtx; // at 0x84
 
-    u32 mExtUserDataNum; // at 0xB4
+    ulong mExtUserDataNum; // at 0xB4
 
     u8 mAlpha;        // at 0xB8
     u8 mGlbAlpha;     // at 0xB9

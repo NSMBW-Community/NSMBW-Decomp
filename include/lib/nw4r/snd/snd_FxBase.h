@@ -1,43 +1,49 @@
 #ifndef NW4R_SND_FX_BASE_H
 #define NW4R_SND_FX_BASE_H
-#include <nw4r/types_nw4r.h>
 
-#include <nw4r/snd/snd_Types.h>
+/*******************************************************************************
+ * headers
+ */
 
-#include <nw4r/ut.h>
+#include <types.h>
 
-namespace nw4r {
-namespace snd {
+#include "nw4r/snd/snd_global.h"
 
-enum SampleFormat {
-    SAMPLE_FORMAT_PCM_S32,
-    SAMPLE_FORMAT_PCM_S16,
-    SAMPLE_FORMAT_PCM_S8,
-    SAMPLE_FORMAT_DSP_ADPCM
-};
+#include "nw4r/ut/ut_NonCopyable.h" // NonCopyable
+#include "nw4r/ut/ut_LinkList.h"
 
-class FxBase : private ut::NonCopyable {
-public:
-    virtual ~FxBase() {} // at 0x8
+/*******************************************************************************
+ * classes and functions
+ */
 
-    virtual bool StartUp() {
-        return true;
-    } // at 0xC
+namespace nw4r { namespace snd
+{
+	// [R89JEL]:/bin/RVL/Debug/mainD.elf:.debug::0x20f98
+	class FxBase : private ut::NonCopyable
+	{
+	// typedefs
+	public:
+		typedef ut::LinkList<FxBase, 0x04> LinkList;
 
-    virtual void Shutdown() {} // at 0x10
+	// methods
+	public:
+		// cdtors
+		virtual ~FxBase() {}
 
-    virtual void UpdateBuffer(int /* channels */, void** /* ppBuffer */,
-                              u32 /* size */, SampleFormat /* format */,
-                              f32 /* sampleRate */, OutputMode /* mode */) {
-    } // at 0x14
+		// virtual function ordering
+		// vtable FxBase
+		virtual bool StartUp();
+		virtual void Shutdown();
+		virtual void UpdateBuffer(int, void **, ulong, SampleFormat, f32,
+		                          OutputMode);
+		virtual void OnChangeOutputMode();
 
-public:
-    NW4R_UT_LINKLIST_NODE_DECL(); // at 0x4
-};
+	private:
+		/* base ut::NonCopyable */		// size 0x00, offset 0x00
+		/* vtable */					// size 0x04, offset 0x00
+	public:
+		ut::LinkListNode	mFxLink;	// size 0x08, offset 0x04
+	}; // size 0x0c
+}} // namespace nw4r::snd
 
-NW4R_UT_LINKLIST_TYPEDEF_DECL(FxBase);
-
-} // namespace snd
-} // namespace nw4r
-
-#endif
+#endif // NW4R_SND_FX_BASE_H
