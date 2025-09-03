@@ -93,7 +93,7 @@ typedef void (*ScnDependentTexMtxFuncPtr)(math::MTX34* pMtx, s8 camRef,
  *
  ******************************************************************************/
 struct IndTexMtxInfo {
-    u32 flag;                                        // at 0x0
+    ulong flag;                                        // at 0x0
     math::MTX34 offset_mtx[GX_ITM_2 - GX_ITM_0 + 1]; // at 0x4
 
     IndTexMtxInfo() : flag(0) {}
@@ -159,8 +159,8 @@ void LoadResMatPix(const ResMatPix pix);
 void LoadResMatTevColor(const ResMatTevColor color);
 void LoadResMatIndMtxAndScale(const ResMatIndMtxAndScale ind);
 void LoadResMatIndMtxAndScale(const ResMatIndMtxAndScale ind, IndMtxOp& rOp);
-void LoadResMatChan(const ResMatChan chan, u32 maskDiffColor, u32 maskDiffAlpha,
-                    u32 maskSpecColor, u32 maskSpecAlpha, GXColor amb,
+void LoadResMatChan(const ResMatChan chan, ulong maskDiffColor, ulong maskDiffAlpha,
+                    ulong maskSpecColor, ulong maskSpecAlpha, GXColor amb,
                     bool lightOff);
 void LoadResMatTexCoordGen(const ResMatTexCoordGen gen);
 void LoadResTexSrt(const ResTexSrt srt);
@@ -171,11 +171,11 @@ void LoadResShpPrimitive(const ResShp shp, const math::MTX34* pViewPos,
 void SetViewPosNrmMtxArray(const math::MTX34* pViewPosMtxArray,
                            const math::MTX33* pViewNrmMtxArray,
                            const math::MTX34* pViewEnvTexMtxArray);
-const math::MTX33* GetViewNrmMtxPtr(u32 id);
+const math::MTX33* GetViewNrmMtxPtr(ulong id);
 
-void SetScnDependentTexMtxFunc(u32 id, ScnDependentTexMtxFuncPtr func,
+void SetScnDependentTexMtxFunc(ulong id, ScnDependentTexMtxFuncPtr func,
                                ScnDependentTexMtxFuncType type);
-bool GetScnDependentTexMtxFunc(u32 id, ScnDependentTexMtxFuncPtr* pFunc,
+bool GetScnDependentTexMtxFunc(ulong id, ScnDependentTexMtxFuncPtr* pFunc,
                                ScnDependentTexMtxFuncType* pType);
 
 IndMtxOp* GetIndMtxOp();
@@ -185,9 +185,9 @@ void LoadFog(int id);
 
 void SetLightSetting(const LightSetting& rSetting);
 const LightObj* GetLightObj(int id);
-void LoadLightSet(int id, u32* pDiffColorMask, u32* pDiffAlphaMask,
-                  u32* pSpecColorMask, u32* pSpecAlphaMask, AmbLightObj* pAmb);
-void LoadLightSet(int id, u32* pDiffMask, u32* pSpecMask, AmbLightObj* pAmb);
+void LoadLightSet(int id, ulong* pDiffColorMask, ulong* pDiffAlphaMask,
+                  ulong* pSpecColorMask, ulong* pSpecAlphaMask, AmbLightObj* pAmb);
+void LoadLightSet(int id, ulong* pDiffMask, ulong* pSpecMask, AmbLightObj* pAmb);
 
 void SetCameraProjMtx(const Camera& rCam, int id, bool view);
 const math::MTX34* GetCameraMtxPtr();

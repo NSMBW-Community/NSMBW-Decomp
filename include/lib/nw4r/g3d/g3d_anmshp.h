@@ -19,7 +19,7 @@ class AnmObjShpRes;
 class AnmObjShp : public AnmObj {
 public:
     AnmObjShp(MEMAllocator* pAllocator, u16* pBindingBuf, int numBinding);
-    virtual void G3dProc(u32 task, u32 param, void* pInfo) = 0; // at 0xC
+    virtual void G3dProc(ulong task, ulong param, void* pInfo) = 0; // at 0xC
     virtual ~AnmObjShp() {}                                     // at 0x10
 
     virtual void SetFrame(f32 frame) = 0; // at 0x1C
@@ -33,7 +33,7 @@ public:
     virtual void Release();                  // at 0x34
 
     virtual const ShpAnmResult* GetResult(ShpAnmResult* pResult,
-                                          u32 idx) = 0; // at 0x38
+                                          ulong idx) = 0; // at 0x38
 
     virtual AnmObjShpRes* Attach(int idx, AnmObjShpRes* pRes); // at 0x3C
     virtual AnmObjShpRes* Detach(int idx);                     // at 0x40
@@ -42,8 +42,8 @@ public:
     virtual void SetWeight(int idx, f32 weight); // at 0x48
     virtual f32 GetWeight(int idx) const;        // at 0x4C
 
-    bool TestExistence(u32 idx) const;
-    bool TestDefined(u32 idx) const;
+    bool TestExistence(ulong idx) const;
+    bool TestDefined(ulong idx) const;
 
 protected:
     enum BindingFlag {
@@ -71,7 +71,7 @@ class AnmObjShpNode : public AnmObjShp {
 public:
     AnmObjShpNode(MEMAllocator* pAllocator, u16* pBindingBuf, int numBinding,
                   AnmObjShpRes** ppChildrenBuf, int numChildren);
-    virtual void G3dProc(u32 task, u32 param, void* pInfo); // at 0xC
+    virtual void G3dProc(ulong task, ulong param, void* pInfo); // at 0xC
     virtual ~AnmObjShpNode();                               // at 0x10
 
     virtual void SetFrame(f32 frame); // at 0x1C
@@ -101,7 +101,7 @@ protected:
  *
  ******************************************************************************/
 class AnmObjShpBlend : public AnmObjShpNode {
-    static AnmObjShpBlend* Construct(MEMAllocator* pAllocator, u32* pSize,
+    static AnmObjShpBlend* Construct(MEMAllocator* pAllocator, ulong* pSize,
                                      ResMdl mdl, int numChildren);
 
     AnmObjShpBlend(MEMAllocator* pAllocator, u16* pBindingBuf, int numBinding,
@@ -111,7 +111,7 @@ class AnmObjShpBlend : public AnmObjShpNode {
     virtual ~AnmObjShpBlend() {} // at 0x10
 
     virtual const ShpAnmResult* GetResult(ShpAnmResult* pResult,
-                                          u32 idx); // at 0x38
+                                          ulong idx); // at 0x38
 
     virtual void SetWeight(int idx, f32 weight); // at 0x48
     virtual f32 GetWeight(int idx) const;        // at 0x4C
@@ -129,13 +129,13 @@ private:
  ******************************************************************************/
 class AnmObjShpRes : public AnmObjShp, protected FrameCtrl {
 public:
-    static AnmObjShpRes* Construct(MEMAllocator* pAllocator, u32* pSize,
+    static AnmObjShpRes* Construct(MEMAllocator* pAllocator, ulong* pSize,
                                    ResAnmShp shp, ResMdl mdl, bool cache);
 
     AnmObjShpRes(MEMAllocator* pAllocator, ResAnmShp shp, u16* pBindingBuf,
                  ShpAnmVtxSet* pVtxSetBuf, int numBinding,
                  ShpAnmResult* pCacheBuf);
-    virtual void G3dProc(u32 task, u32 param, void* pInfo); // at 0xC
+    virtual void G3dProc(ulong task, ulong param, void* pInfo); // at 0xC
     virtual ~AnmObjShpRes() {}                              // at 0x10
 
     virtual void SetFrame(f32 frame); // at 0x1C
@@ -148,7 +148,7 @@ public:
     virtual bool Bind(const ResMdl mdl); // at 0x30
 
     virtual const ShpAnmResult* GetResult(ShpAnmResult* pResult,
-                                          u32 idx); // at 0x38
+                                          ulong idx); // at 0x38
 
     void UpdateCache();
 

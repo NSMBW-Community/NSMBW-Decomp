@@ -27,20 +27,20 @@ struct MtxCacheMap {
 
 void CalcView(math::MTX34* pViewPosArray, math::MTX33* pViewNrmArray,
               const math::MTX34* pModelMtxArray,
-              const u32* pModelMtxAttribArray, u32 numMtx,
+              const ulong* pModelMtxAttribArray, ulong numMtx,
               const math::MTX34* pViewMtx, const ResMdl mdl,
               math::MTX34* pViewTexMtxArray);
 
 void CalcView_LC(math::MTX34* pViewPosArray, math::MTX33* pViewNrmArray,
                  const math::MTX34* pModelMtxArray,
-                 const u32* pModelMtxAttribArray, u32 numMtx,
+                 const ulong* pModelMtxAttribArray, ulong numMtx,
                  const math::MTX34* pViewMtx, const ResMdl mdl,
                  math::MTX34* pViewTexMtxArray);
 
 void CalcView_LC_DMA_ModelMtx(math::MTX34* pViewPosArray,
                               math::MTX33* pViewNrmArray,
                               const math::MTX34* pModelMtxArray,
-                              const u32* pModelMtxAttribArray, u32 numMtx,
+                              const ulong* pModelMtxAttribArray, ulong numMtx,
                               const math::MTX34* pViewMtx, const ResMdl mdl,
                               math::MTX34* pViewTexMtxArray);
 

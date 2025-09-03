@@ -8,20 +8,20 @@ namespace ef {
 // Forward declarations
 class Particle;
 
-void AnimCurveExecuteU8(u8* pCmdList, u8* pTarget, u32 tick, u16 seed,
-                        u32 life);
+void AnimCurveExecuteU8(u8* pCmdList, u8* pTarget, ulong tick, u16 seed,
+                        ulong life);
 
-void AnimCurveExecuteF32(u8* pCmdList, f32* pTarget, u32 tick, u16 seed,
-                         u32 life);
+void AnimCurveExecuteF32(u8* pCmdList, f32* pTarget, ulong tick, u16 seed,
+                         ulong life);
 
-void AnimCurveExecuteRotate(u8* pCmdList, f32* pTarget, u32 tick, u16 seed,
-                            u32 life);
+void AnimCurveExecuteRotate(u8* pCmdList, f32* pTarget, ulong tick, u16 seed,
+                            ulong life);
 
-void AnimCurveExecuteTexture(u8* pCmdList, Particle* pParticle, u32 tick,
-                             u16 seed, u32 life);
+void AnimCurveExecuteTexture(u8* pCmdList, Particle* pParticle, ulong tick,
+                             u16 seed, ulong life);
 
-void AnimCurveExecuteChild(u8* pCmdList, Particle* pParticle, u32 tick,
-                           u16 seed, u32 life);
+void AnimCurveExecuteChild(u8* pCmdList, Particle* pParticle, ulong tick,
+                           u16 seed, ulong life);
 
 } // namespace ef
 } // namespace nw4r

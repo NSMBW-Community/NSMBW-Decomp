@@ -45,8 +45,8 @@ struct LightAnmResult : ResAnmLightDataTypedef {
         FLAG_ALPHA_ENABLE = (1 << 5)
     };
 
-    u32 specIdx;           // at 0x0
-    u32 flags;             // at 0x4
+    ulong specIdx;           // at 0x0
+    ulong flags;             // at 0x4
     math::VEC3 pos;        // at 0x8
     math::VEC3 aim;        // at 0x14
     ut::Color color;       // at 0x20
@@ -90,14 +90,14 @@ struct ResAnmLightData : ResAnmLightDataTypedef {
         FLAG_SHININESS_CONST = (1 << 31)
     };
 
-    u32 size;                  // at 0x0
+    ulong size;                  // at 0x0
     s32 toResAnmScnData;       // at 0x4
     s32 name;                  // at 0x8
-    u32 id;                    // at 0xC
-    u32 refNumber;             // at 0x10
-    u32 specLightObjIdx;       // at 0x14
+    ulong id;                    // at 0xC
+    ulong refNumber;             // at 0x10
+    ulong specLightObjIdx;       // at 0x14
     s32 toResUserData;         // at 0x18
-    u32 flags;                 // at 0x1C
+    ulong flags;                 // at 0x1C
     ResBoolAnmData enable;     // at 0x20
     ResAnmData posX;           // at 0x24
     ResAnmData posY;           // at 0x28
@@ -122,15 +122,15 @@ public:
 
     void GetAnmResult(LightAnmResult* pResult, f32 frame) const;
 
-    u32 GetID() const {
+    ulong GetID() const {
         return ref().id;
     }
 
-    u32 GetRefNumber() const {
+    ulong GetRefNumber() const {
         return ref().refNumber;
     }
 
-    u32 GetSpecularLightIdx() const {
+    ulong GetSpecularLightIdx() const {
         return ref().specLightObjIdx;
     }
 

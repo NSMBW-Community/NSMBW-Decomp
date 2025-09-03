@@ -12,7 +12,7 @@ public:
     EmitterFormTorus() {}
 
     virtual void Emission(Emitter* pEmitter, ParticleManager* pManager,
-                          int count, u32 flags, f32* pParams, u16 life,
+                          int count, ulong flags, f32* pParams, u16 life,
                           f32 lifeRnd, const math::MTX34* pSpace); // at 0x8
 };
 

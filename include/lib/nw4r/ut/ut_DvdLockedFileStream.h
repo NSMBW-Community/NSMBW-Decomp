@@ -18,18 +18,18 @@ public:
     DvdLockedFileStream(const DVDFileInfo* pInfo, bool close);
     virtual ~DvdLockedFileStream(); // at 0xC
 
-    virtual s32 Read(void* pDst, u32 size); // at 0x14
+    virtual s32 Read(void* pDst, ulong size); // at 0x14
 
-    virtual bool ReadAsync(void* /* pDst */, u32 /* size */,
+    virtual bool ReadAsync(void* /* pDst */, ulong /* size */,
                            StreamCallback /* pCallback */,
                            void* /* pCallbackArg */) {
 
         return false;
     } // at 0x18
 
-    virtual s32 Peek(void* pDst, u32 size); // at 0x5C
+    virtual s32 Peek(void* pDst, ulong size); // at 0x5C
 
-    virtual bool PeekAsync(void* /* pDst */, u32 /* size */,
+    virtual bool PeekAsync(void* /* pDst */, ulong /* size */,
                            StreamCallback /* pCallback */,
                            void* /* pCallbackArg */) {
 

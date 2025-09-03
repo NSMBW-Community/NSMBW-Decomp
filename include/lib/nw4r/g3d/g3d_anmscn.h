@@ -34,37 +34,37 @@ public:
     virtual AnmScnRes* Attach(int idx, AnmScnRes* pRes); // at 0x30
     virtual AnmScnRes* Detach();                         // at 0x34
 
-    virtual u32 GetNumLightSet() const = 0;      // at 0x38
-    virtual u32 GetNumAmbLight() const = 0;      // at 0x3C
-    virtual u32 GetNumDiffuseLight() const = 0;  // at 0x40
-    virtual u32 GetNumSpecularLight() const = 0; // at 0x44
-    virtual u32 GetNumFog() const = 0;           // at 0x48
-    virtual u32 GetNumCamera() const = 0;        // at 0x4C
+    virtual ulong GetNumLightSet() const = 0;      // at 0x38
+    virtual ulong GetNumAmbLight() const = 0;      // at 0x3C
+    virtual ulong GetNumDiffuseLight() const = 0;  // at 0x40
+    virtual ulong GetNumSpecularLight() const = 0; // at 0x44
+    virtual ulong GetNumFog() const = 0;           // at 0x48
+    virtual ulong GetNumCamera() const = 0;        // at 0x4C
 
-    virtual u32 GetLightSetMaxRefNumber() const = 0;     // at 0x50
-    virtual u32 GetAmbLightMaxRefNumber() const = 0;     // at 0x54
-    virtual u32 GetDiffuseLightMaxRefNumber() const = 0; // at 0x58
-    virtual u32 GetFogMaxRefNumber() const = 0;          // at 0x5C
-    virtual u32 GetCameraMaxRefNumber() const = 0;       // at 0x60
+    virtual ulong GetLightSetMaxRefNumber() const = 0;     // at 0x50
+    virtual ulong GetAmbLightMaxRefNumber() const = 0;     // at 0x54
+    virtual ulong GetDiffuseLightMaxRefNumber() const = 0; // at 0x58
+    virtual ulong GetFogMaxRefNumber() const = 0;          // at 0x5C
+    virtual ulong GetCameraMaxRefNumber() const = 0;       // at 0x60
 
-    virtual bool GetLightSet(LightSet set, u32 refNumber) = 0; // at 0x64
-    virtual ut::Color GetAmbLightColor(u32 refNumber) = 0;     // at 0x68
+    virtual bool GetLightSet(LightSet set, ulong refNumber) = 0; // at 0x64
+    virtual ut::Color GetAmbLightColor(ulong refNumber) = 0;     // at 0x68
     virtual void GetLight(LightObj* pDiff, LightObj* pSpec,
-                          u32 refNumber) = 0;                 // at 0x6C
-    virtual void GetFog(Fog fog, u32 refNumber) = 0;          // at 0x70
-    virtual bool GetCamera(Camera camera, u32 refNumber) = 0; // at 0x74
+                          ulong refNumber) = 0;                 // at 0x6C
+    virtual void GetFog(Fog fog, ulong refNumber) = 0;          // at 0x70
+    virtual bool GetCamera(Camera camera, ulong refNumber) = 0; // at 0x74
 
-    virtual u32 GetSpecularLightID(u32 refNumber) const = 0; // at 0x78
-    virtual bool HasSpecularLight(u32 refNumber) const = 0;  // at 0x7C
+    virtual ulong GetSpecularLightID(ulong refNumber) const = 0; // at 0x78
+    virtual bool HasSpecularLight(ulong refNumber) const = 0;  // at 0x7C
 
     virtual AmbLightAnmResult* GetAmbLightResult(AmbLightAnmResult* pResult,
-                                                 u32 refNumber) = 0; // at 0x80
+                                                 ulong refNumber) = 0; // at 0x80
     virtual LightAnmResult* GetLightResult(LightAnmResult* pResult,
-                                           u32 refNumber) = 0; // at 0x84
+                                           ulong refNumber) = 0; // at 0x84
     virtual FogAnmResult* GetFogResult(FogAnmResult* pResult,
-                                       u32 refNumber) = 0; // at 0x88
+                                       ulong refNumber) = 0; // at 0x88
     virtual CameraAnmResult* GetCameraResult(CameraAnmResult* pResult,
-                                             u32 refNumber) = 0; // at 0x8C
+                                             ulong refNumber) = 0; // at 0x8C
 
     void GetLightSetting(LightSetting* pSetting);
 

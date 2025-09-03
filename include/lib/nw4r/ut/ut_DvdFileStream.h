@@ -27,15 +27,15 @@ public:
 
     virtual void Close(); // at 0x10
 
-    virtual s32 Read(void* pDst, u32 size); // at 0x14
-    virtual bool ReadAsync(void* pDst, u32 size, StreamCallback pCallback,
+    virtual s32 Read(void* pDst, ulong size); // at 0x14
+    virtual bool ReadAsync(void* pDst, ulong size, StreamCallback pCallback,
                            void* pCallbackArg); // at 0x18
 
-    virtual s32 Peek(void* pDst, u32 size); // at 0x5C
-    virtual bool PeekAsync(void* pDst, u32 size, StreamCallback pCallback,
+    virtual s32 Peek(void* pDst, ulong size); // at 0x5C
+    virtual bool PeekAsync(void* pDst, ulong size, StreamCallback pCallback,
                            void* pCallbackArg); // at 0x60
 
-    virtual void Seek(s32 offset, u32 origin); // at 0x44
+    virtual void Seek(s32 offset, ulong origin); // at 0x44
 
     virtual void Cancel(); // at 0x48
     virtual bool CancelAsync(StreamCallback pCallback,
@@ -45,10 +45,10 @@ public:
         return mIsBusy;
     } // at 0x24
 
-    virtual u32 Tell() const {
+    virtual ulong Tell() const {
         return mFilePosition.Tell();
     } // at 0x58
-    virtual u32 GetSize() const {
+    virtual ulong GetSize() const {
         return mFilePosition.GetFileSize();
     } // at 0x40
 
@@ -68,13 +68,13 @@ public:
         return true;
     } // at 0x54
 
-    virtual u32 GetOffsetAlign() const {
+    virtual ulong GetOffsetAlign() const {
         return 4;
     } // at 0x34
-    virtual u32 GetSizeAlign() const {
+    virtual ulong GetSizeAlign() const {
         return 32;
     } // at 0x38
-    virtual u32 GetBufferAlign() const {
+    virtual ulong GetBufferAlign() const {
         return 32;
     } // at 0x3C
 
@@ -89,7 +89,7 @@ private:
     static void DvdCBAsyncCallback_(s32 result, DVDCommandBlock* pBlock);
 
     void Initialize_();
-    u32 AdjustReadLength_(u32 len);
+    ulong AdjustReadLength_(ulong len);
 
 private:
     FilePosition mFilePosition;     // at 0x14

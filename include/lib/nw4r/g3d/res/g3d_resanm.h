@@ -75,18 +75,18 @@ template <typename T> inline f32 ClipFrame(const T& rInfo, f32 frame) {
  *
  ******************************************************************************/
 union ResColorAnmData {
-    u32 constValue;              // at 0x0
+    ulong constValue;              // at 0x0
     s32 toResColorAnmFramesData; // at 0x0
 };
 struct ResColorAnmFramesData {
-    u32 frameColors[1]; // at 0x0
+    ulong frameColors[1]; // at 0x0
 };
 
 namespace detail {
 
-u32 GetResColorAnmResult(const ResColorAnmFramesData* pData, f32 frame);
+ulong GetResColorAnmResult(const ResColorAnmFramesData* pData, f32 frame);
 
-inline u32 GetResColorAnmResult(const ResColorAnmData* pData, f32 frame,
+inline ulong GetResColorAnmResult(const ResColorAnmData* pData, f32 frame,
                                 bool constant) {
     if (constant) {
         return pData->constValue;
@@ -111,21 +111,21 @@ union ResBoolAnmData {
     s32 toResBoolAnmFramesData; // at 0x0
 };
 struct ResBoolAnmFramesData {
-    u32 boolBits[1]; // at 0x0
+    ulong boolBits[1]; // at 0x0
 };
 
 namespace detail {
 
 inline bool GetResBoolAnmFramesResult(const ResBoolAnmFramesData* pData,
                                       int frame) {
-    const u32* pBits = pData->boolBits;
-    u32 index = static_cast<u32>(frame);
+    const ulong* pBits = pData->boolBits;
+    ulong index = static_cast<ulong>(frame);
 
-    u32 wordIdx = index / 32;
-    u32 bitIdx = index % 32;
+    ulong wordIdx = index / 32;
+    ulong bitIdx = index % 32;
 
-    u32 targetBit = (1U << 31) >> bitIdx;
-    u32 bitWord = pBits[wordIdx];
+    ulong targetBit = (1U << 31) >> bitIdx;
+    ulong bitWord = pBits[wordIdx];
 
     return bitWord & targetBit;
 }

@@ -24,7 +24,7 @@
  * Debug builds show this behavior was not achieved through a function.
  */
 #define NW4R_G3D_OFS_TO_RESNAME(BASE, OFS)                                     \
-    nw4r::g3d::ResName((char*)(BASE) + (OFS) - sizeof(u32))
+    nw4r::g3d::ResName((char*)(BASE) + (OFS) - sizeof(ulong))
 
 /**
  * Define common functions for resource classes.
@@ -141,15 +141,15 @@ private:
  */
 struct ResBlockHeaderData {
     char kind[4]; // at 0x0
-    u32 size;     // at 0x4
+    ulong size;     // at 0x4
 };
 
 /**
  * Name for file resource groups.
  */
 struct ResNameData27 {
-    u32 len;                    // at 0x0
-    char str[32 - sizeof(u32)]; // at 0x4
+    ulong len;                    // at 0x0
+    char str[32 - sizeof(ulong)]; // at 0x4
 };
 
 /******************************************************************************
@@ -158,7 +158,7 @@ struct ResNameData27 {
  *
  ******************************************************************************/
 struct ResNameData {
-    u32 len;     // at 0x0
+    ulong len;     // at 0x0
     char str[4]; // at 0x4
 };
 
@@ -166,7 +166,7 @@ class ResName : public ResCommon<const ResNameData> {
 public:
     explicit ResName(const void* pData) : ResCommon(pData) {}
 
-    u32 GetLength() const {
+    ulong GetLength() const {
         return ref().len;
     }
 
@@ -183,8 +183,8 @@ public:
  *
  ******************************************************************************/
 struct ResTagDLData {
-    u32 bufSize; // at 0x0
-    u32 cmdSize; // at 0x4
+    ulong bufSize; // at 0x0
+    ulong cmdSize; // at 0x4
     s32 toDL;    // at 0x8
 };
 
@@ -192,11 +192,11 @@ class ResTagDL : public ResCommon<ResTagDLData> {
 public:
     NW4R_G3D_RESOURCE_FUNC_DEF(ResTagDL);
 
-    u32 GetBufSize() const {
+    ulong GetBufSize() const {
         return ref().bufSize;
     }
 
-    u32 GetCmdSize() const {
+    ulong GetCmdSize() const {
         return ref().cmdSize;
     }
 
@@ -294,8 +294,8 @@ inline u8 ResRead_u8(const u8* pPtr) {
     return *pPtr;
 }
 
-inline u32 ResRead_u32(const u8* pPtr) {
-    u32 value = ResRead_u8(pPtr++) << 24;
+inline ulong ResRead_ulong(const u8* pPtr) {
+    ulong value = ResRead_u8(pPtr++) << 24;
     value |= ResRead_u8(pPtr++) << 16;
     value |= ResRead_u8(pPtr++) << 8;
     value |= ResRead_u8(pPtr++) << 0;
@@ -311,7 +311,7 @@ inline void ResWrite_u16(u8* pPtr, u16 data) {
     ResWrite_u8(pPtr++, data >> 0);
 }
 
-inline void ResWrite_u32(u8* pPtr, u32 data) {
+inline void ResWrite_ulong(u8* pPtr, ulong data) {
     ResWrite_u8(pPtr++, data >> 24);
     ResWrite_u8(pPtr++, data >> 16);
     ResWrite_u8(pPtr++, data >> 8);
@@ -323,38 +323,38 @@ inline void ResWrite_u32(u8* pPtr, u32 data) {
  * GX Blitting Processor (BP)
  *
  ******************************************************************************/
-inline void ResReadBPCmd(const u8* pPtr, u32* pOut) {
+inline void ResReadBPCmd(const u8* pPtr, ulong* pOut) {
     // Skip over FIFO command byte
-    *pOut = ResRead_u32(pPtr + 1);
+    *pOut = ResRead_ulong(pPtr + 1);
 }
 
-void ResWriteBPCmd(u8* pPtr, u32 reg);
-void ResWriteBPCmd(u8* pPtr, u32 reg, u32 mask);
-void ResWriteSSMask(u8* pPtr, u32 value);
+void ResWriteBPCmd(u8* pPtr, ulong reg);
+void ResWriteBPCmd(u8* pPtr, ulong reg, ulong mask);
+void ResWriteSSMask(u8* pPtr, ulong value);
 
 /******************************************************************************
  *
  * GX Command Processor (CP)
  *
  ******************************************************************************/
-inline void ResReadCPCmd(const u8* pPtr, u32* pOut) {
+inline void ResReadCPCmd(const u8* pPtr, ulong* pOut) {
     // Skip over FIFO command byte + addr byte
-    *pOut = ResRead_u32(pPtr + 2);
+    *pOut = ResRead_ulong(pPtr + 2);
 }
 
-void ResWriteCPCmd(u8* pPtr, u8 addr, u32 value);
+void ResWriteCPCmd(u8* pPtr, u8 addr, ulong value);
 
 /******************************************************************************
  *
  * GX Transform Unit (XF)
  *
  ******************************************************************************/
-inline void ResReadXFCmd(const u8* pPtr, u32* pOut) {
+inline void ResReadXFCmd(const u8* pPtr, ulong* pOut) {
     // Skip over FIFO command byte + size short + addr short
-    *pOut = ResRead_u32(pPtr + 5);
+    *pOut = ResRead_ulong(pPtr + 5);
 }
 
-void ResWriteXFCmd(u8* pPtr, u16 addr, u32 value);
+void ResWriteXFCmd(u8* pPtr, u16 addr, ulong value);
 
 /******************************************************************************
  *

@@ -24,7 +24,7 @@ void ApplyVisAnmResult(u8* pByteVec, ResMdl mdl, AnmObjVis* pObj);
 class AnmObjVis : public AnmObj {
 public:
     AnmObjVis(MEMAllocator* pAllocator, u16* pBindingBuf, int numBinding);
-    virtual void G3dProc(u32 task, u32 param, void* pInfo); // at 0xC
+    virtual void G3dProc(ulong task, ulong param, void* pInfo); // at 0xC
     virtual ~AnmObjVis() {}                                 // at 0x10
 
     virtual void SetFrame(f32 frame) = 0; // at 0x1C
@@ -37,14 +37,14 @@ public:
     virtual bool Bind(const ResMdl mdl) = 0; // at 0x30
     virtual void Release();                  // at 0x34
 
-    virtual bool GetResult(u32 idx) = 0; // at 0x38
+    virtual bool GetResult(ulong idx) = 0; // at 0x38
 
     virtual AnmObjVisRes* Attach(int idx, AnmObjVisRes* pRes); // at 0x3C
     virtual AnmObjVisRes* Detach(int idx);                     // at 0x40
     void DetachAll();
 
-    bool TestExistence(u32 idx) const;
-    bool TestDefined(u32 idx) const;
+    bool TestExistence(ulong idx) const;
+    bool TestDefined(ulong idx) const;
 
 protected:
     enum BindingFlag {
@@ -71,7 +71,7 @@ protected:
 class AnmObjVisNode : public AnmObjVis {
 public:
     AnmObjVisNode(MEMAllocator* pAllocator, u16* pBindingBuf, int numBinding);
-    virtual void G3dProc(u32 task, u32 param, void* pInfo); // at 0xC
+    virtual void G3dProc(ulong task, ulong param, void* pInfo); // at 0xC
     virtual ~AnmObjVisNode();                               // at 0x10
 
     virtual void SetFrame(f32 frame); // at 0x1C
@@ -84,7 +84,7 @@ public:
     virtual bool Bind(const ResMdl mdl); // at 0x30
     virtual void Release();              // at 0x34
 
-    virtual bool GetResult(u32 idx) = 0; // at 0x38
+    virtual bool GetResult(ulong idx) = 0; // at 0x38
 
     virtual AnmObjVisRes* Attach(int idx, AnmObjVisRes* pRes); // at 0x3C
     virtual AnmObjVisRes* Detach(int idx);                     // at 0x40
@@ -102,7 +102,7 @@ protected:
  ******************************************************************************/
 class AnmObjVisOR : public AnmObjVisNode {
 public:
-    static AnmObjVisOR* Construct(MEMAllocator* pAllocator, u32* pSize,
+    static AnmObjVisOR* Construct(MEMAllocator* pAllocator, ulong* pSize,
                                   ResMdl mdl);
 
     AnmObjVisOR(MEMAllocator* pAllocator, u16* pBindingBuf, int numBinding)
@@ -110,7 +110,7 @@ public:
 
     virtual ~AnmObjVisOR() {} // at 0x10
 
-    virtual bool GetResult(u32 idx); // at 0x38
+    virtual bool GetResult(ulong idx); // at 0x38
 
     NW4R_G3D_RTTI_DECL_DERIVED(AnmObjVisOR, AnmObjVisNode);
 };
@@ -138,7 +138,7 @@ public:
 
     virtual bool Bind(const ResMdl mdl); // at 0x30
 
-    virtual bool GetResult(u32 idx); // at 0x38
+    virtual bool GetResult(ulong idx); // at 0x38
 
     ResAnmVis GetResAnm() {
         return mRes;

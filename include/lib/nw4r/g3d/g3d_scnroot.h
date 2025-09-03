@@ -35,11 +35,11 @@ public:
     }
 
     ScnRoot(MEMAllocator* pAllocator, IScnObjGather* pGather,
-            ScnObj** ppChildrenBuf, u32 maxChildren, u32 numLight,
-            u32 numLightSet, LightObj* pLightObjBuf, AmbLightObj* pAmbObjBuf,
+            ScnObj** ppChildrenBuf, ulong maxChildren, ulong numLight,
+            ulong numLightSet, LightObj* pLightObjBuf, AmbLightObj* pAmbObjBuf,
             LightSetData* pLightSetBuf);
 
-    virtual void G3dProc(u32 task, u32 param, void* pInfo); // at 0xC
+    virtual void G3dProc(ulong task, ulong param, void* pInfo); // at 0xC
     virtual ~ScnRoot();                                     // at 0x10
 
     Camera GetCamera(int idx);
@@ -63,10 +63,10 @@ public:
     void DrawOpa();
     void DrawXlu();
 
-    u32 TestScnRootFlag(ScnRootFlag flag) const {
+    ulong TestScnRootFlag(ScnRootFlag flag) const {
         return (mScnRootFlags & flag) != 0;
     }
-    void SetScnRootFlag(ScnRootFlag flag, u32 on) {
+    void SetScnRootFlag(ScnRootFlag flag, ulong on) {
         if (on) {
             mScnRootFlags |= flag;
         } else {
@@ -85,7 +85,7 @@ public:
 private:
     IScnObjGather* mpCollection;              // at 0xE8
     ResMdlDrawMode mDrawMode;                 // at 0xEC
-    u32 mScnRootFlags;                        // at 0xF0
+    ulong mScnRootFlags;                        // at 0xF0
     u8 mCurrentCameraID;                      // at 0xF4
     u8 PADDING_0xF5;                          // at 0xF5
     u8 PADDING_0xF6;                          // at 0xF6
@@ -105,7 +105,7 @@ private:
  ******************************************************************************/
 class ScnObjGather : public IScnObjGather {
 public:
-    ScnObjGather(ScnObj** ppBufOpa, ScnObj** ppBufXlu, u32 capacity);
+    ScnObjGather(ScnObj** ppBufOpa, ScnObj** ppBufXlu, ulong capacity);
 
     virtual ~ScnObjGather() {} // at 0x8
 
@@ -126,9 +126,9 @@ public:
 protected:
     ScnObj** mpArrayOpa; // at 0x4
     ScnObj** mpArrayXlu; // at 0x8
-    u32 mSizeScnObj;     // at 0xC
-    u32 mNumScnObjOpa;   // at 0x10
-    u32 mNumScnObjXlu;   // at 0x14
+    ulong mSizeScnObj;     // at 0xC
+    ulong mNumScnObjOpa;   // at 0x10
+    ulong mNumScnObjXlu;   // at 0x14
 };
 
 } // namespace g3d

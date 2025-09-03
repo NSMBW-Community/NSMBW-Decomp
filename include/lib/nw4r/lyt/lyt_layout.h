@@ -38,7 +38,7 @@ namespace res {
  *
  ******************************************************************************/
 struct Layout {
-    static const u32 SIGNATURE = 'lyt1';
+    static const ulong SIGNATURE = 'lyt1';
 
     DataBlockHeader blockHeader; // at 0x0
     u8 originType;               // at 0x8
@@ -55,8 +55,8 @@ struct Layout {
  ******************************************************************************/
 class Layout {
 public:
-    static const u32 SIGNATURE = 'RLYT';
-    static const u32 SIGNATURE_ANIMATION = 'RLAN';
+    static const ulong SIGNATURE = 'RLYT';
+    static const ulong SIGNATURE_ANIMATION = 'RLAN';
 
 public:
     Layout();
@@ -104,7 +104,7 @@ public:
         mspAllocator = pAllocator;
     }
 
-    static void* AllocMemory(u32 size) {
+    static void* AllocMemory(ulong size) {
         return MEMAllocFromAllocator(mspAllocator, size);
     }
     static void FreeMemory(void* pBlock) {
@@ -112,17 +112,17 @@ public:
     }
 
 protected:
-    static const u32 SIGNATURE_TEXTURELIST = 'txl1';
-    static const u32 SIGNATURE_FONTLIST = 'fnl1';
-    static const u32 SIGNATURE_MATERIALLIST = 'mat1';
+    static const ulong SIGNATURE_TEXTURELIST = 'txl1';
+    static const ulong SIGNATURE_FONTLIST = 'fnl1';
+    static const ulong SIGNATURE_MATERIALLIST = 'mat1';
 
-    static const u32 SIGNATURE_ANIMATIONINFO = 'pai1';
+    static const ulong SIGNATURE_ANIMATIONINFO = 'pai1';
 
-    static const u32 SIGNATURE_PANESTART = 'pas1';
-    static const u32 SIGNATURE_PANEEND = 'pae1';
+    static const ulong SIGNATURE_PANESTART = 'pas1';
+    static const ulong SIGNATURE_PANEEND = 'pae1';
 
-    static const u32 SIGNATURE_GROUPSTART = 'grs1';
-    static const u32 SIGNATURE_GROUPEND = 'gre1';
+    static const ulong SIGNATURE_GROUPSTART = 'grs1';
+    static const ulong SIGNATURE_GROUPEND = 'gre1';
 
 protected:
     static Pane* BuildPaneObj(s32 kind, const void* pBinary,

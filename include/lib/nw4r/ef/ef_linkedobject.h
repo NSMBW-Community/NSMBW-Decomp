@@ -11,7 +11,7 @@ namespace ef {
 class LinkedObject {
 public:
     ut::Link mMemoryLink; // at 0x0
-    u32 mObjectID;        // at 0x8
+    ulong mObjectID;        // at 0x8
 
 public:
     u16 GetObjectIdx() const {

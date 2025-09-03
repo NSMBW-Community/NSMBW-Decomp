@@ -14,19 +14,19 @@ void Disable();
 bool Lock();
 void Unlock();
 
-void LoadBlocks(void* pDst, void* pSrc, u32 blocks);
-void StoreBlocks(void* pDst, void* pSrc, u32 blocks);
-void StoreData(void* pDst, void* pSrc, u32 size);
+void LoadBlocks(void* pDst, void* pSrc, ulong blocks);
+void StoreBlocks(void* pDst, void* pSrc, ulong blocks);
+void StoreData(void* pDst, void* pSrc, ulong size);
 
 inline void* GetBase() {
     return reinterpret_cast<void*>(OS_CACHE_BASE);
 }
 
-inline void QueueWait(u32 len) {
+inline void QueueWait(ulong len) {
     LCQueueWait(len);
 }
 
-inline void QueueWaitEx(u32 len) {
+inline void QueueWaitEx(ulong len) {
     while (LCQueueLength() != len) {
         OSYieldThread();
     }

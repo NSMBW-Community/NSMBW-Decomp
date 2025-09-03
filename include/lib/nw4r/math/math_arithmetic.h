@@ -132,20 +132,20 @@ inline s16 F32ToS16(f32 arg) {
     return ret;
 }
 
-inline u32 F32AsU32(f32 arg) {
-    return *reinterpret_cast<u32*>(&arg);
+inline ulong F32Asulong(f32 arg) {
+    return *reinterpret_cast<ulong*>(&arg);
 }
-inline f32 U32AsF32(u32 arg) {
+inline f32 ulongAsF32(ulong arg) {
     return *reinterpret_cast<f32*>(&arg);
 }
 
 inline s32 FGetExpPart(f32 x) {
-    s32 s = F32AsU32(x);
+    s32 s = F32Asulong(x);
     return ((s >> 23) & 0xFF) - 127;
 }
 inline f32 FGetMantPart(f32 x) {
-    u32 u = F32AsU32(x);
-    return U32AsF32((u & 0x807FFFFF) | 0x3F800000);
+    ulong u = F32Asulong(x);
+    return ulongAsF32((u & 0x807FFFFF) | 0x3F800000);
 }
 
 } // namespace math

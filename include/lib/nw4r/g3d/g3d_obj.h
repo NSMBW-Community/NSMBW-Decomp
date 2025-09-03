@@ -14,10 +14,10 @@ namespace {
  * Alignment
  *
  ******************************************************************************/
-inline u32 align4(u32 x) {
+inline ulong align4(ulong x) {
     return ROUND_UP(x, 4);
 }
-inline u32 align32(u32 x) {
+inline ulong align32(ulong x) {
     return ROUND_UP(x, 32);
 }
 
@@ -30,8 +30,8 @@ inline u32 align32(u32 x) {
  ******************************************************************************/
 class G3dObj {
 public:
-    template <u32 N> struct ResNameDataT {
-        u32 len; // at 0x0
+    template <ulong N> struct ResNameDataT {
+        ulong len; // at 0x0
         // @bug 'N' already includes the null terminator
         char str[ROUND_UP(N + 1, 4)]; // at 0x4
     };
@@ -39,18 +39,18 @@ public:
     class TypeObj {
     public:
         struct ResNameDataPT {
-            u32 len;     // at 0x0
+            ulong len;     // at 0x0
             char str[4]; // at 0x4
         };
 
     public:
-        template <u32 N>
+        template <ulong N>
         explicit TypeObj(const ResNameDataT<N>& rName)
             : mName(reinterpret_cast<const ResNameDataPT*>(&rName)) {}
 
-        u32 GetTypeID() const {
+        ulong GetTypeID() const {
             // @note Address is used for comparing TypeObjs
-            return reinterpret_cast<u32>(mName);
+            return reinterpret_cast<ulong>(mName);
         }
 
         const char* GetTypeName() const {
@@ -91,7 +91,7 @@ public:
         return other == GetTypeObjStatic();
     } // at 0x8
 
-    virtual void G3dProc(u32 task, u32 param, void* pInfo) = 0; // at 0xC
+    virtual void G3dProc(ulong task, ulong param, void* pInfo) = 0; // at 0xC
     virtual ~G3dObj();                                          // at 0x10
 
     virtual const TypeObj GetTypeObj() const {
@@ -117,7 +117,7 @@ public:
 
     void Destroy();
 
-    static void* Alloc(MEMAllocator* pAllocator, u32 size) {
+    static void* Alloc(MEMAllocator* pAllocator, ulong size) {
         return detail::AllocFromAllocator(pAllocator, size);
     }
     static void Dealloc(MEMAllocator* pAllocator, void* pBlock) {

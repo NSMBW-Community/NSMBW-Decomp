@@ -21,15 +21,15 @@ class WorldMtxManip;
  * Functions
  *
  ******************************************************************************/
-void CalcWorld(math::MTX34* pModelMtxArray, u32* pModelMtxAttribArray,
+void CalcWorld(math::MTX34* pModelMtxArray, ulong* pModelMtxAttribArray,
                const u8* pByteCode, const math::MTX34* pBaseMtx, ResMdl mdl,
-               AnmObjChr* pAnmChr, FuncObjCalcWorld* pFuncObj, u32 rootAttrib);
+               AnmObjChr* pAnmChr, FuncObjCalcWorld* pFuncObj, ulong rootAttrib);
 
-void CalcWorld(math::MTX34* pModelMtxArray, u32* pModelMtxAttribArray,
+void CalcWorld(math::MTX34* pModelMtxArray, ulong* pModelMtxAttribArray,
                const u8* pByteCode, const math::MTX34* pBaseMtx, ResMdl mdl,
                AnmObjChr* pAnmChr, FuncObjCalcWorld* pFuncObj);
 
-void CalcSkinning(math::MTX34* pModelMtxArray, u32* pModelMtxAttribArray,
+void CalcSkinning(math::MTX34* pModelMtxArray, ulong* pModelMtxAttribArray,
                   const ResMdl mdl, const u8* pByteCode);
 
 /******************************************************************************
@@ -58,13 +58,13 @@ public:
  ******************************************************************************/
 class WorldMtxManip {
 public:
-    WorldMtxManip(math::MTX34* pM, math::VEC3* pS, u32* pWMAttr)
+    WorldMtxManip(math::MTX34* pM, math::VEC3* pS, ulong* pWMAttr)
         : mpM(pM), mpS(pS), mpWMAttr(pWMAttr) {}
 
 private:
     math::MTX34* mpM; // at 0x0
     math::VEC3* mpS;  // at 0x4
-    u32* mpWMAttr;    // at 0x8
+    ulong* mpWMAttr;    // at 0x8
 };
 
 /******************************************************************************
@@ -74,19 +74,19 @@ private:
  ******************************************************************************/
 class FuncObjCalcWorld {
 public:
-    FuncObjCalcWorld(ICalcWorldCallback* pCallback, u32 timing, u32 nodeID)
+    FuncObjCalcWorld(ICalcWorldCallback* pCallback, ulong timing, ulong nodeID)
         : mpCallback(pCallback), mTiming(timing), mNodeID(nodeID) {}
 
     ~FuncObjCalcWorld() {}
 
-    void CheckCallbackA(u32 nodeID, ChrAnmResult* pResult, ResMdl mdl) {
+    void CheckCallbackA(ulong nodeID, ChrAnmResult* pResult, ResMdl mdl) {
         if (nodeID == mNodeID && (mTiming & ScnObj::CALLBACK_TIMING_A)) {
             mpCallback->ExecCallbackA(pResult, mdl, this);
         }
     }
 
-    void CheckCallbackB(u32 nodeID, math::MTX34* pM, math::VEC3* pS,
-                        u32* pWMAttr, ResMdl mdl) {
+    void CheckCallbackB(ulong nodeID, math::MTX34* pM, math::VEC3* pS,
+                        ulong* pWMAttr, ResMdl mdl) {
 
         if (nodeID == mNodeID && (mTiming & ScnObj::CALLBACK_TIMING_B)) {
             WorldMtxManip manip(pM, pS, pWMAttr);

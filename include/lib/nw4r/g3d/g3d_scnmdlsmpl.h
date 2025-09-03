@@ -53,11 +53,11 @@ public:
                                    ResMdl mdl, int numView);
 
     ScnMdlSimple(MEMAllocator* pAllocator, ResMdl mdl,
-                 math::MTX34* pWorldMtxArray, u32* pWorldMtxAttribArray,
+                 math::MTX34* pWorldMtxArray, ulong* pWorldMtxAttribArray,
                  math::MTX34* pViewPosMtxArray, math::MTX33* pViewNrmMtxArray,
                  math::MTX34* pViewTexMtxArray, int numView, int numViewMtx);
 
-    virtual void G3dProc(u32 task, u32 param, void* pInfo); // at 0xC
+    virtual void G3dProc(ulong task, ulong param, void* pInfo); // at 0xC
     virtual ~ScnMdlSimple();                                // at 0x10
 
     virtual bool SetScnObjOption(ulong option, ulong value);         // at 0x20
@@ -97,11 +97,11 @@ public:
     math::MTX34* GetWldMtxArray() {
         return mpWorldMtxArray;
     }
-    u32* GetWldMtxAttribArray() {
+    ulong* GetWldMtxAttribArray() {
         return mpWorldMtxAttribArray;
     }
 
-    u32 GetNumViewMtx() const {
+    ulong GetNumViewMtx() const {
         return mNumViewMtx;
     }
 
@@ -133,10 +133,10 @@ public:
         return mCwcbTiming;
     }
 
-    void SetScnMdlCallbackNodeID(u32 id) {
+    void SetScnMdlCallbackNodeID(ulong id) {
         mCwcbNodeID = id;
     }
-    u32 GetScnMdlCallbackNodeID() const {
+    ulong GetScnMdlCallbackNodeID() const {
         return mCwcbNodeID;
     }
 
@@ -168,31 +168,31 @@ protected:
         sizeof(detail::MtxCacheMap) / sizeof(math::MTX34) + 1;
 
 protected:
-    void ScnMdlSmpl_CalcPosture(u32 param, const math::MTX34* pParent);
+    void ScnMdlSmpl_CalcPosture(ulong param, const math::MTX34* pParent);
 
-    void ScnMdlSmpl_G3DPROC_GATHER_SCNOBJ(u32 param,
+    void ScnMdlSmpl_G3DPROC_GATHER_SCNOBJ(ulong param,
                                           IScnObjGather* pCollection);
-    void ScnMdlSmpl_G3DPROC_CALC_WORLD(u32 param, const math::MTX34* pParent);
-    void ScnMdlSmpl_G3DPROC_CALC_MAT(u32 param, void* pInfo);
-    void ScnMdlSmpl_G3DPROC_CALC_VIEW(u32 param, const math::MTX34* pCamera);
-    void ScnMdlSmpl_G3DPROC_DRAW_OPA(u32 param, void* pInfo);
-    void ScnMdlSmpl_G3DPROC_DRAW_XLU(u32 param, void* pInfo);
+    void ScnMdlSmpl_G3DPROC_CALC_WORLD(ulong param, const math::MTX34* pParent);
+    void ScnMdlSmpl_G3DPROC_CALC_MAT(ulong param, void* pInfo);
+    void ScnMdlSmpl_G3DPROC_CALC_VIEW(ulong param, const math::MTX34* pCamera);
+    void ScnMdlSmpl_G3DPROC_DRAW_OPA(ulong param, void* pInfo);
+    void ScnMdlSmpl_G3DPROC_DRAW_XLU(ulong param, void* pInfo);
 
-    void ScnMdlSmpl_G3DPROC_UPDATEFRAME(u32 /* param */, void* /* pInfo */) {
+    void ScnMdlSmpl_G3DPROC_UPDATEFRAME(ulong /* param */, void* /* pInfo */) {
         UpdateFrame();
     }
 
 private:
     ResMdl mResMdl;                 // at 0xE8
     math::MTX34* mpWorldMtxArray;   // at 0xEC
-    u32* mpWorldMtxAttribArray;     // at 0xF0
+    ulong* mpWorldMtxAttribArray;     // at 0xF0
     math::MTX34* mpViewPosMtxArray; // at 0xF4
     math::MTX33* mpViewNrmMtxArray; // at 0xF8
     math::MTX34* mpViewTexMtxArray; // at 0xFC
     u8 mNumView;                    // at 0x100
     u8 mCurView;                    // at 0x101
     u16 mNumViewMtx;                // at 0x102
-    u32 mFlagScnMdlSimple;          // at 0x104
+    ulong mFlagScnMdlSimple;          // at 0x104
 
     const u8* mpByteCodeCalc;    // at 0x108
     const u8* mpByteCodeMix;     // at 0x10C

@@ -12,8 +12,8 @@ namespace dcc {
 bool CalcTexMtx_Xsi(math::MTX34* pMtx, bool set, const TexSrt& rSrt,
                     TexSrt::Flag flag);
 
-u32 CalcWorldMtx_Xsi(math::MTX34* pW, math::VEC3* pS, const math::MTX34* pW1,
-                     const math::VEC3* pS1, u32 attr,
+ulong CalcWorldMtx_Xsi(math::MTX34* pW, math::VEC3* pS, const math::MTX34* pW1,
+                     const math::VEC3* pS1, ulong attr,
                      const g3d::ChrAnmResult* pResult);
 
 } // namespace dcc

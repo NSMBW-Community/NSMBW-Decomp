@@ -18,7 +18,7 @@ struct FontTextureGlyph {
     u8 cellHeight;   // at 0x1
     s8 baselinePos;  // at 0x2
     u8 maxCharWidth; // at 0x3
-    u32 sheetSize;   // at 0x4
+    ulong sheetSize;   // at 0x4
     u16 sheetNum;    // at 0x8
     u16 sheetFormat; // at 0xA
     u16 sheetRow;    // at 0xC

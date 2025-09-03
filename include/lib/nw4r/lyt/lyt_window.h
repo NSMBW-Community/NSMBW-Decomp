@@ -34,7 +34,7 @@ namespace res {
  *
  ******************************************************************************/
 struct WindowContent {
-    u32 vtxCols[VERTEXCOLOR_MAX]; // at 0x0
+    ulong vtxCols[VERTEXCOLOR_MAX]; // at 0x0
     u16 materialIdx;              // at 0x10
     u8 texCoordNum;               // at 0x12
     u8 PADDING_0x13[0x14 - 0x13]; // at 0x13
@@ -57,15 +57,15 @@ struct WindowFrame {
  *
  ******************************************************************************/
 struct Window : public Pane {
-    static const u32 SIGNATURE = 'wnd1';
+    static const ulong SIGNATURE = 'wnd1';
 
     InflationLRTB inflation;    // at 0x4C
     u8 frameNum;                // at 0x5C
     u8 PADDING_0x5D;            // at 0x5D
     u8 PADDING_0x5E;            // at 0x5E
     u8 PADDING_0x5F;            // at 0x5F
-    u32 contentOffset;          // at 0x60
-    u32 frameOffsetTableOffset; // at 0x64
+    ulong contentOffset;          // at 0x60
+    ulong frameOffsetTableOffset; // at 0x64
 };
 
 } // namespace res
@@ -115,12 +115,12 @@ public:
     virtual ~Window(); // at 0x8
 
     virtual void DrawSelf(const DrawInfo& rInfo); // at 0x18
-    virtual void AnimateSelf(u32 option);         // at 0x20
+    virtual void AnimateSelf(ulong option);         // at 0x20
 
-    virtual ut::Color GetVtxColor(u32 idx) const;       // at 0x24
-    virtual void SetVtxColor(u32 idx, ut::Color color); // at 0x28
-    virtual u8 GetVtxColorElement(u32 idx) const;       // at 0x34
-    virtual void SetVtxColorElement(u32 idx, u8 value); // at 0x38
+    virtual ut::Color GetVtxColor(ulong idx) const;       // at 0x24
+    virtual void SetVtxColor(ulong idx, ut::Color color); // at 0x28
+    virtual u8 GetVtxColorElement(ulong idx) const;       // at 0x34
+    virtual void SetVtxColorElement(ulong idx, u8 value); // at 0x38
 
     virtual Material* FindMaterialByName(const char* pName,
                                          bool recursive); // at 0x40
@@ -134,7 +134,7 @@ public:
                                     bool recursive); // at 0x58
 
     virtual Material* GetContentMaterial() const;      // at 0x64
-    virtual Material* GetFrameMaterial(u32 idx) const; // at 0x68
+    virtual Material* GetFrameMaterial(ulong idx) const; // at 0x68
 
 protected:
     struct Frame {

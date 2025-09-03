@@ -23,7 +23,7 @@ template <typename T> struct PrintContext {
     const T* str;              // at 0x4
     f32 x;                     // at 0x8
     f32 y;                     // at 0xC
-    u32 flags;                 // at 0x10
+    ulong flags;                 // at 0x10
 };
 
 /******************************************************************************

@@ -20,7 +20,7 @@ namespace res {
  *
  ******************************************************************************/
 struct Bounding : Pane {
-    static const u32 SIGNATURE = 'bnd1';
+    static const ulong SIGNATURE = 'bnd1';
 };
 
 } // namespace res

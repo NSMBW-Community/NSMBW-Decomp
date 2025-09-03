@@ -12,12 +12,12 @@ public:
     EmitterFormCylinder() {}
 
     virtual void Emission(Emitter* pEmitter, ParticleManager* pManager,
-                          int count, u32 flags, f32* pParams, u16 life,
+                          int count, ulong flags, f32* pParams, u16 life,
                           f32 lifeRnd, const math::MTX34* pSpace); // at 0x8
 
 private:
     void EmissionSub(Emitter* pEmitter, ParticleManager* pManager, int count,
-                     u32 flags, f32* pParams, u16 life, f32 lifeRnd,
+                     ulong flags, f32* pParams, u16 life, f32 lifeRnd,
                      const math::MTX34* pSpace, f32 sizeX, f32 sizeY, f32 sizeZ,
                      f32 angle, f32 dangle, f32 angleOffset, f32 height);
 };

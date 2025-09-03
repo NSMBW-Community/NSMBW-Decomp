@@ -47,8 +47,8 @@ struct ShpAnmResult {
 
     static const int MAX_KEY_SHAPE = 32;
 
-    u32 flags;                        // at 0x0
-    u32 numKeyShape;                  // at 0x4
+    ulong flags;                        // at 0x0
+    ulong numKeyShape;                  // at 0x4
     ShpAnmVtxSet baseShapeVtxSet;     // at 0x8
     f32 baseShapeWeight;              // at 0x14
     BlendVtx keyShape[MAX_KEY_SHAPE]; // at 0x18
@@ -67,11 +67,11 @@ struct ResAnmShpAnmData {
         FLAG_ANM_VTXCLR = (1 << 3),
     };
 
-    u32 flags;                 // at 0x0
+    ulong flags;                 // at 0x0
     s32 name;                  // at 0x4
     u16 baseShapeVtxIdx;       // at 0x8
     u16 numKeyShape;           // at 0xA
-    u32 constFlags;            // at 0xC
+    ulong constFlags;            // at 0xC
     s32 toAnmIdxToVtxIdxTable; // at 0x10
     ResAnmData anms[1];        // at 0x14
 };
@@ -84,7 +84,7 @@ struct ResAnmShpInfoData {
 
 struct ResAnmShpData {
     ResBlockHeaderData header; // at 0x0
-    u32 revision;              // at 0x8
+    ulong revision;              // at 0x8
     s32 toResFileData;         // at 0xC
     s32 toShpDataDic;          // at 0x10
     s32 toVtxNameArray;        // at 0x14
@@ -95,13 +95,13 @@ struct ResAnmShpData {
 
 class ResAnmShp : public ResCommon<ResAnmShpData> {
 public:
-    static const u32 SIGNATURE = 'SHP0';
+    static const ulong SIGNATURE = 'SHP0';
     static const int REVISION = 3;
 
 public:
     NW4R_G3D_RESOURCE_FUNC_DEF(ResAnmShp);
 
-    u32 GetRevision() const {
+    ulong GetRevision() const {
         return ref().revision;
     }
 
@@ -109,19 +109,19 @@ public:
         return GetRevision() == REVISION;
     }
 
-    void GetAnmResult(ShpAnmResult* pResult, u32 idx, f32 frame,
+    void GetAnmResult(ShpAnmResult* pResult, ulong idx, f32 frame,
                       const ShpAnmVtxSet* pShapeArray) const;
 
     const ResAnmShpAnmData* GetShapeAnm(int idx) const {
         return static_cast<ResAnmShpAnmData*>(
             ofs_to_obj<ResDic>(ref().toShpDataDic)[idx]);
     }
-    const ResAnmShpAnmData* GetShapeAnm(u32 idx) const {
+    const ResAnmShpAnmData* GetShapeAnm(ulong idx) const {
         return static_cast<ResAnmShpAnmData*>(
             ofs_to_obj<ResDic>(ref().toShpDataDic)[idx]);
     }
 
-    u32 GetShapeAnmNumEntries() const {
+    ulong GetShapeAnmNumEntries() const {
         return ofs_to_obj<ResDic>(ref().toShpDataDic).GetNumData();
     }
 

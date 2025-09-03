@@ -9,7 +9,7 @@ namespace ef {
 
 class HandleBase {
 private:
-    u32 mObjectID;         // at 0x0
+    ulong mObjectID;         // at 0x0
     LinkedObject* mObject; // at 0x4
 
 public:

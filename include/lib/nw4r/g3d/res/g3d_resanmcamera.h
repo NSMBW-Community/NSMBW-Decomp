@@ -34,7 +34,7 @@ struct ResAnmCameraDataTypedef {
 struct CameraAnmResult : ResAnmCameraDataTypedef {
     enum Flag { FLAG_CAMERA_TYPE_MASK = (1 << 0), FLAG_ANM_EXISTS = (1 << 1) };
 
-    u32 flags;                 // at 0x0
+    ulong flags;                 // at 0x0
     GXProjectionType projType; // at 0x4
     math::VEC3 pos;            // at 0x8
     f32 aspect;                // at 0x14
@@ -89,13 +89,13 @@ struct ResAnmCameraData : ResAnmCameraDataTypedef {
         FLAG_ROT_Z_CONST = (1 << 31)
     };
 
-    u32 size;                  // at 0x0
+    ulong size;                  // at 0x0
     s32 toResAnmScnData;       // at 0x4
     s32 name;                  // at 0x8
-    u32 id;                    // at 0xC
-    u32 refNumber;             // at 0x10
+    ulong id;                    // at 0xC
+    ulong refNumber;             // at 0x10
     GXProjectionType projType; // at 0x14
-    u32 flags;                 // at 0x18
+    ulong flags;                 // at 0x18
     s32 toResUserData;         // at 0x1C
     ResAnmData posX;           // at 0x20
     ResAnmData posY;           // at 0x24
@@ -121,7 +121,7 @@ public:
 
     void GetAnmResult(CameraAnmResult* pResult, f32 frame) const;
 
-    u32 GetID() const {
+    ulong GetID() const {
         return ref().id;
     }
 };

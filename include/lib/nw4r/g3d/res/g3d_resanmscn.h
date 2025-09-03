@@ -27,7 +27,7 @@ struct ResAnmScnInfoData {
 
 struct ResAnmScnData {
     ResBlockHeaderData header;     // at 0x0
-    u32 revision;                  // at 0x8
+    ulong revision;                  // at 0x8
     s32 toResFileData;             // at 0xC
     s32 toScnTopLevelDic;          // at 0x10
     s32 toResLightSetDataArray;    // at 0x14
@@ -42,7 +42,7 @@ struct ResAnmScnData {
 
 class ResAnmScn : public ResCommon<ResAnmScnData> {
 public:
-    static const u32 SIGNATURE = 'SCN0';
+    static const ulong SIGNATURE = 'SCN0';
     static const int REVISION = 4;
 
 public:
@@ -54,7 +54,7 @@ public:
         return Bind(*this);
     }
 
-    u32 GetRevision() const {
+    ulong GetRevision() const {
         return ref().revision;
     }
 
@@ -66,22 +66,22 @@ public:
     bool HasResAnmLight() const;
 
     ResLightSet GetResLightSet(int idx) const;
-    ResLightSet GetResLightSet(u32 idx) const;
-    u32 GetResLightSetNumEntries() const;
+    ResLightSet GetResLightSet(ulong idx) const;
+    ulong GetResLightSetNumEntries() const;
 
     ResAnmAmbLight GetResAnmAmbLight(const ResName name) const;
     ResAnmAmbLight GetResAnmAmbLight(int idx) const;
-    ResAnmAmbLight GetResAnmAmbLight(u32 idx) const;
+    ResAnmAmbLight GetResAnmAmbLight(ulong idx) const;
 
     ResAnmLight GetResAnmLight(const ResName name) const;
     ResAnmLight GetResAnmLight(int idx) const;
-    ResAnmLight GetResAnmLight(u32 idx) const;
+    ResAnmLight GetResAnmLight(ulong idx) const;
 
-    ResLightSet GetResLightSetByRefNumber(u32 refNumber) const;
-    ResAnmAmbLight GetResAnmAmbLightByRefNumber(u32 refNumber) const;
-    ResAnmLight GetResAnmLightByRefNumber(u32 refNumber) const;
-    ResAnmFog GetResAnmFogByRefNumber(u32 refNumber) const;
-    ResAnmCamera GetResAnmCameraByRefNumber(u32 refNumber) const;
+    ResLightSet GetResLightSetByRefNumber(ulong refNumber) const;
+    ResAnmAmbLight GetResAnmAmbLightByRefNumber(ulong refNumber) const;
+    ResAnmLight GetResAnmLightByRefNumber(ulong refNumber) const;
+    ResAnmFog GetResAnmFogByRefNumber(ulong refNumber) const;
+    ResAnmCamera GetResAnmCameraByRefNumber(ulong refNumber) const;
 
     u16 GetResAnmFogMaxRefNumber() const {
         return ref().info.numResAnmFogData;

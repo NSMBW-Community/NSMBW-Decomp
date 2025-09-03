@@ -13,8 +13,8 @@ struct ChrAnmResult;
 namespace detail {
 namespace dcc {
 
-u32 CalcWorldMtx_Basic(math::MTX34* pW, math::VEC3* pS, const math::MTX34* pW1,
-                       const math::VEC3* pS1, u32 attr,
+ulong CalcWorldMtx_Basic(math::MTX34* pW, math::VEC3* pS, const math::MTX34* pW1,
+                       const math::VEC3* pS1, ulong attr,
                        const ChrAnmResult* pResult);
 
 } // namespace dcc

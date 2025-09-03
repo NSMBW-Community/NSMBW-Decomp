@@ -44,7 +44,7 @@ public:
         mNumActive = 0;
     }
 
-    u32 GetNumActive() const {
+    ulong GetNumActive() const {
         return mActiveList.numObjects;
     }
 

@@ -19,8 +19,8 @@ struct AmbLightAnmResult {
         FLAG_ALPHA_ENABLE = (1 << 1),
     };
 
-    u32 flags; // at 0x0
-    u32 color; // at 0x4
+    ulong flags; // at 0x0
+    ulong color; // at 0x4
 };
 
 /******************************************************************************
@@ -36,12 +36,12 @@ struct ResAnmAmbLightData {
         FLAG_CONST = (1 << 31)
     };
 
-    u32 size;              // at 0x0
+    ulong size;              // at 0x0
     s32 toResAnmScnData;   // at 0x4
     s32 name;              // at 0x8
-    u32 id;                // at 0xC
-    u32 refNumber;         // at 0x10
-    u32 flags;             // at 0x14
+    ulong id;                // at 0xC
+    ulong refNumber;         // at 0x10
+    ulong flags;             // at 0x14
     ResColorAnmData color; // at 0x18
 };
 
@@ -51,11 +51,11 @@ public:
 
     void GetAnmResult(AmbLightAnmResult* pResult, f32 frame) const;
 
-    u32 GetID() const {
+    ulong GetID() const {
         return ref().id;
     }
 
-    u32 GetRefNumber() const {
+    ulong GetRefNumber() const {
         return ref().refNumber;
     }
 };

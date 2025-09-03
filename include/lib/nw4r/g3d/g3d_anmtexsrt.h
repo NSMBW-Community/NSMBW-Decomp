@@ -24,7 +24,7 @@ class AnmObjTexSrtRes;
 class AnmObjTexSrt : public AnmObj {
 public:
     AnmObjTexSrt(MEMAllocator* pAllocator, u16* pBindingBuf, int numBinding);
-    virtual void G3dProc(u32 task, u32 param, void* pInfo) = 0; // at 0xC
+    virtual void G3dProc(ulong task, ulong param, void* pInfo) = 0; // at 0xC
     virtual ~AnmObjTexSrt() {}                                  // at 0x10
 
     virtual void SetFrame(f32 frame) = 0; // at 0x1C
@@ -38,14 +38,14 @@ public:
     virtual void Release();                  // at 0x34
 
     virtual const TexSrtAnmResult* GetResult(TexSrtAnmResult* pResult,
-                                             u32 idx) = 0; // at 0x38
+                                             ulong idx) = 0; // at 0x38
 
     virtual AnmObjTexSrtRes* Attach(int idx, AnmObjTexSrtRes* pRes); // at 0x3C
     virtual AnmObjTexSrtRes* Detach(int idx);                        // at 0x40
     virtual void DetachAll();                                        // at 0x44
 
-    bool TestExistence(u32 idx) const;
-    bool TestDefined(u32 idx) const;
+    bool TestExistence(ulong idx) const;
+    bool TestDefined(ulong idx) const;
 
 protected:
     enum BindingFlag {
@@ -73,7 +73,7 @@ class AnmObjTexSrtNode : public AnmObjTexSrt {
 public:
     AnmObjTexSrtNode(MEMAllocator* pAllocator, u16* pBindingBuf, int numBinding,
                      AnmObjTexSrtRes** ppChildrenBuf, int numChildren);
-    virtual void G3dProc(u32 task, u32 param, void* pInfo); // at 0xC
+    virtual void G3dProc(ulong task, ulong param, void* pInfo); // at 0xC
     virtual ~AnmObjTexSrtNode();                            // at 0x10
 
     virtual void SetFrame(f32 frame); // at 0x1C
@@ -119,7 +119,7 @@ public:
     virtual ~AnmObjTexSrtOverride() {} // at 0x10
 
     virtual const TexSrtAnmResult* GetResult(TexSrtAnmResult* pResult,
-                                             u32 idx); // at 0x38
+                                             ulong idx); // at 0x38
 
     NW4R_G3D_RTTI_DECL_DERIVED(AnmObjTexSrtOverride, AnmObjTexSrtNode);
 };
@@ -137,7 +137,7 @@ public:
     AnmObjTexSrtRes(MEMAllocator* pAllocator, ResAnmTexSrt srt,
                     u16* pBindingBuf, int numBinding,
                     TexSrtAnmResult* pCacheBuf);
-    virtual void G3dProc(u32 task, u32 param, void* pInfo); // at 0xC
+    virtual void G3dProc(ulong task, ulong param, void* pInfo); // at 0xC
     virtual ~AnmObjTexSrtRes() {}                           // at 0x10
 
     virtual void SetFrame(f32 frame); // at 0x1C
@@ -150,7 +150,7 @@ public:
     virtual bool Bind(const ResMdl mdl); // at 0x30
 
     virtual const TexSrtAnmResult* GetResult(TexSrtAnmResult* pResult,
-                                             u32 idx); // at 0x38
+                                             ulong idx); // at 0x38
 
     void UpdateCache();
 

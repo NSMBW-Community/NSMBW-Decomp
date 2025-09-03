@@ -109,11 +109,11 @@ struct AnimCurveHeader {
     u16 randomSeed;  // at 0x6
     u16 frameLength; // at 0x8
     u16 PADDING_0xA; // at 0xA
-    u32 keyTable;    // at 0xC
-    u32 rangeTable;  // at 0x10
-    u32 randomTable; // at 0x14
-    u32 nameTable;   // at 0x18
-    u32 infoTable;   // at 0x1C
+    ulong keyTable;    // at 0xC
+    ulong rangeTable;  // at 0x10
+    ulong randomTable; // at 0x14
+    ulong nameTable;   // at 0x18
+    ulong infoTable;   // at 0x1C
 };
 
 struct AnimCurveKey {
@@ -136,7 +136,7 @@ struct AnimCurveRandomTable {
 
 struct AnimCurveNameTable {
     struct Name {
-        u32 work; // at 0x0
+        ulong work; // at 0x0
     };
 
     u16 count;       // at 0x0

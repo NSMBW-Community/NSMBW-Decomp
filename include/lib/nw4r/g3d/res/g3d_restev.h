@@ -52,9 +52,9 @@ struct ResTevDL {
 };
 
 struct ResTevData {
-    u32 size;                               // at 0x0
+    ulong size;                               // at 0x0
     s32 toResMdlData;                       // at 0x4
-    u32 id;                                 // at 0x8
+    ulong id;                                 // at 0x8
     u8 nStages;                             // at 0xC
     u8 PADDING_0xD[0x10 - 0xD];             // at 0xD
     u8 texCoordToTexMapID[GX_MAX_TEXCOORD]; // at 0x10
