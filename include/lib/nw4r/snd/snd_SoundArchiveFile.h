@@ -1,307 +1,399 @@
 #ifndef NW4R_SND_SOUND_ARCHIVE_FILE_H
 #define NW4R_SND_SOUND_ARCHIVE_FILE_H
-#include <nw4r/types_nw4r.h>
 
-#include <nw4r/snd/snd_SoundArchive.h>
-#include <nw4r/snd/snd_Util.h>
+/*******************************************************************************
+ * headers
+ */
 
-#include <nw4r/ut.h>
+#include <types.h>
 
-namespace nw4r {
-namespace snd {
-namespace detail {
-namespace SoundArchiveFile {
+#include "nw4r/snd/snd_SoundArchive.h"
+#include "nw4r/snd/snd_Util.h"
 
-/******************************************************************************
- *
- * Symbol (SYMB) block
- *
- ******************************************************************************/
-struct StringTreeNode {
-    u16 flags;    // at 0x0
-    u16 bit;      // at 0x2
-    u32 leftIdx;  // at 0x4
-    u32 rightIdx; // at 0x8
-    u32 strIdx;   // at 0xC
-    u32 id;       // at 0x10
-};
+#include "nw4r/ut/ut_binaryFileFormat.h"
+#include "nw4r/ut/ut_algorithm.h"
 
-struct StringTree {
-    u32 rootIdx;                           // at 0x0
-    Util::Table<StringTreeNode> nodeTable; // at 0x4
-};
+/*******************************************************************************
+ * types
+ */
 
-struct StringTable {
-    Util::Table<u32> offsetTable; // at 0x0
-};
+namespace nw4r { namespace snd { namespace detail
+{
+	struct SoundArchiveFile
+	{
+		/* Header */
 
-struct StringChunk {
-    u32 tableOffset;      // at 0x0
-    u32 soundTreeOffset;  // at 0x4
-    u32 playerTreeOffset; // at 0x8
-    u32 groupTreeOffset;  // at 0xC
-    u32 bankTreeOffset;   // at 0x10
-};
+		// [R89JEL]:/bin/RVL/Debug/mainD.elf:.debug::0x240a6
+		struct Header
+		{
+			ut::BinaryFileHeader	fileHeader;			// size 0x10, offset 0x00
+			ulong						symbolDataOffset;	// size 0x04, offset 0x10
+			ulong						symbolDataSize;		// size 0x04, offset 0x14
+			ulong						infoOffset;			// size 0x04, offset 0x18
+			ulong						infoSize;			// size 0x04, offset 0x1c
+			ulong						fileImageOffset;	// size 0x04, offset 0x20
+			ulong						fileImageSize;		// size 0x04, offset 0x24
+		}; // size 0x28
 
-struct StringBlock {
-    union {
-        StringTable stringTable;
-        StringChunk stringChunk;
-    }; // at 0x0
-};
+		static const int HEADER_AREA_SIZE = ROUND_UP(sizeof(Header), 32) + 40;
 
-struct SymbolBlock {
-    ut::BinaryBlockHeader blockHeader; // at 0x0
-    StringBlock stringBlock;           // at 0x8
-};
+		/* SymbolBlock */
 
-/******************************************************************************
- *
- * Info (INFO) block
- *
- ******************************************************************************/
-struct SeqSoundInfo {
-    u32 dataOffset;        // at 0x0
-    u32 bankId;            // at 0x4
-    u32 allocTrack;        // at 0x8
-    u8 channelPriority;    // at 0xC
-    u8 releasePriorityFix; // at 0xD
-};
+		// [R89JEL]:/bin/RVL/Debug/mainD.elf:.debug::0x24881
+		struct StringTreeNode
+		{
+			u16	flags;		// size 0x02, offset 0x00
+			u16	bit;		// size 0x02, offset 0x02
+			ulong		leftIdx;	// size 0x04, offset 0x04
+			ulong		rightIdx;	// size 0x04, offset 0x08
+			ulong		strIdx;		// size 0x04, offset 0x0c
+			ulong		id;			// size 0x04, offset 0x10
+		}; // size 0x14
 
-struct StrmSoundInfo {};
+		// [R89JEL]:/bin/RVL/Debug/mainD.elf:.debug::0x24a2e
+		struct StringTree
+		{
+			ulong							rootIdx;	// size 0x04, offset 0x00
+			Util::Table<StringTreeNode>	nodeTable;	// size 0x18, offset 0x04
+		}; // size 0x1c
 
-struct WaveSoundInfo {
-    s32 subNo;             // at 0x0
-    u32 allocTrack;        // at 0x4
-    u8 channelPriority;    // at 0x8
-    u8 releasePriorityFix; // at 0x9
-};
-typedef Util::DataRef<void, SeqSoundInfo, StrmSoundInfo, WaveSoundInfo>
-    SoundInfoOffset;
+		// [R89JEL]:/bin/RVL/Debug/mainD.elf:.debug::0x24830
+		struct StringTable
+		{
+			Util::Table<ulong>	offsetTable;	// size 0x08, offset 0x00
+		}; // size 0x08
 
-struct Sound3DParam {
-    u32 flags;     // at 0x0
-    u8 decayCurve; // at 0x4
-    u8 decayRatio; // at 0x5
-};
+		struct StringChunk
+		{
+			ulong	tableOffset;		// size 0x04, offset 0x00
+			ulong	soundTreeOffset;	// size 0x04, offset 0x04
+			ulong	playerTreeOffset;	// size 0x04, offset 0x08
+			ulong	groupTreeOffset;	// size 0x04, offset 0x0c
+			ulong	bankTreeOffset;		// size 0x04, offset 0x10
+		}; // size 0x14
 
-struct SoundCommonInfo {
-    u32 stringId;                           // at 0x0
-    u32 fileId;                             // at 0x4
-    u32 playerId;                           // at 0x8
-    Util::DataRef<Sound3DParam> param3dRef; // at 0xC
-    u8 volume;                              // at 0x14
-    u8 playerPriority;                      // at 0x15
-    u8 soundType;                           // at 0x16
-    u8 remoteFilter;                        // at 0x17
-    SoundInfoOffset soundInfoRef;           // at 0x18
-    u32 userParam[2];                       // at 0x20
-    u8 panMode;                             // at 0x28
-    u8 panCurve;                            // at 0x29
-};
-typedef Util::Table<Util::DataRef<SoundCommonInfo> > SoundCommonTable;
+		union StringBlock
+		{
+			StringTable	stringTable;	// size 0x08
+			StringChunk	stringChunk;	// size 0x14
+		}; // size 0x14
 
-struct BankInfo {
-    u32 stringId; // at 0x0
-    u32 fileId;   // at 0x4
-};
-typedef Util::Table<Util::DataRef<BankInfo> > BankTable;
+		static ulong const SIGNATURE_SYMB_BLOCK =
+			NW4R_FOUR_BYTE('S', 'Y', 'M', 'B');
 
-struct PlayerInfo {
-    u32 stringId;          // at 0x0
-    u8 playableSoundCount; // at 0x4
-    u32 heapSize;          // at 0x8
-};
-typedef Util::Table<Util::DataRef<PlayerInfo> > PlayerTable;
+		struct SymbolBlock
+		{
+			ut::BinaryBlockHeader	blockHeader;	// size 0x08, offset 0x00
+			StringBlock				stringBlock;	// size 0x14, offset 0x08
+		}; // size 0x20
 
-typedef Util::Table<Util::DataRef<SoundArchive::FilePos> > FilePosTable;
+		/* InfoBlock */
 
-struct FileInfo {
-    u32 fileSize;                                // at 0x0
-    u32 waveDataSize;                            // at 0x4
-    s32 entryNum;                                // at 0x8
-    Util::DataRef<char> extFilePathRef;          // at 0xC
-    Util::DataRef<FilePosTable> filePosTableRef; // at 0x14
-};
-typedef Util::Table<Util::DataRef<FileInfo> > FileTable;
+		// [R89JEL]:/bin/RVL/Debug/mainD.elf:.debug::0x2da8f9
+		enum SoundType
+		{
+			SOUND_TYPE_INVALID,
 
-struct GroupItemInfo {
-    u32 fileId;         // at 0x0
-    u32 offset;         // at 0x4
-    u32 size;           // at 0x8
-    u32 waveDataOffset; // at 0xC
-    u32 waveDataSize;   // at 0x10
-};
-typedef Util::Table<Util::DataRef<GroupItemInfo> > GroupItemTable;
+			SOUND_TYPE_SEQ,
+			SOUND_TYPE_STRM,
+			SOUND_TYPE_WAVE,
+		};
 
-struct GroupInfo {
-    u32 stringId;                               // at 0x0
-    s32 entryNum;                               // at 0x4
-    Util::DataRef<char> extFilePathRef;         // at 0x8
-    u32 offset;                                 // at 0x10
-    u32 size;                                   // at 0x14
-    u32 waveDataOffset;                         // at 0x18
-    u32 waveDataSize;                           // at 0x1C
-    Util::DataRef<GroupItemTable> itemTableRef; // at 0x20
-};
-typedef Util::Table<Util::DataRef<GroupInfo> > GroupTable;
+		struct Sound3DParam {
+			ulong flags;
+			u8 decayCurve;
+			u8 decayRatio;
+			u8 field_0x06;
+		};
 
-struct SoundArchivePlayerInfo {
-    u16 seqSoundCount;    // at 0x0
-    u16 seqTrackCount;    // at 0x2
-    u16 strmSoundCount;   // at 0x4
-    u16 strmTrackCount;   // at 0x6
-    u16 strmChannelCount; // at 0x8
-    u16 waveSoundCount;   // at 0xA
-    u16 waveTrackCount;   // at 0xC
-};
+		// [R89JEL]:/bin/RVL/Debug/mainD.elf:.debug::0x25183
+		struct SeqSoundInfo
+		{
+			ulong		dataOffset;			// size 0x04, offset 0x00
+			ulong		bankId;				// size 0x04, offset 0x04
+			ulong		allocTrack;			// size 0x04, offset 0x08
+			u8		channelPriority;	// size 0x01, offset 0x0c
+			u8		releasePriorityFix;	// size 0x01, offset 0x0d
+			u8	padding[2];
+			ulong	reserved;
+		}; // size 0x14
 
-struct Info {
-    Util::DataRef<SoundCommonTable> soundTableRef;                   // at 0x0
-    Util::DataRef<BankTable> bankTableRef;                           // at 0x8
-    Util::DataRef<PlayerTable> playerTableRef;                       // at 0x10
-    Util::DataRef<FileTable> fileTableRef;                           // at 0x18
-    Util::DataRef<GroupTable> groupTableRef;                         // at 0x20
-    Util::DataRef<SoundArchivePlayerInfo> soundArchivePlayerInfoRef; // at 0x28
-};
+		// [R89JEL]:/bin/RVL/Debug/mainD.elf:.debug::0x25089
+		struct StrmSoundInfo
+		{
+			ulong		startPosition;		// size 0x04, offset 0x00
+			u16		allocChannelCount;	// size 0x02, offset 0x04
+			u16	allocTrackFlag;		// size 0x02, offset 0x06
+			ulong	reserved;
+		}; // size 0x0c
 
-struct InfoBlock {
-    ut::BinaryBlockHeader blockHeader; // at 0x0
-    Info info;                         // at 0x8
-};
+		// [R89JEL]:/bin/RVL/Debug/mainD.elf:.debug::0x24f62
+		struct WaveSoundInfo
+		{
+			s32		subNo;				// size 0x04, offset 0x00
+			ulong		allocTrack;			// size 0x04, offset 0x04
+			u8		channelPriority;	// size 0x01, offset 0x08
+			u8		releasePriorityFix;	// size 0x01, offset 0x09
+			u8	padding[2];
+			ulong	reserved;
+		}; // size 0x10
 
-/******************************************************************************
- *
- * File header
- *
- ******************************************************************************/
-struct Header {
-    ut::BinaryFileHeader fileHeader; // at 0x0
-    u32 symbolDataOffset;            // at 0x10
-    u32 symbolDataSize;              // at 0x14
-    u32 infoOffset;                  // at 0x18
-    u32 infoSize;                    // at 0x1C
-    u32 fileImageOffset;             // at 0x20
-    u32 fileImageSize;               // at 0x24
-};
+		typedef Util::DataRef<void, SeqSoundInfo, StrmSoundInfo, WaveSoundInfo>
+			SoundInfoRef;
 
-// TODO: How is this calculated?
-static const int HEADER_AREA_SIZE = ROUND_UP(sizeof(Header), 32) + 40;
+		// [R89JEL]:/bin/RVL/Debug/mainD.elf:.debug::0x2546c
+		struct SoundCommonInfo
+		{
+			ulong							stringId;		// size 0x04, offset 0x00
+			ulong							fileId;			// size 0x04, offset 0x04
+			ulong							playerId;		// size 0x04, offset 0x08
+			Util::DataRef<Sound3DParam>	param3dRef;		// size 0x08, offset 0x0c
+			u8							volume;			// size 0x01, offset 0x14
+			u8							playerPriority;	// size 0x01, offset 0x15
+			u8							soundType;		// size 0x01, offset 0x16
+			u8							remoteFilter;	// size 0x01, offset 0x17
+			SoundInfoRef				soundInfoRef;	// size 0x08, offset 0x18
+			ulong					userParam[2];	// size 0x08, offset 0x20
+			u8							panMode;		// size 0x01, offset 0x28
+			u8							panCurve;		// size 0x01, offset 0x29
+			u8							actorPlayerId;	// size 0x01, offset 0x2a
+			u8						reserved;
+		}; // size 0x2c
 
-} // namespace SoundArchiveFile
+		typedef Util::Table<Util::DataRef<SoundCommonInfo> >
+			SoundCommonInfoTable;
 
-/******************************************************************************
- *
- * SoundArchiveFileReader
- *
- ******************************************************************************/
-class SoundArchiveFileReader {
-public:
-    static const u32 SIGNATURE = 'RSAR';
-    static const int VERSION = NW4R_VERSION(1, 3);
+		// [R89JEL]:/bin/RVL/Debug/mainD.elf:.debug::0x2db9b5
+		struct SoundArchivePlayerInfo
+		{
+			u16		seqSoundCount;		// size 0x02, offset 0x00
+			u16		seqTrackCount;		// size 0x02, offset 0x02
+			u16		strmSoundCount;		// size 0x02, offset 0x04
+			u16		strmTrackCount;		// size 0x02, offset 0x06
+			u16		strmChannelCount;	// size 0x02, offset 0x08
+			u16		waveSoundCount;		// size 0x02, offset 0x0a
+			u16		waveTrackCount;		// size 0x02, offset 0x0c
+			u16	padding;
+			ulong	reserved;
+		}; // size 0x14
 
-public:
-    SoundArchiveFileReader();
+		// [R89JEL]:/bin/RVL/Debug/mainD.elf:.debug::0x24eab
+		struct BankInfo
+		{
+			ulong		stringId;	// size 0x04, offset 0x00
+			ulong		fileId;		// size 0x04, offset 0x04
+			ulong	reserved;
+		}; // size 0x0c
 
-    void Init(const void* pSoundArchiveBin);
-    bool IsValidFileHeader(const void* pSoundArchiveBin);
+		typedef Util::Table<Util::DataRef<BankInfo> > BankInfoTable;
 
-    void SetStringChunk(const void* pChunk, u32 size);
-    void SetInfoChunk(const void* pChunk, u32 size);
+		// [R89JEL]:/bin/RVL/Debug/mainD.elf:.debug::0x24d8f
+		struct PlayerInfo
+		{
+			ulong		stringId;			// size 0x04, offset 0x00
+			u8		playableSoundCount;	// size 0x01, offset 0x04
+			u8	padding;
+			u16	padding2;
+			ulong		heapSize;			// size 0x04, offset 0x08
+			ulong	reserved;
+		}; // size 0x10
 
-    SoundType GetSoundType(u32 id) const;
-    bool ReadSoundInfo(u32 id, SoundArchive::SoundInfo* pInfo) const;
-    bool ReadSound3DParam(u32 id, SoundArchive::Sound3DParam* pParam) const;
-    bool ReadSeqSoundInfo(u32 id, SoundArchive::SeqSoundInfo* pInfo) const;
-    bool ReadStrmSoundInfo(u32 id, SoundArchive::StrmSoundInfo* pInfo) const;
-    bool ReadWaveSoundInfo(u32 id, SoundArchive::WaveSoundInfo* pInfo) const;
-    bool ReadBankInfo(u32 id, SoundArchive::BankInfo* pInfo) const;
-    bool ReadPlayerInfo(u32 id, SoundArchive::PlayerInfo* pInfo) const;
-    bool ReadGroupInfo(u32 id, SoundArchive::GroupInfo* pInfo) const;
-    bool ReadGroupItemInfo(u32 groupId, u32 itemId,
-                           SoundArchive::GroupItemInfo* pInfo) const;
-    bool ReadSoundArchivePlayerInfo(
-        SoundArchive::SoundArchivePlayerInfo* pInfo) const;
+		typedef Util::Table<Util::DataRef<PlayerInfo> > PlayerInfoTable;
 
-    u32 GetSoundStringId(u32 id) const;
-    u32 GetPlayerCount() const;
-    u32 GetGroupCount() const;
+		// [R89JEL]:/bin/RVL/Debug/mainD.elf:.debug::0x2db6e3
+		struct GroupItemInfo
+		{
+			ulong		fileId;			// size 0x04, offset 0x00
+			ulong		offset;			// size 0x04, offset 0x04
+			ulong		size;			// size 0x04, offset 0x08
+			ulong		waveDataOffset;	// size 0x04, offset 0x0c
+			ulong		waveDataSize;	// size 0x04, offset 0x10
+			ulong	reserved;
+		}; // size 0x18
 
-    const char* GetSoundLabelString(u32 id) const;
-    u32 GetSoundUserParam(u32 id) const;
+		typedef Util::Table<Util::DataRef<GroupItemInfo> > GroupItemInfoTable;
 
-    bool ReadFileInfo(u32 id, SoundArchive::FileInfo* pInfo) const;
-    bool ReadFilePos(u32 fileId, u32 id, SoundArchive::FilePos* pPos) const;
+		// [R89JEL]:/bin/RVL/Debug/mainD.elf:.debug::0x24c1b
+		struct GroupInfo
+		{
+			ulong									stringId;		// size 0x04, offset 0x00
+			s32									entryNum;		// size 0x04, offset 0x04
+			Util::DataRef<char>					extFilePathRef;	// size 0x08, offset 0x08
+			ulong									offset;			// size 0x04, offset 0x10
+			ulong									size;			// size 0x04, offset 0x14
+			ulong									waveDataOffset;	// size 0x04, offset 0x18
+			ulong									waveDataSize;	// size 0x04, offset 0x1c
+			Util::DataRef<GroupItemInfoTable>	itemTableRef;	// size 0x08, offset 0x20
+		}; // size 0x28
 
-    const char* GetString(u32 id) const;
+		typedef Util::Table<Util::DataRef<GroupInfo> > GroupInfoTable;
 
-    u32 ConvertLabelStringToSoundId(const char* pLabel) const {
-        return ConvertLabelStringToId(mStringTreeSound, pLabel);
-    }
-    u32 ConvertLabelStringToPlayerId(const char* pLabel) const {
-        return ConvertLabelStringToId(mStringTreePlayer, pLabel);
-    }
-    u32 ConvertLabelStringToGroupId(const char* pLabel) const {
-        return ConvertLabelStringToId(mStringTreeGroup, pLabel);
-    }
+		typedef Util::Table<Util::DataRef<SoundArchive::FilePos> > FilePosTable;
 
-    u16 GetVersion() const {
-        return mHeader.fileHeader.version;
-    }
+		// [R89JEL]:/bin/RVL/Debug/mainD.elf:.debug::0x2dc40b
+		struct FileInfo
+		{
+			ulong							fileSize;			// size 0x04, offset 0x00
+			ulong							waveDataFileSize;	// size 0x04, offset 0x04
+			s32							entryNum;			// size 0x04, offset 0x08
+			Util::DataRef<char>			extFilePathRef;		// size 0x08, offset 0x0c
+			Util::DataRef<FilePosTable>	filePosTableRef;	// size 0x08, offset 0x14
+		}; // size 0x1c
 
-    u32 GetLabelStringChunkOffset() const {
-        return mHeader.symbolDataOffset;
-    }
+		typedef Util::Table<Util::DataRef<FileInfo> > FileInfoTable;
 
-    u32 GetLabelStringChunkSize() const {
-        return mHeader.symbolDataSize;
-    }
+		// [R89JEL]:/bin/RVL/Debug/mainD.elf:.debug::0x24665
+		struct Info
+		{
+			Util::DataRef<SoundCommonInfoTable>		soundTableRef;				// size 0x08, offset 0x00
+			Util::DataRef<BankInfoTable>			bankTableRef;				// size 0x08, offset 0x08
+			Util::DataRef<PlayerInfoTable>			playerTableRef;				// size 0x08, offset 0x10
+			Util::DataRef<FileInfoTable>			fileTableRef;				// size 0x08, offset 0x18
+			Util::DataRef<GroupInfoTable>			groupTableRef;				// size 0x08, offset 0x20
+			Util::DataRef<SoundArchivePlayerInfo>	soundArchivePlayerInfoRef;	// size 0x08, offset 0x28
+		}; // size 0x30
 
-    u32 GetInfoChunkOffset() const {
-        return mHeader.infoOffset;
-    }
+		static ulong const SIGNATURE_INFO_BLOCK =
+			NW4R_FOUR_BYTE('I', 'N', 'F', 'O');
 
-    u32 GetInfoChunkSize() const {
-        return mHeader.infoSize;
-    }
+		// [R89JEL]:/bin/RVL/Debug/mainD.elf:.debug::0x2da76d
+		struct InfoBlock
+		{
+			ut::BinaryBlockHeader	blockHeader;	// size 0x08, offset 0x00
+			Info					info;			// size 0x30, offset 0x08
+		}; // size 0x38
 
-private:
-    u32 ConvertLabelStringToId(const SoundArchiveFile::StringTree* pTree,
-                               const char* pLabel) const;
+		/* SoundArchiveFile */
 
-    const SoundArchiveFile::SoundCommonInfo* impl_GetSoundInfo(u32 id) const;
-    SoundArchiveFile::SoundInfoOffset impl_GetSoundInfoOffset(u32 id) const
-        DECOMP_DONT_INLINE;
+		static ulong const SIGNATURE_FILE =
+			NW4R_FOUR_BYTE('R', 'S', 'A', 'R');
+		static int const FILE_VERSION = NW4R_FILE_VERSION(1, 4);
+	}; // "namespace" SoundArchiveFile
+}}} // namespace nw4r::snd::detail
 
-    const SoundArchiveFile::SeqSoundInfo* impl_GetSeqSoundInfo(u32 id) const;
-    const SoundArchiveFile::StrmSoundInfo* impl_GetStrmSoundInfo(u32 id) const;
-    const SoundArchiveFile::WaveSoundInfo* impl_GetWaveSoundInfo(u32 id) const;
+/*******************************************************************************
+ * classes and functions
+ */
 
-    const SoundArchiveFile::BankInfo* impl_GetBankInfo(u32 id) const;
-    const SoundArchiveFile::PlayerInfo* impl_GetPlayerInfo(u32 id) const;
-    const SoundArchiveFile::GroupInfo* impl_GetGroupInfo(u32 id) const;
+namespace nw4r { namespace snd { namespace detail
+{
+	// [R89JEL]:/bin/RVL/Debug/mainD.elf:.debug::0x261f8
+	class SoundArchiveFileReader
+	{
+	// methods
+	public:
+		// cdtors
+		SoundArchiveFileReader();
+		~SoundArchiveFileReader() {} // not default?
 
-    const void* GetPtrConst(const void* pBase, u32 offset) const {
-        if (offset == 0) {
-            return NULL;
-        }
+		// methods
+		void Init(void const *soundArchiveData);
 
-        return ut::AddOffsetToPtr(pBase, offset);
-    }
+		u16 GetVersion() const { return mHeader.fileHeader.version; }
+		ulong GetLabelStringChunkOffset() const
+		{
+			return mHeader.symbolDataOffset;
+		}
+		ulong GetLabelStringChunkSize() const { return mHeader.symbolDataSize; }
+		ulong GetInfoChunkOffset() const { return mHeader.infoOffset; }
+		ulong GetInfoChunkSize() const { return mHeader.infoSize; }
 
-private:
-    SoundArchiveFile::Header mHeader;                      // at 0x0
-    const SoundArchiveFile::Info* mInfo;                   // at 0x28
-    const void* mStringBase;                               // at 0x2C
-    const SoundArchiveFile::StringTable* mStringTable;     // at 0x30
-    const SoundArchiveFile::StringTree* mStringTreeSound;  // at 0x34
-    const SoundArchiveFile::StringTree* mStringTreePlayer; // at 0x38
-    const SoundArchiveFile::StringTree* mStringTreeGroup;  // at 0x3C
-    const SoundArchiveFile::StringTree* mStringTreeBank;   // at 0x40
-};
+		char const *GetString(ulong id) const;
+		SoundArchive::SoundType GetSoundType(ulong soundId) const;
+		ulong GetSoundStringId(ulong id) const;
+		ulong GetBankCount() const;
+		ulong GetPlayerCount() const;
+		ulong GetGroupCount() const;
+		ulong GetFileCount() const;
+		void const *GetPtrConst(void const *base, ulong offset) const
+		{
+			if (offset == 0)
+				return nullptr;
 
-} // namespace detail
-} // namespace snd
-} // namespace nw4r
+			return ut::AddOffsetToPtr(base, offset);
+		}
 
-#endif
+		void SetStringChunk(void const *stringChunk, ulong stringChunkSize);
+		void SetInfoChunk(void const *infoChunk, ulong infoChunkSize);
+
+		bool ReadSeqSoundInfo(ulong soundId,
+		                      SoundArchive::SeqSoundInfo *info) const;
+		bool ReadStrmSoundInfo(ulong soundId,
+		                       SoundArchive::StrmSoundInfo *info) const;
+		bool ReadWaveSoundInfo(ulong soundId,
+		                       SoundArchive::WaveSoundInfo *info) const;
+		bool ReadSoundArchivePlayerInfo(
+			SoundArchive::SoundArchivePlayerInfo *info) const;
+		bool ReadSoundInfo(ulong soundId, SoundArchive::SoundInfo *info) const;
+
+		bool ReadBankInfo(ulong bankId, SoundArchive::BankInfo *info) const;
+
+		bool ReadPlayerInfo(ulong playerId, SoundArchive::PlayerInfo *info) const;
+		bool ReadSound3DParam(ulong soundId, nw4r::snd::SoundArchive::Sound3DParam* info) const;
+
+		bool ReadGroupItemInfo(ulong groupId, ulong index,
+		                       SoundArchive::GroupItemInfo *info) const;
+		bool ReadGroupInfo(ulong groupId, SoundArchive::GroupInfo *info) const;
+
+		bool ReadFileInfo(ulong fileId, SoundArchive::FileInfo *info) const;
+		bool ReadFilePos(ulong fileId, ulong index,
+		                 SoundArchive::FilePos *filePos) const;
+
+		ulong ConvertLabelStringToId(SoundArchiveFile::StringTree const *tree,
+		                           char const *str) const;
+		const char* GetSoundLabelString(ulong id) const;
+		ulong GetSoundUserParam(ulong id) const;
+
+		ulong ConvertLabelStringToSoundId(const char* pLabel) const {
+			return ConvertLabelStringToId(mStringTreeSound, pLabel);
+		}
+		ulong ConvertLabelStringToPlayerId(const char* pLabel) const {
+			return ConvertLabelStringToId(mStringTreePlayer, pLabel);
+		}
+		ulong ConvertLabelStringToGroupId(const char* pLabel) const {
+			return ConvertLabelStringToId(mStringTreeGroup, pLabel);
+		}
+		ulong ConvertLabelStringToBankId(const char* pLabel) const {
+			return ConvertLabelStringToId(mStringTreeBank, pLabel);
+		}
+
+	private:
+		static bool IsValidFileHeader(void const *soundArchiveData);
+
+		SoundArchiveFile::SeqSoundInfo const *impl_GetSeqSoundInfo(
+			ulong soundId) const;
+		SoundArchiveFile::StrmSoundInfo const *impl_GetStrmSoundInfo(
+			ulong soundId) const;
+		SoundArchiveFile::WaveSoundInfo const *impl_GetWaveSoundInfo(
+			ulong soundId) const;
+		SoundArchiveFile::SoundCommonInfo const *impl_GetSoundInfo(
+			ulong soundId) const;
+
+		bool impl_GetSoundInfoOffset(
+			ulong soundId, SoundArchiveFile::SoundInfoRef *soundInfoRef) const;
+
+		SoundArchiveFile::BankInfo const *impl_GetBankInfo(ulong bankId) const;
+
+		SoundArchiveFile::PlayerInfo const *impl_GetPlayerInfo(
+			ulong playerId) const;
+
+		SoundArchiveFile::GroupInfo const *impl_GetGroupInfo(ulong groupId) const;
+
+	// static members
+	public:
+		static u16 const SUPPORTED_FILE_VERSION = NW4R_FILE_VERSION(1, 4);
+
+	// members
+	private:
+		SoundArchiveFile::Header		mHeader;					// size 0x28, offset 0x00
+		SoundArchiveFile::Info			const *mInfo;				// size 0x04, offset 0x28
+		void							const *mStringBase;			// size 0x04, offset 0x2c
+		SoundArchiveFile::StringTable	const *mStringTable;		// size 0x04, offset 0x30
+		SoundArchiveFile::StringTree	const *mStringTreeSound;	// size 0x04, offset 0x34
+		SoundArchiveFile::StringTree	const *mStringTreePlayer;	// size 0x04, offset 0x38
+		SoundArchiveFile::StringTree	const *mStringTreeGroup;	// size 0x04, offset 0x3c
+		SoundArchiveFile::StringTree	const *mStringTreeBank;		// size 0x04, offset 0x40
+	}; // size 0x44
+}}} // namespace nw4r::snd::detail
+
+#endif // NW4R_SND_SOUND_ARCHIVE_FILE_H

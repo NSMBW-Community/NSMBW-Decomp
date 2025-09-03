@@ -3,6 +3,10 @@
 #include <stddef.h>
 #ifdef __cplusplus
 
+#ifndef __CWCC__
+typedef unsigned long size_t;
+#endif
+
 namespace std {
 using ::intptr_t;
 using ::ptrdiff_t;

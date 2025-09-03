@@ -17,8 +17,11 @@
 
 // Base types
 typedef unsigned char u8;
+typedef unsigned char byte_t;
 typedef unsigned short u16;
+typedef unsigned short byte2_t;
 typedef unsigned int u32;
+typedef unsigned int byte4_t;
 typedef unsigned long long u64;
 typedef signed char s8;
 typedef signed short s16;
@@ -64,17 +67,27 @@ typedef int BOOL;
 
 #define DECL_SECTION(x) __declspec(section x)
 #define DECL_WEAK __declspec(weak)
+#define ATTR_UNUSED
 
 #ifdef __CWCC__
 #define NOINLINE __attribute__((noinline))
 #define ALIGN(x) __attribute__((aligned(x)))
 #define DECOMP_INLINE inline
 #define DECOMP_DONT_INLINE __attribute__((never_inline))
+#define DONT_INLINE __attribute__((never_inline))
 #define AT_ADDRESS(x) : x
+#define override
+
+// Static assert
+#define GLUE(a, b) a##b
+#define GLUE2(a, b) GLUE(a, b)
+#define STATIC_ASSERT(cond) typedef char GLUE2(static_assertion_failed, __LINE__)[(cond) ? 1 : -1]
 #else
 #define NOINLINE
 #define ALIGN(x)
 #define DECOMP_INLINE
 #define DECOMP_DONT_INLINE
+#define DONT_INLINE
 #define AT_ADDRESS(x)
+#define STATIC_ASSERT(...)
 #endif

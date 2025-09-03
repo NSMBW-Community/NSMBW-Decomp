@@ -1,35 +1,46 @@
 #ifndef NW4R_SND_TASK_THREAD_H
 #define NW4R_SND_TASK_THREAD_H
-#include <nw4r/types_nw4r.h>
 
-#include <revolution/OS.h>
+/*******************************************************************************
+ * headers
+ */
 
-namespace nw4r {
-namespace snd {
-namespace detail {
+#include <types.h>
 
-class TaskThread {
-public:
-    TaskThread();
-    ~TaskThread();
+#include <revolution/OS/OSThread.h>
 
-    bool Create(s32 priority, void* pStack, u32 stackSize);
-    void Destroy();
+/*******************************************************************************
+ * classes and functions
+ */
 
-private:
-    static void* ThreadFunc(void* pArg);
-    void ThreadProc();
+namespace nw4r { namespace snd { namespace detail
+{
+	// [R89JEL]:/bin/RVL/Debug/mainD.elf:.debug::0x4b348
+	class TaskThread
+	{
+	// methods
+	public:
+		// cdtors
+		TaskThread();
+		~TaskThread();
 
-private:
-    OSThread mThread; // at 0x0
-    u32* mStackEnd;   // at 0x318
+		// methods
+		bool Create(s32 priority, void *stack, ulong stackSize);
+		void Destroy();
 
-    volatile bool mFinishFlag; // at 0x31C
-    bool mCreateFlag;          // at 0x31D
-};
+	private:
+		// fibers, callbacks, and procedures
+		static void *ThreadFunc(void *arg);
+		void ThreadProc();
 
-} // namespace detail
-} // namespace snd
-} // namespace nw4r
+	// members
+	private:
+		OSThread	mThread;		// size 0x318, offset 0x000
+		ulong		*mStackEnd;		// size 0x004, offset 0x318
+		bool		mFinishFlag;	// size 0x001, offset 0x31c // TODO: volatile? (see ThreadProc)
+		bool		mCreateFlag;	// size 0x001, offset 0x31d
+		/* 2 bytes padding */
+	}; // size 0x320
+}}} // namespace nw4r::snd::detail
 
-#endif
+#endif // NW4R_SND_TASK_THREAD_H

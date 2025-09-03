@@ -1,183 +1,233 @@
 #ifndef NW4R_SND_SOUND_ARCHIVE_H
 #define NW4R_SND_SOUND_ARCHIVE_H
-#include <nw4r/types_nw4r.h>
 
-#include <nw4r/snd/snd_Types.h>
+/*******************************************************************************
+ * headers
+ */
 
-#include <nw4r/ut.h>
+#include <types.h>
 
-namespace nw4r {
-namespace snd {
+#include "nw4r/snd/snd_global.h"
 
-// Forward declarations
-namespace detail {
-class SoundArchiveFileReader;
-} // namespace detail
+/*******************************************************************************
+ * types
+ */
 
-enum SoundType {
-    SOUND_TYPE_INVALID,
-    SOUND_TYPE_SEQ,
-    SOUND_TYPE_STRM,
-    SOUND_TYPE_WAVE
-};
+// forward declarations
+namespace nw4r { namespace snd { namespace detail { class SoundArchiveFileReader; }}}
 
-class SoundArchive {
-public:
-    struct SoundInfo {
-        u32 fileId;                // at 0x0
-        u32 playerId;              // at 0x4
-        int playerPriority;        // at 0x8
-        int volume;                // at 0xC
-        int remoteFilter;          // at 0x10
-        detail::PanMode panMode;   // at 0x14
-        detail::PanCurve panCurve; // at 0x18
-    };
+namespace nw4r { namespace ut { class FileStream; }}
 
-    struct SeqSoundInfo {
-        u32 dataOffset;              // at 0x0
-        u32 bankId;                  // at 0x4
-        u32 allocTrack;              // at 0x8
-        int channelPriority;         // at 0xC
-        bool releasePriorityFixFlag; // at 0x10
-    };
+/*******************************************************************************
+ * classes and functions
+ */
 
-    struct StrmSoundInfo {};
+namespace nw4r { namespace snd
+{
+	// [R89JEL]:/bin/RVL/Debug/mainD.elf:.debug::0x265b9
+	class SoundArchive
+	{
+	// enums
+	public:
+		// [R89JEL]:/bin/RVL/Debug/mainD.elf:.debug::0x26182
+		enum SoundType
+		{
+			SOUND_TYPE_INVALID,
 
-    struct WaveSoundInfo {
-        int subNo;                   // at 0x0
-        int channelPriority;         // at 0x4
-        bool releasePriorityFixFlag; // at 0x8
-    };
+			SOUND_TYPE_SEQ,
+			SOUND_TYPE_STRM,
+			SOUND_TYPE_WAVE,
+		};
 
-    struct Sound3DParam {
-        u32 flags;     // at 0x0
-        u8 decayCurve; // at 0x4
-        u8 decayRatio; // at 0x5
-    };
+	// nested types
+	public:
+		// [R89JEL]:/bin/RVL/Debug/mainD.elf:.debug::0x25c18
+		struct BankInfo
+		{
+			ulong	fileId;	// size 0x04, offset 0x00
+		}; // size 0x04
 
-    struct BankInfo {
-        u32 fileId; // at 0x0
-    };
+		// [R89JEL]:/bin/RVL/Debug/mainD.elf:.debug::0x25ac7
+		struct FileInfo
+		{
+			ulong		fileSize;			// size 0x04, offset 0x00
+			ulong		waveDataFileSize;	// size 0x04, offset 0x04
+			char	const *extFilePath;	// size 0x04, offset 0x08
+			ulong		filePosCount;		// size 0x04, offset 0x0c
+		}; // size 0x10
 
-    struct PlayerInfo {
-        int playableSoundCount; // at 0x0
-        u32 heapSize;           // at 0x4
-    };
+		// [R89JEL]:/bin/RVL/Debug/mainD.elf:.debug::0x25a5b
+		struct FilePos
+		{
+			ulong	groupId;	// size 0x04, offset 0x00
+			ulong	index;		// size 0x04, offset 0x04
+		}; // size 0x08
 
-    struct GroupInfo {
-        u32 itemCount;           // at 0x0
-        const char* extFilePath; // at 0x4
-        u32 offset;              // at 0x8
-        u32 size;                // at 0xC
-        u32 waveDataOffset;      // at 0x10
-        u32 waveDataSize;        // at 0x14
-    };
-    struct GroupItemInfo {
-        u32 fileId;         // at 0x0
-        u32 offset;         // at 0x4
-        u32 size;           // at 0x8
-        u32 waveDataOffset; // at 0xC
-        u32 waveDataSize;   // at 0x10
-    };
+		// [R89JEL]:/bin/RVL/Debug/mainD.elf:.debug::0x2593d
+		struct GroupInfo
+		{
+			ulong		itemCount;			// size 0x04, offset 0x00
+			char	const *extFilePath;	// size 0x04, offset 0x04
+			ulong		offset;				// size 0x04, offset 0x08
+			ulong		size;				// size 0x04, offset 0x0c
+			ulong		waveDataOffset;		// size 0x04, offset 0x10
+			ulong		waveDataSize;		// size 0x04, offset 0x14
+		}; // size 0x18
 
-    struct FileInfo {
-        u32 fileSize;            // at 0x0
-        u32 waveDataFileSize;    // at 0x4
-        const char* extFilePath; // at 0x8
-        u32 filePosCount;        // at 0xC
-    };
-    struct FilePos {
-        u32 groupId; // at 0x0
-        u32 index;   // at 0x4
-    };
+		// [R89JEL]:/bin/RVL/Debug/mainD.elf:.debug::0x2584d
+		struct GroupItemInfo
+		{
+			ulong	fileId;			// size 0x04, offset 0x00
+			ulong	offset;			// size 0x04, offset 0x04
+			ulong	size;			// size 0x04, offset 0x08
+			ulong	waveDataOffset;	// size 0x04, offset 0x0c
+			ulong	waveDataSize;	// size 0x04, offset 0x10
+		}; // size 0x14
 
-    struct SoundArchivePlayerInfo {
-        int seqSoundCount;    // at 0x0
-        int seqTrackCount;    // at 0x4
-        int strmSoundCount;   // at 0x8
-        int strmTrackCount;   // at 0xC
-        int strmChannelCount; // at 0x10
-        int waveSoundCount;   // at 0x14
-        int waveTrackCount;   // at 0x18
-    };
+		// [R89JEL]:/bin/RVL/Debug/mainD.elf:.debug::0x25b9b
+		struct PlayerInfo
+		{
+			int	playableSoundCount;	// size 0x04, offset 0x00
+			ulong	heapSize;			// size 0x04, offset 0x04
+		}; // size 0x08
 
-    static const u32 INVALID_ID = 0xFFFFFFFF;
+		// [R89JEL]:/bin/RVL/Debug/mainD.elf:.debug::0x25dc1
+		struct SeqSoundInfo
+		{
+			ulong		dataOffset;				// size 0x04, offset 0x00
+			ulong		bankId;					// size 0x04, offset 0x04
+			ulong		allocTrack;				// size 0x04, offset 0x08
+			int		channelPriority;		// size 0x04, offset 0x0c
+			bool	releasePriorityFixFlag;	// size 0x01, offset 0x10
+			/* 3 bytes padding */
+		}; // size 0x14
 
-public:
-    SoundArchive();
-    virtual ~SoundArchive(); // at 0x8
+		// [R89JEL]:/bin/RVL/Debug/mainD.elf:.debug::0x25d0f
+		struct StrmSoundInfo
+		{
+			ulong		startPosition;		// size 0x04, offset 0x00
+			u16		allocChannelCount;	// size 0x02, offset 0x04
+			u16	allocTrackFlag;		// size 0x02, offset 0x06
+		}; // size 0x08
 
-    virtual const void* detail_GetFileAddress(u32 id) const = 0; // at 0xC
+		// [R89JEL]:/bin/RVL/Debug/mainD.elf:.debug::0x25c5f
+		struct WaveSoundInfo
+		{
+			s32		subNo;					// size 0x04, offset 0x00
+			int		channelPriority;		// size 0x04, offset 0x04
+			bool	releasePriorityFixFlag;	// size 0x01, offset 0x08
+			/* 3 bytes padding */
+		}; // size 0x0c
 
-    virtual const void*
-    detail_GetWaveDataFileAddress(u32 id) const = 0; // at 0x10
+		struct Sound3DParam {
+			ulong flags;     // at 0x0
+			u8 decayCurve; // at 0x4
+			u8 decayRatio; // at 0x5
+			u8 field_0x06; // at 0x6
+		};
 
-    virtual int detail_GetRequiredStreamBufferSize() const = 0; // at 0x14
+		// [R89JEL]:/bin/RVL/Debug/mainD.elf:.debug::0x256dc
+		struct SoundArchivePlayerInfo
+		{
+			int	seqSoundCount;		// size 0x04, offset 0x00
+			int	seqTrackCount;		// size 0x04, offset 0x04
+			int	strmSoundCount;		// size 0x04, offset 0x08
+			int	strmTrackCount;		// size 0x04, offset 0x0c
+			int	strmChannelCount;	// size 0x04, offset 0x10
+			int	waveSoundCount;		// size 0x04, offset 0x14
+			int	waveTrackCount;		// size 0x04, offset 0x18
+		}; // size 0x1c
 
-    virtual ut::FileStream* OpenStream(void* pBuffer, int bufferSize,
-                                       u32 offset,
-                                       u32 length) const = 0; // at 0x18
+		// [R89JEL]:/bin/RVL/Debug/mainD.elf:.debug::0x26012
+		struct SoundInfo
+		{
+			ulong			fileId;			// size 0x04, offset 0x00
+			ulong			playerId;		// size 0x04, offset 0x04
+			int			actorPlayerId;	// size 0x04, offset 0x08
+			int			playerPriority;	// size 0x04, offset 0x0c
+			int			volume;			// size 0x04, offset 0x10
+			int			remoteFilter;	// size 0x04, offset 0x14
+			PanMode		panMode;		// size 0x04, offset 0x18
+			PanCurve	panCurve;		// size 0x04, offset 0x1c
+		}; // size 0x20
 
-    virtual ut::FileStream* OpenExtStream(void* pBuffer, int bufferSize,
-                                          const char* pExtPath, u32 offset,
-                                          u32 length) const = 0; // at 0x1C
+	// methods
+	public:
+		// cdtors
+		SoundArchive();
+		virtual ~SoundArchive();
 
-    bool IsAvailable() const;
+		// virtual function ordering
+		// vtable SoundArchive
+		virtual void const *detail_GetFileAddress(ulong fileId) const = 0;
+		virtual void const *detail_GetWaveDataFileAddress(ulong fileId) const = 0;
+		virtual int detail_GetRequiredStreamBufferSize() const = 0;
+		virtual ut::FileStream *OpenStream(void *buffer, int size, ulong begin,
+		                                   ulong length) const = 0;
+		virtual ut::FileStream *OpenExtStream(void *buffer, int size,
+		                                      char const *extFilePath,
+		                                      ulong begin, ulong length) const = 0;
 
-    void Setup(detail::SoundArchiveFileReader* pReader);
-    void Shutdown();
+		// methods
+		void Setup(detail::SoundArchiveFileReader *fileReader);
+		void Shutdown();
 
-    u32 GetPlayerCount() const;
-    u32 GetGroupCount() const;
+		ulong GetPlayerCount() const;
+		ulong GetGroupCount() const;
+		bool IsAvailable() const;
+		SoundType GetSoundType(ulong soundId) const;
 
-    const char* GetSoundLabelString(u32 id) const;
-    u32 ConvertLabelStringToSoundId(const char* pLabel) const;
-    u32 ConvertLabelStringToPlayerId(const char* pLabel) const;
-    u32 ConvertLabelStringToGroupId(const char* pLabel) const;
+		const char* GetSoundLabelString(ulong id) const;
+		ulong ConvertLabelStringToSoundId(char const *label) const;
+		ulong ConvertLabelStringToPlayerId(const char* pLabel) const;
+		ulong ConvertLabelStringToGroupId(const char* pLabel) const;
+		ulong ConvertLabelStringToBankId(const char* pLabel) const;
+		ulong GetSoundUserParam(ulong id) const;
 
-    u32 GetSoundUserParam(u32 id) const;
-    SoundType GetSoundType(u32 id) const;
+		bool ReadSoundInfo(ulong soundId, SoundInfo *info) const;
+		bool ReadSeqSoundInfo(ulong soundId, SeqSoundInfo *info) const;
+		bool detail_ReadStrmSoundInfo(ulong soundId, StrmSoundInfo *info) const;
+		bool detail_ReadWaveSoundInfo(ulong soundId, WaveSoundInfo *info) const;
 
-    bool ReadSoundInfo(u32 id, SoundInfo* pInfo) const;
-    bool detail_ReadSeqSoundInfo(u32 id, SeqSoundInfo* pInfo) const;
-    bool detail_ReadStrmSoundInfo(u32 id, StrmSoundInfo* pInfo) const;
-    bool detail_ReadWaveSoundInfo(u32 id, WaveSoundInfo* pInfo) const;
+		bool ReadPlayerInfo(ulong playerId, PlayerInfo *info) const;
+		bool ReadSoundArchivePlayerInfo(SoundArchivePlayerInfo *info) const;
+		bool detail_ReadSound3DParam(ulong soundId, nw4r::snd::SoundArchive::Sound3DParam*) const;
 
-    bool ReadPlayerInfo(u32 id, PlayerInfo* pInfo) const;
-    bool ReadSoundArchivePlayerInfo(SoundArchivePlayerInfo* pInfo) const;
+		bool ReadBankInfo(ulong bankId, BankInfo *info) const;
 
-    bool detail_ReadSound3DParam(u32 id, Sound3DParam* pParam) const;
-    bool detail_ReadBankInfo(u32 id, BankInfo* pInfo) const;
-    bool detail_ReadGroupInfo(u32 id, GroupInfo* pInfo) const;
-    bool detail_ReadGroupItemInfo(u32 groupId, u32 itemId,
-                                  GroupItemInfo* pInfo) const;
+		bool detail_ReadGroupInfo(ulong groupId, GroupInfo *info) const;
+		bool detail_ReadGroupItemInfo(ulong groupId, ulong index,
+		                              GroupItemInfo *info) const;
 
-    bool detail_ReadFileInfo(u32 id, FileInfo* pInfo) const;
-    bool detail_ReadFilePos(u32 fileId, u32 posId, FilePos* pPos) const;
+		ulong detail_GetFileCount() const;
+		bool detail_ReadFileInfo(ulong fileId, FileInfo *info) const;
+		bool detail_ReadFilePos(ulong fileId, ulong index, FilePos *info) const;
 
-    ut::FileStream* detail_OpenFileStream(u32 id, void* pBuffer,
-                                          int bufferSize) const;
-    ut::FileStream* detail_OpenGroupStream(u32 id, void* pBuffer,
-                                           int bufferSize) const;
-    ut::FileStream* detail_OpenGroupWaveDataStream(u32 id, void* pBuffer,
-                                                   int bufferSize) const;
+		ut::FileStream *detail_OpenFileStream(ulong fileId, void *buffer,
+		                                      int size) const;
+		ut::FileStream* detail_OpenGroupStream(ulong id, void* pBuffer,
+												int bufferSize) const;
+		ut::FileStream* detail_OpenGroupWaveDataStream(ulong id, void* pBuffer,
+														int bufferSize) const;
 
-    void SetExternalFileRoot(const char* pExtFileRoot);
+		void SetExternalFileRoot(const char* pExtFileRoot);
 
-protected:
-    static const int FILE_PATH_MAX = 256;
+	private:
+		ut::FileStream *OpenExtStreamImpl(void *buffer, int size,
+		                                  char const *extFilePath, ulong begin,
+		                                  ulong length) const;
 
-private:
-    ut::FileStream* OpenExtStreamImpl(void* pBuffer, int bufferSize,
-                                      const char* pExtPath, u32 offset,
-                                      u32 size) const;
+	// static members
+	public:
+		static int const FILE_PATH_MAX = 255;
+		static ulong const INVALID_ID = -1;
 
-private:
-    detail::SoundArchiveFileReader* mFileReader; // at 0x4
-    char mExtFileRoot[FILE_PATH_MAX];            // at 0x8
-};
+	// members
+	private:
+		/* vtable */														// size 0x004, offset 0x000
+		detail::SoundArchiveFileReader	*mFileReader;						// size 0x004, offset 0x004
+		char							mExtFileRoot[FILE_PATH_MAX + 1];	// size 0x100, offset 0x008
+	}; // size 0x108
+}} // namespace nw4r::snd
 
-} // namespace snd
-} // namespace nw4r
-
-#endif
+#endif // NW4R_SND_SOUND_ARCHIVE_H

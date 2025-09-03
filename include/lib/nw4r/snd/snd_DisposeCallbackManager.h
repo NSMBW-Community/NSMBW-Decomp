@@ -1,32 +1,45 @@
 #ifndef NW4R_SND_DISPOSE_CALLBACK_MANAGER_H
 #define NW4R_SND_DISPOSE_CALLBACK_MANAGER_H
-#include <nw4r/types_nw4r.h>
 
-#include <nw4r/snd/snd_DisposeCallback.h>
+/*******************************************************************************
+ * headers
+ */
 
-namespace nw4r {
-namespace snd {
-namespace detail {
+#include <types.h>
 
-class DisposeCallbackManager {
-public:
-    static DisposeCallbackManager& GetInstance();
+#include "nw4r/snd/snd_DisposeCallback.h"
 
-    void RegisterDisposeCallback(DisposeCallback* pCallback);
-    void UnregisterDisposeCallback(DisposeCallback* pCallback);
+#include "nw4r/ut/ut_LinkList.h"
 
-    void Dispose(void* pData, u32 size, void* pArg);
-    void DisposeWave(void* pData, u32 size, void* pArg);
+/*******************************************************************************
+ * classes and functions
+ */
 
-private:
-    DisposeCallbackManager();
+namespace nw4r { namespace snd { namespace detail
+{
+	// [R89JEL]:/bin/RVL/Debug/mainD.elf:.debug::0x2bb987
+	class DisposeCallbackManager
+	{
+	// methods
+	public:
+		// instance accessors
+		static DisposeCallbackManager &GetInstance();
 
-private:
-    DisposeCallbackList mCallbackList; // at 0x0
-};
+		// methods
+		void RegisterDisposeCallback(DisposeCallback *callback);
+		void UnregisterDisposeCallback(DisposeCallback *callback);
 
-} // namespace detail
-} // namespace snd
-} // namespace nw4r
+		void Dispose(void *mem, ulong size, void *arg);
+		void DisposeWave(void *mem, ulong size, void *arg);
 
-#endif
+	private:
+		// cdtors
+		DisposeCallbackManager();
+
+	// members
+	private:
+		DisposeCallback::LinkList	mCallbackList;	// size 0x0c, offset 0x00
+	}; // size 0x0c
+}}} // namespace nw4r::snd::detail
+
+#endif // NW4R_SND_DISPOSE_CALLBACK_MANAGER_H

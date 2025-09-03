@@ -1,61 +1,72 @@
 #ifndef NW4R_SND_VOICE_MANAGER_H
 #define NW4R_SND_VOICE_MANAGER_H
-#include <nw4r/types_nw4r.h>
 
-#include <nw4r/snd/snd_Voice.h>
+/*******************************************************************************
+ * headers
+ */
 
-#include <revolution/AX.h>
+#include <types.h>
 
-namespace nw4r {
-namespace snd {
-namespace detail {
+#include "nw4r/snd/snd_Voice.h"
 
-class VoiceManager {
-public:
-    static const int VOICE_MAX = AX_VOICE_MAX;
-    static const int WORK_SIZE_MAX = VOICE_MAX * sizeof(Voice);
+/*******************************************************************************
+ * classes and functions
+ */
 
-public:
-    static VoiceManager& GetInstance();
+namespace nw4r { namespace snd { namespace detail
+{
+	// [R89JEL]:/bin/RVL/Debug/mainD.elf:.debug::0x2ffb36
+	class VoiceManager
+	{
+	public:
+		static const int VOICE_MAX = AX_VOICE_MAX;
+		static const int WORK_SIZE_MAX = VOICE_MAX * sizeof(Voice);
+	// methods
+	public:
+		// instance accessors
+		static VoiceManager &GetInstance();
 
-    u32 GetRequiredMemSize();
+		// methods
+		void Setup(void *mem, ulong memSize);
+		void Shutdown();
 
-    void Setup(void* pBuffer, u32 size);
-    void Shutdown();
-    void StopAllVoices();
+		Voice::LinkList const &GetVoiceList() const { return mPrioVoiceList; }
+		ulong GetRequiredMemSize(int voiceCount);
 
-    Voice* AllocVoice(int channels, int voices, int priority,
-                      Voice::VoiceCallback pCallback, void* pCallbackArg);
-    void FreeVoice(Voice* pVoice);
+		Voice *AllocVoice(int voiceChannelCount, int voiceOutCount,
+		                  int priority, Voice::Callback *callback,
+		                  void *callbackData);
+		void FreeVoice(Voice *voice);
 
-    void UpdateAllVoices();
-    void NotifyVoiceUpdate();
-    void ChangeVoicePriority(Voice* pVoice);
-    void UpdateAllVoicesSync(u32 syncFlag);
+		void StopAllVoices();
 
-    const VoiceList& GetVoiceList() const {
-        return mPrioVoiceList;
-    }
+		void ChangeVoicePriority(Voice *voice);
 
-private:
-    VoiceManager();
+		void UpdateAllVoices();
+		void UpdateAllVoicesSync(ulong syncFlag);
 
-    void AppendVoiceList(Voice* pVoice);
-    void RemoveVoiceList(Voice* pVoice);
+		void NotifyVoiceUpdate();
 
-    void UpdateEachVoicePriority(const VoiceList::Iterator& rBegin,
-                                 const VoiceList::Iterator& rEnd);
+	private:
+		// cdtors
+		VoiceManager();
 
-    int DropLowestPriorityVoice(int priority);
+		// methods
+		void AppendVoiceList(Voice *voice);
+		void RemoveVoiceList(Voice *voice);
 
-private:
-    bool mInitialized;        // at 0x0
-    VoiceList mPrioVoiceList; // at 0x4
-    VoiceList mFreeVoiceList; // at 0x10
-};
+		void UpdateEachVoicePriority(Voice::LinkList::Iterator const &beginItr,
+		                             Voice::LinkList::Iterator const &endItr);
 
-} // namespace detail
-} // namespace snd
-} // namespace nw4r
+		int DropLowestPriorityVoice(int priority);
 
-#endif
+	// members
+	private:
+		bool			mInitialized;	// size 0x01, offset 0x00
+		/* 3 bytes padding */
+		Voice::LinkList	mPrioVoiceList;	// size 0x0c, offset 0x04
+		Voice::LinkList	mFreeVoiceList;	// size 0x0c, offset 0x10
+	}; // size 0x1c
+}}} // namespace nw4r::snd::detail
+
+#endif // NW4R_SND_VOICE_MANAGER_H
