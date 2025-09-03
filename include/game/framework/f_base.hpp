@@ -26,7 +26,8 @@ public:
     enum GROUP_TYPE_e {
         OTHER, ///< The base is a @ref dBase_c "generic process".
         SCENE, ///< The base is a @ref dScene_c "scene".
-        ACTOR ///< The base is an @ref dBaseActor_c "actor".
+        ACTOR, ///< The base is an @ref dBaseActor_c "actor".
+        ENTITY ///< The base is an @ref dEn_c "entity".
     };
 
     /// @brief The possible operation results.

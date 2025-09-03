@@ -237,7 +237,7 @@ void dEn_c::normal_collcheck(dCc_c *self, dCc_c *other) {
     } else if (kind == STAGE_ACTOR_PLAYER) {
         if (actor1->mFlags & EN_FLAG_24 || !CeilCheck(actor1->mPos.y, self)) {
             if (actor1->PlDamageCheck(self, other)) {
-                actor1->mCcValue = self->unk3;
+                actor1->mCcValue = self->mCanBounce;
                 self->mInfo |= CC_NO_HIT;
             } else if (other->mCcData.mKind != CC_KIND_PLAYER_ATTACK) {
                 s8 *plrNo = actor2->getPlrNo();
@@ -257,7 +257,7 @@ void dEn_c::normal_collcheck(dCc_c *self, dCc_c *other) {
             } else {
                 if (!CeilCheck(actor1->mPos.y, self)) {
                     if (actor1->YoshiDamageCheck(self, other)) {
-                        actor1->mCcValue = self->unk3;
+                        actor1->mCcValue = self->mCanBounce;
                         self->mInfo |= CC_NO_HIT;
                     } else if (actor1->mNoHitPlayer.mTimer[*plrNo] == 0) {
                         actor1->mNoHitPlayer.mTimer[*plrNo] = smc_NO_HIT_PLAYER_TIMER_DEFAULT;
@@ -268,7 +268,7 @@ void dEn_c::normal_collcheck(dCc_c *self, dCc_c *other) {
         }
     } else {
         if (actor1->EtcDamageCheck(self, other)) {
-            actor1->mCcValue = self->unk3;
+            actor1->mCcValue = self->mCanBounce;
             self->mInfo |= CC_NO_HIT;
         }
     }
@@ -685,12 +685,12 @@ u32 dEn_c::EnBgCheck() {
     return flags;
 }
 
-bool dEn_c::EnBgCheckFoot() {
+u32 dEn_c::EnBgCheckFoot() {
     if (!mBc.hasSensorFoot()) {
         mFootPush2.set(0.0f, 0.0f, 0.0f);
         return false;
     }
-    bool res = mBc.checkFootEnm();
+    u32 res = mBc.checkFootEnm();
     mFootAttr3 = false;
     mFootAttr1 = false;
     if (mBc.isFoot()) {
