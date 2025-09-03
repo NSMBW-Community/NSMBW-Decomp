@@ -769,6 +769,7 @@ namespace fProfile {
         /// @ingroup profile
         enum DRAW_ORDER_e {
             CAMERA,
+            BOOT = 0,
             WORLD_CAMERA,
             PLAYER,
             YOSHI,

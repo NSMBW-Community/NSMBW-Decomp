@@ -25,6 +25,8 @@ public:
     typedef void (*changePosFunc)(mVec3_c *);
     static void setChangePosFunc(int);
 
+    static void setTitleReplayRandomTable();
+
     static changePosFunc changePos;
     static dScStage_c *m_instance;
 };

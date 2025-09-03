@@ -150,9 +150,9 @@ public:
 
 private:
     bool mHasLoadedLayout; ///< @brief Whether the layout has been loaded.
-    bool mIsActive; ///< @brief Whether the window is currently open.
 
 public:
+    bool mIsActive; ///< @brief Whether the window is currently open.
     bool mHitButton; ///< @brief Whether a button has been pressed.
     bool mIsAnimating; ///< @brief Whether an animation is currently playing.
     bool mKeepOpen; ///< @brief Whether the window should stay open after a button has been pressed.

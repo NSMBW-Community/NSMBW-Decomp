@@ -40,7 +40,7 @@ public:
 
     /// @brief Loads the resources and creates the layout for the base.
     /// @return If the creation was successful.
-private:
+public:
     bool createLayout();
 
     LytBase_c mLayout; ///< The layout of the base.

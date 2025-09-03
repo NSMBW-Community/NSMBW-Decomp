@@ -1,6 +1,6 @@
 #include <game/sLib/s_Phase.hpp>
 
-sPhase_c::sPhase_c(phaseMethod **methodList, int count) :
+sPhase_c::sPhase_c(phaseMethod *methodList, int count) :
     mpMethodList(methodList),
     mPhaseLength(count),
     mCurrMethod(0) {

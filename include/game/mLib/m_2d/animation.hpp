@@ -52,6 +52,7 @@ public:
 
 class AnmGroup_c : public AnmGroupBase_c {
 public:
+    void setAndUpdate(float frame) { mpFrameCtrl->setFrame(frame); updateFrame(); }
 };
 
 } // namespace m2d

@@ -14,6 +14,7 @@ namespace dGameCom {
     // Random Number Generation API //
     //////////////////////////////////
 
+    void initRandomSeed(); ///< Initializes the random seed used for randomness.
     u32 getRandomSeed(); ///< Gets a seed used for randomness.
     int rndInt(size_t max);
 
@@ -102,4 +103,6 @@ namespace dGameCom {
     void SelectCursorSetup();
     void SelectCursorSetup(nw4r::lyt::Pane *, int, bool);
     void WindowPaneColorSet(nw4r::lyt::Window *, int);
+
+    void initGame();
 }

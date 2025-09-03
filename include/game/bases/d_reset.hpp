@@ -34,6 +34,9 @@ namespace dReset {
         void SetSoftResetFinish();
         void SetSoftResetScene();
         void PostDeleteScene();
+        void BootComplete();
+        void PermitSoftReset(bool);
+        bool IsFaderBlank();
 
         EGG::Heap *mpHeap;
         EGG::ColorFader *mpColorFader;
@@ -56,7 +59,7 @@ namespace dReset {
 
         u32 mHbmResetTypeMaybe;
         u32 mHbmPowerOffTypeMaybe;
-        u32 mSoftResetStateMaybe;
+        int mSoftResetStateMaybe;
         bool mSoftResetPermitted;
         bool mUnknown2D;
 
