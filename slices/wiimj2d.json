@@ -303,6 +303,14 @@
             }
         },
         {
+            "source": "dol/bases/d_last_actor.cpp",
+            "memoryRanges": {
+                ".text": "0x11e5c0-0x11e730",
+                ".data": "0x26688-0x266d8",
+                ".sdata": "0x1cd8-0x1ce0"
+            }
+        },
+        {
             "source": "dol/bases/d_pausewindow.cpp",
             "memoryRanges": {
                 ".text": "0x153d00-0x1552f0",
