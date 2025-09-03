@@ -22,7 +22,7 @@ int dLastActor_c::execute() {
         if (dScene_c::m_nowScene == fProfile::WORLD_MAP) {
             EffectManager_c::calcGroupForWm();
         } else if (dScene_c::m_nowScene == fProfile::MOVIE) {
-            if (!dScMovie_c::m_instance->mMovieEnded || dScMovie_c::m_instance->m_19D) {
+            if (!dScMovie_c::m_instance->mMovieEnded || dScMovie_c::m_instance->mEffectCreated) {
                 EffectManager_c::calcGroup();
             }
         } else {

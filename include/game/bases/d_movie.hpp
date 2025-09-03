@@ -8,17 +8,17 @@ class dScMovie_c : public dScene_c {
 public:
     sPhase_c mChain;
     dQuake_c mQuake;
-    void *mMovieData; // TODO
-    void *mMovieSound; // TODO
-    void *mDemoMessage; // TODO
+    void *mpMovieData; ///< @todo
+    void *mpMovieSound; ///< @todo
+    void *mpDemoMessage; ///< @todo
     NMSndObjectBase mSndObject;
     u32 m_130[7];
     int mFrameCounter;
-    int mIdxForCmd15;
-    int mIdxForCmd2;
-    int mIdxForCmd4;
-    int mIdxForMovieSound;
-    int mIdxForCmd6;
+    int mEndCommandIndex;
+    int mCameraMoveCommandIndex;
+    int mEffectCommandIndex;
+    int mSoundCommandIndex;
+    int mShakeCommandIndex;
     u32 mState;
     u32 mCurrentSceneId;
     mVec3_c m_16C;
@@ -28,8 +28,7 @@ public:
     int m_194;
     int mMovieId;
     bool mMovieEnded;
-    u8 m_19D;
-    u8 mPaddingMaybe[2];
+    bool mEffectCreated;
     float m_1A0;
 
     static dScMovie_c *m_instance;
