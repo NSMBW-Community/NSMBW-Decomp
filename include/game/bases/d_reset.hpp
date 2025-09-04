@@ -37,6 +37,7 @@ namespace dReset {
         void BootComplete();
         void PermitSoftReset(bool);
         bool IsFaderBlank();
+        void ActiveSaveWindow(bool);
 
         EGG::Heap *mpHeap;
         EGG::ColorFader *mpColorFader;

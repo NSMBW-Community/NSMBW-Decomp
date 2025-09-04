@@ -48,4 +48,6 @@ private:
     u32 mUnknown_98;
 };
 
+void draw();
+
 } // namespace d2d

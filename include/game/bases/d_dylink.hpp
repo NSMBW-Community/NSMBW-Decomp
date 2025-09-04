@@ -3,7 +3,13 @@
 #include <game/framework/f_profile.hpp>
 #include <lib/egg/core/eggExpHeap.h>
 
-class dDynamicModuleControl {
+class DynamicModuleControlBase {
+public:
+    bool load_async();
+    bool link();
+};
+
+class dDynamicModuleControl : public DynamicModuleControlBase {
 public:
     dDynamicModuleControl(const char *name, EGG::ExpHeap *heap);
     virtual ~dDynamicModuleControl();
@@ -12,5 +18,6 @@ public:
 };
 
 namespace dDyl {
+    int LinkASync(fProfile::PROFILE_NAME_e);
     bool Unlink(fProfile::PROFILE_NAME_e);
 };

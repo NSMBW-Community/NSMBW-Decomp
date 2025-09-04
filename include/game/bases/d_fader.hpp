@@ -1,11 +1,15 @@
 #pragma once
 
 #include <types.h>
-#include <game/mLib/m_fader_base.hpp>
+#include <game/mLib/m_fader.hpp>
 
-class dFader_c {
+class dFader_c : public mFader_c {
 public:
-    static void setFader(bool);
+    enum fader_type_e {
+        FADE
+    };
+
+    static void setFader(fader_type_e type);
 
     /// @brief Starts a fade in with the @ref mFader_c::mFader "current fader".
     /// @param duration The duration of the fade in.

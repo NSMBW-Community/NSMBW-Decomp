@@ -3,6 +3,7 @@
 #include <game/bases/d_scene.hpp>
 #include <game/bases/d_wii_strap_screen.hpp>
 #include <game/bases/d_controller_information.hpp>
+#include <game/bases/d_cursor_select.hpp>
 #include <game/bases/d_yes_no_window.hpp>
 #include <game/sLib/s_State.hpp>
 
@@ -46,16 +47,25 @@ private:
     sFStateMgr_c<dScBoot_c, sStateMethodUsr_FI_c> mStateMgr1;
     sFStateMgr_c<dScBoot_c, sStateMethodUsr_FI_c> mStateMgr2;
 
-    u8 mPad[2];
-    bool m_8d;
+    bool isState(const sStateIDIf_c &state) const {
+        return *mStateMgr1.getStateID() == state;
+    }
+
+    u8 mPad1[2];
     dWiiStrapScreen_c *mpWiiStrapScreen;
-    dControllerInformation_c *mpControllerInformation;
     dYesNoWindow_c *mpYesNoWindow;
+    dSelectCursor_c *mpSelectCursor;
+    dControllerInformation_c *mpControllerInformation;
 
-    bool m_104;
-    bool m_105;
-
+    bool m_8c;
+    bool m_8d;
+    bool m_8e;
     bool mSkipFirstPhase;
+
+    bool m_90;
+    bool m_91;
+    int m_94;
+    int m_98;
 
 public:
     static dScBoot_c *m_instance;
