@@ -1,46 +1,101 @@
 #pragma once
 #include <types.h>
+#include <game/bases/d_cd_blocks.hpp>
 #include <game/mLib/m_vec.hpp>
+#include <lib/egg/core/eggHeap.h>
 
-/// @unofficial
-struct AreaBoundU16 {
-    AreaBoundU16(u16 x, u16 y, u16 w, u16 h) {
-        this->x = x;
-        this->y = y;
-        width = w;
-        height = h;
-    }
-
-    u16 x, y, width, height;
-};
-
-/// @unofficial
-class dCdCourseSettings_c {
-public:
-
-    enum FLAG_e {
-        WRAP_AROUND_EDGES = BIT_FLAG(0),
-    };
-
-    char pad[8];
-    u16 mFlags;
-};
-
+/// @brief Course data file holder.
+/// A course data file contains the actual course elements -
+/// areas, actor create information, background data, etc.
 class dCdFile_c {
 public:
-    char pad[0xc];
-    dCdCourseSettings_c *mpCourseSettings;
-    char pad2[0x1c];
-    AreaBoundU16 *mpAreas;
-    char pad3[0x380];
+    dCdFile_c() {}
+    virtual ~dCdFile_c() {}
 
-    u8 getAreaNo(mVec3_c *);
-    AreaBoundU16 *getAreaP(u8 zoneID, mBoundBox *bound); ///< @unofficial
+    void loadCourseData(int fileNo);
+    sScrollData *getScrollDataP(u8 id);
+    sBgData *getBg2DataP(u8 id);
+    sBgData *getBg3DataP(u8 id);
+    sNextGotoData *getNextGotoP(u8 id);
+    sAreaData *getAreaDataP(u8 id, sRangeDataF *bound);
+    u8 getAreaID(u8 id);
+    int getAreaScroll(u8 id);
+    int getAreaZoomType(u8 id);
+    int getAreaZoomID(u8 id);
+    int getAreaZoomChange(u8 id);
+    int getAreaBgm(u8 id);
+    int getAreaBgmMode(u8 id);
+    int getAreaMaskNo(u8 id);
+    int getAreaBg2(u8 id);
+    int getAreaBg3(u8 id);
+    int getAreaColorOBJ(u8 id);
+    int getAreaColorBG(u8 id);
+    int getAreaDirection(u8 id);
+    int getAreaSizeX(u8 id);
+    u8 getAreaNo(mVec3_c *pos);
+    u8 getAreaNo(sRangePosSize *bound);
+    sRangeData *getRangeDataP(u8 id, sRangeDataF *bound);
+    bool checkRange(mVec3_c *pos, sRangeData *range);
+    bool checkRange(sRangePosSize *range1, sRangePosSize *range2);
+    sScrollAreaData *getScrlAreaDataP(u8 id);
+
+    int mFileNo;
+    union {
+        void *mpBlocks[CD_BLOCK_COUNT];
+        struct {
+            sTilesetData *mpTilesetNames;
+            sOptionData *mpOptions;
+            sScrollData *mpScrollData;
+            sBlock4Data *mBlock4;
+            sBgData *mpBg2Data;
+            sBgData *mpBg3Data;
+            sNextGotoData *mpNextGotos;
+            sActorCreateData *mpActorCreates;
+            sBlock8Data *mBlock8;
+            sAreaData *mpAreas;
+            sRangeData *mpRangeData;
+            sScrollAreaData *mpScrlAreas;
+            sRailInfoData *mpRails;
+            sRailNodeData *mpRailNodes;
+        };
+    };
+    u32 mBlockSizes[CD_BLOCK_COUNT];
+    union {
+        u32 mBlockElementCounts[CD_BLOCK_COUNT];
+        struct {
+            int mTilesetsCount;
+            int mOptionsCount;
+            int mScrollDataCount;
+            int mBlock4ElementCount;
+            int mBg2DataCount;
+            int mBg3DataCount;
+            int mNextGotoCount;
+            int mActorCreateCount;
+            int mBlock8ElementCount;
+            int mAreaCount;
+            int mRangeCount;
+            int mScrlAreaCount;
+            int mRailCount;
+            int mRailNodeCount;
+        };
+    };
+    u32 mArr1[64];
+    u32 mArr2[64];
+    u32 mArr3[64];
 };
 
+/// @brief Current course data holder.
+/// A course is made up of multiple files [Reggie terminology: "areas"] - see dCdFile_c.
 class dCd_c {
 public:
-    dCdFile_c mFiles[4];
+    dCd_c() { m_instance = this; }
+    ~dCd_c() { m_instance = nullptr; }
+
+    void loadCourseData();
+
+    static void setCourseArcName(int world, int course, char *buffer);
+    static void createInstance(EGG::Heap *heap);
+    static void deleteInstance();
 
     dCdFile_c *getFileP(int idx) {
         dCdFile_c *course = &mFiles[idx];
@@ -49,6 +104,8 @@ public:
         }
         return nullptr;
     }
+
+    dCdFile_c mFiles[4];
 
     static dCd_c *m_instance;
 };

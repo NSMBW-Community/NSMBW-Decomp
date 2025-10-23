@@ -211,16 +211,15 @@ public:
     static mVec3_c Ez; ///< The unit vector for the Z axis.
 };
 
-/// @unofficial
-class mBoundBox {
+class sRangeDataF {
 public:
-    mBoundBox() {}
+    sRangeDataF() {}
 
-    mBoundBox(float t, float b, float l, float r) {
+    sRangeDataF(float t, float b, float l, float r) {
         set(t, b, l, r);
     }
 
-    mBoundBox(const mBoundBox &b) {
+    sRangeDataF(const sRangeDataF &b) {
         set(b.mOffset.x, b.mOffset.y, b.mSize.x, b.mSize.y);
     }
 

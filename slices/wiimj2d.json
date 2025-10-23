@@ -181,6 +181,15 @@
             }
         },
         {
+            "source": "dol/bases/d_cd.cpp",
+            "memoryRanges": {
+                ".text": "0x87870-0x88540",
+                ".rodata": "0x2418-0x2450",
+                ".data": "0x12a60-0x12a90",
+                ".sdata2": "0xfa8-0xfb8"
+            }
+        },
+        {
             "source": "dol/bases/d_main.cpp",
             "memoryRanges": {
                 ".text": "0xc3880-0xc39d0",

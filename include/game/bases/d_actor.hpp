@@ -195,7 +195,7 @@ public:
     /// @param bound The actor's bounding box.
     /// @param areaID The actor's zone ID.
     /// @return Whether the actor should be culled.
-    bool areaCullCheck(const mVec3_c &pos, const mBoundBox &bound, u8 areaID) const;
+    bool areaCullCheck(const mVec3_c &pos, const sRangeDataF &bound, u8 areaID) const;
 
     /// @brief Checks if the actor is out of gameplay and optionally deletes it.
     /// @param flags The flags to control which actions to perform. Value is a ::SCREEN_OUT_e.
@@ -210,7 +210,7 @@ public:
     /// @param destroyBound The actor's deletion bounding box.
     /// @param areaID The actor's zone ID (unused).
     /// @return Whether the actor should be culled.
-    static bool screenCullCheck(const mVec3_c &pos, const mBoundBox &visibleBound, mBoundBox destroyBound, u8 areaID);
+    static bool screenCullCheck(const mVec3_c &pos, const sRangeDataF &visibleBound, sRangeDataF destroyBound, u8 areaID);
 
     /// @brief Returns whether the actor is colliding with any enabled collision sides.
     /// @unofficial
@@ -348,8 +348,8 @@ public:
 
     mVec2_c mVisibleAreaSize; ///< The size of the area inside which the actor is visible.
     mVec2_c mVisibleAreaOffset; ///< The offset applied to the area size.
-    mBoundBox mMaxBound; ///< @todo Figure out the exact purpose of this field.
-    mBoundBox mDestroyBound; ///< @todo Figure out the exact purpose of this field.
+    sRangeDataF mMaxBound; ///< @todo Figure out the exact purpose of this field.
+    sRangeDataF mDestroyBound; ///< @todo Figure out the exact purpose of this field.
     u8 mDirection; ///< The actor's facing direction.
     u8 mAreaNo; ///< The actor's zone ID.
     u8 mBgCollFlags; ///< The collision directions that the actor can respond to.
@@ -380,7 +380,7 @@ public:
     bool mNoRespawn; ///< Whether the actor should not respawn after being deleted.
     bool mBackFence; ///< Whether the actor is on the back side of chainlink fences.
 
-    mBoundBox getDestroyBound() { return mDestroyBound; }
+    sRangeDataF getDestroyBound() { return mDestroyBound; }
 
     void setDefaultMaxBound() {
         mMaxBound.set(smc_CULL_XLIMIT, smc_CULL_YLIMIT, smc_CULL_AREA_XLIMIT, smc_CULL_AREA_YLIMIT);
