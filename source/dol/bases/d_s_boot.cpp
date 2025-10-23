@@ -205,18 +205,20 @@ sPhase_c::METHOD_RESULT_e myCreate_HbmManage(void *) {
 
 sPhase_c::METHOD_RESULT_e myReadArc_SaveBanner(void *) {
     const char *saveBannerPath = "/EU/save_banner";
-    static const char saveBannerName[] = "save_banner";
+    static const char saveBannerName[] = "save_banner"; ///< @unofficial
     dResMng_c::m_instance->setRes(saveBannerPath, saveBannerName, nullptr);
     return sPhase_c::OK;
 }
 
+/// @unofficial
+const char *l_env_names[] = {
+    "Env_world",
+    "Env_course",
+    "Env_movie"
+};
+
 sPhase_c::METHOD_RESULT_e myReadArc_RegRes(void *) {
-    static const char *envNames[] = {
-        "Env_world",
-        "Env_course",
-        "Env_movie"
-    };
-    dResMng_c::m_instance->setRes("Env", envNames, ARRAY_SIZE(envNames), nullptr);
+    dResMng_c::m_instance->setRes("Env", l_env_names, ARRAY_SIZE(l_env_names), nullptr);
     return sPhase_c::OK;
 }
 
