@@ -101,10 +101,13 @@ struct sScrollAreaData {
 
 /// @unofficial
 struct sRailInfoData {
-    u8 mPad[0x8];
+    u8 mID;
+    u8 m_01;
+    u16 mNodeIdx;
+    u16 m_04, m_06;
 };
 
 /// @unofficial
 struct sRailNodeData {
-    u8 mPad[0x10];
+    short m_00, m_02, m_04, m_06, m_08, m_0a, m_0c, m_0e;
 };

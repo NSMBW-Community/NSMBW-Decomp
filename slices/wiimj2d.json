@@ -218,6 +218,13 @@
             }
         },
         {
+            "source": "dol/bases/d_rail.cpp",
+            "nonMatching": true,
+            "memoryRanges": {
+                ".text": "0xd2a30-0xd30d0"
+            }
+        },
+        {
             "source": "dol/bases/d_res_info.cpp",
             "memoryRanges": {
                 ".text": "0xd82b0-0xd88c0",
