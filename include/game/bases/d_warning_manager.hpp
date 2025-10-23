@@ -5,7 +5,7 @@
 class dWarningManager_c {
 public:
     void AllWarningEnd(bool);
-    void set_b50(int b50) { m_b8f = true; m_b50 = b50; }
+    void setError(int errorID) { m_b8f = true; mErrorID = errorID; }
     static void CreateWarningManager();
     static void addWarningForbid() NOINLINE { m_WarningForbid++; }
     static void subWarningForbid() NOINLINE { if (m_WarningForbid > 0) m_WarningForbid--; }
@@ -16,7 +16,7 @@ public:
     u8 mPad2[0x5];
     bool m_b09;
     u8 mPad3[0x46];
-    int m_b50;
+    int mErrorID;
     u8 mPad4[0x3b];
     bool m_b8f;
 

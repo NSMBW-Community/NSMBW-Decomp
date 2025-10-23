@@ -9,8 +9,8 @@ public:
 
     u8 mPad[0x74];
     int m_74;
-    int m_78;
-    bool m_7c;
+    int mError;
+    bool mFileExists;
 
     static dNandThread_c *m_instance;
 };

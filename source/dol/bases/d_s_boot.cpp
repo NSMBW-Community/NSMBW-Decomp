@@ -22,9 +22,6 @@
 #include <game/mLib/m_pad.hpp>
 #include <revolution/VI.h>
 
-#pragma push
-#pragma pool_data off
-
 BASE_PROFILE(BOOT, dScBoot_c);
 
 dScBoot_c *dScBoot_c::m_instance;
@@ -163,6 +160,7 @@ sPhase_c::phaseMethod myCreate_PhaseMethod[] = {
     myCreate_Painter
 };
 
+/// @brief This phase is run via dScene_c::mpPhase, so before dScBoot_c::execute() is run.
 sPhase_c myCreate_InitPhase(myCreate_PhaseMethod, ARRAY_SIZE(myCreate_PhaseMethod));
 
 mDvd_callback_c *s_dvdcb;
@@ -191,7 +189,7 @@ sPhase_c::METHOD_RESULT_e myReadArc_Sound(void *) {
 sPhase_c::METHOD_RESULT_e myReadArc_resSndWait(void *thisPtr) {
     dScBoot_c *self = (dScBoot_c *) thisPtr;
     if (dAudio::isLoadedSceneSnd()) {
-        self->m_8e = true;
+        self->mSceneSoundLoaded = true;
         return sPhase_c::OK;
     }
     return sPhase_c::WAIT;
@@ -280,7 +278,7 @@ sPhase_c::METHOD_RESULT_e myReadArc_MakeControllerInformation(void *selfPtr) {
 }
 
 /// @unofficial
-sPhase_c::METHOD_RESULT_e myCreate_8015c220(void *selfPtr) {
+sPhase_c::METHOD_RESULT_e myCreate_ControllerInformationReady(void *selfPtr) {
     dScBoot_c *self = (dScBoot_c *) selfPtr;
     if (!self->mpControllerInformation->mIsCreated) {
         return sPhase_c::WAIT;
@@ -289,7 +287,7 @@ sPhase_c::METHOD_RESULT_e myCreate_8015c220(void *selfPtr) {
 }
 
 /// @unofficial
-sPhase_c::METHOD_RESULT_e myCreate_8015c240(void *selfPtr) {
+sPhase_c::METHOD_RESULT_e myCreate_YesNoWindowReady(void *selfPtr) {
     dScBoot_c *self = (dScBoot_c *) selfPtr;
     dYesNoWindow_c *ynWindow = self->mpYesNoWindow;
     dSelectCursor_c *selectCursor = self->mpSelectCursor;
@@ -304,12 +302,12 @@ sPhase_c::phaseMethod myBackGround_PhaseMethod[] = {
     dSystem::createFontManagerPhase,
     dSystem::createMessageManagerPhase,
     myCreate_CreateYesNoWindow,
-    myCreate_8015c240,
+    myCreate_YesNoWindowReady,
     myCreate_ExtensionMng,
     myReadArc_ExtensionMng,
     myCreate_HbmManage,
     myReadArc_MakeControllerInformation,
-    myCreate_8015c220,
+    myCreate_ControllerInformationReady,
     myReadArc_BootSound,
     myReadArc_Sound,
     myReadArc_resSndWait,
@@ -334,11 +332,13 @@ sPhase_c::phaseMethod myBackGround_PhaseMethod[] = {
     dSystem::createEffectManagerPhase1
 };
 
+/// @brief This phase is run directly inside of dScBoot_c::execute() each frame.
 sPhase_c myBackGround_Phase(myBackGround_PhaseMethod, ARRAY_SIZE(myBackGround_PhaseMethod));
 
 STATE_DEFINE(dScBoot_c, ResetWait);
 STATE_DEFINE(dScBoot_c, ResetFadeOut);
 STATE_DEFINE(dScBoot_c, ResetFadeIn);
+
 STATE_DEFINE(dScBoot_c, FadeOutWait);
 STATE_DEFINE(dScBoot_c, WiiStrapKeyWait);
 STATE_DEFINE(dScBoot_c, WiiStrapDispEndWait);
@@ -362,8 +362,8 @@ STATE_DEFINE(dScBoot_c, ErrorWindowOnStageWait);
 STATE_DEFINE(dScBoot_c, ErrorInfinityDisp);
 
 dScBoot_c::dScBoot_c() :
-    mStateMgr1(*this, StateID_FadeOutWait),
-    mStateMgr2(*this, StateID_ResetWait)
+    mStateMgr(*this, StateID_FadeOutWait),
+    mResetStateMgr(*this, StateID_ResetWait)
 {
     mpPhase = &myCreate_InitPhase;
     m_instance = this;
@@ -387,8 +387,8 @@ int dScBoot_c::create() {
     dScStage_c::setTitleReplayRandomTable();
     dGameCom::initGame();
 
-    m_90 = false;
-    m_91 = false;
+    mResetFadeOutStarted = false;
+    mSaveDataCreatedMessageShown = false;
 
     VIEnableDimming(true);
 
@@ -431,9 +431,9 @@ int dScBoot_c::preExecute() {
 
 int dScBoot_c::execute() {
     myBackGround_Phase.callMethod(this);
-    mStateMgr2.executeState();
-    if (!mSkipFirstPhase) {
-        mStateMgr1.executeState();
+    mResetStateMgr.executeState();
+    if (!mIsResetting) {
+        mStateMgr.executeState();
     }
     return SUCCEEDED;
 }
@@ -442,8 +442,12 @@ int dScBoot_c::draw() {
     return SUCCEEDED;
 }
 
+// [Unsure how one could get rid of this pragma...]
+#pragma push
+#pragma pool_data off
+
 void dScBoot_c::initializeState_ResetWait() {
-    mSkipFirstPhase = false;
+    mIsResetting = false;
     mpWiiStrapScreen->mLayout.mpAnimGroup->setAndUpdate(0.0f);
 }
 
@@ -452,42 +456,43 @@ void dScBoot_c::executeState_ResetWait() {
         return;
     }
     dHbm::Manage_c::GetInstance()->mFlags |= 0x40;
-    mStateMgr2.changeState(StateID_ResetFadeOut);
+    mResetStateMgr.changeState(StateID_ResetFadeOut);
 }
 
 void dScBoot_c::finalizeState_ResetWait() {}
 
 void dScBoot_c::initializeState_ResetFadeOut() {
-    mSkipFirstPhase = true;
+    mIsResetting = true;
     dScene_c::m_isAutoFadeIn = false;
     dFader_c::setFader(dFader_c::FADE);
-    m_90 = dFader_c::startFadeOut(30);
-    m_8d = false;
+    mResetFadeOutStarted = dFader_c::startFadeOut(30);
+    mResetFaderDone = false;
 }
 
 void dScBoot_c::executeState_ResetFadeOut() {
-    if (!m_90) {
-        m_90 = dFader_c::startFadeOut(30);
+    if (!mResetFadeOutStarted) {
+        mResetFadeOutStarted = dFader_c::startFadeOut(30);
         return;
     }
-    if (!m_8d && dReset::Manage_c::GetInstance()->IsFaderBlank()) {
-        m_8d = true;
+    if (!mResetFaderDone && dReset::Manage_c::GetInstance()->IsFaderBlank()) {
+        mResetFaderDone = true;
     }
-    if (m_8d && dFader_c::isStatus(mFaderBase_c::OPAQUE)) {
+    if (mResetFaderDone && dFader_c::isStatus(mFaderBase_c::OPAQUE)) {
         if (mpControllerInformation != nullptr && mpControllerInformation->mIsCreated) {
             if (dWarningManager_c::m_instance->m_b00 >= 1) {
                 dWarningManager_c::m_instance->AllWarningEnd(false);
             }
-            if (m_91) {
+            if (mSaveDataCreatedMessageShown) {
+                // Hide the yes/no window so that it doesn't show up again after reset
                 finalizeState_ResetFadeIn();
-                mStateMgr1.changeState(StateID_ProcEnd);
+                mStateMgr.changeState(StateID_ProcEnd);
                 dYesNoWindow_c *ynWindow = mpYesNoWindow;
                 dSelectCursor_c::m_instance->Cancel(0);
                 ynWindow->mIsActive = false;
                 mpControllerInformation->mVisible = false;
-                mStateMgr2.changeState(StateID_ResetWait);
+                mResetStateMgr.changeState(StateID_ResetWait);
             } else {
-                mStateMgr2.changeState(StateID_ResetFadeIn);
+                mResetStateMgr.changeState(StateID_ResetFadeIn);
             }
         }
     }
@@ -496,20 +501,20 @@ void dScBoot_c::executeState_ResetFadeOut() {
 void dScBoot_c::finalizeState_ResetFadeOut() {
     dReset::Manage_c::GetInstance()->SetSoftResetFinish();
     if (isState(StateID_WiiStrapDispEndWait) || isState(StateID_ControllerInformationDispEndWait)) {
-        m_8d = false;
+        mResetFaderDone = false;
         if (isState(StateID_WiiStrapDispEndWait)) {
             dWarningManager_c::m_instance->AllWarningEnd(false);
             mpControllerInformation->mVisible = true;
             mpWiiStrapScreen->m_209 = false;
-            mStateMgr1.changeState(StateID_ControllerInformationSoundWait);
+            mStateMgr.changeState(StateID_ControllerInformationSoundWait);
         } else {
             mpControllerInformation->mVisible = false;
-            mStateMgr1.changeState(StateID_NandCommandEndWait);
+            mStateMgr.changeState(StateID_NandCommandEndWait);
         }
-        m_94 = 0;
-        m_98 = 0;
+        mAutoAdvanceTimer = 0;
+        mMinWaitTimer = 0;
     }
-    m_90 = 0;
+    mResetFadeOutStarted = false;
 }
 
 void dScBoot_c::initializeState_ResetFadeIn() {
@@ -521,7 +526,7 @@ void dScBoot_c::initializeState_ResetFadeIn() {
 
 void dScBoot_c::executeState_ResetFadeIn() {
     if (mFader_c::isStatus(mFaderBase_c::HIDDEN)) {
-        mStateMgr2.changeState(StateID_ResetWait);
+        mResetStateMgr.changeState(StateID_ResetWait);
     }
 }
 
@@ -530,40 +535,42 @@ void dScBoot_c::finalizeState_ResetFadeIn() {
     dReset::Manage_c::GetInstance()->ActiveSaveWindow(false);
     dHbm::Manage_c::GetInstance()->mFlags &= ~0x40;
     if (isState(StateID_ErrorWindowOnStageWait) || isState(StateID_ErrorInfinityDisp)) {
-        mStateMgr1.changeState(StateID_GoToErrorFadeOut);
+        mStateMgr.changeState(StateID_GoToErrorFadeOut);
     }
     if (isState(StateID_ControllerInformationKeyWait) || isState(StateID_ControllerInformationDispEndWait)) {
-        m_94 = 0;
-        m_98 = 0;
+        mAutoAdvanceTimer = 0;
+        mMinWaitTimer = 0;
     } else {
-        m_94 = 1200;
-        m_98 = 60;
+        mAutoAdvanceTimer = 1200;
+        mMinWaitTimer = 60;
     }
-    m_8d = false;
-    mSkipFirstPhase = false;
+    mResetFaderDone = false;
+    mIsResetting = false;
 }
 
 void dScBoot_c::initializeState_FadeOutWait() {}
 
 void dScBoot_c::executeState_FadeOutWait() {
     if (mFader_c::isStatus(mFaderBase_c::HIDDEN)) {
-        mStateMgr1.changeState(StateID_WiiStrapKeyWait);
+        mStateMgr.changeState(StateID_WiiStrapKeyWait);
     }
 }
 
 void dScBoot_c::finalizeState_FadeOutWait() {}
 
+#pragma pop
+
 void dScBoot_c::initializeState_WiiStrapKeyWait() {
-    m_94 = 1200;
-    m_98 = 60;
+    mAutoAdvanceTimer = 1200;
+    mMinWaitTimer = 60;
     mpWiiStrapScreen->mLayout.mpAnimGroup->setAndUpdate(0.0f);
 }
 
 void dScBoot_c::executeState_WiiStrapKeyWait() {
-    m_94--;
-    m_98--;
-    if (m_98 <= 0) {
-        mStateMgr1.changeState(StateID_WiiStrapDispEndWait);
+    mAutoAdvanceTimer--;
+    mMinWaitTimer--;
+    if (mMinWaitTimer <= 0) {
+        mStateMgr.changeState(StateID_WiiStrapDispEndWait);
     }
 }
 
@@ -572,9 +579,9 @@ void dScBoot_c::finalizeState_WiiStrapKeyWait() {}
 void dScBoot_c::initializeState_WiiStrapDispEndWait() {}
 
 void dScBoot_c::executeState_WiiStrapDispEndWait() {
-    m_94--;
-    if (m_94 <= 0 || mPad::g_currentCore->downTrigger(0b111111100011111) || dInfo_c::mGameFlag & 0x80000) {
-        mStateMgr1.changeState(StateID_WiiStrapFadeOut);
+    mAutoAdvanceTimer--;
+    if (mAutoAdvanceTimer <= 0 || mPad::g_currentCore->downTrigger(0b111111100011111) || dInfo_c::mGameFlag & 0x80000) {
+        mStateMgr.changeState(StateID_WiiStrapFadeOut);
     }
 }
 
@@ -592,7 +599,7 @@ void dScBoot_c::executeState_WiiStrapFadeOut() {
     if (mFader_c::isStatus(mFaderBase_c::OPAQUE)) {
         if (mpControllerInformation != nullptr && mpControllerInformation->mIsCreated) {
             mpWiiStrapScreen->m_209 = false;
-            mStateMgr1.changeState(StateID_ControllerInformationFadeIn);
+            mStateMgr.changeState(StateID_ControllerInformationFadeIn);
         }
     }
 }
@@ -609,7 +616,7 @@ void dScBoot_c::initializeState_ControllerInformationFadeIn() {
 
 void dScBoot_c::executeState_ControllerInformationFadeIn() {
     if (mFader_c::isStatus(mFaderBase_c::HIDDEN)) {
-        mStateMgr1.changeState(StateID_ControllerInformationSoundWait);
+        mStateMgr.changeState(StateID_ControllerInformationSoundWait);
     }
 }
 
@@ -622,19 +629,19 @@ void dScBoot_c::finalizeState_ControllerInformationFadeIn() {
 
 void dScBoot_c::initializeState_ControllerInformationSoundWait() {
     dHbm::Manage_c::GetInstance()->mFlags &= ~0x08;
-    m_94 = 300;
-    m_98 = 30;
+    mAutoAdvanceTimer = 300;
+    mMinWaitTimer = 30;
 }
 
 void dScBoot_c::executeState_ControllerInformationSoundWait() {
-    if (m_94 > 0) {
-        m_94--;
+    if (mAutoAdvanceTimer > 0) {
+        mAutoAdvanceTimer--;
     }
-    if (m_98 > 0) {
-        m_98--;
+    if (mMinWaitTimer > 0) {
+        mMinWaitTimer--;
     }
-    if (m_8e) {
-        mStateMgr1.changeState(StateID_ControllerInformationKeyWait);
+    if (mSceneSoundLoaded) {
+        mStateMgr.changeState(StateID_ControllerInformationKeyWait);
     }
 }
 
@@ -643,14 +650,14 @@ void dScBoot_c::finalizeState_ControllerInformationSoundWait() {}
 void dScBoot_c::initializeState_ControllerInformationKeyWait() {}
 
 void dScBoot_c::executeState_ControllerInformationKeyWait() {
-    if (m_94 > 0) {
-        m_94--;
+    if (mAutoAdvanceTimer > 0) {
+        mAutoAdvanceTimer--;
     }
-    if (--m_98 > 0) {
-        return;
+    mMinWaitTimer--;
+    if (mMinWaitTimer <= 0) {
+        mpControllerInformation->mState = dControllerInformation_c::SHOW_IN;
+        mStateMgr.changeState(StateID_ControllerInformationDispEndWait);
     }
-    mpControllerInformation->mState = dControllerInformation_c::SHOW_IN;
-    mStateMgr1.changeState(StateID_ControllerInformationDispEndWait);
 }
 
 void dScBoot_c::finalizeState_ControllerInformationKeyWait() {}
@@ -658,15 +665,15 @@ void dScBoot_c::finalizeState_ControllerInformationKeyWait() {}
 void dScBoot_c::initializeState_ControllerInformationDispEndWait() {}
 
 void dScBoot_c::executeState_ControllerInformationDispEndWait() {
-    if (m_94 != 0) {
-        m_94--;
+    if (mAutoAdvanceTimer != 0) {
+        mAutoAdvanceTimer--;
     }
     if (mPad::g_currentCore->downTrigger(0b111111100011111) || dInfo_c::mGameFlag & 0x80000) {
         mpControllerInformation->mState = dControllerInformation_c::END;
-        m_94 = 0;
+        mAutoAdvanceTimer = 0;
     }
-    if (m_94 <= 0) {
-        mStateMgr1.changeState(StateID_NandCommandEndWait);
+    if (mAutoAdvanceTimer <= 0) {
+        mStateMgr.changeState(StateID_NandCommandEndWait);
     }
 }
 
@@ -677,20 +684,18 @@ void dScBoot_c::initializeState_NandCommandEndWait() {}
 void dScBoot_c::executeState_NandCommandEndWait() {
     if (dNandThread_c::m_instance->m_74 == 0) {
         if (!dReset::Manage_c::GetInstance()->isSafetyWait()) {
-            mStateMgr1.changeState(StateID_ExistFileCheck);
+            mStateMgr.changeState(StateID_ExistFileCheck);
         }
     }
 }
 
 void dScBoot_c::finalizeState_NandCommandEndWait() {}
 
-#pragma pop
-
 void dScBoot_c::initializeState_ExistFileCheck() {
     dHbm::Manage_c::GetInstance()->mFlags |= 0x40;
     dReset::Manage_c::GetInstance()->ActiveSaveWindow(true);
     dNandThread_c::m_instance->cmdExistCheck();
-    m_8c = 0;
+    mNewSaveFileCreated = false;
 }
 
 void dScBoot_c::finalizeState_ExistFileCheck() {}
@@ -699,12 +704,12 @@ void dScBoot_c::executeState_ExistFileCheck() {
     if (dSaveMng_c::m_instance->isNandBusy()) {
         return;
     }
-    if (dNandThread_c::m_instance->m_78 != 0) {
-        mStateMgr1.changeState(StateID_GoToErrorFadeOut);
-    } else if (dNandThread_c::m_instance->m_7c != 0) {
-        mStateMgr1.changeState(StateID_Load);
+    if (dNandThread_c::m_instance->mError != 0) {
+        mStateMgr.changeState(StateID_GoToErrorFadeOut);
+    } else if (dNandThread_c::m_instance->mFileExists) {
+        mStateMgr.changeState(StateID_Load);
     } else {
-        mStateMgr1.changeState(StateID_NandSpaceCheck);
+        mStateMgr.changeState(StateID_NandSpaceCheck);
     }
 }
 
@@ -718,13 +723,13 @@ void dScBoot_c::executeState_NandSpaceCheck() {
     if (dSaveMng_c::m_instance->isNandBusy()) {
         return;
     }
-    if (dNandThread_c::m_instance->m_78 != 0) {
-        mStateMgr1.changeState(StateID_GoToErrorFadeOut);
+    if (dNandThread_c::m_instance->mError != 0) {
+        mStateMgr.changeState(StateID_GoToErrorFadeOut);
     } else {
         const char *save_icon = "save_icon.bti";
         const char *save_banner = "save_banner";
         if (dResMng_c::m_instance->mRes.getRes(save_banner, save_icon).IsValid()) {
-            mStateMgr1.changeState(StateID_CreateFile);
+            mStateMgr.changeState(StateID_CreateFile);
         }
     }
 }
@@ -744,11 +749,11 @@ void dScBoot_c::executeState_CreateFile() {
     if (dSaveMng_c::m_instance->isNandBusy()) {
         return;
     }
-    if (dNandThread_c::m_instance->m_78 == 0) {
-        m_8c = 1;
+    if (dNandThread_c::m_instance->mError == 0) {
+        mNewSaveFileCreated = true;
     }
     dScene_c::m_isAutoFadeIn = false;
-    mStateMgr1.changeState(StateID_GoToErrorFadeIn);
+    mStateMgr.changeState(StateID_GoToErrorFadeIn);
 }
 
 void dScBoot_c::finalizeState_CreateFile() {}
@@ -761,13 +766,13 @@ void dScBoot_c::executeState_Load() {
     if (dSaveMng_c::m_instance->isNandBusy()) {
         return;
     }
-    if (dNandThread_c::m_instance->m_78 != 0) {
-        mStateMgr1.changeState(StateID_GoToErrorFadeOut);
+    if (dNandThread_c::m_instance->mError != 0) {
+        mStateMgr.changeState(StateID_GoToErrorFadeOut);
         return;
     }
     dHbm::Manage_c::GetInstance()->mFlags &= ~0x40;
     dReset::Manage_c::GetInstance()->ActiveSaveWindow(false);
-    mStateMgr1.changeState(StateID_ProcEnd);
+    mStateMgr.changeState(StateID_ProcEnd);
 }
 
 void dScBoot_c::finalizeState_Load() {}
@@ -787,7 +792,7 @@ void dScBoot_c::initializeState_NewSaveFileDisp() {
 
 void dScBoot_c::executeState_NewSaveFileDisp() {
     if (!mpYesNoWindow->mIsAnimating) {
-        mStateMgr1.changeState(StateID_ButtonInputWait);
+        mStateMgr.changeState(StateID_ButtonInputWait);
     }
 }
 
@@ -796,13 +801,13 @@ void dScBoot_c::finalizeState_NewSaveFileDisp() {
 }
 
 void dScBoot_c::initializeState_ButtonInputWait() {
-    m_91 = true;
+    mSaveDataCreatedMessageShown = true;
 }
 
 void dScBoot_c::executeState_ButtonInputWait() {
     if (mPad::g_currentCore->downTrigger(0b00000100100000000) || dInfo_c::mGameFlag & 0x80000) {
         dReset::Manage_c::GetInstance()->ActiveSaveWindow(true);
-        mStateMgr1.changeState(StateID_WindowExitWait);
+        mStateMgr.changeState(StateID_WindowExitWait);
     }
 }
 
@@ -816,8 +821,8 @@ void dScBoot_c::executeState_WindowExitWait() {
     if (!mpYesNoWindow->mIsAnimating) {
         dHbm::Manage_c::GetInstance()->mFlags &= ~0x40;
         dReset::Manage_c::GetInstance()->ActiveSaveWindow(false);
-        m_8c = false;
-        mStateMgr1.changeState(StateID_ProcEnd);
+        mNewSaveFileCreated = false;
+        mStateMgr.changeState(StateID_ProcEnd);
     }
 }
 
@@ -834,7 +839,7 @@ void dScBoot_c::executeState_GoToErrorFadeOut() {
     if (mFader_c::isStatus(mFaderBase_c::OPAQUE)) {
         mpWiiStrapScreen->m_209 = false;
         mpControllerInformation->mVisible = false;
-        mStateMgr1.changeState(StateID_GoToErrorFadeIn);
+        mStateMgr.changeState(StateID_GoToErrorFadeIn);
     }
 }
 
@@ -847,13 +852,13 @@ void dScBoot_c::initializeState_GoToErrorFadeIn() {
 
 void dScBoot_c::executeState_GoToErrorFadeIn() {
     if (mFader_c::isStatus(mFaderBase_c::HIDDEN)) {
-        if (m_8c) {
+        if (mNewSaveFileCreated) {
             dScene_c::m_isAutoFadeIn = true;
-            mStateMgr1.changeState(StateID_NewSaveFileDisp);
+            mStateMgr.changeState(StateID_NewSaveFileDisp);
         } else {
             dScene_c::m_isAutoFadeIn = true;
             dReset::Manage_c::GetInstance()->ActiveSaveWindow(false);
-            mStateMgr1.changeState(StateID_ErrorWindowOnStageWait);
+            mStateMgr.changeState(StateID_ErrorWindowOnStageWait);
         }
     }
 }
@@ -863,20 +868,20 @@ void dScBoot_c::finalizeState_GoToErrorFadeIn() {
 }
 
 void dScBoot_c::initializeState_ErrorWindowOnStageWait() {
-    dWarningManager_c::m_instance->set_b50(dNandThread_c::m_instance->m_78);
+    dWarningManager_c::m_instance->setError(dNandThread_c::m_instance->mError);
 }
 
 void dScBoot_c::executeState_ErrorWindowOnStageWait() {
     dWarningManager_c *warningMgr = dWarningManager_c::m_instance;
     dHbm::Manage_c::GetInstance()->mFlags &= ~0x40;
-    if (warningMgr->m_b50 == 6) {
+    if (warningMgr->mErrorID == 6) {
         if (!warningMgr->m_b09) {
             dHbm::Manage_c::GetInstance()->mFlags &= ~0x40;
-            mStateMgr1.changeState(StateID_NandCommandEndWait);
+            mStateMgr.changeState(StateID_NandCommandEndWait);
         }
     } else if (!dWarningManager_c::isError()) {
         dHbm::Manage_c::GetInstance()->mFlags &= ~0x40;
-        mStateMgr1.changeState(StateID_ErrorInfinityDisp);
+        mStateMgr.changeState(StateID_ErrorInfinityDisp);
     }
 }
 
