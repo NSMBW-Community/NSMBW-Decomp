@@ -12,6 +12,8 @@ namespace dSys_c {
 }
 
 namespace dSystem {
+    sPhase_c::METHOD_RESULT_e createFontManagerPhase(void *);
+    sPhase_c::METHOD_RESULT_e createMessageManagerPhase(void *);
     sPhase_c::METHOD_RESULT_e createEffectManagerPhase1(void *);
     sPhase_c::METHOD_RESULT_e createEffectManagerPhase2(void *);
     void fixArena();

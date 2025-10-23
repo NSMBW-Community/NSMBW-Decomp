@@ -5,6 +5,8 @@
 namespace dHbm {
     class Manage_c {
     public:
+        bool Load();
+
         u8 mPad[0x1d8];
         u32 mFlags;
 

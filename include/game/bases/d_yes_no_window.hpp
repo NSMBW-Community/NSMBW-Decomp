@@ -139,19 +139,16 @@ private:
     int mCursorPos; ///< @brief The current cursor position.
     int mPrevCursorPos; ///< @brief The previous cursor position.
 
+public:
     /// @brief The type of the window.
     /// @details This determines the text and the layout of the window.
     WINDOW_TYPE_e mType;
 
-public:
     /// @brief The number of star coins required to unlock a hint movie.
     /// @details This is only to be used with the WATCH_UNLOCKED_HINT_MOVIE type.
     int mStarCoinsRequired;
 
-private:
     bool mHasLoadedLayout; ///< @brief Whether the layout has been loaded.
-
-public:
     bool mIsActive; ///< @brief Whether the window is currently open.
     bool mHitButton; ///< @brief Whether a button has been pressed.
     bool mIsAnimating; ///< @brief Whether an animation is currently playing.

@@ -18,6 +18,6 @@ public:
 };
 
 namespace dDyl {
-    int LinkASync(fProfile::PROFILE_NAME_e);
-    bool Unlink(fProfile::PROFILE_NAME_e);
+    int LinkASync(ProfileName);
+    bool Unlink(ProfileName);
 };

@@ -18,6 +18,13 @@ public:
     virtual int doDelete();
     virtual void deleteReady();
 
+    /// @brief Deadstripped dummy function to force weak function order
+    void dummyStuff() {
+        mStateMgr1.initializeState();
+        mStateMgr1.finalizeState();
+        mStateMgr1.getOldStateID();
+    }
+
 private:
     STATE_FUNC_DECLARE(dScBoot_c, ResetWait);
     STATE_FUNC_DECLARE(dScBoot_c, ResetFadeOut);
@@ -52,14 +59,18 @@ private:
     }
 
     u8 mPad1[2];
+public:
     dWiiStrapScreen_c *mpWiiStrapScreen;
     dYesNoWindow_c *mpYesNoWindow;
     dSelectCursor_c *mpSelectCursor;
     dControllerInformation_c *mpControllerInformation;
 
+private:
     bool m_8c;
     bool m_8d;
+public:
     bool m_8e;
+private:
     bool mSkipFirstPhase;
 
     bool m_90;

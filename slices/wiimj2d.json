@@ -325,10 +325,10 @@
         },
         {
             "source": "dol/bases/d_s_boot.cpp",
-            "nonMatching": true,
             "memoryRanges": {
                 ".text": "0x1552f0-0x158af0",
                 ".ctors": "0x1fc-0x200",
+                ".rodata": "0x7d50-0x7d60",
                 ".data": "0x29d38-0x2a6c0",
                 ".bss": "0x25c70-0x26378",
                 ".sdata": "0x1d68-0x1d80",

@@ -36,8 +36,10 @@ namespace dReset {
         void PostDeleteScene();
         void BootComplete();
         void PermitSoftReset(bool);
-        bool IsFaderBlank();
+        bool IsFaderBlank() const;
         void ActiveSaveWindow(bool);
+
+        bool isSafetyWait() const { return mModeInit == SAFETY_WAIT || mModeProc == SAFETY_WAIT; }
 
         EGG::Heap *mpHeap;
         EGG::ColorFader *mpColorFader;
