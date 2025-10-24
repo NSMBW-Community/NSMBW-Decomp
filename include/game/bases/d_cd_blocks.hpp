@@ -70,9 +70,6 @@ struct sBlock8Data {
 struct sRangePosSize {
     u16 mX, mY;
     u16 mWidth, mHeight;
-
-    int getRight() const { return mX + mWidth / 2; }
-    int getTop() const { return mY + mHeight / 2; }
 };
 
 struct sRangeData : sRangePosSize {
@@ -102,12 +99,15 @@ struct sScrollAreaData {
 /// @unofficial
 struct sRailInfoData {
     u8 mID;
-    u8 m_01;
-    u16 mNodeIdx;
-    u16 m_04, m_06;
+    u16 mNodeIdx, mCount;
+    u16 mFlags;
 };
 
 /// @unofficial
 struct sRailNodeData {
-    short m_00, m_02, m_04, m_06, m_08, m_0a, m_0c, m_0e;
+    short mX, mY;
+    float mSpeed;
+    float mAccel;
+    short mDelay;
+    u16 mFlags;
 };
