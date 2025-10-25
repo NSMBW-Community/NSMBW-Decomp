@@ -6,9 +6,11 @@
 
 class dBgParameter_c {
 public:
-    u8 mPad[0x38];
+    u8 mPad1[0x38];
     mVec2_c mPos;
     mVec2_c mSize;
+    u8 mPad2[0x38];
+    u8 m_80, m_81;
 
     const mVec2_c &pos() const { return mPos; }
     const mVec2_c &size() const { return mSize; }
