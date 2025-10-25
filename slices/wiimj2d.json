@@ -177,7 +177,7 @@
             }
         },
         {
-            "source": "dol/bases/d_actor_manage.cpp",
+            "source": "dol/bases/d_actor_manager.cpp",
             "memoryRanges": {
                 ".text": "0x618c0-0x628a0",
                 ".rodata": "0x16a8-0x16b8",

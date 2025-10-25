@@ -62,7 +62,7 @@ struct sActorCreateData {
     u16 mX, mY;
     u8 mEventNums[2];
     u32 mParam;
-    u8 m_0c;
+    u8 mAreaNo;
     u8 mLayer;
 };
 

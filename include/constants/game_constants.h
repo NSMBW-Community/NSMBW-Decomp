@@ -15,6 +15,10 @@
 
 #define HINT_MOVIE_COUNT 70 ///< The total hint movie count.
 
+#define MAX_ACTOR_COUNT 1000 ///< The maximum number of actors that can exist simultaneously.
+
+#define MAX_AREAS 64 ///< The maximum number of areas per course file.
+
 #define MAX_LIVES 99 ///< The maximum life count.
 
 #define MAX_STOCK_ITEM 99 ///< The maximum inventory amount per item.
@@ -34,6 +38,8 @@
 #define WM_ENEMY_PATH_MAX_POINT_COUNT 64 ///< The maximum number of keypoints for world map enemy paths.
 
 #define WM_PATH_MAX_POINT_COUNT 32 ///< The maximum number of keypoints for generic world map paths.
+
+#define Z_POS_COUNT 30 ///< The number of Z positions inside a layer.
 
 enum DIRECTION_e {
     DIR_UP,

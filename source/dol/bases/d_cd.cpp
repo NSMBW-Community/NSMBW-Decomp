@@ -39,28 +39,29 @@ void dCdFile_c::loadCourseData(int fileNo) {
             mBlockElementCounts[i] = 0;
         }
     }
-    for (int i = 0; i < 64; i++) {
-        mActorCreatesByGroup[i] = 0;
-        mActorGroupCounts[i] = 0;
-        mActorOffsets[i] = 0;
+    for (int i = 0; i < MAX_AREAS; i++) {
+        mActorCreatesByArea[i] = 0;
+        mActorCreateCountByArea[i] = 0;
+        mActorCreateIdxForArea[i] = 0;
     }
     u32 count = mActorCreateCount;
     if (count != 0) {
+        // This assumes that the actor creates are sorted by area already.
         sActorCreateData *currCreate = mpActorCreates;
         for (int i = 0; i < count; i++) {
-            u8 n = currCreate->m_0c;
-            if (n < 64) {
-                mActorGroupCounts[n]++;
+            u8 n = currCreate->mAreaNo;
+            if (n < MAX_AREAS) {
+                mActorCreateCountByArea[n]++;
             }
             currCreate++;
         }
         int sum = 0;
         currCreate = mpActorCreates;
-        for (int i = 0; i < 64; i++) {
-            mActorCreatesByGroup[i] = currCreate;
-            currCreate += mActorGroupCounts[i];
-            mActorOffsets[i] = sum;
-            sum += mActorGroupCounts[i];
+        for (int i = 0; i < MAX_AREAS; i++) {
+            mActorCreatesByArea[i] = currCreate;
+            currCreate += mActorCreateCountByArea[i];
+            mActorCreateIdxForArea[i] = sum;
+            sum += mActorCreateCountByArea[i];
         }
     }
 }

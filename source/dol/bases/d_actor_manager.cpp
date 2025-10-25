@@ -1,5 +1,6 @@
 #include <cstdlib>
-#include <game/bases/d_actor_manage.hpp>
+#include <game/bases/d_actor_manager.hpp>
+#include <game/bases/d_actor_group_manager.hpp>
 #include <game/bases/d_bg.hpp>
 #include <game/bases/d_info.hpp>
 #include <game/bases/d_s_stage.hpp>
@@ -30,11 +31,11 @@ bool dActorCreateMng_c::ScroolAreaInLoopCheck(int a, int b, int c, int d, int e,
 }
 
 void dActorCreateMng_c::setMapActorCreate() {
-    for (int i = 0 ; i < 1000; i++) {
-        m_7e0[i] = 0;
-        m_10[i] = 0;
+    for (int i = 0 ; i < MAX_ACTOR_COUNT; i++) {
+        mSpawnFlags[i] = 0;
+        mDeleteNums[i] = 0;
     }
-    if (dInfo_c::mGameFlag & 1) {
+    if (dInfo_c::mGameFlag & dInfo_c::GAME_FLAG_0) {
         return;
     }
     mPosX = 0;
@@ -51,8 +52,8 @@ void dActorCreateMng_c::setMapActorCreate_next() {
     if (m_bca) {
         return;
     }
-    for (int i = 0 ; i < 1000; i++) {
-        m_7e0[i] &= ~1;
+    for (int i = 0; i < MAX_ACTOR_COUNT; i++) {
+        mSpawnFlags[i] &= ~dActor_c::ACTOR_SPAWNED;
     }
     mPosX = 0;
     mPosY = 0;
@@ -63,17 +64,24 @@ void dActorCreateMng_c::setMapActorCreate_next() {
 
 void dActorCreateMng_c::MapActorInital_set() {
     dCdFile_c *file = dCd_c::m_instance->getFileP(dScStage_c::m_instance->mCurrFile);
-    create(file->mpActorCreates, m_10, m_7e0, file->mActorCreateCount, false);
+    create(file->mpActorCreates, mDeleteNums, mSpawnFlags, file->mActorCreateCount, false);
 }
 
 void dActorCreateMng_c::MapActorInital_next() {
     dCdFile_c *file = dCd_c::m_instance->getFileP(dScStage_c::m_instance->mCurrFile);
     u8 areaNo = dScStage_c::m_instance->getCurrArea();
-    create(file->mActorCreatesByGroup[areaNo], m_10 + file->mActorOffsets[areaNo], m_7e0 + file->mActorOffsets[areaNo], file->mActorGroupCounts[areaNo], true);
+    create(
+        file->mActorCreatesByArea[areaNo],
+        &mDeleteNums[file->mActorCreateIdxForArea[areaNo]],
+        &mSpawnFlags[file->mActorCreateIdxForArea[areaNo]],
+        file->mActorCreateCountByArea[areaNo],
+        true
+    );
 }
 
-bool dActorCreateMng_c::someCheck(sActorCreateData *data) {
-    static const ProfileName c_skip_profiles[] = {
+bool dActorCreateMng_c::GlobalActorCheck(sActorCreateData *data) {
+    /// @unofficial
+    static const ProfileName sc_globalProfiles[] = {
         fProfile::EN_PUKUCOIN,
         fProfile::EN_KARON,
         fProfile::EN_BIGKARON,
@@ -82,27 +90,27 @@ bool dActorCreateMng_c::someCheck(sActorCreateData *data) {
         0xffff
     };
     u16 curr = 0;
-    while (c_skip_profiles[curr] != 0xffff) {
-        if (data->mActorCreateID == c_skip_profiles[curr]) {
+    while (sc_globalProfiles[curr] != 0xffff) {
+        if (data->mActorCreateID == sc_globalProfiles[curr]) {
             break;
         }
         curr++;
     }
-    if (c_skip_profiles[curr] != 0xffff) {
+    if (sc_globalProfiles[curr] != 0xffff) {
         return true;
     }
     return false;
 }
 
-void dActorCreateMng_c::operate(sActorCreateData *data, u8 area, u32 idx) {
-    dActorGroupIdMng_c::m_instance->operate(data, data->mParam >> 24, area, idx);
+void dActorCreateMng_c::processGroupId(sActorCreateData *data, u8 file, u32 idx) {
+    dActorGroupIdMng_c::m_instance->process(data, data->mParam >> 24, file, idx);
 }
 
 bool dActorCreateMng_c::GroupIdCheck(ulong param) {
     return (param >> 24) == 0;
 }
 
-void dActorCreateMng_c::create(sActorCreateData *data, u16 *data1, u8 *data2, int count, bool b) {
+void dActorCreateMng_c::create(sActorCreateData *data, u16 *deleteNum, u8 *spawnFlags, int count, bool b) {
     if (count == 0 || data == nullptr) {
         return;
     }
@@ -110,23 +118,17 @@ void dActorCreateMng_c::create(sActorCreateData *data, u16 *data1, u8 *data2, in
     sActorCreateInfo *curr;
     dScStage_c *stage = dScStage_c::m_instance;
     dBgParameter_c *bgParam = dBgParameter_c::ms_Instance_p;
-    int top;
-    int left;
-    int right;
-    int bottom;
-    int trueHeight;
-    int trueWidth;
-    int centerY;
-    int centerX;
-    int tmpa, tmpb, ha, hb;
+
+    int top, left, right, bottom;
+    int boundHeight, boundWidth, boundCenterY, boundCenterX;
+    int actorCenterX, actorCenterY, actorWidth, actorHeight;
     u32 i;
-    bool shouldCreate2;
+    bool spawnIfInBounds;
     dCdFile_c *file;
-    bool tmp;
-    bool shouldCreate;
+    bool canSpawnWithAreaCheck;
+    bool spawnActor;
     u8 areaNo;
-    int boundX;
-    int boundY;
+    int boundX, boundY;
     float px, py, sx, sy;
 
     px = bgParam->pos().x;
@@ -143,79 +145,79 @@ void dActorCreateMng_c::create(sActorCreateData *data, u16 *data1, u8 *data2, in
     left = boundX - 48;
     right = boundX + (int)sx + 64;
 
-    trueHeight = (top - bottom) >> 1;
-    trueWidth = (right - left) >> 1;
+    boundHeight = (top - bottom) >> 1;
+    boundWidth = (right - left) >> 1;
 
-    centerY = bottom + trueHeight;
-    centerX = left + trueWidth;
+    boundCenterY = bottom + boundHeight;
+    boundCenterX = left + boundWidth;
 
     i = 0;
     file = dCd_c::m_instance->getFileP(stage->mCurrFile);
     areaNo = dScStage_c::m_instance->getCurrArea();
 
     while (i != count) {
-        if ((*data2 & 1) == 0) {
+        if ((*spawnFlags & dActor_c::ACTOR_SPAWNED) == 0) {
             curr = dActorCreate::getActorCreateInfo(data->mActorCreateID);
-            shouldCreate = false;
-            shouldCreate2 = false;
+            spawnActor = false;
+            spawnIfInBounds = false;
             if (!b) {
-                tmp = false;
-                if ((curr->m_24 & 0x10) != 0) {
+                canSpawnWithAreaCheck = false;
+                if (curr->mFlags & ACTOR_CREATE_GROUPED) {
                     if (!GroupIdCheck(data->mParam)) {
-                        operate(data, stage->mCurrFile, i);
-                        tmp = true;
+                        processGroupId(data, stage->mCurrFile, i);
+                        canSpawnWithAreaCheck = true;
                     }
-                } else if (someCheck(data)) {
-                    shouldCreate = true;
+                } else if (GlobalActorCheck(data)) {
+                    spawnActor = true;
                 }
-                if (!tmp) {
-                    sRangePosSize bound2;
-                    bound2.mX = data->mX;
-                    bound2.mY = data->mY;
-                    bound2.mWidth = curr->m_14 * 2;
-                    bound2.mHeight = curr->m_18 * 2;
-                    if (file->getAreaNo(&bound2) == areaNo) {
-                        shouldCreate2 = true;
+                if (!canSpawnWithAreaCheck) {
+                    sRangePosSize bound;
+                    bound.mX = data->mX;
+                    bound.mY = data->mY;
+                    bound.mWidth = curr->mSpawnRangeWidth * 2;
+                    bound.mHeight = curr->mSpawnRangeHeight * 2;
+                    if (file->getAreaNo(&bound) == areaNo) {
+                        spawnIfInBounds = true;
                     }
                 }
             } else {
-                if ((curr->m_24 & 0x10) != 0) {
+                if (curr->mFlags & ACTOR_CREATE_GROUPED) {
                     if (GroupIdCheck(data->mParam)) {
-                        shouldCreate2 = true;
+                        spawnIfInBounds = true;
                     }
                 } else {
-                    shouldCreate2 = true;
+                    spawnIfInBounds = true;
                 }
             }
-            if (!shouldCreate && shouldCreate2) {
-                if (curr->m_24 & 0x2) {
-                    shouldCreate = true;
+            if (!spawnActor && spawnIfInBounds) {
+                if (curr->mFlags & ACTOR_CREATE_ALWAYS_SPAWN) {
+                    spawnActor = true;
                 } else {
-                    ha = curr->m_14 + ((curr->m_20 + curr->m_22) >> 1);
-                    hb = curr->m_18 + ((curr->m_1c + curr->m_1e) >> 1);
-                    tmpa = data->mX + curr->m_0c;
-                    tmpb = data->mY - curr->m_10;
+                    actorWidth = curr->mSpawnRangeWidth + ((curr->mSpawnMarginLeft + curr->mSpawnMarginRight) >> 1);
+                    actorHeight = curr->mSpawnRangeHeight + ((curr->mSpawnMarginTop + curr->mSpawnMarginBottom) >> 1);
+                    actorCenterX = data->mX + curr->mSpawnRangeOffsetX;
+                    actorCenterY = data->mY - curr->mSpawnRangeOffsetY;
                     if (
-                        abs(centerX - tmpa) <= abs(trueWidth + ha) &&
-                        abs(centerY - tmpb) <= abs(trueHeight + hb)
+                        abs(boundCenterX - actorCenterX) <= abs(boundWidth + actorWidth) &&
+                        abs(boundCenterY - actorCenterY) <= abs(boundHeight + actorHeight)
                     ) {
-                        shouldCreate = true;
+                        spawnActor = true;
                     }
                 }
             }
-            if (shouldCreate) {
-                construct(data, curr, data2, data1, areaNo);
+            if (spawnActor) {
+                construct(data, curr, spawnFlags, deleteNum, areaNo);
             }
         }
         data++;
-        data2++;
-        data1++;
+        spawnFlags++;
+        deleteNum++;
         i++;
     }
 }
 
 void dActorCreateMng_c::MapActorScroolCreateCheck() {
-    if (dInfo_c::mGameFlag & 1) {
+    if (dInfo_c::mGameFlag & dInfo_c::GAME_FLAG_0) {
         return;
     }
     if (m_bcb == 1) {
@@ -224,9 +226,8 @@ void dActorCreateMng_c::MapActorScroolCreateCheck() {
 
     dBgParameter_c *bgParam = dBgParameter_c::ms_Instance_p;
     int boundX, boundY;
-    int m_18;
-    int m_1c;
-    int actualLeft, actualRight, actualTop, actualBottom;
+    int m_18, m_1c;
+    int tileLeft, tileRight, tileTop, tileBottom;
     int endTileX, endTileY;
     u8 m81;
     int m80;
@@ -241,62 +242,62 @@ void dActorCreateMng_c::MapActorScroolCreateCheck() {
     sy = bgParam->size().y;
 
     boundX = px;
-    boundY = -(int)py;
+    boundY = -(int) py;
 
-    actualLeft = (boundX - 32) >> 4;
-    actualRight = (boundX + (int) sx + 48) >> 4;
-    actualTop = (boundY - 16) >> 4;
-    actualBottom = (boundY + (int) sy + 32) >> 4;
+    tileLeft = (boundX - 32) >> 4;
+    tileRight = (boundX + (int) sx + 48) >> 4;
+    tileTop = (boundY - 16) >> 4;
+    tileBottom = (boundY + (int) sy + 32) >> 4;
 
     sSomeStruct s;
-    if (dBg_c::m_bg_p->getM_8ffa4() != dBg_c::m_bg_p->getDispScale()) {
-        s.m_00 = actualLeft;
-        s.m_04 = actualBottom;
-        s.mTileLeft = actualLeft;
-        s.mTileRight = actualRight;
-        s.mTileTop = actualTop;
-        s.mTileBottom = actualBottom;
+    if (dBg_c::m_bg_p->get_8ffa4() != dBg_c::m_bg_p->get_8ffac()) {
+        s.m_00 = tileLeft;
+        s.m_04 = tileBottom;
+        s.mTileLeft = tileLeft;
+        s.mTileRight = tileRight;
+        s.mTileTop = tileTop;
+        s.mTileBottom = tileBottom;
         s.m_18 = 0;
         s.m_1c = -1;
-        dealWithSomeStruct(&s, false);
-        s.m_00 = actualRight;
-        s.m_04 = actualBottom;
-        s.mTileLeft = actualLeft;
-        s.mTileRight = actualRight;
-        s.mTileTop = actualTop;
-        s.mTileBottom = actualBottom;
+        MapActorScrollCreate(&s, false);
+        s.m_00 = tileRight;
+        s.m_04 = tileBottom;
+        s.mTileLeft = tileLeft;
+        s.mTileRight = tileRight;
+        s.mTileTop = tileTop;
+        s.mTileBottom = tileBottom;
         s.m_18 = -1;
         s.m_1c = -1;
-        dealWithSomeStruct(&s, false);
-        endTileX = actualRight;
-        endTileY = actualTop;
+        MapActorScrollCreate(&s, false);
+        endTileX = tileRight;
+        endTileY = tileTop;
         mPosX = boundX;
         mPosY = boundY;
-        s.m_00 = actualRight;
-        s.m_04 = actualTop;
+        s.m_00 = tileRight;
+        s.m_04 = tileTop;
         s.m_18 = -1;
         s.m_1c = 0;
-        dealWithSomeStruct(&s, false);
+        MapActorScrollCreate(&s, false);
     } else {
         m80 = bgParam->m_80;
         m81 = bgParam->m_81;
         if (m80 != 0) {
             if (m80 == 2) {
-                endTileX = actualRight;
+                endTileX = tileRight;
                 m_18 = -1;
             } else {
-                endTileX = actualLeft;
+                endTileX = tileLeft;
             }
         } else {
-            endTileX = mTileY;
+            endTileX = mTileY; // [Bug? Should be mTileX]
             m_18 = 1;
         }
         if (m81 != 0) {
             if (m81 == 1) {
-                endTileY = actualBottom;
+                endTileY = tileBottom;
                 m_1c = -1;
             } else {
-                endTileY = actualTop;
+                endTileY = tileTop;
             }
         } else {
             endTileY = mTileY;
@@ -305,13 +306,13 @@ void dActorCreateMng_c::MapActorScroolCreateCheck() {
         if (mTileX != endTileX || mTileY != endTileY) {
             s.m_00 = endTileX;
             s.m_04 = endTileY;
-            s.mTileLeft = actualLeft;
-            s.mTileRight = actualRight;
-            s.mTileTop = actualTop;
-            s.mTileBottom = actualBottom;
+            s.mTileLeft = tileLeft;
+            s.mTileRight = tileRight;
+            s.mTileTop = tileTop;
+            s.mTileBottom = tileBottom;
             s.m_18 = m_18;
             s.m_1c = m_1c;
-            dealWithSomeStruct(&s, true);
+            MapActorScrollCreate(&s, true);
         }
     }
     mPosX = boundX;
@@ -320,25 +321,25 @@ void dActorCreateMng_c::MapActorScroolCreateCheck() {
     mTileY = endTileY;
 }
 
-void dActorCreateMng_c::dealWithSomeStruct(sSomeStruct *s, int b) {
+void dActorCreateMng_c::MapActorScrollCreate(sSomeStruct *s, int b) {
     dScStage_c *stage = dScStage_c::m_instance;
     u8 areaNo = stage->mCurrArea;
     dCdFile_c *file = dCd_c::m_instance->getFileP(stage->mCurrFile);
 
-    int n = file->mActorGroupCounts[areaNo];
+    int n = file->mActorCreateCountByArea[areaNo];
     if (n == 0) {
         return;
     }
     sActorCreateInfo *curr;
-    sActorCreateData *x = file->mActorCreatesByGroup[areaNo];
-    if (x == nullptr) {
+    sActorCreateData *data = file->mActorCreatesByArea[areaNo];
+    if (data == nullptr) {
         return;
     }
-    u16 *currD1 = m_10 + file->mActorOffsets[areaNo];
-    u8 *currD2 = m_7e0 + file->mActorOffsets[areaNo];
-    bool shouldCreate;
-    int tmpa, tmpb;
-    int iVar6, tileR, tileL;
+    u16 *deleteNum = &mDeleteNums[file->mActorCreateIdxForArea[areaNo]];
+    u8 *spawnFlags = &mSpawnFlags[file->mActorCreateIdxForArea[areaNo]];
+    bool spawnActor;
+    int centerX, centerY;
+    int iVar6, tileL, tileR;
     int iVar17, tileT, tileB;
     int c0 = s->m_00;
     int c4 = s->m_04;
@@ -349,70 +350,70 @@ void dActorCreateMng_c::dealWithSomeStruct(sSomeStruct *s, int b) {
     int c18 = s->m_18;
     int c1c = s->m_1c;
     for (u32 i = 0; i != n; i++) {
-        if ((*currD2 & 1) == 0) {
-            curr = dActorCreate::getActorCreateInfo(x->mActorCreateID);
-            shouldCreate = false;
-            tmpa = x->mX + curr->m_0c;
-            tmpb = x->mY - curr->m_10;
-            tileR = (tmpa - curr->m_14 - curr->m_20) >> 4;
-            tileL = (tmpa + curr->m_14 + curr->m_22) >> 4;
-            tileT = (tmpb - curr->m_18 - curr->m_1c) >> 4;
-            tileB = (tmpb + curr->m_18 + curr->m_1e) >> 4;
-            iVar6 = tileL;
+        if ((*spawnFlags & dActor_c::ACTOR_SPAWNED) == 0) {
+            curr = dActorCreate::getActorCreateInfo(data->mActorCreateID);
+            spawnActor = false;
+            centerX = data->mX + curr->mSpawnRangeOffsetX;
+            centerY = data->mY - curr->mSpawnRangeOffsetY;
+            tileL = (centerX - curr->mSpawnRangeWidth - curr->mSpawnMarginLeft) >> 4;
+            tileR = (centerX + curr->mSpawnRangeWidth + curr->mSpawnMarginRight) >> 4;
+            tileT = (centerY - curr->mSpawnRangeHeight - curr->mSpawnMarginTop) >> 4;
+            tileB = (centerY + curr->mSpawnRangeHeight + curr->mSpawnMarginBottom) >> 4;
+            iVar6 = tileR;
             if (c18 != 0) {
-                iVar6 = tileR;
+                iVar6 = tileL;
             }
             iVar17 = tileB;
             if (c1c != 0) {
                 iVar17 = tileT;
             }
-            bool skipCheck = false;
-            if (curr->m_24 & 0x10) {
-                if (!GroupIdCheck(x->mParam)) {
-                    skipCheck = true;
+            bool noSpawn = false;
+            if (curr->mFlags & ACTOR_CREATE_GROUPED) {
+                if (!GroupIdCheck(data->mParam)) {
+                    noSpawn = true;
                 }
             }
-            if (!skipCheck) {
+            if (!noSpawn) {
                 if (b) {
                     if (iVar6 == c0) {
                         if (c18 != 1) {
                             if (c18 < 0) {
-                                shouldCreate = ScroolAreaInCheck(ctr, tileR, ctt, ctb, tileT, tileB);
+                                spawnActor = ScroolAreaInCheck(ctr, tileL, ctt, ctb, tileT, tileB);
                             } else {
-                                shouldCreate = ScroolAreaInCheck(ctl, tileL, ctt, ctb, tileT, tileB);
+                                spawnActor = ScroolAreaInCheck(ctl, tileR, ctt, ctb, tileT, tileB);
                             }
                         }
                     } else if (iVar17 == c4) {
                         if (c1c != 1) {
                             if (c1c < 0) {
-                                shouldCreate = ScroolAreaInLoopCheck(ctb, tileT, ctl, ctr, tileR, tileL);
+                                spawnActor = ScroolAreaInLoopCheck(ctb, tileT, ctl, ctr, tileL, tileR);
                             } else {
-                                shouldCreate = ScroolAreaInLoopCheck(ctt, tileB, ctl, ctr, tileR, tileL);
+                                spawnActor = ScroolAreaInLoopCheck(ctt, tileB, ctl, ctr, tileL, tileR);
                             }
                         }
                     }
                 } else {
                     if (ScroolAreaInCheck(c0, iVar6, ctt, ctb, tileT, tileB)) {
-                        shouldCreate = true;
+                        spawnActor = true;
                     }
-                    if (ScroolAreaInCheck(c4, iVar17, ctl, ctr, tileR, tileL)) {
-                        shouldCreate = true;
+                    if (ScroolAreaInCheck(c4, iVar17, ctl, ctr, tileL, tileR)) {
+                        spawnActor = true;
                     }
                 }
             }
-            if (shouldCreate) {
-                construct(x, curr, currD2, currD1, areaNo);
+            if (spawnActor) {
+                construct(data, curr, spawnFlags, deleteNum, areaNo);
             }
         }
-        x++;
-        currD1++;
-        currD2++;
+        data++;
+        deleteNum++;
+        spawnFlags++;
     }
 }
 
 void dActorCreateMng_c::incZposCount() {
     mZPosCount++;
-    if (mZPosCount >= 30) {
+    if (mZPosCount >= Z_POS_COUNT) {
         mZPosCount = 0;
     }
 }
@@ -425,7 +426,7 @@ float dActorCreateMng_c::addZposCount() {
 
 void dActorCreateMng_c::incZposCount_layer2() {
     mZPosCountLayer2++;
-    if (mZPosCountLayer2 >= 30) {
+    if (mZPosCountLayer2 >= Z_POS_COUNT) {
         mZPosCountLayer2 = 0;
     }
 }
@@ -438,7 +439,7 @@ float dActorCreateMng_c::addZposCount_layer2() {
 
 void dActorCreateMng_c::incMapObjZposCount() {
     mMapObjZPosCount++;
-    if (mMapObjZPosCount >= 30) {
+    if (mMapObjZPosCount >= Z_POS_COUNT) {
         mMapObjZPosCount = 0;
     }
 }
@@ -451,7 +452,7 @@ float dActorCreateMng_c::addMapObjZposCount() {
 
 void dActorCreateMng_c::incMapObjZposCount_layer2() {
     mMapObjZPosCountLayer2++;
-    if (mMapObjZPosCountLayer2 >= 30) {
+    if (mMapObjZPosCountLayer2 >= Z_POS_COUNT) {
         mMapObjZPosCountLayer2 = 0;
     }
 }
@@ -462,14 +463,14 @@ float dActorCreateMng_c::addMapObjZposCount_layer2() {
     return res;
 }
 
-dActor_c *dActorCreateMng_c::construct(sActorCreateData *data, sActorCreateInfo *info, u8 *data2, u16 *data1, u8 area) {
+dActor_c *dActorCreateMng_c::construct(sActorCreateData *data, sActorCreateInfo *info, u8 *spawnFlags, u16 *deleteNum, u8 areaNo) {
     sActorCreateInfo *ci = dActorCreate::getActorCreateInfo(data->mActorCreateID);
     if (ci->mProfileName == fProfile::DUMMY_ACTOR) {
         return nullptr;
     }
 
     float zPos;
-    if ((info->m_24 & 8) != 0) {
+    if (info->mFlags & ACTOR_CREATE_MAPOBJ) {
         if (data->mLayer != 0) {
             zPos = addMapObjZposCount_layer2();
         } else {
@@ -482,16 +483,15 @@ dActor_c *dActorCreateMng_c::construct(sActorCreateData *data, sActorCreateInfo 
             zPos = addZposCount();
         }
     }
-    mVec3_c pos(data->mX + info->m_04, -(data->mY - info->m_08), zPos);
+    mVec3_c pos(data->mX + info->mSpawnOffsetX, -(data->mY - info->mSpawnOffsetY), zPos);
 
-    dActor_c::m_read_p_keep = data2;
+    dActor_c::m_read_p_keep = spawnFlags;
     *(u16 *) dActor_c::m_flag_keep = *(u16 *) data->mEventNums; // [Works in MWCC without the casts too]
     dActor_c::m_mbgchoice_keep = data->mLayer;
-    dActor_c::m_flagbit_keep = 0;
-    u64 fb = 0;
 
     u8 b1 = dActor_c::m_flag_keep[1];
     u8 b0 = dActor_c::m_flag_keep[0];
+    dActor_c::m_flagbit_keep = 0;
     if (b1 != 0) {
         dActor_c::m_flagbit_keep = 1LL << (b1 - 1);
     }
@@ -503,23 +503,23 @@ dActor_c *dActorCreateMng_c::construct(sActorCreateData *data, sActorCreateInfo 
     dActor_c *actor = dActor_c::construct(ci->mProfileName, data->mParam, &pos, nullptr, data->mLayer);
     if (actor != nullptr) {
         if (data->mActorCreateID >= 10) {
-            actor->mAreaNo = area;
-            actor->mpSpawnFlags = data2;
-            actor->mpDeleteVal = data1;
+            actor->mAreaNo = areaNo;
+            actor->mpSpawnFlags = spawnFlags;
+            actor->mpDeleteVal = deleteNum;
             *(u16 *) actor->mEventNums = *(u16 *) dActor_c::m_flag_keep;
             actor->mEventMask = dActor_c::m_flagbit_keep;
             actor->mBlockHit = false;
-            actor->mSpriteSpawnFlags = info->m_24;
+            actor->mSpriteSpawnFlags = info->mFlags;
             // [Couldn't get this to match in a better way...]
             float areaX = actor->mVisibleAreaSize.x;
             if (!areaX) {
                 float areaY = actor->mVisibleAreaSize.y;
                 if (!areaY) {
-                    actor->mVisibleAreaSize.set(info->m_14 * 2.0f, info->m_18 * 2.0f);
+                    actor->mVisibleAreaSize.set(info->mSpawnRangeWidth * 2.0f, info->mSpawnRangeHeight * 2.0f);
                 }
             }
         }
-        *data2 |= 1;
+        *spawnFlags |= dActor_c::ACTOR_SPAWNED;
     }
     return actor;
 }

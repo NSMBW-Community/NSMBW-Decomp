@@ -1,7 +1,7 @@
 #pragma once
 #include <types.h>
 #include <constants/game_constants.h>
-#include <game/bases/d_cd_blocks.hpp>
+#include <game/bases/d_cd_data.hpp>
 #include <game/sLib/s_RangeData.hpp>
 #include <lib/egg/core/eggHeap.h>
 
@@ -80,9 +80,9 @@ public:
             int mRailNodeCount;
         };
     };
-    sActorCreateData *mActorCreatesByGroup[64];
-    u32 mActorGroupCounts[64];
-    u32 mActorOffsets[64];
+    sActorCreateData *mActorCreatesByArea[MAX_AREAS]; ///< Pointers to the first actor create for an area.
+    u32 mActorCreateCountByArea[MAX_AREAS]; ///< Number of actor creates per area.
+    u32 mActorCreateIdxForArea[MAX_AREAS]; ///< Index of the first actor create for an area.
 };
 
 /// @brief Current course data holder.
