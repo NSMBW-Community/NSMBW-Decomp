@@ -80,9 +80,9 @@ public:
             int mRailNodeCount;
         };
     };
-    u32 mArr1[64];
-    u32 mArr2[64];
-    u32 mArr3[64];
+    sActorCreateData *mActorCreatesByGroup[64];
+    u32 mActorGroupCounts[64];
+    u32 mActorOffsets[64];
 };
 
 /// @brief Current course data holder.

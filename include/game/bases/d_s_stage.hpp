@@ -15,8 +15,11 @@ public:
         LOOP_COUNT,
     };
 
-    char pad[0x119a];
+    char mPad[0x119a];
     u8 mCurrFile;
+    u8 mCurrArea;
+
+    u8 getCurrArea() const { return mCurrArea; }
 
     static float getLoopPosX(float x);
     static int m_loopType;
