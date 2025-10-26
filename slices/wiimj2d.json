@@ -324,6 +324,19 @@
             }
         },
         {
+            "source": "dol/bases/d_s_boot.cpp",
+            "memoryRanges": {
+                ".text": "0x1552f0-0x158af0",
+                ".ctors": "0x1fc-0x200",
+                ".rodata": "0x7d50-0x7d60",
+                ".data": "0x29d38-0x2a6c0",
+                ".bss": "0x25c70-0x26378",
+                ".sdata": "0x1d68-0x1d80",
+                ".sbss": "0x780-0x7a0",
+                ".sdata2": "0x2b70-0x2b78"
+            }
+        },
+        {
             "source": "dol/sLib/s_Phase.cpp",
             "memoryRanges": {
                 ".text": "0x158fc0-0x159090"

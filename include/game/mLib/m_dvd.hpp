@@ -15,6 +15,11 @@ public:
     bool mDone;
 };
 
+class mDvd_callback_c : public mDvd_command_c {
+public:
+    static mDvd_callback_c *createOrDie(void *(*callback)(void *), void *param);
+};
+
 class mDvd_mountMemArchive_c : public mDvd_command_c {
 public:
     void *getArcBinary() const;

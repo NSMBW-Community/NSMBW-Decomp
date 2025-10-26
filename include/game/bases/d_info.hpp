@@ -47,6 +47,8 @@ public:
         bool m_0c;
     };
 
+    dInfo_c();
+
     dCyuukan_c *getCyuukan() { return &mCyuukan; }
     void GetMapEnemyInfo(int, int, enemy_s &);
     void SetMapEnemyInfo(int, int, int, int);
@@ -78,6 +80,7 @@ public:
     int mCourseSelectIndexInPage;
     u8 pad8[0x712];
     bool mFukidashiActionPerformed[4][0x16];
+    u32 pad9;
 
     static dInfo_c *m_instance;
     static unsigned int mGameFlag; ///< See @p ::GAME_FLAG_e

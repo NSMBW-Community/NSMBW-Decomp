@@ -41,7 +41,7 @@ public:
 
     bool doDelete();
 
-private:
+public:
     d2d::ResAccMultLoader_c mResAccessorLoader;
 
     m2d::AnmResV2_c *mpAnimRes;

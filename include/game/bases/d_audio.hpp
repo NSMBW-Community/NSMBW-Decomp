@@ -37,6 +37,10 @@ namespace dAudio {
     void destroySceneSnd(); ///< @unofficial
     void setNextScene(ProfileName prof, unsigned long bgmIndex);
     void pauseOffGameWithReset(); ///< @unofficial
+    void boot();
+    void loadSceneSnd();
+    bool isLoadedSceneSnd();
+    void FUN_8006a6a0(bool); ///< @unofficial
 
     int getRemotePlayer(int);
     mVec2_c cvtSndObjctPos(const mVec3_c &);
