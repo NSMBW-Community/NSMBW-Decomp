@@ -606,3 +606,5 @@ calcGroup__15EffectManager_cFv=80093530
 calcGroupForWm__15EffectManager_cFv=80093a50
 sEffectManager__Q23EGG13EffectManager=0x8042B2B0
 m_instance__10dScMovie_c=8042a498
+getPlayerSetPos__9daPyMng_cFUcUc=8005ed90
+mCollectionCoin__10dScStage_c=803744b0

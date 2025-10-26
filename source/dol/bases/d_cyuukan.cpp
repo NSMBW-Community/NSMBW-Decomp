@@ -10,21 +10,27 @@ dCyuukan_c::dCyuukan_c() {
 
 void dCyuukan_c::clear() {
     mAmbushType = 0;
-    mWorldNo = 0xff;
-    mCourseNo = 0xff;
-    mFileNo = 0xff;
-    mNextGoto = 0xff;
+    mWorldNo = -1;
+    mCourseNo = -1;
+    mFileNo = -1;
+    mNextGoto = -1;
+
+    // [Yes, we set it later again... this is to fix a regswap]
+    mHitPlayer[0] = PLAYER_COUNT;
+
     mIsKinopioInChuukan = false;
     mPlayerSetPos.x = 0.0f;
     mPlayerSetPos.y = 0.0f;
     mActiveCheckpoint = -1;
+
     for (int i = 0; i < CHECKPOINT_COUNT; i++) {
         mHitPlayer[i] = PLAYER_COUNT;
     }
-    for (int i = 0; i < STAR_COIN_COUNT; i++) {
-        mCoinCollection[i].set(PLAYER_COUNT);
+    for (int i = 0; i < ARRAY_SIZE(mCoinCollection); i++) {
+        mCoinCollection[i] = PLAYER_COUNT;
     }
 }
+
 
 void dCyuukan_c::courseIN() {
     dInfo_c *info = dInfo_c::m_instance;
@@ -69,8 +75,8 @@ void dCyuukan_c::setCyuukanData(int checkpointIndex, u8 nextGoto, s8 player, ulo
     mAmbushType = ambushType & 0xFF;
     mActiveCheckpoint = checkpointIndex;
     setPos(daPyMng_c::getPlayerSetPos(stage->mCurrFile, nextGoto));
-    for (int i = 0; i < STAR_COIN_COUNT; i++) {
-        mCoinCollection[i] = *dScStage_c::getCollectionCoin(i);
+    for (int i = 0; i < ARRAY_SIZE(mCoinCollection); i++) {
+        mCoinCollection[i] = dScStage_c::mCollectionCoin[i];
     }
 }
 

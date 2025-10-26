@@ -25,6 +25,6 @@ public:
     u8 mFileNo;
     u8 mNextGoto;
     bool mIsKinopioInChuukan;
-    sCollectionCoin mCoinCollection[STAR_COIN_COUNT];
+    PLAYER_CHARACTER_e mCoinCollection[STAR_COIN_COUNT];
     PLAYER_CHARACTER_e mHitPlayer[CHECKPOINT_COUNT];
 };
