@@ -216,7 +216,6 @@
         },
         {
             "source": "dol/bases/d_cyuukan.cpp",
-            "nonMatching": true,
             "memoryRanges": {
                 ".text": "0x885f0-0x88990",
                 ".data": "0x12a90-0x12aa0",
