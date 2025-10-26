@@ -1,6 +1,7 @@
 #pragma once
 
 #include <game/bases/d_base_actor.hpp>
+#include <game/mLib/m_bound_box.hpp>
 #include <game/mLib/m_3d.hpp>
 #include <game/bases/d_cc.hpp>
 #include <game/bases/d_bc.hpp>

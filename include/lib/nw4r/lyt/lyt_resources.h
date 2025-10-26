@@ -1,4 +1,4 @@
-#ifndef NW4R_LYT_RESOURCES_H
+    #ifndef NW4R_LYT_RESOURCES_H
 #define NW4R_LYT_RESOURCES_H
 #include <nw4r/types_nw4r.h>
 
@@ -30,6 +30,40 @@ struct BinaryFileHeader {
 struct DataBlockHeader {
     char kind[4]; // at 0x0
     ulong size;     // at 0x4
+};
+
+enum ExtUserDataType {
+    TYPE_STRING,
+    TYPE_INT,
+    TYPE_FLOAT,
+};
+
+struct ExtUserData {
+    inline const char *GetString() const {
+        return detail::ConvertOffsToPtr<const char>(this, datOffs);
+    }
+
+    inline float GetFloat() const {
+        return *detail::ConvertOffsToPtr<float>(this, datOffs);
+    }
+
+    inline int GetInt() const {
+        return *detail::ConvertOffsToPtr<int>(this, datOffs);
+    }
+
+    inline const char *GetName() const {
+        return nameOffs != 0 ? detail::ConvertOffsToPtr<const char>(this, nameOffs) : nullptr;
+    }
+
+    inline ExtUserDataType GetType() const {
+        return (ExtUserDataType)type;
+    }
+
+    u32 nameOffs;   // at 0x00
+    u32 datOffs;    // at 0x04
+    u16 numEntries; // at 0x08
+    u8 type;        // at 0x0A
+    u8 padding;     // at 0x0B
 };
 
 /******************************************************************************

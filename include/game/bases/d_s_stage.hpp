@@ -13,8 +13,14 @@ public:
         LOOP_COUNT,
     };
 
-    char pad[0x119a];
+    char pad[0x1198];
+    u8 mCurrWorld;
     u8 mCurrCourse;
+    u8 mCurrFile;
+
+    u8 getWorld() { return mCurrWorld; }
+    u8 getCourse() { return mCurrCourse; }
+    u8 getFile() { return mCurrFile; }
 
     static float getLoopPosX(float x);
     static int m_loopType;
@@ -27,4 +33,8 @@ public:
 
     static changePosFunc changePos;
     static dScStage_c *m_instance;
+    static s32 m_gameMode;
+    static u32 m_miniGame;
+    static bool m_isStaffCredit;
+    static s32 mCollectionCoin[3];
 };

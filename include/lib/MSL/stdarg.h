@@ -4,6 +4,8 @@
 extern "C" {
 #endif
 
+#ifdef __CWCC__
+
 typedef enum _va_arg_type {
     arg_ARGPOINTER,
     arg_WORD,
@@ -16,7 +18,7 @@ typedef struct __va_list_struct {
     char fpr;
     char* input_arg_area;
     char* reg_save_area;
-} va_list[1];
+} va_list;
 
 void* __va_arg(va_list argp, int type);
 
@@ -24,6 +26,17 @@ void* __va_arg(va_list argp, int type);
 #define va_end(VA_LIST) ((void)VA_LIST)
 #define va_arg(VA_LIST, ARG_TYPE)                                              \
     (*(ARG_TYPE*)__va_arg(VA_LIST, _var_arg_typeof(ARG_TYPE)))
+
+#else
+
+typedef __builtin_va_list va_list;
+
+#define va_start(VA_LIST, ARG) __builtin_va_start(VA_LIST, ARG)
+#define va_end(VA_LIST) ((void)VA_LIST)
+#define va_arg(VA_LIST, ARG_TYPE)                                              \
+    (*(ARG_TYPE*)__va_arg(VA_LIST, _var_arg_typeof(ARG_TYPE)))
+
+#endif
 
 #ifdef __cplusplus
 }
