@@ -199,7 +199,11 @@
             "memoryRanges": {
                 ".text": "0xc2220-0xc33d0",
                 ".ctors": "0x11c-0x120",
-                ".rodata": "0x3338-0x33a0"
+                ".rodata": "0x3338-0x33a0",
+                ".data": "0x19098-0x190c8",
+                ".bss": "0x7de0-0x7eb8",
+                ".sdata": "0x588-0x598",
+                ".sdata2": "0x1878-0x1898"
             }
         },
         {
