@@ -7,6 +7,6 @@ class dWiiStrapScreen_c : public dBase_c {
 public:
 
     LytBase_c mLayout;
-    bool m_208;
-    bool m_209;
+    bool mHasLoadedLayout;
+    bool mVisible;
 };

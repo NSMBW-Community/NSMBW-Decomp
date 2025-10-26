@@ -7,6 +7,8 @@ class DynamicModuleControlBase {
 public:
     bool load_async();
     bool link();
+
+    u8 mPad[0x0c];
 };
 
 class dDynamicModuleControl : public DynamicModuleControlBase {
@@ -14,7 +16,7 @@ public:
     dDynamicModuleControl(const char *name, EGG::ExpHeap *heap);
     virtual ~dDynamicModuleControl();
 
-    u8 mPad[0x44];
+    u8 mPad[0x38];
 };
 
 namespace dDyl {

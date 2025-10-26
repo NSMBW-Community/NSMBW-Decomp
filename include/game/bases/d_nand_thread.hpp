@@ -8,7 +8,7 @@ public:
     void cmdSpaceCheck();
 
     u8 mPad[0x74];
-    int m_74;
+    int mState;
     int mError;
     bool mFileExists;
 

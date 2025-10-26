@@ -10,7 +10,7 @@
 /// @brief This scene handles the game's boot process.
 /// It does the following:
 /// - Shows the Wii strap information screen.
-/// - Shows the legend screen for how to hold the controller.
+/// - Shows the controller information screen.
 /// - Checks for existing save data, creating new save data if none exists.
 /// - Shows save data-related error messages
 /// - Finally, transitions to the title screen.

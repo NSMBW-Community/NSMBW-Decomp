@@ -136,7 +136,7 @@ sPhase_c::METHOD_RESULT_e myCreate_WiiStrap(void *thisPtr) {
 
 sPhase_c::METHOD_RESULT_e myCreate_LogoScreen(void *thisPtr) {
     dScBoot_c *self = (dScBoot_c *) thisPtr;
-    if (!self->mpWiiStrapScreen->m_208) {
+    if (!self->mpWiiStrapScreen->mHasLoadedLayout) {
         return sPhase_c::WAIT;
     }
     return sPhase_c::OK;
@@ -507,7 +507,7 @@ void dScBoot_c::finalizeState_ResetFadeOut() {
         if (isState(StateID_WiiStrapDispEndWait)) {
             dWarningManager_c::m_instance->AllWarningEnd(false);
             mpControllerInformation->mVisible = true;
-            mpWiiStrapScreen->m_209 = false;
+            mpWiiStrapScreen->mVisible = false;
             mStateMgr.changeState(StateID_ControllerInformationSoundWait);
         } else {
             mpControllerInformation->mVisible = false;
@@ -582,7 +582,13 @@ void dScBoot_c::initializeState_WiiStrapDispEndWait() {}
 
 void dScBoot_c::executeState_WiiStrapDispEndWait() {
     mAutoAdvanceTimer--;
-    if (mAutoAdvanceTimer <= 0 || mPad::g_currentCore->downTrigger(0b111111100011111) || dInfo_c::mGameFlag & 0x80000) {
+    ulong buttons = (
+        WPAD_BUTTON_LEFT | WPAD_BUTTON_RIGHT | WPAD_BUTTON_DOWN | WPAD_BUTTON_UP |
+        WPAD_BUTTON_A | WPAD_BUTTON_B | WPAD_BUTTON_1 | WPAD_BUTTON_2 |
+        WPAD_BUTTON_PLUS | WPAD_BUTTON_MINUS |
+        WPAD_BUTTON_FS_Z | WPAD_BUTTON_FS_C
+    );
+    if (mAutoAdvanceTimer <= 0 || mPad::g_currentCore->downTrigger(buttons) || dInfo_c::mGameFlag & 0x80000) {
         mStateMgr.changeState(StateID_WiiStrapFadeOut);
     }
 }
@@ -600,7 +606,7 @@ void dScBoot_c::initializeState_WiiStrapFadeOut() {
 void dScBoot_c::executeState_WiiStrapFadeOut() {
     if (mFader_c::isStatus(mFaderBase_c::OPAQUE)) {
         if (mpControllerInformation != nullptr && mpControllerInformation->mIsCreated) {
-            mpWiiStrapScreen->m_209 = false;
+            mpWiiStrapScreen->mVisible = false;
             mStateMgr.changeState(StateID_ControllerInformationFadeIn);
         }
     }
@@ -670,7 +676,13 @@ void dScBoot_c::executeState_ControllerInformationDispEndWait() {
     if (mAutoAdvanceTimer != 0) {
         mAutoAdvanceTimer--;
     }
-    if (mPad::g_currentCore->downTrigger(0b111111100011111) || dInfo_c::mGameFlag & 0x80000) {
+    ulong buttons = (
+        WPAD_BUTTON_LEFT | WPAD_BUTTON_RIGHT | WPAD_BUTTON_DOWN | WPAD_BUTTON_UP |
+        WPAD_BUTTON_A | WPAD_BUTTON_B | WPAD_BUTTON_1 | WPAD_BUTTON_2 |
+        WPAD_BUTTON_PLUS | WPAD_BUTTON_MINUS |
+        WPAD_BUTTON_FS_Z | WPAD_BUTTON_FS_C
+    );
+    if (mPad::g_currentCore->downTrigger(buttons) || dInfo_c::mGameFlag & 0x80000) {
         mpControllerInformation->mState = dControllerInformation_c::END;
         mAutoAdvanceTimer = 0;
     }
@@ -684,7 +696,7 @@ void dScBoot_c::finalizeState_ControllerInformationDispEndWait() {}
 void dScBoot_c::initializeState_NandCommandEndWait() {}
 
 void dScBoot_c::executeState_NandCommandEndWait() {
-    if (dNandThread_c::m_instance->m_74 == 0) {
+    if (dNandThread_c::m_instance->mState == 0) {
         if (!dReset::Manage_c::GetInstance()->isSafetyWait()) {
             mStateMgr.changeState(StateID_ExistFileCheck);
         }
@@ -807,7 +819,7 @@ void dScBoot_c::initializeState_ButtonInputWait() {
 }
 
 void dScBoot_c::executeState_ButtonInputWait() {
-    if (mPad::g_currentCore->downTrigger(0b00000100100000000) || dInfo_c::mGameFlag & 0x80000) {
+    if (mPad::g_currentCore->downTrigger(WPAD_BUTTON_A | WPAD_BUTTON_2) || dInfo_c::mGameFlag & 0x80000) {
         dReset::Manage_c::GetInstance()->ActiveSaveWindow(true);
         mStateMgr.changeState(StateID_WindowExitWait);
     }
@@ -839,7 +851,7 @@ void dScBoot_c::initializeState_GoToErrorFadeOut() {
 
 void dScBoot_c::executeState_GoToErrorFadeOut() {
     if (mFader_c::isStatus(mFaderBase_c::OPAQUE)) {
-        mpWiiStrapScreen->m_209 = false;
+        mpWiiStrapScreen->mVisible = false;
         mpControllerInformation->mVisible = false;
         mStateMgr.changeState(StateID_GoToErrorFadeIn);
     }
