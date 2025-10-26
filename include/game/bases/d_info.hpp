@@ -1,25 +1,8 @@
 #pragma once
 #include <types.h>
+#include <game/bases/d_cyuukan.hpp>
 #include <game/mLib/m_vec.hpp>
 #include <constants/game_constants.h>
-
-class dCyuukan_c {
-public:
-    virtual ~dCyuukan_c();
-
-    bool isCyuukanStart(int, u8, u8);
-
-    int mActivatingPlayer;
-    mVec3_c mPlayerSetPos;
-    u32 mIsAmbush;
-    u8 mWorldNo;
-    u8 mCourseNo;
-    u8 mAreaNo;
-    u8 mEntranceNo;
-    u32 mIsKinopioInChukan;
-    int mCoinCollection[3];
-    int mPlayerType[2];
-};
 
 class dInfo_c {
 public:
@@ -68,15 +51,17 @@ public:
     u8 pad4[0x2e4];
     int mCharIDs[4];
     bool mIsWorldSelect; ///< Whether the World Select Menu is being displayed.
-    int pad5[7];
+    int pad5[6];
+    u8 pad6[3];
+    u8 m_3b3;
     int mDisplayCourseWorld;
     int mDisplayCourseNum;
-    u8 pad6[0x1d];
+    u8 pad7[0x1d];
     bool mExtensionAttached;
-    u8 pad7[0x8];
+    u8 pad8[0x8];
     int mCourseSelectPageNum;
     int mCourseSelectIndexInPage;
-    u8 pad8[0x712];
+    u8 pad9[0x712];
     bool mFukidashiActionPerformed[4][0x16];
 
     static dInfo_c *m_instance;

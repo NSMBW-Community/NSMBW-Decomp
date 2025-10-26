@@ -1,6 +1,14 @@
 #pragma once
+#include <constants/game_constants.h>
 #include <game/bases/d_scene.hpp>
 #include <game/mLib/m_vec.hpp>
+
+struct sCollectionCoin {
+    PLAYER_CHARACTER_e mCollectedBy;
+
+    void set(PLAYER_CHARACTER_e plr) { mCollectedBy = plr; }
+    operator PLAYER_CHARACTER_e() const { return mCollectedBy; }
+};
 
 class dScStage_c : public dScene_c {
 public:
@@ -13,14 +21,19 @@ public:
         LOOP_COUNT,
     };
 
-    char pad[0x119a];
+    char pad[0x1198];
+    u8 mCurrWorld;
     u8 mCurrCourse;
+    u8 mCurrFile;
 
+    static sCollectionCoin *getCollectionCoin(int idx) { return &mCollectionCoins[idx]; }
+    static dScStage_c *getInstance() { return m_instance; }
     static float getLoopPosX(float x);
     static int m_loopType;
 
     static bool m_isCourseOut; ///< Whether the game is transitioning from a stage scene to a non-stage scene.
     static bool m_KoopaJrEscape;
+    static sCollectionCoin mCollectionCoins[STAR_COIN_COUNT];
 
     typedef void (*changePosFunc)(mVec3_c *);
     static void setChangePosFunc(int);
