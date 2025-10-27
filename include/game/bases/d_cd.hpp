@@ -1,5 +1,6 @@
 #pragma once
 #include <types.h>
+#include <constants/game_constants.h>
 #include <game/bases/d_cd_blocks.hpp>
 #include <game/mLib/m_vec.hpp>
 #include <lib/egg/core/eggHeap.h>
@@ -105,7 +106,7 @@ public:
         return nullptr;
     }
 
-    dCdFile_c mFiles[4];
+    dCdFile_c mFiles[COURSE_FILE_COUNT];
 
     static dCd_c *m_instance;
 };

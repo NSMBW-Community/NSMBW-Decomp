@@ -11,6 +11,8 @@
 
 #define CHECKPOINT_COUNT 2 ///< The maximum number of checkpoints supported.
 
+#define COURSE_FILE_COUNT 4 ///< The number of files in a course.
+
 #define HINT_MOVIE_COUNT 70 ///< The total hint movie count.
 
 #define MAX_LIVES 99 ///< The maximum life count.

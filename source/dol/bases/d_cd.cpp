@@ -285,7 +285,7 @@ void dCd_c::deleteInstance() {
 }
 
 void dCd_c::loadCourseData() {
-    for (int i = 0; i < 4; i++) {
+    for (int i = 0; i < COURSE_FILE_COUNT; i++) {
         mFiles[i].loadCourseData(i);
     }
 }
