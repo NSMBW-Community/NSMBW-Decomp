@@ -23,11 +23,11 @@ public:
     u32 getFootAttr();
 
     enum WaterCheckResult_e {
-        R0 = 0,
-        R1 = 1,
-        R2 = 2,
-        R3 = 3,
-        R4 = 4
+        WATER_CHECK_NONE = 0,
+        WATER_CHECK_WATER_1 = 1,
+        WATER_CHECK_WATER_2 = 2,
+        WATER_CHECK_YOGAN = 3,
+        WATER_CHECK_POISON = 4
     };
 
     dActor_c *mpOwner;
@@ -37,7 +37,7 @@ public:
     mVec3_c *mpOwnerPos;
     mVec3_c *mpOwnerLastPos;
     mVec3_c *mpOwnerSpeed;
-    mVec3_c m_20;
+    mVec3_c mPushForce;
     mVec2_c mOwnerPosDelta;
     mVec2_c m_34;
     mVec2_c m_3c;

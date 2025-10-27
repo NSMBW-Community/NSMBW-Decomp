@@ -11,7 +11,7 @@ public:
         mpOwner = owner;
     }
 
-    void begin(int i, float v);
+    void begin(int time, float scale);
     void execute();
 
     mVec3_c mScale;

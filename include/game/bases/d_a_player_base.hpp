@@ -223,8 +223,6 @@ public:
 
     bool isMameAction();
 
-    int calcAndGetTreadCount();
-
     mVec3_c getAnkleCenterPos();
 
     bool isStatus(int key);
