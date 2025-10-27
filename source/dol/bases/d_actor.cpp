@@ -57,7 +57,7 @@ dActor_c::dActor_c() :
     mExecStopMask = 1;
 
     setDefaultMaxBound();
-    mDestroyBound = mBoundBox(256.0f, 256.0f, 80.0f, 80.0f);
+    mDestroyBound = sRangeDataF(256.0f, 256.0f, 80.0f, 80.0f);
 
     dCdFile_c *file = dCd_c::m_instance->getFileP(dScStage_c::m_instance->mCurrCourse);
     mAreaNo = file->getAreaNo(&mPos);
@@ -376,9 +376,9 @@ void dActor_c::deleteActor(u8 deleteForever) {
     }
 }
 
-bool dActor_c::areaCullCheck(const mVec3_c &pos, const mBoundBox &bound, u8 areaID) const {
+bool dActor_c::areaCullCheck(const mVec3_c &pos, const sRangeDataF &bound, u8 areaID) const {
     dCdFile_c *course = dCd_c::m_instance->getFileP(dScStage_c::m_instance->mCurrCourse);
-    AreaBoundU16 *area = course->getAreaP(areaID, nullptr);
+    sAreaData *area = course->getAreaDataP(areaID, nullptr);
     if (area == nullptr) {
         return true;
     }
@@ -388,8 +388,8 @@ bool dActor_c::areaCullCheck(const mVec3_c &pos, const mBoundBox &bound, u8 area
     mVec2_c bt = bound.withPos(pos);
     b.set(bt.x, bt.y);
 
-    b.x -= area->x;
-    b.y += area->y;
+    b.x -= area->mRangeData.mX;
+    b.y += area->mRangeData.mY;
 
     mVec2_c doubleBoundSize = bound.getSize();
     doubleBoundSize.x = 2.0f * doubleBoundSize.x;
@@ -397,12 +397,12 @@ bool dActor_c::areaCullCheck(const mVec3_c &pos, const mBoundBox &bound, u8 area
 
     mVec2_c maxBoundSize = mMaxBound.getSize();
 
-    if (!(course->mpCourseSettings->mFlags & dCdCourseSettings_c::WRAP_AROUND_EDGES)) {
-        if (b.x + doubleBoundSize.x < -maxBoundSize.x || b.x > area->width + maxBoundSize.x) {
+    if (!(course->mpOptions->mFlags & sOptionData::WRAP_AROUND_EDGES)) {
+        if (b.x + doubleBoundSize.x < -maxBoundSize.x || b.x > area->mRangeData.mWidth + maxBoundSize.x) {
             return true;
         }
     }
-    if (b.y - doubleBoundSize.y > maxBoundSize.y || b.y < -(area->height + maxBoundSize.y)) {
+    if (b.y - doubleBoundSize.y > maxBoundSize.y || b.y < -(area->mRangeData.mHeight + maxBoundSize.y)) {
         return true;
     }
 
@@ -418,7 +418,7 @@ bool dActor_c::ActorScrOutCheck(u16 flags) {
         return false;
     }
 
-    mBoundBox visibleBound;
+    sRangeDataF visibleBound;
     visibleBound.mOffset.x = mVisibleAreaOffset.x;
     visibleBound.mOffset.y = mVisibleAreaOffset.y;
     visibleBound.mSize.x = mVisibleAreaSize.x * 0.5f;
@@ -441,7 +441,7 @@ bool dActor_c::ActorScrOutCheck(u16 flags) {
 }
 
 bool dActor_c::ActorDrawCullCheck() {
-    mBoundBox bound;
+    sRangeDataF bound;
     bound.mOffset.x = mVisibleAreaOffset.x;
     bound.mOffset.y = mVisibleAreaOffset.y;
     bound.mSize.x = mVisibleAreaSize.x * 0.5f;
@@ -487,7 +487,7 @@ bool dActor_c::carryFukidashiCheck(int fukidashiAction, mVec2_c fukidashiTrigger
         if (player != nullptr) {
             bool canDrawFukidashi = player->isDrawingCarryFukidashi();
 
-            mBoundBox playerBoundBox;
+            sRangeDataF playerBoundBox;
             player->getCcBounds(playerBoundBox);
             mVec3_c playerPos(
                 dScStage_c::getLoopPosX(playerBoundBox.mOffset.x + player->mPos.x),
@@ -514,7 +514,7 @@ bool dActor_c::carryFukidashiCheck(int fukidashiAction, mVec2_c fukidashiTrigger
         if (player != nullptr) {
             bool canDrawFukidashi = player->isDrawingCarryFukidashi();
 
-            mBoundBox playerBoundBox;
+            sRangeDataF playerBoundBox;
             player->getCcBounds(playerBoundBox);
             mVec3_c playerPos(
                 dScStage_c::getLoopPosX(playerBoundBox.mOffset.x + player->mPos.x),

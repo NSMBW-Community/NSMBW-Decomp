@@ -19,6 +19,8 @@ public:
     static float getLoopPosX(float x);
     static int m_loopType;
 
+    static const char mCdArcName[];
+
     static bool m_isCourseOut; ///< Whether the game is transitioning from a stage scene to a non-stage scene.
     static bool m_KoopaJrEscape;
 
