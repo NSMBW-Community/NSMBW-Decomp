@@ -242,14 +242,19 @@ bool dCourseSelectGuide_c::createLayout() {
 }
 
 void dCourseSelectGuide_c::ScissorMaskSet() {
-    d2d::ClipSettings clipSettings;
+    d2d::ScissorMask scissorMask;
+    scissorMask.mPos.x = 0.0f;
+    scissorMask.mPos.y = 0.0f;
+    scissorMask.mSize.x = 0.0f;
+    scissorMask.mSize.y = 0.0f;
+    scissorMask.mEnabled = false;
     if (dGameCom::GetAspectRatio() == 0) {
-        clipSettings.mPos.y = mVideo::getSmth(330.0f);
-        clipSettings.mSize.x = 640.0f;
-        clipSettings.mSize.y = 330.0f;
-        clipSettings.mEnabled = true;
+        scissorMask.mPos.y = mVideo::getSmth(330.0f);
+        scissorMask.mSize.x = 640.0f;
+        scissorMask.mSize.y = 330.0f;
+        scissorMask.mEnabled = true;
     }
-    mLayout.mClipSettings = clipSettings;
+    mLayout.mScissorMask = scissorMask;
 }
 
 void dCourseSelectGuide_c::PlayerIconSet() {

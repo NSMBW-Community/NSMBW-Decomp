@@ -41,7 +41,7 @@ bool dWipeMario_c::createLayout() {
         return false;
     }
 
-    mLyt.build("wipeMario_02.brlyt", 0);
+    mLyt.build("wipeMario_02.brlyt", nullptr);
     mLyt.AnimeResRegister(AnmNameTbl, ARRAY_SIZE(AnmNameTbl));
     mLyt.GroupRegister(GROUP_NAME_DT, ANIME_INDEX_TBL, ARRAY_SIZE(GROUP_NAME_DT));
     mpRootPane = mLyt.getRootPane();

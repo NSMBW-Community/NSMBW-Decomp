@@ -3,6 +3,7 @@
 #include <nw4r/lyt.h>
 #include <game/mLib/m_3d.hpp>
 #include <game/mLib/m_vec.hpp>
+#include <game/sLib/s_RangeData.hpp>
 #include <game/bases/d_lyttextBox.hpp>
 
 /// @brief A collection of various functions used throughout the game.
