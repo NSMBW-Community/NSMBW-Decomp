@@ -419,5 +419,5 @@ public:
     static u8 m_tmpCtSpriteLayerNo;
 };
 
-extern const u8 l_Ami_Line[2]; ///< The sub-layer for each side of chainlink fences.
-extern const float l_Ami_Zpos[2]; ///< The additional Z offset for each side of chainlink fences.
+extern const u8 l_Ami_Line[]; ///< The sub-layer for each side of chainlink fences.
+extern const float l_Ami_Zpos[]; ///< The additional Z offset for each side of chainlink fences.
