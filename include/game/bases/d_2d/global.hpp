@@ -11,7 +11,7 @@ namespace d2d {
 void init(); ///< Initializes the 2D engine.
 
 void draw(); ///< Draws all registered 2D objects.
-void drawBefore(); ///< Draws all registered background 2D objects
+void drawBefore(); ///< Draws all registered background 2D objects.
 void drawAfter(); ///< Draws all registered foreground 2D objects.
 void drawBtween(u8 after, u8 before); ///< Draws all registered 2D objects between the @p after and @p before draw orders.
 

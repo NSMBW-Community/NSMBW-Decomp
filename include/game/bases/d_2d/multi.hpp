@@ -40,9 +40,9 @@ public:
     void calcAfter(); ///< Calculates the view rectangle and view matrix after the main calculation.
     nw4r::lyt::Pane *getRootPane(); ///< Gets the root pane of the layout.
     nw4r::lyt::Pane *findPaneByName(const char *name); ///< Finds a pane by name.
-    nw4r::lyt::TextBox *findTextBoxByName(const char *name); ///< Finds a text box by name.
-    nw4r::lyt::Picture *findPictureByName(const char *name); ///< Finds a picture by name.
-    nw4r::lyt::Window *findWindowByName(const char *name); ///< Finds a window by name.
+    nw4r::lyt::TextBox *findTextBoxByName(const char *name); ///< Finds a text box pane by name.
+    nw4r::lyt::Picture *findPictureByName(const char *name); ///< Finds a picture pane by name.
+    nw4r::lyt::Window *findWindowByName(const char *name); ///< Finds a window pane by name.
 
 private:
     m2d::Layout_c mLayout; ///< The layout instance.
