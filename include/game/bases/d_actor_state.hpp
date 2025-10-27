@@ -33,6 +33,12 @@ public:
     /// @brief Changes the actor's state to the given state.
     /// @param newState The state ID of the new state.
     virtual void changeState(const sStateIDIf_c &newState) { mStateMgr.changeState(newState); }
+
+    /// @brief Checks if the actor is currently in the given state.
+    /// @param other The state ID to check.
+    /// @return Whether the actor is in the given state.
+    bool isState(const sStateIDIf_c &other) const { return *mStateMgr.getStateID() == other; }
+
     STATE_VIRTUAL_FUNC_DECLARE(dActorMultiState_c, GegnericMulti); ///< An example state that does nothing.
 
     sFStateStateMgr_c<dActorMultiState_c, sStateMethodUsr_FI_c, sStateMethodUsr_FI_c> mStateMgr; ///< The state manager.
