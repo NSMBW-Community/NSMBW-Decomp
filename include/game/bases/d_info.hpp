@@ -57,9 +57,7 @@ public:
     u8 getCourse() const { return m_startGameInfo.mLevel1; }
     u8 getWorld() const { return m_startGameInfo.mWorld1; }
 
-    static dInfo_c *getInstance() {
-        return m_instance;
-    }
+    static dInfo_c *getInstance() { return m_instance; }
 
     char pad1[0x8];
     dCyuukan_c mCyuukan;
@@ -73,14 +71,18 @@ public:
     int pad5[7];
     int mDisplayCourseWorld;
     int mDisplayCourseNum;
-    u8 pad6[0x1d];
+    u8 pad6[0x14];
+    int mTextBoxMessageID;
+    int mTextBoxMessageGroup;
+    u8 pad7[0x1];
     bool mExtensionAttached;
-    u8 pad7[0x8];
+    u8 m_3da;
+    u8 pad8[0x7];
     int mCourseSelectPageNum;
     int mCourseSelectIndexInPage;
-    u8 pad8[0x712];
+    u8 pad9[0x712];
     bool mFukidashiActionPerformed[4][0x16];
-    u32 pad9;
+    u32 pad10;
 
     static dInfo_c *m_instance;
     static unsigned int mGameFlag; ///< See @p ::GAME_FLAG_e
