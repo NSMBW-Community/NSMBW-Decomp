@@ -14,7 +14,7 @@ public:
     };
 
     char pad[0x119a];
-    u8 mCurrCourse;
+    u8 mCurrFile;
 
     static float getLoopPosX(float x);
     static int m_loopType;

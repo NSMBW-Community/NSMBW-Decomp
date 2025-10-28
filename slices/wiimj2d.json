@@ -231,6 +231,14 @@
             }
         },
         {
+            "source": "dol/bases/d_rail.cpp",
+            "memoryRanges": {
+                ".text": "0xd2a30-0xd30d0",
+                ".data": "0x1a9f0-0x1aa00",
+                ".sdata2": "0x1ba0-0x1bb8"
+            }
+        },
+        {
             "source": "dol/bases/d_res_info.cpp",
             "memoryRanges": {
                 ".text": "0xd82b0-0xd88c0",
