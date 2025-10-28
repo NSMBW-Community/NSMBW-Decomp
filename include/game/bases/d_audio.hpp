@@ -43,6 +43,7 @@ namespace dAudio {
     void FUN_8006a6a0(bool); ///< @unofficial
 
     int getRemotePlayer(int);
+    mVec2_c cvtSndObjctPos(const mVec2_c &);
     mVec2_c cvtSndObjctPos(const mVec3_c &);
 
     class SndObjctCmnEmy_c : SndObjctCmnEmy {
@@ -78,12 +79,25 @@ namespace dAudio {
         }
 
         template<class T>
+        void playObjSound(T *obj, const mVec2_c &pos, int playerNo) const {
+            obj->startSound(id, dAudio::cvtSndObjctPos(pos), playerNo);
+        }
+
+        template<class T>
         void playObjSound(T *obj, const mVec3_c &pos, int playerNo) const {
             obj->startSound(id, dAudio::cvtSndObjctPos(pos), playerNo);
         }
 
+        void playEmySound(const mVec2_c &pos, int playerNo) const {
+            playObjSound(dAudio::g_pSndObjEmy, pos, playerNo);
+        }
+
         void playEmySound(const mVec3_c &pos, int playerNo) const {
             playObjSound(dAudio::g_pSndObjEmy, pos, playerNo);
+        }
+
+        void playMapSound(const mVec2_c &pos, int playerNo) const {
+            playObjSound(dAudio::g_pSndObjMap, pos, playerNo);
         }
 
         void playMapSound(const mVec3_c &pos, int playerNo) const {

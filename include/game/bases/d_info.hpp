@@ -37,6 +37,7 @@ public:
     };
 
     enum GAME_FLAG_e {
+        GAME_FLAG_4 = BIT_FLAG(4),
         GAME_FLAG_IS_COIN_COURSE = BIT_FLAG(6)
     };
 

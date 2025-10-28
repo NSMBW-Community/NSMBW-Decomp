@@ -19,6 +19,8 @@
 
 #define MAX_STOCK_ITEM 99 ///< The maximum inventory amount per item.
 
+#define MAX_EXTRA_MODE_SCORE 1000000 ///< The maximum possible score in Free Mode and Coin Battle.
+
 #define SAVE_SLOT_COUNT 3 ///< The total save slot count.
 
 #define SMALL_SCORE_COUNT 30 ///< The maximum number of small score popups visible simultaneously.
