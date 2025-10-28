@@ -357,7 +357,7 @@ public:
 
     u8 *mpSpawnFlags; ///< The spawn flags for the actor. See ::ACTOR_SPAWN_FLAG_e.
     u16 *mpDeleteVal; ///< @unused
-    u16 mEventNums; ///< The event IDs the actor is tracking.
+    u8 mEventNums[2]; ///< The event IDs the actor is tracking.
     u64 mEventMask; ///< The event mask, generated from ::mEventNums.
 
     u32 m_23b; ///< @todo Figure out the purpose of this field.
@@ -406,17 +406,17 @@ public:
     static getTrgToSrcDirFunc mGetTrgToSrcDirFunc; ///< The direction detection function.
     static u8 m_tmpCtLayerNo; ///< Temporary storage for the next constructed actor's layer. See ::mLayer.
 
-    /// @brief Temporary storage for the next created sprite actor's spawn flags. See ::mpSpawnFlags. @unofficial
-    static u8* m_tmpCtSpawnFlags;
+    /// @brief Temporary storage for the next created sprite actor's spawn flags. See ::mpSpawnFlags.
+    static u8* m_read_p_keep;
 
-    /// @brief Temporary storage for the next created sprite actor's tracked event IDs. See ::mEventNums. @unofficial
-    static u16 m_tmpCtEventNums;
+    /// @brief Temporary storage for the next created sprite actor's tracked event IDs. See ::mEventNums.
+    static u8 m_flag_keep[2];
 
-    /// @brief Temporary storage for the next created sprite actor's event mask. See ::mEventMask. @unofficial
-    static u64 m_tmpCtEventMask;
+    /// @brief Temporary storage for the next created sprite actor's event mask. See ::mEventMask.
+    static u64 m_flagbit_keep;
 
-    /// @brief Temporary storage for the next created sprite actor's layer. See ::mLayer. @unofficial
-    static u8 m_tmpCtSpriteLayerNo;
+    /// @brief Temporary storage for the next created sprite actor's layer. See ::mLayer.
+    static u8 m_mbgchoice_keep;
 };
 
 extern const u8 l_Ami_Line[2]; ///< The sub-layer for each side of chainlink fences.
