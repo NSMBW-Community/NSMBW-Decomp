@@ -16,10 +16,10 @@ public:
      * @param speed Pointer to the speed vector of the object on the rail.
      * @param speedF Pointer to the forward speed of the object on the rail.
      * @param startIndex The starting node index on the rail.
-     * @param options Options for rail behavior (&1 = reverse).
+     * @param reverse Whether the object should travel the rail in reverse.
      * @return Whether the rail was successfully initialized.
      */
-    bool set(u8 id, mVec3_c *pos, mVec3_c *speed, float *speedF, u16 startIndex, u8 options);
+    bool set(u8 id, mVec3_c *pos, mVec3_c *speed, float *speedF, u16 startIndex, u8 reverse);
 
     /// @brief Advances the node index to the next target point.
     /// @return Whether the end of the rail has been reached.

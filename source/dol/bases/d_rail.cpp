@@ -13,7 +13,7 @@ sRailInfoData *dRail_c::getRailInfoP(u8 id) {
     return nullptr;
 }
 
-bool dRail_c::set(u8 id, mVec3_c *pos, mVec3_c *speed, float *speedF, u16 startIndex, u8 options) {
+bool dRail_c::set(u8 id, mVec3_c *pos, mVec3_c *speed, float *speedF, u16 startIndex, u8 reverse) {
     mCount = 0;
     mpNodes = nullptr;
     sRailInfoData *railInfo = getRailInfoP(id);
@@ -40,7 +40,7 @@ bool dRail_c::set(u8 id, mVec3_c *pos, mVec3_c *speed, float *speedF, u16 startI
     mIdxCurr = startIndex;
     mIdxNext = startIndex;
     mDelayTimer = railNode->mDelay;
-    mReverse = options;
+    mReverse = reverse;
     mFlags = railInfo->mFlags;
     mNodeFlags = railNode[startIndex].mFlags;
 
