@@ -16,7 +16,7 @@ struct sDeathInfoData {
     sStateIDIf_c *mDeathState;
     int mQuakeScore;
     int m_18;
-    bool mMovingLeft;
+    bool mDirection;
     s8 mKilledBy;
     bool mIsDead;
 };
@@ -38,7 +38,7 @@ public:
         mData.mDeathState = other.mDeathState;
         mData.mQuakeScore = other.mQuakeScore;
         mData.m_18 = other.m_18;
-        mData.mMovingLeft = other.mMovingLeft;
+        mData.mDirection = other.mDirection;
         mData.mKilledBy = other.mKilledBy;
     }
 
@@ -277,7 +277,7 @@ public:
     static const u16 smc_NO_HIT_PLAYER_TIMER_SPIT_OUT = 16; ///< @unofficial
 };
 
-extern const s8 l_base_speedX[]; ///< @unofficial
-extern const s16 l_base_angleY[];
-extern const s16 l_unk_angle[]; ///< @unofficial
-extern const float l_dirX[]; ///< @unofficial
+extern const s8 l_EnMuki[]; ///< Multiplier for directions.
+extern const s16 l_base_angleY[]; ///< Default Y rotation angles per direction.
+extern const s16 l_base_angleY_add[]; ///< Default Y rotation animation increments per direction.
+extern const float l_base_fall_speed_x[]; ///< Default X fall speeds for death animation per direction.

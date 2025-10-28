@@ -15,10 +15,10 @@
 #include <game/bases/d_enemy_manager.hpp>
 #include <constants/sound_list.h>
 
-const s8 l_base_speedX[] = { 1, -1 };
+const s8 l_EnMuki[] = { 1, -1 };
 const s16 l_base_angleY[] = { 0x2000, -0x2000 };
-const s16 l_unk_angle[] = { 0x400, -0x400 };
-const float l_dirX[] = { 1.5f, -1.5f };
+const s16 l_base_angleY_add[] = { 0x400, -0x400 };
+const float l_base_fall_speed_x[] = { 1.5f, -1.5f };
 
 const float dEn_c::smc_WATER_GRAVITY = -0.0625f;
 const float dEn_c::smc_WATER_YMAXSPD = 1.5f;
@@ -427,8 +427,8 @@ bool dEn_c::carry_check(dActor_c *actor) {
 }
 
 void dEn_c::checkWallAndBg() {
-    float v = l_base_speedX[mDirection];
-    mBc.checkWall(&v);
+    float dir = l_EnMuki[mDirection];
+    mBc.checkWall(&dir);
     mVec3_c truePos = mPos;
     truePos += mCenterOffs;
     mBc.checkBg(truePos.x, truePos.y, mLayer, l_Ami_Line[mAmiLayer], 0x819);
@@ -714,13 +714,13 @@ u32 dEn_c::EnBgCheckWall() {
         return 0;
     }
     float tmpX = mBc.m_4c;
-    u8 idx = mPos.x - tmpX < 0.0f;
-    float speed = l_base_speedX[idx];
-    u32 flags = mBc.checkWallEnm(&speed);
-    speed = l_base_speedX[idx ^ 1];
-    u32 wallFlags = mBc.checkWallEnm(&speed);
+    u8 dir = mPos.x - tmpX < 0.0f;
+    float dirVal = l_EnMuki[dir];
+    u32 flags = mBc.checkWallEnm(&dirVal);
+    dirVal = l_EnMuki[dir ^ 1];
+    u32 wallFlags = mBc.checkWallEnm(&dirVal);
     if (mBgCollFlags & 3) {
-        wallFlags |= mBc.checkWallEnm(&speed);
+        wallFlags |= mBc.checkWallEnm(&dirVal);
     }
     mBc.mFlags |= flags | wallFlags;
     return flags;
@@ -1007,7 +1007,7 @@ void dEn_c::boyonBegin() {
 }
 
 void dEn_c::block_hit_init() {
-    bool tmp = mDeathFallDirection;
+    bool dir = mDeathFallDirection;
     s8 plrNo = *getPlrNo();
 
     mVec3_c shiftedPos(mVec2_c(mPos.x, mPos.y), 5500.0f);
@@ -1016,14 +1016,14 @@ void dEn_c::block_hit_init() {
     dAudio::SoundEffectID_t(SE_EMY_DOWN).playEmySound(mPos, 0);
 
     sDeathInfoData data = {
-        l_dirX[(u8) (int) tmp],
+        l_base_fall_speed_x[(u8) (int) dir],
         3.0f,
         -4.0f,
         -0.1875f,
         &StateID_DieFall,
         -1,
         -1,
-        tmp,
+        dir,
         plrNo
     };
     mDeathInfo.set(data);
