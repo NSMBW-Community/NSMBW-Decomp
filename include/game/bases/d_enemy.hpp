@@ -45,6 +45,18 @@ public:
     sDeathInfoData mData;
 };
 
+/// @unofficial
+class dPlayerDownTimer_c {
+public:
+    void update(int idx) {
+        if (mTimer[idx] != 0) {
+            mTimer[idx]--;
+        }
+    }
+
+    u16 mTimer[PLAYER_COUNT];
+};
+
 /// @brief An enemy actor.
 /// Note that the definition of "enemy" in this context is actually
 /// any interactible stage entity, not just ones that can hurt the player.
@@ -246,10 +258,12 @@ public:
     u32 mFlags; ///< Flags for this actor. See FLAGS_e.
     u16 mTimer1; ///< [Used in EN_HATENA_BALLON, for example]
     u16 mTimer2; ///< [Used in EN_HATENA_BALLON, for example]
+
     /// @brief Hit cooldown timers for each player.
     /// This is used to prevent, for example, a thrown shell from hitting
     /// the player that threw it.
-    u16 mPlayerNoHitCooldown[PLAYER_COUNT];
+    dPlayerDownTimer_c mNoHitPlayer;
+
     u8 mTimer3; /// @todo Unused?
     dEnCombo_c mCombo; ///< The enemy combo manager.
     dEnFumiProc_c mFumiProc;
@@ -258,6 +272,9 @@ public:
     static const float smc_WATER_YMAXSPD;
     static const float smc_WATER_FALLMAXSPD;
     static const float smc_WATER_ROLL_DEC_RATE;
+
+    static const u16 smc_NO_HIT_PLAYER_TIMER_DEFAULT = 5; ///< @unofficial
+    static const u16 smc_NO_HIT_PLAYER_TIMER_SPIT_OUT = 16; ///< @unofficial
 };
 
 extern const s8 l_base_speedX[]; ///< @unofficial

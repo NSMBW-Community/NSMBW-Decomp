@@ -45,7 +45,7 @@ dEn_c::dEn_c() :
     mFlags = 0;
 
     for (int i = 0; i < PLAYER_COUNT; i++) {
-        mPlayerNoHitCooldown[i] = 0;
+        mNoHitPlayer.mTimer[i] = 0;
     }
 }
 
@@ -96,14 +96,8 @@ int dEn_c::preExecute() {
         if (mTimer2 != 0) {
             mTimer2--;
         }
-        // [Unfortunately, letting the compiler do the full loop unrolling makes it not match]
-        for (int i = 0; i < PLAYER_COUNT; i += 2) {
-            if (mPlayerNoHitCooldown[i]) {
-                mPlayerNoHitCooldown[i]--;
-            }
-            if (mPlayerNoHitCooldown[i + 1]) {
-                mPlayerNoHitCooldown[i + 1]--;
-            }
+        for (u32 i = 0; i < PLAYER_COUNT; i++) {
+            mNoHitPlayer.update(i);
         }
     }
 
@@ -248,8 +242,8 @@ void dEn_c::normal_collcheck(dCc_c *cc1, dCc_c *cc2) {
             } else if (cc2->mCcData.mCategory != dCc_c::CAT_PLAYER_ATTACK) {
                 s8 *plrNo = actor2->getPlrNo();
                 if (*plrNo >= 0 && *plrNo < PLAYER_COUNT) {
-                    if (actor1->mPlayerNoHitCooldown[*plrNo] == 0) {
-                        actor1->mPlayerNoHitCooldown[*plrNo] = 5;
+                    if (actor1->mNoHitPlayer.mTimer[*plrNo] == 0) {
+                        actor1->mNoHitPlayer.mTimer[*plrNo] = smc_NO_HIT_PLAYER_TIMER_DEFAULT;
                         actor1->Normal_VsPlHitCheck(cc1, cc2);
                     }
                 }
@@ -265,8 +259,8 @@ void dEn_c::normal_collcheck(dCc_c *cc1, dCc_c *cc2) {
                     if (actor1->YoshiDamageCheck(cc1, cc2)) {
                         actor1->mCcValue = cc1->unk3;
                         cc1->mFlag |= dCc_c::CC_DISABLE;
-                    } else if (actor1->mPlayerNoHitCooldown[*plrNo] == 0) {
-                        actor1->mPlayerNoHitCooldown[*plrNo] = 5;
+                    } else if (actor1->mNoHitPlayer.mTimer[*plrNo] == 0) {
+                        actor1->mNoHitPlayer.mTimer[*plrNo] = smc_NO_HIT_PLAYER_TIMER_DEFAULT;
                         actor1->Normal_VsYoshiHitCheck(cc1, cc2);
                     }
                 }
@@ -949,7 +943,7 @@ void dEn_c::slipBound(dActor_c *actor) {
     pl->vf3fc(3.0f, cs_jump_xspeed[idx], 1, 0, 0);
 
     int plrNo = *pl->getPlrNo();
-    mPlayerNoHitCooldown[plrNo] = 3;
+    mNoHitPlayer.mTimer[plrNo] = 3;
 }
 
 void dEn_c::setEatTongue(dActor_c *actor) {
@@ -967,7 +961,7 @@ void dEn_c::setEatTongueOff(dActor_c *actor) {
 bool dEn_c::setEatSpitOut(dActor_c *actor) {
     calcSpitOutPos(actor);
     int plrNo = *actor->getPlrNo();
-    mPlayerNoHitCooldown[plrNo] = 16;
+    mNoHitPlayer.mTimer[plrNo] = smc_NO_HIT_PLAYER_TIMER_SPIT_OUT;
     mDirection = actor->mDirection;
     reviveCc();
     setAfterEatScale();
