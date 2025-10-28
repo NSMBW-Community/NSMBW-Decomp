@@ -144,6 +144,10 @@ public:
 
     math::VEC2 GetVtxPos() const;
 
+    u16 GetExtUserDataNum() const;
+    const res::ExtUserData *GetExtUserData() const;
+    const res::ExtUserData *FindExtUserDataByName(const char *name);
+
     Pane* GetParent() const {
         return mpParent;
     }
