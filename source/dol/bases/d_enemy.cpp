@@ -9,7 +9,6 @@
 #include <game/bases/d_ef.hpp>
 #include <game/bases/d_effectmanager.hpp>
 #include <game/bases/d_effactor_mng.hpp>
-#include <game/bases/d_en_combo.hpp>
 #include <game/bases/d_audio.hpp>
 #include <game/bases/d_multi_mng.hpp>
 #include <game/bases/d_bg_parameter.hpp>
@@ -30,7 +29,7 @@ dEn_c::dEn_c() :
     m_24(0), mFootPush(mVec3_c(0.0f, 0.0f, 0.0f)),
     mKilledByLiquid(false), mFootAttr3(false), mFootAttr1(false), mDeathInfo(),
     mBoyoMng(this), mIceMng(this),
-    mTimer1(0), mTimer2(0), mClapMode(CLAP_1), mFumiProc(this)
+    mTimer1(0), mTimer2(0), mCombo(dEnCombo_c::COMBO_1), mFumiProc(this)
 {
     mFumiProc.refresh(new NonUniqueFumiCheck_c());
 
@@ -531,13 +530,13 @@ void dEn_c::setFumiComboScore(dActor_c *actor) {
         mVec3_c pos = getCenterPos();
         float scY = dScoreMng_c::smc_SCORE_Y;
         pos.y = mPos.y + scY;
-        switch (mClapMode) {
-            case CLAP_1: {
+        switch (mCombo.mType) {
+            case dEnCombo_c::COMBO_1: {
                 dScoreMng_c *instance = dScoreMng_c::getInstance();
                 instance->ScoreSet(pos, treadCount, *actor->getPlrNo(), 1);
                 break;
             }
-            case CLAP_2: {
+            case dEnCombo_c::COMBO_2: {
                 dScoreMng_c *instance = dScoreMng_c::getInstance();
                 instance->ScoreSet2(pos, treadCount, *actor->getPlrNo());
                 break;
@@ -551,7 +550,7 @@ void dEn_c::setFumiComboScore(dActor_c *actor) {
 bool dEn_c::checkComboClap(int num) {
     /// @unofficial
     static const int claps[] = { 7, 7, 4 };
-    return num >= claps[mClapMode];
+    return num >= claps[mCombo.mType];
 }
 
 void dEn_c::fumiSE(dActor_c *actor) {

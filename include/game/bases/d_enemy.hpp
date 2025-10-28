@@ -1,8 +1,9 @@
 #pragma once
 
 #include <game/bases/d_actor_state.hpp>
-#include <game/bases/d_en_fumi_check.hpp>
 #include <game/bases/d_en_boyo_manager.hpp>
+#include <game/bases/d_en_combo.hpp>
+#include <game/bases/d_en_fumi_check.hpp>
 #include <game/bases/d_ice_manager.hpp>
 #include <constants/game_constants.h>
 
@@ -50,13 +51,6 @@ public:
 /// @ingroup bases
 class dEn_c : public dActorMultiState_c {
 public:
-    /// @unofficial
-    enum CLAP_MODE_e {
-        CLAP_0,
-        CLAP_1,
-        CLAP_2
-    };
-
     /// @unofficial
     enum FLAGS_e {
         FLAG_1 = BIT_FLAG(1),
@@ -257,7 +251,7 @@ public:
     /// the player that threw it.
     u16 mPlayerNoHitCooldown[PLAYER_COUNT];
     u8 mTimer3; /// @todo Unused?
-    CLAP_MODE_e mClapMode;
+    dEnCombo_c mCombo; ///< The enemy combo manager.
     dEnFumiProc_c mFumiProc;
 
     static const float smc_WATER_GRAVITY;
