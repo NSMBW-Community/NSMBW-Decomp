@@ -13,6 +13,9 @@ public:
 
     dEnCombo_c(COMBO_TYPE_e type) : mType(type) {}
 
+    int getComboScore(int);
+    int getDamageScore();
+
     static int calcPlFumiCnt(dActor_c *actor);
 
     COMBO_TYPE_e mType;

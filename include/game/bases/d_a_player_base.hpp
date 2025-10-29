@@ -183,7 +183,7 @@ public:
     virtual void endStar() {}
     virtual void setVirusStar(daPlBase_c *) {}
     virtual void clearStarCount();
-    virtual int getStarCount() const; // { return mStarCount; }
+    virtual s8 getStarCount() const; // { return mStarCount; }
     virtual s8 calcStarCount(int);
 
     virtual bool isNoDamage();
@@ -236,7 +236,9 @@ public:
 
     char pad1[0xcee];
     s8 mTreadCount;
-    char pad2[0x54];
+    s8 m_ced;
+    s8 m_cee;
+    char pad3[0x52];
     u32 mFlags;
-    u8 pad3[0x3b4];
+    u8 pad4[0x3b4];
 };

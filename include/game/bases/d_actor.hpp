@@ -335,7 +335,7 @@ public:
     u32 mCarryFukidashiPlayerNo; ///< The player for whom an action prompt related to the actor is being displayed. @p -1 if no players meet this criteria.
     CARRY_ACTION_e mCarryingFlags; ///< The actor's carry actions.
     u32 mThrowDirection; ///< The actor's direction when thrown or dropped after carrying.
-    u32 mComboMultiplier; ///< The current combo multiplier obtained by the actor by colliding with other actors.
+    int mComboMultiplier; ///< The current combo multiplier obtained by the actor by colliding with other actors.
     u8 m_13; ///< @unused
     u32 m_17; ///< @unused
     float m_1b; ///< @unused

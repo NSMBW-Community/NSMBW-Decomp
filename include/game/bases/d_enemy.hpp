@@ -13,36 +13,41 @@ struct sDeathInfoData {
     float mYSpeed;
     float mMaxYSpeed;
     float mYAccel;
-    sStateIDIf_c *mDeathState;
+    const sStateIDIf_c *mDeathState;
     int mQuakeScore;
     int m_18;
-    bool mDirection;
+    u8 mDirection;
     s8 mKilledBy;
-    bool mIsDead;
 };
 
 /// @unofficial
 class dDeathInfo_c {
 public:
     dDeathInfo_c() {
-        mData.mIsDead = false;
+        mIsDead = false;
     }
 
     void set(const sDeathInfoData &other) {
-        mData.mIsDead = true;
-        float tmpY = other.mYSpeed;
-        mData.mXSpeed = other.mXSpeed;
-        mData.mYSpeed = tmpY;
-        mData.mMaxYSpeed = other.mMaxYSpeed;
-        mData.mYAccel = other.mYAccel;
-        mData.mDeathState = other.mDeathState;
-        mData.mQuakeScore = other.mQuakeScore;
-        mData.m_18 = other.m_18;
-        mData.mDirection = other.mDirection;
-        mData.mKilledBy = other.mKilledBy;
+        mIsDead = true;
+        mSpeed.set(other.mXSpeed, other.mYSpeed);
+        mMaxYSpeed = other.mMaxYSpeed;
+        mYAccel = other.mYAccel;
+        mDeathState = other.mDeathState;
+        mQuakeScore = other.mQuakeScore;
+        m_18 = other.m_18;
+        mDirection = other.mDirection;
+        mKilledBy = other.mKilledBy;
     }
 
-    sDeathInfoData mData;
+    mVec2_c mSpeed;
+    float mMaxYSpeed;
+    float mYAccel;
+    const sStateIDIf_c *mDeathState;
+    int mQuakeScore;
+    int m_18;
+    u8 mDirection;
+    s8 mKilledBy;
+    bool mIsDead;
 };
 
 /// @unofficial
@@ -225,12 +230,14 @@ public:
     void Bound(float epsY, float scaleX, float scaleY);
     void slipBound(dActor_c *actor);
     void posMove();
+    bool turnangle_calc(const short *target, const short *delta);
 
     void fireballInvalid(dCc_c *cc1, dCc_c *cc2);
     void iceballInvalid(dCc_c *cc1, dCc_c *cc2);
 
-    bool turnangle_calc(const short *target, const short *delta);
     void setNicePoint_Death();
+    void setDeadMode(dActor_c *actor, int);
+    void killIce();
 
     static void normal_collcheck(dCc_c *cc1, dCc_c *cc2);
     static bool CeilCheck(float y, dCc_c *cc);
@@ -242,15 +249,14 @@ public:
     mVec3_c mFootPush;
     mVec3_c mFootPush2;
     bool mDeathFallDirection; ///< The X direction to move towards on death.
-    u8 mPad2[1];
+    u8 mIceDeathDirection; ///< The X direction to move towards on ice death.
     bool mKilledByLiquid; ///< Whether the enemy was killed by falling in a liquid.
-    u8 mPad3[1];
+    u8 mPad2[1];
     bool mFootAttr3;
     bool mInLiquid; ///< Whether the enemy is in a liquid.
     bool mFootAttr1;
-    u8 mPad4[5];
+    u8 mPad3[5];
     dEnBoyoMng_c mBoyoMng;
-    u8 mPad5[4];
     dIceMng_c mIceMng; ///< The ice manager for this enemy.
     float mAirAccelY; ///< The Y acceleration before entering a liquid.
     float mAirSpeedMaxY; ///< The maximum Y speed before entering a liquid.
@@ -272,6 +278,11 @@ public:
     static const float smc_WATER_YMAXSPD;
     static const float smc_WATER_FALLMAXSPD;
     static const float smc_WATER_ROLL_DEC_RATE;
+
+    static const float smc_DEADFALL_GRAVITY;
+    static const float smc_DEADFALL_YSPEED;
+    static const float smc_DEADFALL_YSPEED_MAX;
+    static const s16 smc_DEADFALL_SPINSPEED;
 
     static const u16 smc_NO_HIT_PLAYER_TIMER_DEFAULT = 5; ///< @unofficial
     static const u16 smc_NO_HIT_PLAYER_TIMER_SPIT_OUT = 16; ///< @unofficial
