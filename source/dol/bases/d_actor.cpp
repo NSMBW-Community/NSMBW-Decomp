@@ -235,8 +235,8 @@ dAcPy_c *dActor_c::searchNearPlayerLoop(mVec2_c &delta, const mVec2_c &pos) {
         }
 
         mVec2_c loopPlayerPos;
-        loopPlayerPos.x = dScStage_c::getLoopPosX(player->getCenterX());
-        loopPlayerPos.y = player->getCenterY();
+        loopPlayerPos.x = dScStage_c::getLoopPosX(player->getCenterPos().x);
+        loopPlayerPos.y = player->getCenterPos().y;
 
         mVec2_c adjDelta;
         adjDelta.x = loopPlayerPos.x - loopPos.x;

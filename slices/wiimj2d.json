@@ -216,6 +216,18 @@
             }
         },
         {
+            "source": "dol/bases/d_enemy_death.cpp",
+            "memoryRanges": {
+                ".text": "0x99040-0x9c0f0",
+                ".ctors": "0xe4-0xe8",
+                ".rodata": "0x2880-0x2ae0",
+                ".data": "0x150e8-0x15360",
+                ".bss": "0x6528-0x6750",
+                ".sbss": "0x348-0x350",
+                ".sdata2": "0x1250-0x12a8"
+            }
+        },
+        {
             "source": "dol/bases/d_lyttextbox.cpp",
             "memoryRanges": {
                 ".text": "0xc33d0-0xc3880",

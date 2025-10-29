@@ -250,15 +250,19 @@ public:
     void Bound(float epsY, float scaleX, float scaleY);
     void slipBound(dActor_c *actor);
     void posMove();
+    bool turnangle_calc(const short *target, const short *delta);
 
     void fireballInvalid(dCc_c *cc1, dCc_c *cc2);
     void iceballInvalid(dCc_c *cc1, dCc_c *cc2);
 
-    bool turnangle_calc(const short *target, const short *delta);
     void setNicePoint_Death();
+    void setDeadMode(dActor_c *actor, int);
+    void killIce();
 
     static void normal_collcheck(dCc_c *cc1, dCc_c *cc2);
     static bool CeilCheck(float y, dCc_c *cc);
+
+    u8 getDeathFallDirection() const { return mDeathFallDirection; }
 
     dDeathInfo_c mDeathInfo; ///< The parameters for the death animation.
     u32 mCcValue;
@@ -267,15 +271,14 @@ public:
     mVec3_c mFootPush;
     mVec3_c mFootPush2;
     u8 mDeathFallDirection; ///< The X direction to move towards on death.
-    u8 mPad2[1];
+    u8 mIceDeathDirection; ///< The X direction to move towards on ice death.
     bool mKilledByLiquid; ///< Whether the enemy was killed by falling in a liquid.
-    u8 mPad3[1];
+    u8 mPad2[1];
     bool mFootAttr3;
     bool mInLiquid; ///< Whether the enemy is in a liquid.
     bool mFootAttr1;
-    u8 mPad4[5];
+    u8 mPad3[5];
     dEnBoyoMng_c mBoyoMng;
-    u8 mPad5[4];
     dIceMng_c mIceMng; ///< The ice manager for this enemy.
     float mAirAccelY; ///< The Y acceleration before entering a liquid.
     float mAirSpeedMaxY; ///< The maximum Y speed before entering a liquid.
@@ -297,6 +300,11 @@ public:
     static const float smc_WATER_YMAXSPD;
     static const float smc_WATER_FALLMAXSPD;
     static const float smc_WATER_ROLL_DEC_RATE;
+
+    static const float smc_DEADFALL_GRAVITY;
+    static const float smc_DEADFALL_YSPEED;
+    static const float smc_DEADFALL_YSPEED_MAX;
+    static const s16 smc_DEADFALL_SPINSPEED;
 
     static const u16 smc_NO_HIT_PLAYER_TIMER_DEFAULT = 5; ///< @unofficial
     static const u16 smc_NO_HIT_PLAYER_TIMER_SPIT_OUT = 16; ///< @unofficial

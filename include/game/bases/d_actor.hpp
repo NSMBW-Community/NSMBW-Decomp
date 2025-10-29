@@ -334,7 +334,7 @@ public:
     u32 mCarryFukidashiPlayerNo; ///< The player for whom an action prompt related to the actor is being displayed. @p -1 if no players meet this criteria.
     u32 mCarryingFlags; ///< The actor's carry actions. See CARRY_ACTION_e.
     u8 mThrowDirection; ///< The actor's direction when thrown or dropped after carrying.
-    u32 mComboMultiplier; ///< The current combo multiplier obtained by the actor by colliding with other actors.
+    int mComboMultiplier; ///< The current combo multiplier obtained by the actor by colliding with other actors.
     u8 m_13; ///< @unused
     u32 m_17; ///< @unused
     float m_1b; ///< @unused
@@ -385,9 +385,6 @@ public:
     void setDefaultMaxBound() {
         mMaxBound.set(smc_CULL_XLIMIT, smc_CULL_YLIMIT, smc_CULL_AREA_XLIMIT, smc_CULL_AREA_YLIMIT);
     }
-
-    float getCenterX() { return getCenterPos().x; }
-    float getCenterY() { return getCenterPos().y; }
 
     u8 getKindMask() { return 1 << mKind; }
 

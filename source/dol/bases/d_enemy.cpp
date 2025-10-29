@@ -1,18 +1,18 @@
 #include <game/bases/d_enemy.hpp>
 #include <game/bases/d_bc.hpp>
 #include <game/bases/d_quake.hpp>
-#include <game/mLib/m_effect.hpp>
 #include <game/bases/d_a_player.hpp>
 #include <game/bases/d_a_player_manager.hpp>
 #include <game/bases/d_bg.hpp>
-#include <game/bases/d_score_mng.hpp>
+#include <game/bases/d_score_manager.hpp>
 #include <game/bases/d_ef.hpp>
 #include <game/bases/d_effectmanager.hpp>
 #include <game/bases/d_effactor_mng.hpp>
 #include <game/bases/d_audio.hpp>
-#include <game/bases/d_multi_mng.hpp>
+#include <game/bases/d_multi_manager.hpp>
 #include <game/bases/d_bg_parameter.hpp>
 #include <game/bases/d_enemy_manager.hpp>
+#include <game/mLib/m_effect.hpp>
 #include <constants/sound_list.h>
 
 const s8 l_EnMuki[] = { 1, -1 };
