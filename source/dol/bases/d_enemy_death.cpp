@@ -35,7 +35,7 @@ const s16 dEn_c::smc_DEADFALL_SPINSPEED = 0xc00;
 
 bool dEn_c::hitCallback_Star(dCc_c *cc1, dCc_c *cc2) {
     s8 plrNo;
-    daPlBase_c *actor = (daPlBase_c *) cc2->mpOwner;
+    daPlBase_c *actor = (daPlBase_c *) cc2->getOwner();
     u8 dir;
     float actorX = actor->mPos.x + actor->mCenterOffs.x;
     float thisX = mPos.x + mCenterOffs.x;
@@ -72,7 +72,7 @@ bool dEn_c::hitCallback_Star(dCc_c *cc1, dCc_c *cc2) {
 
 bool dEn_c::hitCallback_Cannon(dCc_c *cc1, dCc_c *cc2) {
     s8 plrNo;
-    daPlBase_c *actor = (daPlBase_c *) cc2->mpOwner;
+    daPlBase_c *actor = (daPlBase_c *) cc2->getOwner();
     u8 dir;
     float actorX = actor->mPos.x + actor->mCenterOffs.x;
     float thisX = mPos.x + mCenterOffs.x;
@@ -109,7 +109,7 @@ bool dEn_c::hitCallback_Cannon(dCc_c *cc1, dCc_c *cc2) {
 
 bool dEn_c::hitCallback_Slip(dCc_c *cc1, dCc_c *cc2) {
     s8 plrNo;
-    daPlBase_c *actor = (daPlBase_c *) cc2->mpOwner;
+    daPlBase_c *actor = (daPlBase_c *) cc2->getOwner();
     u8 dir;
     float actorX = actor->mPos.x + actor->mCenterOffs.x;
     float thisX = mPos.x + mCenterOffs.x;
@@ -149,9 +149,9 @@ bool dEn_c::hitCallback_Screw(dCc_c *cc1, dCc_c *cc2) {
 }
 
 bool dEn_c::hitCallback_WireNet(dCc_c *cc1, dCc_c *cc2) {
+    daPlBase_c *actor = (daPlBase_c *) cc2->getOwner();
+    u8 plrNo;
     u8 dir;
-    daPlBase_c *actor = (daPlBase_c *) cc2->mpOwner;
-    s8 plrNo;
     float actorX = actor->mPos.x + actor->mCenterOffs.x;
     float thisX = mPos.x + mCenterOffs.x;
     dir = actor->getTrgToSrcDir_Main(thisX, actorX);
@@ -168,7 +168,7 @@ bool dEn_c::hitCallback_WireNet(dCc_c *cc1, dCc_c *cc2) {
         mCombo.getDamageScore(),
         -1,
         dir,
-        plrNo
+        (s8) plrNo
     };
     mDeathInfo.set(data);
 
@@ -176,25 +176,25 @@ bool dEn_c::hitCallback_WireNet(dCc_c *cc1, dCc_c *cc2) {
 }
 
 bool dEn_c::hitCallback_Large(dCc_c *cc1, dCc_c *cc2) {
+    daPlBase_c *actor = (daPlBase_c *) cc2->getOwner();
     u8 dir;
-    daPlBase_c *actor = (daPlBase_c *) cc2->mpOwner;
     s8 plrNo;
     float actorX = actor->mPos.x + actor->mCenterOffs.x;
     float thisX = mPos.x + mCenterOffs.x;
     dir = actor->getTrgToSrcDir_Main(thisX, actorX);
     plrNo = *actor->getPlrNo();
 
-    float xSpeed = 6.0f;
-    float tmp = (actor->mSpeed.x - mSpeed.x);
-    float dirSpeed = l_EnMuki[dir] + tmp;
+    float dirv = l_EnMuki[dir];
+    float tmp = actor->mSpeed.x - mSpeed.x;
+    float dirSpeed = dirv + tmp;
     if (dirSpeed > 6.0f) {
-        xSpeed = dirSpeed;
-    } else if (xSpeed < -6.0f) {
-        xSpeed = -6.0f;
+        dirSpeed = 6.0f;
+    } else if (dirSpeed < -6.0f) {
+        dirSpeed = -6.0f;
     }
 
     sDeathInfoData data = {
-        xSpeed,
+        dirSpeed,
         smc_DEADFALL_YSPEED,
         smc_DEADFALL_YSPEED_MAX,
         smc_DEADFALL_GRAVITY,
@@ -214,8 +214,8 @@ bool dEn_c::hitCallback_Rolling(dCc_c *cc1, dCc_c *cc2) {
 }
 
 bool dEn_c::hitCallback_Spin(dCc_c *cc1, dCc_c *cc2) {
-    s8 plrNo;
-    daPlBase_c *actor = (daPlBase_c *) cc2->mpOwner;
+    daPlBase_c *actor = (daPlBase_c *) cc2->getOwner();
+    u8 plrNo;
     u8 dir;
     float actorX = actor->mPos.x + actor->mCenterOffs.x;
     float thisX = mPos.x + mCenterOffs.x;
@@ -241,7 +241,7 @@ bool dEn_c::hitCallback_Spin(dCc_c *cc1, dCc_c *cc2) {
         quakeScore,
         -1,
         dir,
-        plrNo
+        (s8) plrNo
     };
     mDeathInfo.set(data);
 
@@ -249,8 +249,8 @@ bool dEn_c::hitCallback_Spin(dCc_c *cc1, dCc_c *cc2) {
 }
 
 bool dEn_c::hitCallback_HipAttk(dCc_c *cc1, dCc_c *cc2) {
-    s8 plrNo;
-    daPlBase_c *actor = (daPlBase_c *) cc2->mpOwner;
+    daPlBase_c *actor = (daPlBase_c *) cc2->getOwner();
+    u8 plrNo;
     u8 dir;
     float actorX = actor->mPos.x + actor->mCenterOffs.x;
     float thisX = mPos.x + mCenterOffs.x;
@@ -276,7 +276,7 @@ bool dEn_c::hitCallback_HipAttk(dCc_c *cc1, dCc_c *cc2) {
         quakeScore,
         -1,
         dir,
-        plrNo
+        (s8) plrNo
     };
     mDeathInfo.set(data);
 
@@ -285,7 +285,7 @@ bool dEn_c::hitCallback_HipAttk(dCc_c *cc1, dCc_c *cc2) {
 
 bool dEn_c::hitCallback_YoshiHipAttk(dCc_c *cc1, dCc_c *cc2) {
     u8 plrNo;
-    daPlBase_c *actor = (daPlBase_c *) cc2->mpOwner;
+    daPlBase_c *actor = (daPlBase_c *) cc2->getOwner();
     u8 dir;
     float actorX = actor->mPos.x + actor->mCenterOffs.x;
     float thisX = mPos.x + mCenterOffs.x;
@@ -305,10 +305,9 @@ bool dEn_c::hitCallback_YoshiHipAttk(dCc_c *cc1, dCc_c *cc2) {
 }
 
 bool dEn_c::hitCallback_YoshiBullet(dCc_c *cc1, dCc_c *cc2) {
-    s8 plrNo;
-    dActor_c *actor1 = (dActor_c *) cc1->mpOwner;
-    daPlBase_c *actor = (daPlBase_c *) cc2->mpOwner;
+    daPlBase_c *actor = (daPlBase_c *) cc2->getOwner();
     u8 dir;
+    s8 plrNo;
     float actorX = actor->mPos.x + actor->mCenterOffs.x;
     float thisX = mPos.x + mCenterOffs.x;
     dir = actor->getTrgToSrcDir_Main(thisX, actorX);
@@ -316,7 +315,9 @@ bool dEn_c::hitCallback_YoshiBullet(dCc_c *cc1, dCc_c *cc2) {
 
     setDeathSound_Fire();
 
-    mVec3_c pos(cc1->mCollPos.x, cc1->mCollPos.y, 5500.0f);
+    float y = cc1->mCollPos.y;
+    float x = cc1->mCollPos.x;
+    mVec3_c pos(x, y, 5500.0f);
     hitdamageEffect(pos);
 
     dActorMng_c::m_instance->FUN_80066630(getCenterPos(), dir, 1, 0);
@@ -338,19 +339,17 @@ bool dEn_c::hitCallback_YoshiBullet(dCc_c *cc1, dCc_c *cc2) {
 }
 
 bool dEn_c::hitCallback_YoshiFire(dCc_c *cc1, dCc_c *cc2) {
-    s8 plrNo;
-    dActor_c *actor1 = (dActor_c *) cc1->mpOwner;
-    daPlBase_c *actor = (daPlBase_c *) cc2->mpOwner;
+    daPlBase_c *actor = (daPlBase_c *) cc2->getOwner();
     u8 dir;
+    s8 plrNo;
     float actorX = actor->mPos.x + actor->mCenterOffs.x;
     float thisX = mPos.x + mCenterOffs.x;
     dir = !(actor->mSpeed.x >= 0.0f);
-    dActorMng_c::m_instance->FUN_80066630(getCenterPos(), dir, 1, 0);
+    mVec3_c centerPos = getCenterPos();
+    dActorMng_c::m_instance->FUN_80066630(centerPos, dir, 1, 0);
     plrNo = *actor->getPlrNo();
 
-    mVec2_c pos2D;
-    pos2D.x = actor1->mPos.x;
-    pos2D.y = actor1->mPos.y;
+    mVec2_c pos2D(cc1->mCollPos.x, cc1->mCollPos.y);
     mVec3_c pos(pos2D, 5500.0f);
     hitdamageEffect(pos);
 
@@ -385,7 +384,7 @@ bool dEn_c::hitCallback_Shell(dCc_c *cc1, dCc_c *cc2) {
     u8 dir;
     s8 plrNo;
     dActor_c *actor1 = (dActor_c *) cc1->mpOwner;
-    daPlBase_c *actor = (daPlBase_c *) cc2->mpOwner;
+    daPlBase_c *actor = (daPlBase_c *) cc2->getOwner();
     float actorX = actor->mPos.x + actor->mCenterOffs.x;
     float thisX = mPos.x + mCenterOffs.x;
     dir = actor->getTrgToSrcDir_Main(thisX, actorX);
@@ -430,10 +429,9 @@ bool dEn_c::hitCallback_Shell(dCc_c *cc1, dCc_c *cc2) {
 }
 
 bool dEn_c::hitCallback_Fire(dCc_c *cc1, dCc_c *cc2) {
-    s8 plrNo;
-    dActor_c *actor1 = (dActor_c *) cc1->mpOwner;
-    daPlBase_c *actor = (daPlBase_c *) cc2->mpOwner;
+    daPlBase_c *actor = (daPlBase_c *) cc2->getOwner();
     u8 dir;
+    s8 plrNo;
     dir = !(actor->mSpeed.x >= 0.0f);
     plrNo = *actor->getPlrNo();
 
@@ -459,7 +457,7 @@ bool dEn_c::hitCallback_Fire(dCc_c *cc1, dCc_c *cc2) {
 
 bool dEn_c::hitCallback_Ice(dCc_c *cc1, dCc_c *cc2) {
     if (mIceMng.m_0c == 0){
-        daPlBase_c *actor = (daPlBase_c *) cc2->mpOwner;
+        daPlBase_c *actor = (daPlBase_c *) cc2->getOwner();
 
         if (actor->mSpeed.x >= 0.0f) {
             mBoyoMng.mDirection = 0;
@@ -553,7 +551,7 @@ void dEn_c::setDeathInfo_Smoke(dActor_c *actor) {
         &StateID_DieSmoke,
         -1,
         -1,
-        true,
+        (u8) -1,
         plrNo
     };
     mDeathInfo.set(data);
@@ -592,8 +590,8 @@ void dEn_c::setDeathInfo_YoshiFumi(dActor_c *killedBy) {
     sDeathInfoData data = {
         0.0f,
         0.0f,
-        smc_DEADFALL_YSPEED_MAX,
-        smc_DEADFALL_GRAVITY,
+        0.0f,
+        0.0f,
         &StateID_DieYoshiFumi,
         -1,
         -1,
@@ -612,12 +610,12 @@ void dEn_c::setDeathInfo_Other(dActor_c *killedBy) {
     sDeathInfoData data = {
         0.0f,
         0.0f,
-        smc_DEADFALL_YSPEED_MAX,
-        smc_DEADFALL_GRAVITY,
-        &StateID_DieYoshiFumi,
+        0.0f,
+        0.0f,
+        &StateID_DieOther,
         -1,
         -1,
-        true,
+        (u8) -1,
         plrNo
     };
     mDeathInfo.set(data);
@@ -633,10 +631,10 @@ void dEn_c::setDeathInfo_SpinFumi(dActor_c *killedBy, int) {
 
     sDeathInfoData data = {
         l_base_fall_speed_x[dir],
-        0.0f,
+        smc_DEADFALL_YSPEED,
         smc_DEADFALL_YSPEED_MAX,
         smc_DEADFALL_GRAVITY,
-        &StateID_DieYoshiFumi,
+        &StateID_DieFall,
         -1,
         -1,
         dir,
@@ -651,10 +649,10 @@ void dEn_c::setDeathInfo_IceBreak() {
     s8 plrNo = mPlayerNo;
     sDeathInfoData data = {
         l_base_fall_speed_x[dir],
-        0.0f,
+        smc_DEADFALL_YSPEED,
         smc_DEADFALL_YSPEED_MAX,
         smc_DEADFALL_GRAVITY,
-        &StateID_DieYoshiFumi,
+        &StateID_DieFall,
         -1,
         -1,
         dir,
@@ -672,9 +670,9 @@ void dEn_c::setDeathInfo_IceVanish() {
     sDeathInfoData data = {
         0.0f,
         0.0f,
-        smc_DEADFALL_YSPEED_MAX,
-        smc_DEADFALL_GRAVITY,
-        &StateID_DieYoshiFumi,
+        0.0f,
+        0.0f,
+        &StateID_DieIceVanish,
         -1,
         -1,
         dir,
