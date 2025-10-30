@@ -52,7 +52,7 @@ bool dEn_c::hitCallback_Star(dCc_c *cc1, dCc_c *cc2) {
     }
     actor->slideComboSE(actor->getStarCount(), shortCombo);
 
-    int quakeScore = mCombo.getComboScore(dEnCombo_c::calcPlFumiCnt(actor));
+    int quakeScore = mCombo.getComboScore(dEnCombo_c::calcPlStarCnt(actor));
 
     sDeathInfoData data = {
         l_base_fall_speed_x[dir],
@@ -89,7 +89,7 @@ bool dEn_c::hitCallback_Cannon(dCc_c *cc1, dCc_c *cc2) {
     }
     actor->slideComboSE(actor->m_cee, shortCombo);
 
-    int quakeScore = mCombo.getComboScore(dEnCombo_c::calcPlFumiCnt(actor));
+    int quakeScore = mCombo.getComboScore(dEnCombo_c::calcPlComboCnt(actor));
 
     sDeathInfoData data = {
         l_base_fall_speed_x[dir],
@@ -122,7 +122,7 @@ bool dEn_c::hitCallback_Slip(dCc_c *cc1, dCc_c *cc2) {
 
     setDeathSound_Slip(actor);
 
-    int quakeScore = mCombo.getComboScore(dEnCombo_c::calcPlFumiCnt(actor));
+    int quakeScore = mCombo.getComboScore(dEnCombo_c::calcPlComboCnt(actor));
 
     sDeathInfoData data = {
         l_base_fall_speed_x[dir],
@@ -314,9 +314,7 @@ bool dEn_c::hitCallback_YoshiBullet(dCc_c *cc1, dCc_c *cc2) {
 
     setDeathSound_Fire();
 
-    float y = cc1->mCollPos.y;
-    float x = cc1->mCollPos.x;
-    mVec3_c pos(x, y, 5500.0f);
+    mVec3_c pos(cc1->getCollPosX(), cc1->getCollPosY(), 5500.0f);
     hitdamageEffect(pos);
 
     dActorMng_c::m_instance->FUN_80066630(getCenterPos(), dir, 1, 0);
@@ -348,8 +346,8 @@ bool dEn_c::hitCallback_YoshiFire(dCc_c *cc1, dCc_c *cc2) {
     dActorMng_c::m_instance->FUN_80066630(centerPos, dir, 1, 0);
     plrNo = *actor->getPlrNo();
 
-    mVec2_c pos2D(cc1->mCollPos.x, cc1->mCollPos.y);
-    mVec3_c pos(pos2D, 5500.0f);
+    mVec2_c collPos = cc1->mCollPos;
+    mVec3_c pos(collPos, 5500.0f);
     hitdamageEffect(pos);
 
     s8 shortCombo = false;
@@ -389,10 +387,8 @@ bool dEn_c::hitCallback_Shell(dCc_c *cc1, dCc_c *cc2) {
     dir = actor->getTrgToSrcDir_Main(thisX, actorX);
     plrNo = *actor->getPlrNo();
 
-    float y = cc1->mCollPos.y;
-    float x = cc1->mCollPos.x;
-    mVec2_c pos2D(x, y);
-    mVec3_c pos(pos2D, 5500.0f);
+    mVec2_c collPos = cc1->mCollPos;
+    mVec3_c pos(collPos, 5500.0f);
     hitdamageEffect(pos);
 
     int comboScore = -1;
@@ -520,7 +516,7 @@ void dEn_c::setDeathInfo_Quake(int i) {
 
     dEnemyMng_c::m_instance->incQuakeComboCount(0);
 
-    int comboScore = mCombo.getComboScore(dEnemyMng_c::m_instance->m_154);
+    int comboScore = mCombo.getQuakeScore(dEnemyMng_c::m_instance->m_154);
 
     sDeathInfoData data = {
         0.0f,
@@ -690,12 +686,14 @@ void dEn_c::initializeState_DieFumi() {
     }
     removeCc();
     mBc.mFlags = 0;
-    mSpeed.set(mDeathInfo.mSpeed.x, mDeathInfo.mSpeed.y, 0.0f);
-    mSpeedMax.set(0.0f, mDeathInfo.mMaxYSpeed, 0.0f);
+
+    mSpeed.set(mDeathInfo.getXSpeed(), mDeathInfo.getYSpeed(), 0.0f);
+    mSpeedMax.set(0.0f, mDeathInfo.getMaxYSpeed(), 0.0f);
     mFootAttr3 = 0;
     mIceDeathDirection = mDeathInfo.mDirection;
     mAccelF = 0.0f;
-    mAccelY = mDeathInfo.mYAccel;
+    mAccelY = mDeathInfo.getYAccel();
+
     if (mAngle.y >= 0) {
         mDirection = 0;
     } else {
@@ -741,12 +739,14 @@ void dEn_c::initializeState_DieFall() {
     }
     removeCc();
     mBc.mFlags = 0;
-    mSpeed.set(mDeathInfo.mSpeed.x, mDeathInfo.mSpeed.y, 0.0f);
-    mSpeedMax.set(0.0f, mDeathInfo.mMaxYSpeed, 0.0f);
+
+    mSpeed.set(mDeathInfo.getXSpeed(), mDeathInfo.getYSpeed(), 0.0f);
+    mSpeedMax.set(0.0f, mDeathInfo.getMaxYSpeed(), 0.0f);
     mFootAttr3 = 0;
     mIceDeathDirection = mDeathInfo.mDirection;
     mAccelF = 0.0f;
-    mAccelY = mDeathInfo.mYAccel;
+    mAccelY = mDeathInfo.getYAccel();
+
     if (mAngle.y >= 0) {
         mDirection = 0;
     } else {
@@ -827,7 +827,7 @@ void dEn_c::initializeState_DieIceVanish() {
         if (plrNo >= 0 && plrNo < PLAYER_COUNT) {
             dScoreMng_c::m_instance->ScoreSet(this, quakeScore, plrNo, dScoreMng_c::smc_SCORE_X, dScoreMng_c::smc_SCORE_Y);
         } else if (plrNo == 50) {
-            dScoreMng_c::m_instance->UnKnownScoreSet(this, quakeScore, dScoreMng_c::smc_SCORE_X, dScoreMng_c::smc_SCORE_Y);
+            dScoreMng_c::m_instance->UnKnownScoreSet(this, quakeScore, 0.0f, 24.0f);
         }
     }
 }

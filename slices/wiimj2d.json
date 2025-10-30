@@ -217,7 +217,6 @@
         },
         {
             "source": "dol/bases/d_enemy_death.cpp",
-            "nonMatching": true,
             "memoryRanges": {
                 ".text": "0x99040-0x9c0f0",
                 ".ctors": "0xe4-0xe8",

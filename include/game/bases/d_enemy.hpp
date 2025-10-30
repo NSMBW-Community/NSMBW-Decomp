@@ -39,9 +39,27 @@ public:
         mKilledBy = other.mKilledBy;
     }
 
+    float getXSpeed() const {
+        return mSpeed.x;
+    }
+
+    float getYSpeed() const {
+        return mSpeed.y;
+    }
+
+    float getMaxYSpeed() const {
+        return mMaxYSpeed;
+    }
+
+    float getYAccel() const {
+        return mYAccel;
+    }
+
+private:
     mVec2_c mSpeed;
     float mMaxYSpeed;
     float mYAccel;
+public:
     const sStateIDIf_c *mDeathState;
     int mQuakeScore;
     int m_18;
