@@ -184,9 +184,8 @@ bool dEn_c::hitCallback_Large(dCc_c *cc1, dCc_c *cc2) {
     dir = actor->getTrgToSrcDir_Main(thisX, actorX);
     plrNo = *actor->getPlrNo();
 
-    float dirv = l_EnMuki[dir];
-    float tmp = actor->mSpeed.x - mSpeed.x;
-    float dirSpeed = dirv + tmp;
+    float dirSpeed = l_EnMuki[dir];
+    dirSpeed += actor->mSpeed.x - mSpeed.x;
     if (dirSpeed > 6.0f) {
         dirSpeed = 6.0f;
     } else if (dirSpeed < -6.0f) {
