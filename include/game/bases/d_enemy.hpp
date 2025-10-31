@@ -209,7 +209,7 @@ public:
     bool LineBoundaryCheck(dActor_c *actor);
 
     void WaterCheck(mVec3_c &pos, float h); ///< @unofficial
-    dBc_c::WaterCheckResult_e WaterLineProc(const mVec3_c &pos, float h);
+    dBc_c::WATER_TYPE_e WaterLineProc(const mVec3_c &pos, float h);
     bool EnLavaCheck(const mVec3_c &pos);
     bool EnWaterCheck(const mVec3_c &pos);
     bool EnWaterFlagCheck(const mVec3_c &pos);
