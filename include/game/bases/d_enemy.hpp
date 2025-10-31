@@ -191,7 +191,7 @@ public:
     virtual void boyonBegin();
     virtual void calcBoyonScale();
 
-    virtual void createIceActor();
+    virtual bool createIceActor();
     virtual void setIceAnm();
     virtual void returnAnm_Ice();
     virtual void returnState_Ice();
@@ -261,6 +261,8 @@ public:
 
     static void normal_collcheck(dCc_c *cc1, dCc_c *cc2);
     static bool CeilCheck(float y, dCc_c *cc);
+
+    int getIceMode() const { return 0; }
 
     u8 getDeathFallDirection() const { return mDeathFallDirection; }
 
