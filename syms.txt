@@ -1,6 +1,7 @@
 memcpy=0x80004364
 memset=0x800046B4
 DVDDiskCheck=0x80006780
+draw__3d2dFv=0x800067A0
 __ct__7mVec3_cFv=0x80015E30
 changeState__82sStateMgr_c<13dActorState_c,20sStateMethodUsr_FI_c,12sFStateFct_c,13sStateIDChk_c>FRC12sStateIDIf_c=0x8001CC90
 refreshState__82sStateMgr_c<13dActorState_c,20sStateMethodUsr_FI_c,12sFStateFct_c,13sStateIDChk_c>Fv=0x8001CCA0
@@ -571,6 +572,7 @@ __unregister_fragment=0x802DD68C
 abs=0x802DE804
 snprintf=0x802E19D8
 sprintf=0x802E1ACC
+strcpy=0x802E1C28
 strncpy=0x802E1CE8
 strcmp=0x802E1DA4
 strrchr=0x802E1F30
