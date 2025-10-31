@@ -48,7 +48,7 @@ public:
         STAGE_ACTOR_GENERIC, ///< A generic stage actor (default).
         STAGE_ACTOR_PLAYER, ///< The @ref dAcPy_c "player actor".
         STAGE_ACTOR_YOSHI, ///< The @ref daYoshi_c "Yoshi actor".
-        STAGE_ACTOR_ENTITY, ///< An interactable entity actor.
+        STAGE_ACTOR_ENEMY, ///< An enemy actor.
     };
 
     /// @brief The possible carry actions.
@@ -379,7 +379,7 @@ public:
     u8 mExecStopMask; ///< The mask required to disable the @p execute operation for the actor.
     u8 mLayer; ///< The actor's layer.
     bool mNoRespawn; ///< Whether the actor should not respawn after being deleted.
-    bool mBackFence; ///< Whether the actor is on the back side of chainlink fences.
+    u8 mAmiLayer; ///< The actor's layer for chainlink fences.
 
     sRangeDataF getDestroyBound() { return mDestroyBound; }
 
@@ -419,5 +419,5 @@ public:
     static u8 m_tmpCtSpriteLayerNo;
 };
 
-extern const u8 l_Ami_Line[2]; ///< The sub-layer for each side of chainlink fences.
-extern const float l_Ami_Zpos[2]; ///< The additional Z offset for each side of chainlink fences.
+extern const u8 l_Ami_Line[]; ///< The sub-layer for each side of chainlink fences.
+extern const float l_Ami_Zpos[]; ///< The additional Z offset for each side of chainlink fences.
