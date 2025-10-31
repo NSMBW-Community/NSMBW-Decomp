@@ -110,6 +110,10 @@ public:
      */
     static dBaseActor_c *construct(ProfileName profName, dBase_c *parent, unsigned long param, const mVec3_c *position, const mAng3_c *rotation);
 
+    float getCenterX() const { return mPos.x + mCenterOffs.x; }
+    float getCenterY() const { return mPos.y + mCenterOffs.y; }
+    float getCenterZ() const { return mPos.z + mCenterOffs.z; }
+
 private:
     /**
      * @brief Sets temporary data to be used for the next actor's construction.

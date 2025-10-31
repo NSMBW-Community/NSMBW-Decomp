@@ -169,6 +169,8 @@ public:
     /// Sets a friend actor for this collider.
     void setFriendActor(dBaseActor_c *actor) { mFriendActor = actor; }
 
+    dBaseActor_c *getOwner() const { return mpOwner; } ///< Gets the owner actor of this collider.
+
     /**
      * @brief Gets the result of a hit check.
      * @param mask The mask to check.
@@ -228,6 +230,9 @@ public:
      * Note that this does not clean up the colliders themselves!
      */
     static void reset();
+
+    float getCollPosX() const { return mCollPos.x; }
+    float getCollPosY() const { return mCollPos.y; }
 
 private:
     /**
