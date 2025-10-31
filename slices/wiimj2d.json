@@ -322,6 +322,17 @@
             }
         },
         {
+            "source": "dol/bases/d_SelectCursor.cpp",
+            "memoryRanges": {
+                ".data": "0x24348-0x24478",
+                ".sbss": "0x708-0x710",
+                ".sbss2": "0x18-0x1c",
+                ".sdata": "0x1b88-0x1bb8",
+                ".sdata2": "0x2288-0x2290",
+                ".text": "0x1059b0-0x106360"
+            }
+        },
+        {
             "source": "dol/bases/d_SmallScoreManager.cpp",
             "memoryRanges": {
                 ".text": "0x106360-0x106af0",
