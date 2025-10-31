@@ -377,7 +377,7 @@ bool dEn_c::hitCallback_Fire(dCc_c *self, dCc_c *other) {
 }
 
 bool dEn_c::hitCallback_Ice(dCc_c *self, dCc_c *other) {
-    if (mIceMng.m_0c == 0){
+    if (!mIceMng.mActive){
         daPlBase_c *player = (daPlBase_c *) other->getOwner();
 
         if (player->mSpeed.x >= 0.0f) {
@@ -405,20 +405,25 @@ void dEn_c::setDeadMode(dActor_c *actor, int i) {
     if (mDeathInfo.mIsDead || mNoRespawn) {
         dead = true;
     }
-    if (!dead && (!isState(StateID_Ice) || mIceMng.m_18 == 0)) {
-        removeCc();
-        if (i == 1) {
-            setDeathInfo_Smoke(actor);
-        } else {
-            setDeathInfo_SpinFumi(actor, 0);
+    if (dead) {
+        return;
+    }
+    if (isState(StateID_Ice) && mIceMng.mDestroyMode != 0) {
+        return;
+    }
 
-            static const float cs_effect_offset_x[] = { -6.0f, 6.0f };
-            mVec3_c center = getCenterPos();
-            center.x += cs_effect_offset_x[mDeathInfo.mDirection];
-            hitdamageEffect(center);
+    removeCc();
+    if (i == 1) {
+        setDeathInfo_Smoke(actor);
+    } else {
+        setDeathInfo_SpinFumi(actor, 0);
 
-            dAudio::g_pSndObjEmy->startSound(SE_EMY_DOWN, mPos, 0);
-        }
+        static const float cs_effect_offset_x[] = { -6.0f, 6.0f };
+        mVec3_c center = getCenterPos();
+        center.x += cs_effect_offset_x[mDeathInfo.mDirection];
+        hitdamageEffect(center);
+
+        dAudio::SoundEffectID_t(SE_EMY_DOWN).playEmySound(mPos, 0);
     }
 }
 
