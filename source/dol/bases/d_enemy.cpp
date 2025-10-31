@@ -749,13 +749,13 @@ bool dEn_c::LineBoundaryCheck(dActor_c *actor) {
     return false;
 }
 
-dBc_c::WaterCheckResult_e dEn_c::WaterLineProc(const mVec3_c &pos, float h) {
+dBc_c::WATER_TYPE_e dEn_c::WaterLineProc(const mVec3_c &pos, float h) {
     float height = 0.0f;
-    dBc_c::WaterCheckResult_e res = dBc_c::checkWater(pos.x, pos.y, mLayer, &height);
+    dBc_c::WATER_TYPE_e res = dBc_c::checkWater(pos.x, pos.y, mLayer, &height);
     mVec3_c waterPos(mPos.x, height, 6500.0f);
     switch (res) {
-        case dBc_c::WATER_CHECK_WATER_1:
-        case dBc_c::WATER_CHECK_WATER_2:
+        case dBc_c::WATER_CHECK_WATER:
+        case dBc_c::WATER_CHECK_AIR_WATER:
             if (!mInLiquid) {
                 mInLiquid = true;
                 mAirAccelY = mAccelY;
@@ -821,7 +821,7 @@ void dEn_c::poisonSplashEffect(const mVec3_c &pos, float h) {
 
 bool dEn_c::EnLavaCheck(const mVec3_c &pos) {
     float height = 0.0f;
-    dBc_c::WaterCheckResult_e res = dBc_c::checkWater(pos.x, pos.y, mLayer, &height);
+    dBc_c::WATER_TYPE_e res = dBc_c::checkWater(pos.x, pos.y, mLayer, &height);
     if (res == dBc_c::WATER_CHECK_YOGAN) {
         if (height < 0.0f && mLastPos.y > height && mPos.y <= height) {
             yoganSplashEffect(mVec3_c(pos.x, height, 6000.0f), 1.0f);
@@ -842,8 +842,8 @@ bool dEn_c::EnWaterCheck(const mVec3_c &pos) {
 
 bool dEn_c::EnWaterFlagCheck(const mVec3_c &pos) {
     switch (dBc_c::checkWater(pos.x, pos.y, mLayer, nullptr)) {
-        case dBc_c::WATER_CHECK_WATER_1:
-        case dBc_c::WATER_CHECK_WATER_2:
+        case dBc_c::WATER_CHECK_WATER:
+        case dBc_c::WATER_CHECK_AIR_WATER:
             setWaterSpeed();
             return true;
         default:
