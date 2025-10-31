@@ -34,25 +34,21 @@ const float dEn_c::smc_DEADFALL_YSPEED_MAX = -4.0f;
 const s16 dEn_c::smc_DEADFALL_SPINSPEED = 0xc00;
 
 bool dEn_c::hitCallback_Star(dCc_c *cc1, dCc_c *cc2) {
-    s8 plrNo;
-    daPlBase_c *actor = (daPlBase_c *) cc2->getOwner();
-    u8 dir;
-    float actorX = actor->mPos.x + actor->mCenterOffs.x;
-    float thisX = mPos.x + mCenterOffs.x;
-    dir = actor->getTrgToSrcDir_Main(thisX, actorX);
-    plrNo = *actor->getPlrNo();
+    daPlBase_c *player = (daPlBase_c *) cc2->getOwner();
+    u8 dir = player->getTrgToSrcDir_Main(getCenterX(), player->getCenterX());
+    u8 plrNo = *player->getPlrNo();
 
     mVec2_c collPos = cc1->mCollPos;
     mVec3_c pos(collPos, 5500.0f);
     hitdamageEffect(pos);
 
-    s8 shortCombo = false;
+    int shortCombo = 0;
     if (mCombo.mType == 2) {
-        shortCombo = true;
+        shortCombo = 1;
     }
-    actor->slideComboSE(actor->getStarCount(), shortCombo);
+    player->slideComboSE(player->getStarCount(), shortCombo);
 
-    int quakeScore = mCombo.getComboScore(dEnCombo_c::calcPlStarCnt(actor));
+    int score = mCombo.getComboScore(dEnCombo_c::calcPlStarCnt(player));
 
     sDeathInfoData data = {
         l_base_fall_speed_x[dir],
@@ -60,7 +56,7 @@ bool dEn_c::hitCallback_Star(dCc_c *cc1, dCc_c *cc2) {
         smc_DEADFALL_YSPEED_MAX,
         smc_DEADFALL_GRAVITY,
         &StateID_DieFall,
-        quakeScore,
+        score,
         -1,
         dir,
         plrNo
@@ -71,25 +67,21 @@ bool dEn_c::hitCallback_Star(dCc_c *cc1, dCc_c *cc2) {
 }
 
 bool dEn_c::hitCallback_Cannon(dCc_c *cc1, dCc_c *cc2) {
-    s8 plrNo;
-    daPlBase_c *actor = (daPlBase_c *) cc2->getOwner();
-    u8 dir;
-    float actorX = actor->mPos.x + actor->mCenterOffs.x;
-    float thisX = mPos.x + mCenterOffs.x;
-    dir = actor->getTrgToSrcDir_Main(thisX, actorX);
-    plrNo = *actor->getPlrNo();
+    daPlBase_c *player = (daPlBase_c *) cc2->getOwner();
+    u8 dir = player->getTrgToSrcDir_Main(getCenterX(), player->getCenterX());
+    u8 plrNo = *player->getPlrNo();
 
     mVec2_c collPos = cc1->mCollPos;
     mVec3_c pos(collPos, 5500.0f);
     hitdamageEffect(pos);
 
-    s8 shortCombo = false;
+    int shortCombo = 0;
     if (mCombo.mType == 2) {
-        shortCombo = true;
+        shortCombo = 1;
     }
-    actor->slideComboSE(actor->m_cee, shortCombo);
+    player->slideComboSE(player->m_cee, shortCombo);
 
-    int quakeScore = mCombo.getComboScore(dEnCombo_c::calcPlComboCnt(actor));
+    int score = mCombo.getComboScore(dEnCombo_c::calcPlComboCnt(player));
 
     sDeathInfoData data = {
         l_base_fall_speed_x[dir],
@@ -97,7 +89,7 @@ bool dEn_c::hitCallback_Cannon(dCc_c *cc1, dCc_c *cc2) {
         smc_DEADFALL_YSPEED_MAX,
         smc_DEADFALL_GRAVITY,
         &StateID_DieFall,
-        quakeScore,
+        score,
         -1,
         dir,
         plrNo
@@ -108,21 +100,17 @@ bool dEn_c::hitCallback_Cannon(dCc_c *cc1, dCc_c *cc2) {
 }
 
 bool dEn_c::hitCallback_Slip(dCc_c *cc1, dCc_c *cc2) {
-    s8 plrNo;
-    daPlBase_c *actor = (daPlBase_c *) cc2->getOwner();
-    u8 dir;
-    float actorX = actor->mPos.x + actor->mCenterOffs.x;
-    float thisX = mPos.x + mCenterOffs.x;
-    dir = actor->getTrgToSrcDir_Main(thisX, actorX);
-    plrNo = *actor->getPlrNo();
+    daPlBase_c *player = (daPlBase_c *) cc2->getOwner();
+    u8 dir = player->getTrgToSrcDir_Main(getCenterX(), player->getCenterX());
+    u8 plrNo = *player->getPlrNo();
 
     mVec2_c collPos = cc1->mCollPos;
     mVec3_c pos(collPos, 5500.0f);
     hitdamageEffect(pos);
 
-    setDeathSound_Slip(actor);
+    setDeathSound_Slip(player);
 
-    int quakeScore = mCombo.getComboScore(dEnCombo_c::calcPlComboCnt(actor));
+    int score = mCombo.getComboScore(dEnCombo_c::calcPlComboCnt(player));
 
     sDeathInfoData data = {
         l_base_fall_speed_x[dir],
@@ -130,7 +118,7 @@ bool dEn_c::hitCallback_Slip(dCc_c *cc1, dCc_c *cc2) {
         smc_DEADFALL_YSPEED_MAX,
         smc_DEADFALL_GRAVITY,
         &StateID_DieFall,
-        quakeScore,
+        score,
         -1,
         dir,
         plrNo
@@ -149,13 +137,9 @@ bool dEn_c::hitCallback_Screw(dCc_c *cc1, dCc_c *cc2) {
 }
 
 bool dEn_c::hitCallback_WireNet(dCc_c *cc1, dCc_c *cc2) {
-    daPlBase_c *actor = (daPlBase_c *) cc2->getOwner();
-    u8 plrNo;
-    u8 dir;
-    float actorX = actor->mPos.x + actor->mCenterOffs.x;
-    float thisX = mPos.x + mCenterOffs.x;
-    dir = actor->getTrgToSrcDir_Main(thisX, actorX);
-    plrNo = *actor->getPlrNo();
+    daPlBase_c *player = (daPlBase_c *) cc2->getOwner();
+    u8 dir = player->getTrgToSrcDir_Main(getCenterX(), player->getCenterX());
+    u8 plrNo = *player->getPlrNo();
 
     dAudio::g_pSndObjEmy->startSound(SE_EMY_DOWN, mPos, 0);
 
@@ -168,7 +152,7 @@ bool dEn_c::hitCallback_WireNet(dCc_c *cc1, dCc_c *cc2) {
         mCombo.getDamageScore(),
         -1,
         dir,
-        (s8) plrNo
+        plrNo
     };
     mDeathInfo.set(data);
 
@@ -176,24 +160,20 @@ bool dEn_c::hitCallback_WireNet(dCc_c *cc1, dCc_c *cc2) {
 }
 
 bool dEn_c::hitCallback_Large(dCc_c *cc1, dCc_c *cc2) {
-    daPlBase_c *actor = (daPlBase_c *) cc2->getOwner();
-    u8 dir;
-    s8 plrNo;
-    float actorX = actor->mPos.x + actor->mCenterOffs.x;
-    float thisX = mPos.x + mCenterOffs.x;
-    dir = actor->getTrgToSrcDir_Main(thisX, actorX);
-    plrNo = *actor->getPlrNo();
+    daPlBase_c *player = (daPlBase_c *) cc2->getOwner();
+    u8 dir = player->getTrgToSrcDir_Main(getCenterX(), player->getCenterX());
+    u8 plrNo = *player->getPlrNo();
 
-    float dirSpeed = l_EnMuki[dir];
-    dirSpeed += actor->mSpeed.x - mSpeed.x;
-    if (dirSpeed > 6.0f) {
-        dirSpeed = 6.0f;
-    } else if (dirSpeed < -6.0f) {
-        dirSpeed = -6.0f;
+    float xSpeed = l_EnMuki[dir];
+    xSpeed += player->mSpeed.x - mSpeed.x;
+    if (xSpeed > 6.0f) {
+        xSpeed = 6.0f;
+    } else if (xSpeed < -6.0f) {
+        xSpeed = -6.0f;
     }
 
     sDeathInfoData data = {
-        dirSpeed,
+        xSpeed,
         smc_DEADFALL_YSPEED,
         smc_DEADFALL_YSPEED_MAX,
         smc_DEADFALL_GRAVITY,
@@ -213,23 +193,19 @@ bool dEn_c::hitCallback_Rolling(dCc_c *cc1, dCc_c *cc2) {
 }
 
 bool dEn_c::hitCallback_Spin(dCc_c *cc1, dCc_c *cc2) {
-    daPlBase_c *actor = (daPlBase_c *) cc2->getOwner();
-    u8 plrNo;
-    u8 dir;
-    float actorX = actor->mPos.x + actor->mCenterOffs.x;
-    float thisX = mPos.x + mCenterOffs.x;
-    dir = actor->getTrgToSrcDir_Main(thisX, actorX);
-    plrNo = *actor->getPlrNo();
+    daPlBase_c *player = (daPlBase_c *) cc2->getOwner();
+    u8 dir = player->getTrgToSrcDir_Main(getCenterX(), player->getCenterX());
+    u8 plrNo = *player->getPlrNo();
 
     setDeathSound_Spin();
 
     mVec2_c pos2D;
-    pos2D.x = actor->mPos.x;
-    pos2D.y = actor->mPos.y;
+    pos2D.x = player->mPos.x;
+    pos2D.y = player->mPos.y;
     mVec3_c pos(pos2D, 5500.0f);
     hipatkEffect(pos);
 
-    int quakeScore = mCombo.getComboScore(dEnCombo_c::calcPlFumiCnt(actor));
+    int score = mCombo.getComboScore(dEnCombo_c::calcPlFumiCnt(player));
 
     sDeathInfoData data = {
         l_base_fall_speed_x[dir],
@@ -237,10 +213,10 @@ bool dEn_c::hitCallback_Spin(dCc_c *cc1, dCc_c *cc2) {
         smc_DEADFALL_YSPEED_MAX,
         smc_DEADFALL_GRAVITY,
         &StateID_DieFall,
-        quakeScore,
+        score,
         -1,
         dir,
-        (s8) plrNo
+        plrNo
     };
     mDeathInfo.set(data);
 
@@ -248,23 +224,19 @@ bool dEn_c::hitCallback_Spin(dCc_c *cc1, dCc_c *cc2) {
 }
 
 bool dEn_c::hitCallback_HipAttk(dCc_c *cc1, dCc_c *cc2) {
-    daPlBase_c *actor = (daPlBase_c *) cc2->getOwner();
-    u8 plrNo;
-    u8 dir;
-    float actorX = actor->mPos.x + actor->mCenterOffs.x;
-    float thisX = mPos.x + mCenterOffs.x;
-    dir = actor->getTrgToSrcDir_Main(thisX, actorX);
-    plrNo = *actor->getPlrNo();
+    daPlBase_c *player = (daPlBase_c *) cc2->getOwner();
+    u8 dir = player->getTrgToSrcDir_Main(getCenterX(), player->getCenterX());
+    u8 plrNo = *player->getPlrNo();
 
     setDeathSound_HipAttk();
 
     mVec2_c pos2D;
-    pos2D.x = actor->mPos.x;
-    pos2D.y = actor->mPos.y;
+    pos2D.x = player->mPos.x;
+    pos2D.y = player->mPos.y;
     mVec3_c pos(pos2D, 5500.0f);
     hipatkEffect(pos);
 
-    int quakeScore = mCombo.getComboScore(dEnCombo_c::calcPlFumiCnt(actor));
+    int score = mCombo.getComboScore(dEnCombo_c::calcPlFumiCnt(player));
 
     sDeathInfoData data = {
         l_base_fall_speed_x[dir],
@@ -272,10 +244,10 @@ bool dEn_c::hitCallback_HipAttk(dCc_c *cc1, dCc_c *cc2) {
         smc_DEADFALL_YSPEED_MAX,
         smc_DEADFALL_GRAVITY,
         &StateID_DieFall,
-        quakeScore,
+        score,
         -1,
         dir,
-        (s8) plrNo
+        plrNo
     };
     mDeathInfo.set(data);
 
@@ -283,34 +255,26 @@ bool dEn_c::hitCallback_HipAttk(dCc_c *cc1, dCc_c *cc2) {
 }
 
 bool dEn_c::hitCallback_YoshiHipAttk(dCc_c *cc1, dCc_c *cc2) {
-    u8 plrNo;
-    daPlBase_c *actor = (daPlBase_c *) cc2->getOwner();
-    u8 dir;
-    float actorX = actor->mPos.x + actor->mCenterOffs.x;
-    float thisX = mPos.x + mCenterOffs.x;
-    dir = actor->getTrgToSrcDir_Main(thisX, actorX);
-    plrNo = *actor->getPlrNo();
+    daPlBase_c *player = (daPlBase_c *) cc2->getOwner();
+    u8 dir = player->getTrgToSrcDir_Main(getCenterX(), player->getCenterX());
+    u8 plrNo = *player->getPlrNo();
 
-    int comboScore = mCombo.getComboScore(dEnCombo_c::calcPlFumiCnt(actor));
+    int comboScore = mCombo.getComboScore(dEnCombo_c::calcPlFumiCnt(player));
     if (0 <= comboScore && plrNo < 4) {
         dScoreMng_c::m_instance->ScoreSet(this, comboScore, plrNo, dScoreMng_c::smc_SCORE_X, dScoreMng_c::smc_SCORE_Y);
     }
 
     dAudio::g_pSndObjEmy->startSound(SE_EMY_YOSHI_HPDP, mPos, 0);
 
-    setDeathInfo_YoshiFumi(actor);
+    setDeathInfo_YoshiFumi(player);
 
     return true;
 }
 
 bool dEn_c::hitCallback_YoshiBullet(dCc_c *cc1, dCc_c *cc2) {
-    daPlBase_c *actor = (daPlBase_c *) cc2->getOwner();
-    u8 dir;
-    s8 plrNo;
-    float actorX = actor->mPos.x + actor->mCenterOffs.x;
-    float thisX = mPos.x + mCenterOffs.x;
-    dir = actor->getTrgToSrcDir_Main(thisX, actorX);
-    plrNo = *actor->getPlrNo();
+    daPlBase_c *player = (daPlBase_c *) cc2->getOwner();
+    u8 dir = player->getTrgToSrcDir_Main(getCenterX(), player->getCenterX());
+    s8 plrNo = *player->getPlrNo();
 
     setDeathSound_Fire();
 
@@ -328,7 +292,7 @@ bool dEn_c::hitCallback_YoshiBullet(dCc_c *cc1, dCc_c *cc2) {
         mCombo.getDamageScore(),
         -1,
         dir,
-        plrNo
+        (u8) plrNo
     };
     mDeathInfo.set(data);
 
@@ -336,15 +300,11 @@ bool dEn_c::hitCallback_YoshiBullet(dCc_c *cc1, dCc_c *cc2) {
 }
 
 bool dEn_c::hitCallback_YoshiFire(dCc_c *cc1, dCc_c *cc2) {
-    daPlBase_c *actor = (daPlBase_c *) cc2->getOwner();
-    u8 dir;
-    s8 plrNo;
-    float actorX = actor->mPos.x + actor->mCenterOffs.x;
-    float thisX = mPos.x + mCenterOffs.x;
-    dir = !(actor->mSpeed.x >= 0.0f);
+    daPlBase_c *player = (daPlBase_c *) cc2->getOwner();
+    u8 dir = !(player->mSpeed.x >= 0.0f);
     mVec3_c centerPos = getCenterPos();
     dActorMng_c::m_instance->FUN_80066630(centerPos, dir, 1, 0);
-    plrNo = *actor->getPlrNo();
+    s8 plrNo = *player->getPlrNo();
 
     mVec2_c collPos = cc1->mCollPos;
     mVec3_c pos(collPos, 5500.0f);
@@ -354,12 +314,12 @@ bool dEn_c::hitCallback_YoshiFire(dCc_c *cc1, dCc_c *cc2) {
     if (mCombo.mType == 2) {
         shortCombo = true;
     }
-    actor->slideComboSE(actor->mComboMultiplier, shortCombo);
-    actor->mComboMultiplier++;
-    if (actor->mComboMultiplier >= 8) {
-        actor->mComboMultiplier = 8;
+    player->slideComboSE(player->mComboMultiplier, shortCombo);
+    player->mComboMultiplier++;
+    if (player->mComboMultiplier >= 8) {
+        player->mComboMultiplier = 8;
     }
-    int comboScore = mCombo.getComboScore(actor->mComboMultiplier);
+    int score = mCombo.getComboScore(player->mComboMultiplier);
 
     sDeathInfoData data = {
         l_base_fall_speed_x[dir],
@@ -367,10 +327,10 @@ bool dEn_c::hitCallback_YoshiFire(dCc_c *cc1, dCc_c *cc2) {
         smc_DEADFALL_YSPEED_MAX,
         smc_DEADFALL_GRAVITY,
         &StateID_DieFall,
-        comboScore,
+        score,
         -1,
         dir,
-        plrNo
+        (u8) plrNo
     };
     mDeathInfo.set(data);
 
@@ -378,14 +338,9 @@ bool dEn_c::hitCallback_YoshiFire(dCc_c *cc1, dCc_c *cc2) {
 }
 
 bool dEn_c::hitCallback_Shell(dCc_c *cc1, dCc_c *cc2) {
-    u8 dir;
-    s8 plrNo;
-    dActor_c *actor1 = (dActor_c *) cc1->mpOwner;
-    daPlBase_c *actor = (daPlBase_c *) cc2->getOwner();
-    float actorX = actor->mPos.x + actor->mCenterOffs.x;
-    float thisX = mPos.x + mCenterOffs.x;
-    dir = actor->getTrgToSrcDir_Main(thisX, actorX);
-    plrNo = *actor->getPlrNo();
+    daPlBase_c *player = (daPlBase_c *) cc2->getOwner();
+    u8 dir = player->getTrgToSrcDir_Main(getCenterX(), player->getCenterX());
+    s8 plrNo = *player->getPlrNo();
 
     mVec2_c collPos = cc1->mCollPos;
     mVec3_c pos(collPos, 5500.0f);
@@ -397,12 +352,12 @@ bool dEn_c::hitCallback_Shell(dCc_c *cc1, dCc_c *cc2) {
         if (mCombo.mType == 2) {
             shortCombo = true;
         }
-        actor->slideComboSE(actor->mComboMultiplier, shortCombo);
-        actor->mComboMultiplier++;
-        if (actor->mComboMultiplier >= 8) {
-            actor->mComboMultiplier = 8;
+        player->slideComboSE(player->mComboMultiplier, shortCombo);
+        player->mComboMultiplier++;
+        if (player->mComboMultiplier >= 8) {
+            player->mComboMultiplier = 8;
         }
-        comboScore = mCombo.getComboScore(actor->mComboMultiplier);
+        comboScore = mCombo.getComboScore(player->mComboMultiplier);
     } else {
         dAudio::g_pSndObjEmy->startSound(SE_EMY_DOWN, mPos, 0);
     }
@@ -416,7 +371,7 @@ bool dEn_c::hitCallback_Shell(dCc_c *cc1, dCc_c *cc2) {
         comboScore,
         -1,
         dir,
-        plrNo
+        (u8) plrNo
     };
     mDeathInfo.set(data);
 
@@ -424,11 +379,9 @@ bool dEn_c::hitCallback_Shell(dCc_c *cc1, dCc_c *cc2) {
 }
 
 bool dEn_c::hitCallback_Fire(dCc_c *cc1, dCc_c *cc2) {
-    daPlBase_c *actor = (daPlBase_c *) cc2->getOwner();
-    u8 dir;
-    s8 plrNo;
-    dir = !(actor->mSpeed.x >= 0.0f);
-    plrNo = *actor->getPlrNo();
+    daPlBase_c *player = (daPlBase_c *) cc2->getOwner();
+    u8 dir = !(player->mSpeed.x >= 0.0f);
+    s8 plrNo = *player->getPlrNo();
 
     setDeathSound_Fire();
 
@@ -443,7 +396,7 @@ bool dEn_c::hitCallback_Fire(dCc_c *cc1, dCc_c *cc2) {
         mCombo.getDamageScore(),
         -1,
         dir,
-        plrNo
+        (u8) plrNo
     };
     mDeathInfo.set(data);
 
@@ -452,9 +405,9 @@ bool dEn_c::hitCallback_Fire(dCc_c *cc1, dCc_c *cc2) {
 
 bool dEn_c::hitCallback_Ice(dCc_c *cc1, dCc_c *cc2) {
     if (mIceMng.m_0c == 0){
-        daPlBase_c *actor = (daPlBase_c *) cc2->getOwner();
+        daPlBase_c *player = (daPlBase_c *) cc2->getOwner();
 
-        if (actor->mSpeed.x >= 0.0f) {
+        if (player->mSpeed.x >= 0.0f) {
             mBoyoMng.mDirection = 0;
         } else {
             mBoyoMng.mDirection = 1;
@@ -467,7 +420,7 @@ bool dEn_c::hitCallback_Ice(dCc_c *cc1, dCc_c *cc2) {
                 break;
             }
         }
-        mIceMng.mPlrNo = *actor->getPlrNo();
+        mIceMng.mPlrNo = *player->getPlrNo();
         mStateMgr.changeToSubState(StateID_Ice);
     }
 
@@ -498,11 +451,8 @@ void dEn_c::setDeadMode(dActor_c *actor, int i) {
 }
 
 void dEn_c::setDeathInfo_Quake(int i) {
-    mVec3_c center(
-        mPos.x + mCenterOffs.x,
-        mPos.y + mCenterOffs.y,
-        5500.0f
-    );
+    mVec3_c center(getCenterX(), getCenterY(), 5500.0f);
+
     float ySpeed = 2.0f;
     if (i == 0) {
         EffectManager_c::FUN_800943d0(&center);
@@ -527,13 +477,13 @@ void dEn_c::setDeathInfo_Quake(int i) {
         comboScore,
         -1,
         mDirection,
-        50 // [???]
+        dDeathInfo_c::smc_UNKNOWN_HIT
     };
     mDeathInfo.set(data);
 }
 
 void dEn_c::setDeathInfo_Smoke(dActor_c *actor) {
-    s8 plrNo = mPlayerNo;
+    u8 plrNo = mPlayerNo;
     if (actor != nullptr) {
         plrNo = *actor->getPlrNo();
     }
@@ -553,12 +503,8 @@ void dEn_c::setDeathInfo_Smoke(dActor_c *actor) {
 }
 
 void dEn_c::setDeathInfo_Fumi(dActor_c *killedBy, mVec2_c speed, const sStateIDIf_c &id, int) {
-    s8 plrNo;
-    int dir;
-    float actorX = killedBy->mPos.x + killedBy->mCenterOffs.x;
-    float thisX = mPos.x + mCenterOffs.x;
-    dir = killedBy->getTrgToSrcDir_Main(thisX, actorX);
-    plrNo = *killedBy->getPlrNo();
+    bool dir = killedBy->getTrgToSrcDir_Main(getCenterX(), killedBy->getCenterX());
+    u8 plrNo = *killedBy->getPlrNo();
 
     sDeathInfoData data = {
         speed.x,
@@ -568,19 +514,15 @@ void dEn_c::setDeathInfo_Fumi(dActor_c *killedBy, mVec2_c speed, const sStateIDI
         &id,
         -1,
         -1,
-        (u8) dir,
+        dir,
         plrNo
     };
     mDeathInfo.set(data);
 }
 
 void dEn_c::setDeathInfo_YoshiFumi(dActor_c *killedBy) {
-    s8 plrNo;
-    int dir;
-    float actorX = killedBy->mPos.x + killedBy->mCenterOffs.x;
-    float thisX = mPos.x + mCenterOffs.x;
-    dir = killedBy->getTrgToSrcDir_Main(thisX, actorX);
-    plrNo = *killedBy->getPlrNo();
+    bool dir = killedBy->getTrgToSrcDir_Main(getCenterX(), killedBy->getCenterX());
+    u8 plrNo = *killedBy->getPlrNo();
 
     sDeathInfoData data = {
         0.0f,
@@ -590,7 +532,7 @@ void dEn_c::setDeathInfo_YoshiFumi(dActor_c *killedBy) {
         &StateID_DieYoshiFumi,
         -1,
         -1,
-        (u8) dir,
+        dir,
         plrNo
     };
     mDeathInfo.set(data);
@@ -611,18 +553,14 @@ void dEn_c::setDeathInfo_Other(dActor_c *killedBy) {
         -1,
         -1,
         (u8) -1,
-        plrNo
+        (u8) plrNo
     };
     mDeathInfo.set(data);
 }
 
 void dEn_c::setDeathInfo_SpinFumi(dActor_c *killedBy, int) {
-    s8 plrNo;
-    u8 dir;
-    float actorX = killedBy->mPos.x + killedBy->mCenterOffs.x;
-    float thisX = mPos.x + mCenterOffs.x;
-    dir = killedBy->getTrgToSrcDir_Main(thisX, actorX);
-    plrNo = *killedBy->getPlrNo();
+    u8 dir = killedBy->getTrgToSrcDir_Main(getCenterX(), killedBy->getCenterX());
+    u8 plrNo = *killedBy->getPlrNo();
 
     sDeathInfoData data = {
         l_base_fall_speed_x[dir],
@@ -640,8 +578,10 @@ void dEn_c::setDeathInfo_SpinFumi(dActor_c *killedBy, int) {
 
 void dEn_c::setDeathInfo_IceBreak() {
     killIce();
+
     u8 dir = mIceDeathDirection;
-    s8 plrNo = mPlayerNo;
+    u8 plrNo = mPlayerNo;
+
     sDeathInfoData data = {
         l_base_fall_speed_x[dir],
         smc_DEADFALL_YSPEED,
@@ -658,10 +598,13 @@ void dEn_c::setDeathInfo_IceBreak() {
 
 void dEn_c::setDeathInfo_IceVanish() {
     killIce();
+
     int n = dGameCom::rndInt(2);
     dActorMng_c::m_instance->FUN_80066630(getCenterPos(), n, 1, 0);
+
     u8 dir = mIceDeathDirection;
-    s8 plrNo = mPlayerNo;
+    u8 plrNo = mPlayerNo;
+
     sDeathInfoData data = {
         0.0f,
         0.0f,
@@ -699,16 +642,18 @@ void dEn_c::initializeState_DieFumi() {
     } else {
         mDirection = 1;
     }
-    int quakeScore = mDeathInfo.mQuakeScore;
-    int plrNo = mDeathInfo.mKilledBy;
     mAngle.y = l_base_angleY[mDirection];
-    if (quakeScore >= 0) {
+
+    int score = mDeathInfo.mScore;
+    int plrNo = mDeathInfo.mKilledBy;
+    if (score >= 0) {
         if (plrNo >= 0 && plrNo < PLAYER_COUNT) {
-            dScoreMng_c::m_instance->ScoreSet(this, quakeScore, plrNo, dScoreMng_c::smc_SCORE_X, dScoreMng_c::smc_SCORE_Y);
-        } else if (plrNo == 50) {
-            dScoreMng_c::m_instance->UnKnownScoreSet(this, quakeScore, 0.0f, 24.0f);
+            dScoreMng_c::m_instance->ScoreSet(this, score, plrNo, dScoreMng_c::smc_SCORE_X, dScoreMng_c::smc_SCORE_Y);
+        } else if (plrNo == dDeathInfo_c::smc_UNKNOWN_HIT) {
+            dScoreMng_c::m_instance->UnKnownScoreSet(this, score, 0.0f, 24.0f);
         }
     }
+
     if (mAmiLayer == 1) {
         mPos.z = -384.0f;
     } else {
@@ -719,7 +664,7 @@ void dEn_c::initializeState_DieFumi() {
 void dEn_c::finalizeState_DieFumi() {}
 
 void dEn_c::executeState_DieFumi() {
-    s16 angDelta = 0x300;
+    s16 angDelta = smc_DEADFALL_SPINSPEED / 4;
     if (mInLiquid) {
         angDelta *= smc_WATER_ROLL_DEC_RATE;
     }
@@ -752,16 +697,18 @@ void dEn_c::initializeState_DieFall() {
     } else {
         mDirection = 1;
     }
-    int quakeScore = mDeathInfo.mQuakeScore;
-    int plrNo = mDeathInfo.mKilledBy;
     mAngle.y = l_base_angleY[mDirection];
-    if (quakeScore >= 0) {
+
+    int score = mDeathInfo.mScore;
+    int plrNo = mDeathInfo.mKilledBy;
+    if (score >= 0) {
         if (plrNo >= 0 && plrNo < PLAYER_COUNT) {
-            dScoreMng_c::m_instance->ScoreSet(this, quakeScore, plrNo, dScoreMng_c::smc_SCORE_X, dScoreMng_c::smc_SCORE_Y);
-        } else if (plrNo == 50) {
-            dScoreMng_c::m_instance->UnKnownScoreSet(this, quakeScore, 0.0f, 24.0f);
+            dScoreMng_c::m_instance->ScoreSet(this, score, plrNo, dScoreMng_c::smc_SCORE_X, dScoreMng_c::smc_SCORE_Y);
+        } else if (plrNo == dDeathInfo_c::smc_UNKNOWN_HIT) {
+            dScoreMng_c::m_instance->UnKnownScoreSet(this, score, 0.0f, 24.0f);
         }
     }
+
     if (mAmiLayer == 1) {
         mPos.z = -384.0f;
     } else {
@@ -772,9 +719,10 @@ void dEn_c::initializeState_DieFall() {
 void dEn_c::finalizeState_DieFall() {}
 
 void dEn_c::executeState_DieFall() {
+    const static s16 cs_spin_speed[] = { 0x100, -0x100 };
+
     s16 angDeltaX;
     s16 angDeltaY;
-    const static s16 cs_spin_speed[] = { 0x100, -0x100 };
     if (mDirection == mIceDeathDirection) {
         angDeltaX = smc_DEADFALL_SPINSPEED;
         angDeltaY = -cs_spin_speed[mIceDeathDirection];
@@ -787,6 +735,7 @@ void dEn_c::executeState_DieFall() {
     }
     mAngle.x += angDeltaX;
     mAngle.y += angDeltaY;
+
     calcSpeedY();
     posMove();
     WaterCheck(mPos, 1.0f);
@@ -821,13 +770,14 @@ void dEn_c::executeState_DieSmoke() {
 
 void dEn_c::initializeState_DieIceVanish() {
     removeCc();
-    int quakeScore = mDeathInfo.mQuakeScore;
+
+    int score = mDeathInfo.mScore;
     int plrNo = mDeathInfo.mKilledBy;
-    if (quakeScore >= 0) {
+    if (score >= 0) {
         if (plrNo >= 0 && plrNo < PLAYER_COUNT) {
-            dScoreMng_c::m_instance->ScoreSet(this, quakeScore, plrNo, dScoreMng_c::smc_SCORE_X, dScoreMng_c::smc_SCORE_Y);
-        } else if (plrNo == 50) {
-            dScoreMng_c::m_instance->UnKnownScoreSet(this, quakeScore, 0.0f, 24.0f);
+            dScoreMng_c::m_instance->ScoreSet(this, score, plrNo, dScoreMng_c::smc_SCORE_X, dScoreMng_c::smc_SCORE_Y);
+        } else if (plrNo == dDeathInfo_c::smc_UNKNOWN_HIT) {
+            dScoreMng_c::m_instance->UnKnownScoreSet(this, score, 0.0f, 24.0f);
         }
     }
 }

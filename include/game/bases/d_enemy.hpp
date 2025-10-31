@@ -14,10 +14,10 @@ struct sDeathInfoData {
     float mMaxYSpeed;
     float mYAccel;
     const sStateIDIf_c *mDeathState;
-    int mQuakeScore;
+    int mScore;
     int m_18;
     u8 mDirection;
-    s8 mKilledBy;
+    u8 mKilledBy;
 };
 
 /// @unofficial
@@ -33,7 +33,7 @@ public:
         mMaxYSpeed = other.mMaxYSpeed;
         mYAccel = other.mYAccel;
         mDeathState = other.mDeathState;
-        mQuakeScore = other.mQuakeScore;
+        mScore = other.mScore;
         m_18 = other.m_18;
         mDirection = other.mDirection;
         mKilledBy = other.mKilledBy;
@@ -55,13 +55,15 @@ public:
         return mYAccel;
     }
 
+    static const u8 smc_UNKNOWN_HIT = 50; ///< @unofficial
+
 private:
     mVec2_c mSpeed;
     float mMaxYSpeed;
     float mYAccel;
 public:
     const sStateIDIf_c *mDeathState;
-    int mQuakeScore;
+    int mScore;
     int m_18;
     u8 mDirection;
     s8 mKilledBy;
@@ -260,13 +262,15 @@ public:
     static void normal_collcheck(dCc_c *cc1, dCc_c *cc2);
     static bool CeilCheck(float y, dCc_c *cc);
 
+    u8 getDeathFallDirection() const { return mDeathFallDirection; }
+
     dDeathInfo_c mDeathInfo; ///< The parameters for the death animation.
     u32 mCcValue;
     u16 m_24; ///< @unused
     u8 mPad1[6];
     mVec3_c mFootPush;
     mVec3_c mFootPush2;
-    bool mDeathFallDirection; ///< The X direction to move towards on death.
+    u8 mDeathFallDirection; ///< The X direction to move towards on death.
     u8 mIceDeathDirection; ///< The X direction to move towards on ice death.
     bool mKilledByLiquid; ///< Whether the enemy was killed by falling in a liquid.
     u8 mPad2[1];

@@ -1007,16 +1007,17 @@ void dEn_c::boyonBegin() {
 }
 
 void dEn_c::block_hit_init() {
-    bool dir = mDeathFallDirection;
+    u8 dir = mDeathFallDirection;
     s8 plrNo = *getPlrNo();
 
-    mVec3_c shiftedPos(mVec2_c(mPos.x, mPos.y), 5500.0f);
-
+    mVec2_c pos2D(mPos.x, mPos.y);
+    mVec3_c shiftedPos(pos2D, 5500.0f);
     hitdamageEffect(shiftedPos);
-    dAudio::SoundEffectID_t(SE_EMY_DOWN).playEmySound(mPos, 0);
+
+    dAudio::g_pSndObjEmy->startSound(SE_EMY_DOWN, mPos, 0);
 
     sDeathInfoData data = {
-        l_base_fall_speed_x[(u8) (int) dir],
+        l_base_fall_speed_x[dir],
         3.0f,
         -4.0f,
         -0.1875f,
@@ -1024,7 +1025,7 @@ void dEn_c::block_hit_init() {
         -1,
         -1,
         dir,
-        plrNo
+        (u8) plrNo
     };
     mDeathInfo.set(data);
 }
