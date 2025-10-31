@@ -5,6 +5,24 @@
 
 class dQuake_c {
 public:
+    enum TYPE_SHOCK_e {
+        TYPE_0,
+        TYPE_1,
+        TYPE_2,
+        TYPE_3,
+        TYPE_4,
+        TYPE_5,
+        TYPE_6,
+        TYPE_7,
+        TYPE_8
+    };
+
+    enum FLAGS_e {
+        FLAG_0 = BIT_FLAG(0),
+        FLAG_1 = BIT_FLAG(1),
+        FLAG_2 = BIT_FLAG(2)
+    };
+
     float mSpeed;
     float mResult;
     float mMultiplier;
@@ -16,7 +34,7 @@ public:
     float mAccel2;
     float mMin2;
     mVec2_c mScreenOffset;
-    u32 mFlags; ///< &1 to call dEn_c::add2ToYSpeed() &2 to call dEn_c::powBlockActivated(0) &4 to call dEn_c::powBlockActivated(1)
+    FLAGS_e mFlags;
     u32 m_34;
     bool mQuakeOn;
     u8 mPlayerId;

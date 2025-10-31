@@ -48,7 +48,7 @@ public:
         STAGE_ACTOR_GENERIC, ///< A generic stage actor (default).
         STAGE_ACTOR_PLAYER, ///< The @ref dAcPy_c "player actor".
         STAGE_ACTOR_YOSHI, ///< The @ref daYoshi_c "Yoshi actor".
-        STAGE_ACTOR_ENTITY, ///< An interactable entity actor.
+        STAGE_ACTOR_ENEMY, ///< An enemy actor.
     };
 
     /// @brief The possible carry actions.
@@ -335,7 +335,7 @@ public:
     u32 mCarryFukidashiPlayerNo; ///< The player for whom an action prompt related to the actor is being displayed. @p -1 if no players meet this criteria.
     CARRY_ACTION_e mCarryingFlags; ///< The actor's carry actions.
     u32 mThrowDirection; ///< The actor's direction when thrown or dropped after carrying.
-    u32 mComboMultiplier; ///< The current combo multiplier obtained by the actor by colliding with other actors.
+    int mComboMultiplier; ///< The current combo multiplier obtained by the actor by colliding with other actors.
     u8 m_13; ///< @unused
     u32 m_17; ///< @unused
     float m_1b; ///< @unused
@@ -364,7 +364,7 @@ public:
     u16 mSpriteSpawnFlags; ///< The spawn flags from the sprite data entry.
     bool mBlockHit; ///< Whether a block below the actor was hit.
 
-    u32 mEatenByID; ///< The @ref fBase_c::mUniqueID "unique identifier" of the eating actor.
+    fBaseID_e mEatenByID; ///< The @ref fBase_c::mUniqueID "unique identifier" of the eating actor.
     u8 mEatState; ///< The actor's eat state. Value is a ::EAT_STATE_e.
     u8 mEatBehaviour; ///< The actor's eat behaviour. Value is a ::EAT_BEHAVIOR_e.
     mVec3_c mPreEatScale; ///< The actor's scale before being eaten.
@@ -379,16 +379,13 @@ public:
     u8 mExecStopMask; ///< The mask required to disable the @p execute operation for the actor.
     u8 mLayer; ///< The actor's layer.
     bool mNoRespawn; ///< Whether the actor should not respawn after being deleted.
-    bool mBackFence; ///< Whether the actor is on the back side of chainlink fences.
+    u8 mAmiLayer; ///< The actor's layer for chainlink fences.
 
     sRangeDataF getDestroyBound() { return mDestroyBound; }
 
     void setDefaultMaxBound() {
         mMaxBound.set(smc_CULL_XLIMIT, smc_CULL_YLIMIT, smc_CULL_AREA_XLIMIT, smc_CULL_AREA_YLIMIT);
     }
-
-    float getCenterX() { return getCenterPos().x; }
-    float getCenterY() { return getCenterPos().y; }
 
     u8 getKindMask() { return 1 << mKind; }
 
@@ -419,5 +416,5 @@ public:
     static u8 m_tmpCtSpriteLayerNo;
 };
 
-extern const u8 l_Ami_Line[2]; ///< The sub-layer for each side of chainlink fences.
-extern const float l_Ami_Zpos[2]; ///< The additional Z offset for each side of chainlink fences.
+extern const u8 l_Ami_Line[]; ///< The sub-layer for each side of chainlink fences.
+extern const float l_Ami_Zpos[]; ///< The additional Z offset for each side of chainlink fences.
