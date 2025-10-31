@@ -22,12 +22,12 @@ public:
     bool hasSensorWall() { return mpSensorWall != nullptr; }
     u32 getFootAttr();
 
-    enum WaterCheckResult_e {
-        WATER_CHECK_NONE = 0,
-        WATER_CHECK_WATER_1 = 1,
-        WATER_CHECK_WATER_2 = 2,
-        WATER_CHECK_YOGAN = 3,
-        WATER_CHECK_POISON = 4
+    enum WATER_TYPE_e {
+        WATER_CHECK_NONE,
+        WATER_CHECK_WATER,
+        WATER_CHECK_AIR_WATER,
+        WATER_CHECK_YOGAN,
+        WATER_CHECK_POISON
     };
 
     dActor_c *mpOwner;
@@ -53,7 +53,7 @@ public:
     u8 mLayer;
 
     static int checkWaterDepth(float, float, u8, u8, float *);
-    static WaterCheckResult_e checkWater(float, float, u8, float *);
+    static WATER_TYPE_e checkWater(float, float, u8, float *);
     static void checkBg(float, float, u8, u8, unsigned long);
 
     bool isHead()  { return mFlags & 0b00000000000000000000000000010101; }
