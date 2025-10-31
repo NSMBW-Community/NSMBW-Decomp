@@ -11,6 +11,8 @@ dSelectCursor_c::dSelectCursor_c() {
 
 dSelectCursor_c::Layout_c::Layout_c() : mPaneSize(0.0f, 0.0f), m_230(0.0f), m_234(0.0f) { }
 
+dSelectCursor_c::Layout_c::~Layout_c() { }
+
 dSelectCursor_c::~dSelectCursor_c() {
     dSelectCursor_c::m_instance = nullptr;
 }

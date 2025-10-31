@@ -32,6 +32,7 @@ public:
         u8 mPad4[3];
 
         Layout_c();
+        ~Layout_c();
     };
 
     d2d::ResAccMultLoader_c mResLoader;

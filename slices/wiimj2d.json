@@ -326,7 +326,7 @@
             "memoryRanges": {
                 ".data": "0x24348-0x24478",
                 ".sbss": "0x708-0x710",
-                ".sbss2": "0x18-0x1c",
+                ".sbss2": "0x18-0x20",
                 ".sdata": "0x1b88-0x1bb8",
                 ".sdata2": "0x2288-0x2290",
                 ".text": "0x1059b0-0x106360"
