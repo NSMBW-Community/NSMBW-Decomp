@@ -361,7 +361,7 @@ public:
     u16 mSpriteSpawnFlags; ///< The spawn flags from the sprite data entry.
     bool mBlockHit; ///< Whether a block below the actor was hit.
 
-    u32 mEatenByID; ///< The @ref fBase_c::mUniqueID "unique identifier" of the eating actor.
+    fBaseID_e mEatenByID; ///< The @ref fBase_c::mUniqueID "unique identifier" of the eating actor.
     u8 mEatState; ///< The actor's eat state. Value is a EAT_STATE_e.
     u8 mEatBehaviour; ///< The actor's eat behaviour. Value is a EAT_BEHAVIOR_e.
     mVec3_c mPreEatScale; ///< The actor's scale before being eaten.
