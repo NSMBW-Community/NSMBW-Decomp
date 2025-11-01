@@ -170,7 +170,7 @@ bool daIceBall_c::checkInitLine(float &a) {
 }
 
 void daIceBall_c::lightProc() {
-    mLightMask.set(mPos, lbl_802F5000[3]);
+    mLightMask.set(mPos.x, mPos.y, mPos.z, lbl_802F5000[3]);
     mLightMask.execute();
 }
 
@@ -254,7 +254,7 @@ void daIceBall_c::chgZpos() {
 }
 
 bool daIceBall_c::cullCheck() {
-    return (int)dActor_c::screenCullCheck(mPos, (const sRangeDataF &) l_cull_data, sRangeDataF(64.0f, 64.0f, 32.0f, 32.0f), mAreaNo);
+    return dActor_c::screenCullCheck(mPos, (const sRangeDataF &) l_cull_data, sRangeDataF(64.0f, 64.0f, 32.0f, 32.0f), mAreaNo);
 }
 
 void daIceBall_c::eatMove(dActor_c * actor) {
@@ -456,11 +456,11 @@ void daIceBall_c::initializeState_Move() {
         resX = v3 * v1;
     }
 
-    mSpeed.x = resX + cs_max_speed_x[mDirection];
+    mSpeed.x = resX + cs_speed_x[mDirection];
     mSpeed.y = 3.7f;
     mSpeed.z = 0.0f;
     mAccelY = -0.15f;
-    mSpeedMax.x = cs_speed_x[mDirection];
+    mSpeedMax.x = cs_max_speed_x[mDirection];
     mMaxFallSpeed = -3.0f;
     mAccelF = 0.04f;
 }

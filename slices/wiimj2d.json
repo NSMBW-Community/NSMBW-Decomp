@@ -334,7 +334,6 @@
         },
         {
             "source": "dol/bases/d_a_iceball.cpp",
-            "nonMatching": true,
             "memoryRanges": {
                 ".text": "0x11cc70-0x11e5c0",
                 ".ctors": "0x1e4-0x1e8",
