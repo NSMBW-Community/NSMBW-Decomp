@@ -670,3 +670,4 @@ typeInfo__Q34nw4r3lyt7TextBox=8042b0b8
 typeInfo__Q34nw4r3lyt6Window=8042b0c0
 remove__Q24dDvd8loader_cFv=8008f2b0
 request__Q24dDvd8loader_cFPCcUcPQ23EGG4Heap=8008f1b0
+strcpy=802E1C28
