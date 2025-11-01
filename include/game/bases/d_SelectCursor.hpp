@@ -15,32 +15,22 @@ public:
         bool mIsActive;
         char mPaneName[NW4R_LYT_RES_NAME_LEN + 1];
         u8 mPad[86];
-        mVec2_c mPaneSize;
-        float m_230 ;
-        float m_234 ;
+        nw4r::lyt::Size mPaneSize;
+        nw4r::lyt::Size mPaneOffset; ///< Always (0, 0)
         mVec2_c mPaneGlbMtxScale;
         mVec2_c mPaneGlbMtxTrans;
         u8 mPad2[4];
-        float m_24c;
-        float m_250;
-        float m_254;
+        mVec2_c mRootPaneOffset; ///< Always (0, 0)
+        float m_254; ///< Only set to 0, never read
         u8 mPaneBasePosH;
         u8 mPaneBasePosV;
-        u8 mPad3[2];
-        int m_25c;
-        u8 m_260;
-        u8 mPad4[3];
-
-        Layout_c();
-        ~Layout_c();
+        int mPaneAlpha;
+        bool mDoFade; ///< Always false
     };
 
     d2d::ResAccMultLoader_c mResLoader;
     Layout_c mLayouts[5];
-    u8 m_d38;
-    u8 m_d39;
-    u8 m_d3a;
-    u8 m_d3b;
+    bool mIsLoaded;
 
     dSelectCursor_c();
     virtual ~dSelectCursor_c();
@@ -50,10 +40,10 @@ public:
     int execute();
     int draw();
 
-    void Cancel(int);
-    void PosSet(int);
-    void SetPane(const nw4r::lyt::Pane *param_2, int param_3, bool param_4);
-    void SetAlpha(const nw4r::lyt::Pane *param_2, int param_3);
+    void PosSet(int layoutId);
+    void Cancel(int layoutId);
+    void SetPane(const nw4r::lyt::Pane *pane, int layoutId, bool dontSetAllDrawOrder);
+    void SetAlpha(const nw4r::lyt::Pane *pane, int layoutId);
 
-    static dSelectCursor_c * m_instance; // 8042a5a8
+    static dSelectCursor_c * m_instance;
 };
