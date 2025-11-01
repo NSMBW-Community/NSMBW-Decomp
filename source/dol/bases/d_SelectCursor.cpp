@@ -6,12 +6,8 @@ dSelectCursor_c *dSelectCursor_c::m_instance = nullptr;
 
 dSelectCursor_c::dSelectCursor_c() {
     m_instance = this;
-    m_d38 = 0;
+    mIsLoaded = false;
 }
-
-dSelectCursor_c::Layout_c::Layout_c() : mPaneSize(0.0f, 0.0f), m_230(0.0f), m_234(0.0f) { }
-
-dSelectCursor_c::Layout_c::~Layout_c() { }
 
 dSelectCursor_c::~dSelectCursor_c() {
     dSelectCursor_c::m_instance = nullptr;
@@ -45,7 +41,7 @@ int dSelectCursor_c::create() {
     };
 
 
-    if (m_d38) {
+    if (mIsLoaded) {
         return SUCCEEDED;
     }
 
@@ -69,15 +65,15 @@ int dSelectCursor_c::create() {
         Cancel(i);
 
         if (i == 4) {
-            mLayouts[i].mBase.mDrawOrder = 0xE;
+            mLayouts[i].mBase.mDrawOrder = 14;
         } else {
-            mLayouts[i].mBase.mDrawOrder = 0x93;
+            mLayouts[i].mBase.mDrawOrder = 147;
         }
 
         mLayouts[i].mBase.LoopAnimeStartSetup(0);
     }
 
-    m_d38 = 1;
+    mIsLoaded = true;
 
     return SUCCEEDED;
 }
@@ -119,110 +115,109 @@ int dSelectCursor_c::doDelete() {
     return SUCCEEDED;
 }
 
-void dSelectCursor_c::PosSet(int param_2) {
-    mLayouts[param_2].mpRootPane->SetVisible(true);
+void dSelectCursor_c::PosSet(int layoutId) {
+    mLayouts[layoutId].mpRootPane->SetVisible(true);
 
     mVec2_c pos;
+    float paneMidX, paneMidY, paneScaleX, paneScaleY;
 
-    float b, c, d, e;
+    paneScaleX = mLayouts[layoutId].mPaneGlbMtxScale.x;
+    paneScaleY = mLayouts[layoutId].mPaneGlbMtxScale.y;
 
-    d = mLayouts[param_2].mPaneGlbMtxScale.x;
-    e = mLayouts[param_2].mPaneGlbMtxScale.y;
+    paneMidX = mLayouts[layoutId].mPaneSize.width / 2.0f;
+    paneMidY = mLayouts[layoutId].mPaneSize.height / 2.0f;
 
-    b = mLayouts[param_2].mPaneSize.x / 2.0f;
-    c = mLayouts[param_2].mPaneSize.y / 2.0f;
+    pos.x = mLayouts[layoutId].mPaneGlbMtxTrans.x + mLayouts[layoutId].mRootPaneOffset.x;
 
-    pos.x = mLayouts[param_2].mPaneGlbMtxTrans.x + mLayouts[param_2].m_24c;
-
-    if (mLayouts[param_2].mPaneBasePosH == 0) {
-        pos.x += b * d;
-    } else if (mLayouts[param_2].mPaneBasePosH == 2) {
-        pos.x -= b * d;
+    if (mLayouts[layoutId].mPaneBasePosH == 0) {
+        pos.x += paneMidX * paneScaleX;
+    } else if (mLayouts[layoutId].mPaneBasePosH == 2) {
+        pos.x -= paneMidX * paneScaleX;
     }
 
-    pos.y = mLayouts[param_2].mPaneGlbMtxTrans.y + mLayouts[param_2].m_250;
-    if (mLayouts[param_2].mPaneBasePosV == 0) {
-        pos.y -= c * e;
-    } else if (mLayouts[param_2].mPaneBasePosV == 2) {
-        pos.y += c * e;
+    pos.y = mLayouts[layoutId].mPaneGlbMtxTrans.y + mLayouts[layoutId].mRootPaneOffset.y;
+    if (mLayouts[layoutId].mPaneBasePosV == 0) {
+        pos.y -= paneMidY * paneScaleY;
+    } else if (mLayouts[layoutId].mPaneBasePosV == 2) {
+        pos.y += paneMidY * paneScaleY;
     }
 
-    mLayouts[param_2].mpRootPane->SetTranslate(mVec3_c(pos, 0.0f));
+    mLayouts[layoutId].mpRootPane->SetTranslate(mVec3_c(pos, 0.0f));
 
-    float m_230 = mLayouts[param_2].m_230;
-    float m_234 = mLayouts[param_2].m_234;
+    float hOffset = mLayouts[layoutId].mPaneOffset.width;
+    float vOffset = mLayouts[layoutId].mPaneOffset.height;
     for (int i = 1; i < ARRAY_SIZE(mLayouts); i++) {
         mVec3_c pos2;
         if ((i == 1) || (i == 3)) {
-            pos2.x = (b * d);
+            pos2.x = paneMidX * paneScaleX;
             pos2.x = -pos2.x;
-            pos2.x -= m_230;
+            pos2.x -= hOffset;
         } else {
-            pos2.x = (b * d);
-            pos2.x += m_230;
+            pos2.x = paneMidX * paneScaleX;
+            pos2.x += hOffset;
         }
 
         if ((i == 1) || (i == 2)) {
-            pos2.y = (c * e);
-            pos2.y += m_234;
+            pos2.y = paneMidY * paneScaleY;
+            pos2.y += vOffset;
         } else {
-            pos2.y = (c * e);
+            pos2.y = paneMidY * paneScaleY;
             pos2.y = -pos2.y;
-            pos2.y -= m_234;
+            pos2.y -= vOffset;
         }
 
         pos2.z = 0.0f;
-        mLayouts[param_2].mNPanes[i]->SetTranslate(pos2);
+        mLayouts[layoutId].mNPanes[i]->SetTranslate(pos2);
     }
 
-    if (mLayouts[param_2].m_260 != 0) {
-        mLayouts[param_2].m_25c -= 26;
-        mLayouts[param_2].mNPanes[0]->SetAlpha(mLayouts[param_2].m_25c);
+    if (mLayouts[layoutId].mDoFade) {
+        mLayouts[layoutId].mPaneAlpha -= (255 / 10) + 1;
+        mLayouts[layoutId].mNPanes[0]->SetAlpha(mLayouts[layoutId].mPaneAlpha);
 
-        if (mLayouts[param_2].m_25c < 0) {
-            mLayouts[param_2].m_25c = 0;
-            mLayouts[param_2].m_260 = 0;
-            Cancel(param_2);
+        if (mLayouts[layoutId].mPaneAlpha < 0) {
+            mLayouts[layoutId].mPaneAlpha = 0;
+            mLayouts[layoutId].mDoFade = false;
+            Cancel(layoutId);
         }
     }
 }
 
-void dSelectCursor_c::Cancel(int param_2) {
-    if (mLayouts[param_2].mIsActive) {
-        mLayouts[param_2].mIsActive = false;
-        strcpy(mLayouts[param_2].mPaneName, "");
-        mLayouts[param_2].mpRootPane->SetVisible(false);
+void dSelectCursor_c::Cancel(int layoutId) {
+    if (mLayouts[layoutId].mIsActive) {
+        mLayouts[layoutId].mIsActive = false;
+        strcpy(mLayouts[layoutId].mPaneName, "");
+        mLayouts[layoutId].mpRootPane->SetVisible(false);
     }
 }
 
-void dSelectCursor_c::SetPane(const nw4r::lyt::Pane *param_2, int param_3, bool param_4) {
-    mLayouts[param_3].mIsActive = true;
+void dSelectCursor_c::SetPane(const nw4r::lyt::Pane *pane, int layoutId, bool dontSetAllDrawOrder) {
+    mLayouts[layoutId].mIsActive = true;
 
-    strcpy(mLayouts[param_3].mPaneName, param_2->GetName());
+    strcpy(mLayouts[layoutId].mPaneName, pane->GetName());
 
-    mLayouts[param_3].mPaneSize.x = param_2->GetSize().width;
-    mLayouts[param_3].mPaneSize.y = param_2->GetSize().height;
+    mLayouts[layoutId].mPaneSize.width = pane->GetSize().width;
+    mLayouts[layoutId].mPaneSize.height = pane->GetSize().height;
 
-    nw4r::math::MTX34 mtx = param_2->GetGlobalMtx();
+    nw4r::math::MTX34 mtx = pane->GetGlobalMtx();
 
-    mLayouts[param_3].mPaneGlbMtxTrans.x = mtx._03;
-    mLayouts[param_3].mPaneGlbMtxTrans.y = mtx._13;
-    mLayouts[param_3].mPaneGlbMtxScale.x = mtx._00;
-    mLayouts[param_3].mPaneGlbMtxScale.y = mtx._11;
+    mLayouts[layoutId].mPaneGlbMtxTrans.x = mtx._03;
+    mLayouts[layoutId].mPaneGlbMtxTrans.y = mtx._13;
+    mLayouts[layoutId].mPaneGlbMtxScale.x = mtx._00;
+    mLayouts[layoutId].mPaneGlbMtxScale.y = mtx._11;
 
-    mLayouts[param_3].mPaneBasePosH = param_2->GetBasePositionH();
-    mLayouts[param_3].mPaneBasePosV = param_2->GetBasePositionV();
+    mLayouts[layoutId].mPaneBasePosH = pane->GetBasePositionH();
+    mLayouts[layoutId].mPaneBasePosV = pane->GetBasePositionV();
 
-    mLayouts[param_3].m_230 = 0.0;
-    mLayouts[param_3].m_234 = 0.0;
-    mLayouts[param_3].m_24c = 0.0;
-    mLayouts[param_3].m_250 = 0.0;
-    mLayouts[param_3].m_254 = 0.0;
-    mLayouts[param_3].m_25c = 0xff;
-    mLayouts[param_3].m_260 = 0;
+    mLayouts[layoutId].mPaneOffset.width = 0.0f;
+    mLayouts[layoutId].mPaneOffset.height = 0.0f;
+    mLayouts[layoutId].mRootPaneOffset.x = 0.0f;
+    mLayouts[layoutId].mRootPaneOffset.y = 0.0f;
+    mLayouts[layoutId].m_254 = 0.0f;
+    mLayouts[layoutId].mPaneAlpha = 0xff;
+    mLayouts[layoutId].mDoFade = false;
 
-    if (param_4) {
-        mLayouts[param_3].mBase.mDrawOrder = 152;
+    if (dontSetAllDrawOrder) {
+        mLayouts[layoutId].mBase.mDrawOrder = 152;
     } else {
         for (int i = 0; i < ARRAY_SIZE(mLayouts); i++) {
             if (i == 4) {
@@ -234,12 +229,11 @@ void dSelectCursor_c::SetPane(const nw4r::lyt::Pane *param_2, int param_3, bool 
     }
 }
 
-void dSelectCursor_c::SetAlpha(const nw4r::lyt::Pane *param_2, int param_3) {
-    u8 alpha = param_2->GetGlbAlpha();
-    Layout_c & layout = mLayouts[param_3];
+void dSelectCursor_c::SetAlpha(const nw4r::lyt::Pane *pane, int layoutId) {
+    u8 alpha = pane->GetGlbAlpha();
+    Layout_c & layout = mLayouts[layoutId];
 
-    layout.mPPanes[0]->SetAlpha(alpha);
-    layout.mPPanes[1]->SetAlpha(alpha);
-    layout.mPPanes[2]->SetAlpha(alpha);
-    layout.mPPanes[3]->SetAlpha(alpha);
+    for (int i = 0; i < ARRAY_SIZE(layout.mPPanes); i++) {
+        layout.mPPanes[i]->SetAlpha(alpha);
+    }
 }
