@@ -58,8 +58,12 @@ struct sNextGotoData {
 
 /// @unofficial
 struct sActorCreateData {
-    int mPad1[3];
-    u8 m_0c;
+    u16 mActorCreateID;
+    u16 mX, mY;
+    u8 mEventNums[2];
+    u32 mParam;
+    u8 mAreaNo;
+    u8 mLayer;
 };
 
 /// @unofficial
