@@ -4,7 +4,8 @@
 #include <game/bases/d_lytbase.hpp>
 #include <game/bases/d_2d/multi.hpp>
 
-/// @brief The world map HUD.
+/// @brief A 2D layout element that adds little L-shaped rectangles around the
+/// corners of a parent layout @ref nw4r::lyt::Pane.
 class dSelectCursor_c : public dBase_c {
 
     /// @brief The null panes used in the layout.
