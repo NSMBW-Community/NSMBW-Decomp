@@ -1,6 +1,8 @@
 #pragma once
+
 #include <game/bases/d_scene.hpp>
 #include <game/mLib/m_vec.hpp>
+#include <constants/game_constants.h>
 
 class dScStage_c : public dScene_c {
 public:
@@ -18,6 +20,7 @@ public:
 
     static float getLoopPosX(float x);
     static int m_loopType;
+    static int mCollectionCoin[STAR_COIN_COUNT];
 
     static const char mCdArcName[];
 
