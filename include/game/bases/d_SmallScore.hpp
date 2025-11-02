@@ -43,7 +43,8 @@ public:
         POPUP_TYPE_COIN_5, ///< [Coin icon]x5. Used in Coin Battle.
         POPUP_TYPE_COIN_10, ///< [Coin icon]x10. Used in Coin Battle.
         POPUP_TYPE_COIN_15, ///< [Coin icon]x15. Used in Coin Battle.
-        POPUP_TYPE_COIN_20 ///< [Coin icon]x20. Used in Coin Battle.
+        POPUP_TYPE_COIN_20, ///< [Coin icon]x20. Used in Coin Battle.
+        POPUP_TYPE_INVALID = -1 ///< Invalid popup type.
     };
 
     typedef void (dSmallScore_c::*ProcFunc)();

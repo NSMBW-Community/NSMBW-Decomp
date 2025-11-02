@@ -240,6 +240,17 @@
             }
         },
         {
+
+            "source": "dol/bases/d_multi_manager.cpp",
+            "memoryRanges": {
+                ".text": "0xc8170-0xc8580",
+                ".rodata": "0x3480-0x3490",
+                ".data": "0x19628-0x19638",
+                ".sbss": "0x3f0-0x3f8",
+                ".sdata2": "0x1930-0x1938"
+            }
+        },
+        {
             "source": "dol/bases/d_rail.cpp",
             "memoryRanges": {
                 ".text": "0xd2a30-0xd30d0",
