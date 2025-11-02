@@ -15,24 +15,24 @@ dSelectCursor_c::~dSelectCursor_c() {
 
 int dSelectCursor_c::create() {
 
-    static const char *AnmNameTbl[] = {
+    static const char *AnmNameTbl[ANIM_COUNT] = {
         "select_cursor_04_loopCursor.brlan"
     };
 
-    static const char *GROUP_NAME_DT[] = {
+    static const char *GROUP_NAME_DT[ANIM_COUNT] = {
         "A00_cursor"
     };
 
-    static const int ANIME_INDEX_TBL[ARRAY_SIZE(GROUP_NAME_DT)] = { 0 };
+    static const int ANIME_INDEX_TBL[ANIM_COUNT] = { 0 };
 
-    static const char *PPANE_TABLE[] = {
+    static const char *PPANE_TABLE[P_COUNT] = {
         "P_cursor_00",
         "P_cursor_01",
         "P_cursor_02",
         "P_cursor_03"
     };
 
-    static const char *NPANE_TABLE[] = {
+    static const char *NPANE_TABLE[N_COUNT] = {
         "N_cursor_00",
         "N_LU_00",
         "N_RU_00",
@@ -45,21 +45,21 @@ int dSelectCursor_c::create() {
         return SUCCEEDED;
     }
 
-    if (! mResLoader.request("Layout/select_cursor/select_cursor.arc")) {
+    if (!mResLoader.request("Layout/select_cursor/select_cursor.arc")) {
         return NOT_READY;
     }
 
-    for (int i = 0; i < (int) ARRAY_SIZE(mLayouts); i++) {
+    for (int i = 0; i < ARRAY_SIZE(mLayouts); i++) {
         mLayouts[i].mBase.mpResAccessor = &mResLoader;
     }
 
     for (int i = 0; i < (int) ARRAY_SIZE(mLayouts); i++) {
         mLayouts[i].mBase.build("select_cursor_04.brlyt", nullptr);
-        mLayouts[i].mBase.AnimeResRegister(AnmNameTbl, ARRAY_SIZE(AnmNameTbl));
-        mLayouts[i].mBase.GroupRegister(GROUP_NAME_DT, ANIME_INDEX_TBL, ARRAY_SIZE(GROUP_NAME_DT));
+        mLayouts[i].mBase.AnimeResRegister(AnmNameTbl, ANIM_COUNT);
+        mLayouts[i].mBase.GroupRegister(GROUP_NAME_DT, ANIME_INDEX_TBL, ANIM_COUNT);
         mLayouts[i].mpRootPane = mLayouts[i].mBase.getRootPane();
-        mLayouts[i].mBase.PPaneRegister(PPANE_TABLE, mLayouts[i].mPPanes, ARRAY_SIZE(PPANE_TABLE));
-        mLayouts[i].mBase.NPaneRegister(NPANE_TABLE, mLayouts[i].mNPanes, ARRAY_SIZE(NPANE_TABLE));
+        mLayouts[i].mBase.PPaneRegister(PPANE_TABLE, mLayouts[i].mpPicturePanes, P_COUNT);
+        mLayouts[i].mBase.NPaneRegister(NPANE_TABLE, mLayouts[i].mpNullPanes, N_COUNT);
         mLayouts[i].mpRootPane->SetVisible(false);
 
         Cancel(i);
@@ -102,12 +102,12 @@ int dSelectCursor_c::draw() {
 }
 
 int dSelectCursor_c::doDelete() {
-    if (! mResLoader.remove()) {
+    if (!mResLoader.remove()) {
         return NOT_READY;
     }
 
     for (int i = 0; i < (int) ARRAY_SIZE(mLayouts); i++) {
-        if (! mLayouts[i].mBase.doDelete()) {
+        if (!mLayouts[i].mBase.doDelete()) {
             return NOT_READY;
         }
     }
@@ -167,12 +167,12 @@ void dSelectCursor_c::PosSet(int layoutId) {
         }
 
         pos2.z = 0.0f;
-        mLayouts[layoutId].mNPanes[i]->SetTranslate(pos2);
+        mLayouts[layoutId].mpNullPanes[i]->SetTranslate(pos2);
     }
 
     if (mLayouts[layoutId].mDoFade) {
         mLayouts[layoutId].mPaneAlpha -= (255 / 10) + 1;
-        mLayouts[layoutId].mNPanes[0]->SetAlpha(mLayouts[layoutId].mPaneAlpha);
+        mLayouts[layoutId].mpNullPanes[0]->SetAlpha(mLayouts[layoutId].mPaneAlpha);
 
         if (mLayouts[layoutId].mPaneAlpha < 0) {
             mLayouts[layoutId].mPaneAlpha = 0;
@@ -233,7 +233,7 @@ void dSelectCursor_c::SetAlpha(const nw4r::lyt::Pane *pane, int layoutId) {
     u8 alpha = pane->GetGlbAlpha();
     Layout_c & layout = mLayouts[layoutId];
 
-    for (int i = 0; i < ARRAY_SIZE(layout.mPPanes); i++) {
-        layout.mPPanes[i]->SetAlpha(alpha);
+    for (int i = 0; i < ARRAY_SIZE(layout.mpPicturePanes); i++) {
+        layout.mpPicturePanes[i]->SetAlpha(alpha);
     }
 }
