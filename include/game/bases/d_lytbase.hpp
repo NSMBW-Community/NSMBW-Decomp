@@ -1,6 +1,7 @@
 #pragma once
 #include <game/bases/d_2d.hpp>
 #include <game/bases/d_lyttextBox.hpp>
+#include <game/bases/d_tag_processor.hpp>
 #include <game/mLib/m_2d.hpp>
 #include <nw4r/lyt.h>
 
@@ -53,4 +54,7 @@ public:
     int mGroupCount;
 
     int mLastStartedAnimNum;
+
+public:
+    static TagProcessor_c s_TagPrc;
 };
