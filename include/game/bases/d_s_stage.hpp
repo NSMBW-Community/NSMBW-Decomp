@@ -15,7 +15,9 @@ public:
         LOOP_COUNT,
     };
 
-    char pad[0x119a];
+    char pad[0x1198];
+    u8 mCurrWorld;
+    u8 mCurrCourse;
     u8 mCurrFile;
 
     static float getLoopPosX(float x);

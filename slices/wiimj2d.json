@@ -347,6 +347,16 @@
             }
         },
         {
+
+            "source": "dol/bases/d_water_wave.cpp",
+            "nonMatching": true,
+            "memoryRanges": {
+                ".text": "0xe5570-0xe78b0",
+                ".data": "0x1d208-0x1d688",
+                ".sdata2": "0x1d98-0x1e28"
+            }
+        },
+        {
             "source": "dol/bases/d_wm_actor.cpp",
             "memoryRanges": {
                 ".text": "0xec0a0-0xec480",
