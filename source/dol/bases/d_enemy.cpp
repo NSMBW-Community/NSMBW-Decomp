@@ -915,13 +915,9 @@ mVec3_c dEn_c::calcCarryPos(const mVec3_c &pos) {
     if (player->isStatus(4)) {
         return mPos;
     }
-    mMtx_c mtx;
-    mMtx_c transposeMtx;
+    mMtx_c mtx = player->getCarryMtx();
+    mMtx_c transposeMtx = mMtx_c::createTrans(pos);
     mVec3_c res;
-    mVec3_c carryPos = player->getCarryPos();
-    mtx.trans(carryPos);
-    mtx.concat(player->getModel()->getMtx());
-    transposeMtx.trans(pos.x, pos.y, pos.z);
     mtx.concat(transposeMtx).multVecZero(res);
     return res;
 }
