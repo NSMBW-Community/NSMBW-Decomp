@@ -4,6 +4,7 @@
 #include <game/bases/d_res_mng.hpp>
 #include <game/bases/d_s_stage.hpp>
 #include <game/mLib/m_heap.hpp>
+#include <game/sLib/s_GlobalData.hpp>
 
 static const char *l_bgpoly_arcdt[] = {
     "obj_waterhalf",
@@ -77,22 +78,72 @@ static const char *l_bgpoly_decotexdt[] = {
     "wmy_magmadeco.11"
 };
 
-void dWaterWave_c::wave_tex_set(mVec3_c *pos, float f, int i, u8 a) {
-    dScStage_c *stage = dScStage_c::m_instance;
+template<>
+const dWaterWave_c::GlobalData_t sGlobalData_c<dWaterWave_c>::m_member = {
+    {
+        {255, 255, 255, 255},
+        {255, 255, 0, 255},
+        {255, 255, 135, 255},
+        {255, 255, 255, 255},
+        {255, 0, 0, 255},
+        {200, 0, 0, 255},
+        {255, 255, 255, 255},
+        {255, 0, 255, 255},
+        {100, 0, 100, 255},
+        {50, 0, 50, 255},
+    },
+    {
+        0.25f, 0.04f, 0.001f, 0.1f,
+        0.002f, 0.001f, 0.1f, 0.002f,
+        0.001f, 0.25f, 0.08f, 0.001f
+    },
+    {
+        {1.0f, -2000, 14000 },
+        {1.0f, 1900, 9000 },
+        {1.0f, -900, 18000 },
+        {1.0f, -800, 10000 },
+        {1.0f, -1500, 1300 },
+        {1.0f, 1400, 9000 },
+    },
+    {
+        0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+        0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+        0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+        0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+        0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+        0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+        0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+        0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+        0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+        0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+        0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+        0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f
+    },
+    { 255, 255, 255, 255 },
+    { 0, 255, 255, 255 }
+};
 
+void dWaterWave_c::wave_tex_set(mVec3_c *pos, float f, int i, u8 a) {
+    dScStage_c *stage = dScStage_c::getInstance();
+
+    mVec3_c waveQuadPos[4];
+
+    m_d308 = a;
     mPos = *pos;
+    m_d284 = f / 8.0f;
+    m_d309 = (u8) f % 8;
+    m_d2e8 = i;
     m_d30a = 0;
-    u8 idx = i;
 
     if (
         stage->mCurrWorld == WORLD_8 && stage->mCurrCourse == STAGE_3 ||
         stage->mCurrWorld == WORLD_8 && stage->mCurrCourse == STAGE_CASTLE && stage->mCurrFile == 3 ||
         stage->mCurrWorld == WORLD_2 && stage->mCurrCourse == STAGE_CASTLE && stage->mCurrFile == 0
     ) {
-        idx = 3;
+        a = 3;
     }
     if (
-        stage->mCurrWorld == WORLD_8 && stage->mCurrCourse == STAGE_2
+        stage->mCurrWorld == WORLD_8 && stage->mCurrCourse == STAGE_3
     ) {
         m_d30a = 1;
     }
@@ -102,59 +153,75 @@ void dWaterWave_c::wave_tex_set(mVec3_c *pos, float f, int i, u8 a) {
         m_d30a = 2;
     }
     mAllocator1.createFrmHeap(-1, mHeap::g_gameHeaps[0], nullptr, 0x20);
-    mRes1 = dResMng_c::m_instance->getRes(l_bgpoly_arcdt[idx], l_bgpoly_bressdt[idx]);
-    mRes2 = dResMng_c::m_instance->getRes(l_bgpoly_decarcdt[idx], l_bgpoly_decbressdt[idx]);
+    mRes1 = dResMng_c::m_instance->getRes(l_bgpoly_arcdt[a], l_bgpoly_bressdt[a]);
+    if (m_d308 == 1 || m_d308 == 2) {
+        mRes2 = dResMng_c::m_instance->getRes(l_bgpoly_decarcdt[a], l_bgpoly_decbressdt[a]);
+    }
+
+    waveQuadPos[0].set(0.0f, 0.0f, 0.0f);
+    waveQuadPos[1].set(8.0f, 0.0f, 0.0f);
+    waveQuadPos[2].set(8.0f, -8.0f, 0.0f);
+    waveQuadPos[3].set(0.0f, -8.0f, 0.0f);
+
     mWaveQuad.create(
         m_d308,
-        mRes1.GetResTex(l_bgpoly_texdt[idx]),
-        mRes1.GetResTex(l_bgpoly_texdt2[idx]),
+        mRes1.GetResTex(l_bgpoly_texdt[a]),
+        mRes1.GetResTex(l_bgpoly_texdt2[a]),
         -1,
         133,
         &mAllocator1
     );
-    nw4r::g3d::ResMat mat = mRes1.GetResMdl(l_bgpoly_modeldt[idx]).GetResMat(0);
-    GXColor color;
-    mat.GetResMatTevColor().GXGetTevColor(GX_TEVREG0, &color);
-    mWaveQuad.mColor1 = color;
-    mat.GetResMatTevColor().GXGetTevColor(GX_TEVREG1, &color);
-    mWaveQuad.mColor2 = color;
+    GXColor color1, color2;
+    nw4r::g3d::ResMdl mdl = mRes1.GetResMdl(l_bgpoly_modeldt[a]);
+    nw4r::g3d::ResMat mat = mdl.GetResMat(0);
+    nw4r::g3d::ResMatTevColor col = mat.GetResMatTevColor();
+    col.GXGetTevColor(GX_TEVREG0, &color1);
+    color1.a = 255;
+    mWaveQuad.mColor1 = nw4r::ut::Color(color1);
+    col.GXGetTevColor(GX_TEVREG1, &color1);
+    color1.a = 255;
+    mWaveQuad.mColor2 = nw4r::ut::Color(color1);
     if (m_d308 == 0) {
-        mWaveQuad.mColor1 = (GXColor){255, 255, 255, 255};
-        mWaveQuad.mColor2 = (GXColor){0, 255, 255, 255};
+        GXColor col1 = sGlobalData_c<dWaterWave_c>::m_member.mWaterTexColor1;
+        GXColor col2 = sGlobalData_c<dWaterWave_c>::m_member.mWaterTexColor2;
+        mWaveQuad.mColor1 = nw4r::ut::Color(col1);
+        mWaveQuad.mColor2 = nw4r::ut::Color(col2);
     }
+    mVec3_c v2;
+    mVec3_c v1(0.0f, 0.0f, 0.0f);
     m_d2fc = m_d284;
     if (m_d2fc > 1100) {
         m_d2fc = 1100;
     }
     mWaveQuad.mCount = m_d2fc;
-    mVec3_c someVec(0.0f, 0.0f, 0.0f);
-    mVec3_c v;
     for (int i = 0; i < m_d2fc; i++) {
-        mWaveQuad.setOfs(&v, i);
-        v.x += 8;
+        mWaveQuad.setOfs(waveQuadPos, i);
+        waveQuadPos[0].x += 8.0f;
+        waveQuadPos[1].x += 8.0f;
+        waveQuadPos[2].x += 8.0f;
+        waveQuadPos[3].x += 8.0f;
     }
-    for (int i = 0; i < ARRAY_SIZE(mSub); i++) {
+    for (int i = 0; i < 20; i++) {
         mSub[i].m_964 = 0;
         mSub[i].m_968 = 0;
         mSub[i].m_a34 = 0;
         mSub[i].m_640 = 1.0f;
-        for (int j = 0; j < ARRAY_SIZE(mSub[i].m_00); j++) {
-            mSub[i].m_00[j] = 0;
+        for (int j = 0; j < 200; j++) {
+            mSub[i].m_00[j] = 0.0f;
             mSub[i].m_320[j] = 1.0f;
-            mSub[i].m_644[j] = 1.0f;
+            mSub[i].m_644[j] = 0;
             mSub[i].m_96c[j] = 0;
         }
     }
-    mVec3_c v2;
     if (m_d2e8 == 0) {
-        v2.x = dBg_c::m_bg_p->mLoopOffset;
+        v2.x = dBg_c::m_bg_p->getLeft();
     } else {
         v2.x = mPos.x;
     }
     v2.y = mPos.y;
     v2.z = mPos.z;
-    mMtx_c m = mMtx_c::createTrans(v2);
-    mWaveQuad.setLocalMtx(&m);
+    mMtxWave.trans(v2.x, v2.y, v2.z);
+    mWaveQuad.setLocalMtx(&mMtxWave);
 
     if (m_d308 == 1 || m_d308 == 2) {
         mWaveDeco.create(
@@ -163,20 +230,22 @@ void dWaterWave_c::wave_tex_set(mVec3_c *pos, float f, int i, u8 a) {
             133,
             &mAllocator1
         );
-        nw4r::g3d::ResMat mat = mRes2.GetResMdl(l_bgpoly_decarcdt[idx]).GetResMat(0);
-        GXColor color1;
-        mat.GetResMatTevColor().GXGetTevColor(GX_TEVREG0, &color1);
-        GXColor color2;
-        mat.GetResMatTevColor().GXGetTevColor(GX_TEVREG1, &color2);
-        mMtx.trans(v2.x, 0.0f, 0.0f);
-        mWaveDeco.setLocalMtx(&mMtx);
+        mdl = mRes2.GetResMdl(l_bgpoly_decarcdt[a]);
+        mat = mdl.GetResMat(0);
+        col = mat.GetResMatTevColor();
+        col.GXGetTevColor(GX_TEVREG0, &color1);
+        color1.a = 255;
+        col.GXGetTevColor(GX_TEVREG1, &color2);
+        color2.a = 255;
+        mMtxDeco.trans(v2.x, 0.0f, 0.0f);
+        mWaveDeco.setLocalMtx(&mMtxDeco);
         for (int i = 0; i < 20; i++) {
-            mWaveDeco.mVertices[i] = someVec;
+            mWaveDeco.mVertices[i].set(v1.x, v1.y, v1.z);
             mWaveDeco.m_2c8[i] = 0;
             mWaveDeco.m_278[i] = dGameCom::rndF(2.5f) + 7.5f;
-            mWaveDeco.mObjIndices[i] = i / 12;
-            mWaveDeco.m_2f0[i] = color1;
-            mWaveDeco.m_340[i] = color2;
+            mWaveDeco.mObjIndices[i] = (float) (i % 12);
+            mWaveDeco.m_2f0[i] = nw4r::ut::Color(color1);
+            mWaveDeco.m_340[i] = nw4r::ut::Color(color2);
         }
         for (int i = 0; i < 12; i++) {
             mWaveDeco.setTexObj(i, mRes2.GetResTex(l_bgpoly_decotexdt[i]));

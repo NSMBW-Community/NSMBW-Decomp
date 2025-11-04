@@ -353,6 +353,7 @@
             "memoryRanges": {
                 ".text": "0xe5570-0xe78b0",
                 ".data": "0x1d208-0x1d688",
+                ".rodata": "0x5378-0x5640",
                 ".sdata2": "0x1d98-0x1e28"
             }
         },

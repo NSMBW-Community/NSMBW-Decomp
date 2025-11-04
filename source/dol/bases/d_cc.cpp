@@ -10,7 +10,7 @@ dCc_c *dCc_c::mEntryN;
 dCc_c *dCc_c::mEntryB;
 
 template <>
-const dCc_c::GlobalData_t sGlobalData_c<dCc_c>::mData = {
+const dCc_c::GlobalData_t sGlobalData_c<dCc_c>::m_member = {
     0,
     0xa000a0, 0xa00000a0,
     true, true

@@ -13,11 +13,11 @@ public:
     bool create(int, nw4r::g3d::ResTex, nw4r::g3d::ResTex, int, int, mAllocator_c *);
     void setOfs(mVec3_c *, int);
 
-    u8 mPad1[0x44];
-    mVec3_c mVertices[4][1100];
+    u8 mPad1[0x40];
+    mVec3_c mQuads[4][1100];
+    nw4r::ut::Color mColor1;
+    nw4r::ut::Color mColor2;
     int mCount;
-    GXColor mColor1;
-    GXColor mColor2;
     u8 mPad2[0x8];
 };
 
@@ -31,17 +31,17 @@ public:
     float m_278[20];
     u8 m_2c8[20];
     u8 mObjIndices[20];
-    GXColor m_2f0[20];
-    GXColor m_340[20];
+    nw4r::ut::Color m_2f0[20];
+    nw4r::ut::Color m_340[20];
 };
 
 }
 
 struct dWaterWave_sub {
-    int m_00[200];
+    float m_00[200];
     float m_320[200];
     float m_640;
-    float m_644[200];
+    int m_644[200];
     int m_964;
     int m_968;
     u8 m_96c[200];
@@ -56,6 +56,18 @@ public:
     void draw();
     void doDelete();
 
+    struct GlobalData_t {
+        GXColor mColors[12];
+        float mFloats[12];
+        struct {
+            float f;
+            short s1, s2;
+        } mStructs[6];
+        float mFloats2[139];
+        GXColor mWaterTexColor1;
+        GXColor mWaterTexColor2;
+    };
+
     dHeapAllocator_c mAllocator1;
     dHeapAllocator_c mAllocator2;
     nw4r::g3d::ResFile mRes1;
@@ -63,11 +75,16 @@ public:
     d3d::rtexQuadManyTwin_c mWaveQuad;
     d3d::rtexMagaDeco_c mWaveDeco;
     mVec3_c mPos;
+    u8 mPad1[0xc];
     float m_d284;
-    mMtx_c mMtx;
+    mMtx_c mMtxWave;
+    mMtx_c mMtxDeco;
     int m_d2e8;
+    u8 mPad3[0x10];
     int m_d2fc;
+    u8 mPad4[0x8];
     u8 m_d308;
+    u8 m_d309;
     u8 m_d30a;
     dWaterWave_sub mSub[20];
 };

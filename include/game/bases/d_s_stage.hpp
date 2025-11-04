@@ -20,6 +20,8 @@ public:
     u8 mCurrCourse;
     u8 mCurrFile;
 
+    static dScStage_c *getInstance() { return m_instance; }
+
     static float getLoopPosX(float x);
     static int m_loopType;
     static int mCollectionCoin[STAR_COIN_COUNT];
