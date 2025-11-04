@@ -19,7 +19,7 @@ int daIceBall_c::sm_IceBallCount[4];
 int daIceBall_c::sm_IceBallAliveCount[4];
 
 template <>
-const daIceBall_c::GlobalData_t sGlobalData_c<daIceBall_c>::mData = {
+const daIceBall_c::GlobalData_t sGlobalData_c<daIceBall_c>::m_member = {
     0.75f,
     1.05f,
     0.6f,
@@ -175,7 +175,7 @@ bool daIceBall_c::checkInitLine(float &groundHeight) {
 }
 
 void daIceBall_c::lightProc() {
-    mLightMask.set(mPos.x, mPos.y, mPos.z, sGlobalData_c<daIceBall_c>::mData.mLightRadius);
+    mLightMask.set(mPos.x, mPos.y, mPos.z, sGlobalData_c<daIceBall_c>::m_member.mLightRadius);
     mLightMask.execute();
 }
 
@@ -406,16 +406,16 @@ void daIceBall_c::initializeState_Move() {
     static const float cs_max_speed_x[] = {1.5f, -1.5f};
 
     float playerXSpeed = daPyMng_c::getPlayer(mPlayerNo)->mSpeed.x;
-    float moveBoostThreshold = sGlobalData_c<daIceBall_c>::mData.moveBoostThreshold;
-    float moveBoostScale = sGlobalData_c<daIceBall_c>::mData.mMoveBoostScale;
+    float moveBoostThreshold = sGlobalData_c<daIceBall_c>::m_member.moveBoostThreshold;
+    float moveBoostScale = sGlobalData_c<daIceBall_c>::m_member.mMoveBoostScale;
 
     float speedBoost;
     if (playerXSpeed > moveBoostThreshold) {
         float baseBoost = moveBoostScale * moveBoostThreshold;
-        speedBoost = baseBoost + sGlobalData_c<daIceBall_c>::mData.calcExtraBoost(playerXSpeed - moveBoostThreshold);
+        speedBoost = baseBoost + sGlobalData_c<daIceBall_c>::m_member.calcExtraBoost(playerXSpeed - moveBoostThreshold);
     } else if (playerXSpeed < -moveBoostThreshold) {
         float baseBoost = -moveBoostScale * moveBoostThreshold;
-        speedBoost = baseBoost + sGlobalData_c<daIceBall_c>::mData.calcExtraBoost(playerXSpeed + moveBoostThreshold);
+        speedBoost = baseBoost + sGlobalData_c<daIceBall_c>::m_member.calcExtraBoost(playerXSpeed + moveBoostThreshold);
     } else {
         speedBoost = moveBoostScale * playerXSpeed;
     }

@@ -8,5 +8,5 @@
 template <typename T>
 class sGlobalData_c {
 public:
-    static const typename T::GlobalData_t mData; ///< @unofficial
+    static const typename T::GlobalData_t m_member;
 };

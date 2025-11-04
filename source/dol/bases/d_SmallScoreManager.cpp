@@ -7,7 +7,7 @@ ACTOR_PROFILE(SMALL_SCORE_MANAGER, dSmallScoreManager_c, 0);
 dSmallScoreManager_c *dSmallScoreManager_c::m_instance = nullptr;
 
 template <>
-const dSmallScoreManager_c::GlobalData_t sGlobalData_c<dSmallScoreManager_c>::mData = {
+const dSmallScoreManager_c::GlobalData_t sGlobalData_c<dSmallScoreManager_c>::m_member = {
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     dSmallScoreManager_c::c_SMALL_SCORE_SIZE_4_3_X, dSmallScoreManager_c::c_SMALL_SCORE_SIZE_4_3_Y,
     dSmallScoreManager_c::c_SMALL_SCORE_SIZE_16_9_X, dSmallScoreManager_c::c_SMALL_SCORE_SIZE_16_9_Y,
