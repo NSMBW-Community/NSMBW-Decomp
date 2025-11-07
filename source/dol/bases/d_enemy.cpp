@@ -223,14 +223,14 @@ void dEn_c::normal_collcheck(dCc_c *cc1, dCc_c *cc2) {
     dActor_c *actor2 = (dActor_c *) cc2->mpOwner;
 
     if (actor1->mDeathInfo.mIsDead) {
-        cc1->mFlag |= dCc_c::CC_DISABLE;
+        cc1->mInfo |= CC_NO_HIT;
         return;
     }
 
     u32 kind = actor2->mKind;
     if (kind == STAGE_ACTOR_ENEMY) {
         if (actor1->EnDamageCheck(cc1, cc2)) {
-            cc1->mFlag |= dCc_c::CC_DISABLE;
+            cc1->mInfo |= CC_NO_HIT;
         } else {
             actor1->Normal_VsEnHitCheck(cc1, cc2);
         }
@@ -238,8 +238,8 @@ void dEn_c::normal_collcheck(dCc_c *cc1, dCc_c *cc2) {
         if (actor1->mFlags & FLAG_24 || !CeilCheck(actor1->mPos.y, cc1)) {
             if (actor1->PlDamageCheck(cc1, cc2)) {
                 actor1->mCcValue = cc1->unk3;
-                cc1->mFlag |= dCc_c::CC_DISABLE;
-            } else if (cc2->mCcData.mCategory != dCc_c::CAT_PLAYER_ATTACK) {
+                cc1->mInfo |= CC_NO_HIT;
+            } else if (cc2->mCcData.mKind != CC_KIND_PLAYER_ATTACK) {
                 s8 *plrNo = actor2->getPlrNo();
                 if (*plrNo >= 0 && *plrNo < PLAYER_COUNT) {
                     if (actor1->mNoHitPlayer.mTimer[*plrNo] == 0) {
@@ -252,13 +252,13 @@ void dEn_c::normal_collcheck(dCc_c *cc1, dCc_c *cc2) {
     } else if (kind == STAGE_ACTOR_YOSHI) {
         s8 *plrNo = actor2->getPlrNo();
         if (*plrNo >= 0 && *plrNo < PLAYER_COUNT) {
-            if (cc2->mCcData.mAttackCategory == dCc_c::ATTACK_YOSHI_EAT) {
+            if (cc2->mCcData.mAttack == CC_ATTACK_YOSHI_EAT) {
                 actor1->hitYoshiEat(cc1, cc2);
             } else {
                 if (!CeilCheck(actor1->mPos.y, cc1)) {
                     if (actor1->YoshiDamageCheck(cc1, cc2)) {
                         actor1->mCcValue = cc1->unk3;
-                        cc1->mFlag |= dCc_c::CC_DISABLE;
+                        cc1->mInfo |= CC_NO_HIT;
                     } else if (actor1->mNoHitPlayer.mTimer[*plrNo] == 0) {
                         actor1->mNoHitPlayer.mTimer[*plrNo] = smc_NO_HIT_PLAYER_TIMER_DEFAULT;
                         actor1->Normal_VsYoshiHitCheck(cc1, cc2);
@@ -269,7 +269,7 @@ void dEn_c::normal_collcheck(dCc_c *cc1, dCc_c *cc2) {
     } else {
         if (actor1->EtcDamageCheck(cc1, cc2)) {
             actor1->mCcValue = cc1->unk3;
-            cc1->mFlag |= dCc_c::CC_DISABLE;
+            cc1->mInfo |= CC_NO_HIT;
         }
     }
 }
@@ -291,7 +291,7 @@ void dEn_c::Normal_VsYoshiHitCheck(dCc_c *cc1, dCc_c *cc2) {
 }
 
 bool dEn_c::EnDamageCheck(dCc_c *cc1, dCc_c *cc2) {
-    if (cc2->mCcData.mAttackCategory == dCc_c::ATTACK_SHELL) {
+    if (cc2->mCcData.mAttack == CC_ATTACK_SHELL) {
         if (hitCallback_Shell(cc1, cc2)) {
             return true;
         }
@@ -305,10 +305,10 @@ bool dEn_c::PlDamageCheck(dCc_c *cc1, dCc_c *cc2) {
         return false;
     }
 
-    if (cc2->mCcData.mAttackCategory == dCc_c::ATTACK_STAR && hitCallback_Star(cc1, cc2)) {
+    if (cc2->mCcData.mAttack == CC_ATTACK_STAR && hitCallback_Star(cc1, cc2)) {
         return true;
     }
-    if (cc2->mCcData.mAttackCategory == dCc_c::ATTACK_HIP_ATTK) {
+    if (cc2->mCcData.mAttack == CC_ATTACK_HIP_ATTACK) {
         if (owner->isMameAction()) {
             return false;
         }
@@ -316,12 +316,12 @@ bool dEn_c::PlDamageCheck(dCc_c *cc1, dCc_c *cc2) {
             return true;
         }
     }
-    if (cc2->mCcData.mAttackCategory == dCc_c::ATTACK_SLIP) {
-        if (cc1->mCcData.mAttackCategoryInteract & (1 << dCc_c::ATTACK_SLIP) && hitCallback_Slip(cc1, cc2)) {
+    if (cc2->mCcData.mAttack == CC_ATTACK_SLIP) {
+        if (cc1->mCcData.mVsDamage & (1 << CC_ATTACK_SLIP) && hitCallback_Slip(cc1, cc2)) {
             return true;
         }
     }
-    if (cc2->mCcData.mAttackCategory == dCc_c::ATTACK_PENGUIN_SLIDE) {
+    if (cc2->mCcData.mAttack == CC_ATTACK_PENGUIN_SLIDE) {
         if (mActorProperties & 0x200) {
             return false;
         }
@@ -329,13 +329,13 @@ bool dEn_c::PlDamageCheck(dCc_c *cc1, dCc_c *cc2) {
             return true;
         }
     }
-    if (cc2->mCcData.mAttackCategory == dCc_c::ATTACK_SPIN_FALL && hitCallback_Spin(cc1, cc2)) {
+    if (cc2->mCcData.mAttack == CC_ATTACK_SPIN_FALL && hitCallback_Spin(cc1, cc2)) {
         return true;
     }
-    if (cc2->mCcData.mAttackCategory == dCc_c::ATTACK_CANNON && hitCallback_Cannon(cc1, cc2)) {
+    if (cc2->mCcData.mAttack == CC_ATTACK_CANNON && hitCallback_Cannon(cc1, cc2)) {
         return true;
     }
-    if (cc2->mCcData.mAttackCategory == dCc_c::ATTACK_WIRE_NET && hitCallback_WireNet(cc1, cc2)) {
+    if (cc2->mCcData.mAttack == CC_ATTACK_WIRE_NET && hitCallback_WireNet(cc1, cc2)) {
         return true;
     }
     return false;
@@ -347,14 +347,14 @@ bool dEn_c::YoshiDamageCheck(dCc_c *cc1, dCc_c *cc2) {
         return false;
     }
 
-    if (cc2->mCcData.mAttackCategory == dCc_c::ATTACK_STAR && hitCallback_Star(cc1, cc2)) {
+    if (cc2->mCcData.mAttack == CC_ATTACK_STAR && hitCallback_Star(cc1, cc2)) {
         return true;
     }
-    if (cc2->mCcData.mAttackCategory == dCc_c::ATTACK_HIP_ATTK && hitCallback_YoshiHipAttk(cc1, cc2)) {
+    if (cc2->mCcData.mAttack == CC_ATTACK_HIP_ATTACK && hitCallback_YoshiHipAttk(cc1, cc2)) {
         return true;
     }
-    if (cc2->mCcData.mAttackCategory == dCc_c::ATTACK_SLIP) {
-        if (cc1->mCcData.mAttackCategoryInteract & (1 << dCc_c::ATTACK_SLIP) && hitCallback_Slip(cc1, cc2)) {
+    if (cc2->mCcData.mAttack == CC_ATTACK_SLIP) {
+        if (cc1->mCcData.mVsDamage & (1 << CC_ATTACK_SLIP) && hitCallback_Slip(cc1, cc2)) {
             return true;
         }
     }
@@ -363,30 +363,30 @@ bool dEn_c::YoshiDamageCheck(dCc_c *cc1, dCc_c *cc2) {
 
 bool dEn_c::EtcDamageCheck(dCc_c *cc1, dCc_c *cc2) {
     dEn_c *owner = (dEn_c *) cc1->mpOwner;
-    if (cc2->mCcData.mAttackCategory == dCc_c::ATTACK_SHELL && owner->hitCallback_Shell(cc1, cc2)) {
+    if (cc2->mCcData.mAttack == CC_ATTACK_SHELL && owner->hitCallback_Shell(cc1, cc2)) {
         return true;
     }
-    if (cc2->mCcData.mAttackCategory == dCc_c::ATTACK_FIRE) {
-        if (cc1->mCcData.mAttackCategoryInteract & (1 << dCc_c::ATTACK_FIRE) && owner->hitCallback_Fire(cc1, cc2)) {
+    if (cc2->mCcData.mAttack == CC_ATTACK_FIREBALL) {
+        if (cc1->mCcData.mVsDamage & (1 << CC_ATTACK_FIREBALL) && owner->hitCallback_Fire(cc1, cc2)) {
             return true;
         }
     }
-    if (cc2->mCcData.mAttackCategory == dCc_c::ATTACK_YOSHI_FIRE) {
-        if (cc1->mCcData.mAttackCategoryInteract & (1 << dCc_c::ATTACK_YOSHI_FIRE) && owner->hitCallback_YoshiFire(cc1, cc2)) {
+    if (cc2->mCcData.mAttack == CC_ATTACK_YOSHI_FIRE) {
+        if (cc1->mCcData.mVsDamage & (1 << CC_ATTACK_YOSHI_FIRE) && owner->hitCallback_YoshiFire(cc1, cc2)) {
             return true;
         }
     }
-    if (cc2->mCcData.mAttackCategory == dCc_c::ATTACK_FIRE_2 && owner->hitCallback_Fire(cc1, cc2)) {
+    if (cc2->mCcData.mAttack == CC_ATTACK_FIRE_2 && owner->hitCallback_Fire(cc1, cc2)) {
         return true;
     }
-    if (cc2->mCcData.mAttackCategory == dCc_c::ATTACK_ICE && cc1->mCcData.mAttackCategoryInteract & (1 << dCc_c::ATTACK_ICE) ||
-        cc2->mCcData.mAttackCategory == dCc_c::ATTACK_ICE_2 && cc1->mCcData.mAttackCategoryInteract & (1 << dCc_c::ATTACK_ICE_2)) {
+    if (cc2->mCcData.mAttack == CC_ATTACK_ICEBALL && cc1->mCcData.mVsDamage & (1 << CC_ATTACK_ICEBALL) ||
+        cc2->mCcData.mAttack == CC_ATTACK_ICE_2 && cc1->mCcData.mVsDamage & (1 << CC_ATTACK_ICE_2)) {
         if (owner->hitCallback_Ice(cc1, cc2)) {
             return true;
         }
     }
-    if (cc2->mCcData.mAttackCategory == dCc_c::ATTACK_YOSHI_BULLET) {
-        if (cc1->mCcData.mAttackCategoryInteract & (1 << dCc_c::ATTACK_YOSHI_BULLET) && owner->hitCallback_YoshiBullet(cc1, cc2)) {
+    if (cc2->mCcData.mAttack == CC_ATTACK_YOSHI_BULLET) {
+        if (cc1->mCcData.mVsDamage & (1 << CC_ATTACK_YOSHI_BULLET) && owner->hitCallback_YoshiBullet(cc1, cc2)) {
             return true;
         }
     }
@@ -414,7 +414,7 @@ bool dEn_c::getPl_UDflag(const mVec3_c &pos) {
 }
 
 bool dEn_c::CeilCheck(float y, dCc_c *cc) {
-    return dBgParameter_c::getInstance()->check(y + cc->mCcData.mOffsetY, cc->mCcData.mHeight);
+    return dBgParameter_c::getInstance()->check(y + cc->mCcData.mOffset.y, cc->mCcData.mSize.y);
 }
 
 bool dEn_c::carry_check(dActor_c *actor) {

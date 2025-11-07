@@ -237,7 +237,7 @@ public:
     char mPad1[0xc9e];
     float mSmallScoreOffset;
     char mPad2[0x1];
-    bool m_1035;
+    bool mAmiLayer;
     char mPad3[0x4a];
     s8 mTreadCount;
     char mPad4[0x54];
