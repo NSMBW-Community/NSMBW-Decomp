@@ -11,7 +11,7 @@ dEnemyCarry_c::dEnemyCarry_c() {}
 
 void dEnemyCarry_c::setThrowSpeed(dActor_c *actor) {
     float endSpeed;
-    if (mIsCarried == 0) {
+    if (mThrowMode == 0) {
         endSpeed = smc_DIR_MODE1[mDirection];
     } else {
         endSpeed = smc_DIR_MODE2[mDirection];
@@ -41,12 +41,12 @@ void dEnemyCarry_c::setThrowSpeed(dActor_c *actor) {
 }
 
 void dEnemyCarry_c::setThrowChangeState() {
-    mIsCarry = false;
+    mIsPutOn = false;
     changeState(StateID_Throw);
 }
 
 void dEnemyCarry_c::setPutOnChangeState() {
-    mIsCarry = true;
+    mIsPutOn = true;
     changeState(StateID_Throw);
 }
 
@@ -76,7 +76,7 @@ void dEnemyCarry_c::initializeState_Carry() {
     mCc.mCcData.mVsKind |= BIT_FLAG(CC_KIND_KILLER);
     mCc.mCcData.mAttack = CC_ATTACK_SHELL;
     mRc.setRide(nullptr);
-    mIsCarry = false;
+    mIsPutOn = false;
 }
 
 void dEnemyCarry_c::finalizeState_Carry() {
@@ -115,7 +115,7 @@ void dEnemyCarry_c::executeState_Carry() {
 void dEnemyCarry_c::initializeState_Throw() {
     mNoHitPlayer.mTimer[mPlayerNo] = 12;
     mCc.mCcData.mVsKind |= BIT_FLAG(CC_KIND_KILLER) | BIT_FLAG(CC_KIND_ITEM);
-    if (!mIsCarry) {
+    if (!mIsPutOn) {
         mCc.mCcData.mAttack = CC_ATTACK_SHELL;
     }
 }

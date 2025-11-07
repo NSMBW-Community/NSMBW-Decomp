@@ -16,8 +16,8 @@ public:
     void setDeathInfo_CarryBgIn(dActor_c *);
 
 protected:
-    bool mIsCarry;
-    bool mIsCarried;
+    bool mIsPutOn;
+    bool mThrowMode;
 
     static const float smc_DIR_MODE1[2]; ///< @unofficial
     static const float smc_DIR_MODE2[2]; ///< @unofficial

@@ -139,6 +139,16 @@
             }
         },
         {
+            "source": "dol/bases/d_a_en_carry.cpp",
+            "memoryRanges": {
+                ".text": "0x20430-0x20b70",
+                ".ctors": "0x34-0x38",
+                ".data": "0x4640-0x4978",
+                ".bss": "0x1728-0x1768",
+                ".sdata2": "0x2c8-0x2d0"
+            }
+        },
+        {
             "source": "dol/bases/d_ac_py_key.cpp",
             "memoryRanges": {
                 ".text": "0x57850-0x58220"
