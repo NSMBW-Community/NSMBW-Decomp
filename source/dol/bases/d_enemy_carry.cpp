@@ -63,8 +63,8 @@ void dEnemyCarry_c::initializeState_Carry() {
     }
     mCc.mAmiLine = l_Ami_Line[mAmiLayer];
     mBc.mAmiLine = l_Ami_Line[mAmiLayer];
-    mCc.mCcData.mCategoryInteract |= BIT_FLAG(dCc_c::CAT_CANNON);
-    mCc.mCcData.mAttackCategory = dCc_c::ATTACK_SHELL;
+    mCc.mCcData.mVsKind |= BIT_FLAG(CC_KIND_KILLER);
+    mCc.mCcData.mAttack = CC_ATTACK_SHELL;
     mRc.setRide(nullptr);
     mWasDropped = false;
 }
@@ -73,8 +73,8 @@ void dEnemyCarry_c::finalizeState_Carry() {
     dAcPy_c *player = daPyMng_c::getPlayer(mPlayerNo);
 
     player->cancelCarry(this);
-    mCc.mCcData.mAttackCategory = dCc_c::CAT_PLAYER_GENERIC;
-    mCc.mCcData.mCategoryInteract &= ~BIT_FLAG(dCc_c::CAT_CANNON);
+    mCc.mCcData.mAttack = CC_KIND_PLAYER;
+    mCc.mCcData.mVsKind &= ~BIT_FLAG(CC_KIND_KILLER);
     mRc.setRide(nullptr);
     mBc.mFlags = 0;
     mCarryingFlags &= ~(CARRY_RELEASE | CARRY_THROW);
@@ -106,15 +106,15 @@ void dEnemyCarry_c::executeState_Carry() {
 
 void dEnemyCarry_c::initializeState_Throw() {
     mNoHitPlayer.mTimer[mPlayerNo] = 12;
-    mCc.mCcData.mCategoryInteract |= BIT_FLAG(dCc_c::CAT_CANNON) | BIT_FLAG(dCc_c::CAT_ITEM);
+    mCc.mCcData.mVsKind |= BIT_FLAG(CC_KIND_KILLER) | BIT_FLAG(CC_KIND_ITEM);
     if (!mWasDropped) {
-        mCc.mCcData.mAttackCategory = dCc_c::ATTACK_SHELL;
+        mCc.mCcData.mAttack = CC_ATTACK_SHELL;
     }
 }
 
 void dEnemyCarry_c::finalizeState_Throw() {
-    mCc.mCcData.mCategoryInteract &= ~(BIT_FLAG(dCc_c::CAT_CANNON) | BIT_FLAG(dCc_c::CAT_ITEM));
-    mCc.mCcData.mAttackCategory = dCc_c::CAT_PLAYER_GENERIC;
+    mCc.mCcData.mVsKind &= ~(BIT_FLAG(CC_KIND_KILLER) | BIT_FLAG(CC_KIND_ITEM));
+    mCc.mCcData.mAttack = CC_KIND_PLAYER;
     mAccelF = 0.0f;
     mSpeedMax.x = 0.0f;
 }

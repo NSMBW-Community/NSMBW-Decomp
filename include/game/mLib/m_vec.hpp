@@ -4,6 +4,13 @@
 #include <lib/egg/math/eggVector.h>
 #include <game/cLib/c_math.hpp>
 
+/// A plain-old-data structure version of mVec2_c.
+/// @unofficial
+struct mVec2_POD_c {
+    float x;
+    float y;
+};
+
 /// @brief A two-dimensional floating point vector.
 /// @ingroup mlib
 class mVec2_c : public EGG::Vector2f {
