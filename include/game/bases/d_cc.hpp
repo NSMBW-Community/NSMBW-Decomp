@@ -313,7 +313,7 @@ public:
      * If the same bit is set in a second actor's non-collide mask,
      * the two actors will not collide.
      */
-    u8 mNonCollideMask;
+    u8 mAmiLine;
 
     /**
      * @brief The layer this collider is on.

@@ -216,6 +216,17 @@
             }
         },
         {
+            "source": "dol/bases/d_enemy_carry.cpp",
+            "memoryRanges": {
+                ".text": "0x98370-0x98e70",
+                ".ctors": "0xe0-e4",
+                ".rodata": "0x2808-0x2828",
+                ".data": "0x14d50-0x150e8",
+                ".bss": "0x64a8-0x6528",
+                ".sdata2": "0x1228-0x1250"
+            }
+        },
+        {
             "source": "dol/bases/d_lyttextbox.cpp",
             "memoryRanges": {
                 ".text": "0xc33d0-0xc3880",

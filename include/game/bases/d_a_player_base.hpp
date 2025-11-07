@@ -236,9 +236,11 @@ public:
 
     char mPad1[0xc9e];
     float mSmallScoreOffset;
-    char mPad2[0x4c];
+    char mPad2[0x1];
+    bool m_1035;
+    char mPad3[0x4a];
     s8 mTreadCount;
-    char mPad3[0x54];
+    char mPad4[0x54];
     u32 mFlags;
-    u8 mPad4[0x3b4];
+    u8 mPad5[0x3b4];
 };

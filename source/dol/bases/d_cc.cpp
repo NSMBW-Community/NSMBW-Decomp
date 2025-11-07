@@ -24,7 +24,7 @@ dCc_c::dCc_c() {
     mpPrev = nullptr;
     mIsLinked = false;
     mFriendActor = nullptr;
-    mNonCollideMask = true;
+    mAmiLine = true;
     mLayer = 0;
     clear();
 }
@@ -91,7 +91,7 @@ void dCc_c::registerCc(dBaseActor_c *actor, CcData_s *collInfo) {
 
 void dCc_c::registerCc(dBaseActor_c *actor, CcData_s *collInfo, u8 nonCollideMask) {
     registerCc(actor, collInfo);
-    mNonCollideMask = nonCollideMask;
+    mAmiLine = nonCollideMask;
 }
 
 void dCc_c::reset() {
@@ -177,7 +177,7 @@ bool dCc_c::checkCollision(dCc_c *c1, dCc_c *c2, int active) {
         // Disabled colliders don't collide
         return false;
     }
-    if ((c1->mNonCollideMask & c2->mNonCollideMask) == 0) {
+    if ((c1->mAmiLine & c2->mAmiLine) == 0) {
         // If any bit is set in both non-collide masks, the colliders don't collide
         return false;
     }
