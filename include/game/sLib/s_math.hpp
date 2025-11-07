@@ -4,6 +4,7 @@ namespace sLib {
 
 bool chase(short *, short, short);
 bool chase(float *, float, float);
+float addCalc(float *, float, float, float, float);
 short addCalcAngle(short *, short, short, short, short);
 
 template <typename T>

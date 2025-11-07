@@ -43,10 +43,16 @@ public:
 
     static mMtx_c createTrans(const mVec3_c &v) { return createTrans(v.x, v.y, v.z); }
     static mMtx_c createTrans(float x, float y, float z) { mMtx_c mtx; PSMTXTrans(mtx, x, y, z); return mtx; }
+    static mMtx_c createScale(const mVec3_c &v) { mMtx_c mtx; mtx.scale(v); return mtx; }
+    static mMtx_c createScale(float s) { mMtx_c mtx; mtx.scale(s); return mtx; }
+    static mMtx_c createScale(float sx, float sy, float sz) { mMtx_c mtx; mtx.scale(sx, sy, sz); return mtx; }
 
     mMtx_c &concat(const mMtx_c &other) { PSMTXConcat(*this, other, *this); return *this; }
     mMtx_c &trans(const mVec3_c &v) { PSMTXTrans(*this, v.x, v.y, v.z); return *this; }
     mMtx_c &trans(float x, float y, float z) { PSMTXTrans(*this, x, y, z); return *this; }
+    mMtx_c &scale(const mVec3_c &v) { PSMTXScale(*this, v.x, v.y, v.z); return *this; }
+    mMtx_c &scale(float sx, float sy, float sz) { PSMTXScale(*this, sx, sy, sz); return *this; }
+    mMtx_c &scale(float s) { PSMTXScale(*this, s, s, s); return *this; }
     mMtx_c &ZXYrotM(const mAng3_c &ang) { ZXYrotM(ang.x, ang.y, ang.z); return *this; }
 
     float transX() const { return getTranslation().x; }
