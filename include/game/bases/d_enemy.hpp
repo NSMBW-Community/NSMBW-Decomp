@@ -88,9 +88,9 @@ class dEn_c : public dActorMultiState_c {
 public:
     /// @unofficial
     enum FLAGS_e {
-        FLAG_0 = BIT_FLAG(0),
-        FLAG_1 = BIT_FLAG(1),
-        FLAG_24 = BIT_FLAG(24)
+        EN_IS_SHELL = BIT_FLAG(0),
+        EN_IS_CARRY = BIT_FLAG(1),
+        EN_FLAG_24 = BIT_FLAG(24)
     };
 
     dEn_c(); ///< Constructs a new enemy actor.
