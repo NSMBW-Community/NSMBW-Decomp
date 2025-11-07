@@ -7,8 +7,19 @@ public:
     float mL, mR, mU, mD;
     char mPad2[0x2c];
     float mLoopOffset;
+    u8 mPad3[0x28];
+    float mWaveRelated[80];
+    u8 mPad4[0x124];
+    float mWaveX[20];
+    float mWaveY[20];
+    u8 mWaveType[20];
+    u8 mWaveActive[20];
+
+    static dBg_c *getInstance() { return m_bg_p; }
 
     float getLeft() { return mL; }
+    float getWaveX(int i) const { return mWaveX[i]; }
+    float &getWaveRelated(int i) { return mWaveRelated[i]; }
 
     void setWaterInWave(float x, float y, u8 type);
 
