@@ -25,7 +25,7 @@ class dDeathInfo_c {
 public:
     dDeathInfo_c() : mIsDead(false) {}
 
-    dDeathInfo_c operator=(const sDeathInfoData &other) {
+    void operator=(const sDeathInfoData &other) {
         mIsDead = true;
         mSpeed.set(other.mXSpeed, other.mYSpeed);
         mMaxYSpeed = other.mMaxYSpeed;
