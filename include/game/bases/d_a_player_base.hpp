@@ -39,6 +39,14 @@ public:
         BLEND_1
     };
 
+    enum DemoType_e {
+        DEMO_TYPE_0,
+        DEMO_TYPE_1,
+        DEMO_TYPE_2,
+        DEMO_TYPE_3,
+        DEMO_TYPE_4
+    };
+
     daPlBase_c();
     virtual ~daPlBase_c();
 
@@ -223,9 +231,13 @@ public:
 
     bool isMameAction();
 
+    int calcAndGetTreadCount();
+
     mVec3_c getAnkleCenterPos();
 
     bool isStatus(int key);
+
+    bool isDemoType(DemoType_e type);
 
     float getAnkleCenterX() { return getAnkleCenterPos().x; }
     float getAnkleCenterY() { return getAnkleCenterPos().y; }

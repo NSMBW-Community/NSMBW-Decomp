@@ -10,12 +10,21 @@ public:
     u8 mPad3[0x20];
     float mLiquidHeight;
     u8 mPad4[0x144];
+    float mWaveRelated[80];
+    u8 mPad5[0x118];
     float mDispScale;
     float m_8ffa8;
     float mPrevDispScale;
+    float mWaveX[20];
+    float mWaveY[20];
+    u8 mWaveType[20];
+    u8 mWaveActive[20];
 
+    static dBg_c *getInstance() { return m_bg_p; }
 
-    float getLeft() const { return mL; }
+    float getLeft() { return mL; }
+    float getWaveX(int i) const { return mWaveX[i]; }
+    float &getWaveRelated(int i) { return mWaveRelated[i]; }
     float getLiquidHeight() const { return mLiquidHeight; }
 
     void setWaterInWave(float x, float y, u8 type);
