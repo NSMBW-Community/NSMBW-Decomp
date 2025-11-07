@@ -130,7 +130,7 @@ void dEn_c::fumidamageEffect(const mVec3_c &pos) {
 }
 
 void dEn_c::hipatkEffect(const mVec3_c &pos) {
-    if (mFlags & FLAG_1) {
+    if (mFlags & EN_IS_HARD) {
         dEf::createEffect_change("Wm_mr_hardhit", 0, &pos, nullptr, nullptr);
     } else {
         dEf::createEffect_change("Wm_mr_softhit", 0, &pos, nullptr, nullptr);
@@ -235,7 +235,7 @@ void dEn_c::normal_collcheck(dCc_c *self, dCc_c *other) {
             actor1->Normal_VsEnHitCheck(self, other);
         }
     } else if (kind == STAGE_ACTOR_PLAYER) {
-        if (actor1->mFlags & FLAG_24 || !CeilCheck(actor1->mPos.y, self)) {
+        if (actor1->mFlags & EN_FLAG_24 || !CeilCheck(actor1->mPos.y, self)) {
             if (actor1->PlDamageCheck(self, other)) {
                 actor1->mCcValue = self->unk3;
                 self->mInfo |= CC_NO_HIT;

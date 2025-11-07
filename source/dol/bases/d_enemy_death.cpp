@@ -784,7 +784,7 @@ void dEn_c::setDeathSound_Fire() {
 }
 
 void dEn_c::setDeathSound_HipAttk() {
-    if (mFlags & FLAG_1) {
+    if (mFlags & EN_IS_HARD) {
         dAudio::g_pSndObjEmy->startSound(SE_EMY_DOWN_HPDP_H, mPos, 0);
     } else {
         dAudio::g_pSndObjEmy->startSound(SE_EMY_DOWN_HPDP_S, mPos, 0);
@@ -816,7 +816,7 @@ void dEn_c::setDeathSound_Slip(dActor_c *killedBy) {
 }
 
 void dEn_c::setDeathSound_Spin() {
-    if (mFlags & FLAG_1) {
+    if (mFlags & EN_IS_HARD) {
         dAudio::g_pSndObjEmy->startSound(SE_EMY_DOWN_HPDP_H, mPos, 0);
     } else {
         dAudio::g_pSndObjEmy->startSound(SE_EMY_DOWN_HPDP_S, mPos, 0);
