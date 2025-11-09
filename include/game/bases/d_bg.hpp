@@ -16,6 +16,7 @@ public:
     float getLiquidHeight() const { return mLiquidHeight; }
 
     void setWaterInWave(float x, float y, u8 type);
+    void BgUnitChange(u16, u16, int, u16);
 
     float getDispScale() { return mDispScale; }
     float getPrevDispScale() { return mPrevDispScale; }

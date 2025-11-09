@@ -20,7 +20,7 @@ public:
 
 class dIceInfo {
 public:
-    ~dIceInfo();
+    ~dIceInfo() {}
 
     int mMode;
     mVec3_c mPos;
