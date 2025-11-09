@@ -7,6 +7,7 @@ public:
     float mLoopOffset;
 
     void setWaterInWave(float x, float y, u8 type);
+    void BgUnitChange(u16, u16, int, u16);
 
     static dBg_c *m_bg_p;
 };

@@ -191,7 +191,7 @@ public:
     virtual void boyonBegin();
     virtual void calcBoyonScale();
 
-    virtual void createIceActor();
+    virtual bool createIceActor();
     virtual void setIceAnm();
     virtual void returnAnm_Ice();
     virtual void returnState_Ice();
@@ -229,7 +229,7 @@ public:
     bool checkWallAndBg(); ///< @unofficial
     int Enfumi_check(dCc_c *self, dCc_c *other, int step);
     u32 EnBgCheck();
-    bool EnBgCheckFoot();
+    u32 EnBgCheckFoot();
     u32 EnBgCheckWall();
     bool LineBoundaryCheck(dActor_c *actor);
 

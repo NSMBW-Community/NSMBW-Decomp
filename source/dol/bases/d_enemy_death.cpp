@@ -377,7 +377,7 @@ bool dEn_c::hitCallback_Fire(dCc_c *self, dCc_c *other) {
 }
 
 bool dEn_c::hitCallback_Ice(dCc_c *self, dCc_c *other) {
-    if (mIceMng.m_0c == 0){
+    if (mIceMng.mActive == 0){
         daPlBase_c *player = (daPlBase_c *) other->getOwner();
 
         if (player->mSpeed.x >= 0.0f) {
@@ -405,7 +405,7 @@ void dEn_c::setDeadMode(dActor_c *actor, int i) {
     if (mDeathInfo.mIsDead || mNoRespawn) {
         dead = true;
     }
-    if (!dead && (!isState(StateID_Ice) || mIceMng.m_18 == 0)) {
+    if (!dead && (!isState(StateID_Ice) || mIceMng.mDestroyMode == 0)) {
         removeCc();
         if (i == 1) {
             setDeathInfo_Smoke(actor);
