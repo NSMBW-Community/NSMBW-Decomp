@@ -5,7 +5,7 @@
 #include <game/bases/d_movie.hpp>
 #include <game/bases/d_effectmanager.hpp>
 #include <game/framework/f_profile.hpp>
-#include <lib/egg/util/eggEffectManager.hpp>
+#include <lib/egg/util/eggEffectManager.h>
 
 BASE_PROFILE(LASTACTOR, dLastActor_c);
 
