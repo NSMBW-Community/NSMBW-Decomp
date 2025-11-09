@@ -2,7 +2,7 @@
     "meta": {
         "fileName": "d_enemiesNP.rel",
         "type": "REL",
-        "defaultCompilerFlags": "-sdata 0 -sdata2 0 -proc gekko -fp hard -O4,p -char signed -rtti off -enum int -Cpp_exceptions off -ipa file -enc SJIS",
+        "defaultCompilerFlags": "-sdata 0 -sdata2 0 -proc gekko -fp hard -O4,p -inline noauto -char signed -rtti off -enum int -Cpp_exceptions off -ipa file -enc SJIS",
         "moduleNum": 3,
         "baseAddr": "809A2D90",
         "sections": {
@@ -33,6 +33,16 @@
             "compilerFlags": "",
             "memoryRanges": {
                 ".text": "0x0-0x70"
+            }
+        },
+        {
+            "source": "d_enemiesNP/d_a_en_bomhei.cpp",
+            "memoryRanges": {
+                ".text": "0x25fa0-0x2b0e0",
+                ".ctors": "0x60-0x64",
+                ".data": "0x80c0-0x8838",
+                ".rodata": "0x10b8-0x1330",
+                ".bss": "0x1618-0x1998"
             }
         }
     ]

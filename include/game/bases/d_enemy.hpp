@@ -191,7 +191,7 @@ public:
     virtual void boyonBegin();
     virtual void calcBoyonScale();
 
-    virtual void createIceActor();
+    virtual bool createIceActor();
     virtual void setIceAnm();
     virtual void returnAnm_Ice();
     virtual void returnState_Ice();

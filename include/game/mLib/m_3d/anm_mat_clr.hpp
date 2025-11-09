@@ -6,6 +6,8 @@
 namespace m3d {
     class anmMatClr_c : public banm_c {
     public:
+        anmMatClr_c() : children(nullptr) {}
+
         virtual ~anmMatClr_c();
         virtual void remove();
         virtual void play();

@@ -87,7 +87,7 @@ public:
     dBc_c();
     virtual ~dBc_c();
 
-    void set(dActor_c *, const sBcSensorBase *, const sBcSensorBase *, const sBcSensorBase *); ///< @unofficial
+    void set(dActor_c *owner, const sBcSensorBase *foot, const sBcSensorBase *head, const sBcSensorBase *wall); ///< @unofficial
 
     void checkLink();
     bool checkRide();
@@ -103,6 +103,8 @@ public:
     bool hasSensorFoot() { return mpSensorFoot != nullptr; }
     bool hasSensorHead() { return mpSensorHead != nullptr; }
     bool hasSensorWall() { return mpSensorWall != nullptr; }
+
+    void checkBombBreak(mVec2_c, mVec2_c);
 
     dActor_c *mpOwner;
     sBcSensorBase *mpSensorFoot;
@@ -131,12 +133,16 @@ public:
     dBg_ctr_c *mLinkW[2];
     u32 mFlags;
     u32 mPrevFlags;
-    char pad3[0x55];
+    char mPad3[0x8];
+    s8 mOwningPlayerNo;
+    char mPad4[0x4c];
     u8 mAmiLine;
     char pad4[0x2];
     u8 *mpLayer;
+
     u8 mLayer;
 
+    static int getUnitType(float, float, u8);
     static int checkWaterDepth(float, float, u8, u8, float *);
     static WATER_TYPE_e checkWater(float, float, u8, float *);
 

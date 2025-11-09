@@ -357,7 +357,7 @@ public:
     u16 mEventNums; ///< The event IDs the actor is tracking.
     u64 mEventMask; ///< The event mask, generated from #mEventNums.
 
-    u32 m_23b; ///< @todo Figure out the purpose of this field.
+    int m_23b; ///< @todo Figure out the purpose of this field.
     u16 mSpriteSpawnFlags; ///< The spawn flags from the sprite data entry.
     bool mBlockHit; ///< Whether a block below the actor was hit.
 
