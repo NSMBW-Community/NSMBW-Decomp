@@ -685,12 +685,12 @@ u32 dEn_c::EnBgCheck() {
     return flags;
 }
 
-bool dEn_c::EnBgCheckFoot() {
+u32 dEn_c::EnBgCheckFoot() {
     if (!mBc.hasSensorFoot()) {
         mFootPush2.set(0.0f, 0.0f, 0.0f);
         return false;
     }
-    bool res = mBc.checkFootEnm();
+    u32 res = mBc.checkFootEnm();
     mFootAttr3 = false;
     mFootAttr1 = false;
     if (mBc.isFoot()) {

@@ -1,6 +1,5 @@
 #include <game/bases/d_a_en_carry.hpp>
 
-STATE_BASE_VIRTUAL_DEFINE(daEnCarry_c, Carry);
 STATE_VIRTUAL_DEFINE(daEnCarry_c, Carry);
 
 bool daEnCarry_c::acmIsCarryEnemy(dActor_c *actor) {

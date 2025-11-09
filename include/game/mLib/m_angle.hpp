@@ -2,10 +2,7 @@
 #include <types.h>
 #include <game/sLib/s_math.hpp>
 #include <nw4r/math.h>
-
-extern "C" {
-    int abs(int);
-}
+#include <MSL/arith.h>
 
 /// @brief A one-dimensional short angle vector.
 /// @ingroup mlib
@@ -20,7 +17,7 @@ struct mAng {
     operator s16() { return mAngle; }
 
     bool chase(short target, short step) {
-        return sLib::chase(&mAngle, target, step);
+        return sLib::chaseAngle(&mAngle, target, step);
     }
 
     mAng abs() const {

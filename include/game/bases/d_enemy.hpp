@@ -190,7 +190,7 @@ public:
     virtual void boyonBegin();
     virtual void calcBoyonScale();
 
-    virtual void createIceActor();
+    virtual bool createIceActor();
     virtual void setIceAnm();
     virtual void returnAnm_Ice();
     virtual void returnState_Ice();
@@ -228,7 +228,7 @@ public:
     bool checkWallAndBg(); ///< @unofficial
     int Enfumi_check(dCc_c *cc1, dCc_c *cc2, int step);
     u32 EnBgCheck();
-    bool EnBgCheckFoot();
+    u32 EnBgCheckFoot();
     u32 EnBgCheckWall();
     bool LineBoundaryCheck(dActor_c *actor);
 
@@ -274,7 +274,6 @@ public:
     bool mFootAttr1;
     u8 mPad4[5];
     dEnBoyoMng_c mBoyoMng;
-    u8 mPad5[4];
     dIceMng_c mIceMng; ///< The ice manager for this enemy.
     float mAirAccelY; ///< The Y acceleration before entering a liquid.
     float mAirSpeedMaxY; ///< The maximum Y speed before entering a liquid.
@@ -296,6 +295,11 @@ public:
     static const float smc_WATER_YMAXSPD;
     static const float smc_WATER_FALLMAXSPD;
     static const float smc_WATER_ROLL_DEC_RATE;
+
+    static const float smc_DEADFALL_GRAVITY;
+    static const float smc_DEADFALL_YSPEED;
+    static const float smc_DEADFALL_YSPEED_MAX;
+    static const s16 smc_DEADFALL_SPINSPEED;
 
     static const u16 smc_NO_HIT_PLAYER_TIMER_DEFAULT = 5; ///< @unofficial
     static const u16 smc_NO_HIT_PLAYER_TIMER_SPIT_OUT = 16; ///< @unofficial
