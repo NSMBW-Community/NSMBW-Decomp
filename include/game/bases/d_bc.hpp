@@ -48,13 +48,13 @@ public:
     char mPad2[0x34];
     u32 mFlags;
     char mPad3[0x59];
-    u8 mLineKind;
+    u8 mAmiLine;
     char mPad4[0x6];
     u8 mLayer;
 
     static int checkWaterDepth(float, float, u8, u8, float *);
     static WATER_TYPE_e checkWater(float, float, u8, float *);
-    static void checkBg(float, float, u8, u8, unsigned long);
+    static bool checkBg(float, float, u8, u8, unsigned long);
 
     bool isHead()  { return mFlags & 0b00000000000000000000000000010101; }
     bool isWallL() { return mFlags & 0b00000000000000000000000000101010; }

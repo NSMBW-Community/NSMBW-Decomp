@@ -13,36 +13,61 @@ struct sDeathInfoData {
     float mYSpeed;
     float mMaxYSpeed;
     float mYAccel;
-    sStateIDIf_c *mDeathState;
-    int mQuakeScore;
+    const sStateIDIf_c *mDeathState;
+    int mScore;
     int m_18;
-    bool mDirection;
-    s8 mKilledBy;
-    bool mIsDead;
+    u8 mDirection;
+    u8 mKilledBy;
 };
 
 /// @unofficial
 class dDeathInfo_c {
 public:
     dDeathInfo_c() {
-        mData.mIsDead = false;
+        mIsDead = false;
     }
 
     void set(const sDeathInfoData &other) {
-        mData.mIsDead = true;
-        float tmpY = other.mYSpeed;
-        mData.mXSpeed = other.mXSpeed;
-        mData.mYSpeed = tmpY;
-        mData.mMaxYSpeed = other.mMaxYSpeed;
-        mData.mYAccel = other.mYAccel;
-        mData.mDeathState = other.mDeathState;
-        mData.mQuakeScore = other.mQuakeScore;
-        mData.m_18 = other.m_18;
-        mData.mDirection = other.mDirection;
-        mData.mKilledBy = other.mKilledBy;
+        mIsDead = true;
+        mSpeed.set(other.mXSpeed, other.mYSpeed);
+        mMaxYSpeed = other.mMaxYSpeed;
+        mYAccel = other.mYAccel;
+        mDeathState = other.mDeathState;
+        mScore = other.mScore;
+        m_18 = other.m_18;
+        mDirection = other.mDirection;
+        mKilledBy = other.mKilledBy;
     }
 
-    sDeathInfoData mData;
+    float getXSpeed() const {
+        return mSpeed.x;
+    }
+
+    float getYSpeed() const {
+        return mSpeed.y;
+    }
+
+    float getMaxYSpeed() const {
+        return mMaxYSpeed;
+    }
+
+    float getYAccel() const {
+        return mYAccel;
+    }
+
+    static const u8 smc_UNKNOWN_HIT = 50; ///< @unofficial
+
+private:
+    mVec2_c mSpeed;
+    float mMaxYSpeed;
+    float mYAccel;
+public:
+    const sStateIDIf_c *mDeathState;
+    int mScore;
+    int m_18;
+    u8 mDirection;
+    s8 mKilledBy;
+    bool mIsDead;
 };
 
 /// @unofficial
@@ -65,6 +90,7 @@ class dEn_c : public dActorMultiState_c {
 public:
     /// @unofficial
     enum FLAGS_e {
+        FLAG_0 = BIT_FLAG(0),
         FLAG_1 = BIT_FLAG(1),
         FLAG_24 = BIT_FLAG(24)
     };
@@ -171,9 +197,9 @@ public:
     virtual void returnAnm_Ice();
     virtual void returnState_Ice();
 
-    virtual void isFunsui() const;
-    virtual void endFunsui();
     virtual void beginFunsui();
+    virtual void endFunsui();
+    virtual void isFunsui() const;
 
     virtual bool checkComboClap(int max);
 
@@ -201,7 +227,7 @@ public:
 
     void hitdamageEffect(const mVec3_c &pos);
 
-    void checkWallAndBg(); ///< @unofficial
+    bool checkWallAndBg(); ///< @unofficial
     int Enfumi_check(dCc_c *cc1, dCc_c *cc2, int step);
     u32 EnBgCheck();
     bool EnBgCheckFoot();
@@ -241,7 +267,7 @@ public:
     u8 mPad1[6];
     mVec3_c mFootPush;
     mVec3_c mFootPush2;
-    bool mDeathFallDirection; ///< The X direction to move towards on death.
+    u8 mDeathFallDirection; ///< The X direction to move towards on death.
     u8 mPad2[1];
     bool mKilledByLiquid; ///< Whether the enemy was killed by falling in a liquid.
     u8 mPad3[1];

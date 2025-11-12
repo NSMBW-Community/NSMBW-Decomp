@@ -454,7 +454,7 @@ bool dActor_c::ActorDrawCullCheck() {
     return dGameCom::someCheck(&pos, &bound);
 }
 
-bool dActor_c::checkBgColl() {
+bool dActor_c::HasamareBgCheck() {
     if (mBgCollFlags != 0) {
         if ((mBgCollFlags & COLL_HEAD) && mBc.isHead()) {
             return true;
@@ -731,7 +731,7 @@ void dActor_c::clrComboCnt() {
 void dActor_c::waterSplashEffect(const mVec3_c &pos, float size) {
     mVec3_c shiftedPos(pos, 6500.0f);
 
-    int waterDepth = dBc_c::checkWaterDepth(shiftedPos.x, shiftedPos.y, mLayer, mBc.mLineKind, nullptr);
+    int waterDepth = dBc_c::checkWaterDepth(shiftedPos.x, shiftedPos.y, mLayer, mBc.mAmiLine, nullptr);
 
     u32 splashInfo = 0;
     if (waterDepth < 3) {

@@ -1,7 +1,7 @@
 #include <game/bases/d_enemy.hpp>
 #include <game/bases/d_bc.hpp>
 #include <game/bases/d_quake.hpp>
-#include <game/mLib/m_ef.hpp>
+#include <game/mLib/m_effect.hpp>
 #include <game/bases/d_a_player.hpp>
 #include <game/bases/d_a_player_manager.hpp>
 #include <game/bases/d_bg.hpp>
@@ -79,13 +79,13 @@ int dEn_c::preExecute() {
         }
     }
 
-    if (mDeathInfo.mData.mIsDead) {
+    if (mDeathInfo.mIsDead) {
         if (!mNoRespawn) {
             mNoRespawn = true;
             setNicePoint_Death();
-            changeState(*mDeathInfo.mData.mDeathState);
+            changeState(*mDeathInfo.mDeathState);
         }
-        mDeathInfo.mData.mIsDead = false;
+        mDeathInfo.mIsDead = false;
     } else {
         if (mTimer3 != 0) {
             mTimer3--;
@@ -162,7 +162,7 @@ void dEn_c::posMove() {
             mFootPush2.set(0.0f, 0.0f, 0.0f);
             move.x /= 2;
         } else {
-            bool ok = mDeathInfo.mData.mIsDead || mNoRespawn;
+            bool ok = mDeathInfo.mIsDead || mNoRespawn;
             if (!ok && mSpeed.y <= 0.0f) {
                 move.x += mFootPush2.x;
             }
@@ -222,7 +222,7 @@ void dEn_c::normal_collcheck(dCc_c *cc1, dCc_c *cc2) {
     dEn_c *actor1 = (dEn_c *) cc1->mpOwner;
     dActor_c *actor2 = (dActor_c *) cc2->mpOwner;
 
-    if (actor1->mDeathInfo.mData.mIsDead) {
+    if (actor1->mDeathInfo.mIsDead) {
         cc1->mFlag |= dCc_c::CC_DISABLE;
         return;
     }
@@ -426,12 +426,12 @@ bool dEn_c::carry_check(dActor_c *actor) {
     return false;
 }
 
-void dEn_c::checkWallAndBg() {
+bool dEn_c::checkWallAndBg() {
     float dir = l_EnMuki[mDirection];
     mBc.checkWall(&dir);
     mVec3_c truePos = mPos;
     truePos += mCenterOffs;
-    mBc.checkBg(truePos.x, truePos.y, mLayer, l_Ami_Line[mAmiLayer], 0x819);
+    return mBc.checkBg(truePos.x, truePos.y, mLayer, l_Ami_Line[mAmiLayer], 0x819);
 }
 
 int dEn_c::Enfumi_check(dCc_c *cc1, dCc_c *cc2, int step) {
@@ -515,7 +515,7 @@ void dEn_c::SpinFumiScoreSet(dActor_c *actor) {
 
 void dEn_c::PlayerFumiJump(dActor_c *actor, float param_2) {
     ((daPlBase_c *) actor)->vf3fc(param_2, actor->mSpeedF, 1, 0, 2);
-    dEnemyMng_c::m_instance->m138 = 1;
+    dEnemyMng_c::m_instance->m_138 = 1;
 }
 
 void dEn_c::setFumiComboScore(dActor_c *actor) {
@@ -971,8 +971,8 @@ void dEn_c::calcEatInScale(dActor_c *actor) {
 }
 
 void dEn_c::setNicePoint_Death() {
-    int v = mDeathInfo.mData.mKilledBy;
-    if (mDeathInfo.mData.mKilledBy >= 0 && mDeathInfo.mData.mKilledBy < PLAYER_COUNT) {
+    int v = mDeathInfo.mKilledBy;
+    if (mDeathInfo.mKilledBy >= 0 && mDeathInfo.mKilledBy < PLAYER_COUNT) {
         dMultiMng_c::mspInstance->incEnemyDown(v);
     }
 }
@@ -1003,7 +1003,7 @@ void dEn_c::boyonBegin() {
 }
 
 void dEn_c::block_hit_init() {
-    bool dir = mDeathFallDirection;
+    u8 dir = mDeathFallDirection;
     s8 plrNo = *getPlrNo();
 
     mVec3_c shiftedPos(mVec2_c(mPos.x, mPos.y), 5500.0f);
@@ -1012,7 +1012,7 @@ void dEn_c::block_hit_init() {
     dAudio::SoundEffectID_t(SE_EMY_DOWN).playEmySound(mPos, 0);
 
     sDeathInfoData data = {
-        l_base_fall_speed_x[(u8) (int) dir],
+        l_base_fall_speed_x[dir],
         3.0f,
         -4.0f,
         -0.1875f,
@@ -1020,7 +1020,7 @@ void dEn_c::block_hit_init() {
         -1,
         -1,
         dir,
-        plrNo
+        (u8) plrNo
     };
     mDeathInfo.set(data);
 }
