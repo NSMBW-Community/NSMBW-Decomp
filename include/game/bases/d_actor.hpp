@@ -214,7 +214,6 @@ public:
     static bool screenCullCheck(const mVec3_c &pos, const sRangeDataF &visibleBound, sRangeDataF destroyBound, u8 areaID);
 
     /// @brief Returns whether the actor is colliding with any enabled collision sides.
-    /// @unofficial
     bool HasamareBgCheck();
 
     /// @brief Checks if the prompt for the given action should be displayed for each player.

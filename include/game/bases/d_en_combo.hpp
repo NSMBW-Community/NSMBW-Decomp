@@ -6,9 +6,9 @@ class dEnCombo_c {
 public:
     /// @unofficial
     enum COMBO_TYPE_e {
-        COMBO_0,
-        COMBO_1,
-        COMBO_2
+        COMBO_NONE,
+        COMBO_REGULAR,
+        COMBO_SHORT
     };
 
     dEnCombo_c(COMBO_TYPE_e type) : mType(type) {}

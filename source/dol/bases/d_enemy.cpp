@@ -29,7 +29,7 @@ dEn_c::dEn_c() :
     m_24(0), mFootPush(mVec3_c(0.0f, 0.0f, 0.0f)),
     mKilledByLiquid(false), mFootAttr3(false), mFootAttr1(false), mDeathInfo(),
     mBoyoMng(this), mIceMng(this),
-    mTimer1(0), mTimer2(0), mCombo(dEnCombo_c::COMBO_1), mFumiProc(this)
+    mTimer1(0), mTimer2(0), mCombo(dEnCombo_c::COMBO_REGULAR), mFumiProc(this)
 {
     mFumiProc.refresh(new NonUniqueFumiCheck_c());
 
@@ -525,12 +525,12 @@ void dEn_c::setFumiComboScore(dActor_c *actor) {
         float scY = dScoreMng_c::smc_SCORE_Y;
         pos.y = mPos.y + scY;
         switch (mCombo.mType) {
-            case dEnCombo_c::COMBO_1: {
+            case dEnCombo_c::COMBO_REGULAR: {
                 dScoreMng_c *instance = dScoreMng_c::getInstance();
                 instance->ScoreSet(pos, treadCount, *actor->getPlrNo(), 1);
                 break;
             }
-            case dEnCombo_c::COMBO_2: {
+            case dEnCombo_c::COMBO_SHORT: {
                 dScoreMng_c *instance = dScoreMng_c::getInstance();
                 instance->ScoreSet2(pos, treadCount, *actor->getPlrNo());
                 break;
@@ -755,7 +755,7 @@ dBc_c::WATER_TYPE_e dEn_c::WaterLineProc(const mVec3_c &pos, float h) {
     mVec3_c waterPos(mPos.x, height, 6500.0f);
     switch (res) {
         case dBc_c::WATER_CHECK_WATER:
-        case dBc_c::WATER_CHECK_AIR_WATER:
+        case dBc_c::WATER_CHECK_WATER_BUBBLE:
             if (!mInLiquid) {
                 mInLiquid = true;
                 mAirAccelY = mAccelY;
@@ -789,30 +789,30 @@ dBc_c::WATER_TYPE_e dEn_c::WaterLineProc(const mVec3_c &pos, float h) {
     return res;
 }
 
-void dEn_c::yoganSplashEffect(const mVec3_c &pos, float h) {
-    mVec3_c shiftedPos(pos, 6500.0f);
-    mVec3_c weirdPos(h, h, h);
+void dEn_c::yoganSplashEffect(const mVec3_c &pos, float scale) {
+    mVec3_c efPos(pos, 6500.0f);
+    mVec3_c efScale(scale, scale, scale);
     u32 flags = mLayer << 16 | 5;
-    dEffActorMng_c::m_instance->createWaterSplashEff(shiftedPos, flags, -1, weirdPos);
+    dEffActorMng_c::m_instance->createWaterSplashEff(efPos, flags, -1, efScale);
 
-    dAudio::SoundEffectID_t(SE_OBJ_CMN_SPLASH_LAVA).playMapSound(shiftedPos, 0);
+    dAudio::SoundEffectID_t(SE_OBJ_CMN_SPLASH_LAVA).playMapSound(efPos, 0);
 
-    if (h < 1.0f) {
+    if (scale < 1.0f) {
         dBg_c::m_bg_p->setWaterInWave(pos.x, pos.y, 16);
     } else {
         dBg_c::m_bg_p->setWaterInWave(pos.x, pos.y, 14);
     }
 }
 
-void dEn_c::poisonSplashEffect(const mVec3_c &pos, float h) {
-    mVec3_c shiftedPos(pos, 6500.0f);
-    mVec3_c weirdPos(h, h, h);
+void dEn_c::poisonSplashEffect(const mVec3_c &pos, float scale) {
+    mVec3_c efPos(pos, 6500.0f);
+    mVec3_c efScale(scale, scale, scale);
     u32 flags = mLayer << 16 | 7;
-    dEffActorMng_c::m_instance->createWaterSplashEff(shiftedPos, flags, -1, weirdPos);
+    dEffActorMng_c::m_instance->createWaterSplashEff(efPos, flags, -1, efScale);
 
     dAudio::SoundEffectID_t(SE_OBJ_CMN_SPLASH_POISON).playMapSound(pos, 0);
 
-    if (h < 1.0f) {
+    if (scale < 1.0f) {
         dBg_c::m_bg_p->setWaterInWave(pos.x, pos.y, 23);
     } else {
         dBg_c::m_bg_p->setWaterInWave(pos.x, pos.y, 21);
@@ -843,7 +843,7 @@ bool dEn_c::EnWaterCheck(const mVec3_c &pos) {
 bool dEn_c::EnWaterFlagCheck(const mVec3_c &pos) {
     switch (dBc_c::checkWater(pos.x, pos.y, mLayer, nullptr)) {
         case dBc_c::WATER_CHECK_WATER:
-        case dBc_c::WATER_CHECK_AIR_WATER:
+        case dBc_c::WATER_CHECK_WATER_BUBBLE:
             setWaterSpeed();
             return true;
         default:
@@ -877,8 +877,8 @@ bool dEn_c::Area_X_check(float x) {
     for (int i = 0; i < PLAYER_COUNT; i++) {
         dAcPy_c *player = daPyMng_c::getPlayer(i);
         if (player != nullptr && daPyMng_c::checkPlayer(i)) {
-            mVec3_c tmp = player->mPos;
-            float diff = std::fabs(tmp.x - mPos.x);
+            mVec3_c playerPos = player->mPos;
+            float diff = std::fabs(playerPos.x - mPos.x);
             if (diff < x) {
                 return true;
             }
@@ -891,8 +891,8 @@ bool dEn_c::Area_XY_check(float x, float y) {
     for (int i = 0; i < PLAYER_COUNT; i++) {
         dAcPy_c *player = daPyMng_c::getPlayer(i);
         if (player != nullptr && daPyMng_c::checkPlayer(i)) {
-            mVec3_c tmp = player->mPos;
-            if (std::fabs(tmp.x - mPos.x) < x && std::fabs(tmp.y - mPos.y) < y) {
+            mVec3_c playerPos = player->mPos;
+            if (std::fabs(playerPos.x - mPos.x) < x && std::fabs(playerPos.y - mPos.y) < y) {
                 return true;
             }
         }
@@ -971,9 +971,9 @@ void dEn_c::calcEatInScale(dActor_c *actor) {
 }
 
 void dEn_c::setNicePoint_Death() {
-    int v = mDeathInfo.mKilledBy;
+    int killedBy = mDeathInfo.mKilledBy;
     if (mDeathInfo.mKilledBy >= 0 && mDeathInfo.mKilledBy < PLAYER_COUNT) {
-        dMultiMng_c::mspInstance->incEnemyDown(v);
+        dMultiMng_c::mspInstance->incEnemyDown(killedBy);
     }
 }
 
@@ -985,8 +985,8 @@ void dEn_c::iceballInvalid(dCc_c *cc1, dCc_c *cc2) {
     dBaseActor_c *owner = cc2->mpOwner;
     dAudio::g_pSndObjMap->startSound(SE_OBJ_PNGN_ICEBALL_DISAPP, owner->mPos, 0);
 
-    mVec3_c shiftedPos(owner->mPos.x, owner->mPos.y, 5500.0f);
-    EffectManager_c::SetIceBallMissshitEffect(&shiftedPos);
+    mVec3_c efPos(owner->mPos.x, owner->mPos.y, 5500.0f);
+    EffectManager_c::SetIceBallMissshitEffect(&efPos);
 }
 
 void dEn_c::setDamage(dActor_c *actor) {
@@ -1006,12 +1006,12 @@ void dEn_c::block_hit_init() {
     u8 dir = mDeathFallDirection;
     s8 plrNo = *getPlrNo();
 
-    mVec3_c shiftedPos(mVec2_c(mPos.x, mPos.y), 5500.0f);
+    mVec3_c efPos(mVec2_c(mPos.x, mPos.y), 5500.0f);
 
-    hitdamageEffect(shiftedPos);
+    hitdamageEffect(efPos);
     dAudio::SoundEffectID_t(SE_EMY_DOWN).playEmySound(mPos, 0);
 
-    sDeathInfoData data = {
+    mDeathInfo = (sDeathInfoData) {
         l_base_fall_speed_x[dir],
         3.0f,
         -4.0f,
@@ -1022,5 +1022,4 @@ void dEn_c::block_hit_init() {
         dir,
         (u8) plrNo
     };
-    mDeathInfo.set(data);
 }

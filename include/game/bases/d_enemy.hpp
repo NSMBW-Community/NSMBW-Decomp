@@ -23,11 +23,9 @@ struct sDeathInfoData {
 /// @unofficial
 class dDeathInfo_c {
 public:
-    dDeathInfo_c() {
-        mIsDead = false;
-    }
+    dDeathInfo_c() : mIsDead(false) {}
 
-    void set(const sDeathInfoData &other) {
+    dDeathInfo_c operator=(const sDeathInfoData &other) {
         mIsDead = true;
         mSpeed.set(other.mXSpeed, other.mYSpeed);
         mMaxYSpeed = other.mMaxYSpeed;

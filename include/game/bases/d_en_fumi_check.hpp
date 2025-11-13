@@ -29,25 +29,21 @@ public:
 
 class dEnFumiCheck_c {
 public:
-    dEnFumiCheck_c(dEn_c *owner) {
-        mUnused = 0;
-        mFumiCheck = nullptr;
-        mOwner = owner;
-    }
+    dEnFumiCheck_c(dEn_c *owner) : mUnused(0), mpFumiCheck(nullptr), mpOwner(owner) {}
 
     virtual ~dEnFumiCheck_c() {
-        delete mFumiCheck;
+        delete mpFumiCheck;
     }
 
     /// @unofficial
     void refresh(FumiCheckBase_c *newPtr) {
-        delete mFumiCheck;
-        mFumiCheck = newPtr;
+        delete mpFumiCheck;
+        mpFumiCheck = newPtr;
     }
 
     int mUnused;
-    FumiCheckBase_c *mFumiCheck;
-    dEn_c *mOwner;
+    FumiCheckBase_c *mpFumiCheck;
+    dEn_c *mpOwner;
 };
 
 class dEnFumiProc_c {

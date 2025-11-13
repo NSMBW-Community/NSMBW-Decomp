@@ -25,7 +25,7 @@ public:
     enum WATER_TYPE_e {
         WATER_CHECK_NONE,
         WATER_CHECK_WATER,
-        WATER_CHECK_AIR_WATER,
+        WATER_CHECK_WATER_BUBBLE,
         WATER_CHECK_YOGAN,
         WATER_CHECK_POISON
     };
