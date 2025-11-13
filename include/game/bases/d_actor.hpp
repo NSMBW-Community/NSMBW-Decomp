@@ -48,7 +48,7 @@ public:
         STAGE_ACTOR_GENERIC, ///< A generic stage actor (default).
         STAGE_ACTOR_PLAYER, ///< The @ref dAcPy_c "player actor".
         STAGE_ACTOR_YOSHI, ///< The @ref daYoshi_c "Yoshi actor".
-        STAGE_ACTOR_ENTITY, ///< An interactable entity actor.
+        STAGE_ACTOR_ENEMY, ///< An enemy actor.
     };
 
     /// @brief The possible carry actions.
@@ -214,8 +214,7 @@ public:
     static bool screenCullCheck(const mVec3_c &pos, const sRangeDataF &visibleBound, sRangeDataF destroyBound, u8 areaID);
 
     /// @brief Returns whether the actor is colliding with any enabled collision sides.
-    /// @unofficial
-    bool checkBgColl();
+    bool HasamareBgCheck();
 
     /// @brief Checks if the prompt for the given action should be displayed for each player.
     /// @param fukidashiAction The action to be checked.
@@ -333,8 +332,8 @@ public:
 
     u8 m_00; ///< Seems to be a player bit flag. @unused
     u32 mCarryFukidashiPlayerNo; ///< The player for whom an action prompt related to the actor is being displayed. @p -1 if no players meet this criteria.
-    CARRY_ACTION_e mCarryingFlags; ///< The actor's carry actions.
-    u32 mThrowDirection; ///< The actor's direction when thrown or dropped after carrying.
+    u32 mCarryingFlags; ///< The actor's carry actions. See CARRY_ACTION_e.
+    u8 mThrowDirection; ///< The actor's direction when thrown or dropped after carrying.
     u32 mComboMultiplier; ///< The current combo multiplier obtained by the actor by colliding with other actors.
     u8 m_13; ///< @unused
     u32 m_17; ///< @unused
@@ -379,7 +378,7 @@ public:
     u8 mExecStopMask; ///< The mask required to disable the @p execute operation for the actor.
     u8 mLayer; ///< The actor's layer.
     bool mNoRespawn; ///< Whether the actor should not respawn after being deleted.
-    bool mBackFence; ///< Whether the actor is on the back side of chainlink fences.
+    u8 mAmiLayer; ///< The actor's layer for chainlink fences.
 
     sRangeDataF getDestroyBound() { return mDestroyBound; }
 
@@ -419,5 +418,5 @@ public:
     static u8 m_tmpCtSpriteLayerNo;
 };
 
-extern const u8 l_Ami_Line[2]; ///< The sub-layer for each side of chainlink fences.
-extern const float l_Ami_Zpos[2]; ///< The additional Z offset for each side of chainlink fences.
+extern const u8 l_Ami_Line[]; ///< The sub-layer for each side of chainlink fences.
+extern const float l_Ami_Zpos[]; ///< The additional Z offset for each side of chainlink fences.

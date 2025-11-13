@@ -17,6 +17,8 @@ public:
     void clrLink();
     void chkLink();
 
+    bool check2(unsigned long, unsigned long, unsigned long);
+
     dActor_c *mpOwner;
     mVec3_c *mpOwnerPos;
     dRc_c *mpNext;

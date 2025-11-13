@@ -23,7 +23,11 @@
     virtual void initializeState_##name(); \
     virtual void executeState_##name(); \
     virtual void finalizeState_##name(); \
-    static sFStateVirtualID_c<class> StateID_##name
+    static sFStateVirtualID_c<class> StateID_##name; \
+    template <typename T> static typename T::StateIDSelf_##name StateBaseGetter##name(int) {} \
+    template <typename T> static sStateID_c StateBaseGetter##name(...) {} \
+    typedef decltype(StateBaseGetter##name<class>(0)) StateIDBase_##name; \
+    typedef class StateIDSelf_##name
 
 /// @brief Defines a state.
 /// @param class The class name.
@@ -39,20 +43,19 @@
 /// @param class The class name.
 /// @param name The state name.
 /// @hideinitializer
-#define STATE_VIRTUAL_DEFINE(class, name) sFStateVirtualID_c<class> class::StateID_##name( \
-    baseID_ ##name<sStateID_c> (), \
-    #class "::StateID_" #name, \
-    &class::initializeState_##name, \
-    &class::executeState_##name, \
-    &class::finalizeState_##name)
-
-#define STATE_BASE_VIRTUAL_DEFINE(class, name) \
+#define STATE_VIRTUAL_DEFINE(class, name) \
     template <typename T> \
-    const sStateIDIf_c &baseID_##name() { \
+    static const sStateIDIf_c &baseID_##name() { \
         return T::StateID_##name; \
     } \
     template <> \
     const sStateIDIf_c &baseID_##name<sStateID_c>() { \
         return sStateID::null; \
-    }
-
+    } \
+    sFStateVirtualID_c<class> class::StateID_##name( \
+        baseID_##name<class::StateIDBase_##name>(), \
+        #class "::StateID_" #name, \
+        &class::initializeState_##name, \
+        &class::executeState_##name, \
+        &class::finalizeState_##name \
+    );
