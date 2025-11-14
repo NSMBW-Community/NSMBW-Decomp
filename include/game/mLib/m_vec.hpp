@@ -7,6 +7,14 @@
 /// A plain-old-data structure version of mVec2_c.
 /// @unofficial
 struct mVec2_POD_c {
+    void set(float fx, float fy) {
+        x = fx;
+        y = fy;
+    }
+    void set(const mVec2_POD_c &v) {
+        set(v.x, v.y);
+    }
+
     float x;
     float y;
 };

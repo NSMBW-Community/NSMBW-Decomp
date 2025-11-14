@@ -4530,16 +4530,16 @@ void daPlBase_c::clearCcData() {
 }
 
 void daPlBase_c::setCcAtBody(int attackCategory) {
-    mAttCc2.mCcData.mOffset = mCc.mCcData.mOffset;
-    mAttCc2.mCcData.mSize = mCc.mCcData.mSize;
+    mAttCc2.mCcData.mOffset.set(mCc.mCcData.mOffset);
+    mAttCc2.mCcData.mSize.set(mCc.mCcData.mSize);
     mAttCc2.mCcData.mAttack = attackCategory;
     mAttCc2.mCcData.mVsKind =
         BIT_FLAG(CC_KIND_PLAYER) |
         BIT_FLAG(CC_KIND_PLAYER_ATTACK) |
         BIT_FLAG(CC_KIND_YOSHI);
 
-    mAttCc1.mCcData.mOffset = mCc.mCcData.mOffset;
-    mAttCc1.mCcData.mSize = mCc.mCcData.mSize;
+    mAttCc1.mCcData.mOffset.set(mCc.mCcData.mOffset);
+    mAttCc1.mCcData.mSize.set(mCc.mCcData.mSize);
     mAttCc1.mCcData.mAttack = attackCategory;
     mAttCc1.mCcData.mVsKind = mCc.mCcData.mVsKind & ~(
         BIT_FLAG(CC_KIND_PLAYER) |
@@ -4578,8 +4578,8 @@ void daPlBase_c::setCcAtStar() {
     if (mAttCc1.mCcData.mAttack != CC_ATTACK_NONE &&
         mAttCc1.mCcData.mAttack != CC_ATTACK_YOSHI_EAT
     ) {
-        mAttCc3.mCcData.mOffset = mAttCc1.mCcData.mOffset;
-        mAttCc3.mCcData.mSize = mAttCc1.mCcData.mSize;
+        mAttCc3.mCcData.mOffset.set(mAttCc1.mCcData.mOffset);
+        mAttCc3.mCcData.mSize.set(mAttCc1.mCcData.mSize);
         mAttCc3.mCcData.mAttack = CC_ATTACK_STAR;
     }
     onStatus(STATUS_84);
