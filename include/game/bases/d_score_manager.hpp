@@ -3,11 +3,15 @@
 
 class dScoreMng_c {
 public:
-    void ScoreSet(dActor_c *, unsigned long, int, float, float);
-    void UnKnownScoreSet(dActor_c *, unsigned long, float, float);
+    void ScoreSet(mVec3_c &, ulong, int, int);
+    void ScoreSet(dActor_c *, ulong, int, float, float);
+    void ScoreSet2(mVec3_c &, ulong, int);
+    void UnKnownScoreSet(dActor_c *, ulong, float, float);
 
-    static float smc_SCORE_X; ///< The score's horizontal offset from the actor position.
-    static float smc_SCORE_Y; ///< The score's vertical offset from the actor position.
+    static dScoreMng_c *getInstance() { return m_instance; }
+
+    static float smc_SCORE_X;
+    static float smc_SCORE_Y;
 
     static dScoreMng_c *m_instance;
 };

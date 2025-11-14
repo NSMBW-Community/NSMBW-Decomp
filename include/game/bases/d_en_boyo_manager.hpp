@@ -19,6 +19,7 @@ public:
     float mFactorDelta;
     int mCounter;
     dActor_c *mpOwner;
+    u8 mDirection;
 
     static float smc_DELTA_SCALE;
     static int smc_BOYON_TIME;

@@ -13,6 +13,12 @@ public:
 
     dEnCombo_c(COMBO_TYPE_e type) : mType(type) {}
 
+    int getComboScore(int);
+    int getQuakeScore(int) const;
+    int getDamageScore() const;
+
+    static int calcPlStarCnt(dActor_c *actor);
+    static int calcPlComboCnt(dActor_c *actor);
     static int calcPlFumiCnt(dActor_c *actor);
 
     COMBO_TYPE_e mType;
