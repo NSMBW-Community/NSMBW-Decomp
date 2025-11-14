@@ -119,8 +119,8 @@ void dSmallScore_c::setPlayer1000Color(int player_id) {
         nw4r::ut::Color(255, 255, 255, 255), // #FFFFFF
     };
 
-    mpTextBoxes[T_1000_00]->SetVtxColor(0, UP_COLOR_DATA_TBL[player_id]);
-    mpTextBoxes[T_1000_00]->SetVtxColor(2, DOWN_COLOR_DATA_TBL[player_id]);
+    mpTextBoxes[T_1000_00]->SetVtxColor(nw4r::lyt::VERTEXCOLOR_LT, UP_COLOR_DATA_TBL[player_id]);
+    mpTextBoxes[T_1000_00]->SetVtxColor(nw4r::lyt::VERTEXCOLOR_LB, DOWN_COLOR_DATA_TBL[player_id]);
 }
 
 void dSmallScore_c::setPlayer100Color(int playerType) {
@@ -179,8 +179,8 @@ void dSmallScore_c::setNormalOrBlueColor() {
         colorIdx = 1;
     }
 
-    mpTextBoxes[T_red2_00]->SetVtxColor(0, UP_COLOR_DATA_TBL[colorIdx]);
-    mpTextBoxes[T_red2_00]->SetVtxColor(2, DOWN_COLOR_DATA_TBL[colorIdx]);
+    mpTextBoxes[T_red2_00]->SetVtxColor(nw4r::lyt::VERTEXCOLOR_LT, UP_COLOR_DATA_TBL[colorIdx]);
+    mpTextBoxes[T_red2_00]->SetVtxColor(nw4r::lyt::VERTEXCOLOR_LB, DOWN_COLOR_DATA_TBL[colorIdx]);
 }
 
 void dSmallScore_c::ScissorMaskSet() {
