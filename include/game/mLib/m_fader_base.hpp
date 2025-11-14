@@ -51,6 +51,10 @@ public:
     void setFrame(u16 duration); ///< Sets the duration of the fade. Duration must not be zero.
     void setColor(const mColor &color); ///< Sets the fader's color. Alpha is not modified.
 
+    /// @brief Checks if the fader is in a specific status.
+    /// @unofficial
+    bool isStatus(EStatus status) const { return getStatus() == status; }
+
 protected:
     EStatus mStatus; ///< The fader's status.
     u8 mFlag; ///< The fader's flags.

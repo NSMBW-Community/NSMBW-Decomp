@@ -28,6 +28,7 @@ public:
     short mRotation;
     u8 mLineKind;
     u8 mRideType;
-    u8 pad2[2];
+    u8 mFlags;
+    u8 m_31;
     u8 mLayer;
 };

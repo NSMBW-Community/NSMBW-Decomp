@@ -79,7 +79,7 @@ void dMultiMng_c::setBattleCoin(int plrNo, int value) {
                 return;
             }
             mVec3_c popupPos = player->mPos;
-            popupPos.y += player->mSmallScoreOffset;
+            popupPos.y += player->mSomeYOffset;
             dGameCom::CreateSmallScore(popupPos, popupType, plrNo, false);
         }
     }

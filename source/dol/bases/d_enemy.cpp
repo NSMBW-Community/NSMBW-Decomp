@@ -694,11 +694,11 @@ bool dEn_c::EnBgCheckFoot() {
     mFootAttr3 = false;
     mFootAttr1 = false;
     if (mBc.isFoot()) {
-        u32 footAttr = mBc.getFootAttr();
-        if ((u16) footAttr == 3) {
+        u16 footAttr = mBc.getFootAttr();
+        if (footAttr == 3) {
             mFootAttr3 = true;
         }
-        if ((u16) footAttr == 1) {
+        if (footAttr == 1) {
             mFootAttr1 = true;
         }
         mFootPush = mBc.mPushForce;
@@ -742,7 +742,7 @@ void dEn_c::WaterCheck(mVec3_c &pos, float h) {
 bool dEn_c::LineBoundaryCheck(dActor_c *actor) {
     daPlBase_c *pl = (daPlBase_c *) actor;
     if ((pl->mPos.z > 0.0f && mAmiLayer == 1) || (pl->mPos.z < 0.0f && mAmiLayer == 0)) {
-        if (pl->mFlags & 0x80000 || pl->mFlags & 0x100000) {
+        if (pl->m_d44 & 0x80000 || pl->m_d44 & 0x100000) {
             return true;
         }
     }

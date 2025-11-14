@@ -17,6 +17,12 @@ struct mAng {
     /// @brief Constructs a vector from a short value.
     mAng(s16 x) : mAngle(x) {}
 
+    /// @brief Assignment operator from a short value.
+    mAng *operator=(s16 ang) {
+        mAngle = ang;
+        return this;
+    }
+
     operator s16() { return mAngle; }
 
     bool chase(short target, short step) {
@@ -85,6 +91,14 @@ public:
         y = v.y;
         z = v.z;
         return this;
+    }
+
+    void set(const mAng3_c &v) { x = v.x; y = v.y; z = v.z; }
+
+    void set(s16 fx, s16 fy, s16 fz) {
+        x = fx;
+        y = fy;
+        z = fz;
     }
 
     /// @brief Augmented addition operator.

@@ -68,7 +68,7 @@ bool dEn_c::hitCallback_Cannon(dCc_c *self, dCc_c *other) {
     if (mCombo.mType == dEnCombo_c::COMBO_SHORT) {
         shortCombo = 1;
     }
-    player->slideComboSE(player->m_cee, shortCombo);
+    player->slideComboSE(player->mPlComboCount, shortCombo);
 
     int score = mCombo.getComboScore(dEnCombo_c::calcPlComboCnt(player));
 
@@ -804,7 +804,7 @@ void dEn_c::setDeathSound_Slip(dActor_c *killedBy) {
         SE_EMY_DOWN_COMBO_7
     };
 
-    int count = ((daPlBase_c *) killedBy)->m_cee;
+    int count = ((daPlBase_c *) killedBy)->mPlComboCount;
     if (count >= ARRAY_SIZE(cs_combo_se)) {
         count = ARRAY_SIZE(cs_combo_se) - 1;
     };
