@@ -76,6 +76,11 @@ namespace nw4r { namespace snd
 			return 0;
 		}
 
+		void SetPlayerPriority(int priority) {
+			if (IsAttachedSound())
+				mSound->SetPlayerPriority(priority);
+		}
+
 		ulong GetId() const
 		{
 			if (IsAttachedSound())
