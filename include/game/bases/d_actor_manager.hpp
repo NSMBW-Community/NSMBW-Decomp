@@ -4,7 +4,7 @@
 
 class dActorMng_c {
 public:
-    void FUN_80066630(const mVec3_c &, u8, int, u8); ///< @unofficial
+    void createUpCoin(const mVec3_c &pos, u8 dir, u8 count, u8 layer);
 
     static dActorMng_c *m_instance;
 };
