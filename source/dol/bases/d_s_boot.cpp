@@ -465,7 +465,7 @@ void dScBoot_c::finalizeState_ResetWait() {}
 void dScBoot_c::initializeState_ResetFadeOut() {
     mIsResetting = true;
     dScene_c::m_isAutoFadeIn = false;
-    dFader_c::setFader(dFader_c::FADE);
+    dFader_c::setFader(dFader_c::FADER_FADE);
     mResetFadeOutStarted = dFader_c::startFadeOut(30);
     mResetFaderDone = false;
 }
@@ -520,7 +520,7 @@ void dScBoot_c::finalizeState_ResetFadeOut() {
 
 void dScBoot_c::initializeState_ResetFadeIn() {
     dReset::Manage_c::GetInstance()->ActiveSaveWindow(true);
-    dFader_c::setFader(dFader_c::FADE);
+    dFader_c::setFader(dFader_c::FADER_FADE);
     dFader_c::startFadeIn(30);
     mpWiiStrapScreen->mLayout.mpAnimGroup->setAndUpdate(0.0f);
 }
@@ -596,7 +596,7 @@ void dScBoot_c::finalizeState_WiiStrapDispEndWait() {}
 
 void dScBoot_c::initializeState_WiiStrapFadeOut() {
     dScene_c::m_isAutoFadeIn = false;
-    dFader_c::setFader(dFader_c::FADE);
+    dFader_c::setFader(dFader_c::FADER_FADE);
     dFader_c::startFadeOut(30);
     dHbm::Manage_c::GetInstance()->mFlags |= 0x40;
     dReset::Manage_c::GetInstance()->ActiveSaveWindow(true);
@@ -616,7 +616,7 @@ void dScBoot_c::finalizeState_WiiStrapFadeOut() {
 }
 
 void dScBoot_c::initializeState_ControllerInformationFadeIn() {
-    dFader_c::setFader(dFader_c::FADE);
+    dFader_c::setFader(dFader_c::FADER_FADE);
     dFader_c::startFadeIn(30);
     mpControllerInformation->mVisible = true;
 }
@@ -843,7 +843,7 @@ void dScBoot_c::finalizeState_WindowExitWait() {}
 
 void dScBoot_c::initializeState_GoToErrorFadeOut() {
     dScene_c::m_isAutoFadeIn = false;
-    dFader_c::setFader(dFader_c::FADE);
+    dFader_c::setFader(dFader_c::FADER_FADE);
     dFader_c::startFadeOut(30);
     dReset::Manage_c::GetInstance()->ActiveSaveWindow(true);
 }
@@ -859,7 +859,7 @@ void dScBoot_c::executeState_GoToErrorFadeOut() {
 void dScBoot_c::finalizeState_GoToErrorFadeOut() {}
 
 void dScBoot_c::initializeState_GoToErrorFadeIn() {
-    dFader_c::setFader(dFader_c::FADE);
+    dFader_c::setFader(dFader_c::FADER_FADE);
     dFader_c::startFadeIn(30);
 }
 

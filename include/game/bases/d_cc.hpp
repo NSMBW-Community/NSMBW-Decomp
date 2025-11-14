@@ -70,7 +70,8 @@ enum CC_ATTACK_e {
     CC_ATTACK_YOSHI_BULLET,
     CC_ATTACK_YOSHI_FIRE,
     CC_ATTACK_ICE_2,
-    CC_ATTACK_SAND_PILLAR
+    CC_ATTACK_SAND_PILLAR,
+    CC_FLAG_ATTACK_ALL = 0xFFFFFFFF
 };
 
 class dCc_c;
@@ -250,6 +251,9 @@ private:
     static bool _hitCheckDaikeiLR(dCc_c *ccTrp, dCc_c *ccBox);
 
 public:
+    float getXOffset(int idx) { return mCollOffsetX[idx]; }
+    float getYOffset(int idx) { return mCollOffsetY[idx]; }
+
     dActor_c *mpOwner; ///< The actor this collider belongs to.
     dActor_c *mFriendActor; ///< A second actor that this collider will not collide with.
 
@@ -314,6 +318,7 @@ public:
 private:
     bool mIsLinked; ///< Whether this collider has been placed in the collider list.
 
+private:
     typedef bool (*hitCheck)(dCc_c *, dCc_c *);
 
     /**

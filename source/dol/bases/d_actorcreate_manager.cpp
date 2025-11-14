@@ -351,7 +351,7 @@ void dActorCreateMng_c::MapActorScroolCreateCheck() {
 
 void dActorCreateMng_c::MapActorScrollCreate(sMapActorCreateBounds *createBounds, int isScreenScroll) {
     dScStage_c *stage = dScStage_c::m_instance;
-    u8 areaNo = stage->mCurrArea;
+    u8 areaNo = stage->mCurrAreaNo;
     dCdFile_c *file = dCd_c::m_instance->getFileP(stage->mCurrFile);
 
     int mapActorCount = file->mMapActorCountByArea[areaNo];

@@ -18,9 +18,10 @@ public:
     u8 mCurrWorld;
     u8 mCurrCourse;
     u8 mCurrFile;
-    u8 mCurrArea;
+    u8 mCurrAreaNo;
+    u8 mCurrLayer;
 
-    u8 getCurrArea() const { return mCurrArea; }
+    u8 getCurrArea() const { return mCurrAreaNo; }
 
     static dScStage_c *getInstance() { return m_instance; }
     static float getLoopPosX(float x);
@@ -38,6 +39,8 @@ public:
 
     static void setTitleReplayRandomTable();
 
+    static int m_gameMode;
+    static bool m_isStaffCredit;
     static changePosFunc changePos;
     static dScStage_c *m_instance;
 };
