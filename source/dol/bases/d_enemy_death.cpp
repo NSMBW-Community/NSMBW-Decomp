@@ -25,17 +25,16 @@ const float dEn_c::smc_DEADFALL_YSPEED = 3.9f;
 const float dEn_c::smc_DEADFALL_YSPEED_MAX = -4.0f;
 const s16 dEn_c::smc_DEADFALL_SPINSPEED = 0xc00;
 
-bool dEn_c::hitCallback_Star(dCc_c *cc1, dCc_c *cc2) {
-    daPlBase_c *player = (daPlBase_c *) cc2->getOwner();
+bool dEn_c::hitCallback_Star(dCc_c *self, dCc_c *other) {
+    daPlBase_c *player = (daPlBase_c *) other->getOwner();
     u8 dir = player->getTrgToSrcDir_Main(getCenterX(), player->getCenterX());
     u8 plrNo = *player->getPlrNo();
 
-    mVec2_c collPos = cc1->mCollPos;
-    mVec3_c pos(collPos, 5500.0f);
-    hitdamageEffect(pos);
+    mVec2_c collPos = self->mCollPos;
+    hitdamageEffect(mVec3_c(collPos, 5500.0f));
 
     int shortCombo = 0;
-    if (mCombo.mType == 2) {
+    if (mCombo.mType == dEnCombo_c::COMBO_SHORT) {
         shortCombo = 1;
     }
     player->slideComboSE(player->getStarCount(), shortCombo);
@@ -57,17 +56,16 @@ bool dEn_c::hitCallback_Star(dCc_c *cc1, dCc_c *cc2) {
     return true;
 }
 
-bool dEn_c::hitCallback_Cannon(dCc_c *cc1, dCc_c *cc2) {
-    daPlBase_c *player = (daPlBase_c *) cc2->getOwner();
+bool dEn_c::hitCallback_Cannon(dCc_c *self, dCc_c *other) {
+    daPlBase_c *player = (daPlBase_c *) other->getOwner();
     u8 dir = player->getTrgToSrcDir_Main(getCenterX(), player->getCenterX());
     u8 plrNo = *player->getPlrNo();
 
-    mVec2_c collPos = cc1->mCollPos;
-    mVec3_c pos(collPos, 5500.0f);
-    hitdamageEffect(pos);
+    mVec2_c collPos = self->mCollPos;
+    hitdamageEffect(mVec3_c(collPos, 5500.0f));
 
     int shortCombo = 0;
-    if (mCombo.mType == 2) {
+    if (mCombo.mType == dEnCombo_c::COMBO_SHORT) {
         shortCombo = 1;
     }
     player->slideComboSE(player->m_cee, shortCombo);
@@ -89,14 +87,13 @@ bool dEn_c::hitCallback_Cannon(dCc_c *cc1, dCc_c *cc2) {
     return true;
 }
 
-bool dEn_c::hitCallback_Slip(dCc_c *cc1, dCc_c *cc2) {
-    daPlBase_c *player = (daPlBase_c *) cc2->getOwner();
+bool dEn_c::hitCallback_Slip(dCc_c *self, dCc_c *other) {
+    daPlBase_c *player = (daPlBase_c *) other->getOwner();
     u8 dir = player->getTrgToSrcDir_Main(getCenterX(), player->getCenterX());
     u8 plrNo = *player->getPlrNo();
 
-    mVec2_c collPos = cc1->mCollPos;
-    mVec3_c pos(collPos, 5500.0f);
-    hitdamageEffect(pos);
+    mVec2_c collPos = self->mCollPos;
+    hitdamageEffect(mVec3_c(collPos, 5500.0f));
 
     setDeathSound_Slip(player);
 
@@ -117,16 +114,16 @@ bool dEn_c::hitCallback_Slip(dCc_c *cc1, dCc_c *cc2) {
     return true;
 }
 
-bool dEn_c::hitCallback_PenguinSlide(dCc_c *cc1, dCc_c *cc2) {
-    return hitCallback_Slip(cc1, cc2);
+bool dEn_c::hitCallback_PenguinSlide(dCc_c *self, dCc_c *other) {
+    return hitCallback_Slip(self, other);
 }
 
-bool dEn_c::hitCallback_Screw(dCc_c *cc1, dCc_c *cc2) {
+bool dEn_c::hitCallback_Screw(dCc_c *self, dCc_c *other) {
     return false;
 }
 
-bool dEn_c::hitCallback_WireNet(dCc_c *cc1, dCc_c *cc2) {
-    daPlBase_c *player = (daPlBase_c *) cc2->getOwner();
+bool dEn_c::hitCallback_WireNet(dCc_c *self, dCc_c *other) {
+    daPlBase_c *player = (daPlBase_c *) other->getOwner();
     u8 dir = player->getTrgToSrcDir_Main(getCenterX(), player->getCenterX());
     u8 plrNo = *player->getPlrNo();
 
@@ -147,8 +144,8 @@ bool dEn_c::hitCallback_WireNet(dCc_c *cc1, dCc_c *cc2) {
     return true;
 }
 
-bool dEn_c::hitCallback_Large(dCc_c *cc1, dCc_c *cc2) {
-    daPlBase_c *player = (daPlBase_c *) cc2->getOwner();
+bool dEn_c::hitCallback_Large(dCc_c *self, dCc_c *other) {
+    daPlBase_c *player = (daPlBase_c *) other->getOwner();
     u8 dir = player->getTrgToSrcDir_Main(getCenterX(), player->getCenterX());
     u8 plrNo = *player->getPlrNo();
 
@@ -175,22 +172,21 @@ bool dEn_c::hitCallback_Large(dCc_c *cc1, dCc_c *cc2) {
     return true;
 }
 
-bool dEn_c::hitCallback_Rolling(dCc_c *cc1, dCc_c *cc2) {
+bool dEn_c::hitCallback_Rolling(dCc_c *self, dCc_c *other) {
     return false;
 }
 
-bool dEn_c::hitCallback_Spin(dCc_c *cc1, dCc_c *cc2) {
-    daPlBase_c *player = (daPlBase_c *) cc2->getOwner();
+bool dEn_c::hitCallback_Spin(dCc_c *self, dCc_c *other) {
+    daPlBase_c *player = (daPlBase_c *) other->getOwner();
     u8 dir = player->getTrgToSrcDir_Main(getCenterX(), player->getCenterX());
     u8 plrNo = *player->getPlrNo();
 
     setDeathSound_Spin();
 
-    mVec2_c pos2D;
-    pos2D.x = player->mPos.x;
-    pos2D.y = player->mPos.y;
-    mVec3_c pos(pos2D, 5500.0f);
-    hipatkEffect(pos);
+    mVec2_c playerPos;
+    playerPos.x = player->mPos.x;
+    playerPos.y = player->mPos.y;
+    hipatkEffect(mVec3_c(playerPos, 5500.0f));
 
     int score = mCombo.getComboScore(dEnCombo_c::calcPlFumiCnt(player));
 
@@ -209,18 +205,17 @@ bool dEn_c::hitCallback_Spin(dCc_c *cc1, dCc_c *cc2) {
     return true;
 }
 
-bool dEn_c::hitCallback_HipAttk(dCc_c *cc1, dCc_c *cc2) {
-    daPlBase_c *player = (daPlBase_c *) cc2->getOwner();
+bool dEn_c::hitCallback_HipAttk(dCc_c *self, dCc_c *other) {
+    daPlBase_c *player = (daPlBase_c *) other->getOwner();
     u8 dir = player->getTrgToSrcDir_Main(getCenterX(), player->getCenterX());
     u8 plrNo = *player->getPlrNo();
 
     setDeathSound_HipAttk();
 
-    mVec2_c pos2D;
-    pos2D.x = player->mPos.x;
-    pos2D.y = player->mPos.y;
-    mVec3_c pos(pos2D, 5500.0f);
-    hipatkEffect(pos);
+    mVec2_c playerPos;
+    playerPos.x = player->mPos.x;
+    playerPos.y = player->mPos.y;
+    hipatkEffect(mVec3_c(playerPos, 5500.0f));
 
     int score = mCombo.getComboScore(dEnCombo_c::calcPlFumiCnt(player));
 
@@ -239,13 +234,13 @@ bool dEn_c::hitCallback_HipAttk(dCc_c *cc1, dCc_c *cc2) {
     return true;
 }
 
-bool dEn_c::hitCallback_YoshiHipAttk(dCc_c *cc1, dCc_c *cc2) {
-    daPlBase_c *player = (daPlBase_c *) cc2->getOwner();
+bool dEn_c::hitCallback_YoshiHipAttk(dCc_c *self, dCc_c *other) {
+    daPlBase_c *player = (daPlBase_c *) other->getOwner();
     u8 dir = player->getTrgToSrcDir_Main(getCenterX(), player->getCenterX());
     u8 plrNo = *player->getPlrNo();
 
     int comboScore = mCombo.getComboScore(dEnCombo_c::calcPlFumiCnt(player));
-    if (0 <= comboScore && plrNo < 4) {
+    if (comboScore >= 0 && plrNo < PLAYER_COUNT) {
         dScoreMng_c::m_instance->ScoreSet(this, comboScore, plrNo, dScoreMng_c::smc_SCORE_X, dScoreMng_c::smc_SCORE_Y);
     }
 
@@ -256,17 +251,16 @@ bool dEn_c::hitCallback_YoshiHipAttk(dCc_c *cc1, dCc_c *cc2) {
     return true;
 }
 
-bool dEn_c::hitCallback_YoshiBullet(dCc_c *cc1, dCc_c *cc2) {
-    daPlBase_c *player = (daPlBase_c *) cc2->getOwner();
+bool dEn_c::hitCallback_YoshiBullet(dCc_c *self, dCc_c *other) {
+    daPlBase_c *player = (daPlBase_c *) other->getOwner();
     u8 dir = player->getTrgToSrcDir_Main(getCenterX(), player->getCenterX());
     s8 plrNo = *player->getPlrNo();
 
     setDeathSound_Fire();
 
-    mVec3_c pos(cc1->getCollPosX(), cc1->getCollPosY(), 5500.0f);
-    hitdamageEffect(pos);
+    hitdamageEffect(mVec3_c(self->getCollPosX(), self->getCollPosY(), 5500.0f));
 
-    dActorMng_c::m_instance->FUN_80066630(getCenterPos(), dir, 1, 0);
+    dActorMng_c::m_instance->createUpCoin(getCenterPos(), dir, 1, 0);
 
     mDeathInfo = (sDeathInfoData) {
         l_base_fall_speed_x[dir],
@@ -283,20 +277,19 @@ bool dEn_c::hitCallback_YoshiBullet(dCc_c *cc1, dCc_c *cc2) {
     return true;
 }
 
-bool dEn_c::hitCallback_YoshiFire(dCc_c *cc1, dCc_c *cc2) {
-    daPlBase_c *player = (daPlBase_c *) cc2->getOwner();
+bool dEn_c::hitCallback_YoshiFire(dCc_c *self, dCc_c *other) {
+    daPlBase_c *player = (daPlBase_c *) other->getOwner();
     u8 dir = !(player->mSpeed.x >= 0.0f);
     mVec3_c centerPos = getCenterPos();
-    dActorMng_c::m_instance->FUN_80066630(centerPos, dir, 1, 0);
+    dActorMng_c::m_instance->createUpCoin(centerPos, dir, 1, 0);
     s8 plrNo = *player->getPlrNo();
 
-    mVec2_c collPos = cc1->mCollPos;
-    mVec3_c pos(collPos, 5500.0f);
-    hitdamageEffect(pos);
+    mVec2_c collPos = self->mCollPos;
+    hitdamageEffect(mVec3_c(collPos, 5500.0f));
 
-    s8 shortCombo = false;
-    if (mCombo.mType == 2) {
-        shortCombo = true;
+    int shortCombo = 0;
+    if (mCombo.mType == dEnCombo_c::COMBO_SHORT) {
+        shortCombo = 1;
     }
     player->slideComboSE(player->mComboMultiplier, shortCombo);
     player->mComboMultiplier++;
@@ -320,20 +313,19 @@ bool dEn_c::hitCallback_YoshiFire(dCc_c *cc1, dCc_c *cc2) {
     return true;
 }
 
-bool dEn_c::hitCallback_Shell(dCc_c *cc1, dCc_c *cc2) {
-    daPlBase_c *player = (daPlBase_c *) cc2->getOwner();
+bool dEn_c::hitCallback_Shell(dCc_c *self, dCc_c *other) {
+    daPlBase_c *player = (daPlBase_c *) other->getOwner();
     u8 dir = player->getTrgToSrcDir_Main(getCenterX(), player->getCenterX());
     s8 plrNo = *player->getPlrNo();
 
-    mVec2_c collPos = cc1->mCollPos;
-    mVec3_c pos(collPos, 5500.0f);
-    hitdamageEffect(pos);
+    mVec2_c collPos = self->mCollPos;
+    hitdamageEffect(mVec3_c(collPos, 5500.0f));
 
     int comboScore = -1;
-    if ((u8) plrNo <= 3) {
-        s8 shortCombo = false;
-        if (mCombo.mType == 2) {
-            shortCombo = true;
+    if (plrNo >= 0 && plrNo < PLAYER_COUNT) {
+        int shortCombo = 0;
+        if (mCombo.mType == dEnCombo_c::COMBO_SHORT) {
+            shortCombo = 1;
         }
         player->slideComboSE(player->mComboMultiplier, shortCombo);
         player->mComboMultiplier++;
@@ -360,14 +352,14 @@ bool dEn_c::hitCallback_Shell(dCc_c *cc1, dCc_c *cc2) {
     return true;
 }
 
-bool dEn_c::hitCallback_Fire(dCc_c *cc1, dCc_c *cc2) {
-    daPlBase_c *player = (daPlBase_c *) cc2->getOwner();
+bool dEn_c::hitCallback_Fire(dCc_c *self, dCc_c *other) {
+    daPlBase_c *player = (daPlBase_c *) other->getOwner();
     u8 dir = !(player->mSpeed.x >= 0.0f);
     s8 plrNo = *player->getPlrNo();
 
     setDeathSound_Fire();
 
-    dActorMng_c::m_instance->FUN_80066630(getCenterPos(), dir, 1, 0);
+    dActorMng_c::m_instance->createUpCoin(getCenterPos(), dir, 1, 0);
 
     mDeathInfo = (sDeathInfoData) {
         l_base_fall_speed_x[dir],
@@ -384,9 +376,9 @@ bool dEn_c::hitCallback_Fire(dCc_c *cc1, dCc_c *cc2) {
     return true;
 }
 
-bool dEn_c::hitCallback_Ice(dCc_c *cc1, dCc_c *cc2) {
+bool dEn_c::hitCallback_Ice(dCc_c *self, dCc_c *other) {
     if (mIceMng.m_0c == 0){
-        daPlBase_c *player = (daPlBase_c *) cc2->getOwner();
+        daPlBase_c *player = (daPlBase_c *) other->getOwner();
 
         if (player->mSpeed.x >= 0.0f) {
             mBoyoMng.mDirection = 0;
@@ -436,10 +428,10 @@ void dEn_c::setDeathInfo_Quake(int i) {
 
     float ySpeed = 2.0f;
     if (i == 0) {
-        EffectManager_c::FUN_800943d0(&center);
+        EffectManager_c::SetVsHitEffect(&center);
         ySpeed = 2.0f;
     } else if (i == 1) {
-        EffectManager_c::FUN_800943d0(&center);
+        EffectManager_c::SetVsHitEffect(&center);
         ySpeed = 3.5f;
     }
 
@@ -573,8 +565,8 @@ void dEn_c::setDeathInfo_IceBreak() {
 void dEn_c::setDeathInfo_IceVanish() {
     killIce();
 
-    int n = dGameCom::rndInt(2);
-    dActorMng_c::m_instance->FUN_80066630(getCenterPos(), n, 1, 0);
+    int coinDir = dGameCom::rndInt(2);
+    dActorMng_c::m_instance->createUpCoin(getCenterPos(), coinDir, 1, 0);
 
     u8 dir = mIceDeathDirection;
     u8 plrNo = mPlayerNo;
@@ -601,6 +593,7 @@ void dEn_c::initializeState_DieFumi() {
         }
     }
     removeCc();
+
     mBc.mFlags = 0;
     mSpeed.set(mDeathInfo.getXSpeed(), mDeathInfo.getYSpeed(), 0.0f);
     mSpeedMax.set(0.0f, mDeathInfo.getMaxYSpeed(), 0.0f);
@@ -608,6 +601,7 @@ void dEn_c::initializeState_DieFumi() {
     mIceDeathDirection = mDeathInfo.mDirection;
     mAccelF = 0.0f;
     mAccelY = mDeathInfo.getYAccel();
+
     if (mAngle.y >= 0) {
         mDirection = 0;
     } else {
@@ -654,6 +648,7 @@ void dEn_c::initializeState_DieFall() {
         }
     }
     removeCc();
+
     mBc.mFlags = 0;
     mSpeed.set(mDeathInfo.getXSpeed(), mDeathInfo.getYSpeed(), 0.0f);
     mSpeedMax.set(0.0f, mDeathInfo.getMaxYSpeed(), 0.0f);
@@ -661,6 +656,7 @@ void dEn_c::initializeState_DieFall() {
     mIceDeathDirection = mDeathInfo.mDirection;
     mAccelF = 0.0f;
     mAccelY = mDeathInfo.getYAccel();
+
     if (mAngle.y >= 0) {
         mDirection = 0;
     } else {
