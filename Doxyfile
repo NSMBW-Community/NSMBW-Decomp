@@ -179,7 +179,9 @@ LAYOUT_FILE            = website/doxygen/DoxygenLayout.xml
 # Note: If this tag is empty the current directory is searched.
 
 INPUT                  = source \
-                         include \
+                         include/constants \
+                         include/game \
+                         include/runtime \
                          docs
 
 # This tag can be used to specify the character encoding of the source files
