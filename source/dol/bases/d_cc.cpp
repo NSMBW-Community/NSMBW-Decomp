@@ -1,15 +1,20 @@
 #include <game/bases/d_cc.hpp>
+#include <game/bases/d_actor.hpp>
 #include <game/bases/d_s_stage.hpp>
 #include <game/bases/d_bg.hpp>
+#include <game/sLib/s_GlobalData.hpp>
 #include <nw4r/math.h>
 #include <game/cLib/c_math.hpp>
 
 dCc_c *dCc_c::mEntryN;
 dCc_c *dCc_c::mEntryB;
 
-dCc_c::InitializedUnkClass dCc_c::msInitializedUnkClass = { 0, 0, 0, true, true };
-char dCc_c::msIsInitialized;
-dCc_c::InitializedUnkClass::_init dCc_c::InitializedUnkClass::_initializer;
+template <>
+dCc_c::GlobalData_t sGlobalData_c<dCc_c>::mData = {
+    0,
+    0xa000a0, 0xa00000a0,
+    true, true
+};
 
 // Note that for trapezoid checking, the second collider is always treated as a rectangular collider.
 dCc_c::hitCheck dCc_c::_hitCheck[4][4] = {
@@ -24,7 +29,7 @@ dCc_c::dCc_c() {
     mpPrev = nullptr;
     mIsLinked = false;
     mFriendActor = nullptr;
-    mNonCollideMask = true;
+    mAmiLine = true;
     mLayer = 0;
     clear();
 }
@@ -37,7 +42,7 @@ void dCc_c::clear() {
     mCollidedWith = 0;
     mAttSent = 0;
     mAttReceived = 0;
-    mFlag &= ~CC_DISABLE; // Enable the collider
+    mInfo &= ~CC_NO_HIT; // Enable the collider
     for (unsigned int i = 0; i < ARRAY_SIZE(mCollOffsetX); i++) {
         mCollOffsetX[i] = 0.0f;
         mCollOffsetY[i] = 0.0f;
@@ -83,15 +88,22 @@ void dCc_c::release() {
     mIsLinked = false;
 }
 
-void dCc_c::registerCc(dBaseActor_c *actor, CcData_s *collInfo) {
+void dCc_c::set(dActor_c *actor, sCcDatNewF *collInfo) {
     mpOwner = actor;
-    mCcData = *collInfo;
-    mFlag = 0;
+    mCcData.mOffset = collInfo->mOffset;
+    mCcData.mSize = collInfo->mSize;
+    mCcData.mKind = collInfo->mKind;
+    mCcData.mAttack = collInfo->mAttack;
+    mCcData.mVsKind = collInfo->mVsKind;
+    mCcData.mVsDamage = collInfo->mVsDamage;
+    mCcData.mStatus = collInfo->mStatus;
+    mCcData.mCallback = collInfo->mCallback;
+    mInfo = 0;
 }
 
-void dCc_c::registerCc(dBaseActor_c *actor, CcData_s *collInfo, u8 nonCollideMask) {
-    registerCc(actor, collInfo);
-    mNonCollideMask = nonCollideMask;
+void dCc_c::set(dActor_c *actor, sCcDatNewF *collInfo, u8 nonCollideMask) {
+    set(actor, collInfo);
+    mAmiLine = nonCollideMask;
 }
 
 void dCc_c::reset() {
@@ -100,12 +112,12 @@ void dCc_c::reset() {
     mEntryB = nullptr;
 
     // Set the default hit check to the correct type
-    const static hitCheck checks[3] = {
+    const static hitCheck hitCheckFuncTbl[3] = {
         &_hitCheckNormal,
         &_hitCheckLoop,
         &_hitCheckLoop
     };
-    _hitCheck[0][0] = checks[dScStage_c::m_loopType];
+    _hitCheck[0][0] = hitCheckFuncTbl[dScStage_c::m_loopType];
 }
 
 u16 dCc_c::isHit(u16 mask) const {
@@ -117,27 +129,27 @@ u16 dCc_c::isHitAtDmg(u16 mask) const {
 }
 
 float dCc_c::getTopPos() {
-    return mCcData.mOffsetY + mpOwner->mPos.y + mCcData.mHeight;
+    return mCcData.mOffset.y + mpOwner->mPos.y + mCcData.mSize.y;
 }
 
 float dCc_c::getUnderPos() {
-    return mCcData.mOffsetY + mpOwner->mPos.y - mCcData.mHeight;
+    return mCcData.mOffset.y + mpOwner->mPos.y - mCcData.mSize.y;
 }
 
 float dCc_c::getCenterPosY() {
-    return mCcData.mOffsetY + mpOwner->mPos.y;
+    return mCcData.mOffset.y + mpOwner->mPos.y;
 }
 
 float dCc_c::getRightPos() {
-    return mCcData.mOffsetX + mpOwner->mPos.x + mCcData.mWidth;
+    return mCcData.mOffset.x + mpOwner->mPos.x + mCcData.mSize.x;
 }
 
 float dCc_c::getLeftPos() {
-    return mCcData.mOffsetX + mpOwner->mPos.x - mCcData.mWidth;
+    return mCcData.mOffset.x + mpOwner->mPos.x - mCcData.mSize.x;
 }
 
 float dCc_c::getCenterPosX() {
-    return mCcData.mOffsetX + mpOwner->mPos.x;
+    return mCcData.mOffset.x + mpOwner->mPos.x;
 }
 
 bool dCc_c::isInside(dCc_c *other) {
@@ -149,12 +161,12 @@ bool dCc_c::isInside(dCc_c *other) {
         return true;
     }
     float xDist = getCenterPosX() - other->getCenterPosX();
-    if (std::fabs(xDist) > std::fabs(mCcData.mWidth - other->mCcData.mWidth)) {
+    if (std::fabs(xDist) > std::fabs(mCcData.mSize.x - other->mCcData.mSize.x)) {
         return false;
     }
 
     float yDist = getCenterPosY() - other->getCenterPosY();
-    if (std::fabs(yDist) > std::fabs(mCcData.mHeight - other->mCcData.mHeight)) {
+    if (std::fabs(yDist) > std::fabs(mCcData.mSize.y - other->mCcData.mSize.y)) {
         return false;
     }
     return true;
@@ -173,11 +185,11 @@ bool dCc_c::checkCollision(dCc_c *c1, dCc_c *c2, int active) {
         // No collisions between friend actors
         return false;
     }
-    if ((c1->mFlag & CC_DISABLE) || (c2->mFlag & CC_DISABLE)) {
+    if ((c1->mInfo & CC_NO_HIT) || (c2->mInfo & CC_NO_HIT)) {
         // Disabled colliders don't collide
         return false;
     }
-    if ((c1->mNonCollideMask & c2->mNonCollideMask) == 0) {
+    if ((c1->mAmiLine & c2->mAmiLine) == 0) {
         // If any bit is set in both non-collide masks, the colliders don't collide
         return false;
     }
@@ -186,32 +198,32 @@ bool dCc_c::checkCollision(dCc_c *c1, dCc_c *c2, int active) {
         return false;
     }
 
-    CcData_s collInfo1 = c1->mCcData;
-    u32 catInteract1 = collInfo1.mCategoryInteract;
-    u32 catMask1 = 1 << collInfo1.mCategory;
+    sCcDatNewF collInfo1 = c1->mCcData;
+    u32 catInteract1 = collInfo1.mVsKind;
+    u32 catMask1 = 1 << collInfo1.mKind;
 
-    CcData_s collInfo2 = c2->mCcData;
-    u32 catInteract2 = collInfo2.mCategoryInteract;
-    u32 catMask2 = 1 << collInfo2.mCategory;
+    sCcDatNewF collInfo2 = c2->mCcData;
+    u32 catInteract2 = collInfo2.mVsKind;
+    u32 catMask2 = 1 << collInfo2.mKind;
 
     // First, check the category interaction.
     // A collision only occurs if the two colliders' categories
     // are set in the other's category interact masks.
     if ((catInteract1 & catMask2) && (catInteract2 & catMask1)) {
 
-        u32 attInteract1 = collInfo1.mAttackCategoryInteract;
-        u32 attCatMask1 = 1 << collInfo1.mAttackCategory;
-        u32 attInteract2 = collInfo2.mAttackCategoryInteract;
-        u32 attCatMask2 = 1 << collInfo2.mAttackCategory;
+        u32 attInteract1 = collInfo1.mVsDamage;
+        u32 attCatMask1 = 1 << collInfo1.mAttack;
+        u32 attInteract2 = collInfo2.mVsDamage;
+        u32 attCatMask2 = 1 << collInfo2.mAttack;
 
         if ((
             // Collider 1 can collide with an attacker and collider 2 is of type attacker,
-            (catInteract1 & catMask2 & BIT_FLAG(CAT_PLAYER_ATTACK))
+            (catInteract1 & catMask2 & BIT_FLAG(CC_KIND_PLAYER_ATTACK))
             // but the attack masks don't match
             && (attCatMask2 & attInteract1) == 0
         ) || ( // or
             // Collider 2 can collide with an attacker and collider 1 is of type attacker,
-            (catInteract2 & catMask1 & BIT_FLAG(CAT_PLAYER_ATTACK))
+            (catInteract2 & catMask1 & BIT_FLAG(CC_KIND_PLAYER_ATTACK))
             // but the attack masks don't match
             && (attCatMask1 & attInteract2) == 0
         )) {
@@ -225,7 +237,7 @@ bool dCc_c::checkCollision(dCc_c *c1, dCc_c *c2, int active) {
             }
 
             // Set result flags
-            if (!(collInfo2.mFlag & CC_DATA_PASSIVE)) {
+            if (!(collInfo2.mStatus & CC_STATUS_NO_PASS_INFO)) {
                 c1->mCollidedWith |= catMask2;
                 if (attInteract1 & attCatMask2) {
                     c1->mAttReceived |= attInteract1 & attCatMask2;
@@ -234,7 +246,7 @@ bool dCc_c::checkCollision(dCc_c *c1, dCc_c *c2, int active) {
                     c1->mAttSent |= attInteract2 & attCatMask1;
                 }
             }
-            if (!(collInfo1.mFlag & CC_DATA_PASSIVE)) {
+            if (!(collInfo1.mStatus & CC_STATUS_NO_PASS_INFO)) {
                 c2->mCollidedWith |= catMask1;
                 if (attInteract1 & attCatMask2) {
                     c2->mAttSent |= attInteract1 & attCatMask2;
@@ -245,10 +257,10 @@ bool dCc_c::checkCollision(dCc_c *c1, dCc_c *c2, int active) {
             }
 
             // Execute callback if needed
-            if (!(collInfo2.mFlag & CC_DATA_PASSIVE) && collInfo1.mCallback != nullptr) {
+            if (!(collInfo2.mStatus & CC_STATUS_NO_PASS_INFO) && collInfo1.mCallback != nullptr) {
                 collInfo1.mCallback(c1, c2);
             }
-            if (!(collInfo1.mFlag & CC_DATA_PASSIVE) && collInfo2.mCallback != nullptr) {
+            if (!(collInfo1.mStatus & CC_STATUS_NO_PASS_INFO) && collInfo2.mCallback != nullptr) {
                 collInfo2.mCallback(c2, c1);
             }
         }
@@ -265,22 +277,22 @@ void dCc_c::execute() {
 }
 
 bool dCc_c::_hitCheckSquare(dCc_c *c1, dCc_c *c2, mVec2_c pos1, mVec2_c pos2) {
-    CcData_s &ci1 = c1->mCcData;
-    CcData_s &ci2 = c2->mCcData;
+    sCcDatNewF &ci1 = c1->mCcData;
+    sCcDatNewF &ci2 = c2->mCcData;
 
     // Compute the distance between the two colliders and the maximum distances for a collision
     float xDist = pos1.x - pos2.x;
-    float collSizeX = ci1.mWidth + ci2.mWidth;
+    float collSizeX = ci1.mSize.x + ci2.mSize.x;
     float yDist = pos1.y - pos2.y;
-    float collSizeY = ci1.mHeight + ci2.mHeight;
+    float collSizeY = ci1.mSize.y + ci2.mSize.y;
 
     if (std::fabs(xDist) < collSizeX && std::fabs(yDist) < collSizeY) {
         c1->mCollPos = pos1;
         c2->mCollPos = pos2;
 
         // [Need to research what this check is for]
-        if ((ci1.mFlag & CC_DATA_NO_OFFSET || ci2.mFlag & CC_DATA_NO_OFFSET)
-        && ci1.mCategory != CAT_GOAL_POLE && ci2.mCategory != CAT_GOAL_POLE) {
+        if ((ci1.mStatus & CC_STATUS_NO_REVISION || ci2.mStatus & CC_STATUS_NO_REVISION)
+        && ci1.mKind != CC_KIND_GOAL_POLE && ci2.mKind != CC_KIND_GOAL_POLE) {
             return true;
         }
 
@@ -297,11 +309,11 @@ bool dCc_c::_hitCheckSquare(dCc_c *c1, dCc_c *c2, mVec2_c pos1, mVec2_c pos2) {
             offsetY = -offsetY;
         }
 
-        c1->mCollOffsetX[ci2.mCategory] = offsetX;
-        c1->mCollOffsetY[ci2.mCategory] = offsetY;
+        c1->mCollOffsetX[ci2.mKind] = offsetX;
+        c1->mCollOffsetY[ci2.mKind] = offsetY;
 
-        c2->mCollOffsetX[ci1.mCategory] = -offsetX;
-        c2->mCollOffsetY[ci1.mCategory] = -offsetY;
+        c2->mCollOffsetX[ci1.mKind] = -offsetX;
+        c2->mCollOffsetY[ci1.mKind] = -offsetY;
         return true;
     }
     return false;
@@ -344,8 +356,8 @@ bool dCc_c::_hitCheckCircle(dCc_c *c1, dCc_c *c2) {
     // [Not sure why we are looking at the height here...
     // It seems they maybe wanted the circles to also support ellipses?
     // Either way, the collision calculations treat it as a circle.]
-    float collSizeX = c1->mCcData.mWidth + c2->mCcData.mWidth;
-    float collSizeY = c1->mCcData.mHeight + c2->mCcData.mHeight;
+    float collSizeX = c1->mCcData.mSize.x + c2->mCcData.mSize.x;
+    float collSizeY = c1->mCcData.mSize.y + c2->mCcData.mSize.y;
     float collSizeRadius = (collSizeX + collSizeY) / 2;
 
     mVec2_c distVec = p2 - p1;
@@ -358,13 +370,13 @@ bool dCc_c::_hitCheckCircle(dCc_c *c1, dCc_c *c2) {
         float offsetX = dist * nw4r::math::CosIdx(ang);
         float offsetY = -dist * nw4r::math::SinIdx(ang);
 
-        c1->mCollOffsetX[c2->mCcData.mCategory] = offsetX;
-        c1->mCollOffsetY[c2->mCcData.mCategory] = offsetY;
+        c1->mCollOffsetX[c2->mCcData.mKind] = offsetX;
+        c1->mCollOffsetY[c2->mCcData.mKind] = offsetY;
         c1->mCollPos.x = p1.x;
         c1->mCollPos.y = p1.y;
 
-        c2->mCollOffsetX[c1->mCcData.mCategory] = -offsetX;
-        c2->mCollOffsetY[c1->mCcData.mCategory] = -offsetY;
+        c2->mCollOffsetX[c1->mCcData.mKind] = -offsetX;
+        c2->mCollOffsetY[c1->mCcData.mKind] = -offsetY;
         c2->mCollPos.x = p2.x;
         c2->mCollPos.y = p2.y;
 
@@ -397,17 +409,17 @@ bool dCc_c::_hitCheckBoxCircle(dCc_c *c1, dCc_c *c2) {
     mVec2_c circlePos = circleCc->getCenterVec();
     mVec2_c boxPos = boxCc->getCenterVec();
 
-    float circleRadius = circleCc->mCcData.mWidth;
+    float circleRadius = circleCc->mCcData.mSize.x;
     dir_e boxSideX = (boxCc->getCenterPosX() < circleCc->getCenterPosX()) ? LEFT : RIGHT;
     dir_e boxSideY = (boxCc->getCenterPosY() < circleCc->getCenterPosY()) ? BELOW : ABOVE;
 
     float closerEdgeX[] = {
-        boxCc->getCenterPosX() + boxCc->mCcData.mWidth, // Left edge, if box is on the left
-        boxCc->getCenterPosX() - boxCc->mCcData.mWidth // Right edge, if box is on the right
+        boxCc->getCenterPosX() + boxCc->mCcData.mSize.x, // Left edge, if box is on the left
+        boxCc->getCenterPosX() - boxCc->mCcData.mSize.x // Right edge, if box is on the right
     };
     float closerEdgeY[] = {
-        boxCc->getCenterPosY() + boxCc->mCcData.mHeight, // Top edge, if box is below
-        boxCc->getCenterPosY() - boxCc->mCcData.mHeight // Bottom edge, if box is above
+        boxCc->getCenterPosY() + boxCc->mCcData.mSize.y, // Top edge, if box is below
+        boxCc->getCenterPosY() - boxCc->mCcData.mSize.y // Bottom edge, if box is above
     };
 
     if (closerEdgeY[ABOVE] < circlePos.y && circlePos.y < closerEdgeY[BELOW]) {
@@ -417,13 +429,13 @@ bool dCc_c::_hitCheckBoxCircle(dCc_c *c1, dCc_c *c2) {
             // Move the circle and box apart just in the X direction
 
             float circleOffsetX = DIR2SCALE(boxSideX) * (circleRadius - colliderXDist) / 2;
-            circleCc->mCollOffsetX[circleCc->mCcData.mCategory] = circleOffsetX;
-            circleCc->mCollOffsetY[circleCc->mCcData.mCategory] = 0.0f;
+            circleCc->mCollOffsetX[circleCc->mCcData.mKind] = circleOffsetX;
+            circleCc->mCollOffsetY[circleCc->mCcData.mKind] = 0.0f;
             circleCc->mCollPos = circlePos;
 
-            float boxOffsetX = -circleCc->mCollOffsetX[circleCc->mCcData.mCategory];
-            boxCc->mCollOffsetX[circleCc->mCcData.mCategory] = boxOffsetX;
-            boxCc->mCollOffsetY[circleCc->mCcData.mCategory] = 0.0f;
+            float boxOffsetX = -circleCc->mCollOffsetX[circleCc->mCcData.mKind];
+            boxCc->mCollOffsetX[circleCc->mCcData.mKind] = boxOffsetX;
+            boxCc->mCollOffsetY[circleCc->mCcData.mKind] = 0.0f;
             boxCc->mCollPos = boxPos;
 
             return true;
@@ -435,14 +447,14 @@ bool dCc_c::_hitCheckBoxCircle(dCc_c *c1, dCc_c *c2) {
         if (smthA < circleRadius) {
             // Move the circle and box apart just in the Y direction
 
-            circleCc->mCollOffsetX[circleCc->mCcData.mCategory] = 0.0f;
+            circleCc->mCollOffsetX[circleCc->mCcData.mKind] = 0.0f;
             float circleOffsetY = DIR2SCALE(boxSideY) * (circleRadius - smthA) / 2;
-            circleCc->mCollOffsetY[circleCc->mCcData.mCategory] = circleOffsetY;
+            circleCc->mCollOffsetY[circleCc->mCcData.mKind] = circleOffsetY;
             circleCc->mCollPos = circlePos;
 
-            boxCc->mCollOffsetX[circleCc->mCcData.mCategory] = 0.0f;
-            float boxOffsetY = -circleCc->mCollOffsetY[circleCc->mCcData.mCategory];
-            boxCc->mCollOffsetY[circleCc->mCcData.mCategory] = boxOffsetY;
+            boxCc->mCollOffsetX[circleCc->mCcData.mKind] = 0.0f;
+            float boxOffsetY = -circleCc->mCollOffsetY[circleCc->mCcData.mKind];
+            boxCc->mCollOffsetY[circleCc->mCcData.mKind] = boxOffsetY;
             boxCc->mCollPos = boxPos;
 
             return true;
@@ -457,12 +469,12 @@ bool dCc_c::_hitCheckBoxCircle(dCc_c *c1, dCc_c *c2) {
     if (distance < circleRadius) {
         float offsetBy = (circleRadius - distance) / 2;
         // [This should have been done the same way as in _hitCheckCircle - this way, we shift by too much.]
-        circleCc->mCollOffsetX[circleCc->mCcData.mCategory] = distVec.x * offsetBy;
-        circleCc->mCollOffsetY[circleCc->mCcData.mCategory] = distVec.y * offsetBy;
+        circleCc->mCollOffsetX[circleCc->mCcData.mKind] = distVec.x * offsetBy;
+        circleCc->mCollOffsetY[circleCc->mCcData.mKind] = distVec.y * offsetBy;
         circleCc->mCollPos = circlePos;
 
-        boxCc->mCollOffsetX[boxCc->mCcData.mCategory] = -circleCc->mCollOffsetX[circleCc->mCcData.mCategory];
-        boxCc->mCollOffsetY[boxCc->mCcData.mCategory] = -circleCc->mCollOffsetY[circleCc->mCcData.mCategory];
+        boxCc->mCollOffsetX[boxCc->mCcData.mKind] = -circleCc->mCollOffsetX[circleCc->mCcData.mKind];
+        boxCc->mCollOffsetY[boxCc->mCcData.mKind] = -circleCc->mCollOffsetY[circleCc->mCcData.mKind];
         boxCc->mCollPos = boxPos;
 
         return true;
@@ -511,7 +523,7 @@ bool dCc_c::_hitCheckDaikeiUD(dCc_c *ccTrp, dCc_c * ccBox) {
     // The left and right sides of the trapezoid are parallel,
     // so the width of this shape is the same everywhere.
 
-    float collSizeX = ccTrp->mCcData.mWidth + ccBox->mCcData.mWidth;
+    float collSizeX = ccTrp->mCcData.mSize.x + ccBox->mCcData.mSize.x;
 
     if (std::fabs(trpCenter.x - boxCenter.x) >= collSizeX) {
         return false;
@@ -548,12 +560,12 @@ bool dCc_c::_hitCheckDaikeiUD(dCc_c *ccTrp, dCc_c * ccBox) {
 
     // No shifting of the colliders is done here.
 
-    ccTrp->mCollOffsetX[ccBox->mCcData.mCategory] = 0;
-    ccTrp->mCollOffsetY[ccBox->mCcData.mCategory] = 0;
+    ccTrp->mCollOffsetX[ccBox->mCcData.mKind] = 0;
+    ccTrp->mCollOffsetY[ccBox->mCcData.mKind] = 0;
     ccTrp->mCollPos.set(ccTrp->getCenterPosX(), ccTrp->getCenterPosY());
 
-    ccBox->mCollOffsetX[ccTrp->mCcData.mCategory] = 0;
-    ccBox->mCollOffsetY[ccTrp->mCcData.mCategory] = 0;
+    ccBox->mCollOffsetX[ccTrp->mCcData.mKind] = 0;
+    ccBox->mCollOffsetY[ccTrp->mCcData.mKind] = 0;
     ccBox->mCollPos.set(ccBox->getCenterPosX(), ccBox->getCenterPosY());
 
     return true;
@@ -583,7 +595,7 @@ bool dCc_c::_hitCheckDaikeiLR(dCc_c *ccTrp, dCc_c *ccBox) {
     // The top and bottom sides of the trapezoid are parallel,
     // so the height of this shape is the same everywhere.
 
-    float heightSum = ccTrp->mCcData.mHeight + ccBox->mCcData.mHeight;
+    float heightSum = ccTrp->mCcData.mSize.y + ccBox->mCcData.mSize.y;
 
     if (std::fabs(p1.y - p2.y) >= heightSum) {
         return false;
@@ -620,12 +632,12 @@ bool dCc_c::_hitCheckDaikeiLR(dCc_c *ccTrp, dCc_c *ccBox) {
 
     // No shifting of the colliders is done here.
 
-    ccTrp->mCollOffsetX[ccBox->mCcData.mCategory] = 0;
-    ccTrp->mCollOffsetY[ccBox->mCcData.mCategory] = 0;
+    ccTrp->mCollOffsetX[ccBox->mCcData.mKind] = 0;
+    ccTrp->mCollOffsetY[ccBox->mCcData.mKind] = 0;
     ccTrp->mCollPos.set(ccTrp->getCenterPosX(), ccTrp->getCenterPosY());
 
-    ccBox->mCollOffsetX[ccTrp->mCcData.mCategory] = 0;
-    ccBox->mCollOffsetY[ccTrp->mCcData.mCategory] = 0;
+    ccBox->mCollOffsetX[ccTrp->mCcData.mKind] = 0;
+    ccBox->mCollOffsetY[ccTrp->mCcData.mKind] = 0;
     ccBox->mCollPos.set(ccBox->getCenterPosX(), ccBox->getCenterPosY());
 
     return true;
