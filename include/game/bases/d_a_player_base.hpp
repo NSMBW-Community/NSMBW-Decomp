@@ -1,15 +1,13 @@
 #pragma once
 
-#include <constants/game_constants.h>
 #include <game/bases/d_actor.hpp>
 #include <game/bases/d_ac_py_key.hpp>
 #include <game/bases/d_cc.hpp>
-#include <game/bases/d_effect.hpp>
-#include <game/bases/d_audio.hpp>
 #include <game/bases/d_quake.hpp>
 #include <game/mLib/m_3d.hpp>
 #include <game/sLib/s_State.hpp>
-#include <game/bases/d_quake.hpp>
+#include <game/bases/d_effect.hpp>
+#include <game/bases/d_audio.hpp>
 #include <constants/game_constants.h>
 
 class dPyMdlBase_c {
@@ -63,6 +61,12 @@ public:
     float getFrameMax() { return mAnm.mFrameMax; }
     mMtx_c &getMtx() { return mMtx; }
 
+    void setAng(mAng3_c ang) {
+        m_1fc = ang.x;
+        m_1fe = ang.y;
+        m_200 = ang.z;
+    }
+
     u8 mPad1[0x24];
     m3d::anmChr_c mAnm;
     u8 mPad2[0x6c];
@@ -75,7 +79,9 @@ public:
     u8 mPad5[8];
     u32 mFlags;
     u8 mPad6[0x98];
-    mAng3_c m_1fe;
+    s16 m_1fc;
+    s16 m_1fe;
+    s16 m_200;
     u32 m_204;
     u32 m_208;
 
@@ -155,13 +161,14 @@ public:
         return mpMdl->mAnm.isStop();
     }
 
-    mAng3_c getAng() { return mpMdl->m_1fe; }
-
-    void setAng(mAng3_c ang) {
-        mAng3_c tmp;
-        tmp = ang;
-        mpMdl->m_1fe.set(tmp.x, tmp.y, tmp.z);
+    mAng3_c getAng() const {
+        return mAng3_c(
+            mpMdl->m_1fc,
+            mpMdl->m_1fe,
+            mpMdl->m_200
+        );
     }
+    void setAng(mAng3_c v) { mpMdl->setAng(v); }
 
     u32 getFlags() const {
         return mpMdl->mFlags;
@@ -196,6 +203,7 @@ public:
         BLEND_1
     };
 
+    /// @unofficial
     enum GroundType_e {
         GROUND_TYPE_DEFAULT,
         GROUND_TYPE_SNOW,
@@ -248,12 +256,14 @@ public:
         return (mGroundType == GROUND_TYPE_BEACH) ? true : false;
     }
 
+    /// @unofficial
     enum SlipSubstate_e {
         SLIP_ACTION_NONE,
         SLIP_ACTION_STOOP,
         SLIP_ACTION_END
     };
 
+    /// @unofficial
     enum HipSubstate_e {
         HIP_ACTION_READY,
         HIP_ACTION_ATTACK_START,
@@ -264,22 +274,26 @@ public:
         HIP_ACTION_TO_STOOP
     };
 
+    /// @unofficial
     enum JumpDaiSubstate_e {
         JUMP_DAI_ACTION_0,
         JUMP_DAI_ACTION_1,
     };
 
+    /// @unofficial
     enum FunsuiSubstate_e {
         FUNSUI_ACTION_NONE,
         FUNSUI_ACTION_START
     };
 
+    /// @unofficial
     enum AnimePlaySubstate_e {
         ANIME_PLAY_ACTION_0,
         ANIME_PLAY_ACTION_1,
         ANIME_PLAY_ACTION_2
     };
 
+    /// @unofficial
     enum DemoInDokanSubstate_e {
         DEMO_IN_DOKAN_ACTION_0,
         DEMO_IN_DOKAN_ACTION_1,
@@ -288,12 +302,79 @@ public:
         DEMO_IN_DOKAN_ACTION_4
     };
 
+    /// @unofficial
     enum PowerChangeType_e {
         POWER_CHANGE_0 = 0,
         POWER_CHANGE_1 = 1,
         POWER_CHANGE_2 = 2
     };
 
+
+    /// @unofficial
+    enum BgCross1_e {
+        BGC_IS_FOOT = BIT_FLAG(0),
+        BGC_IS_HEAD = BIT_FLAG(1),
+        BGC_IS_WALL = BIT_FLAG(2),
+        BGC_WALL_TOUCH_L = BIT_FLAG(3),
+        BGC_WALL_TOUCH_R = BIT_FLAG(4),
+        BGC_WALL_TOUCH_L_2 = BIT_FLAG(5),
+        BGC_WALL_TOUCH_R_2 = BIT_FLAG(6),
+        BGC_CARRY_RELATED_L = BIT_FLAG(7),
+        BGC_CARRY_RELATED_R = BIT_FLAG(8),
+        BGC_OBJBG_CARRY_RELATED_L = BIT_FLAG(9),
+        BGC_OBJBG_CARRY_RELATED_R = BIT_FLAG(10),
+        BGC_11 = BIT_FLAG(11),
+        BGC_12 = BIT_FLAG(12),
+        BGC_13 = BIT_FLAG(13),
+        BGC_14 = BIT_FLAG(14),
+        BGC_15 = BIT_FLAG(15),
+        BGC_16 = BIT_FLAG(16),
+        BGC_17 = BIT_FLAG(17),
+        BGC_WATER_BUBBLE = BIT_FLAG(18),
+        BGC_SIDE_LIMIT_L = BIT_FLAG(19),
+        BGC_SIDE_LIMIT_R = BIT_FLAG(20),
+        BGC_21 = BIT_FLAG(21),
+        BGC_ON_SNOW = BIT_FLAG(22),
+        BGC_ON_ICE = BIT_FLAG(23),
+        BGC_ON_ICE_LOW_SLIP = BIT_FLAG(24),
+        BGC_25 = BIT_FLAG(25),
+        BGC_ON_SAND = BIT_FLAG(26),
+        BGC_ON_SINK_SAND = BIT_FLAG(27),
+        BGC_IN_SINK_SAND = BIT_FLAG(28),
+        BGC_INSIDE_SINK_SAND = BIT_FLAG(29),
+        BGC_ON_BELT_L = BIT_FLAG(30),
+        BGC_ON_BELT_R = BIT_FLAG(31)
+    };
+
+    /// @unofficial
+    enum BgCross2_e {
+        BGC_32 = BIT_FLAG(0),
+        BGC_IS_LIFT = BIT_FLAG(1),
+        BGC_34 = BIT_FLAG(2),
+        BGC_IS_SLIP = BIT_FLAG(3),
+        BGC_36 = BIT_FLAG(4),
+        BGC_37 = BIT_FLAG(5),
+        BGC_38 = BIT_FLAG(6),
+        BGC_IS_SAKA = BIT_FLAG(7),
+        BGC_40 = BIT_FLAG(8),
+        BGC_41 = BIT_FLAG(9),
+        BGC_42 = BIT_FLAG(10),
+        BGC_51 = BIT_FLAG(19),
+        BGC_52 = BIT_FLAG(20),
+        BGC_53 = BIT_FLAG(21),
+        BGC_54 = BIT_FLAG(22),
+        BGC_55 = BIT_FLAG(23),
+        BGC_56 = BIT_FLAG(24),
+        BGC_57 = BIT_FLAG(25),
+        BGC_58 = BIT_FLAG(26),
+        BGC_59 = BIT_FLAG(27),
+        BGC_60 = BIT_FLAG(28),
+        BGC_61 = BIT_FLAG(29),
+        BGC_62 = BIT_FLAG(30),
+        BGC_63 = BIT_FLAG(31)
+    };
+
+    /// @unofficial
     enum Status_e {
         STATUS_01 = 0x01,
         STATUS_02 = 0x02,
@@ -434,6 +515,7 @@ public:
         DEMO_8
     };
 
+    /// @unofficial
     struct SpeedData_t {
         float data[9];
 
@@ -452,6 +534,33 @@ public:
         float m_04;
         int m_08;
         int m_0c;
+    };
+
+    /// @unofficial
+    struct sAirTurnPowerData {
+        float mNoButton;
+        float mStand;
+        float mSlowNoDash;
+        float mSlowDash;
+        float mMedium;
+        float mFast;
+        float mTurnAround;
+    };
+
+    /// @unofficial
+    struct sTurnPowerData {
+        float mNormal;
+        float mSakaUp;
+        float mSakaDown;
+        float mAir;
+    };
+
+    /// @unofficial
+    struct sPowerChangeData {
+        sAirTurnPowerData mAirPower[2];
+        sTurnPowerData mRangeType0[2];
+        sTurnPowerData mRangeType1[2];
+        sTurnPowerData mRangeType2[2];
     };
 
     typedef void (daPlBase_c::*ProcFunc)();
@@ -834,7 +943,6 @@ public:
     void setStatus87(); ///< @unofficial
     bool isRideCheckEnable();
     void setStatus5D(float f); ///< @unofficial
-    void fn_8004c0d0(sRangeDataF &); ///< @unofficial
 
     daPlBase_c *getHipAttackDamagePlayer();
     void setHipAttackDamagePlayer(daPlBase_c *player);
@@ -869,6 +977,7 @@ public:
     void grandPowerSet(); // (misspelling of "ground")
     void slipPowerSet(int);
 
+    void getTurnPower(sTurnPowerData &); ///< @unofficial
     void icePowerChange(int);
     void normalPowerSet();
     void fn_8004bf80(SpeedData_t *data);
@@ -887,33 +996,8 @@ public:
         mStateMgr.getOldStateID();
     }
 
-    bool checkD40Status(int bit) const {
-        if (m_d40 & (1 << bit)) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-
     float get_1064() const { return m_1064; }
     float get_106c() const { return m_106c; }
-
-
-    bool checkD44Status(int bit) const {
-        if (m_d44 & (1 << bit)) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    void setD40Status(int bit) {
-        m_d40 |= (1 << bit);
-    }
-
-    void setD44Status(int bit) {
-        m_d44 |= (1 << bit);
-    }
 
     void setStatus(int);
     void calcTimerProc();
@@ -941,6 +1025,20 @@ public:
     float getAnkleCenterY() { return getAnkleCenterPos().y; }
 
     int getTreadCount() { return mTreadCount; }
+
+    u32 isNowBgCross(BgCross1_e m) { return mNowBgCross1 & m; }
+    u32 isNowBgCross(BgCross2_e m) { return mNowBgCross2 & m; }
+    void onNowBgCross(BgCross1_e m) { mNowBgCross1 |= m; }
+    void onNowBgCross(BgCross2_e m) { mNowBgCross2 |= m; }
+    void offNowBgCross(BgCross1_e m) { mNowBgCross1 &= ~m; }
+    void offNowBgCross(BgCross2_e m) { mNowBgCross2 &= ~m; }
+
+    u32 isOldBgCross(BgCross1_e m) { return mOldBgCross1 & m; }
+    u32 isOldBgCross(BgCross2_e m) { return mOldBgCross2 & m; }
+    void onOldBgCross(BgCross1_e m) { mOldBgCross1 |= m; }
+    void onOldBgCross(BgCross2_e m) { mOldBgCross2 |= m; }
+    void offOldBgCross(BgCross1_e m) { mOldBgCross1 &= ~m; }
+    void offOldBgCross(BgCross2_e m) { mOldBgCross2 &= ~m; }
 
     int m_00;
     int m_04;
@@ -1038,10 +1136,10 @@ public:
     int m_d2c;
     mVec3_c m_d30;
     float m_d3c;
-    u32 m_d40;
-    u32 m_d44;
-    u32 m_d48;
-    u32 m_d4c;
+    u32 mNowBgCross1;
+    u32 mNowBgCross2;
+    u32 mOldBgCross1;
+    u32 mOldBgCross2;
     u32 mBgCrossHistory[10];
     u32 m_d78;
     u32 m_d7c;
