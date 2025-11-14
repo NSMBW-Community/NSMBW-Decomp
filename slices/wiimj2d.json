@@ -139,6 +139,19 @@
             }
         },
         {
+            "source": "dol/bases/d_a_player_base.cpp",
+            "nonMatching": true,
+            "memoryRanges": {
+                ".text": "0x3f950-0x54c20",
+                ".ctors": "0x7c-0x80",
+                ".bss": "0x2b90-0x35a0",
+                ".data": "0x9898-0xb268",
+                ".rodata": "0xc98-0xec0",
+                ".sbss": "0xc8-0xd0",
+                ".sdata2": "0x7c0-0x998"
+            }
+        },
+        {
             "source": "dol/bases/d_ac_py_key.cpp",
             "memoryRanges": {
                 ".text": "0x57850-0x58220"
