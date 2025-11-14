@@ -13,5 +13,5 @@ public:
 
     static bool acmIsCarryEnemy(dActor_c *actor); ///< Checks whether the given actor is a carryable enemy.
 
-    bool mIsCarryable; ///< Whether this enemy can be carried.
+    bool mForceShellDamageEffect; ///< Whether to force the shell damage effect the next time shellDamageEffect is called.
 };

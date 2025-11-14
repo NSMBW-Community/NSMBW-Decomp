@@ -21,15 +21,15 @@ int daEnCarry_c::acmShellPlayerNo(dActor_c *actor) const {
 }
 
 void daEnCarry_c::shellDamageEffect(dCc_c *cc, dActor_c *actor) {
-    bool doDamage = true;
-    if (!mIsCarryable && isState(StateID_Carry)) {
-        doDamage = false;
+    bool damageEffect = true;
+    if (!mForceShellDamageEffect && isState(StateID_Carry)) {
+        damageEffect = false;
     }
-    if (doDamage) {
+    if (damageEffect) {
         mVec2_c pos2D = cc->mCollPos;
         hitdamageEffect(mVec3_c(pos2D, 5500.0f));
     } else if (acmIsCarryEnemy(actor)) {
-        ((daEnCarry_c *) actor)->mIsCarryable = true;
+        ((daEnCarry_c *) actor)->mForceShellDamageEffect = true;
     }
 }
 
