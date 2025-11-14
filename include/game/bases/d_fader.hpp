@@ -6,7 +6,12 @@
 class dFader_c : public mFader_c {
 public:
     enum fader_type_e {
-        FADE
+        FADER_FADE,
+        FADER_CIRCLE_MIDDLE,
+        FADER_BOWSER,
+        FADER_DRIP_DOWN,
+        FADER_MARIO,
+        FADER_CIRCLE_TARGET
     };
 
     static void setFader(fader_type_e type);

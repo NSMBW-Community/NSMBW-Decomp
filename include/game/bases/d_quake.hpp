@@ -23,6 +23,8 @@ public:
         FLAG_2 = BIT_FLAG(2)
     };
 
+    void shockMotor(s8, TYPE_SHOCK_e, int, bool);
+
     float mSpeed;
     float mResult;
     float mMultiplier;

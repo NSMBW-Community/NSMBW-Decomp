@@ -25,8 +25,8 @@ mAngle3D()
     }
 
     if (m_tmpCtAngleP != nullptr) {
-        mAngle = *m_tmpCtAngleP;
-        mAngle3D = *m_tmpCtAngleP;
+        mAngle.set(*m_tmpCtAngleP);
+        mAngle3D.set(*m_tmpCtAngleP);
     }
 
     // Initialize the rest

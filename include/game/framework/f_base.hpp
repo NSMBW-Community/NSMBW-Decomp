@@ -178,6 +178,8 @@ protected:
     virtual ~fBase_c(); ///< Destroys the base.
 
 public:
+    fBaseID_e getID() const { return mUniqueID; }
+
     /// @brief Requests deletion of the base.
     /// @details Calling this function multiple times has no effect.
     void deleteRequest();

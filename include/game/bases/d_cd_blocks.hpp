@@ -53,7 +53,13 @@ struct sBgData {
 struct sNextGotoData {
     u8 mPad1[0x8];
     u8 mID;
-    u8 mPad2[0xb];
+    u8 mPad2[0x2];
+    u8 m_0b;
+    u8 mPad3[2];
+    u8 mLayer;
+    u8 m_0f;
+    u16 mFlags;
+    u8 mPad4[0x2];
 };
 
 /// @unofficial

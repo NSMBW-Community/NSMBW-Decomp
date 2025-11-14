@@ -19,6 +19,8 @@ public:
     virtual bool upAll(ulong) const;
     virtual void beginFrame(PADStatus *);
     virtual void endFrame();
+
+    void startPatternRumble(const char *, int, bool);
 };
 
 } // namespace EGG
