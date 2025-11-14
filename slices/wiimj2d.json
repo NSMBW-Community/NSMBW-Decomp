@@ -56,7 +56,8 @@
         "__dt__7mVec2_cFv",
         "__dt__7mVec3_cFv",
         "__dt__Q34nw4r3lyt19ArcResourceAccessorFv",
-        "GetRuntimeTypeInfo__Q34nw4r3lyt4PaneCFv"
+        "GetRuntimeTypeInfo__Q34nw4r3lyt4PaneCFv",
+        "dummy__10daPlBase_cFv"
     ],
     "slices": [
         {
