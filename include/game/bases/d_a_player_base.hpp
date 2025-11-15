@@ -63,6 +63,12 @@ public:
     float getFrameMax() { return mAnm.mFrameMax; }
     mMtx_c &getMtx() { return mMtx; }
 
+    void setAng(mAng3_c ang) {
+        m_1fc = ang.x;
+        m_1fe = ang.y;
+        m_200 = ang.z;
+    }
+
     u8 mPad1[0x24];
     m3d::anmChr_c mAnm;
     u8 mPad2[0x6c];
@@ -75,7 +81,9 @@ public:
     u8 mPad5[8];
     u32 mFlags;
     u8 mPad6[0x98];
-    mAng3_c m_1fe;
+    s16 m_1fc;
+    s16 m_1fe;
+    s16 m_200;
     u32 m_204;
     u32 m_208;
 
@@ -155,13 +163,14 @@ public:
         return mpMdl->mAnm.isStop();
     }
 
-    mAng3_c getAng() { return mpMdl->m_1fe; }
-
-    void setAng(mAng3_c ang) {
-        mAng3_c tmp;
-        tmp = ang;
-        mpMdl->m_1fe.set(tmp.x, tmp.y, tmp.z);
+    mAng3_c getAng() const {
+        return mAng3_c(
+            mpMdl->m_1fc,
+            mpMdl->m_1fe,
+            mpMdl->m_200
+        );
     }
+    void setAng(mAng3_c v) { mpMdl->setAng(v); }
 
     u32 getFlags() const {
         return mpMdl->mFlags;
