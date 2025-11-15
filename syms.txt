@@ -870,5 +870,4 @@ fn_8019AAB0__11SndObjctPlyFUli=8019AAB0
 fn_8019ABB0__11SndObjctPlyFUli=8019ABB0
 vf1C__15NMSndObjectBaseFUli=801976b0
 checkWall__5dBc_cFPC7mVec3_cPC7mVec3_cPfUcUcPP8dActor_c=80075fd0
-lbl_802f5880=802f5880
-lbl_802f58b8=802f58b8
+l_power_change_data=802f5880
