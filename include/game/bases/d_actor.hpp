@@ -389,6 +389,9 @@ public:
     float getCenterX() { return getCenterPos().x; }
     float getCenterY() { return getCenterPos().y; }
 
+    float getVisOffsetY() { return mVisibleAreaOffset.y; }
+    float getVisSizeY() { return mVisibleAreaSize.y; }
+
     u8 getKindMask() { return 1 << mKind; }
 
     static const float smc_CULL_XLIMIT; ///< The default @ref mMaxBound "max bound" X offset.
