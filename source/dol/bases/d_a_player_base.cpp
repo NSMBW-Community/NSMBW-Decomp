@@ -105,7 +105,7 @@ int daPlBase_c::preExecute() {
         return NOT_READY;
     }
     onStatus(STATUS_01);
-    if (m_d44 & 2) {
+    if (isNowBgCross(BGC_IS_LIFT)) {
         mLastPos = m_cb0;
     }
     m_20 = 0;
@@ -274,7 +274,7 @@ void daPlBase_c::walkActionInit_Move(AnmBlend_e blend) {}
 void daPlBase_c::walkAction_Move() {
     AnmBlend_e arg = BLEND_1;
     if (!mSpeedF) {
-        if ((m_d40 & 0x800) || mTimer_f4 != 0 || m_112c) {
+        if (isNowBgCross(BGC_11) || mTimer_f4 != 0 || m_112c) {
             if (mKey.buttonWalk(nullptr)) {
                 arg = BLEND_0;
             } else {
@@ -282,7 +282,7 @@ void daPlBase_c::walkAction_Move() {
                 return;
             }
         } else {
-            if (m_d40 & 4) {
+            if (isNowBgCross(BGC_IS_WALL)) {
                 if (mPowerup == POWERUP_MINI_MUSHROOM && mBc.getSakaUpDown(mDirection) == 1) {
                     arg = BLEND_0;
                 } else {
@@ -290,12 +290,12 @@ void daPlBase_c::walkAction_Move() {
                     return;
                 }
             }
-            if (m_d40 & 0x2000000 || !mKey.buttonWalk(nullptr)) {
+            if (isNowBgCross(BGC_25) || !mKey.buttonWalk(nullptr)) {
                 walkActionInit_Wait(BLEND_1);
                 return;
             }
         }
-    } else if (m_d44 & 2) {
+    } else if (isNowBgCross(BGC_IS_LIFT)) {
         mTimer_f4 = 3;
     }
     setWalkActionAnm(arg);
@@ -317,7 +317,7 @@ void daPlBase_c::calcSpeedOnIceLift() {
     static const float csSpeedMult[] = { 0.5f, 0.8f };
     /// @unofficial
     static const float csSpeedMultNoMove[] = { 0.3f, 1.0f };
-    if (mPowerup != POWERUP_PENGUIN_SUIT && (m_d44 & 2) && m_d40 & 0x800000 && std::fabs(mBc.mIceSpeed) > 1.0f) {
+    if (mPowerup != POWERUP_PENGUIN_SUIT && isNowBgCross(BGC_IS_LIFT) && isNowBgCross(BGC_ON_ICE) && std::fabs(mBc.mIceSpeed) > 1.0f) {
         u8 idx = 0;
         if (mBc.mIceSpeed < 0.0f) {
             idx = 1;
@@ -344,7 +344,7 @@ void daPlBase_c::calcSpeedOnIceLift() {
 }
 
 void daPlBase_c::calcAccOnIceLift() {
-    if ((m_d44 & 2) && m_d40 & 0x800000 && !mKey.buttonWalk(nullptr) && std::fabs(mBc.mIceSpeed) > 1.0f) {
+    if (isNowBgCross(BGC_IS_LIFT) && isNowBgCross(BGC_ON_ICE) && !mKey.buttonWalk(nullptr) && std::fabs(mBc.mIceSpeed) > 1.0f) {
         mAccelF = calcStarAccel(mAccelF);
     }
 }
@@ -378,7 +378,7 @@ void daPlBase_c::executeState_Jump() {
         offStatus(STATUS_4D);
     }
     if (isStatus(STATUS_A5)) {
-        if (!mKey.buttonJump() || m_d40 & 2) {
+        if (!mKey.buttonJump() || isNowBgCross(BGC_IS_HEAD)) {
             mSndObj.stopPlyJumpSound();
             offStatus(STATUS_A5);
         }
@@ -402,7 +402,7 @@ void daPlBase_c::finalizeState_SitJump() {}
 void daPlBase_c::executeState_SitJump() {}
 
 void daPlBase_c::setFallAction() {
-    if (m_d40 & 1) {
+    if (isNowBgCross(BGC_IS_FOOT)) {
         return;
     }
     changeState(StateID_Fall, nullptr);
@@ -416,7 +416,7 @@ void daPlBase_c::initializeState_Fall() {
     if (!mStateChangeParam) {
         mpMdlMng->setAnm(6, 10.0f, 0.0f);
     }
-    if (m_d4c & 2) {
+    if (isOldBgCross(BGC_IS_LIFT)) {
         if (m_1134 * mSpeedF > 0.0f) {
             m_1138 = m_1134;
             m_1134 = 0.0f;
@@ -452,7 +452,7 @@ bool daPlBase_c::setCancelCrouch() {
         mpMdlMng->setAnm(21);
         mpMdlMng->mpMdl->setFrame(mpMdlMng->getLastFrame());
     }
-    if (!(m_d40 & 0x4000)) {
+    if (!isNowBgCross(BGC_14)) {
         mpMdlMng->mpMdl->setRate(-1.0f);
     } else {
         mpMdlMng->mpMdl->setRate(-dPyMdlBase_c::scWaterCrouchAnmSpeed);
@@ -463,7 +463,7 @@ bool daPlBase_c::setCancelCrouch() {
 }
 
 bool daPlBase_c::checkStandUpRoofOnLift() {
-    if ((m_d40 & 1) != 0 && (m_d44 & 2) == 0) {
+    if (isNowBgCross(BGC_IS_FOOT) && !isNowBgCross(BGC_IS_LIFT)) {
         return false;
     }
     return checkStandUpRoof();
@@ -517,12 +517,12 @@ void daPlBase_c::executeState_Slip() {
     powerSet();
     sLib::calcTimer(&m_fc);
     mAng ang = 0;
-    if (m_d40 & 1) {
+    if (isNowBgCross(BGC_IS_FOOT)) {
         ang = mBc.getSakaAngle(mDirection)* 0.3f;
     }
     sLib::addCalcAngle(&mAngle.x.mAngle, ang.mAngle, 4, 0x2000, 0x100);
     int angle = turnAngle();
-    if (m_d44 & 8) {
+    if (isNowBgCross(BGC_IS_SLIP)) {
         m_fc = 9;
     } else if (checkJumpTrigger()) {
         return;
@@ -532,7 +532,7 @@ void daPlBase_c::executeState_Slip() {
     }
     switch ((SlipSubstate_e) mSubstate) {
         case SLIP_ACTION_NONE:
-            if ((m_d40 & 1) == 0 && (mKey.triggerJump() || mKey.triggerCross())) {
+            if (!isNowBgCross(BGC_IS_FOOT) && (mKey.triggerJump() || mKey.triggerCross())) {
                 changeState(StateID_Fall, nullptr);
             } else {
                 slipActionMove(angle);
@@ -591,7 +591,7 @@ void daPlBase_c::setSlipActionViewLimitEnd() {
     if (!mKey.buttonCrouch()) {
         setSlipAction_ToEnd();
     } else if (dScStage_c::m_instance->mCurrWorld == WORLD_1 && dScStage_c::m_instance->mCurrLevel == STAGE_6 && dScStage_c::m_instance->mCurrFile == 1) {
-        if (m_d44 & 2) {
+        if (isNowBgCross(BGC_IS_LIFT)) {
             setSlipAction_ToEnd();
         }
     }
@@ -606,20 +606,20 @@ void daPlBase_c::slipActionMove(int param) {
             setCcAtPenguinSlip();
         }
     }
-    if (m_d48 & 1 && m_d96 > 0 && (m_d98.mAngle * m_d9a.mAngle) <= 0) {
-        m_d40 &= ~1;
+    if (isOldBgCross(BGC_IS_FOOT) && m_d96 > 0 && (m_d98.mAngle * m_d9a.mAngle) <= 0) {
+        offNowBgCross(BGC_IS_FOOT);
         float baseSpeed = mSpeedF;
         float cos = mAng(m_d96).cos();
         mMaxSpeedF = baseSpeed;
         mSpeedF = baseSpeed * cos;
         mSpeed.y = std::fabs(baseSpeed) * mAng(m_d96).sin();
     }
-    if (m_d40 & 1) {
-        if (mSpeedF <= 0.0f && m_d40 & 0x80000) {
+    if (isNowBgCross(BGC_IS_FOOT)) {
+        if (mSpeedF <= 0.0f && isNowBgCross(BGC_SIDE_LIMIT_L)) {
             setSlipActionViewLimitEnd();
         } else if (checkSakaReverse()) {
             setSlipActionEnd();
-        } else if (m_d44 & 0x80) {
+        } else if (isNowBgCross(BGC_IS_SAKA)) {
             mTimer_f8 = 3;
             m_1114 = 8;
             mMaxSpeedF = getSlipMaxSpeedF();
@@ -680,7 +680,7 @@ void daPlBase_c::changeActionSlipEnd(AnmBlend_e param) {
 
 bool daPlBase_c::checkTurn() {
     if (!isCarry() && !isStatus(STATUS_74) && std::fabs(mSpeedF) >= 2.5f) {
-        if ((m_d40 & 0x800000) != 0) {
+        if (isNowBgCross(BGC_ON_ICE)) {
             if (
                 (mSpeedF < 0.0f && mKey.buttonRight() && mDirection == 0) ||
                 (mSpeedF > 0.0f && mKey.buttonLeft() && mDirection == 1)
@@ -717,7 +717,7 @@ void daPlBase_c::setHipAttackEffect() {
     if (mRideActorID) {
         return;
     }
-    if ((m_d40 & 0x18000000) == 0) {
+    if ((isNowBgCross(BGC_ON_SINK_SAND) | isNowBgCross(BGC_IN_SINK_SAND)) == 0) {
         setLandSmokeEffect(getTallType(-1));
     }
     if (mGroundType == GROUND_TYPE_WATER) {
@@ -835,12 +835,12 @@ void daPlBase_c::HipAction_AttackStart() {
 
 void daPlBase_c::HipAction_AttackFall() {
     setHipAttackDropEffect();
-    if (m_1114 == 0 || m_d40 & 1) {
+    if (m_1114 == 0 || isNowBgCross(BGC_IS_FOOT)) {
         offStatus(STATUS_7F);
         offStatus(STATUS_7A);
     }
-    if ((m_d40 & 1) == 0) {
-        if (m_d40 & 0x4000) {
+    if (!isNowBgCross(BGC_IS_FOOT)) {
+        if (isNowBgCross(BGC_14)) {
             mMaxFallSpeed = -3.0f;
         } else {
             mMaxFallSpeed = -6.0f;
@@ -868,10 +868,10 @@ void daPlBase_c::HipAction_AttackFall() {
         daPyMng_c::setHipAttackQuake(quakeType, mPlayerNo);
         onStatus(STATUS_1D);
         offStatus(STATUS_91);
-        if (m_d44 & 0x100) {
+        if (isNowBgCross(BGC_40)) {
             changeState(StateID_Kani, (void *) 2);
         } else if (isSlipSaka()) {
-            if ((m_d40 & 0x8000) == 0) {
+            if (!isNowBgCross(BGC_15)) {
                 if (mBc.getSakaType() >= 2) {
                     mSpeedF = getSlipMaxSpeedF();
                 } else {
@@ -890,7 +890,7 @@ void daPlBase_c::HipAction_AttackFall() {
 }
 
 void daPlBase_c::HipAction_Ground() {
-    if (!mKey.buttonDown() && (m_d40 & 1) == 0) {
+    if (!mKey.buttonDown() && !isNowBgCross(BGC_IS_FOOT)) {
         changeState(StateID_Fall, nullptr);
     } else {
         setHipAttack_StandNormal();
@@ -901,7 +901,7 @@ void daPlBase_c::HipAction_StandNormal() {
     if (mpMdlMng->getAnm() != 18) {
         mpMdlMng->setAnm(18);
     }
-    if (m_d40 & 1) {
+    if (isNowBgCross(BGC_IS_FOOT)) {
         if (mpMdlMng->isAnmStop()) {
             if (!mKey.buttonDown()) {
                 offStatus(STATUS_AE);
@@ -909,10 +909,10 @@ void daPlBase_c::HipAction_StandNormal() {
             } else {
                 setHipBlockBreak();
                 if (m_344 == 0) {
-                    if (m_d44 & 0x400000) {
+                    if (isNowBgCross(BGC_54)) {
                         m_1114 = 15;
                     }
-                    if (dScStage_c::m_isStaffCredit && m_d40 & 1 && (m_d44 & 2) == 0) {
+                    if (dScStage_c::m_isStaffCredit && isNowBgCross(BGC_IS_FOOT) && !isNowBgCross(BGC_IS_LIFT)) {
                         m_344 = 1;
                     }
                 }
@@ -999,7 +999,7 @@ void daPlBase_c::executeState_HipAttack() {
     if (isStatus(STATUS_1C)) {
         setCcAtHipAttack();
     }
-    if (m_d40 & 0x10000) {
+    if (isNowBgCross(BGC_16)) {
         offStatus(STATUS_AA);
     }
     if (mSubstate < HIP_ACTION_STAND_NORMAL || !checkJumpTrigger()) {
@@ -1017,7 +1017,7 @@ void daPlBase_c::finalizeState_Swim() {}
 void daPlBase_c::executeState_Swim() {}
 
 bool daPlBase_c::setJumpDaiRide() {
-    if (isStatus(STATUS_45) || m_d40 & 2) {
+    if (isStatus(STATUS_45) || isNowBgCross(BGC_IS_HEAD)) {
         return false;
     }
     changeState(StateID_JumpDai, nullptr);
@@ -1116,7 +1116,7 @@ void daPlBase_c::executeState_PlayerJumpDai() {
     daPlBase_c *rideActor = (daPlBase_c *) fManager_c::searchBaseByID(mRideActorID);
     if (rideActor == nullptr) {
         changeState(StateID_Fall, nullptr);
-    } else if (m_d40 & 2) {
+    } else if (isNowBgCross(BGC_IS_HEAD)) {
         changeState(StateID_Fall, nullptr);
         mFallTimer = 30;
     } else {
@@ -1220,7 +1220,7 @@ void daPlBase_c::executeState_Funsui() {
     if (mSubstate == FUNSUI_ACTION_START) {
         gravitySet();
         maxFallSpeedSet();
-        if (mSpeed.y <= 0.0f || m_d40 & 2) {
+        if (mSpeed.y <= 0.0f || isNowBgCross(BGC_IS_HEAD)) {
             releaseFunsuiAction();
             return;
         }
@@ -1243,7 +1243,7 @@ void daPlBase_c::finalizeState_Kani() {}
 void daPlBase_c::executeState_Kani() {}
 
 bool daPlBase_c::setCloudOn(dActor_c *cloudActor) {
-    if (m_d40 & 1 || isStatus(STATUS_7E) || isStatus(STATUS_33)) {
+    if (isNowBgCross(BGC_IS_FOOT) || isStatus(STATUS_7E) || isStatus(STATUS_33)) {
         return false;
     }
     if (cloudActor->mPos.y + getCloudOffsetY() >= mPos.y && mSpeed.y < 0.0f && mRideActorID == 0) {
@@ -1473,7 +1473,7 @@ bool daPlBase_c::checkSakaReverse() {
 }
 
 bool daPlBase_c::isSaka() {
-    if (checkD44Status(7)) {
+    if (isNowBgCross(BGC_IS_SAKA) ? 1 : 0) {
         return true;
     }
     return false;
@@ -1492,7 +1492,7 @@ void daPlBase_c::setSlipAction() {
 }
 
 bool daPlBase_c::checkSlip() {
-    if ((mSpeedF > 0.0f || (m_d40 & 0x80000) == 0) && (m_d44 & 8)) {
+    if ((mSpeedF > 0.0f || !isNowBgCross(BGC_SIDE_LIMIT_L)) && isNowBgCross(BGC_IS_SLIP)) {
         setSlipAction();
         return true;
     }
@@ -1500,10 +1500,10 @@ bool daPlBase_c::checkSlip() {
 }
 
 bool daPlBase_c::checkCrouchSlip() {
-    if (m_d40 & 0x4000) {
+    if (isNowBgCross(BGC_14)) {
         return false;
     }
-    if ((mSpeedF > 0.0f || (m_d40 & 0x80000) == 0) && ((m_d44 & 8) || isSlipSaka())) {
+    if ((mSpeedF > 0.0f || !isNowBgCross(BGC_SIDE_LIMIT_L)) && (isNowBgCross(BGC_IS_SLIP) || isSlipSaka())) {
         setSlipAction();
         return true;
     }
@@ -1511,7 +1511,7 @@ bool daPlBase_c::checkCrouchSlip() {
 }
 
 bool daPlBase_c::checkSlipEndKey() {
-    if ((m_d40 & 1)) {
+    if (isNowBgCross(BGC_IS_FOOT)) {
         if (!mKey.buttonDown()) {
             if (mBc.getSakaType() == 0) {
                 if (mKey.buttonCross()) {
@@ -1557,7 +1557,7 @@ float daPlBase_c::getIceSakaSlipOffSpeed() {
 }
 
 bool daPlBase_c::setSandMoveSpeed() {
-    if ((m_d40 & 0x18000000)) {
+    if ((isNowBgCross(BGC_ON_SINK_SAND) | isNowBgCross(BGC_IN_SINK_SAND)) != 0) {
         int dir;
         if (mKey.buttonWalk(&dir)) {
             if (isStatus(STATUS_2B)) {
@@ -1584,7 +1584,7 @@ void daPlBase_c::moveSpeedSet() {
     if (!setSandMoveSpeed() && !isStatus(STATUS_96)) {
         int dir;
         if (mKey.buttonWalk(&dir)) {
-            if ((m_d40 & 1) == 0) {
+            if (!isNowBgCross(BGC_IS_FOOT)) {
                 float absSpeed = std::fabs(mSpeedF);
                 float speed1 = sc_DirSpeed[dir] * *(getSpeedData() + 0);
                 float speed2 = sc_DirSpeed[dir] * *(getSpeedData() + 2);
@@ -1613,7 +1613,7 @@ void daPlBase_c::moveSpeedSet() {
                 mMaxSpeedF = getIceSakaSlipOffSpeed();
             }
         }
-        if (!(m_d40 & 1) && !isStatus(STATUS_88) && std::fabs(mSpeedF) > *(getSpeedData() + 2)) {
+        if (!isNowBgCross(BGC_IS_FOOT) && !isStatus(STATUS_88) && std::fabs(mSpeedF) > *(getSpeedData() + 2)) {
             if (mSpeedF < 0.0f) {
                 mSpeedF = -*(getSpeedData() + 2);
             } else {
@@ -1639,7 +1639,7 @@ void daPlBase_c::simpleMoveSpeedSet() {
 }
 
 void daPlBase_c::grandPowerSet() {
-    if (m_d40 & 0x18000000) {
+    if ((isNowBgCross(BGC_ON_SINK_SAND) | isNowBgCross(BGC_IN_SINK_SAND)) != 0) {
         mAccelF = *(getSpeedData() + 7);
     } else if (isStatus(STATUS_30)) {
         slipPowerSet(1);
@@ -1752,13 +1752,13 @@ daPlBase_c::PowerChangeType_e daPlBase_c::getPowerChangeType(bool mode) {
     if (!mode && isStatus(STATUS_AD)) {
         return POWER_CHANGE_0;
     }
-    if (checkD40Status(23)) {
+    if (isNowBgCross(BGC_ON_ICE)) {
         return POWER_CHANGE_1;
     }
-    if (checkD40Status(24)) {
+    if (isNowBgCross(BGC_ON_ICE_LOW_SLIP)) {
         return POWER_CHANGE_2;
     }
-    if (checkD40Status(22)) {
+    if (isNowBgCross(BGC_ON_SNOW) ? 1 : 0) {
         return POWER_CHANGE_2;
     }
     return POWER_CHANGE_0;
@@ -1852,7 +1852,7 @@ void daPlBase_c::airPowerSet() {
 }
 
 void daPlBase_c::powerSet() {
-    if (m_d40 & 1) {
+    if (isNowBgCross(BGC_IS_FOOT)) {
         grandPowerSet();
     } else {
         airPowerSet();
@@ -1867,7 +1867,7 @@ void daPlBase_c::gravitySet() {
     if (isStatus(STATUS_98)) {
         return;
     }
-    if (m_d40 & 1) {
+    if (isNowBgCross(BGC_IS_FOOT)) {
         mAccelY = *getGravityData();
     } else {
         setJumpGravity();
@@ -1944,14 +1944,14 @@ void daPlBase_c::calcWindSpeed() {
         m_112c = 0.0f;
         return;
     }
-    if (isStatus(STATUS_A0) && (m_d40 & 0x18000000) == 0) {
+    if (isStatus(STATUS_A0) && (isNowBgCross(BGC_ON_SINK_SAND) | isNowBgCross(BGC_IN_SINK_SAND)) == 0) {
         float tmp = fn_8004c700(windActor->m_00);
         float halfTmp = tmp * 0.5f;
         tmp = std::fabs(tmp) * 3.0f;
-        if (m_112c > 0.0f && m_d40 & 0x40 || m_112c < 0.0f && m_d40 & 0x20) {
+        if (m_112c > 0.0f && isNowBgCross(BGC_WALL_TOUCH_R_2) || m_112c < 0.0f && isNowBgCross(BGC_WALL_TOUCH_L_2)) {
             m_112c = 0.0f;
         }
-        if (m_d40 & 1) {
+        if (isNowBgCross(BGC_IS_FOOT)) {
             if (isStatus(STATUS_43)) {
                 offStatus(STATUS_43);
                 mSpeedF += m_112c;
@@ -2076,10 +2076,10 @@ void daPlBase_c::setLandSmokeEffectLight() {
     }
     float sz = dPyMdlMng_c::m_hio.m_08[mpMdlMng->mpMdl->m_152];
     mVec3_c size(sz, sz, sz);
-    if (m_d40 & 0x4000000) {
+    if (isNowBgCross(BGC_ON_SAND)) {
         if (mGroundType == GROUND_TYPE_FUNSUI) {
             setSandFunsuiLandEffect();
-        } else if ((m_d40 & 0x18000000) == 0) {
+        } else if ((isNowBgCross(BGC_ON_SINK_SAND) | isNowBgCross(BGC_IN_SINK_SAND)) == 0) {
             dEf::createPlayerEffect(mPlayerNo, "Wm_mr_cmnsndlandsmk", 0, &pos, nullptr, &size);
         }
     } else {
@@ -2096,8 +2096,8 @@ bool daPlBase_c::setSandFunsuiLandEffect() {
 }
 
 void daPlBase_c::setStartJumpEffect(int param1) {
-    if (m_d40 & 1) {
-        if (m_d40 & 0x18000000) {
+    if (isNowBgCross(BGC_IS_FOOT)) {
+        if ((isNowBgCross(BGC_ON_SINK_SAND) | isNowBgCross(BGC_IN_SINK_SAND)) != 0) {
             setSandJumpEffect();
             onStatus(STATUS_0E);
         } else if (!setSandFunsuiLandEffect() && param1 == 1) {
@@ -2262,7 +2262,7 @@ void daPlBase_c::setRunFootEffect() {
         nullptr,
         nullptr
     };
-    if ((m_d40 & 0x18000000) == 0 && isStatus(STATUS_62)) {
+    if ((isNowBgCross(BGC_ON_SINK_SAND) | isNowBgCross(BGC_IN_SINK_SAND)) == 0 && isStatus(STATUS_62)) {
         if ((groundTypeCheck5() && groundTypeCheck6()) || groundTypeCheck7() || groundTypeCheck8() || groundTypeCheck9()) {
             mVec3_c pos;
             mpMdlMng->mpMdl->getJointPos(&pos, 1);
@@ -2278,16 +2278,16 @@ void daPlBase_c::setSandEffect() {
     if (isStatus(STATUS_4E) || isStatus(STATUS_4B)) {
         return;
     }
-    if (m_d40 & 0x18000000 && (m_d40 & 0x20000000) == 0 || isStatus(STATUS_0E)) {
+    if ((isNowBgCross(BGC_ON_SINK_SAND) | isNowBgCross(BGC_IN_SINK_SAND)) && !isNowBgCross(BGC_INSIDE_SINK_SAND) || isStatus(STATUS_0E)) {
         mVec3_c pos;
         mpMdlMng->mpMdl->getJointPos(&pos, 8);
         dEf::createPlayerEffect(mPlayerNo, &mLevelEfs6, "Wm_mr_sandsplash", 0, &pos, nullptr, nullptr);
     }
-    if (m_d40 & 0x10000000) {
+    if (isNowBgCross(BGC_IN_SINK_SAND)) {
         mVec3_c pos = getCenterPos();
         dEf::createPlayerEffect(mPlayerNo, &mLevelEfs7, "Wm_mr_quicksand", 0, &pos, nullptr, nullptr);
     }
-    if (m_d40 & 0x18000000 && (m_d48 & 0x18000000) == 0) {
+    if ((isNowBgCross(BGC_ON_SINK_SAND) | isNowBgCross(BGC_IN_SINK_SAND)) && (isOldBgCross(BGC_ON_SINK_SAND) | isOldBgCross(BGC_IN_SINK_SAND)) == 0) {
         if (mPos.y > m_db0 - 8.0f && m_cc0 < 0.0f) {
             int idx = 2;
             if ((m_cc0 < -4.0f || m_cc8 > m_db0 + 58.0f) && mPowerup != POWERUP_MINI_MUSHROOM) {
@@ -2310,7 +2310,7 @@ void daPlBase_c::setSandEffect() {
 }
 
 bool daPlBase_c::setSandJumpEffect() {
-    if (m_d40 & 0x18000000 && mPos.y + getSomeYOffset() + 16.0f > m_db0) {
+    if ((isNowBgCross(BGC_ON_SINK_SAND) | isNowBgCross(BGC_IN_SINK_SAND)) && mPos.y + getSomeYOffset() + 16.0f > m_db0) {
         mVec3_c pos = mPos;
         pos.y = m_db0;
         dEf::createPlayerEffect(mPlayerNo, "Wm_mr_sanddive_s", 0, &pos, nullptr, nullptr);
@@ -2327,7 +2327,7 @@ void daPlBase_c::setSoundPlyMode() {
 }
 
 void daPlBase_c::setFootSound() {
-    if ((isDemo() || (m_d40 & 1)) && dScStage_c::m_gameMode != 2 && mpMdlMng->mpMdl->isFootStepTiming()) {
+    if ((isDemo() || isNowBgCross(BGC_IS_FOOT)) && dScStage_c::m_gameMode != 2 && mpMdlMng->mpMdl->isFootStepTiming()) {
         if (mPowerup == POWERUP_PENGUIN_SUIT) {
             startFootSoundPlayer(SE_PLY_FOOTNOTE_PNGN);
             return;
@@ -2688,7 +2688,7 @@ void daPlBase_c::executeState_DemoNone() {
     if (checkTimeOut()) {
         return;
     }
-    if (m_d40 & 1 || isStatus(STATUS_3A)) {
+    if (isNowBgCross(BGC_IS_FOOT) || isStatus(STATUS_3A)) {
         if (mKey.buttonRight()) {
             m_8d++;
             if (m_8d > 10) {
@@ -2842,9 +2842,9 @@ void daPlBase_c::executeDemoInDokan(u8 dir) {
             mDemoSubstate = DEMO_IN_DOKAN_ACTION_1;
             m_10c8 = 40;
             if (mBc.checkWater(m_68.x, m_68.y, mLayer, nullptr)) {
-                m_d40 |= 0x4000;
+                onNowBgCross(BGC_14);
             }
-            if (m_d40 & 0x4000) {
+            if (isNowBgCross(BGC_14)) {
                 if (mDemoStateMgr.getStateID()->isEqual(StateID_DemoInDokanL) ||
                     mDemoStateMgr.getStateID()->isEqual(StateID_DemoInDokanR)
                 ) {
@@ -2890,8 +2890,8 @@ void daPlBase_c::executeDemoInDokan(u8 dir) {
                 }
             }
             changeNormalAction();
-            if (m_d40 & 0x4000) {
-                m_d48 |= 0x4000;
+            if (isNowBgCross(BGC_14)) {
+                onOldBgCross(BGC_14);
             }
             break;
     }
@@ -3116,7 +3116,7 @@ void daPlBase_c::initDemoOutDokan() {
     mSpeed.set(0.0f, 0.0f, 0.0f);
     mAngle.x = 0.0f;
     setZPosition(-1800.0f);
-    if (m_d40 & 0x4000) {
+    if (isNowBgCross(BGC_14)) {
         fn_80057e70(SE_PLY_WATER_DOKAN_IN_OUT, false);
     } else {
         fn_80057e70(SE_PLY_DOKAN_IN_OUT, false);
@@ -3398,10 +3398,10 @@ void daPlBase_c::executeState_DemoInWaterTank() {
             offStatus(STATUS_BB);
             mDemoSubstate = DEMO_IN_DOKAN_ACTION_1;
             m_10c8 = 60;
-            m_d44 = 0;
-            m_d40 = 0;
+            mNowBgCross2 = 0;
+            mNowBgCross1 = 0;
             checkWater();
-            if (m_d40 & 0x4000) {
+            if (isNowBgCross(BGC_14)) {
                 mpMdlMng->setAnm(132);
                 mPos.y = getWaterDokanCenterOffset(mPos.y);
                 fn_80057e70(SE_PLY_WATER_DOKAN_IN_OUT, false);
@@ -3947,7 +3947,7 @@ bool daPlBase_c::calcGoalJump() {
         mSpeed.y = -4.0f;
     }
     mPos.y += mSpeed.y;
-    if (mSpeed.y < 0.0f && m_d40 & 1) {
+    if (mSpeed.y < 0.0f && isNowBgCross(BGC_IS_FOOT)) {
         mPos = m_ac;
         return true;
     }
@@ -4097,10 +4097,10 @@ void daPlBase_c::setControlDemoEndingDance() {
 }
 
 bool daPlBase_c::isBossDemoLand() {
-    if ((m_d40 & 1) == 0) {
+    if (!isNowBgCross(BGC_IS_FOOT)) {
         return false;
     }
-    if (isStatus(STATUS_14) || isStatus(STATUS_4E) || (m_d40 & 0x18000000) || mBossDemoLandTimer != 0) {
+    if (isStatus(STATUS_14) || isStatus(STATUS_4E) || (isNowBgCross(BGC_ON_SINK_SAND) | isNowBgCross(BGC_IN_SINK_SAND)) || mBossDemoLandTimer != 0) {
         return false;
     }
     return true;
@@ -4136,8 +4136,8 @@ bool daPlBase_c::fn_80052500(int p, float f, int i2) {
 }
 
 bool daPlBase_c::isHitWallKinopioWalk(int dir) {
-    static const int scViewHitFlag[] = { 0x100000, 0x80000 };
-    if (checkBGCrossWall(dir) || m_d40 & scViewHitFlag[dir]) {
+    static const BgCross1_e scViewHitFlag[] = { BGC_SIDE_LIMIT_L, BGC_SIDE_LIMIT_R };
+    if (checkBGCrossWall(dir) || isNowBgCross(scViewHitFlag[dir])) {
         return true;
     }
     return false;
@@ -4200,7 +4200,7 @@ void daPlBase_c::finalizeState_DemoControl() {
 void daPlBase_c::executeState_DemoControl() {
     offStatus(STATUS_74);
     if (isStatus(STATUS_73)) {
-        if (m_d40 & 1) {
+        if (isNowBgCross(BGC_IS_FOOT)) {
             offStatus(STATUS_73);
         } else {
             mSpeedF *= 0.98f;
@@ -4210,7 +4210,7 @@ void daPlBase_c::executeState_DemoControl() {
     switch (m_60) {
         case 1: {
             onStatus(STATUS_74);
-            if (m_d40 & 1) {
+            if (isNowBgCross(BGC_IS_FOOT)) {
                 if (!mStateMgr.getStateID()->isEqual(StateID_Walk) && !mStateMgr.getStateID()->isEqual(StateID_Turn)) {
                     changeState(StateID_Walk, (void*)1);
                 }
@@ -4241,14 +4241,15 @@ void daPlBase_c::executeState_DemoControl() {
             break;
         }
         case 5: {
-            if ((m_d40 & 1) == 0 ||
+            if (
+                !isNowBgCross(BGC_IS_FOOT) ||
                 !mStateMgr.getStateID()->isEqual(StateID_Walk) && !mStateMgr.getStateID()->isEqual(StateID_Turn)
             ) {
                 m_60 = 0;
                 break;
             }
             onStatus(STATUS_74);
-            if ((m_d40 & 0x18000000) || (checkKinopioWaitBG(0) && checkKinopioWaitBG(1))) {
+            if ((isNowBgCross(BGC_ON_SINK_SAND) | isNowBgCross(BGC_IN_SINK_SAND)) || (checkKinopioWaitBG(0) && checkKinopioWaitBG(1))) {
                 m_60 = 7;
                 m_c8 = 0.0f;
                 mSpeedF = 0.0f;
@@ -4284,7 +4285,7 @@ void daPlBase_c::executeState_DemoControl() {
                 break;
             }
             onStatus(STATUS_74);
-            if ((m_d40 & 1) && isHitWallKinopioWalk(m_cc)) {
+            if (isNowBgCross(BGC_IS_FOOT) && isHitWallKinopioWalk(m_cc)) {
                 m_cc ^= 1;
             }
             if (m_cc == 0) {
@@ -4297,7 +4298,8 @@ void daPlBase_c::executeState_DemoControl() {
             break;
         }
         case 7: {
-            if ((m_d40 & 1) == 0 ||
+            if (
+                !isNowBgCross(BGC_IS_FOOT) ||
                 !mStateMgr.getStateID()->isEqual(StateID_Walk) && !mStateMgr.getStateID()->isEqual(StateID_Turn)
             ) {
                 m_60 = 0;
@@ -4434,7 +4436,8 @@ void daPlBase_c::updateEndingDance() {
 
 bool daPlBase_c::setEnemyStageClearDemo() {
     if (isStatus(STATUS_60)) {
-        if (m_d44 & 2 &&
+        if (
+            isNowBgCross(BGC_IS_LIFT) &&
             mBc.mpCtrHead != nullptr &&
             mBc.mpCtrHead->mpActor != nullptr &&
             mBc.mpCtrHead->mpActor->mProfName == fProfile::EN_CHIKUWA_BLOCK
@@ -4452,7 +4455,7 @@ bool daPlBase_c::setEnemyStageClearDemo() {
 }
 
 int daPlBase_c::getCcLineKind() {
-    if (m_d44 & 0x180000) {
+    if ((isNowBgCross(BGC_51) | isNowBgCross(BGC_52)) != 0) {
         return m_ca1;
     }
     return 3;
@@ -4675,7 +4678,7 @@ bool daPlBase_c::calcCcPlayerRev(float *f) {
         if (isStatus(STATUS_2C) || mTimer_1074 != 0) {
             tmp = 0.0f;
         }
-        if (isDemoType(DEMO_4) && m_d40 & 1) {
+        if (isDemoType(DEMO_4) && isNowBgCross(BGC_IS_FOOT)) {
             tmp = 0.0f;
         }
         float prev_1064 = m_1064;
@@ -4713,7 +4716,7 @@ bool daPlBase_c::calcCcPlayerRev(float *f) {
 
 bool daPlBase_c::isEnableStampPlayerJump(dCc_c *cc1, dCc_c *cc2) {
     daPlBase_c *other = (daPlBase_c *) cc2->mpOwner;
-    if (m_d40 & 1) {
+    if (isNowBgCross(BGC_IS_FOOT)) {
         return false;
     }
     if (mSpeed.y >= 0.0f) {
@@ -4874,18 +4877,18 @@ void daPlBase_c::calcNoHitObjBgTimer() {
 }
 
 void daPlBase_c::setOldBGCross() {
-    m_d48 = m_d40;
-    m_d4c = m_d44;
+    mOldBgCross1 = mNowBgCross1;
+    mOldBgCross2 = mNowBgCross2;
     for (int i = 9; i > 0; i--) {
         mBgCrossHistory[i] = mBgCrossHistory[i - 1];
     }
-    mBgCrossHistory[0] = m_d40 & 1;
+    mBgCrossHistory[0] = isNowBgCross(BGC_IS_FOOT) ? 1 : 0;
 }
 
 void daPlBase_c::clearBgCheckInfo() {
     setOldBGCross();
-    m_d44 = 0;
-    m_d40 = 0;
+    mNowBgCross2 = 0;
+    mNowBgCross1 = 0;
     m_d7c = m_d78;
     m_d78 = 0;
     m_d30.set(0.0f, 0.0f, 0.0f);
@@ -4901,7 +4904,7 @@ void daPlBase_c::bgCheck(int i) {
     offStatus(STATUS_86);
     offStatus(STATUS_2C);
     offStatus(STATUS_5D);
-    if (m_d40 & 1) {
+    if (isNowBgCross(BGC_IS_FOOT)) {
         m_d8c = mPos.y;
     }
     clearBgCheckInfo();
@@ -4921,7 +4924,7 @@ void daPlBase_c::bgCheck(int i) {
 }
 
 void daPlBase_c::checkBgCross() {
-    if (mPowerup == POWERUP_MINI_MUSHROOM && (m_d48 & 0x60) == 0) {
+    if (mPowerup == POWERUP_MINI_MUSHROOM && (isOldBgCross(BGC_WALL_TOUCH_L_2) | isOldBgCross(BGC_WALL_TOUCH_R_2)) == 0) {
         float dir = 1.0f;
         if (mLastPos.x > mPos.x) {
             dir = -1.0f;
@@ -4959,28 +4962,28 @@ void daPlBase_c::checkBgCross() {
     m_d78 = mBc.mLastUnitType;
 
     if ((bgFlags & 0x3c000000) != 0) {
-        m_d40 |= 2;
+        onNowBgCross(BGC_IS_HEAD);
         if (bgFlags & 0x4000000) {
-            m_d44 |= 0x800000;
+            onNowBgCross(BGC_55);
         }
         if (bgFlags & 0x40000000) {
-            m_d44 |= 0x80000000;
+            onNowBgCross(BGC_63);
         }
         if (bgFlags & 0x80000000) {
-            m_d44 |= 0x200000;
+            onNowBgCross(BGC_53);
         }
         u16 headAttr = mBc.getHeadAttr();
         if (headAttr == 6) {
-            m_d44 |= 4;
+            onNowBgCross(BGC_34);
         }
         if (bgFlags & 0x20000000) {
-            m_d44 |= 0x1000000;
+            onNowBgCross(BGC_56);
             switch (mBc.m_c4) {
                 case 1:
-                    m_d44 |= 0x4000000;
+                    onNowBgCross(BGC_58);
                     break;
                 case 2:
-                    m_d44 |= 0x2000000;
+                    onNowBgCross(BGC_57);
                     break;
             }
             if (mBc.mpCtrFoot != nullptr &&
@@ -4988,7 +4991,7 @@ void daPlBase_c::checkBgCross() {
                 !(mBc.mpCtrFoot->mpActor->mProfName != fProfile::EN_HATENA_BLOCK_LINE &&
                 mBc.mpCtrFoot->mpActor->mProfName != fProfile::EN_RENGA_BLOCK_LINE)
             ) {
-                m_d44 |= 0x8000000;
+                onNowBgCross(BGC_59);
             }
         }
     }
@@ -4997,63 +5000,63 @@ void daPlBase_c::checkBgCross() {
         m_d94 = mBc.getSakaAngleBySpeed(mSpeedF);
         m_d98 = mBc.getSakaAngle(0);
         if (bgFlags & 0x4000) {
-            m_d44 |= 0x80;
+            onNowBgCross(BGC_IS_SAKA);
         }
         if (bgFlags & 0x400000) {
-            m_d44 |= 0x40000000;
+            onNowBgCross(BGC_62);
         }
         if (bgFlags & 0x800000) {
-            m_d44 |= 0x400000;
+            onNowBgCross(BGC_54);
         }
         if (bgFlags & 0x1000000) {
-            m_d44 |= 0x10;
+            onNowBgCross(BGC_36);
         }
-        if (m_d94.mAngle > 0 && (m_d40 & 2)) {
-            m_d40 |= 0x2000000;
+        if (m_d94.mAngle > 0 && isNowBgCross(BGC_IS_HEAD)) {
+            onNowBgCross(BGC_25);
             mSpeedF = 0.0f;
         }
         u16 footAttr = mBc.getFootAttr();
         switch (footAttr) {
             case 3:
-                m_d40 |= 0x8000000;
+                onNowBgCross(BGC_ON_SINK_SAND);
                 break;
             case 7:
-                m_d44 |= 8;
+                onNowBgCross(BGC_IS_SLIP);
                 break;
             case 4:
-                m_d40 |= 0x80000000;
+                onNowBgCross(BGC_ON_BELT_R);
                 break;
             case 5:
-                m_d40 |= 0x40000000;
+                onNowBgCross(BGC_ON_BELT_L);
                 break;
         }
         if (mSpeed.y <= 0.0f) {
-            m_d40 |= 1;
+            onNowBgCross(BGC_IS_FOOT);
             if (bgFlags & 0x200000) {
-                m_d44 |= 1;
+                onNowBgCross(BGC_32);
             }
             if (bgFlags & 0x18000) {
-                m_d44 |= 2;
+                onNowBgCross(BGC_IS_LIFT);
             }
-            if (mPos.y > mLastPos.y && !(m_d44 & 0x80)) {
-                m_d44 |= 0x20;
+            if (mPos.y > mLastPos.y && !isNowBgCross(BGC_IS_SAKA)) {
+                onNowBgCross(BGC_37);
             }
             switch (footAttr) {
                 case 2:
                     mGroundType = GROUND_TYPE_SNOW;
-                    m_d40 |= 0x400000;
+                    onNowBgCross(BGC_ON_SNOW);
                     break;
                 case 3:
                 case 12:
-                    m_d40 |= 0x4000000;
-                    if (m_d44 & 2) {
+                    onNowBgCross(BGC_ON_SAND);
+                    if (isNowBgCross(BGC_IS_LIFT)) {
                         mGroundType = GROUND_TYPE_FUNSUI;
                     } else {
                         mGroundType = GROUND_TYPE_SAND;
                     }
                     break;
                 case 15:
-                    m_d40 |= 0x4000000;
+                    onNowBgCross(BGC_ON_SAND);
                     mGroundType = GROUND_TYPE_BEACH;
                     break;
                 case 13:
@@ -5062,9 +5065,9 @@ void daPlBase_c::checkBgCross() {
                 case 1:
                     mGroundType = GROUND_TYPE_ICE;
                     if (bgFlags & 0x2000000) {
-                        m_d40 |= 0x1000000;
+                        onNowBgCross(BGC_ON_ICE_LOW_SLIP);
                     } else {
-                        m_d40 |= 0x800000;
+                        onNowBgCross(BGC_ON_ICE);
                     }
                     break;
                 case 8:
@@ -5076,10 +5079,10 @@ void daPlBase_c::checkBgCross() {
                         );
                         float outCheckGround;
                         if (dBc_c::checkGround(&tmp, &outCheckGround, mLayer, m_ca1, 8) && std::fabs(outCheckGround - mPos.y) < 2.0f) {
-                            m_d44 |= 0x100;
+                            onNowBgCross(BGC_40);
                         }
                     } else {
-                        m_d44 |= 0x100;
+                        onNowBgCross(BGC_40);
                     }
                     break;
                 case 14:
@@ -5089,7 +5092,7 @@ void daPlBase_c::checkBgCross() {
                     mGroundType = GROUND_TYPE_CARPET;
                     break;
             }
-            if (m_d44 & 2) {
+            if (isNowBgCross(BGC_IS_LIFT)) {
                 if (bgFlags & 0x40000) {
                     mGroundType = GROUND_TYPE_MANTA;
                 }
@@ -5105,7 +5108,7 @@ void daPlBase_c::checkBgCross() {
         if (isStatus(0x58)) {
             mPos.y = m_dcc;
             m_d94 = 0;
-            m_d40 |= 1;
+            onNowBgCross(BGC_IS_FOOT);
         }
         float s = getSomeYOffset() + mPos.y;
         mVec3_c checkPos(mPos.x, s + 8.0f, mPos.z);
@@ -5114,9 +5117,9 @@ void daPlBase_c::checkBgCross() {
         if (dBc_c::checkGround(&checkPos, &groundY, &groundType, mLayer, m_ca1, 8)) {
             if (checkPos.y >= groundY && s <= groundY) {
                 if (groundType == 2) {
-                    m_d44 |= 0x400;
+                    onNowBgCross(BGC_42);
                 } else {
-                    m_d44 |= 0x200;
+                    onNowBgCross(BGC_41);
                 }
                 m_dc8 = groundY;
             }
@@ -5124,45 +5127,45 @@ void daPlBase_c::checkBgCross() {
     }
 
     if (mSpeed.y < 0.0f && (isStatus(0x14) || isStatus(0x4e))) {
-        setD44Status(6);
-        setD40Status(0);
-        setD44Status(1);
+        onNowBgCross(BGC_IS_LIFT);
+        onNowBgCross(BGC_IS_FOOT);
+        onNowBgCross(BGC_38);
     }
 
     if (bgFlags & 0x1fe000) {
-        m_d44 |= 0x40;
+        onNowBgCross(BGC_38);
     } else {
         float groundY3;
         if (dBc_c::checkGroundHalf(&mPos, &groundY3, mLayer, m_ca1) && (mPos.y - 16.0f < groundY3)) {
-            m_d44 |= 0x40;
+            onNowBgCross(BGC_38);
         }
     }
 
     if (bgFlags & 0x100) {
-        m_d44 |= 0x20000000;
+        onNowBgCross(BGC_61);
     }
     if ((bgFlags & 8) || isStatus(0x1a)) {
-        m_d40 |= 0x20;
+        onNowBgCross(BGC_WALL_TOUCH_L_2);
     }
     if ((bgFlags & 4) || isStatus(0x1b)) {
-        m_d40 |= 0x40;
+        onNowBgCross(BGC_WALL_TOUCH_R_2);
     }
 
-    if (m_d40 & 0x60) {
+    if ((isNowBgCross(BGC_WALL_TOUCH_L_2) | isNowBgCross(BGC_WALL_TOUCH_R_2)) != 0) {
         float sx = mSpeed.x;
         m_d9c = mBc.mAdjacentSlopeAngle;
         if (sx < 0.0f) {
-            if (m_d40 & 0x20) {
-                m_d40 |= 4;
+            if (isNowBgCross(BGC_WALL_TOUCH_L_2)) {
+                onNowBgCross(BGC_IS_WALL);
             }
         } else if (sx > 0.0f) {
-            if (m_d40 & 0x40) {
-                m_d40 |= 4;
+            if (isNowBgCross(BGC_WALL_TOUCH_R_2)) {
+                onNowBgCross(BGC_IS_WALL);
             }
         } else {
             static const int flags[] = { 0x1, 0x2 };
             if (bgFlags & flags[mDirection]) {
-                m_d40 |= 4;
+                onNowBgCross(BGC_IS_WALL);
             }
         }
     }
@@ -5171,40 +5174,44 @@ void daPlBase_c::checkBgCross() {
         dBg_ctr_c *ctrWall = mBc.mpCtrWall;
         if (ctrWall) {
             if (ctrWall->m_d0 & 0x800000) {
-                m_d40 |= 0x800;
+                onNowBgCross(BGC_11);
             }
             if (ctrWall->m_c8 == 0 && *ctrWall->m_bc != 0) {
-                m_d40 |= 0x800;
+                onNowBgCross(BGC_11);
             }
         }
         if (bgFlags & 0x80) {
-            m_d40 |= 0x80;
-            if (isCarryObjBgCarried(1)) m_d40 |= 0x200;
+            onNowBgCross(BGC_CARRY_RELATED_L);
+            if (isCarryObjBgCarried(1)) {
+                onNowBgCross(BGC_OBJBG_CARRY_RELATED_L);
+            }
         }
         if (bgFlags & 0x40) {
-            m_d40 |= 0x100;
-            if (isCarryObjBgCarried(0)) m_d40 |= 0x400;
+            onNowBgCross(BGC_CARRY_RELATED_R);
+            if (isCarryObjBgCarried(0)) {
+                onNowBgCross(BGC_OBJBG_CARRY_RELATED_R);
+            }
         }
     }
 
     if (bgFlags & 0x2a) {
-        m_d40 |= 8;
+        onNowBgCross(BGC_WALL_TOUCH_L);
     }
     if (bgFlags & 0x15) {
-        m_d40 |= 0x10;
+        onNowBgCross(BGC_WALL_TOUCH_R);
     }
     if (bgFlags & 0x800) {
-        m_d40 |= 0x1000;
+        onNowBgCross(BGC_12);
     }
     if (bgFlags & 0x1000) {
-        m_d40 |= 0x2000;
+        onNowBgCross(BGC_13);
     }
 
-    if (m_d40 & 0x8000000) {
+    if (isNowBgCross(BGC_ON_SINK_SAND)) {
         checkSinkSand();
     }
 
-    if ((m_d40 & 1) == 0) {
+    if (!isNowBgCross(BGC_IS_FOOT)) {
         if (m_cc4 < mPos.y) {
             m_cc4 = mPos.y;
         }
@@ -5213,16 +5220,16 @@ void daPlBase_c::checkBgCross() {
         m_cc4 = mPos.y;
     }
 
-    if ((m_d40 & 2) && (m_d44 & 0x800000) && !(m_d44 & 0x80000000)) {
+    if (isNowBgCross(BGC_IS_HEAD) && isNowBgCross(BGC_55) && !isNowBgCross(BGC_63)) {
         fn_80056370(nullptr, 10);
     }
-    if ((m_d40 & 1) && !(m_d44 & 2)) {
+    if (isNowBgCross(BGC_IS_FOOT) && !isNowBgCross(BGC_IS_LIFT)) {
         fn_80056370(nullptr, 9);
     }
-    if ((m_d40 & 0x20) && !(m_d40 & 0x80)) {
+    if (isNowBgCross(BGC_WALL_TOUCH_L_2) && !isNowBgCross(BGC_CARRY_RELATED_L)) {
         fn_80056370(nullptr, 12);
     }
-    if ((m_d40 & 0x40) && !(m_d40 & 0x100)) {
+    if (isNowBgCross(BGC_WALL_TOUCH_R_2) && !isNowBgCross(BGC_CARRY_RELATED_R)) {
         fn_80056370(nullptr, 11);
     }
 }
@@ -5244,21 +5251,22 @@ bool daPlBase_c::isCarryObjBgCarried(u8 i) {
 }
 
 void daPlBase_c::postBgCross() {
-    if (m_d40 & 2) {
+    if (isNowBgCross(BGC_IS_HEAD)) {
         if (mSpeed.y > 0.0f || isStatus(STATUS_4E)) {
-            if ((m_d48 & 2) == 0 &&
-                (m_d44 & 0x2000000) == 0 &&
-                (m_d44 & 0x80000000) == 0 &&
-                (m_d44 & 0x4) == 0
+            if (
+                !isOldBgCross(BGC_IS_HEAD) &&
+                !isNowBgCross(BGC_57) &&
+                !isNowBgCross(BGC_63) &&
+                !isNowBgCross(BGC_34)
             ) {
                 bool m = false;
                 if (mPowerup == POWERUP_MINI_MUSHROOM) {
                     m = true;
                 }
-                if (m_d44 & 0x200000) {
+                if (isNowBgCross(BGC_53)) {
                     fn_80057ee0(SE_PLY_HIT_BLOCK_BOUND, m, false);
-                } else if (m_d44 & 0x1000000) {
-                    if (m_d44 & 0x4000000) {
+                } else if (isNowBgCross(BGC_56)) {
+                    if (isNowBgCross(BGC_58)) {
                         fn_80057ee0(SE_PLY_HIT_BLOCK, m, false);
                     } else {
                         fn_80057ee0(SE_PLY_HIT_GENERAL_OBJ, m, false);
@@ -5274,13 +5282,13 @@ void daPlBase_c::postBgCross() {
             onStatus(STATUS_BF);
         }
     }
-    if (m_d40 & 1) {
-        if (m_d40 & 0xc0000000) {
+    if (isNowBgCross(BGC_IS_FOOT)) {
+        if (isNowBgCross(BGC_ON_BELT_L) | isNowBgCross(BGC_ON_BELT_R)) {
             m_d30 = mBc.mPushForce;
         }
-        if (m_d40 & 0x4000 || m_d44 & 4) {
+        if (isNowBgCross(BGC_14) || isNowBgCross(BGC_34)) {
             mSpeed.y = 0.0f;
-        } else if (m_d40 & 0x8000000) {
+        } else if (isNowBgCross(BGC_ON_SINK_SAND)) {
             mSpeed.y = 0.0f;
             m_d30.set(0.0f, mBc.mPushForce.y * getSandSinkRate(), 0.0f);
         } else if (isSaka() || isStatus(STATUS_30)) {
@@ -5291,10 +5299,10 @@ void daPlBase_c::postBgCross() {
         if (isStatus(STATUS_5F)) {
             mSpeedF = 0.0f;
         }
-        if (m_d40 & 0x8000 && (m_d40 & 0x4000) == 0) {
+        if (isNowBgCross(BGC_15) && !isNowBgCross(BGC_14)) {
             mGroundType = GROUND_TYPE_WATER;
         }
-        if ((m_d44 & 2) == 0 && m_d40 & 2) {
+        if (!isNowBgCross(BGC_IS_LIFT) && isNowBgCross(BGC_IS_HEAD)) {
             if (mBc.getSakaType() != 0 && mBc.getSakaUpDown(mDirection) == 1) {
                 if (mDirection == 0) {
                     onStatus(STATUS_1B);
@@ -5306,8 +5314,8 @@ void daPlBase_c::postBgCross() {
             }
         }
     }
-    if ((m_d40 & 1) == 0 && (m_d44 & 2) == 0) {
-        if (m_d48 & 1 &&  m_d4c & 2) {
+    if (!isNowBgCross(BGC_IS_FOOT) && !isNowBgCross(BGC_IS_LIFT)) {
+        if (isOldBgCross(BGC_IS_FOOT) && isOldBgCross(BGC_IS_LIFT)) {
             m_1134 = 0.0f;
             if (std::fabs(mSpeedF) >= 0.01f && m_1eb.x * mSpeedF > 0.0f) {
                 m_1134 = m_1eb.x;
@@ -5334,11 +5342,11 @@ void daPlBase_c::checkWater() {
     m_db6 = 0;
     m_da8 = m_da4;
     m_da4 = dBg_c::m_bg_p->m_8fe00;
-    u8 waterCheck = dBc_c::checkWater(mPos.x, mPos.y , mLayer, &m_da4);
+    u8 waterCheck = dBc_c::checkWater(mPos.x, mPos.y, mLayer, &m_da4);
     if (waterCheck && mPos.y <= m_da4) {
-        m_d40 |= 0x8000;
+        onNowBgCross(BGC_15);
         if (waterCheck == 2) {
-            m_d40 |= 0x40000;
+            onNowBgCross(BGC_WATER_BUBBLE);
         }
     }
     if (waterCheck == 0 || waterCheck == 2) {
@@ -5346,12 +5354,12 @@ void daPlBase_c::checkWater() {
         if (waterCheck != 2) {
             return;
         }
-        m_d40 |= 0x4000;
-        m_d40 |= 0x10000;
+        onNowBgCross(BGC_14);
+        onNowBgCross(BGC_16);
     }
     switch (waterCheck) {
         case 2: {
-            m_d40 |= 0x40000;
+            onNowBgCross(BGC_WATER_BUBBLE);
             mVec2_c pos;
             dBc_c::getAirWaterHitPos(&pos);
             m_db8.set(pos.x, pos.y, mPos.z);
@@ -5362,12 +5370,12 @@ void daPlBase_c::checkWater() {
         }
         case 1: {
             if (getWaterCheckPosY() <= m_da4) {
-                m_d40 |= 0x4000;
+                onNowBgCross(BGC_14);
             }
             void *p = getHeadBgPointData();
             float f = *((int *)p + 3);
             if (mPos.y + f / 4096.0f <= m_da4) {
-                m_d40 |= 0x10000;
+                onNowBgCross(BGC_16);
             }
             m_dac = dBc_c::checkWaterDepth(mPos.x, m_da4, mLayer, m_ca1, nullptr);
             break;
@@ -5433,23 +5441,23 @@ bool daPlBase_c::checkSinkSand() {
     pos.y += 128.0f;
     if (dBc_c::checkGround(&pos, &m_db0, mLayer, m_ca1, 3)) {
         if (m_db0 > mPos.y) {
-            m_d40 |= 0x8000000;
+            onNowBgCross(BGC_ON_SINK_SAND);
         }
         if (m_db0 > getCenterPos().y) {
-            m_d40 |= 0x10000000;
+            onNowBgCross(BGC_IN_SINK_SAND);
         }
         if (m_db0 > mPos.y + getSomeYOffset()) {
-            m_d40 |= 0x20000000;
+            onNowBgCross(BGC_INSIDE_SINK_SAND);
         }
         return true;
     }
     return false;
 }
 
+
 bool daPlBase_c::checkBGCrossWall(u8 direction) {
-    static const int flags[] = { 0x40, 0x20 };
-    u32 f = flags[direction];
-    return m_d40 & f;
+    static const BgCross1_e flags[] = { BGC_WALL_TOUCH_L_2, BGC_WALL_TOUCH_R_2 };
+    return isNowBgCross(flags[direction]);
 }
 
 void daPlBase_c::checkSideViewLemit() {
@@ -5491,7 +5499,7 @@ bool daPlBase_c::revSideLimitCommon(float f) {
 }
 
 bool daPlBase_c::calcSideLimitMultL(float f) {
-    m_d40 |= 0x80000;
+    onNowBgCross(BGC_SIDE_LIMIT_L);
     revSideLimitCommon(f);
     if (mSpeedF < 0.0f) {
         if (mDirection == 1) {
@@ -5505,7 +5513,7 @@ bool daPlBase_c::calcSideLimitMultL(float f) {
 }
 
 bool daPlBase_c::calcSideLimitMultR(float f) {
-    m_d40 |= 0x100000;
+    onNowBgCross(BGC_SIDE_LIMIT_R);
     revSideLimitCommon(f);
     if (mSpeedF > 0.0f) {
         if (mDirection == 0) {
@@ -5531,7 +5539,7 @@ bool daPlBase_c::checkDispSideLemit() {
     switch (m_1079) {
         case 0:
             if (mPos.x < s) {
-                if (m_d48 & 0x400 || (m_d48 & 0x40) == 0) {
+                if (isOldBgCross(BGC_OBJBG_CARRY_RELATED_R) || !isOldBgCross(BGC_WALL_TOUCH_R_2)) {
                     calcSideLimitMultL(s);
                     return true;
                 }
@@ -5544,7 +5552,7 @@ bool daPlBase_c::checkDispSideLemit() {
                 m_1079 = 0;
             }
             float diff = mPos.x - s;
-            if (m_1080 < diff || m_d48 & 0x40) {
+            if (m_1080 < diff || isOldBgCross(BGC_WALL_TOUCH_R_2)) {
                 m_1080 = diff;
             }
             if (mPos.x < s + m_1080) {
@@ -5557,7 +5565,7 @@ bool daPlBase_c::checkDispSideLemit() {
     switch (m_1078) {
         case 0:
             if (mPos.x > m) {
-                if (m_d48 & 0x200 || (m_d48 & 0x20) == 0) {
+                if (isOldBgCross(BGC_OBJBG_CARRY_RELATED_L) || !isOldBgCross(BGC_WALL_TOUCH_L_2)) {
                     calcSideLimitMultR(m);
                     return true;
                 }
@@ -5570,7 +5578,7 @@ bool daPlBase_c::checkDispSideLemit() {
                 m_1078 = 0;
             }
             float diff = mPos.x - m;
-            if (m_107c > diff || m_d48 & 0x20) {
+            if (m_107c > diff || isOldBgCross(BGC_WALL_TOUCH_L_2)) {
                 m_107c = diff;
             }
             if (mPos.x > m + m_107c) {
@@ -5774,8 +5782,8 @@ bool daPlBase_c::isEnablePressLR() {
 
 bool daPlBase_c::checkPressBg() {
     if (
-        (m_d40 & 0x80000 && m_d40 & 0x40) ||
-        (m_d40 & 0x100000 && m_d40 & 0x20)
+        (isNowBgCross(BGC_SIDE_LIMIT_L) && isNowBgCross(BGC_WALL_TOUCH_R_2)) ||
+        (isNowBgCross(BGC_SIDE_LIMIT_R) && isNowBgCross(BGC_WALL_TOUCH_L_2))
     ) {
         return true;
     }
@@ -6032,7 +6040,7 @@ void daPlBase_c::calcPlayerSpeedXY() {
     tmp += t;
 
     if (m_1130 != 0.0f) {
-        if (!(m_d40 & 1)) {
+        if (!isNowBgCross(BGC_IS_FOOT)) {
             tmp += m_1130;
         } else {
             if (m_1130 * mSpeedF < 0.0f) {
@@ -6043,7 +6051,7 @@ void daPlBase_c::calcPlayerSpeedXY() {
     }
 
     if (m_1138 != 0.0f) {
-        if (!(m_d40 & 1)) {
+        if (!isNowBgCross(BGC_IS_FOOT)) {
             tmp += m_1138;
             sLib::chase(&m_1138, 0.0f, m_113c);
         } else {
@@ -6051,13 +6059,13 @@ void daPlBase_c::calcPlayerSpeedXY() {
         }
     }
 
-    if ((m_d40 & 1) && isStatus(STATUS_5F)) {
+    if (isNowBgCross(BGC_IS_FOOT) && isStatus(STATUS_5F)) {
         mSpeedF = 0.0f;
     }
     m_cbc = mSpeedF;
 
     float k = mMaxFallSpeed;
-    if (m_d40 & 0x18000000) {
+    if (isNowBgCross(BGC_ON_SINK_SAND) | isNowBgCross(BGC_IN_SINK_SAND)) {
         k = 0.0f;
     }
 
@@ -6084,7 +6092,7 @@ void daPlBase_c::calcPlayerSpeedXY() {
 void daPlBase_c::posMoveAnglePenguin(mVec3_c a, unsigned short b) {
     mVec3_c _40(0.0f, a.y, 0.0f);
 
-    if ((m_d40 & 2) && (_40.y > 0.0f)) {
+    if (isNowBgCross(BGC_IS_HEAD) && (_40.y > 0.0f)) {
         mAng angle = mBc.getHeadSakaMoveAngle(mDirection);
 
         if (angle.mAngle > 0) {
@@ -6094,7 +6102,7 @@ void daPlBase_c::posMoveAnglePenguin(mVec3_c a, unsigned short b) {
         _40.y = a.y * std::fabs(angle.cos());
     }
 
-    if ((m_d40 & 1) && (a.y < 0.0f)) {
+    if (isNowBgCross(BGC_IS_FOOT) && (a.y < 0.0f)) {
         mAng angle = mBc.getSakaMoveAngle(mDirection);
 
         if (angle.mAngle < 0) {
@@ -6115,10 +6123,9 @@ void daPlBase_c::posMoveAnglePenguin(mVec3_c a, unsigned short b) {
     posMove(delta);
 }
 
-// Doesn't match 100%
 void daPlBase_c::posMoveAnglePlayer(mVec3_c a) {
     if (
-        ((a.x > 0.0f && m_d40 & 0x40) || (a.x < 0.0f && m_d40 & 0x20)) &&
+        ((a.x > 0.0f && isNowBgCross(BGC_WALL_TOUCH_R_2)) || (a.x < 0.0f && isNowBgCross(BGC_WALL_TOUCH_L_2))) &&
         (std::fabs(a.x) > 2.5f)
     ) {
         if (a.x > 0.0f) {
@@ -6134,7 +6141,7 @@ void daPlBase_c::posMoveAnglePlayer(mVec3_c a) {
     }
 
     u16 x = mBc.getSakaMoveAngle(dir);
-    if (m_d40 & 2) {
+    if (isNowBgCross(BGC_IS_HEAD)) {
         x = mBc.getHeadSakaMoveAngle(dir);
     }
 
@@ -6195,7 +6202,7 @@ void daPlBase_c::offZPosSetNone() {
 }
 
 float daPlBase_c::setJumpAddSpeedF(float a) {
-    if (m_d40 & 1) {
+    if (isNowBgCross(BGC_IS_FOOT)) {
         return a;
     }
 
@@ -6239,11 +6246,11 @@ bool daPlBase_c::setDelayHelpJump() {
 }
 
 bool daPlBase_c::fn_800579c0(int a, int b) {
-    if ((m_d40 & 0x4000) || isStatus(STATUS_87)) {
+    if (isNowBgCross(BGC_14) || isStatus(STATUS_87)) {
         return false;
     }
 
-    if ((m_d40 & 2) && !(m_d44 & 0x8000000)) {
+    if (isNowBgCross(BGC_IS_HEAD) && !isNowBgCross(BGC_59)) {
         return false;
     }
 
@@ -6266,7 +6273,7 @@ bool daPlBase_c::fn_800579c0(int a, int b) {
 }
 
 bool daPlBase_c::checkJumpTrigger() {
-    if ((m_d40 & 1) && !(m_d44 & 0x100) && fn_800579c0(1, 1)) {
+    if (isNowBgCross(BGC_IS_FOOT) && !isNowBgCross(BGC_40) && fn_800579c0(1, 1)) {
         return true;
     }
     return false;
