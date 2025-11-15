@@ -6522,19 +6522,19 @@ void daPlBase_c::calcHeadAttentionAngle() {
                 if (pdVar10->mAttentionMode == 3) {
                     mpMdlMng->mpMdl->m_204 = 2;
 
-                    mAng r30_tmp = 0x5000;
                     int r29 = mpMdlMng->mpMdl->mFlags & 0x100;
+                    s16 r30_tmp = 0x5000;
                     if (r29) {
                         r30_tmp = 0x2000;
                     }
 
                     int r3 = abs(iVar2);
 
-                    if (r3 > r30_tmp.mAngle) {
+                    if (r3 > r30_tmp) {
                         if (iVar2 > 0) {
-                            temp = (r30_tmp + mAngle.y).mAngle;
+                            temp = (mAng(r30_tmp) + mAngle.y).mAngle;
                         } else {
-                            temp = (mAngle.y - r30_tmp).mAngle;
+                            temp = (mAngle.y - mAng(r30_tmp)).mAngle;
                         }
                     }
 
