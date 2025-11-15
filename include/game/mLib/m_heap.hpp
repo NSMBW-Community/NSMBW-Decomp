@@ -6,7 +6,8 @@
 
 namespace mHeap {
     enum AllocOptBit_t {
-        OPT_4 = 4
+        OPT_NONE = 0,
+        OPT_4 = BIT_FLAG(2)
     };
 
     void restoreCurrentHeap();
@@ -17,14 +18,8 @@ namespace mHeap {
     void saveCurrentHeap();
 
     EGG::ExpHeap *createExpHeap(size_t, EGG::Heap *, const char *, size_t, mHeap::AllocOptBit_t);
-
-    /// @unofficial
-    EGG::FrmHeap *makeFrmHeapAndUpdate(unsigned long size, EGG::Heap *parent, const char *name, u32 align, u32 opt);
-    /// @unofficial
-    EGG::FrmHeap *makeFrmHeap(unsigned long size, EGG::Heap *parent, const char *name, u32 align, u32 opt);
-
-    /// @unofficial
-    EGG::FrmHeap *createFrmHeap(unsigned long size, EGG::Heap *parent, const char *name, u32 align, u32 opt);
+    EGG::FrmHeap *createFrmHeapToCurrent(unsigned long size, EGG::Heap *parent, const char *name, ulong align, mHeap::AllocOptBit_t opt);
+    EGG::FrmHeap *createFrmHeap(unsigned long size, EGG::Heap *parent, const char *name, ulong align, mHeap::AllocOptBit_t opt);
 
     extern EGG::Heap *g_gameHeaps[3];
 };

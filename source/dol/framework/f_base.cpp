@@ -333,7 +333,7 @@ bool fBase_c::entryFrmHeap(unsigned long size, EGG::Heap *parentHeap) {
 
     // First, try to make a heap with the given size
     if (size != 0) {
-        newHeap = mHeap::makeFrmHeapAndUpdate(size, parentHeap, F_BASE_HEAP_NAME, 0x20, 0);
+        newHeap = mHeap::createFrmHeapToCurrent(size, parentHeap, F_BASE_HEAP_NAME, 0x20, mHeap::OPT_NONE);
 
         if (newHeap != nullptr) {
             bool createSuccess = createHeap();
@@ -354,7 +354,7 @@ bool fBase_c::entryFrmHeap(unsigned long size, EGG::Heap *parentHeap) {
 
     // If that failed, allocate all available space
     if (newHeap == nullptr) {
-        newHeap = mHeap::makeFrmHeapAndUpdate(-1, parentHeap, F_BASE_HEAP_NAME, 0x20, 0);
+        newHeap = mHeap::createFrmHeapToCurrent(-1, parentHeap, F_BASE_HEAP_NAME, 0x20, mHeap::OPT_NONE);
 
         if (newHeap != nullptr) {
             bool createSuccess = createHeap();
@@ -371,7 +371,7 @@ bool fBase_c::entryFrmHeap(unsigned long size, EGG::Heap *parentHeap) {
 
     // [I think this is trying to verify if adjusting the new heap freed up some more space]
     if (newHeap != nullptr) {
-        EGG::FrmHeap *largerHeap = mHeap::makeFrmHeapAndUpdate(heapSize, parentHeap, F_BASE_HEAP_NAME, 0x20, 0);
+        EGG::FrmHeap *largerHeap = mHeap::createFrmHeapToCurrent(heapSize, parentHeap, F_BASE_HEAP_NAME, 0x20, mHeap::OPT_NONE);
 
         if (largerHeap != nullptr) {
             if (largerHeap < newHeap) {
@@ -413,7 +413,7 @@ bool fBase_c::entryFrmHeapNonAdjust(unsigned long size, EGG::Heap *parentHeap) {
     }
 
     // Try to make a heap with the given size
-    EGG::FrmHeap *newHeap = mHeap::makeFrmHeapAndUpdate(size, parentHeap, F_BASE_HEAP_NAME, 0x20, 0);
+    EGG::FrmHeap *newHeap = mHeap::createFrmHeapToCurrent(size, parentHeap, F_BASE_HEAP_NAME, 0x20, mHeap::OPT_NONE);
     if (newHeap != nullptr) {
         bool createSuccess = createHeap();
         mHeap::restoreCurrentHeap();

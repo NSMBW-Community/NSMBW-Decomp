@@ -25,7 +25,7 @@ bool m3d::banm_c::createAllocator(mAllocator_c *allocator, size_t *size) {
     size_t aligned = nw4r::ut::RoundUp(mHeap::frmHeapCost(*size, 0x20), 0x20) - mHeap::frmHeapCost(0, 0x20);
     *size = nw4r::ut::RoundUp(mHeap::frmHeapCost(aligned, 0x20), 0x20);
 
-    mpHeap = mHeap::makeFrmHeap(aligned, allocator->mpHeap, M3D_BANM_HEAP_NAME, sHeapAlignment, 0);
+    mpHeap = mHeap::createFrmHeap(aligned, allocator->mpHeap, M3D_BANM_HEAP_NAME, sHeapAlignment, mHeap::OPT_NONE);
     mAllocator.attach(mpHeap, 0x20);
     return true;
 }

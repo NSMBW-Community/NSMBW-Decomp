@@ -162,7 +162,7 @@ bool dWmDemoActor_c::checkArriveTargetXZ(const mVec3_c &startPos, const mVec3_c 
 }
 
 void dWmDemoActor_c::CreateShadowModel(const char *arc, const char *path, const char *mdlName, bool param4) {
-    mHeapAllocator.createHeapRestoreCurrent(-1, mHeap::g_gameHeaps[0], nullptr, 0x20, 0);
+    mHeapAllocator.createFrmHeapToCurrent(-1, mHeap::g_gameHeaps[0], nullptr, 0x20, mHeap::OPT_NONE);
 
     nw4r::g3d::ResFile resFile = (nw4r::g3d::ResFile) dResMng_c::m_instance->mRes.getRes(arc, path);
     mModel.create(resFile.GetResMdl(mdlName), &mHeapAllocator, 0x20, 1, 0);

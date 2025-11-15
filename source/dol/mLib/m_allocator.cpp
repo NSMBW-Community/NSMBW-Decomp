@@ -90,7 +90,7 @@ mHeapAllocator_c::~mHeapAllocator_c() {
     destroyHeap();
 }
 
-bool mHeapAllocator_c::createHeap(size_t size, EGG::Heap *parent, const char *name, u32 align, u32 opt) {
+bool mHeapAllocator_c::createFrmHeap(size_t size, EGG::Heap *parent, const char *name, ulong align, mHeap::AllocOptBit_t opt) {
     destroyHeap();
     EGG::FrmHeap *heap = mHeap::createFrmHeap(size, parent, name, align, opt);
     if (heap == nullptr) {
@@ -119,8 +119,8 @@ size_t mHeapAllocator_c::adjustFrmHeap() {
     return mHeap::adjustFrmHeap(heap);
 }
 
-bool mHeapAllocator_c::createHeapRestoreCurrent(size_t size, EGG::Heap *parent, const char *name, u32 align, u32 opt) {
-    if (!createHeap(size, parent, name, align, opt)) {
+bool mHeapAllocator_c::createFrmHeapToCurrent(size_t size, EGG::Heap *parent, const char *name, ulong align, mHeap::AllocOptBit_t opt) {
+    if (!createFrmHeap(size, parent, name, align, opt)) {
         return false;
     }
 

@@ -98,7 +98,7 @@ dRes_c::info_c::LOAD_STATUS_e dRes_c::info_c::setRes(callback_c *callback) {
 
         // Prepare the heap for the archive data
         EGG::Heap *heap = (mpMountHeap != nullptr) ? mpMountHeap : mHeap::g_gameHeaps[0];
-        mDataHeap = mHeap::makeFrmHeapAndUpdate(-1, heap, "dRes_c::info_c::mDataHeap", 0x20, 0);
+        mDataHeap = mHeap::createFrmHeapToCurrent(-1, heap, "dRes_c::info_c::mDataHeap", 0x20, mHeap::OPT_NONE);
         if (mDataHeap == nullptr) {
             return LOAD_ERROR;
         }

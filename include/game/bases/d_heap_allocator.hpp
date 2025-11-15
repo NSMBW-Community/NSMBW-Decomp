@@ -1,4 +1,5 @@
 #pragma once
+#include <game/mLib/m_allocator.hpp>
 #include <game/mLib/m_heap.hpp>
 
 class dHeapAllocator_c : public mHeapAllocator_c {

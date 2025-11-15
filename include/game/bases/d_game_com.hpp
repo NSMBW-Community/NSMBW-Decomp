@@ -90,10 +90,11 @@ namespace dGameCom {
     void Player1upColor(LytTextBox_c *, int);
     void getGlbPosToLyt(mVec3_c &);
     bool someCheck(mVec3_c *a, sRangeDataF *b); ///< @unofficial
+    void FUN_800b3780(int, int); ///< @unofficial
 
     bool checkRectangleOverlap(mVec3_c *, mVec3_c *, mVec3_c *, mVec3_c *, float); ///< @unofficial
 
-    void updateSelectCursor(nw4r::lyt::Picture *pic, int index, bool useSpecialDraw); ///< @unofficial
+    void SelectCursorSetup(nw4r::lyt::Pane *pane, int index, bool useSpecialDraw);
     float getDispCenterY();
 
     void DispSizeScale(nw4r::math::VEC2 &scale);

@@ -41,8 +41,8 @@ public:
     static dBase_c *createRoot(ProfileName profName, unsigned long param, u8 groupType);
 
 protected:
-    const char* mpKindString; ///< @brief The base's kind string. @unused
-    const char* mpNameString; ///< @brief The base's profile name string. @unused
+    const char* mpKindString; ///< The base's kind string. @unused
+    const char* mpNameString; ///< The base's profile name string. @unused
 
 private:
     /// @brief Module loading callback for the scrapped relocatable profile system.
