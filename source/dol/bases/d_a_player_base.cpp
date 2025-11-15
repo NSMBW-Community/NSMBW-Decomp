@@ -4136,7 +4136,7 @@ bool daPlBase_c::fn_80052500(int p, float f, int i2) {
 }
 
 bool daPlBase_c::isHitWallKinopioWalk(int dir) {
-    static const BgCross1_e scViewHitFlag[] = { BGC_SIDE_LIMIT_L, BGC_SIDE_LIMIT_R };
+    static const BgCross1_e scViewHitFlag[] = { BGC_SIDE_LIMIT_R, BGC_SIDE_LIMIT_L };
     if (checkBGCrossWall(dir) || isNowBgCross(scViewHitFlag[dir])) {
         return true;
     }
@@ -5456,7 +5456,7 @@ bool daPlBase_c::checkSinkSand() {
 
 
 bool daPlBase_c::checkBGCrossWall(u8 direction) {
-    static const BgCross1_e flags[] = { BGC_WALL_TOUCH_L_2, BGC_WALL_TOUCH_R_2 };
+    static const BgCross1_e flags[] = { BGC_WALL_TOUCH_R_2, BGC_WALL_TOUCH_L_2 };
     return isNowBgCross(flags[direction]);
 }
 
@@ -6395,13 +6395,13 @@ void daPlBase_c::fn_80057fd0(ulong soundID, short s, bool b) {
 
 void daPlBase_c::vf434(int a, int b) {
     if (!fn_80057E00(b)) {
-        mSndObj.fn_8019ABB0(a, 0);
+        mSndObj.fn_8019AAB0(a, 0);
     }
 }
 
 void daPlBase_c::vf438(int a, int b) {
     if (!fn_80057E00(b)) {
-        mSndObj.fn_8019AAB0(a, 0);
+        mSndObj.fn_8019ABB0(a, 0);
     }
 }
 
