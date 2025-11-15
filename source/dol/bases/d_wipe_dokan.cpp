@@ -68,19 +68,20 @@ bool dWipeDokan_c::createLayout() {
     return true;
 }
 
-typedef void (dWipeDokan_c::*actMeth)();
-const actMeth actMeths[] = {
-    &dWipeDokan_c::OpenSetup,
-    &dWipeDokan_c::AnimeEndCheck,
-    &dWipeDokan_c::CloseSetup
-};
+typedef void (dWipeDokan_c::*Proc)();
 
 int dWipeDokan_c::calc() {
+    static const Proc Proc_tbl[] = {
+        &dWipeDokan_c::OpenSetup,
+        &dWipeDokan_c::AnimeEndCheck,
+        &dWipeDokan_c::CloseSetup
+    };
+
     if (!mIsCreated) {
         return 1;
     }
     if (mAction != IDLE) {
-        (this->*actMeths[mAction])();
+        (this->*Proc_tbl[mAction])();
         mLyt.AnimePlay();
         mLyt.calc();
     }

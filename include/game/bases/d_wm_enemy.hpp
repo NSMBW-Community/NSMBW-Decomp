@@ -74,7 +74,7 @@ public:
     void deleteSound();
     void deleteEffect();
     bool csCommand(int id, bool b); ///< @unofficial
-    bool FUN_800f88d0(); ///< @unofficial (`isMainCast`?)
+    bool isMainCast();
     void demoJump(const mVec3_c &pos, JumpData_s &jumpData, float scale); ///< @unofficial
     bool isThroughPoint(int);
     bool isDead();

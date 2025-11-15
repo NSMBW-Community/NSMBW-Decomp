@@ -65,13 +65,13 @@ bool dWipeCircle_c::createLayout() {
     return true;
 }
 
-typedef void (dWipeCircle_c::*actMeth)();
+typedef void (dWipeCircle_c::*Proc)();
 
 int dWipeCircle_c::calc() {
-    static const actMeth Proc_tbl[ACTION_COUNT] = {
-        dWipeCircle_c::OpenSetup,
-        dWipeCircle_c::AnimeEndCheck,
-        dWipeCircle_c::CloseSetup
+    static const Proc Proc_tbl[ACTION_COUNT] = {
+        &dWipeCircle_c::OpenSetup,
+        &dWipeCircle_c::AnimeEndCheck,
+        &dWipeCircle_c::CloseSetup
     };
 
     if (!mIsCreated) {

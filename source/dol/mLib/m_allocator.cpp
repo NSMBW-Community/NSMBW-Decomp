@@ -5,11 +5,8 @@
 
 mAllocatorDummyHeap_c *mAllocatorDummyHeap_c::m_instance;
 
-/// @unofficial
-void *dummyHeapAlloc(MEMAllocator *, size_t) { return nullptr; }
-
-/// @unofficial
-void dummyHeapFree(MEMAllocator *, void *) {}
+void *mAllocatorDummyHeap_c::AllocatorAllocForDummyHeap(MEMAllocator *, size_t) { return nullptr; }
+void mAllocatorDummyHeap_c::AllocatorFreeForDummyHeap(MEMAllocator *, void *) {}
 
 mAllocatorDummyHeap_c::mAllocatorDummyHeap_c() {
     m_instance = this;
@@ -22,8 +19,11 @@ int mAllocatorDummyHeap_c::getHeapKind() const {
 }
 
 void mAllocatorDummyHeap_c::initAllocator(EGG::Allocator *allocator, long alignment) {
-    const static MEMAllocatorFuncs funcs = { dummyHeapAlloc, dummyHeapFree };
-    allocator->funcs = &funcs;
+    const static MEMAllocatorFuncs sAllocatorFunc = {
+        AllocatorAllocForDummyHeap,
+        AllocatorFreeForDummyHeap
+    };
+    allocator->funcs = &sAllocatorFunc;
     allocator->heap = mHeapHandle;
     allocator->heapParam1 = alignment;
     allocator->heapParam2 = 0;

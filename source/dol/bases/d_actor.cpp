@@ -38,10 +38,10 @@ u8 dActor_c::m_tmpCtLayerNo;
 const u8 l_Ami_Line[] = { 1, 2 };
 const float l_Ami_Zpos[] = { 1500.0f, -2500.0f };
 
-u8* dActor_c::m_tmpCtSpawnFlags;
-u16 dActor_c::m_tmpCtEventNums;
-u64 dActor_c::m_tmpCtEventMask;
-u8 dActor_c::m_tmpCtSpriteLayerNo;
+u8* dActor_c::m_read_p_keep;
+u16 dActor_c::m_flag_keep;
+u64 dActor_c::m_flagbit_keep;
+u8 dActor_c::m_mbgchoice_keep;
 
 dActor_c::dActor_c() :
     m_00(0), mCarryFukidashiPlayerNo(-1), m_17(0), m_1b(1.0f),

@@ -108,14 +108,14 @@ int dWmEnemy_c::execute() {
     }
     setCutEndSpecific(dCsSeqMng_c::ms_instance->GetCutName(), dCsSeqMng_c::ms_instance->m_164);
     if (IsExecEnable() || dCsSeqMng_c::ms_instance->GetCutName() == 0x57) {
-        static const ProcFunc ProcTbl[PROC_COUNT] = {
-            mode_exec,
-            mode_DemoContinue,
-            mode_bgmDance,
-            mode_lose,
-            mode_waitWalk
+        static const ProcFunc Proc_tbl[PROC_COUNT] = {
+            &dWmEnemy_c::mode_exec,
+            &dWmEnemy_c::mode_DemoContinue,
+            &dWmEnemy_c::mode_bgmDance,
+            &dWmEnemy_c::mode_lose,
+            &dWmEnemy_c::mode_waitWalk
         };
-        (this->*ProcTbl[mCurrProc])();
+        (this->*Proc_tbl[mCurrProc])();
     }
     calculateEffect();
     calc();
@@ -337,7 +337,7 @@ bool dWmEnemy_c::csCommand(int id, bool b) {
                 }
                 break;
             case 89:
-                if (FUN_800f88d0()) {
+                if (isMainCast()) {
                     initDemoLose();
                 }
                 break;
@@ -365,7 +365,7 @@ bool dWmEnemy_c::csCommand(int id, bool b) {
             }
             break;
         case 89:
-            if (FUN_800f88d0()) {
+            if (isMainCast()) {
                 isEnd = !procDemoLose();
             } else {
                 isEnd = false;
@@ -462,7 +462,7 @@ bool dWmEnemy_c::isThroughPoint(int idx) {
     return wmMap->mCsvData[wmMap->currIdx].GetPointName(idx)[0] == 'K';
 }
 
-bool dWmEnemy_c::FUN_800f88d0() {
+bool dWmEnemy_c::isMainCast() {
     return dInfo_c::m_instance->m_9c == ACTOR_PARAM(enemyNo);
 }
 

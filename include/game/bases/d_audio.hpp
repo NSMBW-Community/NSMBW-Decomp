@@ -33,8 +33,8 @@ public:
 
 namespace dAudio {
     void requestStartScene(ProfileName sceneProf); ///< Sets up game audio for the given scene.
-    void prepareSceneSnd(); ///< @unofficial
-    void destroySceneSnd(); ///< @unofficial
+    void createSndObjctCmn();
+    void deleteSndObjctCmn();
     void setNextScene(ProfileName prof, unsigned long bgmIndex);
     void pauseOffGameWithReset(); ///< @unofficial
     void boot();

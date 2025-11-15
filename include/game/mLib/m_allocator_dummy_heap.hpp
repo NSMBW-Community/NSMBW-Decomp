@@ -25,6 +25,9 @@ public:
     virtual u32 getAllocatableSize(long alignment);
     virtual bool adjust();
 
+    static void *AllocatorAllocForDummyHeap(MEMAllocator *, size_t);
+    static void AllocatorFreeForDummyHeap(MEMAllocator *, void *);
+
     static mAllocatorDummyHeap_c *getInstance();
 
     static mAllocatorDummyHeap_c *m_instance;

@@ -38,7 +38,7 @@ dScene_c::~dScene_c() {
     if (dWarningManager_c::m_WarningForbid > 0) {
         dWarningManager_c::m_WarningForbid--;
     }
-    dAudio::destroySceneSnd();
+    dAudio::deleteSndObjctCmn();
 }
 
 int dScene_c::preCreate() {
@@ -53,7 +53,7 @@ int dScene_c::preCreate() {
 void dScene_c::postCreate(fBase_c::MAIN_STATE_e status) {
     if (status == SUCCESS) {
         dReset::Manage_c::GetInstance()->SetSoftResetFinish();
-        dAudio::prepareSceneSnd();
+        dAudio::createSndObjctCmn();
         fBase_c::createChild(fProfile::LASTACTOR, this, 0, fBase_c::OTHER);
     }
     dBase_c::postCreate(status);

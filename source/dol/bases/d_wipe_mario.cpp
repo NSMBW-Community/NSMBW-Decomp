@@ -62,19 +62,20 @@ bool dWipeMario_c::createLayout() {
     return true;
 }
 
-typedef void (dWipeMario_c::*actMeth)();
-const actMeth actMeths[] = {
-    &dWipeMario_c::OpenSetup,
-    &dWipeMario_c::AnimeEndCheck,
-    &dWipeMario_c::CloseSetup
-};
+typedef void (dWipeMario_c::*Proc)();
 
 int dWipeMario_c::calc() {
+    static const Proc Proc_tbl[] = {
+        &dWipeMario_c::OpenSetup,
+        &dWipeMario_c::AnimeEndCheck,
+        &dWipeMario_c::CloseSetup
+    };
+
     if (!mIsCreated) {
         return 1;
     }
     if (mAction != IDLE) {
-        (this->*actMeths[mAction])();
+        (this->*Proc_tbl[mAction])();
         mLyt.AnimePlay();
         mLyt.calc();
     }
