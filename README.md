@@ -76,9 +76,6 @@ ninja
 ## Documentation
 You can generate source documentation using [Doxygen](https://www.doxygen.nl/).
 
-> [!NOTE]
-> Doxygen 1.14 is not yet supported due to incompatible HTML/CSS theme changes.
-
 1. Install Doxygen.
 2. If not already present, download the [doxygen-awesome-css](https://github.com/jothepro/doxygen-awesome-css) theme and place its contents into the following directory:
 
