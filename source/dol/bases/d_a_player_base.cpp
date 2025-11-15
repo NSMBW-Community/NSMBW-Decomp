@@ -2798,7 +2798,7 @@ float daPlBase_c::getWaterDokanCenterOffset(float param1) {
     if (mKind == 1) {
         max = l_maxOffsets[m_1140];
     }
-    float pos = getYCenter() - mPos.y;
+    float pos = getCenterY() - mPos.y;
     if (pos > max) {
         pos = max;
     }
@@ -5608,10 +5608,11 @@ void daPlBase_c::fn_80055d00() {
 }
 
 void daPlBase_c::underOverCheck() {
-    float f = dBgParameter_c::ms_Instance_p->yStart() - dBgParameter_c::ms_Instance_p->ySize();
-    float t = mPos.y;
-    float t2 = t + mVisibleAreaSize.y + mVisibleAreaOffset.y;
-    float f2 = f - 24.0f;
+    dBgParameter_c *bgParam = dBgParameter_c::ms_Instance_p;
+
+    float tmp = bgParam->yStart() - bgParam->ySize();
+    float bgTop = tmp - 24.0f;
+    float selfTop = mPos.y + getVisOffsetY() + getVisSizeY();
     int cond = 0;
     if (isItemKinopio()) {
         cond = 1;
@@ -5622,10 +5623,10 @@ void daPlBase_c::underOverCheck() {
         }
     }
     if (cond == 1) {
-        if (f2 < t2 && f2 < dBg_c::m_bg_p->m_8fe00) {
+        if (selfTop < bgTop && selfTop < dBg_c::m_bg_p->m_8fe00) {
             setFallDownDemo();
         }
-    } else if (f2 < t2) {
+    } else if (selfTop < bgTop) {
         setFallDownDemo();
     }
 }
