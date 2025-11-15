@@ -3,6 +3,7 @@
 #include <game/bases/d_actor.hpp>
 #include <game/bases/d_ac_py_key.hpp>
 #include <game/bases/d_cc.hpp>
+#include <game/bases/d_player_model_manager.hpp>
 #include <game/bases/d_quake.hpp>
 #include <game/mLib/m_3d.hpp>
 #include <game/sLib/s_State.hpp>
@@ -10,179 +11,10 @@
 #include <game/bases/d_audio.hpp>
 #include <constants/game_constants.h>
 
-class dPyMdlBase_c {
-public:
-    virtual ~dPyMdlBase_c();
-    virtual void getFaceJointIdx();
-    virtual void createModel();
-    virtual void initialize();
-    virtual void play();
-    virtual void _calc();
-    virtual void calc2();
-    virtual void draw();
-    virtual void getBodyMdl();
-    virtual void getAnmResFile();
-    virtual void setPlayerMode();
-    virtual void setColorType();
-    virtual void setDark();
-    virtual void vf3c(); ///< @unofficial
-    virtual void onStarAnm();
-    virtual void offStarAnm();
-    virtual void onStarEffect();
-    virtual void offStarEffect();
-    virtual void getJointMtx();
-    virtual void getHeadPropelJointMtx();
-    virtual void vf58(); ///< @unofficial
-    virtual void setAnm(int, float, float, float);
-    virtual void vf60(); ///< @unofficial
-    virtual void vf64(); ///< @unofficial
-    virtual void vf68(); ///< @unofficial
-    virtual void copyAnm();
-    virtual void vf70(); ///< @unofficial
-    virtual void vf74(); ///< @unofficial
-    virtual void setAnmBind();
-    virtual void vf7c(); ///< @unofficial
-    virtual void setTexAnmType();
-    virtual void setFrame(float);
-    virtual void setBodyFrame();
-    virtual void setRate(float);
-    virtual void setBodyRate();
-    virtual void vf94(); ///< @unofficial
-    virtual void getPropelRollSpeed();
-    virtual void vf9c(); ///< @unofficial
-    virtual void vfa0(); ///< @unofficial
-    virtual void vfa4(); ///< @unofficial
-    virtual void vfa8(); ///< @unofficial
-    virtual void vfac(); ///< @unofficial
-
-    bool isFootStepTiming();
-    void getJointPos(mVec3_c *, int);
-
-    float getFrameMax() { return mAnm.mFrameMax; }
-    mMtx_c &getMtx() { return mMtx; }
-
-    void setAng(mAng3_c ang) {
-        m_1fc = ang.x;
-        m_1fe = ang.y;
-        m_200 = ang.z;
-    }
-
-    u8 mPad1[0x24];
-    m3d::anmChr_c mAnm;
-    u8 mPad2[0x6c];
-    mVec3_c mHatPosMaybe;
-    u8 mPad3[0x30];
-    mMtx_c mMtx;
-    u8 mPad4[0x1a];
-    u8 m_152;
-    int m_154;
-    u8 mPad5[8];
-    u32 mFlags;
-    u8 mPad6[0x98];
-    s16 m_1fc;
-    s16 m_1fe;
-    s16 m_200;
-    u32 m_204;
-    u32 m_208;
-
-    static const float scWaterCrouchAnmSpeed;
-};
-
-class dPyAnm_HIO_c {
-public:
-    u8 mID;
-    float mRate;
-    float mBlendDuration;
-};
-
-class dPyAnmMain_HIO_c {
-public:
-    dPyAnm_HIO_c mAnm[177];
-};
-
-class dPyModel_HIO_c {
-public:
-    float mData[17];
-};
-
-class dYoshiModel_HIO_c {
-public:
-    float mData[4];
-};
-
-class dPyMdlBase_HIO_c {
-public:
-    u8 mPad[0x8];
-    float m_08[8];
-    dPyAnmMain_HIO_c mPyAnm;
-    dPyModel_HIO_c mPyModel[3];
-    dYoshiModel_HIO_c mYoshiModel;
-
-    float pyRate(int anmID) const {
-        return mPyAnm.mAnm[anmID].mRate;
-    }
-
-    float pyBlend(int anmID) const {
-        return mPyAnm.mAnm[anmID].mBlendDuration;
-    }
-};
-
-class dPyMdlMng_c {
-public:
-    u8 mPad[4];
-    dPyMdlBase_c *mpMdl;
-
-    void setAnm(int anmID, float rate, float blendDuration, float f) {
-        mpMdl->setAnm(anmID, rate, blendDuration, f);
-    }
-
-    void setAnm(int anmID, float blendDuration, float f) {
-        float rate = m_hio.mPyAnm.mAnm[anmID].mRate;
-        setAnm(anmID, rate, blendDuration, f);
-    }
-
-    void setAnm(int anmID, const dPyAnm_HIO_c &hio, float f = 0.0f) {
-        mpMdl->setAnm(anmID, hio.mRate, hio.mBlendDuration, f);
-    }
-
-    void setAnm(int anmID, float f = 0.0f) {
-        setAnm(anmID, m_hio.mPyAnm.mAnm[anmID], f);
-    }
-
-    int getAnm() const {
-        return mpMdl->m_154;
-    }
-
-    float getLastFrame() const {
-        return mpMdl->mAnm.mFrameMax - 1.0f;
-    }
-
-    bool isAnmStop() const {
-        return mpMdl->mAnm.isStop();
-    }
-
-    mAng3_c getAng() const {
-        return mAng3_c(
-            mpMdl->m_1fc,
-            mpMdl->m_1fe,
-            mpMdl->m_200
-        );
-    }
-    void setAng(mAng3_c v) { mpMdl->setAng(v); }
-
-    u32 getFlags() const {
-        return mpMdl->mFlags;
-    }
-
-    mVec3_c &getHatPos() const { return mpMdl->mHatPosMaybe; }
-
-    static dPyMdlBase_HIO_c m_hio;
-};
-
 class daPlBase_c : public dActor_c {
 public:
     enum DamageType_e {
-        DAMAGE_NONE = 0,
+        DAMAGE_NONE,
         DAMAGE_1, DAMAGE_2, DAMAGE_3, DAMAGE_4,
         DAMAGE_5, DAMAGE_6, DAMAGE_7, DAMAGE_8,
         DAMAGE_9, DAMAGE_A, DAMAGE_B, DAMAGE_C
@@ -219,42 +51,6 @@ public:
         GROUND_TYPE_LEAF,
         GROUND_TYPE_WOOD
     };
-
-    bool groundTypeCheck1() {
-        return (mGroundType < GROUND_TYPE_DEFAULT) ? true : false;
-    }
-
-    bool groundTypeCheck2() {
-        return (mGroundType > GROUND_TYPE_CLOUD) ? true : false;
-    }
-
-    bool groundTypeCheck3() {
-        return (mGroundType < GROUND_TYPE_MANTA) ? true : false;
-    }
-
-    bool groundTypeCheck4() {
-        return (mGroundType > GROUND_TYPE_CARPET) ? true : false;
-    }
-
-    bool groundTypeCheck5() {
-        return (mGroundType >= GROUND_TYPE_SNOW) ? true : false;
-    }
-
-    bool groundTypeCheck6() {
-        return (mGroundType <= GROUND_TYPE_ICE) ? true : false;
-    }
-
-    bool groundTypeCheck7() {
-        return (mGroundType == GROUND_TYPE_WATER) ? true : false;
-    }
-
-    bool groundTypeCheck8() {
-        return (mGroundType == GROUND_TYPE_FUNSUI) ? true : false;
-    }
-
-    bool groundTypeCheck9() {
-        return (mGroundType == GROUND_TYPE_BEACH) ? true : false;
-    }
 
     /// @unofficial
     enum SlipSubstate_e {
@@ -294,6 +90,17 @@ public:
     };
 
     /// @unofficial
+    enum DemoType_e {
+        DEMO_0,
+        DEMO_1,
+        DEMO_2,
+        DEMO_3,
+        DEMO_PLAYER,
+        DEMO_KINOPIO,
+        DEMO_ENDING_DANCE
+    };
+
+    /// @unofficial
     enum DemoInDokanSubstate_e {
         DEMO_IN_DOKAN_ACTION_0,
         DEMO_IN_DOKAN_ACTION_1,
@@ -303,12 +110,51 @@ public:
     };
 
     /// @unofficial
-    enum PowerChangeType_e {
-        POWER_CHANGE_0 = 0,
-        POWER_CHANGE_1 = 1,
-        POWER_CHANGE_2 = 2
+    enum DemoGoalSubstate_e {
+        GOAL_DEMO_ACTION_POLE,
+        GOAL_DEMO_ACTION_WAIT,
+        GOAL_DEMO_ACTION_KIME_POSE,
+        GOAL_DEMO_ACTION_RUN
     };
 
+    /// @unofficial
+    enum DemoWaitSubstate_e {
+        DEMO_WAIT_ACTION_0,
+        DEMO_WAIT_ACTION_1
+    };
+
+    /// @unofficial
+    enum DemoGoalState_Pole_e {
+        GOAL_DEMO_POLE_0,
+        GOAL_DEMO_POLE_1,
+        GOAL_DEMO_POLE_2,
+        GOAL_DEMO_POLE_3,
+        GOAL_DEMO_POLE_4,
+        GOAL_DEMO_POLE_5,
+        GOAL_DEMO_POLE_6,
+        GOAL_DEMO_POLE_7,
+        GOAL_DEMO_POLE_8
+    };
+
+    /// @unofficial
+    enum ControlDemoState_e {
+        CONTROL_DEMO_WAIT,
+        CONTROL_DEMO_WALK,
+        CONTROL_DEMO_ANM,
+        CONTROL_DEMO_ANM_2,
+        CONTROL_DEMO_4,
+        CONTROL_DEMO_KINOPIO_WALK,
+        CONTROL_DEMO_KINOPIO_SWIM,
+        CONTROL_DEMO_KINOPIO_SINK_SAND,
+        CONTROL_DEMO_ENDING_DANCE,
+    };
+
+    /// @unofficial
+    enum PowerChangeType_e {
+        POWER_CHANGE_0,
+        POWER_CHANGE_1,
+        POWER_CHANGE_2
+    };
 
     /// @unofficial
     enum BgCross1_e {
@@ -501,18 +347,6 @@ public:
         STATUS_BF = 0xbf,
         STATUS_C1 = 0xc1,
         STATUS_C4 = 0xc4,
-    };
-
-    enum DemoType_e {
-        DEMO_0,
-        DEMO_1,
-        DEMO_2,
-        DEMO_3,
-        DEMO_4,
-        DEMO_5,
-        DEMO_6,
-        DEMO_7,
-        DEMO_8
     };
 
     /// @unofficial
@@ -974,7 +808,7 @@ public:
     void DemoAnmBossKeyGet();
 
     void simpleMoveSpeedSet();
-    void grandPowerSet(); // (misspelling of "ground")
+    void grandPowerSet(); // [misspelling of "ground"]
     void slipPowerSet(int);
 
     void getTurnPower(sTurnPowerData &); ///< @unofficial
@@ -985,19 +819,6 @@ public:
     void setJumpGravity();
     void setButtonJumpGravity();
     void setNormalJumpGravity();
-
-    float calcStarAccel(float f) { return 3.0f * f; }
-    float calcIdkAccel(float f) { return 0.375f * f; }
-    void set_m_d80(int i, float f) { m_d80[i] = f; }
-    float getSomeYOffset() const { return mSomeYOffset; }
-
-    // [Needed to place getOldStateID in the correct location]
-    void dummy() {
-        mStateMgr.getOldStateID();
-    }
-
-    float get_1064() const { return m_1064; }
-    float get_106c() const { return m_106c; }
 
     void setStatus(int);
     void calcTimerProc();
@@ -1021,6 +842,19 @@ public:
     s8 calcComboCount(int);
     mVec3_c getAnkleCenterPos();
 
+    // [Needed to place getOldStateID in the correct location]
+    void dummy() {
+        mStateMgr.getOldStateID();
+    }
+
+    float calcStarAccel(float f) { return 3.0f * f; }
+    float calcIdkAccel(float f) { return 0.375f * f; }
+    void set_m_d80(int i, float f) { m_d80[i] = f; }
+    float getSomeYOffset() const { return mSomeYOffset; }
+
+    float get_1064() const { return m_1064; }
+    float get_106c() const { return m_106c; }
+
     float getAnkleCenterX() { return getAnkleCenterPos().x; }
     float getAnkleCenterY() { return getAnkleCenterPos().y; }
 
@@ -1040,19 +874,19 @@ public:
     void offOldBgCross(BgCross1_e m) { mOldBgCross1 &= ~m; }
     void offOldBgCross(BgCross2_e m) { mOldBgCross2 &= ~m; }
 
-    int m_00;
-    int m_04;
-    float m_08;
+    int mReductionMode;
+    int mSquishKeyframeIdx;
+    float mSquishScale;
     int mTimer_0c;
     int mTimer_10;
     const daPlBase_c *mpNoHitPlayer;
     int mNoHitTimer;
-    u32 m_1c;
-    u32 m_20;
-    fBaseID_e mIDs[13];
-    float m_58;
-    int m_5c;
-    s8 m_60;
+    u32 mBgPressActive;
+    u32 mBgPressFlags;
+    fBaseID_e mBgPressIDs[13];
+    float mViewLimitPadding;
+    int mKimePoseState;
+    s8 mDemoState; /// Value is a GoalDemoState_e.
     int mDokanNextGoto;
     mVec3_c m_68;
     mVec2_c m_74;
@@ -1178,7 +1012,7 @@ public:
     void *mDemoStateChangeParam; ///< To be used as a kind of argument to the new demo state.
     int mDemoSubstate; ///< Demo states can use this as a kind of sub-state variable (cast to some enum)
     int m_10c8;
-    u8 mDemoMode;
+    u8 mIsDemoMode;
     sFStateMgr_c<daPlBase_c, sStateMethodUsr_FI_c> mStateMgr;
     void *mStateChangeParam; ///< To be used as a kind of argument to the new state.
     int mSubstate; ///< States can use this as a kind of sub-state variable (cast to some enum)
