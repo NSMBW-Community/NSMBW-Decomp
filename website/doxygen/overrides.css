@@ -67,11 +67,6 @@ a:active {
     color: var(--primary-light-color) !important;
 }
 
-/* Remove the ugly hover shadow on the bottom navigator */
-.navpath li.navelem a:hover {
-    text-shadow: none;
-}
-
 /* Use darker primary color for hovered/active/focused top menu buttons */
 .sm-dox ul a:hover,
 .sm-dox ul a:active,
@@ -89,14 +84,14 @@ a:active {
 
 /* Add border to cell descriptions (left) */
 td.mdescLeft {
-    border-left: 1px solid var(--separator-color);
-    border-bottom: 1px solid var(--separator-color);
+    border-left: 1px solid var(--separator-color) !important;
+    border-bottom: 1px solid var(--separator-color) !important;
 }
 
 /* Add border to cell descriptions (right) */
 td.mdescRight {
-    border-right: 1px solid var(--separator-color);
-    border-bottom: 1px solid var(--separator-color);
+    border-right: 1px solid var(--separator-color) !important;
+    border-bottom: 1px solid var(--separator-color) !important;
 }
 
 /* Remove unnecessary padding on definitions in desktop mode */
@@ -140,22 +135,18 @@ div.header .title {
 }
 
 /* Remove colors on dark mode directories/files */
-html.dark-mode .icondoc,
-html.dark-mode .iconfopen,
-html.dark-mode .iconfclosed {
+html.dark-mode .folder-icon {
     filter: saturate(0) !important;
 }
 
-/* Disable color inversion on menu arrows and restore it on light mode files */
-html.dark-mode img[src="closed.png"],
-html.dark-mode img[src="open.png"],
-.icondoc {
-    filter: none !important;
+/* Remove open folder graphic */
+.folder-icon.open::after {
+    opacity: 0;
 }
 
 /* Fix padding on inherit dropdowns */
 table.memberdecls .inherit_header td {
-    padding: 0px 0px 0px var(--spacing-medium);
+    padding: var(--spacing-medium) 0px 0px var(--spacing-medium);
 }
 
 /* Remove padding at the start of lists */
@@ -183,11 +174,6 @@ ul {
 .paramname {
     color: var(--page-foreground-color);
     font-weight: normal;
-}
-
-/* Increase navigation arrow size */
-.arrow {
-    font-size: 100% !important;
 }
 
 /* Change color of copy to clipboard success button */
@@ -307,7 +293,9 @@ td.memItemLeft,
 td.memItemRight,
 td.memTemplParams,
 td.memTemplItemLeft,
-td.memTemplItemRight {
+td.memTemplItemRight,
+td.mdescLeft,
+td.mdescRight {
     border-radius: 0 !important;
     border-top-left-radius: 0 !important;
     border-top-right-radius: 0 !important;
@@ -387,16 +375,6 @@ div.header .summary {
     border-left: none;
 }
 
-/* Fix selected arrow color */
-#nav-tree .selected .arrow {
-    color: inherit;
-}
-
-/* Fix navigation arrow alignment */
-#nav-tree .arrow {
-    vertical-align: unset;
-}
-
 /* Improve code folding style */
 span.lineno {
     background: none !important;
@@ -404,15 +382,9 @@ span.lineno {
     margin-right: var(--spacing-medium) !important;
 }
 
-/* Hide nonfunctional fold-all */
-/* Yes i know it's bad, but using display: none breaks the first line */
-#fold_all {
-    background-image: none !important;
-}
-
+#fold_all.minus,
 .foldopen span.fold[onclick] {
     --open-svg: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2016%2016%22%20width%3D%2216%22%20height%3D%2216%22%3E%0A%20%20%3Cpath%20d%3D%22M12.78%205.22a.749.749%200%200%201%200%201.06l-4.25%204.25a.749.749%200%200%201-1.06%200L3.22%206.28a.749.749%200%201%201%201.06-1.06L8%208.939l3.72-3.719a.749.749%200%200%201%201.06%200Z%22%2F%3E%0A%3C%2Fsvg%3E");
-    background-image: none !important;
     background-color: var(--page-foreground-color);
     -webkit-mask: var(--open-svg) no-repeat center;
     mask: var(--open-svg) no-repeat center;
@@ -420,14 +392,20 @@ span.lineno {
     mask-size: contain;
 }
 
+#fold_all.plus,
 .foldclosed span.fold[onclick] {
     --closed-svg: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2016%2016%22%20width%3D%2216%22%20height%3D%2216%22%3E%3Cpath%20d%3D%22M6.22%203.22a.75.75%200%200%201%201.06%200l4.25%204.25a.75.75%200%200%201%200%201.06l-4.25%204.25a.751.751%200%200%201-1.042-.018.751.751%200%200%201-.018-1.042L9.94%208%206.22%204.28a.75.75%200%200%201%200-1.06Z%22%3E%3C%2Fpath%3E%3C%2Fsvg%3E");
-    background-image: none !important;
     background-color: var(--page-foreground-color);
     -webkit-mask: var(--closed-svg) no-repeat center;
     mask: var(--closed-svg) no-repeat center;
     -webkit-mask-size: contain;
     mask-size: contain;
+}
+
+span.fold.plus::before,
+span.fold.minus::before,
+span.fold.plus::after {
+    background: transparent;
 }
 
 /* Improve code tooltip style */
@@ -484,7 +462,6 @@ h1.glow, h2.glow, h3.glow, h4.glow, h5.glow, h6.glow {
 }
 
 /* Parameter table styles */
-
 table.paramtable {
     text-align: center;
 }
@@ -512,4 +489,46 @@ td.param-inherit {
         transparent 100%
     );
     background-size: 15px 15px;
+}
+
+/* Fix footer */
+#nav-path li.navelem:has(.el)::after {
+    display: none;
+}
+
+#nav-path li.navelem:has(.el)::before {
+    content: '>';
+    border: none;
+    transform: scaleY(6) scaleX(0.7) translateY(-1.5px);
+    color: var(--separator-color);
+    font-family: var(--font-family);
+}
+
+#nav-path li.navelem:hover {
+    background: transparent;
+}
+
+#nav-path li.navelem {
+    padding-left: 0px;
+}
+
+.navpath li.navelem a {
+    margin-right: 10px;
+    color: var(--primary-light-color) !important;
+}
+
+/* Undo bold list entries */
+table.directory td.entry,
+.memItemRight b {
+    font-weight: lighter;
+}
+
+/* Fix TOC line height */
+div.toc li {
+    line-height: 16px;
+}
+
+/* Remove reference icons */
+.icona {
+    display: none;
 }

@@ -15,6 +15,7 @@ function createCustomBubble(div, labelContent, shortText, extendedText) {
         const memproto = div.parentElement.closest('.memitem').querySelector('.memproto');
 
         const label = document.createElement('span');
+        label.title = extendedText
         label.classList.add('mlabel', 'customlabel');
         label.innerText = labelContent;
 
