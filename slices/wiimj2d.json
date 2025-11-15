@@ -141,7 +141,6 @@
         },
         {
             "source": "dol/bases/d_a_player_base.cpp",
-            "nonMatching": true,
             "memoryRanges": {
                 ".text": "0x3f950-0x54c20",
                 ".ctors": "0x7c-0x80",
