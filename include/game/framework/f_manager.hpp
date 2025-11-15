@@ -22,7 +22,7 @@ private:
         NONE, CONNECT, CREATE, EXECUTE, DELETE, DRAW
     };
 
-    /// @brief The operation disable flags, induced from ::LOOP_PROC_e.
+    /// @brief The operation disable flags, induced from LOOP_PROC_e.
     enum PROC_FLAGS_e {
         PROC_FLAG_NONE    = GET_PROC_FLAG(NONE),
         PROC_FLAG_CONNECT = GET_PROC_FLAG(CONNECT),
@@ -40,7 +40,7 @@ private:
         mDrawNode(owner),
         mSearchNode(owner) {}
 
-    /// @brief Gets the index of the search list the owning base was added to. See ::m_searchManage.
+    /// @brief Gets the index of the search list the owning base was added to. See #m_searchManage.
     int getSearchTableNum();
 
 public:
@@ -62,13 +62,13 @@ public:
     static fBase_c *searchBaseByGroupType(unsigned char groupType, const fBase_c *parent);
 
 private:
-    fTrNdBa_c mConnectNode; ///< The node in the @ref ::m_connectManage "connect tree".
+    fTrNdBa_c mConnectNode; ///< The node in the @ref m_connectManage "connect tree".
 
-    /// @brief The node in the @ref ::m_createManage "create", @ref ::m_executeManage "execute" or
-    /// @ref ::m_deleteManage "delete" list.
+    /// @brief The node in the @ref m_createManage "create", @ref m_executeManage "execute" or
+    /// @ref m_deleteManage "delete" list.
     fLiNdPrio_c mMainNode;
-    fLiNdPrio_c mDrawNode; ///< The node in the @ref ::m_drawManage "draw list".
-    fLiNdBa_c mSearchNode; ///< The node in the @ref ::m_searchManage "search lists".
+    fLiNdPrio_c mDrawNode; ///< The node in the @ref m_drawManage "draw list".
+    fLiNdBa_c mSearchNode; ///< The node in the @ref m_searchManage "search lists".
 
     static fTrMgPTMF_c m_connectManage; ///< A tree that connects all loaded bases.
     static fLiMgPTMF_c m_createManage; ///< A list of all the bases scheduled for creation.
@@ -83,10 +83,10 @@ private:
 
     /// @brief The operations which should be globally skipped this frame.
     /// @unused
-    /// @details Value is a combination of ::PROC_FLAGS_e.
+    /// @details Value is a combination of PROC_FLAGS_e.
     static u32 m_StopProcInf;
 
-    /// @brief The current operation being globally executed. See ::mainLoop.
+    /// @brief The current operation being globally executed. See mainLoop().
     /// @details The list for this operation cannot be updated until the operation has finished executing.
     /// @hideinitializer
     static LOOP_PROC_e m_nowLoopProc;

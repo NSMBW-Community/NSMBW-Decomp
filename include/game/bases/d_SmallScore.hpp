@@ -116,14 +116,14 @@ public:
     nw4r::lyt::Pane *mpNullPanes[N_COUNT]; ///< The null panes used for the layout.
     float mMaxHeight; ///< The maximum height the score popup can be displayed at.
     STATE_e mState; ///< The state the score popup is in.
-    int mPopupType; ///< The popup type. Value is a ::POPUP_TYPE_e.
+    int mPopupType; ///< The popup type. Value is a POPUP_TYPE_e.
     int mDispWaitCounter; ///< The amount of frames the @p DispWait state has been active.
     int mDispWaitTime; ///< The number of frames to wait in the @p DispWait state.
     int mPlayerType;
-    int mChgColorCounter; ///< Counter that is incremented every call to ::chgColor, which ensures that the 1-UP color is only set once every 10 calls.
+    int mChgColorCounter; ///< Counter that is incremented every call to chgColor(), which ensures that the 1-UP color is only set once every 10 calls.
     u32 mPlayerColor;
     int mAnimCounter;
-    u32 mCurTextbox; ///< The textbox currently displayed. Value is a ::T_PANE_e.
+    u32 mCurTextbox; ///< The textbox currently displayed. Value is a T_PANE_e.
     bool mIsGoalScore;
     bool mInitialized; ///< Whether the layout has been initialized.
     bool mEnableColorChange;

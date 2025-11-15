@@ -11,7 +11,7 @@
 class dWipeDokan_c : public mFaderBase_c {
 public:
 
-    /// @brief The possible actions performed in ::calc.
+    /// @brief The possible actions performed in calc().
     enum ACTION_e {
         OPEN_SETUP, ///< Prepare the fade-out transition.
         ANIME_END_CHECK, ///< Fade has begun, waiting for it to end.
@@ -55,7 +55,7 @@ public:
 
     /// @brief Checks if the fade animation has finished yet.
     /// @details If the animation has finished, sets the status accordingly
-    /// and switches back to the ::IDLE action.
+    /// and switches back to the #IDLE action.
     void AnimeEndCheck();
 
     /// @brief Returns whether the wipe should go upwards or downwards.
@@ -70,7 +70,7 @@ public:
     virtual void draw();
 
     /// @brief Sets the fader's status.
-    /// @details The only allowed values are ::OPAQUE and ::HIDDEN.
+    /// @details The only allowed values are #OPAQUE and #HIDDEN.
     virtual void setStatus(mFaderBase_c::EStatus status);
 
     virtual bool fadeIn();
@@ -82,6 +82,6 @@ private:
     LytBase_c mLyt; ///< The layout for the fader.
     nw4r::lyt::Pane *mpRootPane; ///< The root pane of the fader layout.
     nw4r::lyt::Picture *mpPic[P_COUNT]; ///< The picture panes.
-    ACTION_e mAction; ///< The action to be performed in ::calc.
+    ACTION_e mAction; ///< The action to be performed in calc().
     bool mIsCreated; ///< Whether the layout for the fader has been created.
 };

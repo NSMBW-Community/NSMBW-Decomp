@@ -52,8 +52,8 @@ private:
     d2d::ResAccMultLoader_c mResLoader; ///< The resource loader for the layout.
     dSmallScore_c mSmallScores[SMALL_SCORE_COUNT]; ///< The regular small score popups.
     dSmallScore_c mGoalScores[PLAYER_COUNT]; ///< The goal score popups.
-    int mSmallScoresIdx; ///< The next free index in ::mSmallScores.
-    int mGoalScoresIdx; ///< The next free index in ::mGoalScores.
+    int mSmallScoresIdx; ///< The next free index in #mSmallScores.
+    int mGoalScoresIdx; ///< The next free index in #mGoalScores.
 
 public:
     static dSmallScoreManager_c *m_instance; ///< The instance of the small score manager.

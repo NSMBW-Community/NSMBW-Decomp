@@ -20,7 +20,7 @@ public:
     virtual void postDelete(fBase_c::MAIN_STATE_e status);
 
     /// @copybrief fBase_c::preExecute
-    /// @details If ::m_nextScene is set, prepares to transition to the next scene.
+    /// @details If #m_nextScene is set, prepares to transition to the next scene.
     /// Once all initial child bases have been added, the execute and draw operations are enabled on this base
     /// and its children.
     virtual int preExecute();

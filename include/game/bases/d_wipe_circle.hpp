@@ -9,7 +9,7 @@
 class dWipeCircle_c : public mFaderBase_c {
 public:
 
-    /// @brief The possible actions performed in ::calc.
+    /// @brief The possible actions performed in calc().
     enum ACTION_e {
         OPEN_SETUP, ///< Prepare the fade-out transition.
         ANIME_END_CHECK, ///< Fade has begun, waiting for it to end.
@@ -53,7 +53,7 @@ public:
 
     /// @brief Checks if the fade animation has finished yet.
     /// @details If the animation has finished, sets the status accordingly
-    /// and switches back to the ::IDLE action.
+    /// and switches back to the #IDLE action.
     void AnimeEndCheck();
 
     /// @brief Prepares the fade-in transition.
@@ -72,14 +72,14 @@ private:
     nw4r::lyt::Pane *mpRootPane; ///< The root pane of the fader layout.
     nw4r::lyt::Window *mpWnd[W_COUNT]; ///< The window panes of the fader.
     mVec2_c mCenterPos; ///< The screen position of the circle's center point.
-    ACTION_e mAction; ///< The action to be performed in ::calc.
+    ACTION_e mAction; ///< The action to be performed in calc().
     bool mIsCreated; ///< Whether the layout for the fader has been created.
 
     /// @brief Whether the circle's center point needs to be targeted at a specific position.
     /// @details If set to @p false, the circle is centered on the screen automatically.
     bool mHasTarget;
 
-    /// @brief Whether ::mCenterPos should be used as the circle's center point.
+    /// @brief Whether #mCenterPos should be used as the circle's center point.
     /// @details If set to @p false, the circle is centered on the current demo player.
     bool mUseCenterPos;
 };

@@ -87,6 +87,6 @@ public:
     u32 pad10;
 
     static dInfo_c *m_instance;
-    static unsigned int mGameFlag; ///< See @p ::GAME_FLAG_e
+    static unsigned int mGameFlag; ///< See GAME_FLAG_e
     static StartGameInfo m_startGameInfo;
 };

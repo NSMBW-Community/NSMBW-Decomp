@@ -4,7 +4,7 @@
 /// @ingroup slib
 class sPhase_c {
 public:
-    /// @brief Return value of a phase method and ::callMethod.
+    /// @brief Return value of a phase method and callMethod().
     /// @unofficial
     enum METHOD_RESULT_e {
         WAIT, ///< Do not proceed to the next method in the phase.

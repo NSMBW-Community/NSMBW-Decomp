@@ -117,8 +117,8 @@ Doxygen is being used for generating documentation:
   Or, if it looks better, you may also use inline comments:
   ```cpp
   virtual int create(); ///< Creates the base.
-  virtual int preCreate(); ///< Code to be executed before ::create.
-  virtual void postCreate(MAIN_STATE_e state); ///< Code to be executed after ::create.
+  virtual int preCreate(); ///< Code to be executed before create().
+  virtual void postCreate(MAIN_STATE_e state); ///< Code to be executed after create().
   ```
 
 - If no official symbol has been cracked for a class or a function, report this information using the `@unofficial` command. For unknown class names, adding the note to each member function is not necessary.

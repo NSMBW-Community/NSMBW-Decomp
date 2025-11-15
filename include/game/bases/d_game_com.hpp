@@ -33,7 +33,7 @@ namespace dGameCom {
     };
 
     /// @brief Determines if gameplay is currently stopped for the specified reason(s).
-    /// @param flag The pause reasons. Value is a ::GAME_STOP_e.
+    /// @param flag The pause reasons. Value is a GAME_STOP_e.
     bool isGameStop(ulong flag);
     void clearGameStop(); ///< Resets the game stop state.
     void setGameStop();

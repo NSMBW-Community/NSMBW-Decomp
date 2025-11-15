@@ -8,7 +8,7 @@ For more complex behaviors, it is recommended to use dWmDemoActor_c and its sub-
 enable the actor to respond to world map events and more.
 
 ## Creating Map Actors
-Map actors can be created by calling one of the two ::construct methods, which define two
+Map actors can be created by calling one of the two construct() methods, which define two
 additional arguments to provide the starting position and rotation. A parent base can optionally
 be provided.
 
@@ -34,7 +34,7 @@ be controlled by setting the sphere's @ref EGG::Sphere3f::mRadius "radius" (whic
 If the radius is set to @p 0.0f (the default value), the check is bypassed and the actor is always
 drawn. The sphere's @ref EGG::Sphere3f::mCenter "center position" is updated automatically.
 
-@hint{It is recommended to set the sphere radius in the ::create method.}
+@hint{It is recommended to set the sphere radius in the create() method.}
 
 ## Lighting Adjustments
 Wrappers to adjust the model lighting are provided for convenience. See dGameCom for details.

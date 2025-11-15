@@ -15,7 +15,7 @@ public:
     /// @param procFunc The process function, or @p nullptr .
     fTrMgPTMF_c(int (fBase_c::*procFunc)()) : mpProcFunc(procFunc) {}
 
-    /// @brief Calls @ref ::mpProcFunc "the process function" on each base in the tree.
+    /// @brief Calls @ref mpProcFunc "the process function" on each base in the tree.
     /// @return Always returns true.
     bool walkPack();
 

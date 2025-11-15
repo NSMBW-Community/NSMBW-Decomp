@@ -35,8 +35,8 @@ protected:
     sStateIDChkIf_c &mpStateChk; ///< The state checker to use. @unused
     sStateFctIf_c &mpStateFct; ///< The state factory which produces the state holder.
 
-    bool mInitFinalizeLock; ///< A lock to ensure ::initializeStateMethod and ::finalizeStateMethod are not called recursively.
-    bool mExecutionLock; ///< A lock to ensure ::executeStateMethod is not called recursively.
+    bool mInitFinalizeLock; ///< A lock to ensure initializeStateMethod() and finalizeStateMethod() are not called recursively.
+    bool mExecutionLock; ///< A lock to ensure executeStateMethod() is not called recursively.
     bool mIsValid; ///< If the state holder contains a valid state ID.
     bool mStateChanged; ///< If the current state has changed during execution.
     bool mRefreshStateMethod; ///< True, if after a state transition, the state should be executed again.
