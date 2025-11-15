@@ -1778,21 +1778,22 @@ void daPlBase_c::fn_8004bf80(daPlBase_c::SpeedData_t *data) {
     }
 }
 
-// TODO: fix indices here
-extern float lbl_802f58b8[30][4];
+/// @unofficial
+/// @todo Move to the correct file
+extern const daPlBase_c::sPowerChangeData l_power_change_data;
 
-void daPlBase_c::fn_8004c0d0(sRangeDataF &bb) {
-    float (*data)[4] = lbl_802f58b8;
+void daPlBase_c::getTurnPower(sTurnPowerData &bb) {
+    const sPowerChangeData *data = &l_power_change_data;
     int idx = isStar() ? 1 : 0;
     switch (getPowerChangeType(false)) {
         case POWER_CHANGE_0:
-            bb.set(data[idx][14], data[idx][15], data[idx][16], data[idx][17]);
+            bb = data->mRangeType0[idx];
             break;
         case POWER_CHANGE_1:
-            bb.set(data[idx][22], data[idx][23], data[idx][24], data[idx][25]);
+            bb = data->mRangeType1[idx];
             break;
         case POWER_CHANGE_2:
-            bb.set(data[idx][30], data[idx][31], data[idx][32], data[idx][33]);
+            bb = data->mRangeType2[idx];
             break;
     }
 }
@@ -1818,39 +1819,35 @@ void daPlBase_c::icePowerChange(int mode) {
     }
 }
 
-extern float lbl_802f5880[2][7];
-
 void daPlBase_c::airPowerSet() {
-    float (*data_tmp)[7] = lbl_802f5880;
+    const sPowerChangeData *data = &l_power_change_data;
     u8 idx = isStar() ? 1 : 0;
-    float *data = data_tmp[idx];
+    const sAirTurnPowerData &airPowerData = data->mAirPower[idx];
     int dir;
     if (mKey.buttonWalk(&dir)) {
         if (mSpeedF * sc_DirSpeed[dir] < 0.0f) {
-            mAccelF = data[6];
+            mAccelF = airPowerData.mTurnAround;
             return;
         } else if (std::fabs(mSpeedF) < 0.5f) {
-            mAccelF = data[1];
+            mAccelF = airPowerData.mStand;
             return;
         }
 
         float absSpeed = std::fabs(mSpeedF);
 
-        if (absSpeed < *(getSpeedData() + 0)) {
+        if (absSpeed < getSpeedData()[0]) {
             if (mKey.buttonDush()) {
-                mAccelF = data[3];
+                mAccelF = airPowerData.mSlowDash;
             } else {
-                mAccelF = data[2];
+                mAccelF = airPowerData.mSlowNoDash;
             }
+        } else if (absSpeed < getSpeedData()[1]) {
+            mAccelF = airPowerData.mMedium;
         } else {
-            if (absSpeed < *(getSpeedData() + 1)) {
-                mAccelF = data[4];
-            } else {
-                mAccelF = data[5];
-            }
+            mAccelF = airPowerData.mFast;
         }
     } else {
-        mAccelF = data[0];
+        mAccelF = airPowerData.mNoButton;
     }
 }
 
@@ -6163,7 +6160,7 @@ void daPlBase_c::posMoveAnglePlayer(mVec3_c a) {
     posMove(delta);
 }
 
-float * daPlBase_c::getSpeedData() {
+float *daPlBase_c::getSpeedData() {
     if (isStar()) {
         return m_cd0;
     } else {

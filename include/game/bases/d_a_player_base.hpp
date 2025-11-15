@@ -196,6 +196,7 @@ public:
         BLEND_1
     };
 
+    /// @unofficial
     enum GroundType_e {
         GROUND_TYPE_DEFAULT,
         GROUND_TYPE_SNOW,
@@ -248,12 +249,14 @@ public:
         return (mGroundType == GROUND_TYPE_BEACH) ? true : false;
     }
 
+    /// @unofficial
     enum SlipSubstate_e {
         SLIP_ACTION_NONE,
         SLIP_ACTION_STOOP,
         SLIP_ACTION_END
     };
 
+    /// @unofficial
     enum HipSubstate_e {
         HIP_ACTION_READY,
         HIP_ACTION_ATTACK_START,
@@ -264,22 +267,26 @@ public:
         HIP_ACTION_TO_STOOP
     };
 
+    /// @unofficial
     enum JumpDaiSubstate_e {
         JUMP_DAI_ACTION_0,
         JUMP_DAI_ACTION_1,
     };
 
+    /// @unofficial
     enum FunsuiSubstate_e {
         FUNSUI_ACTION_NONE,
         FUNSUI_ACTION_START
     };
 
+    /// @unofficial
     enum AnimePlaySubstate_e {
         ANIME_PLAY_ACTION_0,
         ANIME_PLAY_ACTION_1,
         ANIME_PLAY_ACTION_2
     };
 
+    /// @unofficial
     enum DemoInDokanSubstate_e {
         DEMO_IN_DOKAN_ACTION_0,
         DEMO_IN_DOKAN_ACTION_1,
@@ -288,6 +295,7 @@ public:
         DEMO_IN_DOKAN_ACTION_4
     };
 
+    /// @unofficial
     enum PowerChangeType_e {
         POWER_CHANGE_0 = 0,
         POWER_CHANGE_1 = 1,
@@ -434,6 +442,7 @@ public:
         DEMO_8
     };
 
+    /// @unofficial
     struct SpeedData_t {
         float data[9];
 
@@ -452,6 +461,33 @@ public:
         float m_04;
         int m_08;
         int m_0c;
+    };
+
+    /// @unofficial
+    struct sAirTurnPowerData {
+        float mNoButton;
+        float mStand;
+        float mSlowNoDash;
+        float mSlowDash;
+        float mMedium;
+        float mFast;
+        float mTurnAround;
+    };
+
+    /// @unofficial
+    struct sTurnPowerData {
+        float mNormal;
+        float mSakaUp;
+        float mSakaDown;
+        float mAir;
+    };
+
+    /// @unofficial
+    struct sPowerChangeData {
+        sAirTurnPowerData mAirPower[2];
+        sTurnPowerData mRangeType0[2];
+        sTurnPowerData mRangeType1[2];
+        sTurnPowerData mRangeType2[2];
     };
 
     typedef void (daPlBase_c::*ProcFunc)();
@@ -834,7 +870,6 @@ public:
     void setStatus87(); ///< @unofficial
     bool isRideCheckEnable();
     void setStatus5D(float f); ///< @unofficial
-    void fn_8004c0d0(sRangeDataF &); ///< @unofficial
 
     daPlBase_c *getHipAttackDamagePlayer();
     void setHipAttackDamagePlayer(daPlBase_c *player);
@@ -869,6 +904,7 @@ public:
     void grandPowerSet(); // (misspelling of "ground")
     void slipPowerSet(int);
 
+    void getTurnPower(sTurnPowerData &); ///< @unofficial
     void icePowerChange(int);
     void normalPowerSet();
     void fn_8004bf80(SpeedData_t *data);
