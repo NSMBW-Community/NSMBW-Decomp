@@ -5608,9 +5608,7 @@ void daPlBase_c::fn_80055d00() {
 }
 
 void daPlBase_c::underOverCheck() {
-    dBgParameter_c *bgParam = dBgParameter_c::ms_Instance_p;
-
-    float tmp = bgParam->yStart() - bgParam->ySize();
+    float tmp = dBgParameter_c::ms_Instance_p->yStart() - dBgParameter_c::ms_Instance_p->ySize();
     float bgTop = tmp - 24.0f;
     float selfTop = mPos.y + getVisOffsetY() + getVisSizeY();
     int cond = 0;
@@ -5658,65 +5656,75 @@ void daPlBase_c::checkDispOver() {
 }
 
 void daPlBase_c::checkDisplayOutDead() {
-    float f = 20.0f;
+    float offset = 20.0f;
     if (daPyMng_c::mNum > 1 || dBg_c::m_bg_p->m_90009 == 1 || dBg_c::m_bg_p->m_90009 == 3) {
-        f = 64.0f;
+        offset = 64.0f;
     }
-    float bgY = dBgParameter_c::ms_Instance_p->yStart() - dBgParameter_c::ms_Instance_p->ySize() - 16.0f;
-    float bgY2 = dBgParameter_c::ms_Instance_p->yStart() - dBgParameter_c::ms_Instance_p->ySize() - f;
-    float selfY = mVisibleAreaOffset.y + mPos.y + mVisibleAreaSize.y;
-    if (selfY < bgY) {
+
+    float bgBottom = dBgParameter_c::ms_Instance_p->yStart() - dBgParameter_c::ms_Instance_p->ySize();
+    float bgSide1 = bgBottom - 16.0f;
+    float bgSide2 = bgBottom - offset;
+    float edgePos = mPos.y + getVisOffsetY() + getVisSizeY();
+    if (edgePos < bgSide1) {
         onStatus(STATUS_B9);
         onStatus(STATUS_BA);
         if (isItemKinopio()) {
             onStatus(STATUS_B6);
         }
     }
-    if (selfY < bgY2) {
+    if (edgePos < bgSide2) {
         setBalloonInDispOut(3);
     }
-    float selfY2 = mVisibleAreaOffset.y + mPos.y - mVisibleAreaSize.y;
-    if (selfY2 > dBgParameter_c::ms_Instance_p->yStart() + 16.0f) {
+
+    float bgTop = dBgParameter_c::ms_Instance_p->yStart();
+    bgSide1 = bgTop + 16.0f;
+    edgePos = mPos.y + getVisOffsetY() - getVisSizeY();
+    if (edgePos > bgSide1) {
         onStatus(STATUS_B9);
     }
-    if (isItemKinopio() && selfY2 > dBgParameter_c::ms_Instance_p->yStart() + 128.0f) {
+
+    if (isItemKinopio() && edgePos > dBgParameter_c::ms_Instance_p->yStart() + 128.0f) {
         onStatus(STATUS_B6);
     }
     if (isStatus(STATUS_81)) {
         return;
     }
-    float f2 = 0.0f;
+
+    offset = 0.0f;
     if (!isStatus(STATUS_B8)) {
-        if (dBg_c::m_bg_p->m_9004c && dBg_c::m_bg_p->m_90009 != 4) {
-            f2 = -(m_d2c / 4096.0f - 1.0f + mVisibleAreaSize.x);
+        if (dBg_c::m_bg_p->m_9004c && dBg_c::m_bg_p->m_9008e != 4) {
+            offset = -(m_d2c / 4096.0f - 1.0f + getVisSizeX());
         } else if (daPyMng_c::mNum > 1) {
-            f2 = 16.0f;
+            offset = 16.0f;
         }
     }
-    float bgX = dBgParameter_c::ms_Instance_p->fn_80082240(mPos.x);
-    float selfX = mVisibleAreaOffset.x + mPos.x + mVisibleAreaSize.x;
-    float bgX2 = bgX - f2;
-    if (selfX < bgX - 16.0f) {
+
+    float bgLeft = dBgParameter_c::ms_Instance_p->fn_80082240(mPos.x);
+    bgSide1 = bgLeft - 16.0f;
+    bgSide2 = bgLeft - offset;
+    edgePos = mPos.x + getVisOffsetX() + getVisSizeX();
+    if (edgePos < bgSide1) {
         onStatus(STATUS_B9);
         onStatus(STATUS_BA);
         if (isItemKinopio()) {
             onStatus(STATUS_B6);
         }
     }
-    if (selfX < bgX2) {
-        setBalloonInDispOut(1);
+    if (edgePos < bgSide2) {
+        setBalloonInDispOut(2);
     }
-    float bgSizeX = bgX + dBgParameter_c::ms_Instance_p->xSize();
-    float selfX2 = mVisibleAreaOffset.x + mPos.x - mVisibleAreaSize.x;
-    bgX += f2;
-    if (bgSizeX + 16.0f > selfX2) {
+
+    bgSide1 = bgLeft + dBgParameter_c::ms_Instance_p->xSize() + 16.0f;
+    bgSide2 = bgLeft + dBgParameter_c::ms_Instance_p->xSize() + offset;
+    edgePos = mPos.x + getVisOffsetX() - getVisSizeX();
+    if (edgePos > bgSide1) {
         onStatus(STATUS_B9);
         onStatus(STATUS_BA);
         if (isItemKinopio()) {
             onStatus(STATUS_B6);
         }
     }
-    if (selfX2 > bgX) {
+    if (edgePos > bgSide2) {
         setBalloonInDispOut(0);
     }
 }

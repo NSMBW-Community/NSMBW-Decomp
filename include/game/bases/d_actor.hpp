@@ -389,7 +389,9 @@ public:
     float getCenterX() { return getCenterPos().x; }
     float getCenterY() { return getCenterPos().y; }
 
+    float getVisOffsetX() { return mVisibleAreaOffset.x; }
     float getVisOffsetY() { return mVisibleAreaOffset.y; }
+    float getVisSizeX() { return mVisibleAreaSize.x; }
     float getVisSizeY() { return mVisibleAreaSize.y; }
 
     u8 getKindMask() { return 1 << mKind; }
