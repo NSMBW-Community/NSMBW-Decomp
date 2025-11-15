@@ -78,7 +78,7 @@ daPlBase_c::daPlBase_c() :
     changeDemoState(StateID_DemoNone, 0);
     changeState(StateID_None, 0);
     mAttentionMode = 3;
-    m_58 = 16.0f;
+    mViewLimitPadding = 16.0f;
     mEatBehaviour = 0;
 }
 
@@ -108,7 +108,7 @@ int daPlBase_c::preExecute() {
     if (isNowBgCross(BGC_IS_LIFT)) {
         mLastPos = m_cb0;
     }
-    m_20 = 0;
+    mBgPressFlags = 0;
     offStatus(STATUS_84);
     offStatus(STATUS_B7);
     offStatus(STATUS_40);
@@ -728,7 +728,10 @@ void daPlBase_c::setHipAttackEffect() {
         return;
     }
 
-    if ((groundTypeCheck1() || groundTypeCheck2()) && (groundTypeCheck3() || groundTypeCheck4())) {
+    if (
+        !(GROUND_TYPE_DEFAULT <= mGroundType && mGroundType <= GROUND_TYPE_CLOUD) &&
+        !(GROUND_TYPE_MANTA <= mGroundType && mGroundType <= GROUND_TYPE_CARPET)
+    ) {
         switch (mGroundType) {
             case GROUND_TYPE_FUNSUI:
             case GROUND_TYPE_LEAF:
@@ -2263,7 +2266,12 @@ void daPlBase_c::setRunFootEffect() {
         nullptr
     };
     if ((isNowBgCross(BGC_ON_SINK_SAND) | isNowBgCross(BGC_IN_SINK_SAND)) == 0 && isStatus(STATUS_62)) {
-        if ((groundTypeCheck5() && groundTypeCheck6()) || groundTypeCheck7() || groundTypeCheck8() || groundTypeCheck9()) {
+        if (
+            GROUND_TYPE_SNOW <= mGroundType && mGroundType <= GROUND_TYPE_ICE ||
+            mGroundType == GROUND_TYPE_WATER ||
+            mGroundType == GROUND_TYPE_FUNSUI ||
+            mGroundType == GROUND_TYPE_BEACH
+        ) {
             mVec3_c pos;
             mpMdlMng->mpMdl->getJointPos(&pos, 1);
             static const float sc_runFootScale[] = { 0.5f, 0.8f, 1.0f };
@@ -2473,7 +2481,6 @@ void daPlBase_c::setCreateAction(int action) {
 }
 
 bool daPlBase_c::isDemoType(DemoType_e type) {
-    // bool res = false;
     switch (type) {
         case DEMO_1:
             if (isDemoMode() && isStatus(STATUS_04)) {
@@ -2490,18 +2497,18 @@ bool daPlBase_c::isDemoType(DemoType_e type) {
                 return true;
             }
             break;
-        case DEMO_4:
-            if (!isItemKinopio() && (isStatus(STATUS_72) || isStatus(STATUS_71)) && (u8) m_60 <= 4) {
+        case DEMO_PLAYER:
+            if (!isItemKinopio() && (isStatus(STATUS_72) || isStatus(STATUS_71)) && mDemoState >= CONTROL_DEMO_WAIT && mDemoState <= CONTROL_DEMO_4) {
                 return true;
             }
             break;
-        case DEMO_5:
-            if (isItemKinopio() && (isStatus(STATUS_72) || isStatus(STATUS_71)) && (u8) m_60 <= 7) {
+        case DEMO_KINOPIO:
+            if (isItemKinopio() && (isStatus(STATUS_72) || isStatus(STATUS_71)) && mDemoState >= CONTROL_DEMO_WAIT && mDemoState <= CONTROL_DEMO_KINOPIO_SINK_SAND) {
                 return true;
             }
             break;
-        case DEMO_6:
-            if ((isStatus(STATUS_72) || isStatus(STATUS_71)) && m_60 == 8) {
+        case DEMO_ENDING_DANCE:
+            if ((isStatus(STATUS_72) || isStatus(STATUS_71)) && mDemoState == CONTROL_DEMO_ENDING_DANCE) {
                 return true;
             }
             break;
@@ -2519,7 +2526,7 @@ bool daPlBase_c::isDemo() {
 }
 
 bool daPlBase_c::isControlDemoAll() {
-    if (isDemoType(DEMO_4) || isDemoType(DEMO_5) || isDemoType(DEMO_6)) {
+    if (isDemoType(DEMO_PLAYER) || isDemoType(DEMO_KINOPIO) || isDemoType(DEMO_ENDING_DANCE)) {
         return true;
     }
     return false;
@@ -2533,7 +2540,7 @@ bool daPlBase_c::isDemoAll() {
 }
 
 bool daPlBase_c::isDemoMode() const {
-    return mDemoMode;
+    return mIsDemoMode != 0;
 }
 
 void daPlBase_c::onDemo() {
@@ -2545,7 +2552,7 @@ void daPlBase_c::onDemo() {
         daPyMng_c::mPauseEnableInfo &= ~(1 << mPlayerNo);
         daPyMng_c::mStopTimerInfo |= (1 << mPlayerNo);
     }
-    mDemoMode = true;
+    mIsDemoMode = true;
 }
 
 void daPlBase_c::offDemo() {
@@ -2557,7 +2564,7 @@ void daPlBase_c::offDemo() {
         daPyMng_c::mPauseEnableInfo |= (1 << mPlayerNo);
         daPyMng_c::mStopTimerInfo &= ~(1 << mPlayerNo);
     }
-    mDemoMode = false;
+    mIsDemoMode = false;
 }
 
 void daPlBase_c::changeNextScene(int param1) {
@@ -2747,23 +2754,23 @@ void daPlBase_c::finalizeState_DemoStartWait() {}
 
 void daPlBase_c::initializeState_DemoWait() {
     if (daPyDemoMng_c::mspInstance->checkDemoNo(mPlayerNo)) {
-        mDemoSubstate = 1;
+        mDemoSubstate = DEMO_WAIT_ACTION_1;
         m_10c8 = 0;
     } else {
-        mDemoSubstate = 0;
+        mDemoSubstate = DEMO_WAIT_ACTION_0;
     }
 }
 void daPlBase_c::finalizeState_DemoWait() {}
 void daPlBase_c::executeState_DemoWait() {
     if (mFader_c::mFader->isStatus(mFaderBase_c::HIDDEN)) {
-        switch (mDemoSubstate) {
-            case 0:
+        switch ((DemoWaitSubstate_e) mDemoSubstate) {
+            case DEMO_WAIT_ACTION_0:
                 if (daPyDemoMng_c::mspInstance->checkDemoNo(mPlayerNo)) {
-                    mDemoSubstate = 1;
+                    mDemoSubstate = DEMO_WAIT_ACTION_1;
                     m_10c8 = 10;
                 }
                 break;
-            case 1:
+            case DEMO_WAIT_ACTION_1:
                 if (m_10c8 == 0) {
                     daPyDemoMng_c::mspInstance->turnNextDemoNo();
                     switch ((int) mDemoStateChangeParam) {
@@ -2893,6 +2900,8 @@ void daPlBase_c::executeDemoInDokan(u8 dir) {
             if (isNowBgCross(BGC_14)) {
                 onOldBgCross(BGC_14);
             }
+            break;
+        default:
             break;
     }
 }
@@ -3764,7 +3773,7 @@ void daPlBase_c::setDemoGoal_MultiJump() {
     );
     dBc_c::checkGround(&pos, &pos.y, mLayer, 1, -1);
     mAngle.y = 0x4000;
-    m_60 = 4;
+    mDemoState = GOAL_DEMO_POLE_4;
     mpMdlMng->setAnm(88);
     if (daPyDemoMng_c::mspInstance->m_1c > 1) {
         initGoalJump(pos, daPlBase_c::sc_JumpSpeed + 1.5f);
@@ -3774,15 +3783,15 @@ void daPlBase_c::setDemoGoal_MultiJump() {
 }
 
 void daPlBase_c::executeDemoGoal_Pole() {
-    switch (m_60) {
-        case 0:
+    switch ((DemoGoalState_Pole_e) mDemoState) {
+        case GOAL_DEMO_POLE_0:
             if (!addCalcAngleY(-0x4000, 10) && mpMdlMng->mpMdl->mAnm.isStop()) {
-                m_60 = 1;
+                mDemoState = GOAL_DEMO_POLE_1;
                 mpMdlMng->setAnm(86);
                 onStatus(STATUS_66);
             }
             break;
-        case 1:
+        case GOAL_DEMO_POLE_1:
             if (isStatus(STATUS_67)) {
                 int polePlayer = daPyDemoMng_c::mspInstance->getPoleBelowPlayer(mPlayerNo);
                 if (polePlayer != -1) {
@@ -3794,58 +3803,58 @@ void daPlBase_c::executeDemoGoal_Pole() {
                         }
                     }
                 }
-                m_60 = 2;
+                mDemoState = GOAL_DEMO_POLE_2;
                 offStatus(STATUS_66);
                 daPyDemoMng_c::mspInstance->mFlags |= 1;
                 mSpeed.y = -1.9f;
             }
             break;
-        case 2: {
+        case GOAL_DEMO_POLE_2: {
             float tmp = m_a4;
             mPos.y += mSpeed.y;
             if (mPos.y < m_a4) {
                 mPos.y = m_a4;
                 onStatus(STATUS_68);
                 mSpeed.y = 0.0f;
-                m_60 = 3;
+                mDemoState = GOAL_DEMO_POLE_3;
                 mpMdlMng->setAnm(87);
             }
             break;
         }
-        case 3:
+        case GOAL_DEMO_POLE_3:
             if (isStatus(STATUS_69)) {
                 setDemoGoal_MultiJump();
             }
             break;
-        case 4:
+        case GOAL_DEMO_POLE_4:
             if (calcGoalJump()) {
-                m_60 = 5;
+                mDemoState = GOAL_DEMO_POLE_5;
                 mpMdlMng->setAnm(89);
                 setLandSE();
             }
             break;
-        case 5:
+        case GOAL_DEMO_POLE_5:
             if (mpMdlMng->mpMdl->mAnm.isStop()) {
                 mpMdlMng->setAnm(143);
-                m_60 = 6;
+                mDemoState = GOAL_DEMO_POLE_6;
                 m_10c8 = 5;
             }
             break;
-        case 6:
+        case GOAL_DEMO_POLE_6:
             if (m_10c8 == 0) {
                 onStatus(STATUS_6A);
-                m_60 = 7;
+                mDemoState = GOAL_DEMO_POLE_7;
             }
             break;
-        case 7:
+        case GOAL_DEMO_POLE_7:
             if (daPyDemoMng_c::mspInstance->mFlags & 8 && !addCalcAngleY(0, 10)) {
                 m_10c8 = 7;
-                m_60 = 8;
+                mDemoState = GOAL_DEMO_POLE_8;
             }
             break;
-        case 8:
+        case GOAL_DEMO_POLE_8:
             if (m_10c8 == 0) {
-                setDemoGoalMode(1, 0);
+                setDemoGoalMode(GOAL_DEMO_ACTION_WAIT, 0);
             }
             break;
     }
@@ -3855,19 +3864,19 @@ void daPlBase_c::executeDemoGoal_Wait() {
     if (isStatus(STATUS_6B)) {
         offStatus(STATUS_6B);
         onStatus(STATUS_6C);
-        setDemoGoalMode(2, 0);
+        setDemoGoalMode(GOAL_DEMO_ACTION_KIME_POSE, 0);
     }
     if (isStatus(STATUS_6D)) {
-        setDemoGoalMode(3, 0);
+        setDemoGoalMode(GOAL_DEMO_ACTION_RUN, 0);
     }
 }
 
 void daPlBase_c::executeDemoGoal_KimePose() {
-    if (m_5c && mpMdlMng->mpMdl->mAnm.checkFrame(107.0f)) {
+    if (mKimePoseState != 0 && mpMdlMng->mpMdl->mAnm.checkFrame(107.0f)) {
         daPlBase_c *pl = daPyMng_c::getPlayer(mPlayerNo);
         if (pl != nullptr) {
             if (pl->isItemKinopio()) {
-                if (m_5c == 2 || m_5c == 3) {
+                if (mKimePoseState == 2 || mKimePoseState == 3) {
                     if (pl->mPowerup == POWERUP_NONE) {
                         dScoreMng_c::m_instance->fn_800e25a0(8, mPlayerNo, 1);
                     } else {
@@ -3886,7 +3895,7 @@ void daPlBase_c::executeDemoGoal_KimePose() {
         }
     }
     if (vf284(0)) {
-        setDemoGoalMode(1, 0);
+        setDemoGoalMode(GOAL_DEMO_ACTION_WAIT, 0);
     }
 }
 
@@ -3894,21 +3903,21 @@ void daPlBase_c::executeDemoGoal_Run() {}
 
 void daPlBase_c::setDemoGoalMode(int mode, int param) {
     mDemoSubstate = mode;
-    m_60 = param;
+    mDemoState = param;
 }
 
 void daPlBase_c::executeState_DemoGoal() {
-    switch (mDemoSubstate) {
-        case 0:
+    switch ((DemoGoalSubstate_e) mDemoSubstate) {
+        case GOAL_DEMO_ACTION_POLE:
             executeDemoGoal_Pole();
             break;
-        case 1:
+        case GOAL_DEMO_ACTION_WAIT:
             executeDemoGoal_Wait();
             break;
-        case 2:
+        case GOAL_DEMO_ACTION_KIME_POSE:
             executeDemoGoal_KimePose();
             break;
-        case 3:
+        case GOAL_DEMO_ACTION_RUN:
             executeDemoGoal_Run();
             break;
     }
@@ -3956,7 +3965,7 @@ bool daPlBase_c::calcGoalJump() {
 
 void daPlBase_c::initDemoKimePose() {
     onStatus(STATUS_6C);
-    m_5c = 0;
+    mKimePoseState = 0;
 }
 
 bool daPlBase_c::vf284(int) {
@@ -3992,9 +4001,9 @@ void daPlBase_c::fn_80051d00(int p) {
 }
 
 bool daPlBase_c::startControlDemo() {
-    if (isDemoType(DEMO_4)) {
+    if (isDemoType(DEMO_PLAYER)) {
         return true;
-    } else if (isDemoType(DEMO_6)) {
+    } else if (isDemoType(DEMO_ENDING_DANCE)) {
         changeDemoState(StateID_DemoControl, 0);
         return true;
     } else {
@@ -4020,14 +4029,14 @@ void daPlBase_c::setControlDemoDir(u8 dir) {
 
 void daPlBase_c::setControlDemoWait() {
     if (isStatus(STATUS_72)) {
-        m_60 = 0;
+        mDemoState = CONTROL_DEMO_WAIT;
         changeState(StateID_Walk, (void *) 1);
     }
 }
 
 bool daPlBase_c::isControlDemoWait() {
     if (isStatus(STATUS_72)) {
-        if (m_60 == 0) {
+        if (mDemoState == CONTROL_DEMO_WAIT) {
             return true;
         }
     }
@@ -4037,7 +4046,7 @@ bool daPlBase_c::isControlDemoWait() {
 void daPlBase_c::setControlDemoWalk(const float &f1, const float &f2) {
     if (isStatus(STATUS_72)) {
         m_bc = f1;
-        m_60 = 1;
+        mDemoState = CONTROL_DEMO_WALK;
         m_c8 = std::fabs(f2);
         if (m_c8 > *(getSpeedData() + 2)) {
             m_c8 = *(getSpeedData() + 2);
@@ -4047,7 +4056,7 @@ void daPlBase_c::setControlDemoWalk(const float &f1, const float &f2) {
 
 bool daPlBase_c::isControlDemoWalk() {
     if (isStatus(STATUS_72)) {
-        if (m_60 == 1) {
+        if (mDemoState == CONTROL_DEMO_WALK) {
             return true;
         }
     }
@@ -4056,7 +4065,7 @@ bool daPlBase_c::isControlDemoWalk() {
 
 void daPlBase_c::setControlDemoAnm(int anmNo) {
     if (isStatus(STATUS_72)) {
-        m_60 = 2;
+        mDemoState = CONTROL_DEMO_ANM;
         changeState(StateID_AnimePlay, nullptr);
         dPyAnm_HIO_c &hio = dPyMdlMng_c::m_hio.mPyAnm.mAnm[anmNo & 0xff];
         mpMdlMng->setAnm(anmNo, hio, 0.0f);
@@ -4064,7 +4073,7 @@ void daPlBase_c::setControlDemoAnm(int anmNo) {
 }
 bool daPlBase_c::isControlDemoAnm(int anmNo) {
     if (isStatus(STATUS_72)) {
-        if (m_60 == 2 && anmNo == mpMdlMng->mpMdl->m_154) {
+        if (mDemoState == CONTROL_DEMO_ANM && anmNo == mpMdlMng->mpMdl->m_154) {
             return true;
         }
     }
@@ -4073,26 +4082,26 @@ bool daPlBase_c::isControlDemoAnm(int anmNo) {
 
 void daPlBase_c::fn_80052290(int param) {
     if (isStatus(STATUS_72)) {
-        m_60 = 3;
+        mDemoState = CONTROL_DEMO_ANM_2;
         changeState(StateID_AnimePlay, (void *) param);
     }
 }
 
 void daPlBase_c::setControlDemoKinopioWalk() {
-    if (mDemoStateMgr.getStateID()->isEqual(StateID_DemoNone) || (isDemoType(DEMO_5) && m_60 != 5)) {
-        changeDemoState(StateID_DemoControl, DEMO_5);
+    if (mDemoStateMgr.getStateID()->isEqual(StateID_DemoNone) || (isDemoType(DEMO_KINOPIO) && mDemoState != CONTROL_DEMO_KINOPIO_WALK)) {
+        changeDemoState(StateID_DemoControl, CONTROL_DEMO_KINOPIO_WALK);
     }
 }
 
 void daPlBase_c::setControlDemoKinopioSwim() {
-    if (mDemoStateMgr.getStateID()->isEqual(StateID_DemoNone) || (isDemoType(DEMO_5) && m_60 != 6)) {
-        changeDemoState(StateID_DemoControl, DEMO_6);
+    if (mDemoStateMgr.getStateID()->isEqual(StateID_DemoNone) || (isDemoType(DEMO_KINOPIO) && mDemoState != CONTROL_DEMO_KINOPIO_SWIM)) {
+        changeDemoState(StateID_DemoControl, CONTROL_DEMO_KINOPIO_SWIM);
     }
 }
 
 void daPlBase_c::setControlDemoEndingDance() {
     if (!isControlDemoAll()) {
-        changeDemoState(StateID_DemoControl, DEMO_8);
+        changeDemoState(StateID_DemoControl, CONTROL_DEMO_ENDING_DANCE);
     }
 }
 
@@ -4157,15 +4166,15 @@ void daPlBase_c::initializeState_DemoControl() {
     mKey.onStatus(dAcPyKey_c::STATUS_DEMO);
     onStatus(STATUS_72);
     offStatus(STATUS_71);
-    mDemoMode = 0;
+    mIsDemoMode = false;
     initializeDemoControl();
-    m_60 = (u8) (int) mDemoStateChangeParam;
-    switch (m_60) {
-        case DEMO_4:
+    mDemoState = (u8) (int) mDemoStateChangeParam;
+    switch (mDemoState) {
+        case CONTROL_DEMO_4:
             m_10c8 = 60;
             onStatus(STATUS_7A);
             break;
-        case DEMO_5:
+        case CONTROL_DEMO_KINOPIO_WALK:
             m_bc = mPos.x;
             m_c8 = 0.9f;
             m_cc = mDirection;
@@ -4174,7 +4183,7 @@ void daPlBase_c::initializeState_DemoControl() {
                 m_cc ^= 1;
             }
             break;
-        case DEMO_6:
+        case CONTROL_DEMO_KINOPIO_SWIM:
             if (mSpeedF > 0.0f) {
                 m_cc = 0;
             } else {
@@ -4192,7 +4201,7 @@ void daPlBase_c::finalizeState_DemoControl() {
     offStatus(STATUS_74);
     offStatus(STATUS_63);
     offStatus(STATUS_73);
-    if (m_60 == DEMO_4) {
+    if (mDemoState == CONTROL_DEMO_4) {
         offStatus(STATUS_7A);
     }
 }
@@ -4207,8 +4216,8 @@ void daPlBase_c::executeState_DemoControl() {
         }
     }
 
-    switch (m_60) {
-        case 1: {
+    switch ((ControlDemoState_e) mDemoState) {
+        case CONTROL_DEMO_WALK: {
             onStatus(STATUS_74);
             if (isNowBgCross(BGC_IS_FOOT)) {
                 if (!mStateMgr.getStateID()->isEqual(StateID_Walk) && !mStateMgr.getStateID()->isEqual(StateID_Turn)) {
@@ -4220,7 +4229,7 @@ void daPlBase_c::executeState_DemoControl() {
                 }
             }
             if (std::fabs(mPos.x - m_bc) < m_c8) {
-                m_60 = 0;
+                mDemoState = CONTROL_DEMO_WAIT;
                 mSpeedF = 0.0f;
                 mPos.x = m_bc;
                 break;
@@ -4234,23 +4243,23 @@ void daPlBase_c::executeState_DemoControl() {
             mSpeedF = -m_c8;
                 break;
         }
-        case 4: {
+        case CONTROL_DEMO_4: {
             if (m_10c8 == 0) {
                 changeDemoState(StateID_DemoNone, 0);
             }
             break;
         }
-        case 5: {
+        case CONTROL_DEMO_KINOPIO_WALK: {
             if (
                 !isNowBgCross(BGC_IS_FOOT) ||
                 !mStateMgr.getStateID()->isEqual(StateID_Walk) && !mStateMgr.getStateID()->isEqual(StateID_Turn)
             ) {
-                m_60 = 0;
+                mDemoState = CONTROL_DEMO_WAIT;
                 break;
             }
             onStatus(STATUS_74);
             if ((isNowBgCross(BGC_ON_SINK_SAND) | isNowBgCross(BGC_IN_SINK_SAND)) || (checkKinopioWaitBG(0) && checkKinopioWaitBG(1))) {
-                m_60 = 7;
+                mDemoState = CONTROL_DEMO_KINOPIO_SINK_SAND;
                 m_c8 = 0.0f;
                 mSpeedF = 0.0f;
                 break;
@@ -4279,9 +4288,9 @@ void daPlBase_c::executeState_DemoControl() {
             }
             break;
         }
-        case 6: {
+        case CONTROL_DEMO_KINOPIO_SWIM: {
             if (!mStateMgr.getStateID()->isEqual(StateID_Swim)) {
-                m_60 = 0;
+                mDemoState = CONTROL_DEMO_WAIT;
                 break;
             }
             onStatus(STATUS_74);
@@ -4297,12 +4306,12 @@ void daPlBase_c::executeState_DemoControl() {
             }
             break;
         }
-        case 7: {
+        case CONTROL_DEMO_KINOPIO_SINK_SAND: {
             if (
                 !isNowBgCross(BGC_IS_FOOT) ||
                 !mStateMgr.getStateID()->isEqual(StateID_Walk) && !mStateMgr.getStateID()->isEqual(StateID_Turn)
             ) {
-                m_60 = 0;
+                mDemoState = CONTROL_DEMO_WAIT;
                 break;
             }
             onStatus(STATUS_74);
@@ -4328,7 +4337,7 @@ void daPlBase_c::fn_80052ef0(int p2, int p3, int p4) {
             fn_80057e70(SE_PLY_DOKAN_IN_OUT, false);
             break;
         case 1:
-            mDemoMode = 0;
+            mIsDemoMode = false;
             if (!isStatus(STATUS_3C)) {
                 changeState(StateID_Fall, nullptr);
             }
@@ -4368,14 +4377,14 @@ void daPlBase_c::executeState_DemoNextGotoBlock() {
 
 void daPlBase_c::updateEndingDance() {
     offStatus(STATUS_75);
-    if (!dScStage_c::m_isStaffCredit || isDemoType(DEMO_4)) {
+    if (!dScStage_c::m_isStaffCredit || isDemoType(DEMO_PLAYER)) {
         return;
     }
     int cond = 0;
     if (dGameKey_c::m_instance->checkButtonsDown(mPlayerNo) || dGameKey_c::m_instance->checkShaking(mPlayerNo)) {
         cond = 1;
     }
-    if (!isDemoType(DEMO_6)) {
+    if (!isDemoType(DEMO_ENDING_DANCE)) {
         if (cond == 1) {
             m_ec = 0;
         } else {
@@ -4444,7 +4453,7 @@ bool daPlBase_c::setEnemyStageClearDemo() {
         ) {
             return false;
         }
-        if (!isDemoType(DEMO_4)) {
+        if (!isDemoType(DEMO_PLAYER)) {
             changeDemoState(StateID_DemoControl, 0);
         }
         mSpeed.y = 0.0f;
@@ -4678,7 +4687,7 @@ bool daPlBase_c::calcCcPlayerRev(float *f) {
         if (isStatus(STATUS_2C) || mTimer_1074 != 0) {
             tmp = 0.0f;
         }
-        if (isDemoType(DEMO_4) && isNowBgCross(BGC_IS_FOOT)) {
+        if (isDemoType(DEMO_PLAYER) && isNowBgCross(BGC_IS_FOOT)) {
             tmp = 0.0f;
         }
         float prev_1064 = m_1064;
@@ -4693,7 +4702,7 @@ bool daPlBase_c::calcCcPlayerRev(float *f) {
             }
             if (mSpeedF * prev_1064 <= 0.0f) {
                 *f = m;
-                if (isDemoType(DEMO_4) || isStatus(STATUS_5F)) {
+                if (isDemoType(DEMO_PLAYER) || isStatus(STATUS_5F)) {
                     return false;
                 }
                 float f1 = m_1060;
@@ -4728,7 +4737,7 @@ bool daPlBase_c::isEnableStampPlayerJump(dCc_c *cc1, dCc_c *cc2) {
     if (other->isLiftUp() || other->mTimer_10) {
         return false;
     }
-    if (isDemoType(DEMO_4) || other->isDemoType(DEMO_4)) {
+    if (isDemoType(DEMO_PLAYER) || other->isDemoType(DEMO_PLAYER)) {
         return false;
     }
     float topPos = cc2->getTopPos() - 16.0f;
@@ -4779,7 +4788,7 @@ void daPlBase_c::setReductionScale() {
 }
 
 void daPlBase_c::initStampReduction() {
-    if (!isStatus(STATUS_0A) || m_04 == 0) {
+    if (!isStatus(STATUS_0A) || mSquishKeyframeIdx == 0) {
         mTimer_0c = 4;
     }
     mTimer_10 = 10;
@@ -4791,36 +4800,36 @@ void daPlBase_c::calcJumpDaiReductionScale(int i1, int i2) {
     if (i1 > i2) {
         i1 = i2;
     }
-    m_08 = i1 * 0.6f / i2;
-    m_00 = 1;
+    mSquishScale = i1 * 0.6f / i2;
+    mReductionMode = 1;
 }
 
 void daPlBase_c::setReductionBoyon() {
-    m_00 = 3;
-    m_04 = 4;
+    mReductionMode = 3;
+    mSquishKeyframeIdx = 4;
 }
 
 void daPlBase_c::calcReductionScale() {
-    switch (m_00) {
+    switch (mReductionMode) {
         case 1:
-            m_00 = 2;
+            mReductionMode = 2;
             break;
         case 2:
             setReductionBoyon();
             break;
         case 3:
-            if (m_04) {
-                int idx = m_04 - 1;
+            if (mSquishKeyframeIdx) {
+                int idx = mSquishKeyframeIdx - 1;
                 /// @unofficial
                 static const float floats[] = { 0.0f, 0.2f, 0.0f, 0.4f };
                 /// @unofficial
                 static const float floats2[] = { 0.02f, 0.025f, 0.04f, 0.06f };
-                if (sLib::chase(&m_08, floats[idx], floats2[idx])) {
-                    m_04--;
+                if (sLib::chase(&mSquishScale, floats[idx], floats2[idx])) {
+                    mSquishKeyframeIdx--;
                 }
             }
-            if (m_04 == 0) {
-                m_00 = 0;
+            if (mSquishKeyframeIdx == 0) {
+                mReductionMode = 0;
             }
             break;
     }
@@ -4828,9 +4837,9 @@ void daPlBase_c::calcReductionScale() {
 
 mVec3_c daPlBase_c::getReductionModelScale() {
     return mVec3_c(
-        1.0f + m_08,
-        1.0f - m_08,
-        1.0f + m_08
+        1.0f + mSquishScale,
+        1.0f - mSquishScale,
+        1.0f + mSquishScale
     );
 }
 
@@ -5237,8 +5246,8 @@ void daPlBase_c::checkBgCross() {
 bool daPlBase_c::isCarryObjBgCarried(u8 i) {
     dBg_ctr_c *ctrWall = mBc.mpCtrWalls[i];
     if (ctrWall != nullptr) {
-        mVec2_c tmp = ctrWall->m_a0 - ctrWall->m_ac;
-        set_m_d80(i, tmp.x);
+        float f = (ctrWall->m_a0 - ctrWall->m_ac).x;
+        set_m_d80(i, f);
         if (ctrWall->m_d0 & 0x800) {
             dActor_c* carriedActor = ctrWall->mpActor;
             if (carriedActor != nullptr && carriedActor->checkCarried(0)) {
@@ -5397,7 +5406,7 @@ void daPlBase_c::checkDamageBg() {
     ) {
         return;
     }
-    if (!isDemoAll() || isDemoType(DEMO_5)) {
+    if (!isDemoAll() || isDemoType(DEMO_KINOPIO)) {
         m_db4 = mBc.m_e0;
         m_db5 = mBc.m_e1;
         switch (m_db6) {
@@ -5461,18 +5470,18 @@ bool daPlBase_c::checkBGCrossWall(u8 direction) {
 }
 
 void daPlBase_c::checkSideViewLemit() {
-    if (!daPyDemoMng_c::mspInstance->m_94 && isDemoType(DEMO_4)) {
+    if (!daPyDemoMng_c::mspInstance->m_94 && isDemoType(DEMO_PLAYER)) {
         return;
     }
     if (isStatus(STATUS_53) || isStatus(STATUS_6F) || isStatus(STATUS_8D)) {
         return;
     }
     if (dScStage_c::m_loopType == 0) {
-        float tmpL = dBg_c::m_bg_p->getLeftLimit() + m_58;
+        float tmpL = dBg_c::m_bg_p->getLeftLimit() + mViewLimitPadding;
         if (mPos.x <= tmpL) {
             calcSideLimitMultL(tmpL);
         }
-        float tmpR = dBg_c::m_bg_p->getRightLimit() - m_58;
+        float tmpR = dBg_c::m_bg_p->getRightLimit() - mViewLimitPadding;
         if (mPos.x >= tmpR) {
             calcSideLimitMultR(tmpR);
         }
@@ -5534,8 +5543,8 @@ bool daPlBase_c::checkDispSideLemit() {
         return false;
     }
     float l = dBgParameter_c::ms_Instance_p->fn_80082240(mPos.x);
-    float s = l + m_58;
-    float m = l + dBgParameter_c::ms_Instance_p->xSize() - m_58 + 1.0f;
+    float s = l + mViewLimitPadding;
+    float m = l + dBgParameter_c::ms_Instance_p->xSize() - mViewLimitPadding + 1.0f;
     switch (m_1079) {
         case 0:
             if (mPos.x < s) {
@@ -5595,8 +5604,8 @@ void daPlBase_c::fn_80055d00() {
         return;
     }
     float l = dBgParameter_c::ms_Instance_p->fn_80082240(mPos.x);
-    float s = l + m_58;
-    float m = l + dBgParameter_c::ms_Instance_p->xSize() - m_58 + 1.0f;
+    float s = l + mViewLimitPadding;
+    float m = l + dBgParameter_c::ms_Instance_p->xSize() - mViewLimitPadding + 1.0f;
     if (mPos.x < s) {
         m_1079 = 1;
         m_1080 = mPos.x - s;
@@ -5649,7 +5658,7 @@ void daPlBase_c::checkDispOver() {
         }
         underOverCheck();
         checkPressBg();
-        m_1c = 0;
+        mBgPressActive = 0;
         setBgDamage();
     }
     checkDisplayOutDead();
@@ -5730,21 +5739,21 @@ void daPlBase_c::checkDisplayOutDead() {
 }
 
 void daPlBase_c::fn_80056370(dActor_c *actor, int i) {
-    m_1c |= (1 << i);
+    mBgPressActive |= (1 << i);
     if (actor != nullptr) {
-        mIDs[i] = actor->mUniqueID;
+        mBgPressIDs[i] = actor->mUniqueID;
     } else {
-        mIDs[i] = (fBaseID_e) 0;
+        mBgPressIDs[i] = (fBaseID_e) 0;
     }
 }
 
 bool daPlBase_c::isBgPress(dActor_c *actor) {
-    u32 param = m_20;
+    u32 param = mBgPressFlags;
     if (param == 0) {
         return false;
     }
     for (int i = 1; i <= 12; i++){
-        if (param & (1 << i) && mIDs[i] == actor->getID()) {
+        if (param & (1 << i) && mBgPressIDs[i] == actor->getID()) {
             return true;
         }
     }
@@ -5802,26 +5811,26 @@ bool daPlBase_c::checkPressBg() {
         mPos.y >= -1420.0f
     ) {
         if (setPressBgDamage(DAMAGE_B, 1)) {
-            m_20 |= 0x8;
+            mBgPressFlags |= 0x8;
             return true;
         }
     }
-    if (m_1c & 0x20a && m_1c & 0x414 && isEnablePressUD()) {
-        if (m_1c & 0x18 && setPressBgDamage(DAMAGE_B, 1)) {
-            if (m_1c & 0x8) {
-                m_20 |= 0x8;
+    if (mBgPressActive & 0x20a && mBgPressActive & 0x414 && isEnablePressUD()) {
+        if (mBgPressActive & 0x18 && setPressBgDamage(DAMAGE_B, 1)) {
+            if (mBgPressActive & 0x8) {
+                mBgPressFlags |= 0x8;
             }
-            if (m_1c & 0x10) {
-                m_20 |= 0x10;
+            if (mBgPressActive & 0x10) {
+                mBgPressFlags |= 0x10;
             }
             return true;
         }
-        if (m_1c & 6 && setPressBgDamage(DAMAGE_1, 1)) {
-            if (m_1c & 2) {
-                m_20 |= 0x2;
+        if (mBgPressActive & 6 && setPressBgDamage(DAMAGE_1, 1)) {
+            if (mBgPressActive & 2) {
+                mBgPressFlags |= 0x2;
             }
-            if (m_1c & 4) {
-                m_20 |= 0x4;
+            if (mBgPressActive & 4) {
+                mBgPressFlags |= 0x4;
             }
             return true;
         }
@@ -5829,22 +5838,22 @@ bool daPlBase_c::checkPressBg() {
     if (isStatus(STATUS_3C)) {
         return false;
     }
-    if (m_1c & 0x1140 && m_1c & 0x8a0 && isEnablePressLR()) {
-        if (m_1c & 0x60 && setPressBgDamage(DAMAGE_B, 0)) {
-            if (m_1c & 0x20) {
-                m_20 |= 0x20;
+    if (mBgPressActive & 0x1140 && mBgPressActive & 0x8a0 && isEnablePressLR()) {
+        if (mBgPressActive & 0x60 && setPressBgDamage(DAMAGE_B, 0)) {
+            if (mBgPressActive & 0x20) {
+                mBgPressFlags |= 0x20;
             }
-            if (m_1c & 0x40) {
-                m_20 |= 0x40;
+            if (mBgPressActive & 0x40) {
+                mBgPressFlags |= 0x40;
             }
             return true;
         }
-        if (m_1c & 0x180 && setPressBgDamage(DAMAGE_1, 0)) {
-            if (m_1c & 0x80) {
-                m_20 |= 0x80;
+        if (mBgPressActive & 0x180 && setPressBgDamage(DAMAGE_1, 0)) {
+            if (mBgPressActive & 0x80) {
+                mBgPressFlags |= 0x80;
             }
-            if (m_1c & 0x100) {
-                m_20 |= 0x100;
+            if (mBgPressActive & 0x100) {
+                mBgPressFlags |= 0x100;
             }
             return true;
         }
