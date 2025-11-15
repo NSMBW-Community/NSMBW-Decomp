@@ -11,6 +11,8 @@ public:
     u8 m_90009;
     u8 mPad5[0x4c];
     bool m_9004c;
+    u8 mPad6[0x37];
+    u8 m_9008e;
 
     void setWaterInWave(float x, float y, u8 type);
     float getLeftLimit();
