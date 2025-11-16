@@ -16,8 +16,8 @@ public:
     enum DamageType_e {
         DAMAGE_NONE,
         DAMAGE_1, DAMAGE_2, DAMAGE_3, DAMAGE_4,
-        DAMAGE_5, DAMAGE_6, DAMAGE_7, DAMAGE_8,
-        DAMAGE_9, DAMAGE_A, DAMAGE_B, DAMAGE_C
+        DAMAGE_5, DAMAGE_6, DAMAGE_YOGAN, DAMAGE_8,
+        DAMAGE_9, DAMAGE_POISON, DAMAGE_B, DAMAGE_C
     };
 
     enum DokanDir_e {
@@ -87,6 +87,16 @@ public:
         ANIME_PLAY_ACTION_0,
         ANIME_PLAY_ACTION_1,
         ANIME_PLAY_ACTION_2
+    };
+
+    /// @unofficial
+    enum DemoAnime_e {
+        DEMO_ANIME_NORMAL,
+        DEMO_ANIME_BOSS_SET_UP,
+        DEMO_ANIME_BOSS_GLAD,
+        DEMO_ANIME_BOSS_ATTENTION,
+        DEMO_ANIME_BOSS_KEY_GET,
+        DEMO_ANIME_BOSS_GLAD_2
     };
 
     /// @unofficial
@@ -919,20 +929,20 @@ public:
     int mTimer_f4;
     int mTimer_f8;
     s8 m_fc;
-    dEf::followEffect_c mFollowEf;
-    mEf::levelEffect_c mLevelEf1;
+    dEf::followEffect_c mTurnSmokeEffect; ///< The wind effect when turning around after running.
+    mEf::levelEffect_c mHitAttackDropEffect; ///< The wind effect when doing a ground pound.
     u32 m_344;
     mVec3_c m_348;
     float m_354;
     int mFallTimer;
-    int m_35c;
+    DemoAnime_e mDemoAnime;
     u32 m_360;
-    mEf::levelEffect_c mLevelEfs2;
-    mEf::levelEffect_c mLevelEfs3;
-    mEf::levelEffect_c mLevelEfs4;
-    mEf::levelEffect_c mLevelEfs5;
-    mEf::levelEffect_c mLevelEfs6;
-    mEf::levelEffect_c mLevelEfs7;
+    mEf::levelEffect_c mFunsuiSmokeEffect; ///< Effect when being sent upwards by a sand fountain.
+    mEf::levelEffect_c mSlipSmokeEffect; ///< Smoke when sliding down a slope.
+    mEf::levelEffect_c mBrakeSmokeEffect; ///< Smoke when turning around after running.
+    mEf::levelEffect_c mRunEffect; ///< E.g. sand particles / snowflakes when running.
+    mEf::levelEffect_c mQuicksandSplashEffect; ///< Sand splash effect when landing on quicksand.
+    mEf::levelEffect_c mQuicksandSinkEffect; ///< Sand particles when the player is submerged in quicksand.
     dPyMdlMng_c *mpMdlMng;
     dAudio::SndObjctPly_c mSndObj;
     dAcPyKey_c mKey;
@@ -943,16 +953,15 @@ public:
     float mSomeYOffset;
     u8 mPad14[1];
     u8 m_ca1;
-    u8 m_ca2;
-    u8 mPad15[1];
-    mVec3_c m_ca4;
-    mVec3_c m_cb0;
+    u8 mZPosLayer;
+    mVec3_c mLastPosDelta;
+    mVec3_c mLiftRelatedPos;
     float m_cbc;
     float m_cc0;
     float m_cc4;
     float m_cc8;
-    float *m_ccc;
-    float *m_cd0;
+    float *mSpeedDataNormal;
+    float *mSpeedDataStar;
     float *mGravityData;
     int mNoGravityTimer;
     u32 m_cdc;
@@ -964,17 +973,19 @@ public:
     s8 mPlComboCount;
     u32 m_cf0;
     u32 mFollowMameKuribo;
-    u8 mPad17_5[4];
+    u8 mPad15[4];
     PLAYER_POWERUP_e mPowerup;
     u8 mPad18[0x2c];
     int m_d2c;
-    mVec3_c m_d30;
+    mVec3_c mBgPushForce; ///< Belts, quicksand etc.
     float m_d3c;
+
     u32 mNowBgCross1;
     u32 mNowBgCross2;
     u32 mOldBgCross1;
     u32 mOldBgCross2;
     u32 mBgCrossHistory[10];
+
     u32 m_d78;
     u32 m_d7c;
     float m_d80[2];
@@ -985,15 +996,15 @@ public:
     short m_d96;
     mAng m_d98, m_d9a, m_d9c;
     int m_da0;
-    float m_da4;
-    float m_da8;
+    float mWaterHeight;
+    float mPrevWaterHeight;
     u32 m_dac;
     float m_db0;
-    u8 m_db4;
-    s8 m_db5;
-    u8 m_db6;
-    mVec3_c m_db8;
-    short m_dc4;
+    bool mIsBgDamage;
+    s8 mBgDamageType;
+    u8 mWaterType; ///< Value is a dBc_c::WATER_TYPE_e.
+    mVec3_c mAirWaterHitPos;
+    short mAirWaterHitAngle;
     float m_dc8;
     float m_dcc;
     dCc_c mCc1, mAttCc1, mAttCc2, mAttCc3;
@@ -1004,14 +1015,14 @@ public:
     bool m_1070;
     bool m_1071;
     int mTimer_1074;
-    u8 m_1078;
-    u8 m_1079;
-    float m_107c;
-    float m_1080;
+    u8 mDispLimitRelatedL;
+    u8 mDispLimitRelatedR;
+    float mDispLimitRelatedL2;
+    float mDispLimitRelatedR2;
     sFStateMgr_c<daPlBase_c, sStateMethodUsr_FI_c> mDemoStateMgr;
     void *mDemoStateChangeParam; ///< To be used as a kind of argument to the new demo state.
     int mDemoSubstate; ///< Demo states can use this as a kind of sub-state variable (cast to some enum)
-    int m_10c8;
+    int mDemoWaitTimer;
     u8 mIsDemoMode;
     sFStateMgr_c<daPlBase_c, sStateMethodUsr_FI_c> mStateMgr;
     void *mStateChangeParam; ///< To be used as a kind of argument to the new state.
@@ -1026,7 +1037,7 @@ public:
     float m_1134;
     float m_1138;
     float m_113c;
-    int m_1140;
+    int mDokanCenterOffsetType;
 
     static const float sc_DirSpeed[2];
     static const float sc_JumpSpeed;

@@ -79,7 +79,7 @@ public:
     mAng mAdjacentSlopeAngle;
     char mPad7[0x12];
     float mIceSpeed;
-    u8 m_e0;
+    bool m_e0;
     u8 m_e1;
     u8 m_e2;
     bool mMovingLeft;

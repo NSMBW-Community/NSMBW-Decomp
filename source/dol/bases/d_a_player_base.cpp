@@ -106,7 +106,7 @@ int daPlBase_c::preExecute() {
     }
     onStatus(STATUS_01);
     if (isNowBgCross(BGC_IS_LIFT)) {
-        mLastPos = m_cb0;
+        mLastPos = mLiftRelatedPos;
     }
     mBgPressFlags = 0;
     offStatus(STATUS_84);
@@ -136,8 +136,8 @@ int daPlBase_c::execute() {
 
 void daPlBase_c::postExecute(fBase_c::MAIN_STATE_e status) {
     if (status == SUCCESS) {
-        m_ca4 = mLastPos - mPos;
-        m_cb0 = mPos;
+        mLastPosDelta = mLastPos - mPos;
+        mLiftRelatedPos = mPos;
         offStatus(STATUS_1A);
         offStatus(STATUS_1B);
         offStatus(STATUS_BE);
@@ -649,7 +649,7 @@ void daPlBase_c::slipActionMove(int param) {
             }
         }
     } else {
-        if (m_1114) {
+        if (m_1114 != 0) {
             mAccelY = 0.0f;
             onStatus(STATUS_98);
         } else {
@@ -749,9 +749,9 @@ void daPlBase_c::setHipAttackDropEffect() {
     static const float sc_dropEffectScale[] = { 0.7f, 0.8f, 1.0f };
     mVec3_c pos;
     mpMdlMng->mpMdl->getJointPos(&pos, 1);
-    float sz = sc_dropEffectScale[getTallType(-1)];
-    mVec3_c size(sz, sz, sz);
-    dEf::createPlayerEffect(mPlayerNo, &mLevelEf1, "Wm_mr_drop", 0, &pos, nullptr, &size);
+    float scale = sc_dropEffectScale[getTallType(-1)];
+    mVec3_c scaleVec(scale, scale, scale);
+    dEf::createPlayerEffect(mPlayerNo, &mHitAttackDropEffect, "Wm_mr_drop", 0, &pos, nullptr, &scaleVec);
 }
 
 void daPlBase_c::setHipBlockBreak() {
@@ -831,7 +831,7 @@ void daPlBase_c::HipAction_Ready() {
 }
 
 void daPlBase_c::HipAction_AttackStart() {
-    if (!m_1114) {
+    if (m_1114 == 0) {
         setHipAttack_AttackFall();
     }
 }
@@ -1213,7 +1213,7 @@ void daPlBase_c::finalizeState_Funsui() {
 }
 void daPlBase_c::executeState_Funsui() {
     if (mPlayerNo >= 0) {
-        dEf::createPlayerEffect(mPlayerNo, &mLevelEfs2, "Wm_mr_sprisesmoke", 0, &mPos, nullptr, nullptr);
+        dEf::createPlayerEffect(mPlayerNo, &mFunsuiSmokeEffect, "Wm_mr_sprisesmoke", 0, &mPos, nullptr, nullptr);
         if (m_1114 == 0) {
             m_1114 = 8;
             dQuake_c::m_instance->shockMotor(mPlayerNo, dQuake_c::TYPE_8, 0, false);
@@ -1316,8 +1316,8 @@ bool daPlBase_c::updateCloudMove() {
 void daPlBase_c::executeState_Cloud() {}
 
 void daPlBase_c::initializeState_AnimePlay() {
-    m_35c = (int) mStateChangeParam;
-    if (m_35c) {
+    mDemoAnime = (DemoAnime_e) (int) mStateChangeParam;
+    if (mDemoAnime != DEMO_ANIME_NORMAL) {
         onStatus(STATUS_03);
     }
 }
@@ -1342,7 +1342,7 @@ void daPlBase_c::executeState_AnimePlay() {
     moveSpeedSet();
     powerSet();
     if (isStatus(STATUS_03) || checkWalkNextAction() == 0) {
-        (this->*scDemoAnmFunc[m_35c])();
+        (this->*scDemoAnmFunc[mDemoAnime])();
     }
 }
 
@@ -1380,7 +1380,7 @@ void daPlBase_c::DemoAnmBossGlad() {
             break;
         case ANIME_PLAY_ACTION_2: {
             int arg = 1;
-            if (m_35c == 5) {
+            if (mDemoAnime == DEMO_ANIME_BOSS_GLAD_2) {
                 arg = 2;
             }
             if (!vf284(arg)) {
@@ -2146,7 +2146,7 @@ void daPlBase_c::setSlipSmokeEffect() {
     };
 
     if (mGroundType == GROUND_TYPE_WATER) {
-        setSlipOnWaterEffect(&mLevelEfs3);
+        setSlipOnWaterEffect(&mSlipSmokeEffect);
         return;
     }
     mVec3_c pos;
@@ -2155,7 +2155,7 @@ void daPlBase_c::setSlipSmokeEffect() {
     if (mPowerup != POWERUP_MINI_MUSHROOM) {
         idx = 1;
     }
-    dEf::createPlayerEffect_change(mPlayerNo, &mLevelEfs3, sc_slipSmokeEffectID[mGroundType][idx], 0, &pos, nullptr, nullptr);
+    dEf::createPlayerEffect_change(mPlayerNo, &mSlipSmokeEffect, sc_slipSmokeEffectID[mGroundType][idx], 0, &pos, nullptr, nullptr);
 }
 
 void daPlBase_c::setBrakeSmokeEffect(mVec3_c &offset) {
@@ -2176,14 +2176,14 @@ void daPlBase_c::setBrakeSmokeEffect(mVec3_c &offset) {
     };
 
     if (mGroundType == GROUND_TYPE_WATER) {
-        setSlipOnWaterEffect(&mLevelEfs4);
+        setSlipOnWaterEffect(&mBrakeSmokeEffect);
         return;
     }
     int idx = 0;
     if (mPowerup != POWERUP_MINI_MUSHROOM) {
         idx = 1;
     }
-    dEf::createPlayerEffect_change(mPlayerNo, &mLevelEfs4, sc_brakeSmokeEffectID[mGroundType][idx], 0, &offset, nullptr, nullptr);
+    dEf::createPlayerEffect_change(mPlayerNo, &mBrakeSmokeEffect, sc_brakeSmokeEffectID[mGroundType][idx], 0, &offset, nullptr, nullptr);
 }
 
 void daPlBase_c::setTurnSmokeEffect() {
@@ -2224,29 +2224,29 @@ void daPlBase_c::setTurnSmokeEffect() {
     mVec3_c pos;
     mpMdlMng->mpMdl->getJointPos(&pos, 1);
     if (mGroundType == GROUND_TYPE_WATER) {
-        if (mPos.y < m_da4 - 4.0f) {
+        if (mPos.y < mWaterHeight - 4.0f) {
             fadeOutTurnEffect();
             return;
         }
-        pos.y = m_da4;
+        pos.y = mWaterHeight;
     }
     float sz = sc_turnSmokeScale[getTallType(-1)];
     mVec3_c size(sz, sz, sz);
-    if (mFollowEf.m_118 == 1 && mFollowEf.m_114 == mGroundType) {
-        mFollowEf.follow(&pos, 0, 0);
+    if (mTurnSmokeEffect.m_118 == 1 && mTurnSmokeEffect.m_114 == mGroundType) {
+        mTurnSmokeEffect.follow(&pos, 0, 0);
     } else {
-        dEf::createPlayerEffect(mPlayerNo, &mFollowEf, sc_turnSmokeEffectID[mGroundType][mDirection], 0, &pos, nullptr, &size);
-        mFollowEf.m_114 = mGroundType;
-        mFollowEf.m_118 = 1;
+        dEf::createPlayerEffect(mPlayerNo, &mTurnSmokeEffect, sc_turnSmokeEffectID[mGroundType][mDirection], 0, &pos, nullptr, &size);
+        mTurnSmokeEffect.m_114 = mGroundType;
+        mTurnSmokeEffect.m_118 = 1;
     }
 }
 
 void daPlBase_c::fadeOutTurnEffect() {
-    if (mFollowEf.m_118 != 1) {
+    if (mTurnSmokeEffect.m_118 != 1) {
         return;
     }
-    mFollowEf.followFade();
-    mFollowEf.m_118 = 0;
+    mTurnSmokeEffect.followFade();
+    mTurnSmokeEffect.m_118 = 0;
 }
 
 void daPlBase_c::setRunFootEffect() {
@@ -2277,7 +2277,7 @@ void daPlBase_c::setRunFootEffect() {
             static const float sc_runFootScale[] = { 0.5f, 0.8f, 1.0f };
             float sz = sc_runFootScale[getTallType(-1)];
             mVec3_c size(sz, sz, sz);
-            dEf::createPlayerEffect(mPlayerNo, &mLevelEfs5, sc_runFootEffectID[mGroundType], 0, &pos, nullptr, &size);
+            dEf::createPlayerEffect(mPlayerNo, &mRunEffect, sc_runFootEffectID[mGroundType], 0, &pos, nullptr, &size);
         }
     }
 }
@@ -2289,11 +2289,11 @@ void daPlBase_c::setSandEffect() {
     if ((isNowBgCross(BGC_ON_SINK_SAND) | isNowBgCross(BGC_IN_SINK_SAND)) && !isNowBgCross(BGC_INSIDE_SINK_SAND) || isStatus(STATUS_0E)) {
         mVec3_c pos;
         mpMdlMng->mpMdl->getJointPos(&pos, 8);
-        dEf::createPlayerEffect(mPlayerNo, &mLevelEfs6, "Wm_mr_sandsplash", 0, &pos, nullptr, nullptr);
+        dEf::createPlayerEffect(mPlayerNo, &mQuicksandSplashEffect, "Wm_mr_sandsplash", 0, &pos, nullptr, nullptr);
     }
     if (isNowBgCross(BGC_IN_SINK_SAND)) {
         mVec3_c pos = getCenterPos();
-        dEf::createPlayerEffect(mPlayerNo, &mLevelEfs7, "Wm_mr_quicksand", 0, &pos, nullptr, nullptr);
+        dEf::createPlayerEffect(mPlayerNo, &mQuicksandSinkEffect, "Wm_mr_quicksand", 0, &pos, nullptr, nullptr);
     }
     if ((isNowBgCross(BGC_ON_SINK_SAND) | isNowBgCross(BGC_IN_SINK_SAND)) && (isOldBgCross(BGC_ON_SINK_SAND) | isOldBgCross(BGC_IN_SINK_SAND)) == 0) {
         if (mPos.y > m_db0 - 8.0f && m_cc0 < 0.0f) {
@@ -2655,8 +2655,8 @@ void daPlBase_c::changeDemoState(const sStateIDIf_c &stateID, int param) {
 
 bool daPlBase_c::executeDemoState() {
     offStatus(STATUS_79);
-    if (m_10c8 != 0) {
-        m_10c8--;
+    if (mDemoWaitTimer != 0) {
+        mDemoWaitTimer--;
     }
     mDemoStateMgr.executeState();
     if (isStatus(STATUS_71)) {
@@ -2674,7 +2674,7 @@ bool daPlBase_c::executeDemoState() {
 }
 
 void daPlBase_c::initializeState_DemoNone() {
-    m_10c8 = 15;
+    mDemoWaitTimer = 15;
     daPyDemoMng_c::mspInstance->clearDemoNo(mPlayerNo);
     offDemo();
     if ((int) mDemoStateChangeParam != 1) {
@@ -2716,7 +2716,7 @@ void daPlBase_c::executeState_DemoNone() {
         m_8d = 0;
         m_8c = 0;
     }
-    if (m_10c8 == 0 && isEnableDokanInStatus()) {
+    if (mDemoWaitTimer == 0 && isEnableDokanInStatus()) {
         if (setDokanIn(DOKAN_D)) {
             return;
         }
@@ -2755,7 +2755,7 @@ void daPlBase_c::finalizeState_DemoStartWait() {}
 void daPlBase_c::initializeState_DemoWait() {
     if (daPyDemoMng_c::mspInstance->checkDemoNo(mPlayerNo)) {
         mDemoSubstate = DEMO_WAIT_ACTION_1;
-        m_10c8 = 0;
+        mDemoWaitTimer = 0;
     } else {
         mDemoSubstate = DEMO_WAIT_ACTION_0;
     }
@@ -2767,11 +2767,11 @@ void daPlBase_c::executeState_DemoWait() {
             case DEMO_WAIT_ACTION_0:
                 if (daPyDemoMng_c::mspInstance->checkDemoNo(mPlayerNo)) {
                     mDemoSubstate = DEMO_WAIT_ACTION_1;
-                    m_10c8 = 10;
+                    mDemoWaitTimer = 10;
                 }
                 break;
             case DEMO_WAIT_ACTION_1:
-                if (m_10c8 == 0) {
+                if (mDemoWaitTimer == 0) {
                     daPyDemoMng_c::mspInstance->turnNextDemoNo();
                     switch ((int) mDemoStateChangeParam) {
                         case 0:
@@ -2803,7 +2803,7 @@ float daPlBase_c::getWaterDokanCenterOffset(float param1) {
     static const float l_maxOffsets[] = { 12.0f, 15.0f, 13.0f, 13.0f };
     float max = 16.0f;
     if (mKind == 1) {
-        max = l_maxOffsets[m_1140];
+        max = l_maxOffsets[mDokanCenterOffsetType];
     }
     float pos = getCenterY() - mPos.y;
     if (pos > max) {
@@ -2847,7 +2847,7 @@ void daPlBase_c::executeDemoInDokan(u8 dir) {
             }
             offStatus(STATUS_BB);
             mDemoSubstate = DEMO_IN_DOKAN_ACTION_1;
-            m_10c8 = 40;
+            mDemoWaitTimer = 40;
             if (mBc.checkWater(m_68.x, m_68.y, mLayer, nullptr)) {
                 onNowBgCross(BGC_14);
             }
@@ -2867,7 +2867,7 @@ void daPlBase_c::executeDemoInDokan(u8 dir) {
             fn_80057e70(SE_PLY_DOKAN_IN_OUT, false);
             break;
         case DEMO_IN_DOKAN_ACTION_1:
-            if (m_10c8 == 0) {
+            if (mDemoWaitTimer == 0) {
                 daPyDemoMng_c::mspInstance->turnNextDemoNo();
                 mDemoSubstate = DEMO_IN_DOKAN_ACTION_2;
             }
@@ -2931,7 +2931,7 @@ void daPlBase_c::initDemoInDokanUD(u8 dir) {
             tmp = 30.0f;
             daPlBase_c *pl = ((daYoshi_c *) this)->getPlayerRideOn();
             if (pl != nullptr) {
-                int t = pl->m_1140;
+                int t = pl->mDokanCenterOffsetType;
                 switch (pl->mPowerup) {
                     case POWERUP_NONE:
                         tmp = tmps[t];
@@ -3081,8 +3081,9 @@ bool daPlBase_c::setDemoOutDokanAction(int param1, DokanDir_e dir) {
     } else if (nextGoto->mFlags & 4) {
         m_80 = 3;
     }
-    /// @unofficial
-    static sFStateVirtualID_c<daPlBase_c> *stateIDs[] = {
+
+    // [official symbol - sic]
+    static sFStateVirtualID_c<daPlBase_c> *l_dokanInAction[] = {
         &StateID_DemoOutDokanU,
         &StateID_DemoOutDokanD,
         &StateID_DemoOutDokanL,
@@ -3101,18 +3102,18 @@ bool daPlBase_c::setDemoOutDokanAction(int param1, DokanDir_e dir) {
             if (nextGoto->m_0b == 22) {
                 changeDemoState(StateID_DemoOutWaterTank, 0);
             } else {
-                changeDemoState(*stateIDs[dir], 0);
+                changeDemoState(*l_dokanInAction[dir], 0);
             }
             return true;
         case 2:
             dRail_c::getRailInfoP(nextGoto->m_0f);
-            changeDemoState(*stateIDs[dir], 0);
+            changeDemoState(*l_dokanInAction[dir], 0);
             return true;
         case 3:
             if (nextGoto->m_0b == 22) {
                 changeDemoState(StateID_DemoOutWaterTank, dir);
             } else {
-                changeDemoState(*stateIDs[dir], 0);
+                changeDemoState(*l_dokanInAction[dir], 0);
             }
             return true;
     }
@@ -3176,7 +3177,7 @@ void daPlBase_c::executeDemoOutDokanUD() {
             }
             if (demo_dokan_move_x(1.0f, m_94) && cond == 1) {
                 mDemoSubstate = DEMO_IN_DOKAN_ACTION_1;
-                m_10c8 = 10;
+                mDemoWaitTimer = 10;
             }
             break;
         }
@@ -3406,7 +3407,7 @@ void daPlBase_c::executeState_DemoInWaterTank() {
             }
             offStatus(STATUS_BB);
             mDemoSubstate = DEMO_IN_DOKAN_ACTION_1;
-            m_10c8 = 60;
+            mDemoWaitTimer = 60;
             mNowBgCross2 = 0;
             mNowBgCross1 = 0;
             checkWater();
@@ -3419,7 +3420,7 @@ void daPlBase_c::executeState_DemoInWaterTank() {
             }
             break;
         case DEMO_IN_DOKAN_ACTION_1:
-            if (m_10c8 == 0) {
+            if (mDemoWaitTimer == 0) {
                 changeNormalAction();
             }
             break;
@@ -3445,7 +3446,7 @@ void daPlBase_c::executeState_DemoOutWaterTank() {
             if (sLib::chase(&mPos.x, m_68.x, 1.0f)) {
                 mpMdlMng->setAnm(130);
                 fn_80057e70(SE_PLY_DOKAN_IN_OUT, false);
-                m_10c8 = 60;
+                mDemoWaitTimer = 60;
                 mDemoSubstate = DEMO_IN_DOKAN_ACTION_1;
             }
             break;
@@ -3453,7 +3454,7 @@ void daPlBase_c::executeState_DemoOutWaterTank() {
             if (mpMdlMng->mpMdl->mAnm.isStop()) {
                 mpMdlMng->setAnm(131);
             }
-            if (m_10c8 == 0) {
+            if (mDemoWaitTimer == 0) {
                 onStatus(STATUS_BB);
                 if (m_80 == 3) {
                     setZPosition(-1800.0f);
@@ -3837,23 +3838,23 @@ void daPlBase_c::executeDemoGoal_Pole() {
             if (mpMdlMng->mpMdl->mAnm.isStop()) {
                 mpMdlMng->setAnm(143);
                 mDemoState = GOAL_DEMO_POLE_6;
-                m_10c8 = 5;
+                mDemoWaitTimer = 5;
             }
             break;
         case GOAL_DEMO_POLE_6:
-            if (m_10c8 == 0) {
+            if (mDemoWaitTimer == 0) {
                 onStatus(STATUS_6A);
                 mDemoState = GOAL_DEMO_POLE_7;
             }
             break;
         case GOAL_DEMO_POLE_7:
             if (daPyDemoMng_c::mspInstance->mFlags & 8 && !addCalcAngleY(0, 10)) {
-                m_10c8 = 7;
+                mDemoWaitTimer = 7;
                 mDemoState = GOAL_DEMO_POLE_8;
             }
             break;
         case GOAL_DEMO_POLE_8:
-            if (m_10c8 == 0) {
+            if (mDemoWaitTimer == 0) {
                 setDemoGoalMode(GOAL_DEMO_ACTION_WAIT, 0);
             }
             break;
@@ -4132,7 +4133,7 @@ bool daPlBase_c::fn_80052500(int p, float f, int i2) {
             tmp.y = mPos.y - 4.0f;
             float y2;
             if (dBc_c::checkWater(tmp.x, tmp.y, mLayer, &y2) &&
-                m_ca4.y >= 0.0f &&
+                mLastPosDelta.y >= 0.0f &&
                 y <= y2 &&
                 mPos.y <= y2 - 4.0f
             ) {
@@ -4171,7 +4172,7 @@ void daPlBase_c::initializeState_DemoControl() {
     mDemoState = (u8) (int) mDemoStateChangeParam;
     switch (mDemoState) {
         case CONTROL_DEMO_4:
-            m_10c8 = 60;
+            mDemoWaitTimer = 60;
             onStatus(STATUS_7A);
             break;
         case CONTROL_DEMO_KINOPIO_WALK:
@@ -4244,7 +4245,7 @@ void daPlBase_c::executeState_DemoControl() {
                 break;
         }
         case CONTROL_DEMO_4: {
-            if (m_10c8 == 0) {
+            if (mDemoWaitTimer == 0) {
                 changeDemoState(StateID_DemoNone, 0);
             }
             break;
@@ -4331,7 +4332,7 @@ void daPlBase_c::fn_80052ef0(int p2, int p3, int p4) {
         return;
     }
     changeDemoState(StateID_DemoNextGotoBlock, p2 | ((p4 & 0xFF) << 8));
-    m_10c8 = p3;
+    mDemoWaitTimer = p3;
     switch (p4) {
         case 3:
             fn_80057e70(SE_PLY_DOKAN_IN_OUT, false);
@@ -4361,7 +4362,7 @@ void daPlBase_c::finalizeState_DemoNextGotoBlock() {
 }
 
 void daPlBase_c::executeState_DemoNextGotoBlock() {
-    if (mDemoSubstate == DEMO_IN_DOKAN_ACTION_0 && m_10c8 == 0) {
+    if (mDemoSubstate == DEMO_IN_DOKAN_ACTION_0 && mDemoWaitTimer == 0) {
         dFader_c::fader_type_e f = dFader_c::FADER_DRIP_DOWN;
         int param = (int) mDemoStateChangeParam;
         int lower = (param & 0xff);
@@ -4821,10 +4822,10 @@ void daPlBase_c::calcReductionScale() {
             if (mSquishKeyframeIdx) {
                 int idx = mSquishKeyframeIdx - 1;
                 /// @unofficial
-                static const float floats[] = { 0.0f, 0.2f, 0.0f, 0.4f };
+                static const float sc_squishTarget[] = { 0.0f, 0.2f, 0.0f, 0.4f };
                 /// @unofficial
-                static const float floats2[] = { 0.02f, 0.025f, 0.04f, 0.06f };
-                if (sLib::chase(&mSquishScale, floats[idx], floats2[idx])) {
+                static const float sc_squishStep[] = { 0.02f, 0.025f, 0.04f, 0.06f };
+                if (sLib::chase(&mSquishScale, sc_squishTarget[idx], sc_squishStep[idx])) {
                     mSquishKeyframeIdx--;
                 }
             }
@@ -4900,7 +4901,7 @@ void daPlBase_c::clearBgCheckInfo() {
     mNowBgCross1 = 0;
     m_d7c = m_d78;
     m_d78 = 0;
-    m_d30.set(0.0f, 0.0f, 0.0f);
+    mBgPushForce.set(0.0f, 0.0f, 0.0f);
     m_d3c = 0.0f;
     mGroundType = GROUND_TYPE_DEFAULT;
     m_dac = 0;
@@ -5293,13 +5294,13 @@ void daPlBase_c::postBgCross() {
     }
     if (isNowBgCross(BGC_IS_FOOT)) {
         if (isNowBgCross(BGC_ON_BELT_L) | isNowBgCross(BGC_ON_BELT_R)) {
-            m_d30 = mBc.mPushForce;
+            mBgPushForce = mBc.mPushForce;
         }
         if (isNowBgCross(BGC_14) || isNowBgCross(BGC_34)) {
             mSpeed.y = 0.0f;
         } else if (isNowBgCross(BGC_ON_SINK_SAND)) {
             mSpeed.y = 0.0f;
-            m_d30.set(0.0f, mBc.mPushForce.y * getSandSinkRate(), 0.0f);
+            mBgPushForce.set(0.0f, mBc.mPushForce.y * getSandSinkRate(), 0.0f);
         } else if (isSaka() || isStatus(STATUS_30)) {
             mSpeed.y = 0.0f;
         } else {
@@ -5348,51 +5349,51 @@ float daPlBase_c::getWaterCheckPosY() {
 }
 
 void daPlBase_c::checkWater() {
-    m_db6 = 0;
-    m_da8 = m_da4;
-    m_da4 = dBg_c::m_bg_p->m_8fe00;
-    u8 waterCheck = dBc_c::checkWater(mPos.x, mPos.y, mLayer, &m_da4);
-    if (waterCheck && mPos.y <= m_da4) {
+    mWaterType = dBc_c::WATER_CHECK_NONE;
+    mPrevWaterHeight = mWaterHeight;
+    mWaterHeight = dBg_c::m_bg_p->m_8fe00;
+    u8 waterCheck = dBc_c::checkWater(mPos.x, mPos.y, mLayer, &mWaterHeight);
+    if (waterCheck != dBc_c::WATER_CHECK_NONE && mPos.y <= mWaterHeight) {
         onNowBgCross(BGC_15);
-        if (waterCheck == 2) {
+        if (waterCheck == dBc_c::WATER_CHECK_WATER_BUBBLE) {
             onNowBgCross(BGC_WATER_BUBBLE);
         }
     }
-    if (waterCheck == 0 || waterCheck == 2) {
-        waterCheck = dBc_c::checkWater(mPos.x, getWaterCheckPosY(), mLayer, &m_da4);
-        if (waterCheck != 2) {
+    if (waterCheck == dBc_c::WATER_CHECK_NONE || waterCheck == dBc_c::WATER_CHECK_WATER_BUBBLE) {
+        waterCheck = dBc_c::checkWater(mPos.x, getWaterCheckPosY(), mLayer, &mWaterHeight);
+        if (waterCheck != dBc_c::WATER_CHECK_WATER_BUBBLE) {
             return;
         }
         onNowBgCross(BGC_14);
         onNowBgCross(BGC_16);
     }
     switch (waterCheck) {
-        case 2: {
+        case dBc_c::WATER_CHECK_WATER_BUBBLE: {
             onNowBgCross(BGC_WATER_BUBBLE);
             mVec2_c pos;
             dBc_c::getAirWaterHitPos(&pos);
-            m_db8.set(pos.x, pos.y, mPos.z);
+            mAirWaterHitPos.set(pos.x, pos.y, mPos.z);
             short s;
             dBc_c::getAirWaterHitAngle(&s);
-            m_dc4 = s;
+            mAirWaterHitAngle = s;
             break;
         }
-        case 1: {
-            if (getWaterCheckPosY() <= m_da4) {
+        case dBc_c::WATER_CHECK_WATER: {
+            if (getWaterCheckPosY() <= mWaterHeight) {
                 onNowBgCross(BGC_14);
             }
             void *p = getHeadBgPointData();
             float f = *((int *)p + 3);
-            if (mPos.y + f / 4096.0f <= m_da4) {
+            if (mPos.y + f / 4096.0f <= mWaterHeight) {
                 onNowBgCross(BGC_16);
             }
-            m_dac = dBc_c::checkWaterDepth(mPos.x, m_da4, mLayer, m_ca1, nullptr);
+            m_dac = dBc_c::checkWaterDepth(mPos.x, mWaterHeight, mLayer, m_ca1, nullptr);
             break;
         }
-        case 3:
-        case 4:
+        case dBc_c::WATER_CHECK_YOGAN:
+        case dBc_c::WATER_CHECK_POISON:
             if (!isStatus(STATUS_7E)) {
-                m_db6 = waterCheck;
+                mWaterType = waterCheck;
             }
             break;
     }
@@ -5407,40 +5408,40 @@ void daPlBase_c::checkDamageBg() {
         return;
     }
     if (!isDemoAll() || isDemoType(DEMO_KINOPIO)) {
-        m_db4 = mBc.m_e0;
-        m_db5 = mBc.m_e1;
-        switch (m_db6) {
-            case 3:
-                m_db4 = 1;
-                m_db5 = 7;
+        mIsBgDamage = mBc.m_e0;
+        mBgDamageType = mBc.m_e1;
+        switch (mWaterType) {
+            case dBc_c::WATER_CHECK_YOGAN:
+                mIsBgDamage = 1;
+                mBgDamageType = 7;
                 break;
-            case 4:
-                m_db4 = 1;
-                m_db5 = 8;
+            case dBc_c::WATER_CHECK_POISON:
+                mIsBgDamage = 1;
+                mBgDamageType = 8;
                 break;
         }
     }
 }
 
 bool daPlBase_c::setBgDamage() {
-    if (m_db4 != 0) {
-        m_db4 = 0;
-        DamageType_e i = DAMAGE_1;
-        switch (m_db5) {
+    if (mIsBgDamage) {
+        mIsBgDamage = false;
+        DamageType_e damageType = DAMAGE_1;
+        switch (mBgDamageType) {
             case 7:
-                i = DAMAGE_7;
+                damageType = DAMAGE_YOGAN;
                 break;
             case 8:
-                i = DAMAGE_A;
+                damageType = DAMAGE_POISON;
                 break;
             case 9:
-                i = DAMAGE_B;
+                damageType = DAMAGE_B;
                 break;
         }
-        if (i == 1 && isNoDamage()) {
+        if (damageType == DAMAGE_1 && isNoDamage()) {
             return false;
         }
-        return setDamage2(nullptr, i);
+        return setDamage2(nullptr, damageType);
     }
     return false;
 }
@@ -5545,53 +5546,53 @@ bool daPlBase_c::checkDispSideLemit() {
     float l = dBgParameter_c::ms_Instance_p->fn_80082240(mPos.x);
     float s = l + mViewLimitPadding;
     float m = l + dBgParameter_c::ms_Instance_p->xSize() - mViewLimitPadding + 1.0f;
-    switch (m_1079) {
+    switch (mDispLimitRelatedR) {
         case 0:
             if (mPos.x < s) {
                 if (isOldBgCross(BGC_OBJBG_CARRY_RELATED_R) || !isOldBgCross(BGC_WALL_TOUCH_R_2)) {
                     calcSideLimitMultL(s);
                     return true;
                 }
-                m_1079 = 1;
-                m_1080 = mPos.x - s;
+                mDispLimitRelatedR = 1;
+                mDispLimitRelatedR2 = mPos.x - s;
             }
             break;
         case 1: {
             if (mPos.x > s) {
-                m_1079 = 0;
+                mDispLimitRelatedR = 0;
             }
             float diff = mPos.x - s;
-            if (m_1080 < diff || isOldBgCross(BGC_WALL_TOUCH_R_2)) {
-                m_1080 = diff;
+            if (mDispLimitRelatedR2 < diff || isOldBgCross(BGC_WALL_TOUCH_R_2)) {
+                mDispLimitRelatedR2 = diff;
             }
-            if (mPos.x < s + m_1080) {
-                calcSideLimitMultL(s + m_1080);
+            if (mPos.x < s + mDispLimitRelatedR2) {
+                calcSideLimitMultL(s + mDispLimitRelatedR2);
                 return true;
             }
             break;
         }
     }
-    switch (m_1078) {
+    switch (mDispLimitRelatedL) {
         case 0:
             if (mPos.x > m) {
                 if (isOldBgCross(BGC_OBJBG_CARRY_RELATED_L) || !isOldBgCross(BGC_WALL_TOUCH_L_2)) {
                     calcSideLimitMultR(m);
                     return true;
                 }
-                m_1078 = 1;
-                m_107c = mLastPos.x - m;
+                mDispLimitRelatedL = 1;
+                mDispLimitRelatedL2 = mLastPos.x - m;
             }
             break;
         case 1: {
             if (mPos.x < m) {
-                m_1078 = 0;
+                mDispLimitRelatedL = 0;
             }
             float diff = mPos.x - m;
-            if (m_107c > diff || isOldBgCross(BGC_WALL_TOUCH_L_2)) {
-                m_107c = diff;
+            if (mDispLimitRelatedL2 > diff || isOldBgCross(BGC_WALL_TOUCH_L_2)) {
+                mDispLimitRelatedL2 = diff;
             }
-            if (mPos.x > m + m_107c) {
-                calcSideLimitMultR(m + m_107c);
+            if (mPos.x > m + mDispLimitRelatedL2) {
+                calcSideLimitMultR(m + mDispLimitRelatedL2);
                 return true;
             }
         }
@@ -5607,12 +5608,12 @@ void daPlBase_c::fn_80055d00() {
     float s = l + mViewLimitPadding;
     float m = l + dBgParameter_c::ms_Instance_p->xSize() - mViewLimitPadding + 1.0f;
     if (mPos.x < s) {
-        m_1079 = 1;
-        m_1080 = mPos.x - s;
+        mDispLimitRelatedR = 1;
+        mDispLimitRelatedR2 = mPos.x - s;
     }
     if (mPos.x > m) {
-        m_1078 = 1;
-        m_107c = mLastPos.x - m;
+        mDispLimitRelatedL = 1;
+        mDispLimitRelatedL2 = mLastPos.x - m;
     }
 }
 
@@ -6089,7 +6090,7 @@ void daPlBase_c::calcPlayerSpeedXY() {
 
     setSandEffect();
 
-    mPos += mVec3_c(m_d30.x, m_d30.y, m_d30.z);
+    mPos += mVec3_c(mBgPushForce.x, mBgPushForce.y, mBgPushForce.z);
 
     m_cc0 = mSpeed.y;
     mSpeed.y += mAccelY;
@@ -6187,9 +6188,9 @@ void daPlBase_c::posMoveAnglePlayer(mVec3_c a) {
 
 float *daPlBase_c::getSpeedData() {
     if (isStar()) {
-        return m_cd0;
+        return mSpeedDataStar;
     } else {
-        return m_ccc;
+        return mSpeedDataNormal;
     }
 }
 
@@ -6199,15 +6200,15 @@ void daPlBase_c::setZPosition() {
     }
 
     if ((m_ca1 == 1) && (mLayer == 0)) {
-        mPos.z = 3000.0f - (float)(m_ca2 * 32);
+        mPos.z = 3000.0f - (float)(mZPosLayer * 32);
     } else {
-        mPos.z = -1800.0f - (float)(m_ca2 * 32);
+        mPos.z = -1800.0f - (float)(mZPosLayer * 32);
     }
 }
 
 void daPlBase_c::setZPosition(float a) {
     onStatus(STATUS_99);
-    mPos.z = a - (float)(m_ca2 * 32);
+    mPos.z = a - (float)(mZPosLayer * 32);
 }
 
 void daPlBase_c::setZPositionDirect(float a) {
@@ -6243,7 +6244,7 @@ float daPlBase_c::setAddLiftSpeedF() {
         t = m_d3c * 0.4f;
     }
 
-    return setJumpAddSpeedF(m_d30.x + t);
+    return setJumpAddSpeedF(mBgPushForce.x + t);
 }
 
 bool daPlBase_c::setDelayHelpJump() {
