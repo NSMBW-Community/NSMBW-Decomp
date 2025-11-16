@@ -98,7 +98,7 @@ bool d2d::ResAccMultLoader_c::remove() {
 }
 
 bool d2d::ResAccMultLoader_c::create(EGG::Heap *parent, ulong size) {
-    EGG::Heap *heap = mHeap::createExpHeap(size, parent, D2D_HEAP_NAME, 0x20, mHeap::OPT_4);
+    EGG::Heap *heap = mHeap::createExpHeap(size, parent, D2D_HEAP_NAME, 0x20, mHeap::OPT_THREAD_SAFE);
     ms_res_allocator = new(heap, 4) mAllocator_c();
     ms_res_allocator->attach(heap, 0x20);
     return true;
