@@ -40,6 +40,7 @@ config_yaml = {
 symbols_url = 'https://github.com/RootCubed/NSMBW-Maps/releases/download/v1.0/wiimj2d_symbols.txt'
 symbols_path = BUILDDIR / 'wiimj2d_symbols.txt'
 if not symbols_path.exists() or not args.skip_download:
+    symbols_path.parent.mkdir(parents=True, exist_ok=True)
     print(f'Downloading symbols from {symbols_url}')
     req = urllib.request.Request(symbols_url, headers={'User-Agent': 'Mozilla/5.0'})
     with urllib.request.urlopen(req) as response:
