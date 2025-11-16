@@ -79,7 +79,7 @@ daPlBase_c::daPlBase_c() :
     changeState(StateID_None, 0);
     mAttentionMode = 3;
     mViewLimitPadding = 16.0f;
-    mEatBehaviour = 0;
+    mEatBehaviour = EAT_TYPE_NONE;
 }
 
 daPlBase_c::~daPlBase_c() {
@@ -218,7 +218,7 @@ void daPlBase_c::changeState(const sStateIDIf_c &state, void *param) {
     }
     clearComboCount();
     mSubstate = 0;
-    m_1114 = 0;
+    mSubstateTimer = 0;
     m_1118 = 0;
     offStatus(STATUS_97);
     offStatus(STATUS_98);
@@ -227,8 +227,8 @@ void daPlBase_c::changeState(const sStateIDIf_c &state, void *param) {
 }
 
 void daPlBase_c::executeState() {
-    if (m_1114 != 0) {
-        m_1114--;
+    if (mSubstateTimer != 0) {
+        mSubstateTimer--;
     }
     mStateMgr.executeState();
 }
@@ -500,7 +500,7 @@ void daPlBase_c::initializeState_Slip() {
     mSubstate = SLIP_ACTION_NONE;
     mpMdlMng->setAnm(22);
     mMaxSpeedF = getSlipMaxSpeedF();
-    m_1114 = 8;
+    mSubstateTimer = 8;
     m_fc = 0;
     onStatus(STATUS_30);
     onStatus(STATUS_97);
@@ -621,7 +621,7 @@ void daPlBase_c::slipActionMove(int param) {
             setSlipActionEnd();
         } else if (isNowBgCross(BGC_IS_SAKA)) {
             mTimer_f8 = 3;
-            m_1114 = 8;
+            mSubstateTimer = 8;
             mMaxSpeedF = getSlipMaxSpeedF();
             if (!mBc.getSakaUpDown(mDirection)) {
                 if (param == 0) {
@@ -638,7 +638,7 @@ void daPlBase_c::slipActionMove(int param) {
                 }
             }
         } else {
-            m_1114 = 0;
+            mSubstateTimer = 0;
             mMaxSpeedF = 0.0f;
             if (mTimer_f8 == 0 && std::fabs(mSpeedF) < 1.1f) {
                 if (!mKey.buttonCrouch()) {
@@ -649,7 +649,7 @@ void daPlBase_c::slipActionMove(int param) {
             }
         }
     } else {
-        if (m_1114 != 0) {
+        if (mSubstateTimer != 0) {
             mAccelY = 0.0f;
             onStatus(STATUS_98);
         } else {
@@ -780,7 +780,7 @@ void daPlBase_c::setHipAttack_KinopioStart() {
 void daPlBase_c::setHipAttack_AttackStart() {
     mSubstate = HIP_ACTION_ATTACK_START;
     mpMdlMng->setAnm(17);
-    m_1114 = 5;
+    mSubstateTimer = 5;
     mSpeed.y = 0.0f;
 }
 
@@ -797,11 +797,11 @@ void daPlBase_c::setHipAttack_AttackFall() {
     }
     onStatus(STATUS_1C);
     setHipBlockBreak();
-    m_1114 = 5;
+    mSubstateTimer = 5;
 }
 
 void daPlBase_c::setHipAttack_StandNormal() {
-    m_1114 = 20;
+    mSubstateTimer = 20;
     mSubstate = HIP_ACTION_STAND_NORMAL;
     mpMdlMng->setAnm(18);
     onStatus(STATUS_1E);
@@ -831,14 +831,14 @@ void daPlBase_c::HipAction_Ready() {
 }
 
 void daPlBase_c::HipAction_AttackStart() {
-    if (m_1114 == 0) {
+    if (mSubstateTimer == 0) {
         setHipAttack_AttackFall();
     }
 }
 
 void daPlBase_c::HipAction_AttackFall() {
     setHipAttackDropEffect();
-    if (m_1114 == 0 || isNowBgCross(BGC_IS_FOOT)) {
+    if (mSubstateTimer == 0 || isNowBgCross(BGC_IS_FOOT)) {
         offStatus(STATUS_7F);
         offStatus(STATUS_7A);
     }
@@ -913,13 +913,13 @@ void daPlBase_c::HipAction_StandNormal() {
                 setHipBlockBreak();
                 if (m_344 == 0) {
                     if (isNowBgCross(BGC_54)) {
-                        m_1114 = 15;
+                        mSubstateTimer = 15;
                     }
                     if (dScStage_c::m_isStaffCredit && isNowBgCross(BGC_IS_FOOT) && !isNowBgCross(BGC_IS_LIFT)) {
                         m_344 = 1;
                     }
                 }
-                if (m_1114 == 0) {
+                if (mSubstateTimer == 0) {
                     offStatus(STATUS_AE);
                     setHipAttack_ToStoop();
                 }
@@ -1204,7 +1204,7 @@ void daPlBase_c::initializeState_Funsui() {
     if (mPlayerNo >= 0) {
         vf434(50, 0);
         dQuake_c::m_instance->shockMotor(mPlayerNo, dQuake_c::TYPE_7, 0, false);
-        m_1114 = 8;
+        mSubstateTimer = 8;
     }
 }
 void daPlBase_c::finalizeState_Funsui() {
@@ -1214,8 +1214,8 @@ void daPlBase_c::finalizeState_Funsui() {
 void daPlBase_c::executeState_Funsui() {
     if (mPlayerNo >= 0) {
         dEf::createPlayerEffect(mPlayerNo, &mFunsuiSmokeEffect, "Wm_mr_sprisesmoke", 0, &mPos, nullptr, nullptr);
-        if (m_1114 == 0) {
-            m_1114 = 8;
+        if (mSubstateTimer == 0) {
+            mSubstateTimer = 8;
             dQuake_c::m_instance->shockMotor(mPlayerNo, dQuake_c::TYPE_8, 0, false);
         }
     }
@@ -1369,11 +1369,11 @@ void daPlBase_c::DemoAnmBossGlad() {
     addCalcAngleY(0, 10);
     switch ((AnimePlaySubstate_e) mSubstate) {
         case ANIME_PLAY_ACTION_0:
-            m_1114 = 15;
+            mSubstateTimer = 15;
             mSubstate++;
             // fallthrough
         case ANIME_PLAY_ACTION_1:
-            if (m_1114 == 0) {
+            if (mSubstateTimer == 0) {
                 initDemoKimePose();
                 mSubstate++;
             }
@@ -1429,10 +1429,10 @@ void daPlBase_c::DemoAnmBossKeyGet() {
     addCalcAngleY(0, 10);
     switch ((AnimePlaySubstate_e) mSubstate) {
         case ANIME_PLAY_ACTION_0:
-            m_1114 = 15;
+            mSubstateTimer = 15;
             mSubstate++;
         case ANIME_PLAY_ACTION_1:
-            if (m_1114 == 0) {
+            if (mSubstateTimer == 0) {
             mpMdlMng->setAnm(148);
                 fn_80051d00(1);
                 mSubstate++;
@@ -2697,24 +2697,24 @@ void daPlBase_c::executeState_DemoNone() {
     }
     if (isNowBgCross(BGC_IS_FOOT) || isStatus(STATUS_3A)) {
         if (mKey.buttonRight()) {
-            m_8d++;
-            if (m_8d > 10) {
-                m_8d = 10;
+            mDokanCounterR++;
+            if (mDokanCounterR > sc_DokanEnterThreshold) {
+                mDokanCounterR = sc_DokanEnterThreshold;
             }
         } else {
-            m_8d = 0;
+            mDokanCounterR = 0;
         }
         if (mKey.buttonLeft()) {
-            m_8c++;
-            if (m_8c > 10) {
-                m_8c = 10;
+            mDokanCounterL++;
+            if (mDokanCounterL > sc_DokanEnterThreshold) {
+                mDokanCounterL = sc_DokanEnterThreshold;
             }
         } else {
-            m_8c = 0;
+            mDokanCounterL = 0;
         }
     } else {
-        m_8d = 0;
-        m_8c = 0;
+        mDokanCounterR = 0;
+        mDokanCounterL = 0;
     }
     if (mDemoWaitTimer == 0 && isEnableDokanInStatus()) {
         if (setDokanIn(DOKAN_D)) {
@@ -2723,12 +2723,12 @@ void daPlBase_c::executeState_DemoNone() {
         if (setDokanIn(DOKAN_U)) {
             return;
         }
-        if (m_8d >= 10 && mDirection == 0) {
+        if (mDokanCounterR >= sc_DokanEnterThreshold && mDirection == 0) {
             if (setDokanIn(DOKAN_R)) {
                 return;
             }
         }
-        if (m_8c >= 10 && mDirection == 1) {
+        if (mDokanCounterL >= sc_DokanEnterThreshold && mDirection == 1) {
             if (setDokanIn(DOKAN_L)) {
                 return;
             }
@@ -4899,8 +4899,8 @@ void daPlBase_c::clearBgCheckInfo() {
     setOldBGCross();
     mNowBgCross2 = 0;
     mNowBgCross1 = 0;
-    m_d7c = m_d78;
-    m_d78 = 0;
+    mPrevStandOnUnitType = mStandOnUnitType;
+    mStandOnUnitType = 0;
     mBgPushForce.set(0.0f, 0.0f, 0.0f);
     m_d3c = 0.0f;
     mGroundType = GROUND_TYPE_DEFAULT;
@@ -4969,7 +4969,7 @@ void daPlBase_c::checkBgCross() {
     m_d9a = m_d98;
     m_d98 = 0;
     m_d94 = 0;
-    m_d78 = mBc.mLastUnitType;
+    mStandOnUnitType = mBc.mLastUnitType;
 
     if ((bgFlags & 0x3c000000) != 0) {
         onNowBgCross(BGC_IS_HEAD);
@@ -5222,25 +5222,25 @@ void daPlBase_c::checkBgCross() {
     }
 
     if (!isNowBgCross(BGC_IS_FOOT)) {
-        if (m_cc4 < mPos.y) {
-            m_cc4 = mPos.y;
+        if (mAirTopHeight < mPos.y) {
+            mAirTopHeight = mPos.y;
         }
-        m_cc8 = m_cc4;
+        m_cc8 = mAirTopHeight;
     } else {
-        m_cc4 = mPos.y;
+        mAirTopHeight = mPos.y;
     }
 
     if (isNowBgCross(BGC_IS_HEAD) && isNowBgCross(BGC_55) && !isNowBgCross(BGC_63)) {
-        fn_80056370(nullptr, 10);
+        fn_80056370(nullptr, BG_PRESS_HEAD);
     }
     if (isNowBgCross(BGC_IS_FOOT) && !isNowBgCross(BGC_IS_LIFT)) {
-        fn_80056370(nullptr, 9);
+        fn_80056370(nullptr, BG_PRESS_FOOT);
     }
     if (isNowBgCross(BGC_WALL_TOUCH_L_2) && !isNowBgCross(BGC_CARRY_RELATED_L)) {
-        fn_80056370(nullptr, 12);
+        fn_80056370(nullptr, BG_PRESS_L);
     }
     if (isNowBgCross(BGC_WALL_TOUCH_R_2) && !isNowBgCross(BGC_CARRY_RELATED_R)) {
-        fn_80056370(nullptr, 11);
+        fn_80056370(nullptr, BG_PRESS_R);
     }
 }
 
@@ -5739,12 +5739,12 @@ void daPlBase_c::checkDisplayOutDead() {
     }
 }
 
-void daPlBase_c::fn_80056370(dActor_c *actor, int i) {
+void daPlBase_c::fn_80056370(dActor_c *actor, BgPress_e i) {
     mBgPressActive |= (1 << i);
     if (actor != nullptr) {
         mBgPressIDs[i] = actor->mUniqueID;
     } else {
-        mBgPressIDs[i] = (fBaseID_e) 0;
+        mBgPressIDs[i] = BASE_ID_NULL;
     }
 }
 
@@ -5753,7 +5753,7 @@ bool daPlBase_c::isBgPress(dActor_c *actor) {
     if (param == 0) {
         return false;
     }
-    for (int i = 1; i <= 12; i++){
+    for (int i = 1; i < BG_PRESS_COUNT; i++) {
         if (param & (1 << i) && mBgPressIDs[i] == actor->getID()) {
             return true;
         }

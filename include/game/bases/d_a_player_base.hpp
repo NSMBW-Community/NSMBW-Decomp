@@ -167,6 +167,15 @@ public:
     };
 
     /// @unofficial
+    enum BgPress_e {
+        BG_PRESS_FOOT = 9,
+        BG_PRESS_HEAD,
+        BG_PRESS_R,
+        BG_PRESS_L,
+        BG_PRESS_COUNT
+    };
+
+    /// @unofficial
     enum BgCross1_e {
         BGC_IS_FOOT = BIT_FLAG(0),
         BGC_IS_HEAD = BIT_FLAG(1),
@@ -778,7 +787,7 @@ public:
     mVec3_c getReductionModelScale();
     void checkSideViewLemit();
     bool checkSinkSand();
-    void fn_80056370(dActor_c *, int);
+    void fn_80056370(dActor_c *, BgPress_e);
     bool isCarryObjBgCarried(u8);
     float getWaterCheckPosY();
     bool setBgDamage();
@@ -893,7 +902,7 @@ public:
     int mNoHitTimer;
     u32 mBgPressActive;
     u32 mBgPressFlags;
-    fBaseID_e mBgPressIDs[13];
+    fBaseID_e mBgPressIDs[13]; ///< Index into this array with BgPress_e.
     float mViewLimitPadding;
     int mKimePoseState;
     s8 mDemoState; /// Value is a GoalDemoState_e.
@@ -904,8 +913,12 @@ public:
     int m_80;
     u8 m_84;
     dBg_ctr_c *mpBgCtr;
-    u8 m_8c;
-    u8 m_8d;
+    /// Counts up while walking to the left, and allows the
+    /// player to enter a pipe when it reaches #sc_DokanEnterThreshold.
+    u8 mDokanCounterL;
+    /// Counts up while walking to the right, and allows the
+    /// player to enter a pipe when it reaches #sc_DokanEnterThreshold.
+    u8 mDokanCounterR;
     float m_90;
     float m_94;
     short m_98;
@@ -958,13 +971,13 @@ public:
     mVec3_c mLiftRelatedPos;
     float m_cbc;
     float m_cc0;
-    float m_cc4;
+    float mAirTopHeight; ///< The highest Y position since being on the ground last.
     float m_cc8;
     float *mSpeedDataNormal;
     float *mSpeedDataStar;
     float *mGravityData;
     int mNoGravityTimer;
-    u32 m_cdc;
+    u32 mStarTimer;
     int mTimer_ce0;
     int mTimer_ce4;
     int mTimer_ce8;
@@ -986,8 +999,8 @@ public:
     u32 mOldBgCross2;
     u32 mBgCrossHistory[10];
 
-    u32 m_d78;
-    u32 m_d7c;
+    u32 mStandOnUnitType;
+    u32 mPrevStandOnUnitType;
     float m_d80[2];
     GroundType_e mGroundType;
     float m_d8c;
@@ -1027,7 +1040,7 @@ public:
     sFStateMgr_c<daPlBase_c, sStateMethodUsr_FI_c> mStateMgr;
     void *mStateChangeParam; ///< To be used as a kind of argument to the new state.
     int mSubstate; ///< States can use this as a kind of sub-state variable (cast to some enum)
-    int m_1114;
+    int mSubstateTimer; ///< States can use this generic timer for various purposes.
     int m_1118;
     mVec2_c m_111c;
     u8 mPad25[0x4];
@@ -1055,4 +1068,10 @@ public:
     static const float scDokanInWidthX;
     static const float scDokanInMoveSpeed;
     static const float scDokanWaitAnmFixFrame;
+
+    // [Inofficial constants]
+
+    /// Number of walking frames before being able to enter a pipe.
+    /// @see mDokanCounterL, mDokanCounterR
+    static const int sc_DokanEnterThreshold = 10;
 };
