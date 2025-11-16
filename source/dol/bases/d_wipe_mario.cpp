@@ -56,7 +56,7 @@ bool dWipeMario_c::createLayout() {
     mLyt.AllAnimeEndSetup();
 
     mpRootPane->SetVisible(false);
-    mLyt.mDrawOrder = 154;
+    mLyt.mDrawOrder = m2d::LAYOUT_DRAW_ORDER::WIPE;
     mAction = IDLE;
 
     return true;

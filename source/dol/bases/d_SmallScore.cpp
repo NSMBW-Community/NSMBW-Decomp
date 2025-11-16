@@ -54,7 +54,7 @@ bool dSmallScore_c::createLayout(d2d::ResAccMultLoader_c *res) {
     mpNullPanes[N_coin_00]->SetVisible(false);
     mpRootPane->SetVisible(false);
 
-    mLayout.mDrawOrder = 7;
+    mLayout.mDrawOrder = m2d::LAYOUT_DRAW_ORDER::SMALL_SCORE;
     mState = dSmallScore_c::STATE_NONE;
     mInitialized = true;
     mEnableColorChange = false;

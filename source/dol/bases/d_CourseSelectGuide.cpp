@@ -160,7 +160,7 @@ bool dCourseSelectGuide_c::createLayout() {
     mLayout.TPaneNameRegister(T_PANE_FIXED_NAME_TBL, MESSAGE_DATA_TBL, BMG_CATEGORY_COURSE_SELECT_GUIDE, T_FIXED_COUNT);
     mLayout.PPaneRegister(P_PANE_NAME_TBL, &mpPicturePanes[P_cC_1_00], P_COUNT);
 
-    mLayout.mDrawOrder = 2;
+    mLayout.mDrawOrder = m2d::LAYOUT_DRAW_ORDER::COURSE_SELECT_GUIDE;
     mpRootPane->SetVisible(true);
     mpNullPanes[N_mapArrow_00]->SetVisible(true);
     mpPicturePanes[P_flagSkull_00]->SetVisible(false);

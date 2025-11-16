@@ -137,7 +137,7 @@ int dYesNoWindow_c::create() {
     mLayout.GroupRegister(GROUP_NAME_DT, ANIME_INDEX_TBL, ARRAY_SIZE(GROUP_NAME_DT));
     mLayout.TPaneNameRegister(T_PANE_FIXED_NAME_TBL, MESSAGE_DATA_TBL, BMG_CATEGORY_YES_NO_WINDOW, ARRAY_SIZE(T_PANE_FIXED_NAME_TBL));
 
-    mLayout.mDrawOrder = 143;
+    mLayout.mDrawOrder = m2d::LAYOUT_DRAW_ORDER::YES_NO_WINDOW;
     mpRootPane = mLayout.getRootPane();
 
     mLayout.PPaneRegister(PPANE_NAME_DT, mpPictures, ARRAY_SIZE(PPANE_NAME_DT));

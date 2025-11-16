@@ -117,7 +117,7 @@ int Pausewindow_c::create() {
     mLayout.TPaneRegister(T_PANE_NAME_TBL, mpTextBoxes, T_COUNT);
     mLayout.NPaneRegister(NPANE_NAME_DT, mpNullPanes, N_COUNT);
 
-    mLayout.mDrawOrder = 141;
+    mLayout.mDrawOrder = m2d::LAYOUT_DRAW_ORDER::PAUSE_WINDOW;
     mIsActive = false;
     mHasLoadedLayout = true;
     mIsAnimating = false;
