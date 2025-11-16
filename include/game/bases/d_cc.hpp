@@ -215,6 +215,9 @@ public:
      */
     static void reset();
 
+    float getCollPosX() const { return mCollPos.x; }
+    float getCollPosY() const { return mCollPos.y; }
+
 private:
     /**
      * @brief A hit check function for rectangular colliders. Used in _hitCheckNormal and _hitCheckLoop.
