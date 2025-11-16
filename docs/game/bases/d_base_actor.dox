@@ -5,7 +5,7 @@ dBaseActor_c allows placing bases in either 2D or 3D space, by implementing the 
 concepts of translation, scale, rotation and visibility. It also comes with a barebones physics
 engine and a few other properties. All actor bases (including sub-implementations) use
 @ref fProfile::fActorProfile_c "fActorProfile_c" for their profile, and their instances are
-added to a #m_actorManage "dedicated list" in addition to the default ones.
+added to a @ref m_actorManage "dedicated list" in addition to the default ones.
 
 The class is used directly when the only purpose of the base is displaying a 3D model.
 For more complex behaviour, it's recommended to use one of the available sub-implementations:

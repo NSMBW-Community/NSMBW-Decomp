@@ -19,8 +19,8 @@ public:
         STATE_UP_MOVE,
         STATE_DISP_WAIT,
         STATE_GOAL_DISP,
-        STATE_NONE,
-        STATE_COUNT = STATE_NONE,
+        STATE_COUNT,
+        STATE_NONE = STATE_COUNT
     };
 
     /// @brief The different types of the small score popups.
