@@ -104,8 +104,8 @@ public:
 
     void initialize(); ///< Initializes the slot data.
 
-    void setPlrID(int player, int character); ///< Sets @p player 's character. See PLAYER_CHARACTER_e.
-    int getPlrID(int player) const; ///< Gets @p player 's character. See PLAYER_CHARACTER_e.
+    void setPlrID(int player, int character); ///< Sets @p player 's character. See PLAYER_TYPE_e.
+    int getPlrID(int player) const; ///< Gets @p player 's character. See PLAYER_TYPE_e.
 
     void setPlrMode(int player, u8 powerup); ///< Sets @p player 's powerup. See PLAYER_POWERUP_e.
     int getPlrMode(int player) const; ///< Gets @p player 's powerup. See PLAYER_POWERUP_e.
@@ -265,7 +265,7 @@ private:
     s8 mPlayerCoin[PLAYER_COUNT]; ///< The coin count for each player.
     u8 mPlayerLife[PLAYER_COUNT]; ///< The life count for each player.
     u8 mPlayerCreateItem[PLAYER_COUNT]; ///< The Star Power flag for each player. See PLAYER_CREATE_ITEM_e.
-    u8 mPlayerCharacter[PLAYER_COUNT]; ///< The character for each player. See PLAYER_CHARACTER_e.
+    u8 mPlayerCharacter[PLAYER_COUNT]; ///< The character for each player. See PLAYER_TYPE_e.
     u8 mPlayerPowerup[PLAYER_COUNT]; ///< The powerup for each player. See PLAYER_POWERUP_e.
 
     u8 mWorldCompletion[WORLD_COUNT]; ///< The completion flags for each world. See WORLD_COMPLETION_e.

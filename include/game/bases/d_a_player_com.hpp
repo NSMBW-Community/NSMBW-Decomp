@@ -6,7 +6,7 @@
 namespace daPyCom_c {
 
 /// @unofficial
-static const PLAYER_CHARACTER_e sc_PLAYER_ORDER[] = {
+static const PLAYER_TYPE_e sc_PLAYER_ORDER[] = {
     PLAYER_MARIO,
     PLAYER_LUIGI,
     PLAYER_BLUE_TOAD,

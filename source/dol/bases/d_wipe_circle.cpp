@@ -59,7 +59,7 @@ bool dWipeCircle_c::createLayout() {
     mLyt.AllAnimeEndSetup();
 
     mpRootPane->SetVisible(false);
-    mLyt.mDrawOrder = m2d::LAYOUT_DRAW_ORDER::WIPE;
+    mLyt.mDrawOrder = m2d::DRAW_ORDER_WIPE;
     mAction = IDLE;
 
     return true;

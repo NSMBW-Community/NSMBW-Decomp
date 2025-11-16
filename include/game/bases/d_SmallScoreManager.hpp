@@ -22,29 +22,29 @@ public:
     /// @brief Creates a blue small score popup.
     /// @param pos The position of the popup.
     /// @param popupType The type of popup to create. A value from dSmallScore_c::POPUP_TYPE_e.
-    /// @param playerType The player type. A value from PLAYER_CHARACTER_e.
+    /// @param playerType The player type. A value from PLAYER_TYPE_e.
     void CreateBlueNumber(const mVec3_c &pos, int popupType, int playerType);
 
     /// @brief Creates a red number popup.
     /// @param pos The position of the popup.
-    /// @param playerType The player type. A value from PLAYER_CHARACTER_e.
+    /// @param playerType The player type. A value from PLAYER_TYPE_e.
     void CreateRedNumber(const mVec3_c &pos, int playerType);
 
     /// @brief Creates a small score popup.
     /// @param pos The position of the popup.
     /// @param popupType The type of popup to create. A value from dSmallScore_c::POPUP_TYPE_e.
-    /// @param playerType The player type. A value from PLAYER_CHARACTER_e.
+    /// @param playerType The player type. A value from PLAYER_TYPE_e.
     void CreateSmallScore(const mVec3_c &pos, int popupType, int playerType);
 
     /// @brief Creates a goal score popup.
     /// @param pos The position of the popup.
     /// @param popupType The type of popup to create. A value from dSmallScore_c::POPUP_TYPE_e.
-    /// @param playerType The player type. A value from PLAYER_CHARACTER_e.
+    /// @param playerType The player type. A value from PLAYER_TYPE_e.
     void CreateGoalScore(const mVec3_c &pos, int popupType, int playerType);
 
     /// @brief Updates the position of a goal score popup.
     /// @param pos The new position.
-    /// @param playerType The player type. A value from PLAYER_CHARACTER_e.
+    /// @param playerType The player type. A value from PLAYER_TYPE_e.
     void GoalScoreExecute(const mVec3_c &pos, int playerType);
 
 private:

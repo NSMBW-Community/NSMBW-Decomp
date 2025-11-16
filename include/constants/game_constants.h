@@ -48,8 +48,8 @@ enum PATH_DIRECTION_e {
     PATH_DIR_INITIAL,
 };
 
-/// @brief The identifiers for each character.
-enum PLAYER_CHARACTER_e {
+/// @brief The identifiers for each player type.
+enum PLAYER_TYPE_e {
     PLAYER_MARIO,
     PLAYER_LUIGI,
     PLAYER_YELLOW_TOAD,
