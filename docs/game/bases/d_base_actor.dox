@@ -5,7 +5,7 @@ dBaseActor_c allows placing bases in either 2D or 3D space, by implementing the 
 concepts of translation, scale, rotation and visibility. It also comes with a barebones physics
 engine and a few other properties. All actor bases (including sub-implementations) use
 @ref fProfile::fActorProfile_c "fActorProfile_c" for their profile, and their instances are
-added to a @ref ::m_actorManage "dedicated list" in addition to the default ones.
+added to a @ref m_actorManage "dedicated list" in addition to the default ones.
 
 The class is used directly when the only purpose of the base is displaying a 3D model.
 For more complex behaviour, it's recommended to use one of the available sub-implementations:
@@ -14,7 +14,7 @@ For more complex behaviour, it's recommended to use one of the available sub-imp
 - dMdActor_c, the minimum required implementation for a cutscene actor.
 
 ## Creating Actors
-Actor bases can be created by calling one of the two ::construct methods, which define two
+Actor bases can be created by calling one of the two construct() methods, which define two
 additional arguments to provide the starting position and rotation. A parent base can optionally
 be provided.
 
@@ -50,12 +50,12 @@ right-handed coordinate system}, with the Y axis used as height and the Z axis u
 
 ### Notes for Stage Actors
 - The position vector generally does not represent the center of the actor. To get the
-centered position, use the ::getCenterPos function.
+centered position, use the getCenterPos() function.
 - In stages, the origin point is placed in the top left corner, therefore Y values must be negated.
 - Tiles have a length and height of @p 16.0 .
 
 ## Moving an Actor
-You can move an actor by calling the ::posMove function. A translation vector can optionally be
+You can move an actor by calling the posMove() function. A translation vector can optionally be
 provided, otherwise the actor will be moved by its @ref mSpeed "current speed".
 
 @hint{Many subclasses will call this function automatically. Make sure to research this to avoid
@@ -85,63 +85,63 @@ values, and their behaviour is summarised into the table below:
 </thead>
 <tbody>
   <tr>
-    <td>::calcSpeedF</td>
+    <td>#calcSpeedF</td>
     <td>All Actors</td>
     <td>**F**</td>
-    <td>::mSpeedF</td>
-    <td>::mSpeedF</td>
-    <td>::mAccelF</td>
-    <td>::mMaxSpeedF</td>
+    <td>#mSpeedF</td>
+    <td>#mSpeedF</td>
+    <td>#mAccelF</td>
+    <td>#mMaxSpeedF</td>
     <td>
      - This function cannot be used on its own to update horizontal speed, as the result is not
-       placed into the ::mSpeed vector.
+       placed into the #mSpeed vector.
      - It is unknown what "F" stands for. Guesses are either Facing or Forward.
     </td>
   </tr>
   <tr>
-    <td rowspan="3">::calcSpeed</td>
+    <td rowspan="3">#calcSpeed</td>
     <td rowspan="3">3D Actors</td>
     <td>**X**</td>
-    <td>::mSpeedF</td>
+    <td>#mSpeedF</td>
     <td>@ref mSpeed "mSpeed.x"</td>
     <td>*none*</td>
     <td>*none*</td>
     <td rowspan="3">
-     - ::mSpeedF is applied into the direction the actor is facing.
-     - Combine this with ::calcSpeedF to implement acceleration and limiting on the X/Z axes.
+     - #mSpeedF is applied into the direction the actor is facing.
+     - Combine this with #calcSpeedF to implement acceleration and limiting on the X/Z axes.
     </td>
   </tr>
   <tr>
     <td>**Y**</td>
     <td>@ref mSpeed "mSpeed.y"</td>
     <td>@ref mSpeed "mSpeed.y"</td>
-    <td>::mAccelY</td>
-    <td>::mMaxFallSpeed</td>
+    <td>#mAccelY</td>
+    <td>#mMaxFallSpeed</td>
   </tr>
   <tr>
     <td>**Z**</td>
-    <td>::mSpeedF</td>
+    <td>#mSpeedF</td>
     <td>@ref mSpeed "mSpeed.z"</td>
     <td>*none*</td>
     <td>*none*</td>
   </tr>
   <tr>
-    <td>::calcSpeedX</td>
+    <td>#calcSpeedX</td>
     <td>2D Actors</td>
     <td>**X**</td>
     <td>@ref mSpeed "mSpeed.x"</td>
     <td>@ref mSpeed "mSpeed.x"</td>
-    <td>::mAccelF</td>
+    <td>#mAccelF</td>
     <td>@ref mSpeedMax "mSpeedMax.x"</td>
     <td></td>
   </tr>
   <tr>
-    <td>::calcSpeedY</td>
+    <td>#calcSpeedY</td>
     <td>2D Actors</td>
     <td>**Y**</td>
     <td>@ref mSpeed "mSpeed.y"</td>
     <td>@ref mSpeed "mSpeed.y"</td>
-    <td>::mAccelY</td>
+    <td>#mAccelY</td>
     <td>@ref mSpeedMax "mSpeedMax.y"</td>
     <td>
      - This function is intended to be used with negative speed values, but will also work with
@@ -151,26 +151,26 @@ values, and their behaviour is summarised into the table below:
     </td>
   </tr>
   <tr>
-    <td>::calcFallSpeed</td>
+    <td>#calcFallSpeed</td>
     <td>2D Actors</td>
     <td>**Y**</td>
     <td>@ref mSpeed "mSpeed.y"</td>
     <td>@ref mSpeed "mSpeed.y"</td>
-    <td>::mAccelY</td>
-    <td>::mMaxFallSpeed</td>
+    <td>#mAccelY</td>
+    <td>#mMaxFallSpeed</td>
     <td>In order for this function to work correctly, the acceleration value must be negated (so
         downwards acceleration is achieved with positive values and viceversa).</td>
   </tr>
   <tr>
-    <td rowspan="2">::calcSpeedXY</td>
+    <td rowspan="2">#calcSpeedXY</td>
     <td rowspan="2">2D Actors</td>
     <td>**X**</td>
-    <td>::mSpeedF</td>
+    <td>#mSpeedF</td>
     <td>@ref mSpeed "mSpeed.x"</td>
-    <td>::mAccelF</td>
-    <td>::mMaxSpeedF</td>
-    <td rowspan="2">This function combines ::calcSpeedF (with the correct destination value) and
-        ::calcFallSpeed, so make sure to read the notes for each of the two functions to ensure
+    <td>#mAccelF</td>
+    <td>#mMaxSpeedF</td>
+    <td rowspan="2">This function combines #calcSpeedF (with the correct destination value) and
+        #calcFallSpeed, so make sure to read the notes for each of the two functions to ensure
         proper functionality.
     </td>
   </tr>
@@ -178,37 +178,37 @@ values, and their behaviour is summarised into the table below:
     <td>**Y**</td>
     <td>@ref mSpeed "mSpeed.y"</td>
     <td>@ref mSpeed "mSpeed.y"</td>
-    <td>::mAccelY</td>
-    <td>::mMaxFallSpeed</td>
+    <td>#mAccelY</td>
+    <td>#mMaxFallSpeed</td>
   </tr>
 </tbody>
 </table>
 
 ## Scaling
-An actor base' scale can be controlled through the ::mScale vector. Depending on the base's
+An actor base' scale can be controlled through the #mScale vector. Depending on the base's
 implementation, the effects may only be visual or there may be no change at all.
 
 ## Rotation
 Actor rotations are stored as @ref mAng3_c "3-dimensional short vectors". There are two vectors:
-::mAngle, which is used by 2D actors, and ::mAngle3D, which is used by 3D actors. A small number of
+#mAngle, which is used by 2D actors, and #mAngle3D, which is used by 3D actors. A small number of
 bases ignore these conventions and employ the unused vector either as a backup or as a delta value.
 
 Just like for scaling, the effects of a rotation change also depend on the base's implementation.
 
 ## Visibility
-The actor's visibility can be controlled through the ::mVisible attribute. The actor won't be drawn
+The actor's visibility can be controlled through the #mVisible attribute. The actor won't be drawn
 if said property is set to @p false .
 
 ## Actor Properties
-::mActorProperties is a bitfield storing various properties, which are later interpreted by inheriting
+#mActorProperties is a bitfield storing various properties, which are later interpreted by inheriting
 classes. They are copied from the @ref fProfile::fActorProfile_c::mActorProperties
 "corresponding field" in @ref fProfile::fActorProfile_c "fActorProfile_c" when the base is
 constructed.
 
 ## Specialties
 ### Drawing Models Over 2D Layouts
-The ::draw2D function can replace the @p draw operation to allow 3D models to be drawn over the
-game's interface (the ::mVisible attribute in this case is ignored). This feature can only be
+The draw2D() function can replace the @p draw operation to allow 3D models to be drawn over the
+game's interface (the #mVisible attribute in this case is ignored). This feature can only be
 used in the following scenes:
 - Main Menu (dScGameSetup_c)
 - Multiplayer Level Select (dScMulti_c)
@@ -216,23 +216,23 @@ used in the following scenes:
 - World 9 Unlock Cutscene (dScWorld9DeMo_c)
 - World Map (dScWMap_c)
 
-The world map scene also supports an additional function (::draw2D_lyt2), which is executed in a
+The world map scene also supports an additional function (draw2D_lyt2()), which is executed in a
 later draw pass.
 
-@hint{To use this feature in other scenes, simply call ::draw2DActorOnLyt1 (and optionally
-::draw2DActorOnLyt2) from the scene's paint function (do so before the LinkScene call for the
+@hint{To use this feature in other scenes, simply call draw2DActorOnLyt1() (and optionally
+draw2DActorOnLyt2()) from the scene's paint function (do so before the LinkScene call for the
 respective draw pass).}
 
 ### Profile Counting
-The number of actor bases using a given profile can be obtained by calling ::GetProfNameActorNum.
+The number of actor bases using a given profile can be obtained by calling GetProfNameActorNum().
 
 ### Map Actor Types
-The ::GetActorType function offers basic type information about map actors. See ::ACTOR_KIND_e for
+The GetActorType() function offers basic type information about map actors. See ACTOR_KIND_e for
 details.
 
 ## Unused Content
-- The Z component of ::mSpeedMax is never used, despite being set to zero by various actors.
-- ::ACTOR_KIND_e type @ref ACTOR_KIND_e::ACTOR_UNK_6 "UNK_6" is not used anywhere, and presumably
+- The Z component of #mSpeedMax is never used, despite being set to zero by various actors.
+- ACTOR_KIND_e type @ref ACTOR_KIND_e::ACTOR_UNK_6 "UNK_6" is not used anywhere, and presumably
 identifies a now-deleted actor.
 
 @todo Add missing links (especially the dGraph bit to avoid confusing terminology). Find the official

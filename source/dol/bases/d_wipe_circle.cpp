@@ -59,19 +59,19 @@ bool dWipeCircle_c::createLayout() {
     mLyt.AllAnimeEndSetup();
 
     mpRootPane->SetVisible(false);
-    mLyt.mDrawOrder = 154;
+    mLyt.mDrawOrder = m2d::DRAW_ORDER_WIPE;
     mAction = IDLE;
 
     return true;
 }
 
-typedef void (dWipeCircle_c::*actMeth)();
+typedef void (dWipeCircle_c::*Proc)();
 
 int dWipeCircle_c::calc() {
-    static const actMeth Proc_tbl[ACTION_COUNT] = {
-        dWipeCircle_c::OpenSetup,
-        dWipeCircle_c::AnimeEndCheck,
-        dWipeCircle_c::CloseSetup
+    static const Proc Proc_tbl[ACTION_COUNT] = {
+        &dWipeCircle_c::OpenSetup,
+        &dWipeCircle_c::AnimeEndCheck,
+        &dWipeCircle_c::CloseSetup
     };
 
     if (!mIsCreated) {

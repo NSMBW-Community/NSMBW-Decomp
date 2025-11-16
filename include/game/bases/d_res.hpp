@@ -12,7 +12,7 @@ class dRes_c {
 public:
 
     /// @brief A callback class for processing resources.
-    /// @details The calls to ::execute occur during the initial loading of an archive.
+    /// @details The calls to execute() occur during the initial loading of an archive.
     class callback_c {
     public:
         /// @brief Initializes the callback with the resource name.
@@ -50,8 +50,8 @@ public:
 
         callback_c *mpCallback; ///< The file processing callback.
         u8 **mpFiles; ///< An array of pointers to the data of each loaded resource.
-        int mNumFiles; ///< The number of files in ::mpFiles.
-        unsigned int mFileIdx; ///< The index of the current file in ::mpFiles.
+        int mNumFiles; ///< The number of files in #mpFiles.
+        unsigned int mFileIdx; ///< The index of the current file in #mpFiles.
         u32 mFolderSig; ///< The first 4 characters of the current folder.
     };
 
@@ -78,7 +78,7 @@ public:
          *
          * @param arcName The name of the archive.
          * @param containingFolder The path to the folder which the archive is in.
-         * @param allocDirection The allocation direction. See ::MEMExpHeapAllocDir.
+         * @param allocDirection The allocation direction. See MEMExpHeapAllocDir.
          * @param heap The heap to load the resources of the archive into, or @p nullptr to use the default heap.
          * @return Whether the archive was prepared successfully and will be loaded.
          */
@@ -148,7 +148,7 @@ public:
      * @brief Schedules an archive for loading.
      * @param arcName The name of the archive to load. See the [path notes](#path-notes).
      * @param containingFolder The path to the folder the archive is in. See the [path notes](#path-notes).
-     * @param allocDir The allocation direction. See ::MEMExpHeapAllocDir.
+     * @param allocDir The allocation direction. See MEMExpHeapAllocDir.
      * @param heap The heap to load the archive into, or @p nullptr to use the default archive heap.
      * @return Whether the operation was successful.
      */
@@ -191,17 +191,17 @@ public:
      * @param resPath The path to the resource within the archive. See the [path notes](#path-notes).
      * @param size A pointer where the uncompressed size of the resource will be written to, or @p nullptr .
      * @param compressionType A pointer where the compression type of the resource will be written to, or
-     * @p nullptr . See ::CXCompressionType.
+     * @p nullptr . See CXCompressionType.
      * @return A pointer to the compressed contents of the resource.
      */
     void *getRes(const char *arcName, const char *resPath, unsigned long *size, int *compressionType) const;
 
     /// @brief Gets a resource without logging a message if the resource is not found.
-    /// @see ::getRes(const char*, const char*) const
+    /// @see getRes(const char*, const char*) const
     void *getResSilently(const char *arcName, const char *resPath) const;
 
     /// @brief Gets a resource without logging a message if the resource is not found.
-    /// @see ::getRes(const char*, const char*, unsigned long*) const
+    /// @see getRes(const char*, const char*, unsigned long*) const
     void *getResSilently(const char *arcName, const char *resPath, unsigned long *size) const;
 
     /// @brief Attempts to load the resources of an archive that has finished loading since the last call to this function. The callback is executed on all files and folders.
@@ -234,7 +234,7 @@ public:
 
     /// @brief Copies an optionally compressed resource.
     /// @param size The size of the data. Only used for uncompressed resources.
-    /// @param compressionType The compression type. See ::CXCompressionType for the possible values.
+    /// @param compressionType The compression type. See CXCompressionType for the possible values.
     static void copyRes(const void *from, void *to, int size, int compressionType);
 
 private:

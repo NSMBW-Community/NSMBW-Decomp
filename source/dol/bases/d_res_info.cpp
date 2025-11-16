@@ -98,7 +98,7 @@ dRes_c::info_c::LOAD_STATUS_e dRes_c::info_c::setRes(callback_c *callback) {
 
         // Prepare the heap for the archive data
         EGG::Heap *heap = (mpMountHeap != nullptr) ? mpMountHeap : mHeap::g_gameHeaps[0];
-        mDataHeap = mHeap::makeFrmHeapAndUpdate(-1, heap, "dRes_c::info_c::mDataHeap", 0x20, 0);
+        mDataHeap = mHeap::createFrmHeapToCurrent(-1, heap, "dRes_c::info_c::mDataHeap", 0x20, mHeap::OPT_NONE);
         if (mDataHeap == nullptr) {
             return LOAD_ERROR;
         }
@@ -152,12 +152,12 @@ dRes_c::info_c::LOAD_STATUS_e dRes_c::info_c::loadRes(dRes_c::callback_c *callba
     }
 
     if (callback != nullptr) {
-        // Use the callback to populate ::mpFiles
+        // Use the callback to populate mpFiles
         callback->init(mName);
         searchCallback_c searchCallback(callback, mpFiles, numFiles, 0, '    ');
         mpArchive->searchInside(&dRes_c::searchCallback_c::callback, &searchCallback);
     } else {
-        // Simply populate ::mpFiles with the files
+        // Simply populate mpFiles with the files
         mpArchive->getFileArray(mpFiles, numFiles);
     }
     return LOAD_SUCCESS;

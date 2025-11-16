@@ -8,6 +8,7 @@
 /// @ingroup bases
 class dYesNoWindow_c : public dBase_c {
 public:
+
     /// @brief The prompt type.
     enum WINDOW_TYPE_e {
         SAVE_DATA_CREATED,
@@ -39,22 +40,39 @@ public:
         RETURN_TO_MAP2,
         PEACH_CASTLE_HINT1,
         PEACH_CASTLE_HINT2,
-        NUM_WINDOW_TYPES
+        WINDOW_TYPE_COUNT
     };
 
     /// @brief The possible cursor positions.
     enum CURSOR_POS_e {
         POS_YES,
         POS_NO,
-        POS_OK
+        POS_OK,
+        POS_COUNT
     };
 
-    /// @brief The sound effect types used by the window.
+    /// @brief The sound effect types used for the window.
     enum SOUND_e {
         SOUND_CLOSE,
         SOUND_WAIT,
         SOUND_CURSOR_MOVE,
-        SOUND_OPEN_ANIME
+        SOUND_OPEN_ANIME,
+        SOUND_COUNT
+    };
+
+    /// @brief The animation names used for the window.
+    enum ANIM_NAME_e {
+        inWindow,
+        loopWindow,
+        inYesNoButton,
+        onYesNoButton,
+        idleYesNoButton,
+        hitYesNoButton,
+        offYesNoButton,
+        inBG,
+        outBG,
+        outWindow,
+        ANIM_NAME_COUNT
     };
 
     /// @brief The animations used for the window.
@@ -81,7 +99,47 @@ public:
         ANIM_OFF_OK,
         ANIM_IN_BG,
         ANIM_OUT_BG,
-        ANIM_OUT_WINDOW
+        ANIM_OUT_WINDOW,
+        ANIM_COUNT
+    };
+
+    /// @brief The picture panes used for the window.
+    enum P_PANE_e {
+        P_yesBase_00,
+        P_noBase_00,
+        P_centerBase_00,
+        P_COUNT
+    };
+
+    /// @brief The fixed text boxes used for the window.
+    enum T_FIXED_PANE_e {
+        T_center_00,
+        T_center_01,
+        T_otehonTextS_00,
+        T_otehonText_00,
+        T_FIXED_COUNT
+    };
+
+    /// @brief The text boxes used for the window.
+    enum T_PANE_e {
+        T_questionS_00,
+        T_question_00,
+        T_otehonTextS_01,
+        T_otehonText_01,
+        T_needCoinX_00,
+        T_needCoin_00,
+        T_yes_00,
+        T_yes_01,
+        T_no_00,
+        T_no_01,
+        T_COUNT
+    };
+
+    /// @brief The null panes used for the window.
+    enum N_PANE_e {
+        N_otehonText_00,
+        N_saveIcon_00,
+        N_COUNT
     };
 
     dYesNoWindow_c();
@@ -99,45 +157,27 @@ private:
     /// - Showing the quick save balloon if necessary
     void populateLayout();
 
-    STATE_FUNC_DECLARE(dYesNoWindow_c, InitWait); ///< @brief Initial state. Switches to OpenAnimeStartWait immediately.
-    STATE_FUNC_DECLARE(dYesNoWindow_c, OpenAnimeEndWait); ///< @brief Waiting for the window to finish the opening animation.
-    STATE_FUNC_DECLARE(dYesNoWindow_c, ButtonOnStageAnimeEndWait); ///< @brief Plays the button appearing animation and waits for it to finish.
-    STATE_FUNC_DECLARE(dYesNoWindow_c, ButtonChangeAnimeEndWait); ///< @brief Playing the button change animations.
-    STATE_FUNC_DECLARE(dYesNoWindow_c, SelectWait); ///< @brief Waiting for either a button change or button hit to occur.
-    STATE_FUNC_DECLARE(dYesNoWindow_c, HitAnimeEndWait); ///< @brief Waiting for the button to finish the hit animation.
-    STATE_FUNC_DECLARE(dYesNoWindow_c, ClouseAnimeEndWait); ///< @brief Waiting for the window to finish the closing animation.
-    STATE_FUNC_DECLARE(dYesNoWindow_c, HitAnimeAfterWait); ///< @brief Waiting in an infinite loop after the button was pressed.
+    STATE_FUNC_DECLARE(dYesNoWindow_c, InitWait); ///< Initial state. Switches to OpenAnimeStartWait immediately.
+    STATE_FUNC_DECLARE(dYesNoWindow_c, OpenAnimeEndWait); ///< Waiting for the window to finish the opening animation.
+    STATE_FUNC_DECLARE(dYesNoWindow_c, ButtonOnStageAnimeEndWait); ///< Plays the button appearing animation and waits for it to finish.
+    STATE_FUNC_DECLARE(dYesNoWindow_c, ButtonChangeAnimeEndWait); ///< Playing the button change animations.
+    STATE_FUNC_DECLARE(dYesNoWindow_c, SelectWait); ///< Waiting for either a button change or button hit to occur.
+    STATE_FUNC_DECLARE(dYesNoWindow_c, HitAnimeEndWait); ///< Waiting for the button to finish the hit animation.
+    STATE_FUNC_DECLARE(dYesNoWindow_c, ClouseAnimeEndWait); ///< Waiting for the window to finish the closing animation.
+    STATE_FUNC_DECLARE(dYesNoWindow_c, HitAnimeAfterWait); ///< Waiting in an infinite loop after the button was pressed.
 
-    LytBase_c mLayout; ///< @brief The layout for the window.
+    LytBase_c mLayout; ///< The layout for the window.
 
     /// @brief The state manager for the window.
     sFStateMgr_c<dYesNoWindow_c, sStateMethodUsr_FI_c> mStateMgr;
 
-    nw4r::lyt::Pane *mpRootPane; ///< @brief The root pane of the window.
+    nw4r::lyt::Pane *mpRootPane; ///< The root pane of the window.
+    nw4r::lyt::Picture *mpPictures[P_COUNT]; ///< The picture panes.
+    LytTextBox_c *mpTextBoxes[T_COUNT]; ///< The text boxes.
+    nw4r::lyt::Pane *mpNullPanes[N_COUNT]; ///< The null panes.
 
-    nw4r::lyt::Picture *P_yesBase_00,
-                       *P_noBase_00,
-                       *P_centerBase_00;
-
-    /// @brief Gets the n-th picture pane.
-    nw4r::lyt::Picture *getPicturePane(int n) { return (&P_yesBase_00)[n]; }
-
-    LytTextBox_c *T_questionS_00,
-                 *T_question_00,
-                 *T_otehonTextS_01,
-                 *T_otehonText_01,
-                 *T_needCoinX_00,
-                 *T_needCoin_00,
-                 *T_yes_00,
-                 *T_yes_01,
-                 *T_no_00,
-                 *T_no_01;
-
-    nw4r::lyt::Pane *N_otehonText_00,
-                    *N_saveIcon_00;
-
-    int mCursorPos; ///< @brief The current cursor position.
-    int mPrevCursorPos; ///< @brief The previous cursor position.
+    int mCursorPos; ///< The current cursor position.
+    int mPrevCursorPos; ///< The previous cursor position.
 
 public:
     /// @brief The type of the window.
@@ -148,11 +188,11 @@ public:
     /// @details This is only to be used with the WATCH_UNLOCKED_HINT_MOVIE type.
     int mStarCoinsRequired;
 
-    bool mHasLoadedLayout; ///< @brief Whether the layout has been loaded.
-    bool mIsActive; ///< @brief Whether the window is currently open.
-    bool mHitButton; ///< @brief Whether a button has been pressed.
-    bool mIsAnimating; ///< @brief Whether an animation is currently playing.
-    bool mKeepOpen; ///< @brief Whether the window should stay open after a button has been pressed.
-    bool mCancel; ///< @brief Whether the window has been cancelled (and closed).
-    bool mHideBG; ///< @brief Whether to hide the translucent background that fills the screen.
+    bool mHasLoadedLayout; ///< Whether the layout has been loaded.
+    bool mIsActive; ///< Whether the window is currently open.
+    bool mHitButton; ///< Whether a button has been pressed.
+    bool mIsAnimating; ///< Whether an animation is currently playing.
+    bool mKeepOpen; ///< Whether the window should stay open after a button has been pressed.
+    bool mCancel; ///< Whether the window has been cancelled (and closed).
+    bool mHideBG; ///< Whether to hide the translucent background that fills the screen.
 };

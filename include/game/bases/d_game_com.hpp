@@ -33,7 +33,7 @@ namespace dGameCom {
     };
 
     /// @brief Determines if gameplay is currently stopped for the specified reason(s).
-    /// @param flag The pause reasons. Value is a ::GAME_STOP_e.
+    /// @param flag The pause reasons. Value is a GAME_STOP_e.
     bool isGameStop(ulong flag);
     void clearGameStop(); ///< Resets the game stop state.
     void setGameStop();
@@ -93,7 +93,7 @@ namespace dGameCom {
 
     bool checkRectangleOverlap(mVec3_c *, mVec3_c *, mVec3_c *, mVec3_c *, float); ///< @unofficial
 
-    void updateSelectCursor(nw4r::lyt::Picture *pic, int index, bool useSpecialDraw); ///< @unofficial
+    void SelectCursorSetup(nw4r::lyt::Pane *pane, int index, bool useSpecialDraw);
     float getDispCenterY();
 
     void DispSizeScale(nw4r::math::VEC2 &scale);

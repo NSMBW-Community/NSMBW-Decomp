@@ -13,16 +13,16 @@ public:
 
     void initialize(); ///< Initializes the header data.
 
-    /// @brief Gets the Free Mode play count for the given world/level. See ::mPlayCountFreeMode.
+    /// @brief Gets the Free Mode play count for the given world/level. See #mPlayCountFreeMode.
     u16 getPlayCountFreeMode(int world, int level) const;
 
-    /// @brief Sets the Free Mode play count for the given world/level. See ::mPlayCountFreeMode.
+    /// @brief Sets the Free Mode play count for the given world/level. See #mPlayCountFreeMode.
     void setPlayCountFreeMode(int world, int level, int count);
 
-    /// @brief Gets the Coin Battle play count for the given world/level. See ::mPlayCountCoinBattle.
+    /// @brief Gets the Coin Battle play count for the given world/level. See #mPlayCountCoinBattle.
     u16 getPlayCountCoinBattle(int world, int level) const;
 
-    /// @brief Sets the Coin Battle play count for the given world/level. See ::mPlayCountCoinBattle.
+    /// @brief Sets the Coin Battle play count for the given world/level. See #mPlayCountCoinBattle.
     void setPlayCountCoinBattle(int world, int level, int count);
 
     void onMultiWorldOpenFlag(int world); ///< Unlocks the given world in extra modes.
@@ -38,13 +38,13 @@ private:
     u8 mRevision[2]; ///< The save revision numbers. See ::SAVE_REVISION_MAJOR and ::SAVE_REVISION_MINOR.
 
     u8 mLastSelectedFile; ///< The last selected save data slot.
-    u8 mUnknown7; ///< @brief Padding. @unused
+    u8 mUnknown7; ///< Padding. @unused
     u16 mPlayCountFreeMode[WORLD_COUNT][STAGE_COUNT]; ///< The play count of each level in Free Mode.
     u16 mPlayCountCoinBattle[WORLD_COUNT][STAGE_COUNT]; ///< The play count of each level in Coin Battle.
     u16 mMultiWorldOpenFlag; ///< The worlds unlocked in Extra Modes.
-    u16 mUnknown69A; ///< @brief Padding. @unused
+    u16 mUnknown69A; ///< Padding. @unused
 
-    u32 mChecksum; ///< The CRC32 checksum of the above data (excluding ::mMagic).
+    u32 mChecksum; ///< The CRC32 checksum of the above data (excluding #mMagic).
 
     friend class dSaveMng_c;
 };
@@ -104,21 +104,21 @@ public:
 
     void initialize(); ///< Initializes the slot data.
 
-    void setPlrID(int player, int character); ///< Sets @p player 's character. See ::PLAYER_CHARACTER_e.
-    int getPlrID(int player) const; ///< Gets @p player 's character. See ::PLAYER_CHARACTER_e.
+    void setPlrID(int player, int character); ///< Sets @p player 's character. See PLAYER_TYPE_e.
+    int getPlrID(int player) const; ///< Gets @p player 's character. See PLAYER_TYPE_e.
 
-    void setPlrMode(int player, u8 powerup); ///< Sets @p player 's powerup. See ::PLAYER_POWERUP_e.
-    int getPlrMode(int player) const; ///< Gets @p player 's powerup. See ::PLAYER_POWERUP_e.
+    void setPlrMode(int player, u8 powerup); ///< Sets @p player 's powerup. See PLAYER_POWERUP_e.
+    int getPlrMode(int player) const; ///< Gets @p player 's powerup. See PLAYER_POWERUP_e.
 
     void setRest(int player, u8 lives); ///< Sets @p player 's life count.
     int getRest(int player) const; ///< Gets @p player 's life count.
 
-    /// @brief Sets @p player 's createItem flag. See ::PLAYER_CREATE_ITEM_e.
-    /// @details Flags other than ::CREATE_ITEM_STAR_POWER are ignored.
+    /// @brief Sets @p player 's createItem flag. See PLAYER_CREATE_ITEM_e.
+    /// @details Flags other than CREATE_ITEM_STAR_POWER are ignored.
     void setCreateItem(int player, u8 flag);
 
-    /// @brief Gets @p player 's createItem flag. See ::PLAYER_CREATE_ITEM_e.
-    /// @details Flags other than ::CREATE_ITEM_STAR_POWER are ignored.
+    /// @brief Gets @p player 's createItem flag. See PLAYER_CREATE_ITEM_e.
+    /// @details Flags other than CREATE_ITEM_STAR_POWER are ignored.
     int getCreateItem(int player) const;
 
     void setCoin(int player, s8 coins); ///< Sets @p player 's coin count.
@@ -136,7 +136,7 @@ public:
     /// @brief Checks if the given hint movie was bought.
     bool isOtehonMenuOpenFlag(int movie) const;
 
-    /// @brief Sets the obtained Star Coin(s) for the given world/level. See ::COURSE_COMPLETION_e.
+    /// @brief Sets the obtained Star Coin(s) for the given world/level. See COURSE_COMPLETION_e.
     /// @details Other flags are discarded.
     void setCollectCoin(int world, int level, u8 coins);
 
@@ -146,10 +146,10 @@ public:
     /// @brief Checks if the given Star Coin has been obtained in the given world/level.
     u8 isCollectCoin(int world, int level, int coin) const;
 
-    /// @brief Sets the starting Toad House type in the given world. See ::START_KINOKO_KIND_e.
+    /// @brief Sets the starting Toad House type in the given world. See START_KINOKO_KIND_e.
     void setStartKinokoKind(int world, u8 type);
 
-    /// @brief Gets the starting Toad House type in the given world. See ::START_KINOKO_KIND_e.
+    /// @brief Gets the starting Toad House type in the given world. See START_KINOKO_KIND_e.
     int getStartKinokoKind(int world) const;
 
     /**
@@ -176,25 +176,25 @@ public:
     void setStockItem(int item, s8 count); ///< Sets the inventory amount for the given item.
     inline s8 getStockItem(int item) { return mStockItemCount[item]; } // [why was this inlined?]
 
-    /// @brief Checks if the completion flag(s) for the given world is set. See ::WORLD_COMPLETION_e.
+    /// @brief Checks if the completion flag(s) for the given world is set. See WORLD_COMPLETION_e.
     u8 isWorldDataFlag(int world, u8 flag) const;
 
-    /// @brief Sets the specified flag(s) for the given world. See ::WORLD_COMPLETION_e.
+    /// @brief Sets the specified flag(s) for the given world. See WORLD_COMPLETION_e.
     void onWorldDataFlag(int world, u8 flag);
 
-    /// @brief Unsets the specified flag(s) for the given world. See ::WORLD_COMPLETION_e.
+    /// @brief Unsets the specified flag(s) for the given world. See WORLD_COMPLETION_e.
     void offWorldDataFlag(int world, u8 flag);
 
-    /// @brief Checks if the completion flag for the given world/level is set. See ::COURSE_COMPLETION_e.
+    /// @brief Checks if the completion flag for the given world/level is set. See COURSE_COMPLETION_e.
     bool isCourseDataFlag(int world, int level, ulong flag) const;
 
-    /// @brief Sets the completion flag(s) for the given world/level. See ::COURSE_COMPLETION_e.
+    /// @brief Sets the completion flag(s) for the given world/level. See COURSE_COMPLETION_e.
     void onCourseDataFlag(int world, int level, ulong flag);
 
-    /// @brief Unsets the completion flag(s) for the given world/level. See ::COURSE_COMPLETION_e.
+    /// @brief Unsets the completion flag(s) for the given world/level. See COURSE_COMPLETION_e.
     void offCourseDataFlag(int world, int level, ulong flag);
 
-    /// @brief Gets all the completion flags for the given world/level. See ::COURSE_COMPLETION_e.
+    /// @brief Gets all the completion flags for the given world/level. See COURSE_COMPLETION_e.
     int getCourseDataFlag(int world, int level) const;
 
     /// @brief Sets the revival counter for the given map enemy.
@@ -216,7 +216,7 @@ public:
     u8 getCSEnemyPosIndex(int world, int enemy) const;
 
     /// @brief Sets the path direction for the given map enemy.
-    /// @param direction The path direction. Value is a ::PATH_DIRECTION_e.
+    /// @param direction The path direction. Value is a PATH_DIRECTION_e.
     void setCSEnemyWalkDir(int world, int enemy, u8 direction);
 
     /// @brief Gets the path direction for the given map enemy.
@@ -243,7 +243,7 @@ private:
 
     u8 mRevision[2]; ///< The save data version and subversion. See ::SAVE_REVISION_MAJOR and ::SAVE_REVISION_MINOR.
 
-    u8 mGameCompletion; ///< The overall completion of the save slot. See ::GAME_COMPLETION_e.
+    u8 mGameCompletion; ///< The overall completion of the save slot. See GAME_COMPLETION_e.
 
     u8 mCurrentWorld; ///< The world the player is currently in.
     u8 mCurrentSubWorld; ///< The subworld the player is currently in.
@@ -258,24 +258,24 @@ private:
 
     u8 mStockItemCount[POWERUP_COUNT]; ///< The inventory amount for each item.
 
-    /// @brief The starting Toad House type for each world. See ::START_KINOKO_KIND_e.
+    /// @brief The starting Toad House type for each world. See START_KINOKO_KIND_e.
     u8 mStartKinokoType[WORLD_COUNT];
 
     u8 mPlayerContinue[PLAYER_COUNT]; ///< The continue count for each player.
     s8 mPlayerCoin[PLAYER_COUNT]; ///< The coin count for each player.
     u8 mPlayerLife[PLAYER_COUNT]; ///< The life count for each player.
-    u8 mPlayerCreateItem[PLAYER_COUNT]; ///< The Star Power flag for each player. See ::PLAYER_CREATE_ITEM_e.
-    u8 mPlayerCharacter[PLAYER_COUNT]; ///< The character for each player. See ::PLAYER_CHARACTER_e.
-    u8 mPlayerPowerup[PLAYER_COUNT]; ///< The powerup for each player. See ::PLAYER_POWERUP_e.
+    u8 mPlayerCreateItem[PLAYER_COUNT]; ///< The Star Power flag for each player. See PLAYER_CREATE_ITEM_e.
+    u8 mPlayerCharacter[PLAYER_COUNT]; ///< The character for each player. See PLAYER_TYPE_e.
+    u8 mPlayerPowerup[PLAYER_COUNT]; ///< The powerup for each player. See PLAYER_POWERUP_e.
 
-    u8 mWorldCompletion[WORLD_COUNT]; ///< The completion flags for each world. See ::WORLD_COMPLETION_e.
+    u8 mWorldCompletion[WORLD_COUNT]; ///< The completion flags for each world. See WORLD_COMPLETION_e.
     u8 mEnemyRevivalCount[WORLD_COUNT][AMBUSH_ENEMY_COUNT]; ///< The revival counter for each map enemy.
 
     u16 mUnknown64; ///< @unused
     u16 mStaffRollHighScore; ///< The staff credits high score.
     u32 mScore; ///< The regular score.
 
-    /// @brief The completion flags for each level. See ::COURSE_COMPLETION_e.
+    /// @brief The completion flags for each level. See COURSE_COMPLETION_e.
     u32 mStageCompletion[WORLD_COUNT][STAGE_COUNT];
     bool mOtehonMenuOpen[HINT_MOVIE_COUNT]; ///< The hint movie bought status for each movie.
     u8 mKinopioCourseNo[WORLD_COUNT]; ///< The Toad Rescue level for each world.
@@ -283,13 +283,13 @@ private:
     u8 mEnemySceneNo[WORLD_COUNT][AMBUSH_ENEMY_COUNT]; ///< The subworld number for each map enemy.
     u8 mEnemyPosIndex[WORLD_COUNT][AMBUSH_ENEMY_COUNT]; ///< The path node for each map enemy.
 
-    /// @brief The movement direction for each map enemy. Value is a ::PATH_DIRECTION_e.
+    /// @brief The movement direction for each map enemy. Value is a PATH_DIRECTION_e.
     u8 mEnemyWalkDir[WORLD_COUNT][AMBUSH_ENEMY_COUNT];
 
     /// @brief The death count for each level.
     /// @details The value is cumulative, and not reset after clearing the level.
     u8 mDeathCount[WORLD_COUNT][STAGE_COUNT];
-    u8 mDeathCountSwitch; ///< The death count for the worldmap switch variant of World 3-4. See ::mDeathCount.
+    u8 mDeathCountSwitch; ///< The death count for the worldmap switch variant of World 3-4. See #mDeathCount.
 
     u8 pad[0x13]; // [Aligns the data to 32]
     u32 mChecksum; ///< The CRC32 checksum of the above data.

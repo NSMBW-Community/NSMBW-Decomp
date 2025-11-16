@@ -6,6 +6,6 @@ The dResMng_c class wraps a dRes_c instance to provide higher-level access. For 
 resource loading and management, see dRes_c.
 
 ## Bulk Resource Loading
-Use the ::setRes function to open multiple archives at once. Only up to ::MAX_NUM_RES archives can be
+Use the setRes() function to open multiple archives at once. Only up to #MAX_NUM_RES archives can be
 open at the same time.
 */

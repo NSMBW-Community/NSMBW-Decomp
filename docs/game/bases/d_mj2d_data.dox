@@ -11,7 +11,7 @@ The header is composed by the following fields:
 another region) will cause the save to be marked as corrupted.
 - A @ref mRevision "major and minor revision number":
 - A different major revision number will cause the version to be updated silently
-(see ::versionUpdate for details).
+(see versionUpdate() for details).
 - A different minor revision number will not trigger any action.
 - The @ref mLastSelectedFile "last selected file". It is updated automatically when loading a save slot.
 - The play count for each level in both @ref mPlayCountFreeMode "free mode" and
@@ -34,7 +34,7 @@ This can be achieved through the dSaveMng_c class.
 @note The save data structure must be 32-byte aligned to comply with NAND-level constraints.
 
 ### Resetting the Contents
-To reset the contents of the header, call the ::initialize function.
+To reset the contents of the header, call the initialize() function.
 */
 
 /*!
@@ -88,7 +88,7 @@ The following game statistics are additionally stored:
 The following data is for internal use only, with no developer interaction required:
 - A @ref mRevision "major and minor revision number":
 - A different major revision number will cause the version to be updated silently
-(see ::versionUpdate for details).
+(see versionUpdate() for details).
 - A different minor revision number will not trigger any action.
 - A @ref mChecksum "CRC32 checksum" of all the above data. A mismatch (for example, by
 hex editing the save file and forgetting to update this value) will cause the save to be marked as
@@ -105,5 +105,5 @@ This can be achieved through the dSaveMng_c class.
 @note The save data structure must be 32-byte aligned to comply with NAND-level constraints.
 
 ### Resetting the Contents
-To reset the contents of the save slot, call the ::initialize function.
+To reset the contents of the save slot, call the initialize() function.
 */

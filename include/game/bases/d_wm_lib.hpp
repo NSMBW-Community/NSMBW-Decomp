@@ -3,19 +3,6 @@
 #include <game/mLib/m_vec.hpp>
 #include <game/bases/d_wm_csv_data.hpp>
 
-/// @unofficial
-struct ForceListElement {
-    int nodeWorld;
-    const char *nodeName;
-    int world;
-    int level;
-    int entrance;
-    const char *levelNode;
-    mVec3_c nodePos;
-
-    ~ForceListElement() {}
-};
-
 namespace dWmLib {
     enum Direction3D_e {
         DIR3D_UP,
@@ -51,6 +38,18 @@ namespace dWmLib {
         POINT_TYPE_OTHER
     };
 
+    struct ForceInCourseList_t {
+        ~ForceInCourseList_t() {}
+
+        int nodeWorld;
+        const char *nodeName;
+        int world;
+        int level;
+        int entrance;
+        const char *levelNode;
+        mVec3_c nodePos;
+    };
+
     int GetCourseTypeFromCourseNo(int courseNo);
     bool isKoopaShipAnchor();
     u8 getStartPointKinokoHouseKindNum();
@@ -61,8 +60,7 @@ namespace dWmLib {
     int GetCurrentPlayResultStatus();
     int getEnemyRevivalCount(int, int);
 
-    /// @unofficial
-    static ForceListElement sc_ForceList[] = {
+    static ForceInCourseList_t sc_ForceList[] = {
         {WORLD_7, "F7C0", WORLD_7, dCsvData_c::c_CASTLE_ID, 4, "W7C0", mVec3_c(2160, -30, -478)}
     };
 

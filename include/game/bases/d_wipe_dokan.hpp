@@ -11,7 +11,7 @@
 class dWipeDokan_c : public mFaderBase_c {
 public:
 
-    /// @brief The possible actions performed in ::calc.
+    /// @brief The possible actions performed in calc().
     enum ACTION_e {
         OPEN_SETUP, ///< Prepare the fade-out transition.
         ANIME_END_CHECK, ///< Fade has begun, waiting for it to end.
@@ -19,16 +19,32 @@ public:
         IDLE ///< The fade has not been started.
     };
 
+    /// @brief The animation names used for the fader.
+    enum ANIM_NAME_e {
+        inBlackDown,
+        outBlackUp,
+        outBlackDown,
+        inBlackUp,
+        ANIM_NAME_COUNT
+    };
+
     /// @brief The animations for this fader.
     enum ANIM_e {
         IN_DOWN, ///< Downward fade-in.
         OUT_UP, ///< Upward fade-out.
         OUT_DOWN, ///< Downward fade-out.
-        IN_UP ///< Upward fade-in.
+        IN_UP, ///< Upward fade-in.
+        ANIM_COUNT
     };
 
-    dWipeDokan_c(nw4r::ut::Color, mFaderBase_c::EStatus stat); ///< See mFaderBase_c::mFaderBase_c.
-    ~dWipeDokan_c(); ///< Destroys the fader.
+    /// @brief The picture panes used for the fader.
+    enum P_PANE_e {
+        P_baseBlack_00,
+        P_COUNT
+    };
+
+    dWipeDokan_c(nw4r::ut::Color, mFaderBase_c::EStatus status); ///< @copydoc mFaderBase_c::mFaderBase_c
+    ~dWipeDokan_c(); ///< @copydoc mFaderBase_c::~mFaderBase_c
 
     /// @brief Loads the resources and creates the layout for the fader.
     /// @return Whether the creation was successful.
@@ -39,7 +55,7 @@ public:
 
     /// @brief Checks if the fade animation has finished yet.
     /// @details If the animation has finished, sets the status accordingly
-    /// and switches back to the ::IDLE action.
+    /// and switches back to the #IDLE action.
     void AnimeEndCheck();
 
     /// @brief Returns whether the wipe should go upwards or downwards.
@@ -54,8 +70,8 @@ public:
     virtual void draw();
 
     /// @brief Sets the fader's status.
-    /// @details The only allowed values are ::OPAQUE and ::HIDDEN.
-    virtual void setStatus(mFaderBase_c::EStatus stat);
+    /// @details The only allowed values are #OPAQUE and #HIDDEN.
+    virtual void setStatus(mFaderBase_c::EStatus status);
 
     virtual bool fadeIn();
     virtual bool fadeOut();
@@ -65,7 +81,7 @@ public:
 private:
     LytBase_c mLyt; ///< The layout for the fader.
     nw4r::lyt::Pane *mpRootPane; ///< The root pane of the fader layout.
-    nw4r::lyt::Picture *mpPic[1]; ///< The picture pane containing the fader texture.
-    ACTION_e mAction; ///< The action to be performed in ::calc.
+    nw4r::lyt::Picture *mpPic[P_COUNT]; ///< The picture panes.
+    ACTION_e mAction; ///< The action to be performed in calc().
     bool mIsCreated; ///< Whether the layout for the fader has been created.
 };

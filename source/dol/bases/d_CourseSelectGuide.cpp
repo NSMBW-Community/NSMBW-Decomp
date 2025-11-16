@@ -118,15 +118,16 @@ bool dCourseSelectGuide_c::createLayout() {
         "T_guideViewLS_00", "T_guideViewL_01"
     };
 
-    static const int MESSAGE_DATA_TBL[T_FIXED_COUNT] = {
-        MSG_CS_SELECT_WORLD,
-        MSG_CS_MENU,
-        MSG_CS_WORLD
-    };
     static const char *T_PANE_FIXED_NAME_TBL[T_FIXED_COUNT] = {
         "T_guideViewC_00",
         "T_guideViewR_00",
         "T_world_00"
+    };
+
+    static const int MESSAGE_DATA_TBL[T_FIXED_COUNT] = {
+        MSG_CS_SELECT_WORLD,
+        MSG_CS_MENU,
+        MSG_CS_WORLD
     };
 
     static const char *P_PANE_NAME_TBL[P_COUNT] = {
@@ -159,7 +160,7 @@ bool dCourseSelectGuide_c::createLayout() {
     mLayout.TPaneNameRegister(T_PANE_FIXED_NAME_TBL, MESSAGE_DATA_TBL, BMG_CATEGORY_COURSE_SELECT_GUIDE, T_FIXED_COUNT);
     mLayout.PPaneRegister(P_PANE_NAME_TBL, &mpPicturePanes[P_cC_1_00], P_COUNT);
 
-    mLayout.mDrawOrder = 2;
+    mLayout.mDrawOrder = m2d::DRAW_ORDER_COURSE_SELECT_GUIDE;
     mpRootPane->SetVisible(true);
     mpNullPanes[N_mapArrow_00]->SetVisible(true);
     mpPicturePanes[P_flagSkull_00]->SetVisible(false);
@@ -267,7 +268,7 @@ void dCourseSelectGuide_c::PlayerIconSet() {
     int currPane = N_IconPos1P_00;
     int playerCount = -1;
     for (int i = 0; i < PLAYER_COUNT; i++) {
-        PLAYER_CHARACTER_e playerType = daPyCom_c::sc_PLAYER_ORDER[i];
+        PLAYER_TYPE_e playerType = daPyCom_c::sc_PLAYER_ORDER[i];
         int playerIndex = daPyMng_c::getPlayerIndex(playerType);
         if (dGameCom::PlayerEnterCheck(playerIndex)) {
             mVec3_c translate;
@@ -289,7 +290,7 @@ void dCourseSelectGuide_c::RestNumberDisp() {
     static const int textBoxIdxs[PLAYER_COUNT] = { T_lifeNumber_00, T_lifeNumber_01, T_lifeNumber_03, T_lifeNumber_02 };
 
     for (int i = 0; i < PLAYER_COUNT; i++) {
-        PLAYER_CHARACTER_e playerType = daPyCom_c::sc_PLAYER_ORDER[i];
+        PLAYER_TYPE_e playerType = daPyCom_c::sc_PLAYER_ORDER[i];
         int playerIndex = daPyMng_c::getPlayerIndex(playerType);
         int rest = daPyMng_c::getRest(playerType);
         if (mRest[i] != rest) {
@@ -489,7 +490,7 @@ void dCourseSelectGuide_c::CollectionCoinSet() {
     }
 }
 
-bool dCourseSelectGuide_c::IsDirectionAllowed(int dir) {
+bool dCourseSelectGuide_c::isArrowDispRequest(int dir) {
     static const u8 flags[] = {
         BIT_FLAG(DIR_UP),
         BIT_FLAG(DIR_DOWN),
@@ -644,7 +645,7 @@ void dCourseSelectGuide_c::finalizeState_GuideExitAnimeEndCheck() {}
 
 void dCourseSelectGuide_c::initializeState_UpOnStageWait() {}
 void dCourseSelectGuide_c::executeState_UpOnStageWait() {
-    if (!mDisableArrows && (IsDirectionAllowed(DIR_UP) || mEnableAllArrows)) {
+    if (!mDisableArrows && (isArrowDispRequest(DIR_UP) || mEnableAllArrows)) {
         mStateMgrUp.changeState(StateID_UpOnStageAnimeEndCheck);
     }
 }
@@ -655,7 +656,7 @@ void dCourseSelectGuide_c::initializeState_UpOnStageAnimeEndCheck() {
     mLayout.AnimeStartSetup(ANIM_IN_ARROW_U, false);
 }
 void dCourseSelectGuide_c::executeState_UpOnStageAnimeEndCheck() {
-    if (!IsDirectionAllowed(DIR_UP) || mDisableArrows) {
+    if (!isArrowDispRequest(DIR_UP) || mDisableArrows) {
         mLayout.AnimeEndSetup(ANIM_IN_ARROW_U);
         mStateMgrUp.changeState(StateID_UpExitAnimeEndCheck);
     } else {
@@ -673,7 +674,7 @@ void dCourseSelectGuide_c::initializeState_UpDisp() {
     mLayout.LoopAnimeStartSetup(ANIM_LOOP_ARROW_U);
 }
 void dCourseSelectGuide_c::executeState_UpDisp() {
-    if (!IsDirectionAllowed(DIR_UP) || mDisableArrows) {
+    if (!isArrowDispRequest(DIR_UP) || mDisableArrows) {
         mStateMgrUp.changeState(StateID_UpExitAnimeEndCheck);
     }
 }
@@ -685,7 +686,7 @@ void dCourseSelectGuide_c::initializeState_UpExitAnimeEndCheck() {
     mLayout.AnimeStartSetup(ANIM_OUT_ARROW_U, false);
 }
 void dCourseSelectGuide_c::executeState_UpExitAnimeEndCheck() {
-    if (IsDirectionAllowed(DIR_UP)) {
+    if (isArrowDispRequest(DIR_UP)) {
         mStateMgrUp.changeState(StateID_UpOnStageAnimeEndCheck);
     } else if (!mLayout.isAnime(ANIM_OUT_ARROW_U)) {
         mStateMgrUp.changeState(StateID_UpOnStageWait);
@@ -697,7 +698,7 @@ void dCourseSelectGuide_c::finalizeState_UpExitAnimeEndCheck() {
 
 void dCourseSelectGuide_c::initializeState_DownOnStageWait() {}
 void dCourseSelectGuide_c::executeState_DownOnStageWait() {
-    if (!mDisableArrows && (IsDirectionAllowed(DIR_DOWN) || mEnableAllArrows)) {
+    if (!mDisableArrows && (isArrowDispRequest(DIR_DOWN) || mEnableAllArrows)) {
         mStateMgrDown.changeState(StateID_DownOnStageAnimeEndCheck);
     }
 }
@@ -708,7 +709,7 @@ void dCourseSelectGuide_c::initializeState_DownOnStageAnimeEndCheck() {
     mLayout.AnimeStartSetup(ANIM_IN_ARROW_D, false);
 }
 void dCourseSelectGuide_c::executeState_DownOnStageAnimeEndCheck() {
-    if (!IsDirectionAllowed(DIR_DOWN) || mDisableArrows) {
+    if (!isArrowDispRequest(DIR_DOWN) || mDisableArrows) {
         mLayout.AnimeEndSetup(ANIM_IN_ARROW_D);
         mStateMgrDown.changeState(StateID_DownExitAnimeEndCheck);
     } else if (!mLayout.isAnime(ANIM_IN_ARROW_D)) {
@@ -723,7 +724,7 @@ void dCourseSelectGuide_c::initializeState_DownDisp() {
     mLayout.LoopAnimeStartSetup(ANIM_LOOP_ARROW_D);
 }
 void dCourseSelectGuide_c::executeState_DownDisp() {
-    if (!IsDirectionAllowed(DIR_DOWN) || mDisableArrows) {
+    if (!isArrowDispRequest(DIR_DOWN) || mDisableArrows) {
         mStateMgrDown.changeState(StateID_DownExitAnimeEndCheck);
     }
 }
@@ -735,7 +736,7 @@ void dCourseSelectGuide_c::initializeState_DownExitAnimeEndCheck() {
     mLayout.AnimeStartSetup(ANIM_OUT_ARROW_D, false);
 }
 void dCourseSelectGuide_c::executeState_DownExitAnimeEndCheck() {
-    if (IsDirectionAllowed(DIR_DOWN)) {
+    if (isArrowDispRequest(DIR_DOWN)) {
         mStateMgrDown.changeState(StateID_DownOnStageAnimeEndCheck);
     } else if (!mLayout.isAnime(ANIM_OUT_ARROW_D)) {
         mStateMgrDown.changeState(StateID_DownOnStageWait);
@@ -747,7 +748,7 @@ void dCourseSelectGuide_c::finalizeState_DownExitAnimeEndCheck() {
 
 void dCourseSelectGuide_c::initializeState_LeftOnStageWait() {}
 void dCourseSelectGuide_c::executeState_LeftOnStageWait() {
-    if (!mDisableArrows && (IsDirectionAllowed(DIR_LEFT) || mEnableAllArrows)) {
+    if (!mDisableArrows && (isArrowDispRequest(DIR_LEFT) || mEnableAllArrows)) {
         mStateMgrLeft.changeState(StateID_LeftOnStageAnimeEndCheck);
     }
 }
@@ -758,7 +759,7 @@ void dCourseSelectGuide_c::initializeState_LeftOnStageAnimeEndCheck() {
     mLayout.AnimeStartSetup(ANIM_IN_ARROW_L, false);
 }
 void dCourseSelectGuide_c::executeState_LeftOnStageAnimeEndCheck() {
-    if (!IsDirectionAllowed(DIR_LEFT) || mDisableArrows) {
+    if (!isArrowDispRequest(DIR_LEFT) || mDisableArrows) {
         mLayout.AnimeEndSetup(ANIM_IN_ARROW_L);
         mStateMgrLeft.changeState(StateID_LeftExitAnimeEndCheck);
     } else if (!mLayout.isAnime(ANIM_IN_ARROW_L)) {
@@ -773,7 +774,7 @@ void dCourseSelectGuide_c::initializeState_LeftDisp() {
     mLayout.LoopAnimeStartSetup(ANIM_LOOP_ARROW_L);
 }
 void dCourseSelectGuide_c::executeState_LeftDisp() {
-    if (!IsDirectionAllowed(DIR_LEFT) || mDisableArrows) {
+    if (!isArrowDispRequest(DIR_LEFT) || mDisableArrows) {
         mStateMgrLeft.changeState(StateID_LeftExitAnimeEndCheck);
     }
 }
@@ -785,7 +786,7 @@ void dCourseSelectGuide_c::initializeState_LeftExitAnimeEndCheck() {
     mLayout.AnimeStartSetup(ANIM_OUT_ARROW_L, false);
 }
 void dCourseSelectGuide_c::executeState_LeftExitAnimeEndCheck() {
-    if (IsDirectionAllowed(DIR_LEFT)) {
+    if (isArrowDispRequest(DIR_LEFT)) {
         mStateMgrLeft.changeState(StateID_LeftOnStageAnimeEndCheck);
     } else if (!mLayout.isAnime(ANIM_OUT_ARROW_L)) {
         mStateMgrLeft.changeState(StateID_LeftOnStageWait);
@@ -797,7 +798,7 @@ void dCourseSelectGuide_c::finalizeState_LeftExitAnimeEndCheck() {
 
 void dCourseSelectGuide_c::initializeState_RightOnStageWait() {}
 void dCourseSelectGuide_c::executeState_RightOnStageWait() {
-    if (!mDisableArrows && (IsDirectionAllowed(DIR_RIGHT) || mEnableAllArrows)) {
+    if (!mDisableArrows && (isArrowDispRequest(DIR_RIGHT) || mEnableAllArrows)) {
         mStateMgrRight.changeState(StateID_RightOnStageAnimeEndCheck);
     }
 }
@@ -808,7 +809,7 @@ void dCourseSelectGuide_c::initializeState_RightOnStageAnimeEndCheck() {
     mLayout.AnimeStartSetup(ANIM_IN_ARROW_R, false);
 }
 void dCourseSelectGuide_c::executeState_RightOnStageAnimeEndCheck() {
-    if (!IsDirectionAllowed(DIR_RIGHT) || mDisableArrows) {
+    if (!isArrowDispRequest(DIR_RIGHT) || mDisableArrows) {
         mLayout.AnimeEndSetup(ANIM_IN_ARROW_R);
         mStateMgrRight.changeState(StateID_RightExitAnimeEndCheck);
     } else if (!mLayout.isAnime(ANIM_IN_ARROW_R)) {
@@ -823,7 +824,7 @@ void dCourseSelectGuide_c::initializeState_RightDisp() {
     mLayout.LoopAnimeStartSetup(ANIM_LOOP_ARROW_R);
 }
 void dCourseSelectGuide_c::executeState_RightDisp() {
-    if (!IsDirectionAllowed(DIR_RIGHT) || mDisableArrows) {
+    if (!isArrowDispRequest(DIR_RIGHT) || mDisableArrows) {
         mStateMgrRight.changeState(StateID_RightExitAnimeEndCheck);
     }
 }
@@ -835,7 +836,7 @@ void dCourseSelectGuide_c::initializeState_RightExitAnimeEndCheck() {
     mLayout.AnimeStartSetup(ANIM_OUT_ARROW_R, false);
 }
 void dCourseSelectGuide_c::executeState_RightExitAnimeEndCheck() {
-    if (IsDirectionAllowed(DIR_RIGHT)) {
+    if (isArrowDispRequest(DIR_RIGHT)) {
         mStateMgrRight.changeState(StateID_RightOnStageAnimeEndCheck);
     } else if (!mLayout.isAnime(ANIM_OUT_ARROW_R)) {
         mStateMgrRight.changeState(StateID_RightOnStageWait);

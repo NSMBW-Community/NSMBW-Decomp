@@ -179,7 +179,9 @@ LAYOUT_FILE            = website/doxygen/DoxygenLayout.xml
 # Note: If this tag is empty the current directory is searched.
 
 INPUT                  = source \
-                         include \
+                         include/constants \
+                         include/game \
+                         include/runtime \
                          docs
 
 # This tag can be used to specify the character encoding of the source files
@@ -412,6 +414,16 @@ DISABLE_INDEX          = NO
 # This tag requires that the tag GENERATE_HTML is set to YES.
 
 GENERATE_TREEVIEW      = YES
+
+# When GENERATE_TREEVIEW is set to YES, the PAGE_OUTLINE_PANEL option determines
+# if an additional navigation panel is shown at the right hand side of the
+# screen, displaying an outline of the contents of the main page, similar to
+# e.g. https://developer.android.com/reference If GENERATE_TREEVIEW is set to
+# NO, this option has no effect.
+# The default value is: YES.
+# This tag requires that the tag GENERATE_HTML is set to YES.
+
+PAGE_OUTLINE_PANEL     = NO
 
 # The ENUM_VALUES_PER_LINE tag can be used to set the number of enum values that
 # Doxygen will group on one line in the generated HTML documentation.

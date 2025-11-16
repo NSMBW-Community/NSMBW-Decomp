@@ -99,9 +99,9 @@ jobs:
       - name: Generate documentation
         run: |
           sudo apt-get install -y graphviz fonts-freefont-ttf
-          curl https://www.doxygen.nl/files/doxygen-1.13.2.linux.bin.tar.gz --output doxygen-1.13.2.linux.bin.tar.gz
-          tar xzf doxygen-1.13.2.linux.bin.tar.gz
-          cd doxygen-1.13.2
+          curl https://www.doxygen.nl/files/doxygen-1.15.0.linux.bin.tar.gz --output doxygen-1.15.0.linux.bin.tar.gz
+          tar xzf doxygen-1.15.0.linux.bin.tar.gz
+          cd doxygen-1.15.0
           sudo make install
           cd ..
           doxygen

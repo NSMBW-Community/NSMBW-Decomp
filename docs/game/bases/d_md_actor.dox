@@ -11,7 +11,7 @@ The following operation changes have been made:
 @ref dGameCom::GAME_STOP_e::GAME_STOP_ANY "any reason".
 
 ## Unused Content
-- The @ref mCullSphere "bounding sphere" mechanism from dWmActor_c is present in this class as well,
+- The @ref mClipSphere "bounding sphere" mechanism from dWmActor_c is present in this class as well,
 however no cutscene actors make use of it.
 - Similarly, the World Select Menu check from the same class is also present, but it will never be
 triggered since no cutscene actors are ever active on the world map.

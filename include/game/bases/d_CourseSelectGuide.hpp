@@ -133,7 +133,7 @@ private:
      */
     void CourseSelectSet(dWmLib::PointType_e type);
 
-    bool IsDirectionAllowed(int dir); ///< Returns whether the arrow for direction @p dir should be shown. @unofficial
+    bool isArrowDispRequest(int dir); ///< Returns whether the arrow for direction @p dir should be shown.
 
     /**
      * @brief Updates the course-related parts of the course info guide.

@@ -30,5 +30,5 @@ public:
     }
 
     u16 mOrder; ///< The priority of this node. Lower values mean higher priority.
-    u16 mNewOrder; ///< The priority the node should change to if it differs from ::mOrder.
+    u16 mNewOrder; ///< The priority the node should change to if it differs from #mOrder.
 };

@@ -6,8 +6,8 @@
 
 dWipeDokan_c *dWipeDokan_c::m_instance;
 
-dWipeDokan_c::dWipeDokan_c(nw4r::ut::Color color, mFaderBase_c::EStatus stat) :
-mFaderBase_c(mColor(color), stat) {
+dWipeDokan_c::dWipeDokan_c(nw4r::ut::Color color, mFaderBase_c::EStatus status) :
+mFaderBase_c(mColor(color), status) {
     m_instance = this;
     mIsCreated = false;
 }
@@ -17,22 +17,28 @@ dWipeDokan_c::~dWipeDokan_c() {
 }
 
 bool dWipeDokan_c::createLayout() {
-    static const char *AnmNameTbl[] = {
+    static const char *AnmNameTbl[ANIM_NAME_COUNT] = {
         "wipeDokan_02_inBlackDown.brlan",
         "wipeDokan_02_outBlackUp.brlan",
         "wipeDokan_02_outBlackDown.brlan",
         "wipeDokan_02_inBlackUp.brlan"
     };
 
-    static const char *GROUP_NAME_DT[] = {
+    static const char *GROUP_NAME_DT[ANIM_COUNT] = {
         "A00_wipeDokan",
         "A00_wipeDokan",
         "A00_wipeDokan",
         "A00_wipeDokan"
     };
-    static const int ANIME_INDEX_TBL[] = {0, 1, 2, 3};
 
-    static const char *PPANE_NAME_DT[] = {
+    static const int ANIME_INDEX_TBL[ANIM_COUNT] = {
+        inBlackDown,
+        outBlackUp,
+        outBlackDown,
+        inBlackUp
+    };
+
+    static const char *PPANE_NAME_DT[P_COUNT] = {
         "P_baseBlack_00"
     };
 
@@ -45,36 +51,37 @@ bool dWipeDokan_c::createLayout() {
         return false;
     }
 
-    mLyt.build("wipeDokan_02.brlyt", nullptr);
-    mLyt.AnimeResRegister(AnmNameTbl, ARRAY_SIZE(AnmNameTbl));
-    mLyt.GroupRegister(GROUP_NAME_DT, ANIME_INDEX_TBL, ARRAY_SIZE(GROUP_NAME_DT));
+    mLyt.build("wipeDokan_02.brlyt", 0);
+    mLyt.AnimeResRegister(AnmNameTbl, ANIM_NAME_COUNT);
+    mLyt.GroupRegister(GROUP_NAME_DT, ANIME_INDEX_TBL, ANIM_COUNT);
     mpRootPane = mLyt.getRootPane();
-    mLyt.PPaneRegister(PPANE_NAME_DT, mpPic, ARRAY_SIZE(mpPic));
+    mLyt.PPaneRegister(PPANE_NAME_DT, mpPic, P_COUNT);
 
     mIsCreated = true;
 
     mLyt.AllAnimeEndSetup();
 
     mpRootPane->SetVisible(false);
-    mLyt.mDrawOrder = 154;
+    mLyt.mDrawOrder = m2d::DRAW_ORDER_WIPE;
     mAction = IDLE;
 
     return true;
 }
 
-typedef void (dWipeDokan_c::*actMeth)();
-const actMeth actMeths[] = {
-    &dWipeDokan_c::OpenSetup,
-    &dWipeDokan_c::AnimeEndCheck,
-    &dWipeDokan_c::CloseSetup
-};
+typedef void (dWipeDokan_c::*Proc)();
 
 int dWipeDokan_c::calc() {
+    static const Proc Proc_tbl[] = {
+        &dWipeDokan_c::OpenSetup,
+        &dWipeDokan_c::AnimeEndCheck,
+        &dWipeDokan_c::CloseSetup
+    };
+
     if (!mIsCreated) {
         return 1;
     }
     if (mAction != IDLE) {
-        (this->*actMeths[mAction])();
+        (this->*Proc_tbl[mAction])();
         mLyt.AnimePlay();
         mLyt.calc();
     }
@@ -133,20 +140,20 @@ void dWipeDokan_c::CloseSetup() {
     mAction = ANIME_END_CHECK;
 }
 
-void dWipeDokan_c::setStatus(mFaderBase_c::EStatus stat) {
-    if (stat == OPAQUE) {
+void dWipeDokan_c::setStatus(mFaderBase_c::EStatus status) {
+    if (status == OPAQUE) {
         mStatus = OPAQUE;
 
-        mpPic[0]->SetAlpha(255);
+        mpPic[P_baseBlack_00]->SetAlpha(255);
         mLyt.ReverseAnimeStartSetup(OUT_UP, false);
 
         mpRootPane->SetVisible(true);
         mLyt.AnimePlay();
         mLyt.calc();
-    } else if (stat == HIDDEN) {
+    } else if (status == HIDDEN) {
         mStatus = HIDDEN;
 
-        mpPic[0]->SetAlpha(0);
+        mpPic[P_baseBlack_00]->SetAlpha(0);
         mLyt.ReverseAnimeStartSetup(IN_DOWN, false);
 
         mpRootPane->SetVisible(true);

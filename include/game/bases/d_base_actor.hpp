@@ -54,7 +54,7 @@ protected:
     virtual void draw2D_lyt2();
 
 public:
-    virtual int GetActorType() { return ACTOR_GENERIC; } ///< Gets the actor kind. See ::ACTOR_KIND_e.
+    virtual int GetActorType() { return ACTOR_GENERIC; } ///< Gets the actor kind. See ACTOR_KIND_e.
 
 protected:
     virtual void finalUpdate() {} ///< Code to be executed after all actors' @p execute operation has run.
@@ -71,7 +71,7 @@ public:
     void calcSpeedY(); ///< Updates the actor's Y speed. See [here](#speed-and-acceleration) for details.
     void calcSpeedF(); ///< Updates the actor's forward speed. See [here](#speed-and-acceleration) for details.
 
-    /// @brief Generates a partial transformation matrix for the actor and stores it in ::mMatrix.
+    /// @brief Generates a partial transformation matrix for the actor and stores it in #mMatrix.
     /// @details The transformation matrix only contains the translation and the rotation on the Y axis.
     void makeMtx();
 
@@ -82,8 +82,8 @@ public:
     // [why is this not static?]
     int GetProfNameActorNum(ProfileName profile); ///< Counts the instances of the given actor profile.
 
-    static void draw2DActorOnLyt1(); ///< Calls ::draw2D on every actor.
-    static void draw2DActorOnLyt2(); ///< Calls ::draw2D_lyt2 on every actor.
+    static void draw2DActorOnLyt1(); ///< Calls draw2D() on every actor.
+    static void draw2DActorOnLyt2(); ///< Calls draw2D_lyt2() on every actor.
 
     /**
      * @brief Creates an actor without a parent.
@@ -119,10 +119,10 @@ private:
      */
     static void setTmpCtData(const mVec3_c *position, const mAng3_c *rotation);
 
-    fLiNdBa_c mLinkActor; ///< The node in ::m_actorManage.
+    fLiNdBa_c mLinkActor; ///< The node in #m_actorManage.
 
 public:
-    mMtx_c mMatrix; ///< The actor's partial transformation matrix. See ::makeMtx for details.
+    mMtx_c mMatrix; ///< The actor's partial transformation matrix. See makeMtx() for details.
 
     mVec3_c mPos; ///< The actor's position.
     mVec3_c mLastPos; ///< The actor's position in the previous frame.
@@ -146,7 +146,7 @@ public:
     bool mVisible; ///< Whether the actor should be visible or not. Defaults to @p true .
 
 private:
-    static const mVec3_c *m_tmpCtPosP; ///< Temporary storage for the next constructed actor's position. See ::mPos.
-    static const mAng3_c *m_tmpCtAngleP; ///< Temporary storage for the next constructed actor's rotation. See ::mAngle.
+    static const mVec3_c *m_tmpCtPosP; ///< Temporary storage for the next constructed actor's position. See #mPos.
+    static const mAng3_c *m_tmpCtAngleP; ///< Temporary storage for the next constructed actor's rotation. See #mAngle.
     static fLiMgBa_c m_actorManage; ///< A list of all actor bases.
 };

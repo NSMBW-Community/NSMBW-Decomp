@@ -25,7 +25,7 @@ class dDeathInfo_c {
 public:
     dDeathInfo_c() : mIsDead(false) {}
 
-    dDeathInfo_c operator=(const sDeathInfoData &other) {
+    dDeathInfo_c &operator=(const sDeathInfoData &other) {
         mIsDead = true;
         mSpeed.set(other.mXSpeed, other.mYSpeed);
         mMaxYSpeed = other.mMaxYSpeed;
@@ -35,6 +35,7 @@ public:
         m_18 = other.m_18;
         mDirection = other.mDirection;
         mKilledBy = other.mKilledBy;
+        return *this;
     }
 
     float getXSpeed() const {

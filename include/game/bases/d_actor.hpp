@@ -104,7 +104,7 @@ public:
     virtual void block_hit_init(); ///< Callback for when a block directly beneath the actor is hit.
 
     virtual bool vf68(dBg_ctr_c *collider) { return true; } ///< Unknown, related to collision. @unofficial
-    virtual s8 *getPlrNo() { return &mPlayerNo; } ///< Gets the player number associated with the actor. See ::mPlayerNo.
+    virtual s8 *getPlrNo() { return &mPlayerNo; } ///< Gets the player number associated with the actor. See #mPlayerNo.
     virtual mVec2_c getLookatPos() const; ///< Gets the position players look to when focused on the actor.
 
     /// @brief Returns whether the actor can be carried.
@@ -199,7 +199,7 @@ public:
     bool areaCullCheck(const mVec3_c &pos, const sRangeDataF &bound, u8 areaID) const;
 
     /// @brief Checks if the actor is out of gameplay and optionally deletes it.
-    /// @param flags The flags to control which actions to perform. Value is a ::SCREEN_OUT_e.
+    /// @param flags The flags to control which actions to perform. Value is a SCREEN_OUT_e.
     /// @return Whether the actor is out of gameplay.
     bool ActorScrOutCheck(u16 flags);
 
@@ -262,18 +262,18 @@ public:
     /// @param pos The position to use for the search.
     /// @return The closest player, or @p nullptr .
     typedef dAcPy_c *(*searchNearPlayerFunc)(mVec2_c &delta, const mVec2_c &pos);
-    static dAcPy_c *searchNearPlayer_Main(mVec2_c &delta, const mVec2_c &pos); ///< See ::searchNearPlayerFunc.
-    static dAcPy_c *searchNearPlayerNormal(mVec2_c &delta, const mVec2_c &pos); ///< See ::searchNearPlayerFunc.
-    static dAcPy_c *searchNearPlayerLoop(mVec2_c &delta, const mVec2_c &pos); ///< See ::searchNearPlayerFunc.
+    static dAcPy_c *searchNearPlayer_Main(mVec2_c &delta, const mVec2_c &pos); ///< See searchNearPlayerFunc.
+    static dAcPy_c *searchNearPlayerNormal(mVec2_c &delta, const mVec2_c &pos); ///< See searchNearPlayerFunc.
+    static dAcPy_c *searchNearPlayerLoop(mVec2_c &delta, const mVec2_c &pos); ///< See searchNearPlayerFunc.
 
     /// @brief Gets the direction the target position is in, from the source position's viewpoint.
     /// @param trgX The target X position.
     /// @param srcX The source X position.
     /// @return The direction the target is in.
     typedef bool (*getTrgToSrcDirFunc)(float trgX, float srcX);
-    static bool getTrgToSrcDir_Main(float trgX, float srcX); ///< See ::getTrgToSrcDirFunc.
-    static bool getTrgToSrcDirNormal(float trgX, float srcX); ///< See ::getTrgToSrcDirFunc.
-    static bool getTrgToSrcDirLoop(float trgX, float srcX); ///< See ::getTrgToSrcDirFunc.
+    static bool getTrgToSrcDir_Main(float trgX, float srcX); ///< See getTrgToSrcDirFunc.
+    static bool getTrgToSrcDirNormal(float trgX, float srcX); ///< See getTrgToSrcDirFunc.
+    static bool getTrgToSrcDirLoop(float trgX, float srcX); ///< See getTrgToSrcDirFunc.
 
     /// @brief Adjusts the actor's position to account for looping stages.
     /// @param pos The position to be updated.
@@ -297,7 +297,7 @@ public:
     /// @param loopType The loop type. See dScStage_c::LOOP_TYPE_e.
     static void setLoopFunc(int loopType);
 
-    void setKind(u8 kind); ///< Sets the actor's kind. See ::STAGE_ACTOR_KIND_e.
+    void setKind(u8 kind); ///< Sets the actor's kind. See STAGE_ACTOR_KIND_e.
 
     /// @brief Sets temporary data to be used for the next actor's construction.
     /// @param layer The actor's layer.
@@ -354,18 +354,18 @@ public:
     u8 mAreaNo; ///< The actor's zone ID.
     u8 mBgCollFlags; ///< The collision directions that the actor can respond to.
 
-    u8 *mpSpawnFlags; ///< The spawn flags for the actor. See ::ACTOR_SPAWN_FLAG_e.
+    u8 *mpSpawnFlags; ///< The spawn flags for the actor. See ACTOR_SPAWN_FLAG_e.
     u16 *mpDeleteVal; ///< @unused
     u16 mEventNums; ///< The event IDs the actor is tracking.
-    u64 mEventMask; ///< The event mask, generated from ::mEventNums.
+    u64 mEventMask; ///< The event mask, generated from #mEventNums.
 
     u32 m_23b; ///< @todo Figure out the purpose of this field.
     u16 mSpriteSpawnFlags; ///< The spawn flags from the sprite data entry.
     bool mBlockHit; ///< Whether a block below the actor was hit.
 
     u32 mEatenByID; ///< The @ref fBase_c::mUniqueID "unique identifier" of the eating actor.
-    u8 mEatState; ///< The actor's eat state. Value is a ::EAT_STATE_e.
-    u8 mEatBehaviour; ///< The actor's eat behaviour. Value is a ::EAT_BEHAVIOR_e.
+    u8 mEatState; ///< The actor's eat state. Value is a EAT_STATE_e.
+    u8 mEatBehaviour; ///< The actor's eat behaviour. Value is a EAT_BEHAVIOR_e.
     mVec3_c mPreEatScale; ///< The actor's scale before being eaten.
 
     EAT_POINTS_e mEatPoints; ///< @copydoc EAT_POINTS_e
@@ -373,7 +373,7 @@ public:
     u32 mAttentionFlags; ///< @todo Document this field and its values.
 
     dPropelParts_c *mPropelParts; ///< The actor's propeller effect manager.
-    u8 mKind; ///< The actor's kind. Value is a ::STAGE_ACTOR_KIND_e.
+    u8 mKind; ///< The actor's kind. Value is a STAGE_ACTOR_KIND_e.
     s8 mPlayerNo; ///< The player associated with the actor, @p -1 if not associated to any player.
     u8 mExecStopMask; ///< The mask required to disable the @p execute operation for the actor.
     u8 mLayer; ///< The actor's layer.
@@ -403,19 +403,19 @@ public:
     static u8 mDrawStop; ///< The actor kinds for which the @p draw operation is currently disabled.
     static searchNearPlayerFunc mSearchNearPlayerFunc; ///< The player search function.
     static getTrgToSrcDirFunc mGetTrgToSrcDirFunc; ///< The direction detection function.
-    static u8 m_tmpCtLayerNo; ///< Temporary storage for the next constructed actor's layer. See ::mLayer.
+    static u8 m_tmpCtLayerNo; ///< Temporary storage for the next constructed actor's layer. See #mLayer.
 
-    /// @brief Temporary storage for the next created sprite actor's spawn flags. See ::mpSpawnFlags. @unofficial
-    static u8* m_tmpCtSpawnFlags;
+    /// @brief Temporary storage for the next created sprite actor's spawn flags. See #mpSpawnFlags.
+    static u8* m_read_p_keep;
 
-    /// @brief Temporary storage for the next created sprite actor's tracked event IDs. See ::mEventNums. @unofficial
-    static u16 m_tmpCtEventNums;
+    /// @brief Temporary storage for the next created sprite actor's tracked event IDs. See #mEventNums.
+    static u16 m_flag_keep;
 
-    /// @brief Temporary storage for the next created sprite actor's event mask. See ::mEventMask. @unofficial
-    static u64 m_tmpCtEventMask;
+    /// @brief Temporary storage for the next created sprite actor's event mask. See #mEventMask.
+    static u64 m_flagbit_keep;
 
-    /// @brief Temporary storage for the next created sprite actor's layer. See ::mLayer. @unofficial
-    static u8 m_tmpCtSpriteLayerNo;
+    /// @brief Temporary storage for the next created sprite actor's layer. See #mLayer.
+    static u8 m_mbgchoice_keep;
 };
 
 extern const u8 l_Ami_Line[]; ///< The sub-layer for each side of chainlink fences.

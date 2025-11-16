@@ -11,7 +11,7 @@ namespace EGG {
         /// @brief Constructs a sphere from a center and radius.
         Sphere3f(const Vector3f &center, float radius) : mCenter(center), mRadius(radius) {}
 
-        Vector3f mCenter;
-        float mRadius;
+        Vector3f mCenter; ///< The sphere center position.
+        float mRadius; ///< The sphere radius.
     };
 }

@@ -24,7 +24,7 @@ public:
      */
     bool addNode(fLiNdPrio_c *node);
 
-    /// @brief Calls the @ref ::mpProcFunc "process function" on each base in the list.
+    /// @brief Calls the @ref mpProcFunc "process function" on each base in the list.
     /// @return Always returns true.
     bool walkPack();
 

@@ -15,8 +15,8 @@ characters.
 - Full paths to resources inside an archive should not exceed 250 characters.
 
 ## Opening Archives
-Use the ::setRes function to open an archive. For opening multiple archives at once, see
-@ref dResMng_c::setRes "the dResMng_c equivalent". Only up to ::mNumArcs archives can be open at the same
+Use the setRes() function to open an archive. For opening multiple archives at once, see
+@ref dResMng_c::setRes "the dResMng_c equivalent". Only up to #mNumArcs archives can be open at the same
 time.
 
 @note Many kinds of assets are loaded automatically, therefore doing so manually is not necessary.
@@ -36,17 +36,17 @@ For layout archives, it's recommended to use the
 @ref LytBase_c::ReadResource3 "dedicated LytBase_c functions" instead of this class.
 
 ## Loading Archives
-Use the ::syncAllRes function to perform the actual archive file loading. The function will return
+Use the syncAllRes() function to perform the actual archive file loading. The function will return
 @p true until all opened archives are loaded successfully.
 
 ## Getting Archive Resources
-Use the ::getRes function to obtain a resource inside a specific archive once it has been loaded.
+Use the getRes() function to obtain a resource inside a specific archive once it has been loaded.
 Overloads are provided to obtain the size of the resource and optionally detect compressed resources.
 
 If the file could not be found under the archive, a warning is printed to the console.
-Use ::getResSilently if this behaviour is undesired (such as with an optional file).
+Use getResSilently() if this behaviour is undesired (such as with an optional file).
 
-@note No overload for ::getResSilently with compression support is available.
+@note No overload for getResSilently() with compression support is available.
 
 ### Compressed Resources
 While the @ref getRes(const char*, const char*, unsigned long*, int*) const "getRes" function can detect
@@ -58,11 +58,11 @@ the decompressed data into.
 @note Only LZ77 compression is supported.
 
 ## Deleting Archives
-Use the ::deleteRes function to mark an archive as no longer needed by the calling entity.
+Use the deleteRes() function to mark an archive as no longer needed by the calling entity.
 This ensures that archives no longer in use are properly disposed of.
 
 ## Unused Content
-- ::mSetCallback is an unused callback for when an archive is added to the class. It was probably
+- #mSetCallback is an unused callback for when an archive is added to the class. It was probably
 used to debug resource loading.
 */
 
@@ -74,17 +74,17 @@ directly, but is managed by the outer dRes_c class. It wraps the functionalities
 mDvd_mountMemArchive_c and EGG::Archive to simplify the loading and iteration of resource archives.
 
 ## Loading an Archive
-Use the ::set function to manually schedule an archive for loading. If successful, a
+Use the set() function to manually schedule an archive for loading. If successful, a
 @ref mpDvdCmd "file loading command" is generated and queued to continue the loading process
 in the background.
 
 ## Checking Progress
-Use the ::setRes function to query the @ref LOAD_STATUS_e "archive's loading state". Once the
+Use the setRes() function to query the @ref LOAD_STATUS_e "archive's loading state". Once the
 loading process is completed, the @ref mpDvdCmd "command" is deleted and the
 @ref mpFiles "archive's resource list" is built using the provided callback.
 
 ## Archive Disposal
-Each archive holder features a @ref ::mRefCount "reference count", which acts as a garbage disposal
+Each archive holder features a @ref mRefCount "reference count", which acts as a garbage disposal
 mechanism: each time the archive is requested the count increases, while it decreases when its deletion
 is requested. When the counter reaches zero (or the holder is deleted), the archive is automatically
 @ref cleanup "disposed".

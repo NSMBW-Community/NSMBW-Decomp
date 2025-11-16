@@ -6,8 +6,8 @@
 
 dWipeMario_c *dWipeMario_c::m_instance;
 
-dWipeMario_c::dWipeMario_c(nw4r::ut::Color color, mFaderBase_c::EStatus stat) :
-mFaderBase_c(mColor(color), stat) {
+dWipeMario_c::dWipeMario_c(nw4r::ut::Color color, mFaderBase_c::EStatus status) :
+mFaderBase_c(mColor(color), status) {
     m_instance = this;
     mIsCreated = false;
 }
@@ -17,18 +17,22 @@ dWipeMario_c::~dWipeMario_c() {
 }
 
 bool dWipeMario_c::createLayout() {
-    static const char *AnmNameTbl[] = {
+    static const char *AnmNameTbl[ANIM_NAME_COUNT] = {
         "wipeMario_02_inWindow.brlan",
         "wipeMario_02_outWindow.brlan"
     };
 
-    static const char *GROUP_NAME_DT[] = {
+    static const char *GROUP_NAME_DT[ANIM_COUNT] = {
         "A00_inWindow",
         "B00_outWindow"
     };
-    static const int ANIME_INDEX_TBL[] = {0, 1};
 
-    static const char *WPANE_NAME_DT[] = {
+    static const int ANIME_INDEX_TBL[ANIM_COUNT] = {
+        inWindow,
+        outWindow
+    };
+
+    static const char *WPANE_NAME_DT[W_COUNT] = {
         "W_Mario_00"
     };
 
@@ -41,36 +45,37 @@ bool dWipeMario_c::createLayout() {
         return false;
     }
 
-    mLyt.build("wipeMario_02.brlyt", nullptr);
-    mLyt.AnimeResRegister(AnmNameTbl, ARRAY_SIZE(AnmNameTbl));
-    mLyt.GroupRegister(GROUP_NAME_DT, ANIME_INDEX_TBL, ARRAY_SIZE(GROUP_NAME_DT));
+    mLyt.build("wipeMario_02.brlyt", 0);
+    mLyt.AnimeResRegister(AnmNameTbl, ANIM_NAME_COUNT);
+    mLyt.GroupRegister(GROUP_NAME_DT, ANIME_INDEX_TBL, ANIM_COUNT);
     mpRootPane = mLyt.getRootPane();
-    mLyt.WPaneRegister(WPANE_NAME_DT, mpWnd, ARRAY_SIZE(mpWnd));
+    mLyt.WPaneRegister(WPANE_NAME_DT, mpWnd, W_COUNT);
 
     mIsCreated = true;
 
     mLyt.AllAnimeEndSetup();
 
     mpRootPane->SetVisible(false);
-    mLyt.mDrawOrder = 154;
+    mLyt.mDrawOrder = m2d::DRAW_ORDER_WIPE;
     mAction = IDLE;
 
     return true;
 }
 
-typedef void (dWipeMario_c::*actMeth)();
-const actMeth actMeths[] = {
-    &dWipeMario_c::OpenSetup,
-    &dWipeMario_c::AnimeEndCheck,
-    &dWipeMario_c::CloseSetup
-};
+typedef void (dWipeMario_c::*Proc)();
 
 int dWipeMario_c::calc() {
+    static const Proc Proc_tbl[] = {
+        &dWipeMario_c::OpenSetup,
+        &dWipeMario_c::AnimeEndCheck,
+        &dWipeMario_c::CloseSetup
+    };
+
     if (!mIsCreated) {
         return 1;
     }
     if (mAction != IDLE) {
-        (this->*actMeths[mAction])();
+        (this->*Proc_tbl[mAction])();
         mLyt.AnimePlay();
         mLyt.calc();
     }
@@ -109,20 +114,20 @@ void dWipeMario_c::CloseSetup() {
     mAction = ANIME_END_CHECK;
 }
 
-void dWipeMario_c::setStatus(mFaderBase_c::EStatus stat) {
-    if (stat == OPAQUE) {
+void dWipeMario_c::setStatus(mFaderBase_c::EStatus status) {
+    if (status == OPAQUE) {
         mStatus = OPAQUE;
 
-        mpWnd[0]->SetAlpha(255);
+        mpWnd[W_Mario_00]->SetAlpha(255);
         mLyt.ReverseAnimeStartSetup(OUT, false);
 
         mpRootPane->SetVisible(true);
         mLyt.AnimePlay();
         mLyt.calc();
-    } else if (stat == HIDDEN) {
+    } else if (status == HIDDEN) {
         mStatus = HIDDEN;
 
-        mpWnd[0]->SetAlpha(0);
+        mpWnd[W_Mario_00]->SetAlpha(0);
         mLyt.ReverseAnimeStartSetup(IN, false);
 
         mpRootPane->SetVisible(true);
