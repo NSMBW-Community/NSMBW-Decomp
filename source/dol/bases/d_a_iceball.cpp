@@ -1,27 +1,27 @@
 #include <game/bases/d_a_iceball.hpp>
+#include <game/bases/d_a_player_manager.hpp>
 #include <game/bases/d_audio.hpp>
 #include <game/bases/d_actor.hpp>
+#include <game/bases/d_eff_actor_manager.hpp>
+#include <game/bases/d_effectmanager.hpp>
 #include <game/bases/d_s_stage.hpp>
 #include <game/bases/d_cd.hpp>
-#include <constants/sound_list.h>
-#include <game/bases/d_a_player_manager.hpp>
-#include <game/bases/d_effectmanager.hpp>
-#include <game/bases/d_eff_actor_manager.hpp>
 #include <game/bases/d_bg.hpp>
 #include <game/framework/f_profile.hpp>
 #include <game/framework/f_profile_name.hpp>
+#include <game/sLib/s_GlobalData.hpp>
+#include <constants/sound_list.h>
 
 
 ACTOR_PROFILE(ICEBALL, daIceBall_c, 2);
 
-int daIceBall_c::sm_IceBallCount[4] = {0, 0, 0, 0};
-int daIceBall_c::sm_IceBallAliveCount[4] = {0, 0, 0, 0};
+int daIceBall_c::sm_IceBallCount[4];
+int daIceBall_c::sm_IceBallAliveCount[4];
 
-const float lbl_802F5000[4] = {0.75f, 1.05f, 0.6f, 120.0f};
-
-inline float mul_lbl_802F5000_2(float x) {
-    return x * lbl_802F5000[2];
-}
+template <>
+const daIceBall_c::GlobalData_t sGlobalData_c<daIceBall_c>::mData = {
+    0.75f, 1.05f, 0.6f, 120.0f
+};
 
 const dBcSensor_c l_iceball_foot = { 0, 0, -0x3000 };
 const dBcSensor_c l_iceball_head = { 0, 0, 0x3000 };
@@ -46,31 +46,30 @@ STATE_DEFINE(daIceBall_c, EatNow);
 STATE_DEFINE(daIceBall_c, Kill);
 
 int daIceBall_c::create() {
+    mPlayerNo = ACTOR_PARAM(PlayerNo);
 
-    mPlayerNo = mParam & 3;
-
-    bool v9 = CheckIceballLimit(mPlayerNo, (mParam >> 16) & 3);
+    bool isCreateOK = CheckIceballLimit(mPlayerNo, ACTOR_PARAM(LimitMode));
 
     m_3d0 = 60;
 
     sm_IceBallCount[mPlayerNo]++;
     sm_IceBallAliveCount[mPlayerNo]++;
 
-    if (! v9) {
+    if (!isCreateOK) {
         deleteRequest();
         return fBase_c::CANCELED;
     }
 
-    mCc.mAmiLine = (mParam >> 12) & 3;
-    mBc.mAmiLine = (mParam >> 12) & 3;
-    mRc.mLineKind = (mParam >> 12) & 3;
+    mCc.mAmiLine = ACTOR_PARAM(AmiLine);
+    mBc.mAmiLine = ACTOR_PARAM(AmiLine);
+    mRc.mLineKind = ACTOR_PARAM(AmiLine);
 
-    mLayer = (mParam >> 8) & 3;
-    mCc.mLayer = (mParam >> 8) & 3;
-    mBc.mLayer = (mParam >> 8) & 3;
+    mLayer = ACTOR_PARAM(Layer);
+    mCc.mLayer = ACTOR_PARAM(Layer);
+    mBc.mLayer = ACTOR_PARAM(Layer);
 
     mLiquidType = dBc_c::checkWater(mPos.x, mPos.y, mLayer, &mLiquidHeight);
-    mDirection = ((mParam >> 4) & 1);
+    mDirection = ACTOR_PARAM(Direction);
 
     float v0 = 0.0f;
     if (checkInitLine(v0)) {
@@ -86,7 +85,7 @@ int daIceBall_c::create() {
     }
 
     mCenterOffs.set(0.0f, 0.0f, 0.0f);
-    mEatBehaviour = 5;
+    mEatBehaviour = EAT_TYPE_ICEBALL;
     mActorProperties |= 0x80;
     mAreaNo = dCd_c::m_instance->getFileP(dScStage_c::m_instance->mCurrFile)->getAreaNo(&mPos);
 
@@ -170,7 +169,7 @@ bool daIceBall_c::checkInitLine(float &a) {
 }
 
 void daIceBall_c::lightProc() {
-    mLightMask.set(mPos.x, mPos.y, mPos.z, lbl_802F5000[3]);
+    mLightMask.set(mPos.x, mPos.y, mPos.z, sGlobalData_c<daIceBall_c>::mData.v4);
     mLightMask.execute();
 }
 
@@ -208,7 +207,7 @@ void daIceBall_c::ccCallback_Iceball(dCc_c * self, dCc_c * other) {
     self->mInfo |= CC_NO_HIT;
     dActor_c *thing = (dActor_c *)other->mpOwner;
 
-    if (thing->mKind == fBase_c::ENTITY) {
+    if (thing->mKind == fBase_c::ENEMY) {
         if (thing->mProfName == fProfile::EN_MARUTA) {
             if (iceball->mSpeed.y >= 0.0f) {
                 return;
@@ -223,7 +222,7 @@ void daIceBall_c::ccCallback_Iceball(dCc_c * self, dCc_c * other) {
         iceball->m_3d4 = 1;
     } else if (other->mCcData.mAttack == CC_ATTACK_KOOPA_FIRE) {
         if ((thing->mProfName == fProfile::KOOPA_FIRE) && ((int)(thing->mParam & 0xF) == 1)) {
-            dAudio::SndObjctCmnMap_c* map = dAudio::g_pSndObjMap;
+            dAudio::SndObjctCmnMap_c *map = dAudio::g_pSndObjMap;
             dAudio::SoundEffectID_t(SE_OBJ_PNGN_ICEBALL_DISAPP).playObjSound(map, iceball->mPos, 0);
         }
 
@@ -257,25 +256,22 @@ bool daIceBall_c::cullCheck() {
     return dActor_c::screenCullCheck(mPos, (const sRangeDataF &) l_cull_data, sRangeDataF(64.0f, 64.0f, 32.0f, 32.0f), mAreaNo);
 }
 
-void daIceBall_c::eatMove(dActor_c * actor) {
+void daIceBall_c::eatMove(dActor_c *actor) {
     dActor_c::eatMove(actor);
     mPos.y += 2.0f;
 }
 
 bool daIceBall_c::checkDeleteBg() {
-    u32 mask1 = 0x3f;
-    u32 mask2 = dBc_c::SENSOR_26 | dBc_c::SENSOR_27 | dBc_c::SENSOR_28 | dBc_c::SENSOR_29;
-    u32 x = (mBc.mFlags & mask1) | (mBc.mFlags & mask2);
-    if (x) {
+    if (mBc.isWallL() | mBc.isWallR() | mBc.isHead()) {
         return true;
     }
     if ((mBc.mFlags & dBc_c::SENSOR_15) && (mRc.isRideFlag(0x200) & 0xFFFF)) {
         return true;
     }
-    if ((u16)mBc.getFootAttr() == 3) {
+    if (mBc.getFootAttr() == 3) {
         return true;
     }
-    if ((s16)mBc.getSakaAngle(mDirection) >= 0x2D16) {
+    if (mBc.getSakaAngle(mDirection) >= 0x2D16) {
         return true;
     }
     if (mRc.getRide() && (mRc.getRide()->mFlags & 0x1000)) {
@@ -321,8 +317,7 @@ bool daIceBall_c::waterlineCheck() {
 
 void daIceBall_c::waterSplash(float height) {
     mVec3_c pos(mPos.x, height, 6500.0f);
-    dAudio::SndObjctCmnMap_c *x = dAudio::g_pSndObjMap;
-    x->startSound(SE_OBJ_FIREBALL_SPLASH, dAudio::cvtSndObjctPos(pos), 0);
+    dAudio::SoundEffectID_t(SE_OBJ_FIREBALL_SPLASH).playMapSound(pos, 0);
 
     u32 v0;
     if (pos.y == mPos.y) {
@@ -340,8 +335,7 @@ void daIceBall_c::waterSplash(float height) {
 void daIceBall_c::yoganSplash(float height) {
     mVec3_c pos(mPos.x, height, 6500.0f);
     mVec3_c pos2;
-    dAudio::SndObjctCmnMap_c *x = dAudio::g_pSndObjMap;
-    x->startSound(SE_OBJ_CMN_SPLASH_LAVA, dAudio::cvtSndObjctPos(pos), 0);
+    dAudio::SoundEffectID_t(SE_OBJ_CMN_SPLASH_LAVA).playMapSound(pos, 0);
 
     u32 v0 = mLayer << 16 | 4;
 
@@ -358,8 +352,7 @@ void daIceBall_c::yoganSplash(float height) {
 void daIceBall_c::poisonSplash(float height) {
     mVec3_c pos(mPos.x, height, 6500.0f);
     mVec3_c pos2;
-    dAudio::SndObjctCmnMap_c *x = dAudio::g_pSndObjMap;
-    x->startSound(SE_OBJ_CMN_SPLASH_POISON, dAudio::cvtSndObjctPos(pos), 0);
+    dAudio::SoundEffectID_t(SE_OBJ_CMN_SPLASH_POISON).playMapSound(pos, 0);
 
     u32 v0 = mLayer << 16 | 6;
 
@@ -415,8 +408,7 @@ void daIceBall_c::executeState_FireMove() {
     }
 
     if (checkDeleteBg()) {
-        dAudio::SndObjctCmnMap_c * v1 = dAudio::g_pSndObjMap;
-        v1->startSound(SE_OBJ_PNGN_ICEBALL_DISAPP, dAudio::cvtSndObjctPos(mPos), 0);
+        dAudio::SoundEffectID_t(SE_OBJ_PNGN_ICEBALL_DISAPP).playMapSound(mPos, 0);
         setDeleteEffect();
         deleteRequest();
     } else if (cullCheck()) {
@@ -424,23 +416,24 @@ void daIceBall_c::executeState_FireMove() {
     }
 }
 
-void daIceBall_c::initializeState_Move() {
+inline float mul_lbl_802F5000_2(float x) {
+    return x * sGlobalData_c<daIceBall_c>::mData.v3;
+}
 
+void daIceBall_c::initializeState_Move() {
     static const float cs_speed_x[] = {3.0f, -3.0f};
     static const float cs_max_speed_x[] = {1.5f, -1.5f};
 
-    dAcPy_c * v0 = daPyMng_c::getPlayer(mPlayerNo);
-    float v1 = v0->mSpeed.x;
-
-    float v2 = lbl_802F5000[0];
-    float v3 = lbl_802F5000[1];
+    float v1 = daPyMng_c::getPlayer(mPlayerNo)->mSpeed.x;
+    float v2 = sGlobalData_c<daIceBall_c>::mData.v1;
+    float v3 = sGlobalData_c<daIceBall_c>::mData.v2;
 
     float resX;
     if (v1 > v2) {
-        float tmp = (v3 * v2);
+        float tmp = v3 * v2;
         resX = tmp + mul_lbl_802F5000_2(v1 - v2);
     } else if (v1 < -v2) {
-        float tmp = (-v3 * v2);
+        float tmp = -v3 * v2;
         resX = tmp + mul_lbl_802F5000_2(v1 + v2);
     } else {
         resX = v3 * v1;
@@ -481,16 +474,14 @@ void daIceBall_c::executeState_Move() {
     }
 
     if (bgCheck()) {
-        dAudio::SndObjctCmnMap_c * v1 = dAudio::g_pSndObjMap;
-        v1->startSound(SE_OBJ_PNGN_ICEBALL_DISAPP, dAudio::cvtSndObjctPos(mPos), 0);
+        dAudio::SoundEffectID_t(SE_OBJ_PNGN_ICEBALL_DISAPP).playMapSound(mPos, 0);
         setDeleteEffect();
         deleteRequest();
         return;
     }
 
     if (mRc.getRide()) {
-        dAudio::SndObjctCmnMap_c * v1 = dAudio::g_pSndObjMap;
-        v1->startSound(SE_OBJ_PNGN_ICEBALL_DISAPP, dAudio::cvtSndObjctPos(mPos), 0);
+        dAudio::SoundEffectID_t(SE_OBJ_PNGN_ICEBALL_DISAPP).playMapSound(mPos, 0);
         setDeleteEffect();
         deleteRequest();
         return;
@@ -527,9 +518,9 @@ void daIceBall_c::finalizeState_Kill() {}
 
 void daIceBall_c::executeState_Kill() {}
 
-bool daIceBall_c::CheckIceballLimit(int playerId, int v0) {
+bool daIceBall_c::CheckIceballLimit(int playerId, int limitMode) {
     if (daIceBall_c::sm_IceBallCount[playerId] < 6) {
-        if (v0 == 1) {
+        if (limitMode == 1) {
             return true;
         }
 
@@ -540,4 +531,3 @@ bool daIceBall_c::CheckIceballLimit(int playerId, int v0) {
 
     return false;
 }
-
