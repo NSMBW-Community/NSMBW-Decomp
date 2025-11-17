@@ -6,6 +6,10 @@
 
 class daIceBall_c : public dActorState_c {
 public:
+    struct GlobalData_t {
+        float v1, v2, v3, v4;
+    };
+
     daIceBall_c() {}
     virtual ~daIceBall_c() {}
 
@@ -48,6 +52,12 @@ public:
     dHeapAllocator_c mAllocator;
     dCircleLightMask_c mLightMask;
     u8 m_unk_428[8];
+
+    ACTOR_PARAM_CONFIG(PlayerNo, 0, 2);
+    ACTOR_PARAM_CONFIG(Direction, 4, 1);
+    ACTOR_PARAM_CONFIG(Layer, 8, 2);
+    ACTOR_PARAM_CONFIG(AmiLine, 12, 2);
+    ACTOR_PARAM_CONFIG(LimitMode, 16, 2);
 
     static int sm_IceBallCount[4];
     static int sm_IceBallAliveCount[4];

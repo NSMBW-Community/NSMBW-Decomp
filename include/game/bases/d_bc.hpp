@@ -47,15 +47,15 @@ public:
         SENSOR_30 = BIT_FLAG(30),
         SENSOR_31_NO_COLLISIONS = BIT_FLAG(31),
 
-        SENSOR_HEAD =
-            SENSOR_IS_POINT | SENSOR_2 | SENSOR_4,
         SENSOR_WALL_L =
+            SENSOR_IS_POINT | SENSOR_2 | SENSOR_4,
+        SENSOR_WALL_R =
             SENSOR_1 | SENSOR_3 | SENSOR_5,
         SENSOR_FOOT =
             SENSOR_13 | SENSOR_14 | SENSOR_15 | SENSOR_16 | SENSOR_14 |
             SENSOR_15 | SENSOR_16 | SENSOR_17 | SENSOR_18 | SENSOR_19 |
             SENSOR_20 | SENSOR_21,
-        SENSOR_WALL_R =
+        SENSOR_HEAD =
             SENSOR_26 | SENSOR_27 | SENSOR_28 | SENSOR_29
     };
 
@@ -72,7 +72,7 @@ public:
     void checkLink();
     bool checkRide();
     bool checkHead(ulong);
-    int getSakaAngle(u8);
+    s16 getSakaAngle(u8);
     int getSakaMoveAngle(u8);
     SensorFlags checkWall(float *);
     SensorFlags checkWallEnm(float *);
@@ -82,7 +82,7 @@ public:
     bool hasSensorFoot() { return mpSensorFoot != nullptr; }
     bool hasSensorHead() { return mpSensorHead != nullptr; }
     bool hasSensorWall() { return mpSensorWall != nullptr; }
-    u32 getFootAttr();
+    u16 getFootAttr();
 
     dActor_c *mpOwner;
     dBcSensor_c *mpSensorFoot;
@@ -126,9 +126,9 @@ public:
     static u32 findWall(mVec3_c *, mVec3_c *, float *, u8, u32, dActor_c *); ///< @unofficial
     void set(dActor_c *, const dBcSensor_c *, const dBcSensor_c *, const dBcSensor_c *); ///< @unofficial
 
-    bool isHead()  { return mFlags & 0b00000000000000000000000000010101; }
-    bool isWallL() { return mFlags & 0b00000000000000000000000000101010; }
-    bool isFoot(); //  { return mFlags & 0b00000000000111111110000000000000; }
-    bool isWallR() { return mFlags & 0b00111100000000000000000000000000; }
+    u32 isWallL()  { return mFlags & SENSOR_WALL_L; }
+    u32 isWallR() { return mFlags & SENSOR_WALL_R; }
+    u32 isFoot(); //  { return mFlags & 0b00000000000111111110000000000000; }
+    u32 isHead() { return mFlags & SENSOR_HEAD; }
 
 };

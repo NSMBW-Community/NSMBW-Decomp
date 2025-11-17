@@ -456,16 +456,16 @@ bool dActor_c::ActorDrawCullCheck() {
 
 bool dActor_c::HasamareBgCheck() {
     if (mBgCollFlags != 0) {
-        if ((mBgCollFlags & COLL_HEAD) && mBc.isHead()) {
+        if ((mBgCollFlags & COLL_WALL_L) && mBc.isWallL()) {
             return true;
         }
-        if ((mBgCollFlags & COLL_WALL_L) && mBc.isWallL()) {
+        if ((mBgCollFlags & COLL_WALL_R) && mBc.isWallR()) {
             return true;
         }
         if ((mBgCollFlags & COLL_FOOT) && mBc.isFoot()) {
             return true;
         }
-        if ((mBgCollFlags & COLL_WALL_R) && mBc.isWallR()) {
+        if ((mBgCollFlags & COLL_HEAD) && mBc.isHead()) {
             return true;
         }
     }

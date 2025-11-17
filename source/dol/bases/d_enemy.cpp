@@ -7,7 +7,7 @@
 #include <game/bases/d_score_manager.hpp>
 #include <game/bases/d_ef.hpp>
 #include <game/bases/d_effectmanager.hpp>
-#include <game/bases/d_effactor_mng.hpp>
+#include <game/bases/d_eff_actor_manager.hpp>
 #include <game/bases/d_audio.hpp>
 #include <game/bases/d_multi_manager.hpp>
 #include <game/bases/d_bg_parameter.hpp>
@@ -694,11 +694,11 @@ u32 dEn_c::EnBgCheckFoot() {
     mFootAttr3 = false;
     mFootAttr1 = false;
     if (mBc.isFoot()) {
-        u32 footAttr = mBc.getFootAttr();
-        if ((u16) footAttr == 3) {
+        u16 footAttr = mBc.getFootAttr();
+        if (footAttr == 3) {
             mFootAttr3 = true;
         }
-        if ((u16) footAttr == 1) {
+        if (footAttr == 1) {
             mFootAttr1 = true;
         }
         mFootPush = mBc.mPushForce;

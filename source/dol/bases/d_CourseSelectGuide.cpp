@@ -11,7 +11,7 @@
 dCourseSelectGuide_c *dCourseSelectGuide_c::m_instance;
 
 template <>
-dCourseSelectGuide_c::GlobalData_t sGlobalData_c<dCourseSelectGuide_c>::mData = {
+const dCourseSelectGuide_c::GlobalData_t sGlobalData_c<dCourseSelectGuide_c>::mData = {
     dCourseSelectGuide_c::c_DISP_WAIT_TIMER, dCourseSelectGuide_c::c_DISP_WAIT_TIMER + 50
 };
 

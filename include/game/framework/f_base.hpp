@@ -27,7 +27,7 @@ public:
         OTHER, ///< The base is a @ref dBase_c "generic process".
         SCENE, ///< The base is a @ref dScene_c "scene".
         ACTOR, ///< The base is an @ref dBaseActor_c "actor".
-        ENTITY ///< The base is an @ref dEn_c "entity".
+        ENEMY ///< The base is an @ref dEn_c "enemy".
     };
 
     /// @brief The possible operation results.
