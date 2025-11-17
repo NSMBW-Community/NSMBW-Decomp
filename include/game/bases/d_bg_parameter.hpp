@@ -9,6 +9,9 @@ public:
     u8 mPad[0x38];
     mVec2_c mPos;
     mVec2_c mSize;
+    float m_48;
+
+    float fn_80082240(float);
 
     const mVec2_c &pos() const { return mPos; }
     const mVec2_c &size() const { return mSize; }

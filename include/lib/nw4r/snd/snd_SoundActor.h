@@ -68,6 +68,7 @@ namespace nw4r { namespace snd
 		void StopAllSound(int fadeFrames);
 		void PauseAllSound(bool flag, int fadeFrames);
 		int GetPlayingSoundCount(int playerId) const;
+		void SetPlayableSoundCount(int playerId, int count);
 
 	// static members
 	public:

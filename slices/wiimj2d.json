@@ -56,7 +56,8 @@
         "__dt__7mVec2_cFv",
         "__dt__7mVec3_cFv",
         "__dt__Q34nw4r3lyt19ArcResourceAccessorFv",
-        "GetRuntimeTypeInfo__Q34nw4r3lyt4PaneCFv"
+        "GetRuntimeTypeInfo__Q34nw4r3lyt4PaneCFv",
+        "dummy__10daPlBase_cFv"
     ],
     "slices": [
         {
@@ -136,6 +137,18 @@
                 ".sdata": "0x168-0x180",
                 ".sbss": "0x88-0x90",
                 ".sdata2": "0x180-0x188"
+            }
+        },
+        {
+            "source": "dol/bases/d_a_player_base.cpp",
+            "memoryRanges": {
+                ".text": "0x3f950-0x54c20",
+                ".ctors": "0x7c-0x80",
+                ".bss": "0x2b90-0x35a0",
+                ".data": "0x9898-0xb268",
+                ".rodata": "0xc98-0xec0",
+                ".sbss": "0xc8-0xd0",
+                ".sdata2": "0x7c0-0x998"
             }
         },
         {

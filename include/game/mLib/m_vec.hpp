@@ -7,6 +7,14 @@
 /// A plain-old-data structure version of mVec2_c.
 /// @unofficial
 struct mVec2_POD_c {
+    void set(float fx, float fy) {
+        x = fx;
+        y = fy;
+    }
+    void set(const mVec2_POD_c &v) {
+        set(v.x, v.y);
+    }
+
     float x;
     float y;
 };
@@ -181,7 +189,7 @@ public:
     mVec3_c operator*(f32 f) const { return mVec3_c(f * x, f * y, f * z); }
 
     /// @brief Scalar division operator.
-    mVec3_c operator/(f32 f) const { f32 r = 1.0f / f; return operator*(r); }
+    mVec3_c operator/(f32 f) const { f32 r = 1.0f / f; return mVec3_c(x * r, y * r, z * r); }
 
     /// @brief Equality operator.
     bool operator==(const mVec3_c &v) const { return x == v.x && y == v.y && z == v.z; }
@@ -199,6 +207,14 @@ public:
 
     float distTo(const mVec3_c &other) const {
         return EGG::Mathf::sqrt(PSVECSquareDistance((const Vec*) this, (const Vec*) &other));
+    }
+
+    friend mVec3_c operator*(f32 f, const mVec3_c &v) {
+        return mVec3_c(v.x * f, v.y * f, v.z * f);
+    }
+
+    bool isSmallerThan1() const {
+        return PSVECMag(*this) <= 1.0f;
     }
 
     /// @brief Normalizes the vector.

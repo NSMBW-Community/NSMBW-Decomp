@@ -386,6 +386,11 @@ public:
         mMaxBound.set(smc_CULL_XLIMIT, smc_CULL_YLIMIT, smc_CULL_AREA_XLIMIT, smc_CULL_AREA_YLIMIT);
     }
 
+    float getVisOffsetX() { return mVisibleAreaOffset.x; }
+    float getVisOffsetY() { return mVisibleAreaOffset.y; }
+    float getVisSizeX() { return mVisibleAreaSize.x; }
+    float getVisSizeY() { return mVisibleAreaSize.y; }
+
     u8 getKindMask() { return 1 << mKind; }
 
     static const float smc_CULL_XLIMIT; ///< The default @ref mMaxBound "max bound" X offset.

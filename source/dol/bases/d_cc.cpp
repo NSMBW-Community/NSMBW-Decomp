@@ -364,11 +364,11 @@ bool dCc_c::_hitCheckCircle(dCc_c *c1, dCc_c *c2) {
     if (distVec.length() <= collSizeRadius) {
         // Push the circles apart in the direction of the collision
         float dist = collSizeRadius - distVec.length();
-        s16 ang = cM::atan2s(distVec.y, std::fabs(distVec.x));
+        mAng ang = cM::atan2s(distVec.y, std::fabs(distVec.x));
         // [This calculation is incorrect. It should be dist / 2 * ...
         // so that the shifting is distributed between the two colliders]
-        float offsetX = dist * nw4r::math::CosIdx(ang);
-        float offsetY = -dist * nw4r::math::SinIdx(ang);
+        float offsetX = dist * ang.cos();
+        float offsetY = -dist * ang.sin();
 
         c1->mCollOffsetX[c2->mCcData.mKind] = offsetX;
         c1->mCollOffsetY[c2->mCcData.mKind] = offsetY;
