@@ -426,7 +426,7 @@ bool dEn_c::carry_check(dActor_c *actor) {
     return false;
 }
 
-bool dEn_c::checkWallAndBg() {
+u32 dEn_c::checkWallAndBg() {
     float dir = l_EnMuki[mDirection];
     mBc.checkWall(&dir);
     mVec3_c truePos = mPos;

@@ -4,6 +4,10 @@
 #include <game/bases/d_circle_light_mask.hpp>
 #include <game/bases/d_heap_allocator.hpp>
 
+/// @brief An iceball, thrown by the player.
+/// @paramtable
+/// @statetable
+/// @ingroup bases
 class daIceBall_c : public dActorState_c {
 public:
     struct GlobalData_t {
