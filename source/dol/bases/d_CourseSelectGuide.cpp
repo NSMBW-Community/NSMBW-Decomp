@@ -12,7 +12,8 @@ dCourseSelectGuide_c *dCourseSelectGuide_c::m_instance;
 
 template <>
 const dCourseSelectGuide_c::GlobalData_t sGlobalData_c<dCourseSelectGuide_c>::mData = {
-    dCourseSelectGuide_c::c_DISP_WAIT_TIMER, dCourseSelectGuide_c::c_DISP_WAIT_TIMER + 50
+    (short) dCourseSelectGuide_c::c_DISP_WAIT_TIMER,
+    (short) (dCourseSelectGuide_c::c_DISP_WAIT_TIMER + 50)
 };
 
 const int dCourseSelectGuide_c::c_DISP_WAIT_TIMER = 20;

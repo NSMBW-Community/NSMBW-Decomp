@@ -23,17 +23,18 @@ const daIceBall_c::GlobalData_t sGlobalData_c<daIceBall_c>::mData = {
     0.75f, 1.05f, 0.6f, 120.0f
 };
 
-const dBcSensor_c l_iceball_foot = { 0, 0, -0x3000 };
-const dBcSensor_c l_iceball_head = { 0, 0, 0x3000 };
-const dBcSensor_c l_iceball_wall = { 0, 0x3000, 0 };
+const sBcSensorPoint l_iceball_foot = { SENSOR_IS_POINT, 0, -0x3000 };
+const sBcSensorPoint l_iceball_head = { SENSOR_IS_POINT, 0, 0x3000 };
+const sBcSensorPoint l_iceball_wall = { SENSOR_IS_POINT, 0x3000, 0 };
 
 const sCcDatNewF l_fball_cc_data = {
     0.0f, 0.0f,
     6.0f, 6.0f,
-    6, 2,
-    0xFA,
-    0x8050,
-    0,
+    CC_KIND_TAMA, CC_ATTACK_ICEBALL,
+    BIT_FLAG(CC_KIND_PLAYER_ATTACK) | BIT_FLAG(CC_KIND_ENEMY) |
+    BIT_FLAG(CC_KIND_BALLOON) | BIT_FLAG(CC_KIND_ITEM) | BIT_FLAG(CC_KIND_TAMA) | BIT_FLAG(CC_KIND_KILLER),
+    BIT_FLAG(CC_ATTACK_ICE_BREAK) | BIT_FLAG(CC_ATTACK_KOOPA_FIRE) | BIT_FLAG(CC_ATTACK_YOSHI_EAT),
+    CC_STATUS_NONE,
     daIceBall_c::ccCallback_Iceball
 };
 
@@ -98,13 +99,13 @@ int daIceBall_c::create() {
     float v2;
     mVec3_c v3(mPos.x, mPos.y + 4.0f, mPos.z);
 
-    if (dBc_c::findGround(&v3, &v2, mLayer, 1)) {
+    if (dBc_c::checkTenjou(&v3, &v2, mLayer, 1)) {
         if (mPos.y > v2 - 6.0f) {
             mPos.y = v2 - 6.0f;
         }
     }
 
-    mBc.set(this, &l_iceball_foot, &l_iceball_head, &l_iceball_wall);
+    mBc.set(this, l_iceball_foot, l_iceball_head, l_iceball_wall);
 
     m_3d4 = 0;
     mStartPos = mPos;
@@ -152,17 +153,18 @@ bool daIceBall_c::checkInitVanish() {
     mVec3_c b = mPos;
     float c = 0.0f;
 
-    return dBc_c::findWall(&a, &b, &c, mLayer, 1, nullptr);
+    return dBc_c::checkWall(&a, &b, &c, mLayer, 1, nullptr);
 }
 
 bool daIceBall_c::checkInitLine(float &a) {
     mVec3_c pos(mPos.x, mPos.y + 10.0f, mPos.z);
-    float v0 = 0.0f;
 
-    bool v1 = dBc_c::checkGround(&pos, &v0, mLayer, 1, -1);
-    if (v1 && (v0 < pos.y) && (v0 >= mPos.y - 3.0f)) {
-        a = v0;
-        return true;
+    float v0 = 0.0f;
+    if (dBc_c::checkGround(&pos, &v0, mLayer, 1, -1)) {
+        if (v0 < pos.y && v0 >= mPos.y - 3.0f) {
+            a = v0;
+            return true;
+        }
     }
 
     return false;
@@ -181,13 +183,13 @@ void daIceBall_c::setEatTongue(dActor_c * actor) {
 
 bool daIceBall_c::bgCheck() {
     if (mRc.check(mBc.checkFoot(), 0, 0)) {
-        mBc.mFlags |= dBc_c::SENSOR_15;
+        mBc.mFlags |= dBc_c::FLAG_15;
     }
 
     mBc.checkWall(nullptr);
     mBc.checkHead(0);
 
-    if (mBc.mFlags & 0x3c1fe03f) {
+    if (mBc.isCollision()) {
         return true;
     }
 
@@ -198,7 +200,7 @@ void daIceBall_c::setDeleteEffect() {
     EffectManager_c::SetIceBallMissshitEffect(&mPos);
 }
 
-void daIceBall_c::ccCallback_Iceball(dCc_c * self, dCc_c * other) {
+void daIceBall_c::ccCallback_Iceball(dCc_c *self, dCc_c *other) {
     if ((other->mCcData.mVsDamage & (1 << CC_ATTACK_ICEBALL)) == 0) {
         return;
     }
@@ -265,7 +267,7 @@ bool daIceBall_c::checkDeleteBg() {
     if (mBc.isWallL() | mBc.isWallR() | mBc.isHead()) {
         return true;
     }
-    if ((mBc.mFlags & dBc_c::SENSOR_15) && (mRc.isRideFlag(0x200) & 0xFFFF)) {
+    if ((mBc.mFlags & dBc_c::FLAG_15) && (mRc.isRideFlag(0x200) & 0xFFFF)) {
         return true;
     }
     if (mBc.getFootAttr() == 3) {
@@ -319,50 +321,38 @@ void daIceBall_c::waterSplash(float height) {
     mVec3_c pos(mPos.x, height, 6500.0f);
     dAudio::SoundEffectID_t(SE_OBJ_FIREBALL_SPLASH).playMapSound(pos, 0);
 
-    u32 v0;
+    u32 waterSplashFlags;
     if (pos.y == mPos.y) {
-        v0 = mLayer << 16 | 1;
+        waterSplashFlags = mLayer << 16 | 1;
     } else {
-        v0 = mLayer << 16 | 2;
+        waterSplashFlags = mLayer << 16 | 2;
     }
 
-    dEffActorMng_c * z = dEffActorMng_c::m_instance;
-
-    z->createWaterSplashEff(pos, v0, -1, mVec3_c(1.0f, 1.0f, 1.0f));
+    dEffActorMng_c::m_instance->createWaterSplashEff(pos, waterSplashFlags, -1, mVec3_c(1.0f, 1.0f, 1.0f));
     dBg_c::m_bg_p->setWaterInWave(pos.x, pos.y, 8);
 }
 
 void daIceBall_c::yoganSplash(float height) {
     mVec3_c pos(mPos.x, height, 6500.0f);
-    mVec3_c pos2;
     dAudio::SoundEffectID_t(SE_OBJ_CMN_SPLASH_LAVA).playMapSound(pos, 0);
 
-    u32 v0 = mLayer << 16 | 4;
+    u32 waterSplashFlags = mLayer << 16 | 4;
 
-    dEffActorMng_c * z = dEffActorMng_c::m_instance;
+    mVec3_c scale(0.6f, 0.6f, 0.6f);
 
-    pos2.x = 0.6f;
-    pos2.y = 0.6f;
-    pos2.z = 0.6f;
-
-    z->createWaterSplashEff(pos, v0, -1, pos2);
+    dEffActorMng_c::m_instance->createWaterSplashEff(pos, waterSplashFlags, -1, scale);
     dBg_c::m_bg_p->setWaterInWave(pos.x, pos.y, 18);
 }
 
 void daIceBall_c::poisonSplash(float height) {
     mVec3_c pos(mPos.x, height, 6500.0f);
-    mVec3_c pos2;
     dAudio::SoundEffectID_t(SE_OBJ_CMN_SPLASH_POISON).playMapSound(pos, 0);
 
     u32 v0 = mLayer << 16 | 6;
 
-    dEffActorMng_c * z = dEffActorMng_c::m_instance;
+    mVec3_c scale(0.6f, 0.6f, 0.6f);
 
-    pos2.x = 0.6f;
-    pos2.y = 0.6f;
-    pos2.z = 0.6f;
-
-    z->createWaterSplashEff(pos, v0, -1, pos2);
+    dEffActorMng_c::m_instance->createWaterSplashEff(pos, v0, -1, scale);
     dBg_c::m_bg_p->setWaterInWave(pos.x, pos.y, 25);
 }
 
@@ -396,7 +386,7 @@ void daIceBall_c::executeState_FireMove() {
     chgZpos();
     bgCheck();
 
-    if (mBc.mFlags & 0x1fe000) {
+    if (mBc.mFlags & dBc_c::FLAG_FOOT) {
         mStateMgr.changeState(StateID_Move);
         return;
     }
@@ -455,9 +445,8 @@ void daIceBall_c::executeState_Move() {
 
     if (m_3d0 != 0) {
         if (--m_3d0 == 0) {
-            u32 v0 = mPlayerNo;
-            if (0 < sm_IceBallAliveCount[v0]) {
-                sm_IceBallAliveCount[v0]--;
+            if (sm_IceBallAliveCount[mPlayerNo] > 0) {
+                sm_IceBallAliveCount[mPlayerNo]--;
             }
         }
     }
@@ -498,7 +487,7 @@ void daIceBall_c::finalizeState_EatIn() {}
 
 void daIceBall_c::executeState_EatIn() {
     EffectManager_c::SetIceBallEffect(&mPos);
-    if (mEatState == 2) {
+    if (mEatState == EAT_STATE_EATEN) {
         mStateMgr.changeState(StateID_EatNow);
     }
 }
