@@ -37,6 +37,13 @@ class dBgBound_c {
 public:
     dBgBound_c() : mLeft(0.0f), mRight(0.0f), mUp(0.0f), mDown(0.0f) {}
 
+    float getR() const { return mRight; }
+    float getL() const { return mLeft; }
+    float getU() const { return mUp; }
+    float getD() const { return mDown; }
+    float getW() const { return getR() - getL(); }
+    float getH() const { return getU() - getD(); }
+
     float mLeft, mRight, mUp, mDown;
 };
 
@@ -159,6 +166,10 @@ public:
         return (1.0f / getZoomTargetMin()) + bgVal * (1.0f / tmp1 - (1.0f / getZoomTargetMin()));
     }
 
+    float invZoomTargetMin() {
+        return 1.0f / getZoomTargetMin();
+    }
+
     float getZoomSpreadLine();
     float getZoomSpreadLine2();
     float getZoomShrinkLine();
@@ -216,6 +227,7 @@ public:
     u16 cvtH() { return getU() - getD(); }
 
     float getLimitD() { return mDLimit; }
+    float getLimitU() { return mULimit; }
 
     float getSomePosX() { return mSomePos.x; }
     float getSomePosY() { return mSomePos.y; }
@@ -223,6 +235,9 @@ public:
     float getSomeSizeY() { return mSomeSize.y; }
 
     float getLoopOffsetX() { return mLoopOffsetX; }
+
+    float get_900ac() { return m_900ac; }
+    float get_900b0() { return m_900b0; }
 
     dBgScrollLimit_c *getScrLim(int area, int group, int idx) { return &mScrLimit[area][group][idx]; }
     dBgSubstruct2_c * getData2(int idx, int i) { return &mData2[idx][i]; }
@@ -256,7 +271,8 @@ public:
     float mMoreFloats7[7];
     float mWaveRelated[80];
     float mDispScale;
-    float mMoreFloats3[4];
+    float mSomeScale;
+    float mMoreFloats3[3];
     u8 mU8s[6];
     float mZoomDenom;
     u8 m_8ffbc;
