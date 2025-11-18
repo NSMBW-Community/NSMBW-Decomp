@@ -33,9 +33,12 @@ public:
 
 /// @unofficial
 struct sScrollData {
-    u8 mPad1[0x10];
+    int mX, mY;
+    int mXCloud, mYCloud;
     u16 mID;
-    u8 mPad2[0x6];
+    u16 mUpLimit;
+    u16 m_16;
+    u16 m_18;
 };
 
 /// @unofficial
@@ -46,7 +49,11 @@ struct sBlock4Data {
 /// @unofficial
 struct sBgData {
     u16 mID;
-    u8 mPad[0x16];
+    u16 m_02;
+    int m_04;
+    int m_08;
+    int m_0c;
+    u8 mPad[0x8];
 };
 
 /// @unofficial
