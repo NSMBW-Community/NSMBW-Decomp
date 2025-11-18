@@ -222,6 +222,8 @@ public:
     float getSomeSizeX() { return mSomeSize.x; }
     float getSomeSizeY() { return mSomeSize.y; }
 
+    float getLoopOffsetX() { return mLoopOffsetX; }
+
     dBgScrollLimit_c *getScrLim(int area, int group, int idx) { return &mScrLimit[area][group][idx]; }
     dBgSubstruct2_c * getData2(int idx, int i) { return &mData2[idx][i]; }
 

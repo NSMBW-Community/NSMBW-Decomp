@@ -1999,27 +1999,28 @@ void dBg_c::initScroll() {
 }
 
 float dBg_c::fn_8007c7d0(float x) {
-    float res = x;
-    float loopOffset = mLoopOffsetX;
+    float loopOffset = getLoopOffsetX();
+
     if (dScStage_c::m_loopType == 2) {
-        if (dBgParameter_c::ms_Instance_p->posX() < getMaxLeftPos()) {
-            float tmp1 = getMaxLeftPos() + (getMaxRightPos() - getMaxLeftPos()) * 0.5f;
-            float bgW = dBgParameter_c::ms_Instance_p->width();
-            float bgX = dBgParameter_c::ms_Instance_p->posX();
-            bgW += getMaxLeftPos();
-            if (bgX > bgW && tmp1 > x) {
-                res -= loopOffset;
+        if (dBgParameter_c::ms_Instance_p->xStart() < getMaxLeftPos()) {
+            float midPos = getMaxLeftPos() + (getMaxRightPos() - getMaxLeftPos()) * 0.5f;
+            float xSize = dBgParameter_c::ms_Instance_p->xSize();
+            float xStart = dBgParameter_c::ms_Instance_p->xStart();
+            float xLeft = getMaxLeftPos();
+            xLeft += xSize;
+            if (xStart > xLeft && x > midPos) {
+                x -= loopOffset;
             }
-        } else if (dBgParameter_c::ms_Instance_p->posX() > getMaxRightPos() - dBgParameter_c::ms_Instance_p->width()) {
-            float tmp1 = getMaxLeftPos() + (getMaxRightPos() - getMaxLeftPos()) * 0.5f;
-            float bgW = dBgParameter_c::ms_Instance_p->width();
-            float bgX = dBgParameter_c::ms_Instance_p->posX();
-            if (dBgParameter_c::ms_Instance_p->posX() < getMaxRightPos() && tmp1 < x) {
-                res += loopOffset;
+        } else if (dBgParameter_c::ms_Instance_p->xStart() > getMaxRightPos() - dBgParameter_c::ms_Instance_p->xSize()) {
+            float midPos = getMaxLeftPos() + (getMaxRightPos() - getMaxLeftPos()) * 0.5f;
+            float xStart = dBgParameter_c::ms_Instance_p->xStart();
+            if (xStart < getMaxRightPos() && x < midPos) {
+                x += loopOffset;
             }
         }
     }
-    return res;
+
+    return x;
 }
 
 bool isRightPlayer(dAcPy_c *pl1, dAcPy_c *pl2) {
