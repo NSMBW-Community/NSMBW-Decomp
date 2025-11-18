@@ -156,8 +156,8 @@ public:
     void RemoveBgTex();
 
     bgTex_c *__createBgTex(int, u16, u16, u16, u16, int, int);
-    void fn_80078250(u16, u16, u16, u32);
-    void fn_80078300();
+    void EntryWakuCoin(ulong, u16, u16, int);
+    void SetWakuCoin();
     void fn_80077860(u16, u16, int, u16);
     void setWaterInWave(float, float, u8);
     void setBubble(float, float, u8, u8);
