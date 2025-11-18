@@ -2045,11 +2045,12 @@ void swap(dAcPy_c **pl1, dAcPy_c **pl2) {
 }
 
 void dBg_c::fn_8007ca90(dBgSomeInfo_c *info, int i1, int i2) {
-    static bool (*compareFuncs[4])(dAcPy_c *, dAcPy_c *) = {
-        isRightPlayer,
-        isLeftPlayer,
-        isUpPlayer,
-        isDownPlayer
+    typedef bool (*CompareFunc)(dAcPy_c *, dAcPy_c *);
+    static const CompareFunc compareFuncs[4] = {
+        &isRightPlayer,
+        &isUpPlayer,
+        &isLeftPlayer,
+        &isDownPlayer
     };
     dAcPy_c *pls[4];
     int count2 = 0;
@@ -2080,67 +2081,69 @@ void dBg_c::fn_8007ca90(dBgSomeInfo_c *info, int i1, int i2) {
 
     m_bg_p->m_9095a = 0;
     // sort players
-    for (int i = 0; i < 3; i++) {
-        for (int j = i + 1; j < 4; j++) {
-            dAcPy_c *pl1 = pls[i];
-            dAcPy_c *pl2 = pls[j];
-            if (pls[j] != nullptr) {
-                if (pls[i] == nullptr) {
-                    swap(&pls[i], &pls[j]);
-                } else if (compareFuncs[i1 & 0xFF](pl1, pl2)) {
-                    swap(&pls[i], &pls[j]);
-                }
+    for (int i = 0; i < PLAYER_COUNT - 1; i++) {
+        for (int j = i + 1; j < PLAYER_COUNT; j++) {
+            dAcPy_c *pl1 = pls[j];
+            dAcPy_c *pl2 = pls[i];
+            if (pls[j] == nullptr) {
+                continue;
+            }
+            if (pls[i] == nullptr) {
+                swap(&pls[i], &pls[j]);
+            } else if (compareFuncs[i1 & 0xFF](pl1, pl2)) {
+                swap(&pls[i], &pls[j]);
             }
         }
     }
-    dAcPy_c *pl1, *pl2;
+    dAcPy_c *pl2;
+    dAcPy_c *pl1;
     pl1 = pls[0];
     pl2 = pls[i2 - 1];
     switch (i1) {
         case 0:
-            if (pls[0] != nullptr) {
+            if (pl1 != nullptr) {
                 info->m_14 = pl1;
                 info->mBounds.mRight = fn_8007c7d0(pl1->mBgRelatedPos.x);
                 info->m_24 = pl1->m_44;
             }
             if (pls[i2 - 1] != nullptr) {
-                info->m_10 = pl2;
+                info->m_10 = pls[i2 - 1];
                 info->mBounds.mLeft = fn_8007c7d0(pl2->mBgRelatedPos.x);
                 info->m_20 = pl2->m_44;
             }
             break;
         case 2:
-            if (pls[i2 - 1] != nullptr) {
+            if (pl2 != nullptr) {
                 info->m_14 = pl2;
                 info->mBounds.mRight = fn_8007c7d0(pl2->mBgRelatedPos.x);
                 info->m_24 = pl2->m_44;
             }
             if (pls[0] != nullptr) {
-                info->m_10 = pl1;
+                info->m_10 = pls[0];
                 info->mBounds.mLeft = fn_8007c7d0(pl1->mBgRelatedPos.x);
                 info->m_20 = pl1->m_44;
             }
             break;
         case 1:
-            if (pls[0] != nullptr) {
+            if (pl1 != nullptr) {
                 info->m_18 = pl1;
                 info->mBounds.mUp = pl1->mBgRelatedPos.y;
                 info->m_28 = pl1->m_44;
             }
             if (pls[i2 - 1] != nullptr) {
-                info->m_1c = pl2;
+                info->m_1c = pls[i2 - 1];
                 info->mBounds.mDown = pl2->mBgRelatedPos.y;
                 info->m_2c = pl2->m_44;
             }
             break;
         case 3:
-            if (pls[i2 - 1] != nullptr) {
+            if (pl2 != nullptr) {
                 info->m_18 = pl2;
                 info->mBounds.mUp = pl2->mBgRelatedPos.y;
                 info->m_28 = pl2->m_44;
             }
             if (pls[0] != nullptr) {
-                info->m_1c = pl1;
+                info->m_1c = pls[0];
                 info->mBounds.mDown = pl1->mBgRelatedPos.y;
                 info->m_2c = pl1->m_44;
             }
