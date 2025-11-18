@@ -1,7 +1,21 @@
 #pragma once
-#include <types.h>
+#include <game/mLib/m_vec.hpp>
 
 class dBg_c {
+    class dBg_autoScroll_c {
+    public:
+        dBg_autoScroll_c() {}
+        ~dBg_autoScroll_c() {}
+
+        mVec3_c mPos;
+        float m_0c;
+        float m_10;
+        u8 m_14, m_15, m_16, m_17;
+        u8 m_18;
+        bool m_19;
+        bool mActive;
+    };
+
 public:
     u8 mPad1[0x8fe70];
     float m_8fe00;
@@ -13,11 +27,11 @@ public:
     float mDispScale;
     float m_8ffa8;
     float mPrevDispScale;
-    u8 mPad5[0x59];
+    u8 mPad5[0x61];
     u8 m_90009;
-    u8 mPad6[0x4c];
-    bool m_9004c;
-    u8 mPad6[0x37];
+    u8 mPad6[0x30];
+    dBg_autoScroll_c mAutoscrolls[2];
+    u8 mPad7[0x1a];
     u8 m_9008e;
 
     float getLiquidHeight() const { return mLiquidHeight; }

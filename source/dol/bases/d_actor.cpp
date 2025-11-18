@@ -489,7 +489,7 @@ bool dActor_c::carryFukidashiCheck(int fukidashiAction, mVec2_c fukidashiTrigger
             bool canDrawFukidashi = player->isDrawingCarryFukidashi();
 
             sRangeDataF playerBoundBox;
-            player->getCcBounds(playerBoundBox);
+            player->getCcBounds(&playerBoundBox);
             mVec3_c playerPos(
                 dScStage_c::getLoopPosX(playerBoundBox.mOffset.x + player->mPos.x),
                 playerBoundBox.mOffset.y + player->mPos.y,
@@ -516,7 +516,7 @@ bool dActor_c::carryFukidashiCheck(int fukidashiAction, mVec2_c fukidashiTrigger
             bool canDrawFukidashi = player->isDrawingCarryFukidashi();
 
             sRangeDataF playerBoundBox;
-            player->getCcBounds(playerBoundBox);
+            player->getCcBounds(&playerBoundBox);
             mVec3_c playerPos(
                 dScStage_c::getLoopPosX(playerBoundBox.mOffset.x + player->mPos.x),
                 playerBoundBox.mOffset.y + player->mPos.y,

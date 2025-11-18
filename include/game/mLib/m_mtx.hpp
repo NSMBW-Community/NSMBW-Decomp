@@ -20,6 +20,15 @@ public:
     /// @brief Const Mtx cast operator.
     operator const Mtx*() const { return &mtx; }
 
+    mMtx_c &operator=(const mMtx_c &other) {
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 4; j++) {
+                m[i][j] = other.m[i][j];
+            }
+        }
+        return *this;
+    }
+
     void XrotS(mAng angle); ///< Generates a rotation matrix for the X axis with the given angle.
     void XrotM(mAng angle); ///< Rotates the matrix on the X axis by the given angle.
     void YrotS(mAng angle); ///< Generates a rotation matrix for the Y axis with the given angle.
@@ -43,6 +52,8 @@ public:
 
     static mMtx_c createTrans(const mVec3_c &v) { return createTrans(v.x, v.y, v.z); }
     static mMtx_c createTrans(float x, float y, float z) { mMtx_c mtx; PSMTXTrans(mtx, x, y, z); return mtx; }
+    static mMtx_c createScale(const mVec3_c &v) { mMtx_c mtx; PSMTXScale(mtx, v.x, v.y, v.z); return mtx; }
+    static mMtx_c createScale(float x, float y, float z) { mMtx_c mtx; PSMTXScale(mtx, x, y, z); return mtx; }
 
     mMtx_c &concat(const mMtx_c &other) { PSMTXConcat(*this, other, *this); return *this; }
     mMtx_c &trans(const mVec3_c &v) { PSMTXTrans(*this, v.x, v.y, v.z); return *this; }

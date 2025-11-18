@@ -15,8 +15,10 @@ public:
     virtual void createEffect(const char *, ulong, const mMtx_c *);
     virtual void vfa8();
     virtual void vfac();
-    virtual void follow(const mVec3_c *, const mAng3_c *, const mVec3_c *);
-    virtual void follow(const mMtx_c *);
+    virtual bool follow(const mVec3_c *, const mAng3_c *, const mVec3_c *);
+    virtual bool follow(const mMtx_c *);
+
+    void copyExEffectParam();
 
     u8 mPad[0x92];
     mAng mAng;
@@ -35,9 +37,9 @@ public:
     virtual void createEffect(const char *, ulong, const mMtx_c *);
     virtual void vfa8();
     virtual void vfac();
-    virtual void follow(const mVec3_c *, const mAng3_c *, const mVec3_c *);
-    virtual void follow(const mMtx_c *);
-    virtual void isActive();
+    virtual bool follow(const mVec3_c *, const mAng3_c *, const mVec3_c *);
+    virtual bool follow(const mMtx_c *);
+    virtual bool isActive();
 
     void cleanup();
 

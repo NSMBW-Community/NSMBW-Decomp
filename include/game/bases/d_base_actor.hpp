@@ -116,6 +116,7 @@ public:
     float getCenterY() const { return mPos.y + mCenterOffs.y; }
     float getCenterZ() const { return mPos.z + mCenterOffs.z; }
 
+    float getSpeedF() const { return mSpeedF; }
     float getAccelF() const { return mAccelF; }
     void setAccelF(float accelF) { mAccelF = accelF; }
     float absSpeedF() { return std::fabs(mSpeedF); }

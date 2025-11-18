@@ -414,12 +414,12 @@ bool dEn_c::getPl_UDflag(const mVec3_c &pos) {
 }
 
 bool dEn_c::CeilCheck(float y, dCc_c *cc) {
-    return dBgParameter_c::getInstance()->check(y + cc->mCcData.mOffset.y, cc->mCcData.mSize.y);
+    return dBgParameter_c::getInstance()->check(y + cc->mCcData.mBase.mOffset.y, cc->mCcData.mBase.mSize.y);
 }
 
 bool dEn_c::carry_check(dActor_c *actor) {
     dAcPy_c *pl = (dAcPy_c *) actor;
-    if (pl->FUN_8012e540(this, true)) {
+    if (pl->fn_8012e540(this, true)) {
         mPlayerNo = *actor->getPlrNo();
         return true;
     }

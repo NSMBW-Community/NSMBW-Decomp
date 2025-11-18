@@ -280,6 +280,8 @@ namespace dAudio {
     bool isLoadedSceneSnd();
     void FUN_8006a6a0(bool); ///< @unofficial
     bool isBgmAccentSign(u8);
+    void pauseOffMove(int);
+    void pauseMove(int);
 
     int getRemotePlayer(int);
     mVec2_c cvtSndObjctPos(const mVec2_c &);

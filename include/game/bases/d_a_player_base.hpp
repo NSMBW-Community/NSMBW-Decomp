@@ -1,6 +1,8 @@
 #pragma once
 
 #include <game/bases/d_actor.hpp>
+#include <game/bases/d_a_player_data.hpp>
+#include <game/bases/d_a_player_hio.hpp>
 #include <game/bases/d_ac_py_key.hpp>
 #include <game/bases/d_cc.hpp>
 #include <game/bases/d_player_model_manager.hpp>
@@ -17,7 +19,9 @@ public:
         DAMAGE_NONE,
         DAMAGE_1, DAMAGE_2, DAMAGE_3, DAMAGE_4,
         DAMAGE_5, DAMAGE_6, DAMAGE_YOGAN, DAMAGE_8,
-        DAMAGE_9, DAMAGE_POISON, DAMAGE_B, DAMAGE_C
+        DAMAGE_9, DAMAGE_POISON, DAMAGE_B, DAMAGE_C,
+        DAMAGE_D, DAMAGE_E, DAMAGE_F, DAMAGE_10,
+        DAMAGE_11, DAMAGE_12
     };
 
     enum DokanDir_e {
@@ -28,7 +32,11 @@ public:
         DOKAN_ROLL
     };
 
-    enum StarSet_e {};
+    enum StarSet_e {
+        STAR_SET_0,
+        STAR_SET_1,
+        STAR_SET_2
+    };
 
     enum AnmBlend_e {
         BLEND_0,
@@ -191,7 +199,7 @@ public:
         BGC_11 = BIT_FLAG(11),
         BGC_12 = BIT_FLAG(12),
         BGC_13 = BIT_FLAG(13),
-        BGC_14 = BIT_FLAG(14),
+        BGC_14 = BIT_FLAG(14), // Water surface?
         BGC_15 = BIT_FLAG(15),
         BGC_16 = BIT_FLAG(16),
         BGC_17 = BIT_FLAG(17),
@@ -224,6 +232,13 @@ public:
         BGC_40 = BIT_FLAG(8),
         BGC_41 = BIT_FLAG(9),
         BGC_42 = BIT_FLAG(10),
+        BGC_43 = BIT_FLAG(11),
+        BGC_44 = BIT_FLAG(12),
+        BGC_45 = BIT_FLAG(13),
+        BGC_46 = BIT_FLAG(14),
+        BGC_47 = BIT_FLAG(15),
+        BGC_48 = BIT_FLAG(16),
+        BGC_49 = BIT_FLAG(17),
         BGC_51 = BIT_FLAG(19),
         BGC_52 = BIT_FLAG(20),
         BGC_53 = BIT_FLAG(21),
@@ -241,29 +256,45 @@ public:
 
     /// @unofficial
     enum Status_e {
+        STATUS_00 = 0x00,
         STATUS_01 = 0x01,
         STATUS_02 = 0x02,
         STATUS_03 = 0x03,
         STATUS_04 = 0x04,
+        STATUS_05 = 0x05,
         STATUS_06 = 0x06,
+        STATUS_07 = 0x07,
         STATUS_08 = 0x08,
         STATUS_0A = 0x0a,
+        STATUS_0B = 0x0b,
+        STATUS_0C = 0x0c,
+        STATUS_0D = 0x0d,
         STATUS_0E = 0x0e,
+        STATUS_0F = 0x0f,
+        STATUS_10 = 0x10,
+        STATUS_11 = 0x11,
         STATUS_12 = 0x12,
         STATUS_13 = 0x13,
         STATUS_14 = 0x14,
         STATUS_15 = 0x15,
         STATUS_16 = 0x16,
         STATUS_17 = 0x17,
+        STATUS_18 = 0x18,
+        STATUS_19 = 0x19,
         STATUS_1A = 0x1a,
         STATUS_1B = 0x1b,
         STATUS_1C = 0x1c,
         STATUS_1D = 0x1d,
         STATUS_1E = 0x1e,
         STATUS_1F = 0x1f,
+        STATUS_20 = 0x20,
+        STATUS_21 = 0x21,
         STATUS_22 = 0x22,
         STATUS_23 = 0x23,
         STATUS_24 = 0x24,
+        STATUS_26 = 0x26,
+        STATUS_27 = 0x27,
+        STATUS_29 = 0x29,
         STATUS_2A = 0x2a,
         STATUS_2B = 0x2b,
         STATUS_2C = 0x2c,
@@ -271,26 +302,45 @@ public:
         STATUS_2E = 0x2e,
         STATUS_30 = 0x30,
         STATUS_31 = 0x31,
+        STATUS_32 = 0x32,
         STATUS_33 = 0x33,
+        STATUS_34 = 0x34,
         STATUS_35 = 0x35,
         STATUS_36 = 0x36,
+        STATUS_37 = 0x37,
+        STATUS_38 = 0x38,
+        STATUS_39 = 0x39,
         STATUS_3A = 0x3a,
         STATUS_3B = 0x3b,
         STATUS_3C = 0x3c,
+        STATUS_3D = 0x3d,
         STATUS_3E = 0x3e,
+        STATUS_3F = 0x3f,
         STATUS_40 = 0x40,
         STATUS_41 = 0x41,
         STATUS_42 = 0x42,
         STATUS_43 = 0x43,
         STATUS_45 = 0x45,
+        STATUS_46 = 0x46,
+        STATUS_47 = 0x47,
+        STATUS_48 = 0x48,
+        STATUS_49 = 0x49,
+        STATUS_4A = 0x4a,
         STATUS_4B = 0x4b,
         STATUS_4D = 0x4d,
         STATUS_4E = 0x4e,
+        STATUS_4F = 0x4f,
+        STATUS_50 = 0x50,
         STATUS_51 = 0x51,
         STATUS_52 = 0x52,
         STATUS_53 = 0x53,
+        STATUS_54 = 0x54,
+        STATUS_55 = 0x55,
+        STATUS_56 = 0x56,
+        STATUS_57 = 0x57,
         STATUS_58 = 0x58,
         STATUS_59 = 0x59,
+        STATUS_5A = 0x5a,
         STATUS_5B = 0x5b,
         STATUS_5C = 0x5c,
         STATUS_5D = 0x5d,
@@ -312,6 +362,7 @@ public:
         STATUS_6D = 0x6d,
         STATUS_6E = 0x6e,
         STATUS_6F = 0x6f,
+        STATUS_70 = 0x70,
         STATUS_71 = 0x71,
         STATUS_72 = 0x72,
         STATUS_73 = 0x73,
@@ -330,30 +381,47 @@ public:
         STATUS_82 = 0x82,
         STATUS_83 = 0x83,
         STATUS_84 = 0x84,
+        STATUS_85 = 0x85,
         STATUS_86 = 0x86,
         STATUS_87 = 0x87,
         STATUS_88 = 0x88,
         STATUS_89 = 0x89,
+        STATUS_8A = 0x8a,
         STATUS_8B = 0x8b,
         STATUS_8C = 0x8c,
         STATUS_8D = 0x8d,
+        STATUS_8E = 0x8e,
+        STATUS_8F = 0x8f,
         STATUS_91 = 0x91,
+        STATUS_92 = 0x92,
+        STATUS_93 = 0x93,
         STATUS_94 = 0x94,
         STATUS_95 = 0x95,
         STATUS_96 = 0x96,
         STATUS_97 = 0x97,
         STATUS_98 = 0x98,
         STATUS_99 = 0x99,
+        STATUS_9B = 0x9b,
+        STATUS_9C = 0x9c,
+        STATUS_9D = 0x9d,
+        STATUS_9E = 0x9e,
         STATUS_9F = 0x9f,
         STATUS_A0 = 0xa0,
+        STATUS_A1 = 0xa1,
+        STATUS_A2 = 0xa2,
+        STATUS_A3 = 0xa3,
         STATUS_A4 = 0xa4,
         STATUS_A5 = 0xa5,
+        STATUS_A6 = 0xa6,
+        STATUS_A7 = 0xa7,
         STATUS_A8 = 0xa8,
+        STATUS_A9 = 0xa9,
         STATUS_AA = 0xaa,
         STATUS_AB = 0xab,
         STATUS_AC = 0xac,
         STATUS_AD = 0xad,
         STATUS_AE = 0xae,
+        STATUS_B3 = 0xb3, /// [Yoshi only?]
         STATUS_B5 = 0xb5,
         STATUS_B6 = 0xb6,
         STATUS_B7 = 0xb7,
@@ -362,58 +430,28 @@ public:
         STATUS_BA = 0xba,
         STATUS_BB = 0xbb,
         STATUS_BC = 0xbc,
+        STATUS_BD = 0xbd,
         STATUS_BE = 0xbe,
         STATUS_BF = 0xbf,
+        STATUS_C0 = 0xc0,
         STATUS_C1 = 0xc1,
+        STATUS_C2 = 0xc2,
+        STATUS_C3 = 0xc3,
         STATUS_C4 = 0xc4,
-    };
-
-    /// @unofficial
-    struct SpeedData_t {
-        float data[9];
-
-        SpeedData_t *operator=(const SpeedData_t &other) {
-            for (int i = 0; i < 9; ++i) {
-                data[i] = other.data[i];
-            }
-            return this;
-        }
+        STATUS_C5 = 0xc5,
+        STATUS_C8 = 0xc8,
+        STATUS_C9 = 0xc9,
+        STATUS_CA = 0xca
     };
 
     class jmpInf_c {
     public:
+        jmpInf_c(float f, int a, int b) : m_04(f), m_08(a), m_0c(b) {}
         virtual ~jmpInf_c() {};
 
         float m_04;
         int m_08;
         int m_0c;
-    };
-
-    /// @unofficial
-    struct sAirTurnPowerData {
-        float mNoButton;
-        float mStand;
-        float mSlowNoDash;
-        float mSlowDash;
-        float mMedium;
-        float mFast;
-        float mTurnAround;
-    };
-
-    /// @unofficial
-    struct sTurnPowerData {
-        float mNormal;
-        float mSakaUp;
-        float mSakaDown;
-        float mAir;
-    };
-
-    /// @unofficial
-    struct sPowerChangeData {
-        sAirTurnPowerData mAirPower[2];
-        sTurnPowerData mRangeType0[2];
-        sTurnPowerData mRangeType1[2];
-        sTurnPowerData mRangeType2[2];
     };
 
     typedef void (daPlBase_c::*ProcFunc)();
@@ -435,9 +473,9 @@ public:
     virtual bool isItemKinopio() { return false; }
     virtual void setPowerup(PLAYER_POWERUP_e, int); ///< @unofficial
     virtual u8 getTallType(s8);
-    virtual void *getHeadBgPointData() { return nullptr; };
-    virtual void *getWallBgPointData() { return nullptr; };
-    virtual void *getFootBgPointData() { return nullptr; };
+    virtual const sBcPointData *getHeadBgPointData() { return nullptr; };
+    virtual const sBcPointData *getWallBgPointData() { return nullptr; };
+    virtual const sBcPointData *getFootBgPointData() { return nullptr; };
     virtual float getStandHeadBgPointY() { return 0.0f; }
     virtual void checkBgCrossSub() {}
     virtual void postBgCross();
@@ -450,7 +488,7 @@ public:
     virtual bool setBalloonInDispOut(int) { return false; }
     virtual bool isChange() { return false; }
     virtual void changeNextScene(int);
-    virtual bool isEnableDokanInStatus(void);
+    virtual bool isEnableDokanInStatus();
     virtual bool setHideNotGoalPlayer();
     virtual int vf130(float f, mVec2_c *v, int param3); ///< @unofficial
     virtual bool setDemoCannonWarp(int, short, short) { return false; }
@@ -551,8 +589,8 @@ public:
     virtual void setRideJrCrownMtx(const mMtx_c *) {}
     virtual void setRideJrCrownAnm(int) {}
 
-    virtual float *getHeadTopPosP() { return nullptr; }
-    virtual float *getGravityData() { return mGravityData; }
+    virtual const float *getHeadTopPosP() { return nullptr; }
+    virtual const float *getGravityData() { return mGravityData; }
     virtual bool isCarry() const { return false; }
     virtual bool isLiftUp() { return false; }
 
@@ -569,14 +607,14 @@ public:
     virtual bool setDamage(dActor_c *, DamageType_e);
     virtual bool setForcedDamage(dActor_c *, DamageType_e);
 
-    virtual u32 vf3fc(float, float, int, int, int); ///< @unofficial
-    virtual u32 vf400(float, float, int, int, int); ///< @unofficial
+    virtual bool vf3fc(float, float, int, int, int); ///< @unofficial
+    virtual bool vf400(float, float, int, int, int); ///< @unofficial
     virtual bool setWaitJump(float);
 
     virtual bool setHipAttackOnEnemy(mVec3_c *);
 
     virtual void clearJumpActionInfo(int) {}
-    virtual bool setSwimSpeed(float, float);
+    virtual bool setSwimSpeed(float speedY, float speedF);
     virtual void setLandSE();
 
     virtual void set1UpKinokoEffect() {}
@@ -676,7 +714,7 @@ public:
     float getSakaMoveAccele(u8 direction);
     float getIceSakaSlipOffSpeed();
     PowerChangeType_e getPowerChangeType(bool);
-    float *getSpeedData();
+    const float *getSpeedData();
     void calcWindSpeed();
     void startFootSoundPlayer(unsigned long);
     void setSlipSE();
@@ -862,8 +900,16 @@ public:
     mVec3_c getAnkleCenterPos();
 
     // [Needed to place getOldStateID in the correct location]
-    void dummy() {
-        mStateMgr.getOldStateID();
+    const sStateIDIf_c &getOldState() {
+        return *mStateMgr.getOldStateID();
+    }
+
+    bool isState(sStateIDIf_c &id) {
+        return mStateMgr.getStateID()->isEqual(id);
+    }
+
+    bool isDemoState(sStateIDIf_c &id) {
+        return mDemoStateMgr.getStateID()->isEqual(id);
     }
 
     float calcStarAccel(float f) { return 3.0f * f; }
@@ -872,6 +918,7 @@ public:
     float getSomeYOffset() const { return mSomeYOffset; }
 
     float get_1064() const { return m_1064; }
+    float get_1068() const { return m_1068; }
     float get_106c() const { return m_106c; }
 
     float getAnkleCenterX() { return getAnkleCenterPos().x; }
@@ -885,6 +932,7 @@ public:
     void onNowBgCross(BgCross2_e m) { mNowBgCross2 |= m; }
     void offNowBgCross(BgCross1_e m) { mNowBgCross1 &= ~m; }
     void offNowBgCross(BgCross2_e m) { mNowBgCross2 &= ~m; }
+    void clearNowBgCross() { mNowBgCross1 = mNowBgCross2 = 0; }
 
     u32 isOldBgCross(BgCross1_e m) { return mOldBgCross1 & m; }
     u32 isOldBgCross(BgCross2_e m) { return mOldBgCross2 & m; }
@@ -892,6 +940,15 @@ public:
     void onOldBgCross(BgCross2_e m) { mOldBgCross2 |= m; }
     void offOldBgCross(BgCross1_e m) { mOldBgCross1 &= ~m; }
     void offOldBgCross(BgCross2_e m) { mOldBgCross2 &= ~m; }
+    void clearOldBgCross() { mOldBgCross1 = mOldBgCross2 = 0; }
+
+    bool isOnSinkSand() { return isNowBgCross(BGC_ON_SINK_SAND) | isNowBgCross(BGC_IN_SINK_SAND); }
+    bool wasOnSinkSand() { return isOldBgCross(BGC_ON_SINK_SAND) | isOldBgCross(BGC_IN_SINK_SAND); }
+
+    float getDirSpeed() const { return sc_DirSpeed[mDirection]; }
+
+    u8 getDirection() const { return mDirection; }
+    PLAYER_POWERUP_e getPowerup() const { return mPowerup; }
 
     int mReductionMode;
     int mSquishKeyframeIdx;
@@ -905,9 +962,9 @@ public:
     fBaseID_e mBgPressIDs[13]; ///< Index into this array with BgPress_e.
     float mViewLimitPadding;
     int mKimePoseState;
-    s8 mDemoState; /// Value is a GoalDemoState_e.
+    s8 mDemoState; /// Value is a ControlDemoState_e.
     int mDokanNextGoto;
-    mVec3_c m_68;
+    mVec3_c mWarpPos; ///< Position of the door or pipe the player is entering.
     mVec2_c m_74;
     short m_7c;
     int m_80;
@@ -938,20 +995,25 @@ public:
     int mBossDemoLandTimer;
     int m_d8[5];
     int m_ec;
-    u8 mPad11[0x4];
+    int m_f0;
     int mTimer_f4;
     int mTimer_f8;
     s8 m_fc;
     dEf::followEffect_c mTurnSmokeEffect; ///< The wind effect when turning around after running.
+    int mTurnGroundType;
+    u8 mTurnEffectFade;
     mEf::levelEffect_c mHitAttackDropEffect; ///< The wind effect when doing a ground pound.
     u32 m_344;
     mVec3_c m_348;
     float m_354;
     int mFallTimer;
     DemoAnime_e mDemoAnime;
-    u32 m_360;
-    mEf::levelEffect_c mFunsuiSmokeEffect; ///< Effect when being sent upwards by a sand fountain.
-    mEf::levelEffect_c mSlipSmokeEffect; ///< Smoke when sliding down a slope.
+    int m_360;
+
+    /// Effect when being sent upwards by a sand fountain,
+    /// also used for the wall slide, water run and death smoke effect.
+    mEf::levelEffect_c mSmokeEffect;
+    mEf::levelEffect_c mSlipSmokeEffect; ///< Smoke when sliding down a slope or into a cannon.
     mEf::levelEffect_c mBrakeSmokeEffect; ///< Smoke when turning around after running.
     mEf::levelEffect_c mRunEffect; ///< E.g. sand particles / snowflakes when running.
     mEf::levelEffect_c mQuicksandSplashEffect; ///< Sand splash effect when landing on quicksand.
@@ -960,24 +1022,24 @@ public:
     dAudio::SndObjctPly_c mSndObj;
     dAcPyKey_c mKey;
     fBaseID_e mRideActorID;
-    u8 mPad12[0x4];
+    fBaseID_e mRelatedActorID; ///< Actor that is eating the player, or the door actor.
     fBaseID_e mHipAttackPlayerID;
     u32 mStatusFlags[7];
     float mSomeYOffset;
-    u8 mPad14[1];
+    u8 m_ca0;
     u8 m_ca1;
-    u8 mZPosLayer;
+    u8 mPlayerLayer;
     mVec3_c mLastPosDelta;
     mVec3_c mLiftRelatedPos;
     float m_cbc;
     float m_cc0;
     float mAirTopHeight; ///< The highest Y position since being on the ground last.
     float m_cc8;
-    float *mSpeedDataNormal;
-    float *mSpeedDataStar;
-    float *mGravityData;
+    const float *mSpeedDataNormal;
+    const float *mSpeedDataStar;
+    const float *mGravityData;
     int mNoGravityTimer;
-    u32 mStarTimer;
+    int mStarTimer;
     int mTimer_ce0;
     int mTimer_ce4;
     int mTimer_ce8;
@@ -986,10 +1048,11 @@ public:
     s8 mPlComboCount;
     u32 m_cf0;
     u32 mFollowMameKuribo;
-    u8 mPad15[4];
+    fBaseID_e mIceActorID;
     PLAYER_POWERUP_e mPowerup;
-    u8 mPad18[0x2c];
-    int m_d2c;
+    sBcPointData mHeadBcData;
+    sBcPointData mFootBcData;
+    sBcPointData mWallBcData;
     mVec3_c mBgPushForce; ///< Belts, quicksand etc.
     float m_d3c;
 
@@ -1011,7 +1074,7 @@ public:
     int m_da0;
     float mWaterHeight;
     float mPrevWaterHeight;
-    u32 m_dac;
+    int m_dac;
     float m_db0;
     bool mIsBgDamage;
     s8 mBgDamageType;
@@ -1041,18 +1104,17 @@ public:
     void *mStateChangeParam; ///< To be used as a kind of argument to the new state.
     int mSubstate; ///< States can use this as a kind of sub-state variable (cast to some enum)
     int mSubstateTimer; ///< States can use this generic timer for various purposes.
-    int m_1118;
-    mVec2_c m_111c;
-    u8 mPad25[0x4];
+    int mSubstateTimer2; ///< States can use this generic timer for various purposes.
+    mVec3_c mHitAttackRelated;
     int m_1128;
     float m_112c;
     float m_1130;
     float m_1134;
     float m_1138;
     float m_113c;
-    int mDokanCenterOffsetType;
+    int mPlayerType;
 
-    static const float sc_DirSpeed[2];
+    static const float sc_DirSpeed[];
     static const float sc_JumpSpeed;
     static const float sc_JumpSpeedNuma1;
     static const float sc_JumpSpeedNuma2;

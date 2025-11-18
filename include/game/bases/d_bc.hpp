@@ -29,6 +29,32 @@ struct sBcSensorLine {
 };
 
 class dBg_ctr_c;
+class dBcSensor_c {
+public:
+    u32 mFlags;
+    int mOffsetX;
+    int mOffsetY;
+};
+
+/// @unofficial
+class sBcPointData {
+public:
+    operator const sBcSensorBase *() const { return (sBcSensorBase *) &mFlags; }
+
+    u32 mFlags;
+    long mInfMargin;
+    long mSupMargin;
+    long mOffset;
+};
+
+/// @unofficial
+class sBcPlayerPointData {
+public:
+    sBcPointData mFoot;
+    sBcPointData mHead;
+    sBcPointData mWall;
+    sBcPointData mVine;
+};
 
 class dBg_ctr_c {
 public:
@@ -38,7 +64,9 @@ public:
     mVec2_c m_ac;
     u8 mPad2[0xc];
     short *m_bc;
-    u8 mPad4[0x8];
+    short m_c0;
+    short m_c2;
+    u8 mPad4[0x4];
     int m_c8;
     u32 mFlags;
     int m_d0;
@@ -105,18 +133,23 @@ public:
     dBc_c();
     virtual ~dBc_c();
 
+    void init();
     void set(dActor_c *, const sBcSensorBase *, const sBcSensorBase *, const sBcSensorBase *); ///< @unofficial
 
     void checkLink();
     bool checkRide();
     bool checkHead(unsigned long);
     s16 getSakaAngle(u8);
-    int getSakaMoveAngle(u8);
+    s16 getSakaMoveAngle(u8);
     Flag_e checkWall(float *);
     Flag_e checkWallEnm(float *);
     Flag_e checkFoot();
     Flag_e checkFootEnm();
+    u16 getWallAttr(int);
     u16 getFootAttr();
+
+    u32 checkCollision(sBcPointData *); ///< @unofficial
+    u32 checkCollision2(sBcPointData *); ///< @unofficial
 
     bool hasSensorFoot() { return mpSensorFoot != nullptr; }
     bool hasSensorHead() { return mpSensorHead != nullptr; }
@@ -173,13 +206,16 @@ public:
     u32 mPrevFlags;
     u32 mLastUnitType;
     u32 mLastUnitKind;
-    u8 mOwningPlrNo;
-    char mPad5[0x23];
+    s8 mOwningPlrNo;
+    s8 mRidePlrNo;
+    char mPad5[0x22];
     u8 mPlayerFlags;
     char mPad6[0x4];
     int m_c4;
     mAng mAdjacentSlopeAngle;
-    char mPad7[0x12];
+    int mFenceType;
+    dBg_ctr_c *mpFenceCollision;
+    char mPad7[0x8];
     float mIceSpeed;
     bool m_e0;
     u8 m_e1;
@@ -198,9 +234,12 @@ public:
     static u32 checkWireNet(float x, float y, unsigned char layer);
     static u32 checkGround(const mVec3_c *, float *, u8, u8, s8);
     static u32 checkGround(const mVec3_c *, float *, int *, u8, u8, s8);
+    static bool checkGroundAngle(const mVec3_c *, float *, s16 *, u8, u8, s8, int *, int);
     static u32 checkGroundHalf(const mVec3_c *, float *, u8, u8);
     static u32 checkTenjou(const mVec3_c *, float *, u8, u8);
     static u32 checkWall(const mVec3_c *, const mVec3_c *, float *p_hit_x, u8 layer, u8, dActor_c **p_hit_actor);
     static void getAirWaterHitPos(mVec2_c *);
     static void getAirWaterHitAngle(short *);
+    static u32 getUnitType(float x, float y, u8);
+    static u32 getUnitKind(float x, float y, u8);
 };

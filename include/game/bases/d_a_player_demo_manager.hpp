@@ -6,7 +6,8 @@ class daPyDemoMng_c {
 public:
     enum Mode_e {
         MODE_0,
-        MODE_1
+        MODE_1,
+        MODE_2
     };
 
     void setCourseOutList(s8 playerNo);
@@ -18,6 +19,7 @@ public:
     void stopBgmGoalDemo();
     int getPoleBelowPlayer(int playerNo);
     int getControlDemoPlayerNum() const;
+    int getNextDemoNo();
 
     char mPad1[0x10];
     u32 mFlags;
@@ -34,11 +36,15 @@ public:
     int m_70;
     char mPad7[0xc];
     int mPlNo;
-    u8 mPad8[0x10];
+    int m_84;
+    int m_88;
+    u8 mPad8[0x8];
     int m_94;
 
     int getPlrNo() const { return mPlNo; }
     void setPlrNo(int playerNo) { mPlNo = playerNo; }
+    int get_88() const { return m_88; }
+    void inc_88() { m_88++; }
 
     static daPyDemoMng_c *mspInstance;
 };

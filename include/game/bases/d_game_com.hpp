@@ -18,6 +18,7 @@ namespace dGameCom {
     void initRandomSeed(); ///< Initializes the random seed used for randomness.
     u32 getRandomSeed(); ///< Gets a seed used for randomness.
     int rndInt(size_t max);
+    float rnd();
 
     ////////////////////
     // Game Pause API //
@@ -79,6 +80,8 @@ namespace dGameCom {
     /// @param playerId The player to hide the action prompt for.
     /// @param fukidashiAction The action prompt type to be hidden.
     void hideFukidashiForSession(int playerId, int fukidashiAction);
+
+    void fn_800b37b0(int playerId, int fukidashiAction); ///< @unofficial
 
     ////////////////
     // Other APIs //

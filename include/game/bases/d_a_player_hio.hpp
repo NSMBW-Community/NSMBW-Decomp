@@ -7,5 +7,6 @@ public:
     dAcPy_HIO_Speed_c();
     ~dAcPy_HIO_Speed_c();
 
-    u8 mPad[0xf0];
+    float mDataNormal[30];
+    float mDataStar[30];
 };

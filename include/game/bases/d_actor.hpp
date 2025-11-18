@@ -370,7 +370,7 @@ public:
     int mAttentionMode; ///< @todo Document this field and its values.
     u32 mAttentionFlags; ///< @todo Document this field and its values.
 
-    dPropelParts_c *mPropelParts; ///< The actor's propeller effect manager.
+    dPropelParts_c *mpPropelParts; ///< The actor's propeller effect manager.
     u8 mKind; ///< The actor's kind. Value is a STAGE_ACTOR_KIND_e.
     s8 mPlayerNo; ///< The player associated with the actor, @p -1 if not associated to any player.
     u8 mExecStopMask; ///< The mask required to disable the @p execute operation for the actor.
@@ -384,10 +384,17 @@ public:
         mMaxBound.set(smc_CULL_XLIMIT, smc_CULL_YLIMIT, smc_CULL_AREA_XLIMIT, smc_CULL_AREA_YLIMIT);
     }
 
+    void setVisibleArea(const mVec2_POD_c &offset, const mVec2_POD_c &size) {
+        mVisibleAreaOffset.set(offset.x, offset.y);
+        mVisibleAreaSize.set(size.x, size.y);
+    }
+
     float getVisOffsetX() { return mVisibleAreaOffset.x; }
     float getVisOffsetY() { return mVisibleAreaOffset.y; }
     float getVisSizeX() { return mVisibleAreaSize.x; }
     float getVisSizeY() { return mVisibleAreaSize.y; }
+    float getVisTop() { return mPos.y + getVisOffsetY() + getVisSizeY(); }
+    float getVisBottom() { return mPos.y + getVisOffsetY() - getVisSizeY(); }
 
     u8 getKindMask() { return 1 << mKind; }
 

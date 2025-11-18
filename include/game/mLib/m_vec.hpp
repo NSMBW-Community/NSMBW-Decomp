@@ -14,9 +14,19 @@ struct mVec2_POD_c {
     void set(const mVec2_POD_c &v) {
         set(v.x, v.y);
     }
+    void setX(float fx) { x = fx; }
+    void setY(float fy) { y = fy; }
 
     float x;
     float y;
+};
+
+/// @unofficial
+struct sPcRect {
+    int mLeft;
+    int mTop;
+    int mHeight;
+    int mWidth;
 };
 
 /// @brief A two-dimensional floating point vector.

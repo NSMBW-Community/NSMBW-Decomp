@@ -58,6 +58,9 @@ struct mAng {
     float cos() const { return nw4r::math::CosIdx(mAngle); }
 
     s16 mAngle; ///< The rotation.
+
+    static float AngleToDegreeCoefficient;
+    static float DegreeToAngleCoefficient;
 };
 
 /// @brief A three-dimensional short angle vector.

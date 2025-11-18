@@ -90,8 +90,8 @@ void dCc_c::release() {
 
 void dCc_c::set(dActor_c *actor, sCcDatNewF *collInfo) {
     mpOwner = actor;
-    mCcData.mOffset = collInfo->mOffset;
-    mCcData.mSize = collInfo->mSize;
+    mCcData.mBase.mOffset = collInfo->mBase.mOffset;
+    mCcData.mBase.mSize = collInfo->mBase.mSize;
     mCcData.mKind = collInfo->mKind;
     mCcData.mAttack = collInfo->mAttack;
     mCcData.mVsKind = collInfo->mVsKind;
@@ -129,27 +129,27 @@ u16 dCc_c::isHitAtDmg(u16 mask) const {
 }
 
 float dCc_c::getTopPos() {
-    return mCcData.mOffset.y + mpOwner->mPos.y + mCcData.mSize.y;
+    return mCcData.mBase.mOffset.y + mpOwner->mPos.y + mCcData.mBase.mSize.y;
 }
 
 float dCc_c::getUnderPos() {
-    return mCcData.mOffset.y + mpOwner->mPos.y - mCcData.mSize.y;
+    return mCcData.mBase.mOffset.y + mpOwner->mPos.y - mCcData.mBase.mSize.y;
 }
 
 float dCc_c::getCenterPosY() {
-    return mCcData.mOffset.y + mpOwner->mPos.y;
+    return mCcData.mBase.mOffset.y + mpOwner->mPos.y;
 }
 
 float dCc_c::getRightPos() {
-    return mCcData.mOffset.x + mpOwner->mPos.x + mCcData.mSize.x;
+    return mCcData.mBase.mOffset.x + mpOwner->mPos.x + mCcData.mBase.mSize.x;
 }
 
 float dCc_c::getLeftPos() {
-    return mCcData.mOffset.x + mpOwner->mPos.x - mCcData.mSize.x;
+    return mCcData.mBase.mOffset.x + mpOwner->mPos.x - mCcData.mBase.mSize.x;
 }
 
 float dCc_c::getCenterPosX() {
-    return mCcData.mOffset.x + mpOwner->mPos.x;
+    return mCcData.mBase.mOffset.x + mpOwner->mPos.x;
 }
 
 bool dCc_c::isInside(dCc_c *other) {
@@ -161,12 +161,12 @@ bool dCc_c::isInside(dCc_c *other) {
         return true;
     }
     float xDist = getCenterPosX() - other->getCenterPosX();
-    if (std::fabs(xDist) > std::fabs(mCcData.mSize.x - other->mCcData.mSize.x)) {
+    if (std::fabs(xDist) > std::fabs(mCcData.mBase.mSize.x - other->mCcData.mBase.mSize.x)) {
         return false;
     }
 
     float yDist = getCenterPosY() - other->getCenterPosY();
-    if (std::fabs(yDist) > std::fabs(mCcData.mSize.y - other->mCcData.mSize.y)) {
+    if (std::fabs(yDist) > std::fabs(mCcData.mBase.mSize.y - other->mCcData.mBase.mSize.y)) {
         return false;
     }
     return true;
@@ -282,9 +282,9 @@ bool dCc_c::_hitCheckSquare(dCc_c *c1, dCc_c *c2, mVec2_c pos1, mVec2_c pos2) {
 
     // Compute the distance between the two colliders and the maximum distances for a collision
     float xDist = pos1.x - pos2.x;
-    float collSizeX = ci1.mSize.x + ci2.mSize.x;
+    float collSizeX = ci1.mBase.mSize.x + ci2.mBase.mSize.x;
     float yDist = pos1.y - pos2.y;
-    float collSizeY = ci1.mSize.y + ci2.mSize.y;
+    float collSizeY = ci1.mBase.mSize.y + ci2.mBase.mSize.y;
 
     if (std::fabs(xDist) < collSizeX && std::fabs(yDist) < collSizeY) {
         c1->mCollPos = pos1;
@@ -356,8 +356,8 @@ bool dCc_c::_hitCheckCircle(dCc_c *c1, dCc_c *c2) {
     // [Not sure why we are looking at the height here...
     // It seems they maybe wanted the circles to also support ellipses?
     // Either way, the collision calculations treat it as a circle.]
-    float collSizeX = c1->mCcData.mSize.x + c2->mCcData.mSize.x;
-    float collSizeY = c1->mCcData.mSize.y + c2->mCcData.mSize.y;
+    float collSizeX = c1->mCcData.mBase.mSize.x + c2->mCcData.mBase.mSize.x;
+    float collSizeY = c1->mCcData.mBase.mSize.y + c2->mCcData.mBase.mSize.y;
     float collSizeRadius = (collSizeX + collSizeY) / 2;
 
     mVec2_c distVec = p2 - p1;
@@ -409,17 +409,17 @@ bool dCc_c::_hitCheckBoxCircle(dCc_c *c1, dCc_c *c2) {
     mVec2_c circlePos = circleCc->getCenterVec();
     mVec2_c boxPos = boxCc->getCenterVec();
 
-    float circleRadius = circleCc->mCcData.mSize.x;
+    float circleRadius = circleCc->mCcData.mBase.mSize.x;
     dir_e boxSideX = (boxCc->getCenterPosX() < circleCc->getCenterPosX()) ? LEFT : RIGHT;
     dir_e boxSideY = (boxCc->getCenterPosY() < circleCc->getCenterPosY()) ? BELOW : ABOVE;
 
     float closerEdgeX[] = {
-        boxCc->getCenterPosX() + boxCc->mCcData.mSize.x, // Left edge, if box is on the left
-        boxCc->getCenterPosX() - boxCc->mCcData.mSize.x // Right edge, if box is on the right
+        boxCc->getCenterPosX() + boxCc->mCcData.mBase.mSize.x, // Left edge, if box is on the left
+        boxCc->getCenterPosX() - boxCc->mCcData.mBase.mSize.x // Right edge, if box is on the right
     };
     float closerEdgeY[] = {
-        boxCc->getCenterPosY() + boxCc->mCcData.mSize.y, // Top edge, if box is below
-        boxCc->getCenterPosY() - boxCc->mCcData.mSize.y // Bottom edge, if box is above
+        boxCc->getCenterPosY() + boxCc->mCcData.mBase.mSize.y, // Top edge, if box is below
+        boxCc->getCenterPosY() - boxCc->mCcData.mBase.mSize.y // Bottom edge, if box is above
     };
 
     if (closerEdgeY[ABOVE] < circlePos.y && circlePos.y < closerEdgeY[BELOW]) {
@@ -523,7 +523,7 @@ bool dCc_c::_hitCheckDaikeiUD(dCc_c *ccTrp, dCc_c * ccBox) {
     // The left and right sides of the trapezoid are parallel,
     // so the width of this shape is the same everywhere.
 
-    float collSizeX = ccTrp->mCcData.mSize.x + ccBox->mCcData.mSize.x;
+    float collSizeX = ccTrp->mCcData.mBase.mSize.x + ccBox->mCcData.mBase.mSize.x;
 
     if (std::fabs(trpCenter.x - boxCenter.x) >= collSizeX) {
         return false;
@@ -595,7 +595,7 @@ bool dCc_c::_hitCheckDaikeiLR(dCc_c *ccTrp, dCc_c *ccBox) {
     // The top and bottom sides of the trapezoid are parallel,
     // so the height of this shape is the same everywhere.
 
-    float heightSum = ccTrp->mCcData.mSize.y + ccBox->mCcData.mSize.y;
+    float heightSum = ccTrp->mCcData.mBase.mSize.y + ccBox->mCcData.mBase.mSize.y;
 
     if (std::fabs(p1.y - p2.y) >= heightSum) {
         return false;
