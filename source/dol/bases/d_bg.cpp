@@ -393,27 +393,34 @@ bgTex_c *dBg_c::__createBgTex(int layer, u16 tw, u16 th, u16 w, u16 h, int i1, i
             check = true;
         }
 
-        for (u16 y = 0; y < tex->mCount; y++) {
+        for (u16 y = 0; y < tex->mYCount; y++) {
             u16 x = 0;
-            if (tex->m_30 == 0) {
+            if (tex->mXCount == 0) {
                 continue;
             }
             unsigned int unitX, unitY;
             unitY = (y + th) * 16;
-            while (x < tex->mSmth) {
+            while (x < tex->mXCount) {
                 unitX = (x + tw) * 16;
                 u16 unitNum = GetUnitNumber(unitX, unitY, layer, false);
                 if (unitNum == 0xffff) {
                     unitNum = UNIT_0;
                 }
-                if (check && (UNIT_IS_GRASS(unitNum) || UNIT_IS_FLOWER(unitNum) || UNIT_IS_GRASS_FLOWER(unitNum))) {
+                if (check && (
+                    unitNum >= UNIT_GRASS_L && unitNum <= UNIT_GRASS_R ||
+                    unitNum >= UNIT_FLOWER_1 && unitNum <= UNIT_FLOWER_3 ||
+                    unitNum >= UNIT_GRASS_FLOWER_1 && unitNum <= UNIT_GRASS_FLOWER_3
+                )) {
                     int grassIdx = mGrassCount;
                     int flowerIdx = mFlowerCount;
                     dBgAnimObj_c animObj;
                     animObj.mX = unitX + 8;
                     animObj.mY = -(float) (unitY + 16);
-                    if (UNIT_IS_GRASS(unitNum) || UNIT_IS_GRASS_FLOWER(unitNum)) {
-                        if (UNIT_IS_GRASS(unitNum)) {
+                    if (
+                        unitNum >= UNIT_GRASS_L && unitNum <= UNIT_GRASS_R ||
+                        unitNum >= UNIT_GRASS_FLOWER_1 && unitNum <= UNIT_GRASS_FLOWER_3
+                    ) {
+                        if (unitNum >= UNIT_GRASS_L && unitNum <= UNIT_GRASS_R) {
                             animObj.mType = unitNum - UNIT_GRASS_L;
                         } else {
                             animObj.mType = unitNum - UNIT_GRASS_FLOWER_1 + 1; // use center grass style
@@ -425,8 +432,11 @@ bgTex_c *dBg_c::__createBgTex(int layer, u16 tw, u16 th, u16 w, u16 h, int i1, i
                         }
                         mGrassCount = grassIdx;
                     }
-                    if (UNIT_IS_FLOWER(unitNum) || UNIT_IS_GRASS_FLOWER(unitNum)) {
-                        if (unitNum == 432 || unitNum == 433 || unitNum == 434) {
+                    if (
+                        unitNum >= UNIT_FLOWER_1 && unitNum <= UNIT_FLOWER_3 ||
+                        unitNum >= UNIT_GRASS_FLOWER_1 && unitNum <= UNIT_GRASS_FLOWER_3
+                    ) {
+                        if (unitNum >= UNIT_FLOWER_1 && unitNum <= UNIT_FLOWER_3) {
                             animObj.mType = unitNum - UNIT_FLOWER_1;
                         } else {
                             animObj.mType = unitNum - UNIT_GRASS_FLOWER_1;

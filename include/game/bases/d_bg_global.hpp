@@ -16,24 +16,6 @@ enum UNIT_NUM_e {
     UNIT_GRASS_FLOWER_3, ///< Grass with blue flower
 };
 
-#define UNIT_IS_GRASS(x) (\
-    x == UNIT_GRASS_L || \
-    x == UNIT_GRASS_C1 || x == UNIT_GRASS_C2 || x == UNIT_GRASS_C3 || \
-    x == UNIT_GRASS_R \
-)
-
-#define UNIT_IS_FLOWER(x) (\
-    x == UNIT_FLOWER_1 || \
-    x == UNIT_FLOWER_2 || \
-    x == UNIT_FLOWER_3 \
-)
-
-#define UNIT_IS_GRASS_FLOWER(x) (\
-    x == UNIT_GRASS_FLOWER_1 || \
-    x == UNIT_GRASS_FLOWER_2 || \
-    x == UNIT_GRASS_FLOWER_3 \
-)
-
 class dBgUnit_c {
 public:
     dBgUnit_c *GetBuffPos(u16, u16, int *, bool);
