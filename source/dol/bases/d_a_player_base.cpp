@@ -1009,8 +1009,8 @@ void daPlBase_c::executeState_HipAttack() {
         (this->*l_HipActionProc[mSubstate])();
         if (isStatus(STATUS_22)) {
             offStatus(STATUS_22);
-            mPos.x = m_111c.x;
-            mPos.y = m_111c.y;
+            mPos.x = mHitAttackRelated.x;
+            mPos.y = mHitAttackRelated.y;
         }
     }
 }
@@ -1165,14 +1165,14 @@ bool daPlBase_c::setFunsui() {
     if (isDemo()) {
         return false;
     }
-    if (!mStateMgr.getStateID()->isEqual(StateID_Funsui)) {
+    if (!isState(StateID_Funsui)) {
         changeState(StateID_Funsui, nullptr);
     }
     return true;
 }
 
 bool daPlBase_c::updateFunsuiPos(float x, float y) {
-    if (mStateMgr.getStateID()->isEqual(StateID_Funsui)) {
+    if (isState(StateID_Funsui)) {
         mPos.x = x;
         mPos.y = y;
         return true;
@@ -1181,7 +1181,7 @@ bool daPlBase_c::updateFunsuiPos(float x, float y) {
 }
 
 bool daPlBase_c::releaseFunsui(float f) {
-    if (mStateMgr.getStateID()->isEqual(StateID_Funsui)) {
+    if (isState(StateID_Funsui)) {
         mSpeed.y = f;
         mSubstate = FUNSUI_ACTION_START;
         mKey.onStatus(dAcPyKey_c::STATUS_FORCE_NO_JUMP);
@@ -2660,7 +2660,7 @@ bool daPlBase_c::executeDemoState() {
     }
     mDemoStateMgr.executeState();
     if (isStatus(STATUS_71)) {
-        if (mDemoStateMgr.getStateID()->isEqual(StateID_DemoNone)) {
+        if (isDemoState(StateID_DemoNone)) {
             changeDemoState(StateID_DemoControl, 0);
         }
     }
@@ -2852,9 +2852,7 @@ void daPlBase_c::executeDemoInDokan(u8 dir) {
                 onNowBgCross(BGC_14);
             }
             if (isNowBgCross(BGC_14)) {
-                if (mDemoStateMgr.getStateID()->isEqual(StateID_DemoInDokanL) ||
-                    mDemoStateMgr.getStateID()->isEqual(StateID_DemoInDokanR)
-                ) {
+                if (isDemoState(StateID_DemoInDokanL) || isDemoState(StateID_DemoInDokanR)) {
                     mpMdlMng->setAnm(132);
                     if ((int) mDemoStateChangeParam != 1) {
                         mPos.y = getWaterDokanCenterOffset(mPos.y);
@@ -4022,7 +4020,7 @@ void daPlBase_c::endControlDemo(int p) {
 void daPlBase_c::setControlDemoDir(u8 dir) {
     if (isStatus(STATUS_72)) {
         mDirection = dir;
-        if (!mStateMgr.getStateID()->isEqual(StateID_Walk)) {
+        if (!isState(StateID_Walk)) {
             changeState(StateID_Walk, (void *) 1);
         }
     }
@@ -4089,13 +4087,13 @@ void daPlBase_c::fn_80052290(int param) {
 }
 
 void daPlBase_c::setControlDemoKinopioWalk() {
-    if (mDemoStateMgr.getStateID()->isEqual(StateID_DemoNone) || (isDemoType(DEMO_KINOPIO) && mDemoState != CONTROL_DEMO_KINOPIO_WALK)) {
+    if (isDemoState(StateID_DemoNone) || (isDemoType(DEMO_KINOPIO) && mDemoState != CONTROL_DEMO_KINOPIO_WALK)) {
         changeDemoState(StateID_DemoControl, CONTROL_DEMO_KINOPIO_WALK);
     }
 }
 
 void daPlBase_c::setControlDemoKinopioSwim() {
-    if (mDemoStateMgr.getStateID()->isEqual(StateID_DemoNone) || (isDemoType(DEMO_KINOPIO) && mDemoState != CONTROL_DEMO_KINOPIO_SWIM)) {
+    if (isDemoState(StateID_DemoNone) || (isDemoType(DEMO_KINOPIO) && mDemoState != CONTROL_DEMO_KINOPIO_SWIM)) {
         changeDemoState(StateID_DemoControl, CONTROL_DEMO_KINOPIO_SWIM);
     }
 }
@@ -4221,11 +4219,11 @@ void daPlBase_c::executeState_DemoControl() {
         case CONTROL_DEMO_WALK: {
             onStatus(STATUS_74);
             if (isNowBgCross(BGC_IS_FOOT)) {
-                if (!mStateMgr.getStateID()->isEqual(StateID_Walk) && !mStateMgr.getStateID()->isEqual(StateID_Turn)) {
+                if (!isState(StateID_Walk) && !isState(StateID_Turn)) {
                     changeState(StateID_Walk, (void*)1);
                 }
             } else {
-                if (!mStateMgr.getStateID()->isEqual(StateID_Fall)) {
+                if (!isState(StateID_Fall)) {
                     changeState(StateID_Fall, 0);
                 }
             }

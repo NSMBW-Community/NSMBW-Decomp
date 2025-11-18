@@ -191,7 +191,7 @@ public:
         BGC_11 = BIT_FLAG(11),
         BGC_12 = BIT_FLAG(12),
         BGC_13 = BIT_FLAG(13),
-        BGC_14 = BIT_FLAG(14),
+        BGC_14 = BIT_FLAG(14), // Water surface?
         BGC_15 = BIT_FLAG(15),
         BGC_16 = BIT_FLAG(16),
         BGC_17 = BIT_FLAG(17),
@@ -261,9 +261,12 @@ public:
         STATUS_1D = 0x1d,
         STATUS_1E = 0x1e,
         STATUS_1F = 0x1f,
+        STATUS_20 = 0x20,
+        STATUS_21 = 0x21,
         STATUS_22 = 0x22,
         STATUS_23 = 0x23,
         STATUS_24 = 0x24,
+        STATUS_26 = 0x26,
         STATUS_2A = 0x2a,
         STATUS_2B = 0x2b,
         STATUS_2C = 0x2c,
@@ -337,6 +340,7 @@ public:
         STATUS_8B = 0x8b,
         STATUS_8C = 0x8c,
         STATUS_8D = 0x8d,
+        STATUS_8F = 0x8f,
         STATUS_91 = 0x91,
         STATUS_94 = 0x94,
         STATUS_95 = 0x95,
@@ -348,6 +352,7 @@ public:
         STATUS_A0 = 0xa0,
         STATUS_A4 = 0xa4,
         STATUS_A5 = 0xa5,
+        STATUS_A7 = 0xa7,
         STATUS_A8 = 0xa8,
         STATUS_AA = 0xaa,
         STATUS_AB = 0xab,
@@ -866,6 +871,14 @@ public:
         mStateMgr.getOldStateID();
     }
 
+    bool isState(sStateIDIf_c &id) {
+        return mStateMgr.getStateID()->isEqual(id);
+    }
+
+    bool isDemoState(sStateIDIf_c &id) {
+        return mDemoStateMgr.getStateID()->isEqual(id);
+    }
+
     float calcStarAccel(float f) { return 3.0f * f; }
     float calcIdkAccel(float f) { return 0.375f * f; }
     void set_m_d80(int i, float f) { m_d80[i] = f; }
@@ -1042,8 +1055,7 @@ public:
     int mSubstate; ///< States can use this as a kind of sub-state variable (cast to some enum)
     int mSubstateTimer; ///< States can use this generic timer for various purposes.
     int m_1118;
-    mVec2_c m_111c;
-    u8 mPad25[0x4];
+    mVec3_c mHitAttackRelated;
     int m_1128;
     float m_112c;
     float m_1130;

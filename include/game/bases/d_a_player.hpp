@@ -4,12 +4,23 @@
 
 class dAcPy_c : public daPlBase_c {
 public:
+    /// @unofficial
+    enum SpinHipAttackSubstate_e {
+        SPIN_HIP_ATTACK_ACTION_0,
+        SPIN_HIP_ATTACK_ACTION_1
+    };
+
     struct GlobalData_t {
         float f1, f2, f3, f4, f5, f6, f7, f8;
         mVec3_c mPos1;
         mVec3_c mPos2;
         mVec3_c mPos3;
     };
+
+    virtual bool setHipAttackOnEnemy(mVec3_c *hitPos);
+    virtual void setHipAttackEffect();
+    virtual void setHipAttack_AttackStart();
+    virtual bool isCarry() const { return mCarryActorID != BASE_ID_NULL; }
 
     STATE_VIRTUAL_FUNC_DECLARE(dAcPy_c, Walk);
     STATE_VIRTUAL_FUNC_DECLARE(dAcPy_c, Jump);
@@ -64,6 +75,15 @@ public:
     STATE_FUNC_DECLARE(dAcPy_c, DemoDokanCannon);
     STATE_FUNC_DECLARE(dAcPy_c, DemoCannonWarp);
 
+    void setSeaLandSmokeEffect();
+    bool setHipAttackAction();
+    void setWaterInEffect();
+    void setSpinHipAttackEffect();
+    void setScrollMode(s8);
+    void setCcAtSpinFall();
+    dActor_c *getCarryPropelActor();
+    void setPropelSpinSmokeEffect();
+
     bool isDrawingCarryFukidashi();
     void getCcBounds(sRangeDataF &bounds); ///< @unofficial
     void cancelCarry(dActor_c *carriedActor);
@@ -78,7 +98,15 @@ public:
 
     bool FUN_8012e540(dActor_c *, bool); ///< @unofficial
 
-    char mPad[0x15a0];
+    u8 mPad1[0x8c];
+    u32 m_8c;
+    u8 mPad2[0x8];
+    mEf::levelEffect_c mLevelEf1;
+    mEf::levelEffect_c mLevelEf2;
+    mAng m_2e8;
+    u8 mPad3[0x129c];
+    dPyMdlMng_c mPyMdlMng;
+    u8 mPad4[0x10];
     fBaseID_e mCarryActorID;
 
     static dAcPy_HIO_Speed_c m_speed_hio[2];
