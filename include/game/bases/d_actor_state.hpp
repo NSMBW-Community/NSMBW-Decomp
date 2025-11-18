@@ -21,6 +21,10 @@ public:
         mStateMgr.getOldStateID();
     }
     /// @endcond
+
+    bool isState(const sStateIDIf_c &state) const {
+        return *mStateMgr.getStateID() == state;
+    }
 };
 
 /// @brief An implementation of dActor_c with multi state support.

@@ -258,7 +258,7 @@ public:
     dCc_c *mpNext; ///< The next collider in the list.
     dCc_c *mpPrev; ///< The previous collider in the list.
 
-    u32 unk3; ///< [Unused (?)].
+    u32 mCanBounce; ///< [used by Giant Wigglers to allow jumping].
 
     sCcDatNewF mCcData; ///< The collision data of this collider.
 
