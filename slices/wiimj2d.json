@@ -399,6 +399,18 @@
             }
         },
         {
+            "source": "dol/bases/d_a_player.cpp",
+            "nonMatching": true,
+            "memoryRanges": {
+                ".text": "0x11fed0-0x1440b0",
+                ".ctors": "0x1e8-0x1ec",
+                ".data": "0x267b8-0x282c0",
+                ".bss": "0x245a0-0x25438",
+                ".sbss": "0x750-0x758",
+                ".sdata2": "0x26d8-0x2968"
+            }
+        },
+        {
             "source": "dol/bases/d_pausewindow.cpp",
             "memoryRanges": {
                 ".text": "0x153d00-0x1552f0",
