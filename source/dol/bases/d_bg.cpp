@@ -2333,23 +2333,27 @@ void dBg_c::fn_8007cd70(dBgSomeInfo_c *info1, dBgSomeInfo_c *info2, int i1) {
 }
 
 u8 dBg_c::freeUpScrollLimit(const dBgScrollLimit_c &scrollLimit, int group, int area) {
-    dBgScrollLimit_c *base = getScrLim(area, group, 0);
+    dBgScrollLimit_c *base = mScrLimit[area][group];
+    dBgScrollLimit_c *currSL;
+
     u8 idx = 0;
     for (; idx < 16; idx++) {
-        // idx = i;
-        if (base[idx].mR2 >= scrollLimit.mR2) {
+        currSL = &base[idx];
+        if (currSL->mR2 >= scrollLimit.mR2) {
             break;
         }
     }
     if (idx >= 16) {
         idx = 0;
     }
-    dBgScrollLimit_c *currSL, *prevSL;
-    u8 prev = 15;
+
+    u8 curr = 15;
     for (u32 i = idx; i != 15; i++) {
-        prevSL = getScrLim(area, group, prev);
-        currSL = getScrLim(area, group, --prev);
-        *prevSL = *currSL;
+        dBgScrollLimit_c *c = &mScrLimit[area][group][curr];
+        curr--;
+        dBgScrollLimit_c *n = &mScrLimit[area][group][curr];
+        *c = *n;
+        currSL = n;
     }
 
     currSL->mL = 0.0f;
@@ -2369,24 +2373,28 @@ u8 dBg_c::freeUpScrollLimit(const dBgScrollLimit_c &scrollLimit, int group, int 
     return idx;
 }
 
-u8 dBg_c::freeUpScrollLimit2(dBgScrollLimit_c *scrollLimit, int group, int area) {
-    dBgScrollLimit_c *base = getScrLim(area, group, 0);
+u8 dBg_c::freeUpScrollLimit2(const dBgScrollLimit_c &scrollLimit, int group, int area) {
+    dBgScrollLimit_c *base = mScrLimit[area][group];
+    dBgScrollLimit_c *currSL;
+
     u8 idx = 0;
     for (; idx < 16; idx++) {
-        // idx = i;
-        if (base[idx].mD3 >= scrollLimit->mD3) {
+        currSL = &base[idx];
+        if (currSL->mD3 >= scrollLimit.mD3) {
             break;
         }
     }
     if (idx >= 16) {
         idx = 0;
     }
-    dBgScrollLimit_c *currSL, *prevSL;
-    u8 prev = 15;
+
+    u8 curr = 15;
     for (u32 i = idx; i != 15; i++) {
-        prevSL = getScrLim(area, group, prev);
-        currSL = getScrLim(area, group, --prev);
-        *prevSL = *currSL;
+        dBgScrollLimit_c *c = &mScrLimit[area][group][curr];
+        curr--;
+        dBgScrollLimit_c *n = &mScrLimit[area][group][curr];
+        *c = *n;
+        currSL = n;
     }
 
     currSL->mL = 0.0f;
@@ -2484,7 +2492,7 @@ void dBg_c::setScrollLimit(dBgScrollLimit_c *scrollLimit, int areaNo, int type, 
                 }
             }
             if (idx >= 16) {
-                idx = freeUpScrollLimit2(scrollLimit, group, areaNo);
+                idx = freeUpScrollLimit2(*scrollLimit, group, areaNo);
             }
             curr = &mScrLimit[areaNo][group][idx];
             curr->mU2 = scrollLimit->mU2;
@@ -2506,7 +2514,7 @@ void dBg_c::setScrollLimit(dBgScrollLimit_c *scrollLimit, int areaNo, int type, 
                 }
             }
             if (idx >= 16) {
-                idx = freeUpScrollLimit2(scrollLimit, group, areaNo);
+                idx = freeUpScrollLimit2(*scrollLimit, group, areaNo);
             }
             curr = &mScrLimit[areaNo][group][idx];
             curr->mD2 = (short) (scrollLimit->mD2 + 16.0f);
