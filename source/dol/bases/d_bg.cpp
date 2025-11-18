@@ -167,7 +167,7 @@ u64 dBg_c::CvtBgCheckFromUnitNo(u16 num) {
 dBgUnit_c *dBg_c::fn_80077520(u16 x, u16 y, u8 layer, int *param_5, bool b) {
     int file = dScStage_c::m_instance->mCurrFile;
     dBgUnit_c *bgUnit = dBgGlobal_c::ms_pInstance->GetBgUnitP(file, layer);
-    return bgUnit->fn_80083b40(x, y, param_5, b);
+    return bgUnit->GetBuffPos(x, y, param_5, b);
 }
 
 u16 fn_80081ab0(u16);
@@ -319,48 +319,47 @@ void dBg_c::DispScaleCalc() {
 void dBg_c::CreateBgTex() {
     mTexMng.create(mHeap::g_gameHeaps[2]);
 
-    u16 iMu, iMd, iw, ih;
-    u16 texWidthMaybe, texHeightMaybe;
+    u16 texL = getL() / 16.0f;
+    u16 texU = -getU() / 16.0f;
 
-    texWidthMaybe = mL / 16.0f;
-    texHeightMaybe = -mU / 16.0f;
-    iMu = mU;
-    iMd = mD;
-    iw = mL - mR;
-    ih = mU - mD;
+    u16 iMu = getU();
+    u16 iMd = getD();
+    u16 iw = cvtW();
+    u16 ih = cvtH();
 
-    if ((iw & 0xF) != 0) {
-        iw /= 16;
+    if (iw % 16U > 0) {
+        iw = iw >> 4;
         iw++;
     } else {
-        iw /= 16;
+        iw = iw >> 4;
     }
 
-    if ((ih & 0xF) != 0) {
-        ih /= 16;
+    if (ih % 16U > 0) {
+        ih = ih >> 4;
         ih++;
     } else {
-        ih /= 16;
-        if ((iMu & 0xF) != 0) {
+        ih = ih >> 4;
+        if (iMu % 16U > 0) {
             ih++;
         }
-        if ((iMd & 0xF) != 0) {
+        if (iMd % 16U > 0) {
             ih++;
         }
     }
 
     if (dScStage_c::m_loopType == 0) {
         iw += 2;
-        texWidthMaybe--;
+        texL--;
     }
     ih += 2;
-    texHeightMaybe--;
-    mTex[0] = __createBgTex(0, texWidthMaybe, texHeightMaybe, iw, ih, 0, 4);
+    texU--;
+
+    mTex[0] = __createBgTex(0, texL, texU, iw, ih, 0, 4);
     if (CheckExistLayer(1)) {
-        mTex[1] = __createBgTex(1, texWidthMaybe, texHeightMaybe, iw, ih, 127, 3);
+        mTex[1] = __createBgTex(1, texL, texU, iw, ih, 127, 3);
     }
     if (CheckExistLayer(2)) {
-        mTex[2] = __createBgTex(2, texWidthMaybe, texHeightMaybe, iw, ih, 3, -1);
+        mTex[2] = __createBgTex(2, texL, texU, iw, ih, 3, -1);
         mTexProc = new(m_FrmHeap_p, 4) dShareBgTexProc_c();
         mTexProc->create(mTex[2], m_FrmHeap_p);
     }

@@ -36,7 +36,7 @@ enum UNIT_NUM_e {
 
 class dBgUnit_c {
 public:
-    dBgUnit_c *fn_80083b40(u16, u16, int *, bool); ///< @unofficial
+    dBgUnit_c *GetBuffPos(u16, u16, int *, bool);
 
     static bool fn_80081900(u16, u16 *); ///< @unofficial
     static u16 cvtNum(u16); ///< @unofficial
