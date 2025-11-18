@@ -999,14 +999,18 @@ void dBg_c::calcLoopAutoScroll() {
     float maxX = 6000.0f;
 
     mVec3_c unitVec;
-    mVec3_c pos;
     unitVec.x = 1.0f;
     unitVec.y = 0.0f;
 
-    float actualY = bgParam->mSize.y + mDLimit;
+    float actualY = bgParam->ySize() + getLimitD();
 
-    pos = mAutoscrolls[0].mPos;
-    mSomeParameterPos = bgParam->mPos;
+    mVec3_c pos;
+    pos.x = mAutoscrolls[0].mPos.x;
+    pos.y = mAutoscrolls[0].mPos.y;
+    pos.z = mAutoscrolls[0].mPos.z;
+    mSomeParameterPos.x = bgParam->xStart();
+    mSomeParameterPos.y = bgParam->yStart();
+
 
     if (m_90958 == 1) {
         if (bgParam->mPos.x > 2290.0f) {
@@ -1047,11 +1051,14 @@ void dBg_c::calcLoopAutoScroll() {
         pos.x = maxX;
     }
     mAutoscrolls[0].mPos = pos;
-    mSomePos.x = pos.x;
-    mSomePos.y = pos.y;
+    float posX = pos.x;
+    float posY = pos.y;
+    mSomePos.set(posX, posY);
+
     float lWidth = mVideo::l_rayoutWidthF;
     float lHeight = mVideo::l_rayoutHeightF;
     float target = m_bg_p->getZoomTargetMin();
+
     mDispScale = 1.0f / target;
     mSomeSize.x = lWidth * (1.0f / mDispScale);
     mSomeSize.y = lHeight * (1.0f / mDispScale);

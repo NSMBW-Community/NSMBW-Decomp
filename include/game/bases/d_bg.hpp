@@ -215,6 +215,8 @@ public:
     u16 cvtW() { return getR() - getL(); }
     u16 cvtH() { return getU() - getD(); }
 
+    float getLimitD() { return mDLimit; }
+
     dBgScrollLimit_c *getScrLim(int area, int group, int idx) { return &mScrLimit[area][group][idx]; }
     dBgSubstruct2_c * getData2(int idx, int i) { return &mData2[idx][i]; }
 
