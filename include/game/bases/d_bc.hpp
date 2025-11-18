@@ -64,9 +64,9 @@ public:
         FLAG_28 = BIT_FLAG(28),
         FLAG_29 = BIT_FLAG(29),
 
-        FLAG_WALL_L =
-            FLAG_0 | FLAG_2 | FLAG_4,
         FLAG_WALL_R =
+            FLAG_0 | FLAG_2 | FLAG_4,
+        FLAG_WALL_L =
             FLAG_1 | FLAG_3 | FLAG_5,
         FLAG_FOOT =
             FLAG_13 | FLAG_14 | FLAG_15 | FLAG_16 | FLAG_14 |
@@ -146,8 +146,8 @@ public:
     static u32 checkTenjou(const mVec3_c *, float *, u8, u8);
     static u32 checkWall(const mVec3_c *, const mVec3_c *, float *, u8, u8, dActor_c **);
 
-    u32 isWallL()  { return mFlags & FLAG_WALL_L; }
     u32 isWallR() { return mFlags & FLAG_WALL_R; }
+    u32 isWallL()  { return mFlags & FLAG_WALL_L; }
     u32 isFoot(); // { return mFlags & FLAG_FOOT; }
     u32 isHead() { return mFlags & FLAG_HEAD; }
     u32 isCollision() { return mFlags & (FLAG_WALL_L | FLAG_WALL_R | FLAG_FOOT | FLAG_HEAD); }
