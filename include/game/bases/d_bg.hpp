@@ -189,7 +189,7 @@ public:
     void fn_8007cd70(dBgSomeInfo_c *, dBgSomeInfo_c *, int); ///< @unofficial
 
     u8 freeUpScrollLimit(const dBgScrollLimit_c &scrollLimit, int group, int area); ///< @unofficial
-    u8 freeUpScrollLimit2(dBgScrollLimit_c *scrollLimit, int group, int area); ///< @unofficial
+    u8 freeUpScrollLimit2(const dBgScrollLimit_c &scrollLimit, int group, int area); ///< @unofficial
 
     void setScrollLimit(dBgScrollLimit_c *scrollLimit, int areaNo, int type, int group); ///< @unofficial
 
