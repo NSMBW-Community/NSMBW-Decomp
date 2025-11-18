@@ -1878,16 +1878,20 @@ void dBg_c::initScroll() {
     }
     calcScroll(plPos, 1);
 
-    mPrevSomePos = mSomePos;
-    bgParam->mPos = mSomePos;
+    mPrevSomePos.x = getSomePosX();
+    mPrevSomePos.y = getSomePosY();
+    bgParam->mPos.x = getSomePosX();
+    bgParam->mPos.y = getSomePosY();
 
-    m_90960 = mSomePos.y;
+    m_90960 = getSomePosY();
 
-    mPrevSomeSize = mSomeSize;
-    bgParam->mSize = mSomeSize;
+    mPrevSomeSize.x = getSomeSizeX();
+    mPrevSomeSize.y = getSomeSizeY();
+    bgParam->mSize.x = getSomeSizeX();
+    bgParam->mSize.y = getSomeSizeY();
 
-    bgParam->mCenter.x = bgParam->mPos.x + bgParam->mSize.x * 0.5f;
-    bgParam->mCenter.y = bgParam->mPos.y - bgParam->mSize.y * 0.5f;
+    bgParam->mCenter.x = bgParam->xStart() + bgParam->xSize() * 0.5f;
+    bgParam->mCenter.y = bgParam->yStart() - bgParam->ySize() * 0.5f;
 
     mU8s[3] = 0;
     mU8s[4] = 0;
@@ -1903,8 +1907,8 @@ void dBg_c::initScroll() {
     mMoreFloats5[1] = 1.0f;
     mMoreFloats5[2] = 1.0f;
     mMoreFloats5[4] = 0.0f;
-    mSomeParameterPos.x = dBgParameter_c::ms_Instance_p->mPos.x;
-    mSomeParameterPos.y = dBgParameter_c::ms_Instance_p->mPos.y;
+    mSomeParameterPos.x = dBgParameter_c::ms_Instance_p->xStart();
+    mSomeParameterPos.y = dBgParameter_c::ms_Instance_p->yStart();
 
     dBgScrollLimit_c zeroLimit;
     zeroLimit.mL = 0.0f;
