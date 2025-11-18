@@ -136,29 +136,32 @@ dBg_c::~dBg_c() {
     m_bg_p = nullptr;
 }
 
-unsigned long long dBg_c::getBgCheckBuff(u16 idx) {
+u64 dBg_c::getBgCheckBuff(u16 idx) {
     return mBgCheckBuffer[idx];
 }
 
-unsigned long long *dBg_c::getpBgCheckBuff(u16 idx) {
+u64 *dBg_c::getpBgCheckBuff(u16 idx) {
     return &mBgCheckBuffer[idx];
 }
 
-unsigned long long dBg_c::fn_800774A0(u16 idx) {
-    u32 idk = idx / 1024U;
-    u32 bufIdx = idx % 1024U;
-    unsigned long long cu = getBgCheckBuff(bufIdx);
-    cu = fn_80081960(cu, idx);
-    unsigned long long mask = (1ULL << 42);
-    if (bufIdx > 0x100U) {
-        u32 top = cu >> 32;
-        u32 bottom = cu & 0xFFFFFFFF;
-        // unsigned long long n = ((unsigned long long) top << 32) | (bottom & ~(0x400));
-        if ((cu & mask) != 0 && idk != 0) {
-            return ((unsigned long long) (top & ~(0x400)) << 32) | bottom;
+u64 dBg_c::CvtBgCheckFromUnitNo(u16 num) {
+    u32 x = num >> 10;
+
+    int oldNum = num;
+    num &= 0x3FF;
+
+    u64 data = getBgCheckBuff(num);
+    u64 maskedData = fn_80081960(data, oldNum);
+
+    if (num > 256) {
+        u32 top = maskedData >> 32;
+        u32 bottom = maskedData & 0xFFFFFFFF;
+        if (maskedData & (1ULL << 42) && x != 0) {
+            top &= ~(1 << (42 - 32));
+            maskedData = ((u64) top << 32) | bottom;
         }
     }
-    return cu;
+    return maskedData;
 }
 
 dBgUnit_c *dBg_c::fn_80077520(u16 x, u16 y, u8 layer, int *param_5, bool b) {
@@ -190,10 +193,10 @@ u16 dBg_c::GetMaskedUnitNumber(u16 p1, u16 p2, u8 p3) {
     return data;
 }
 
-unsigned long long dBg_c::GetBgCheckData(u16 p1, u16 p2, u8 p3) {
+u64 dBg_c::GetBgCheckData(u16 p1, u16 p2, u8 p3) {
     int loopPos = dScStage_c::getLoopPosX(p1);
     dBgUnit_c *data = fn_80077520(loopPos, p2, p3, 0, false);
-    return fn_800774A0(data->mUnitNumber);
+    return CvtBgCheckFromUnitNo(data->mUnitNumber);
 }
 
 u32 dBg_c::GetUnitTypeInfo(u16 p1, u16 p2, u8 p3) {
@@ -281,7 +284,7 @@ bool dBg_c::CheckExistLayer(u8 layer) {
 }
 
 void dBg_c::CreateBgCheckBuffer() {
-    mBgCheckBuffer = new(m_FrmHeap_p, 4) unsigned long long[0x400];
+    mBgCheckBuffer = new(m_FrmHeap_p, 4) u64[0x400];
 
     int file = dScStage_c::m_instance->mCurrFile;
 
