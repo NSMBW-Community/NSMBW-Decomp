@@ -8,40 +8,6 @@
 #include <game/mLib/m_vec.hpp>
 #include <game/mLib/m_3d.hpp>
 
-struct dBgCheckUnit {
-    // dBgCheckUnit() {}
-    // float x, y;
-    unsigned long long a;
-    // u8 a, b, c;
-    // int d;
-    // u8 test[8];
-    // u32 flags[2];
-
-    // bool checkBit(int bit) {
-    //     if (bit > 32) {
-    //         return flags[1] & (1 << (bit - 32));
-    //     } else {
-    //         return flags[0] & (1 << bit);
-    //     }
-    // }
-    // void setBit(int bit) {
-    //     if (bit > 32) {
-    //         flags[1] |= (1 << (bit - 32));
-    //     } else {
-    //         flags[0] |= (1 << bit);
-    //     }
-    // }
-    // void clearBit(int bit) {
-    //     if (bit > 32) {
-    //         flags[0] &= (1 << (bit - 32));
-    //         flags[1] &= ~0;
-    //     } else {
-    //         flags[0] &= ~0;
-    //         flags[1] &= (1 << bit);
-    //     }
-    // }
-};
-
 class dProcShareProc_c : public d3d::proc_c {
 public:
     dProcShareProc_c() : idk(0) {}
@@ -135,7 +101,7 @@ public:
 
     void CreateBgCheckBuffer();
 
-    unsigned long long fn_800774A0(u16);
+    unsigned long long CvtBgCheckFromUnitNo(u16);
     static unsigned long long fn_80081960(unsigned long long, int);
     dBgUnit_c *fn_80077520(u16 param_2, u16 param_3, u8 param_4, int *param_5, bool b);
 
