@@ -447,24 +447,7 @@ bgTex_c *dBg_c::__createBgTex(int layer, u16 tw, u16 th, u16 w, u16 h, int i1, i
     return tex;
 }
 
-u16 dBg_c::dBg_getUpLimitScroll(u8 layer) {
-    dCdFile_c *file = dCd_c::m_instance->getFileP(dScStage_c::m_instance->mCurrFile);
-    u8 id = file->getAreaID(layer);
-    int scrollID = file->getAreaScroll(id);
-    return file->getScrollDataP(scrollID)->mUpLimit;
-}
-
-int dBg_c::dBg_getScrlAreaDataSize(u8 layer) {
-    dCdFile_c *file = dCd_c::m_instance->getFileP(dScStage_c::m_instance->mCurrFile);
-    return file->mScrlAreaCount;
-}
-
-sScrollAreaData *dBg_c::dBg_getScrlAreaDataP(u8 layer, u8 idx) {
-    dCdFile_c *file = dCd_c::m_instance->getFileP(dScStage_c::m_instance->mCurrFile);
-    return file->getScrlAreaDataP(idx);
-}
-
-void dBg_c::fn_80078250(u16 p1, u16 p2, u16 p3, u32 p4) {
+void dBg_c::EntryWakuCoin(ulong p1, u16 p2, u16 p3, int p4) {
     if (mBgThingsRelated > 255) {
         return;
     }
@@ -492,7 +475,7 @@ void dBg_c::fn_80078250(u16 p1, u16 p2, u16 p3, u32 p4) {
     fn_80077860(p2, p3, p4, 0);
 }
 
-void dBg_c::fn_80078300() {
+void dBg_c::SetWakuCoin() {
     for (int i = 0; i < 256; i++) {
         sBgThing *thing = &mBgThings[i];
         if (thing->m_08 == 0) {
@@ -603,6 +586,23 @@ int dBg_c::dBg_isCloudFlyPlayerMulti() {
         }
     }
     return res;
+}
+
+u16 dBg_c::dBg_getUpLimitScroll(u8 layer) {
+    dCdFile_c *file = dCd_c::m_instance->getFileP(dScStage_c::m_instance->mCurrFile);
+    u8 id = file->getAreaID(layer);
+    int scrollID = file->getAreaScroll(id);
+    return file->getScrollDataP(scrollID)->mUpLimit;
+}
+
+int dBg_c::dBg_getScrlAreaDataSize(u8 layer) {
+    dCdFile_c *file = dCd_c::m_instance->getFileP(dScStage_c::m_instance->mCurrFile);
+    return file->mScrlAreaCount;
+}
+
+sScrollAreaData *dBg_c::dBg_getScrlAreaDataP(u8 layer, u8 idx) {
+    dCdFile_c *file = dCd_c::m_instance->getFileP(dScStage_c::m_instance->mCurrFile);
+    return file->getScrlAreaDataP(idx);
 }
 
 float dBg_c::fn_80078860(float f) {
@@ -1350,6 +1350,8 @@ void dBg_c::calcMultiScroll(int arg1) {
 void dBg_c::fn_8007ac40(const dBgSomeInfo_c *info, int arg1) {
     // dBgBound_c b = info->mBounds;
 
+    float boundScale = 0.5f;
+
     float lWidth = mVideo::getLayoutWidth();
     float lHeight = mVideo::getLayoutHeight();
 
@@ -1384,7 +1386,7 @@ void dBg_c::fn_8007ac40(const dBgSomeInfo_c *info, int arg1) {
         r.x = r.y;
         someTmp = someTmp2;
     }
-    if (mLimitRelated == 6 || mLimitRelated == 7) {
+    if (mLimitRelated2 >= 6 && mLimitRelated2 <= 7) {
         r.y = r.x - 1.0f;
         someTmp2 = someTmp;
     }
@@ -1418,42 +1420,40 @@ void dBg_c::fn_8007ac40(const dBgSomeInfo_c *info, int arg1) {
         someTmp2 = someTmp;
     }
     if ((daPyDemoMng_c::mspInstance->mFlags & 1) == 0) {
-        if (m_90024 == 0) {
-            if (someTmp2 <= spL) {
-                mMoreFloats5[0] = tgMin;
-            } else {
-                mMoreFloats5[0] = tgMid;
-                m_90024 = 1;
-            }
-        } else if (m_90024 == 1) {
-            if (someTmp2 <= spL2) {
-                if (shL <= someTmp2) {
-                    if (spL <= someTmp2) {
-                        mMoreFloats5[0] = tgMid;
-                    }
+        switch (m_90024) {
+            case 0:
+                if (someTmp2 > spL) {
+                    mMoreFloats5[0] = tgMid;
+                    m_90024 = 1;
                 } else {
+                    mMoreFloats5[0] = tgMin;
+                }
+                break;
+            case 1:
+                if (someTmp2 > spL2) {
+                    mMoreFloats5[0] = tgMax;
+                    m_90024 = 2;
+                } else if (someTmp2 < shL) {
                     bVar7 = true;
                     if (m_900b6 > 120) {
                         mMoreFloats5[0] = tgMin;
                         m_90024 = 0;
                     }
+                } else if (someTmp2 > spL) {
+                    mMoreFloats5[0] = tgMid;
                 }
-            } else {
-                mMoreFloats5[0] = tgMax;
-                m_90024 = 2;
-            }
-        } else if (m_90024 == 2) {
-            if (shL2 <= someTmp2) {
-                if (spL2 <= someTmp2) {
+                break;
+            case 2:
+                if (someTmp2 > shL2) {
+                    bVar7 = true;
+                    if (m_900b6 > 120) {
+                        mMoreFloats5[0] = tgMid;
+                        m_90024 = 1;
+                    }
+                } else if (someTmp2 > spL2) {
                     mMoreFloats5[0] = tgMax;
                 }
-            } else {
-                bVar7 = true;
-                if (m_900b6 > 120) {
-                    mMoreFloats5[0] = tgMid;
-                    m_90024 = 1;
-                }
-            }
+                break;
         }
         if (mMoreFloats5[0] == tgMax) {
             if (mMoreFloats5[2] != tgMid) {
@@ -1537,7 +1537,7 @@ void dBg_c::fn_8007ac40(const dBgSomeInfo_c *info, int arg1) {
     mPrevSomeSize.x = lWidth * copy_90018;
     mPrevSomeSize.y = lHeight * copy_90018;
     mDispScale = 1.0f / copy_90018;
-    fVar28 *= 0.5f;
+    fVar28 *= boundScale;
     float mLP = getMaxLeftPos();
     float mRP = getMaxRightPos();
     float w = (info->mBounds.mRight + info->mBounds.mLeft) * 0.5f;
@@ -2208,10 +2208,10 @@ void dBg_c::fn_8007cd70(dBgSomeInfo_c *info1, dBgSomeInfo_c *info2, int i1) {
             dh = 1.0f;
             dw = 1.0f;
         }
-        float fVar5 = fabsf(dw);
+        float fVar5 = std::fabs(dw);
         float fVar6, fVar7;
         float fVar12 = fVar5 * 6.0f;
-        float fVar13 = fabsf(dh) * 12.0f;
+        float fVar13 = std::fabs(dh) * 12.0f;
         if (stage->mCurrWorld == WORLD_8 && stage->mCurrCourse == STAGE_7 || cond) {
             fVar6 = 6.0f;
             fVar7 = 0.5f;
@@ -2220,7 +2220,7 @@ void dBg_c::fn_8007cd70(dBgSomeInfo_c *info1, dBgSomeInfo_c *info2, int i1) {
             fVar6 = 2.0f;
             fVar7 = 0.2f;
         }
-        fVar6 *= fabsf(dh);
+        fVar6 *= std::fabs(dh);
 
         float calcArg1 = 0.1f;
         float calcArg2 = 0.005f;
