@@ -25,6 +25,12 @@ public:
         JUMP_AIR
     };
 
+    /// @unofficial
+    enum LandSubstate_e {
+        LAND_ACTION_0,
+        LAND_ACTION_1
+    };
+
     struct GlobalData_t {
         float f1, f2, f3, f4, f5, f6, f7, f8;
         mVec3_c mPos1;
@@ -104,7 +110,7 @@ public:
     void setWaterWalkFlag();
     bool setKaniActionInitHangHand();
     bool jump_common();
-    void _jumpSet(int);
+    void _jumpSet(jmpInf_c *);
     void calcJumpCount();
     float getJumpSpeed();
     void setJumpSpeed();
@@ -113,8 +119,14 @@ public:
     bool checkCarryThrow();
     void jumpExeTakeOff();
     void jumpExecAir();
-    void fn_801282d0(int);
+    void fn_801282d0(int); ///< @unofficial
     bool FUN_8012e540(dActor_c *, bool); ///< @unofficial
+    void setJumpCommonBase();
+    dAcPy_c *getCarryPlayer();
+    bool isIceSlipAnmPlay();
+    int checkWallSlideEnable(int);
+    bool checkWallJump();
+    void setWallSlideEffect();
 
     bool isDrawingCarryFukidashi();
     void getCcBounds(sRangeDataF &bounds); ///< @unofficial
@@ -134,7 +146,8 @@ public:
     u8 mPad2[0x34];
     int mJumpCounter;
     u8 m_90;
-    u8 mPad3[0x4];
+    u8 m_91;
+    u8 mPad3[0x3];
     mEf::levelEffect_c mLevelEf1;
     mEf::levelEffect_c mLevelEf2;
     mAng m_2e8;

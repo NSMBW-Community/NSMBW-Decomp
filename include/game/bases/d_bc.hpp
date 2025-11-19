@@ -31,6 +31,7 @@ public:
     bool checkRide();
     bool checkHead(unsigned long);
     void checkWall(float *);
+    u16 getWallAttr(int);
     u32 checkWallEnm(float *);
 
     bool checkFootEnm();

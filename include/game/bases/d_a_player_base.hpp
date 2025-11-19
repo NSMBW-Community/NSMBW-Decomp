@@ -290,6 +290,7 @@ public:
         STATUS_42 = 0x42,
         STATUS_43 = 0x43,
         STATUS_45 = 0x45,
+        STATUS_47 = 0x47,
         STATUS_48 = 0x48,
         STATUS_4B = 0x4b,
         STATUS_4D = 0x4d,
@@ -361,10 +362,13 @@ public:
         STATUS_9F = 0x9f,
         STATUS_A0 = 0xa0,
         STATUS_A1 = 0xa1,
+        STATUS_A2 = 0xa2,
+        STATUS_A3 = 0xa3,
         STATUS_A4 = 0xa4,
         STATUS_A5 = 0xa5,
         STATUS_A7 = 0xa7,
         STATUS_A8 = 0xa8,
+        STATUS_A9 = 0xa9,
         STATUS_AA = 0xaa,
         STATUS_AB = 0xab,
         STATUS_AC = 0xac,
@@ -380,6 +384,7 @@ public:
         STATUS_BC = 0xbc,
         STATUS_BE = 0xbe,
         STATUS_BF = 0xbf,
+        STATUS_C0 = 0xc0,
         STATUS_C1 = 0xc1,
         STATUS_C2 = 0xc2,
         STATUS_C4 = 0xc4,
@@ -981,7 +986,7 @@ public:
     int mFallTimer;
     DemoAnime_e mDemoAnime;
     u32 m_360;
-    mEf::levelEffect_c mFunsuiSmokeEffect; ///< Effect when being sent upwards by a sand fountain.
+    mEf::levelEffect_c mFunsuiSmokeEffect; ///< Effect when being sent upwards by a sand fountain. Also used for the wall slide effect.
     mEf::levelEffect_c mSlipSmokeEffect; ///< Smoke when sliding down a slope.
     mEf::levelEffect_c mBrakeSmokeEffect; ///< Smoke when turning around after running.
     mEf::levelEffect_c mRunEffect; ///< E.g. sand particles / snowflakes when running.
@@ -1072,7 +1077,7 @@ public:
     void *mStateChangeParam; ///< To be used as a kind of argument to the new state.
     int mSubstate; ///< States can use this as a kind of sub-state variable (cast to some enum)
     int mSubstateTimer; ///< States can use this generic timer for various purposes.
-    int m_1118;
+    int mSubstateTimer2; ///< States can use this generic timer for various purposes.
     mVec3_c mHitAttackRelated;
     int m_1128;
     float m_112c;
@@ -1082,7 +1087,7 @@ public:
     float m_113c;
     int mDokanCenterOffsetType;
 
-    static const float sc_DirSpeed[2];
+    static const float sc_DirSpeed[];
     static const float sc_JumpSpeed;
     static const float sc_JumpSpeedNuma1;
     static const float sc_JumpSpeedNuma2;

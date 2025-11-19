@@ -219,7 +219,7 @@ void daPlBase_c::changeState(const sStateIDIf_c &state, void *param) {
     clearComboCount();
     mSubstate = 0;
     mSubstateTimer = 0;
-    m_1118 = 0;
+    mSubstateTimer2 = 0;
     offStatus(STATUS_97);
     offStatus(STATUS_98);
     mStateChangeParam = param;
@@ -1108,7 +1108,7 @@ void daPlBase_c::initializeState_PlayerJumpDai() {
     } else {
         mSubstate = JUMP_DAI_ACTION_0;
     }
-    m_1118 = 0;
+    mSubstateTimer2 = 0;
 }
 void daPlBase_c::finalizeState_PlayerJumpDai() {
     offStatus(STATUS_16);
@@ -1130,7 +1130,7 @@ void daPlBase_c::executeState_PlayerJumpDai() {
         }
         switch ((JumpDaiSubstate_e) mSubstate) {
             case JUMP_DAI_ACTION_0:
-                if (m_1118 < 5) {
+                if (mSubstateTimer2 < 5) {
                     if (mKey.triggerJump()) {
                         mSubstate = JUMP_DAI_ACTION_1;
                     }
@@ -1146,7 +1146,7 @@ void daPlBase_c::executeState_PlayerJumpDai() {
                 }
                 break;
             case JUMP_DAI_ACTION_1:
-                if (m_1118 > 5) {
+                if (mSubstateTimer2 > 5) {
                     float f = 4.428f;
                     if (isMameAction()) {
                         f = 3.828f;
@@ -1156,8 +1156,8 @@ void daPlBase_c::executeState_PlayerJumpDai() {
                 }
                 break;
         }
-        rideActor->calcJumpDaiReductionScale(m_1118, 5);
-        m_1118++;
+        rideActor->calcJumpDaiReductionScale(mSubstateTimer2, 5);
+        mSubstateTimer2++;
     }
 }
 
