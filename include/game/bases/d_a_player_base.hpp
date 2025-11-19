@@ -248,7 +248,11 @@ public:
         STATUS_06 = 0x06,
         STATUS_08 = 0x08,
         STATUS_0A = 0x0a,
+        STATUS_0C = 0x0c,
+        STATUS_0D = 0x0d,
         STATUS_0E = 0x0e,
+        STATUS_0F = 0x0f,
+        STATUS_10 = 0x10,
         STATUS_12 = 0x12,
         STATUS_13 = 0x13,
         STATUS_14 = 0x14,
@@ -286,6 +290,7 @@ public:
         STATUS_42 = 0x42,
         STATUS_43 = 0x43,
         STATUS_45 = 0x45,
+        STATUS_48 = 0x48,
         STATUS_4B = 0x4b,
         STATUS_4D = 0x4d,
         STATUS_4E = 0x4e,
@@ -342,14 +347,20 @@ public:
         STATUS_8D = 0x8d,
         STATUS_8F = 0x8f,
         STATUS_91 = 0x91,
+        STATUS_92 = 0x92,
         STATUS_94 = 0x94,
         STATUS_95 = 0x95,
         STATUS_96 = 0x96,
         STATUS_97 = 0x97,
         STATUS_98 = 0x98,
         STATUS_99 = 0x99,
+        STATUS_9B = 0x9b,
+        STATUS_9C = 0x9c,
+        STATUS_9D = 0x9d,
+        STATUS_9E = 0x9e,
         STATUS_9F = 0x9f,
         STATUS_A0 = 0xa0,
+        STATUS_A1 = 0xa1,
         STATUS_A4 = 0xa4,
         STATUS_A5 = 0xa5,
         STATUS_A7 = 0xa7,
@@ -370,6 +381,7 @@ public:
         STATUS_BE = 0xbe,
         STATUS_BF = 0xbf,
         STATUS_C1 = 0xc1,
+        STATUS_C2 = 0xc2,
         STATUS_C4 = 0xc4,
     };
 
@@ -419,6 +431,10 @@ public:
         sTurnPowerData mRangeType0[2];
         sTurnPowerData mRangeType1[2];
         sTurnPowerData mRangeType2[2];
+        float mGravityData1[18];
+        float mGravityData2[36];
+        float mJumpSpeedValues1[3];
+        float mJumpSpeedValues2[4];
     };
 
     typedef void (daPlBase_c::*ProcFunc)();

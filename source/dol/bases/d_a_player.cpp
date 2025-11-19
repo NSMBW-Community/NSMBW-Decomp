@@ -133,7 +133,7 @@ void dAcPy_c::setHipAttack_AttackStart() {
 
 void dAcPy_c::initializeState_HipAttack() {
     daPlBase_c::initializeState_HipAttack();
-    m_8c = 0;
+    mJumpCounter = 0;
     offStatus(STATUS_C1);
     onStatus(STATUS_8F);
 }
@@ -162,7 +162,7 @@ void dAcPy_c::initializeState_SpinHipAttack() {
     onStatus(STATUS_A8);
     onStatus(STATUS_8F);
     onStatus(STATUS_2B);
-    mKey.onStatus(dAcPyKey_c::FLAG_2);
+    mKey.onStatus(dAcPyKey_c::STATUS_FORCE_NO_JUMP);
     int changeParam = (int) mStateChangeParam;
     mSpeedF = 0.0f;
     mMaxSpeedF = 0.0f;
@@ -281,8 +281,243 @@ void dAcPy_c::finalizeState_SpinHipAttack() {
     offStatus(STATUS_9F);
     offStatus(STATUS_22);
     offStatus(STATUS_8F);
-    mKey.offStatus(dAcPyKey_c::FLAG_2);
+    mKey.offStatus(dAcPyKey_c::STATUS_FORCE_NO_JUMP);
     setScrollMode(0);
+}
+
+void dAcPy_c::initializeState_Fall() {
+    daPlBase_c::initializeState_Fall();
+    onStatus(STATUS_9B);
+    onStatus(STATUS_9C);
+    onStatus(STATUS_9D);
+    onStatus(STATUS_9E);
+    onStatus(STATUS_9F);
+    onStatus(STATUS_92);
+    onStatus(STATUS_8F);
+    onStatus(STATUS_A1);
+    if (!isNowBgCross(BGC_15)) {
+        setWaterWalkFlag();
+    }
+    mSpeedMax.x = 0.0;
+    mJumpCounter = 0;
+    mSubstate = FALL_ACTION_1;
+    setAddLiftSpeedF();
+    if (isStatus(STATUS_C2)) {
+        mSpeed.y = 0.5f;
+    }
+    setJumpGravity();
+    maxFallSpeedSet();
+    moveSpeedSet();
+    powerSet();
+}
+
+void dAcPy_c::finalizeState_Fall() {
+    daPlBase_c::finalizeState_Fall();
+    mAngle.x = 0;
+    offStatus(STATUS_9B);
+    offStatus(STATUS_9C);
+    offStatus(STATUS_9D);
+    offStatus(STATUS_9E);
+    offStatus(STATUS_9F);
+    offStatus(STATUS_92);
+    offStatus(STATUS_8F);
+    offStatus(STATUS_C2);
+    offStatus(STATUS_A1);
+}
+
+void dAcPy_c::executeState_Fall() {
+    daPlBase_c::executeState_Fall();
+    setJumpGravity();
+    maxFallSpeedSet();
+    moveSpeedSet();
+    powerSet();
+    if (!setKaniActionInitHangHand()) {
+        jump_common();
+        if (setDelayHelpJump()) {
+            return;
+        }
+    }
+}
+
+void dAcPy_c::initializeState_Jump() {
+    daPlBase_c::initializeState_Jump();
+    onStatus(STATUS_9B);
+    onStatus(STATUS_9C);
+    onStatus(STATUS_9D);
+    if (!m_1058) {
+        onStatus(STATUS_9F);
+    }
+    onStatus(STATUS_92);
+    onStatus(STATUS_8F);
+    onStatus(STATUS_A1);
+    m_12f4 = mDirection;
+    mSpeedMax.x = 0.0f;
+    setStartJumpEffect(0);
+    _jumpSet((int) mStateChangeParam);
+    if (mJumpCounter != 2) {
+        onStatus(STATUS_9E);
+    }
+}
+
+void dAcPy_c::finalizeState_Jump() {
+    daPlBase_c::finalizeState_Jump();
+    m_1058 = 0;
+    m_90 = 8;
+    if (!isStatus(STATUS_61)) {
+        onStatus(STATUS_61);
+        calcJumpCount();
+    }
+    offStatus(STATUS_0C);
+    offStatus(STATUS_96);
+    offStatus(STATUS_48);
+    offStatus(STATUS_BF);
+    offStatus(STATUS_A8);
+    offStatus(STATUS_9B);
+    offStatus(STATUS_9C);
+    offStatus(STATUS_9D);
+    offStatus(STATUS_9E);
+    offStatus(STATUS_9F);
+    offStatus(STATUS_92);
+    offStatus(STATUS_8F);
+    offStatus(STATUS_A1);
+}
+
+void dAcPy_c::executeState_Jump() {
+    daPlBase_c::executeState_Jump();
+    if (m_1058 != 0) {
+        if (--m_1058 == 0) {
+            onStatus(STATUS_9F);
+        }
+    }
+    if (isStatus(STATUS_A8) && mSpeed.y < 2.0f) {
+        offStatus(STATUS_A8);
+    }
+    gravitySet();
+    maxFallSpeedSet();
+    moveSpeedSet();
+    airPowerSet();
+    if (!setKaniActionInitHangHand()) {
+        jump_common();
+    }
+}
+
+void dAcPy_c::calcJumpCount() {
+    if (!isStatus(STATUS_AB)) {
+        mJumpCounter++;
+        if (mJumpCounter > 2) {
+            mJumpCounter = 0;
+        }
+    }
+}
+
+/// @todo define data
+extern const daPlBase_c::sPowerChangeData l_power_change_data;
+
+float dAcPy_c::getJumpSpeed() {
+    float baseSpeed;
+    float absSpeed = std::fabs(mSpeedF);
+    if (absSpeed < l_power_change_data.mJumpSpeedValues1[0]) {
+        baseSpeed = l_power_change_data.mJumpSpeedValues2[0];
+    } else if (absSpeed < l_power_change_data.mJumpSpeedValues1[1]) {
+        baseSpeed = l_power_change_data.mJumpSpeedValues2[1];
+    } else if (absSpeed < l_power_change_data.mJumpSpeedValues1[2]) {
+        baseSpeed = l_power_change_data.mJumpSpeedValues2[2];
+    } else {
+        baseSpeed = l_power_change_data.mJumpSpeedValues2[3];
+    }
+    if (std::fabs(mSpeedF) >= getSpeedData()[2]) {
+        baseSpeed = l_power_change_data.mJumpSpeedValues2[3];
+    }
+    float jumpSpeed;
+    if (isNowBgCross(BgCross1_e(BGC_IN_SINK_SAND | BGC_ON_SINK_SAND))) {
+        if (isNowBgCross(BGC_IN_SINK_SAND)) {
+            jumpSpeed = sc_JumpSpeedNuma2;
+        } else {
+            jumpSpeed = sc_JumpSpeedNuma1;
+            if (mPos.y < m_db0 - 4.0f) {
+                jumpSpeed += -0.15f;
+            }
+        }
+    } else {
+        jumpSpeed = sc_JumpSpeed + baseSpeed;
+    }
+    if (isMameAction()) {
+        jumpSpeed *= 0.8125f;
+    }
+    return jumpSpeed;
+}
+
+void dAcPy_c::setJumpSpeed() {
+    float jumpSpeed = getJumpSpeed();
+    if (mJumpCounter == 2) {
+        jumpSpeed *= 1.05f;
+    }
+    mSpeed.y = jumpSpeed;
+}
+
+void dAcPy_c::fn_80127740(int jumpMode, int b) {
+    mSubstate = JUMP_TAKE_OFF;
+    fn_80145fd0(jumpMode);
+    if (isStatus(STATUS_10)) {
+        mPyMdlMng.setAnm(121, 0.0f, 0.0f);
+    } else if (isStatus(STATUS_2B)) {
+        mPyMdlMng.setAnm(71);
+    } else if (isStatus(STATUS_0D)) {
+        mPyMdlMng.setAnm(67, 0.0f, 0.0f);
+    } else if (isStatus(STATUS_0C) && !isCarry()) {
+        mPyMdlMng.setAnm(117);
+    } else if (isStatus(STATUS_0F)) {
+        mPyMdlMng.setAnm(118);
+    } else {
+        int anmNum;
+        switch (mJumpCounter) {
+            case 0:
+                anmNum = 5;
+                break;
+            case 1:
+                vf434(21, 0);
+                anmNum = 8;
+                break;
+            default:
+                vf434(22, 0);
+                anmNum = 11;
+                break;
+        }
+        if (!isCarry()) {
+            if (mJumpCounter == 1) {
+                mPyMdlMng.mpMdl->fn_800d5e00(1);
+            } else {
+                mPyMdlMng.mpMdl->fn_800d5e00(0);
+            }
+        }
+        if (!b) {
+            mPyMdlMng.setAnm(anmNum, 0.0f, 0.0f);
+        } else {
+            mPyMdlMng.setAnm(anmNum);
+        }
+    }
+}
+
+bool dAcPy_c::jump_common() {
+    if (checkCarryThrow()) {
+        return true;
+    }
+    if (setHipAttackAction()) {
+        return true;
+    }
+    if (isNowBgCross(BGC_WALL_TOUCH_L_2) | isNowBgCross(BGC_WALL_TOUCH_R_2)) {
+        mKey.offStatus(dAcPyKey_c::STATUS_DISABLE_LR);
+    }
+    if (mSpeed.y <= 0.0f) {
+        mKey.offStatus(dAcPyKey_c::STATUS_FORCE_JUMP);
+    }
+    typedef void (dAcPy_c::*JumpActionProc)();
+    static JumpActionProc l_JumpActionProc[] = {
+        &dAcPy_c::jumpExeTakeOff,
+        &dAcPy_c::jumpExeTakeAir
+    };
+    (this->*l_JumpActionProc[mSubstate])();
+    return false;
 }
 
 #pragma pop

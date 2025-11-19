@@ -8,7 +8,6 @@ public:
     enum STATUS_e {
         STATUS_NO_INPUT = 0, ///< Disable all inputs.
         STATUS_DISABLE_LR = 1, ///< Disable left and right directional buttons.
-        STATUS_2 = 2,
         STATUS_FORCE_JUMP = 3, ///< Force the jump button to be pressed down.
         STATUS_FORCE_NO_JUMP = 4, ///< Force a jump input to be ignored.
         STATUS_SHAKE_COOLDOWN = 6, ///< Is in cooldown for shake events
@@ -17,7 +16,6 @@ public:
 
         FLAG_NO_INPUT = BIT_FLAG(STATUS_NO_INPUT),
         FLAG_DISABLE_LR = BIT_FLAG(STATUS_DISABLE_LR),
-        FLAG_2 = BIT_FLAG(STATUS_2),
         FLAG_FORCE_JUMP = BIT_FLAG(STATUS_FORCE_JUMP),
         FLAG_FORCE_NO_JUMP = BIT_FLAG(STATUS_FORCE_NO_JUMP),
         FLAG_SHAKE_COOLDOWN = BIT_FLAG(STATUS_SHAKE_COOLDOWN),

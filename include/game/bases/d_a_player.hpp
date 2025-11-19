@@ -10,6 +10,18 @@ public:
         SPIN_HIP_ATTACK_ACTION_1
     };
 
+    /// @unofficial
+    enum FallSubstate_e {
+        FALL_ACTION_0,
+        FALL_ACTION_1
+    };
+
+    /// @unofficial
+    enum JumpSubstate_e {
+        JUMP_TAKE_OFF,
+        JUMP_TAKE_AIR
+    };
+
     struct GlobalData_t {
         float f1, f2, f3, f4, f5, f6, f7, f8;
         mVec3_c mPos1;
@@ -83,6 +95,18 @@ public:
     void setCcAtSpinFall();
     dActor_c *getCarryPropelActor();
     void setPropelSpinSmokeEffect();
+    void setWaterWalkFlag();
+    bool setKaniActionInitHangHand();
+    bool jump_common();
+    void _jumpSet(int);
+    void calcJumpCount();
+    float getJumpSpeed();
+    void setJumpSpeed();
+    void fn_80127740(int, int); ///< Jump animation set, some enum as first param @unofficial
+    void fn_80145fd0(int); ///< Jump voice, some enum as param @unofficial
+    bool checkCarryThrow();
+    void jumpExeTakeOff();
+    void jumpExeTakeAir();
 
     bool isDrawingCarryFukidashi();
     void getCcBounds(sRangeDataF &bounds); ///< @unofficial
@@ -99,14 +123,19 @@ public:
     bool FUN_8012e540(dActor_c *, bool); ///< @unofficial
 
     u8 mPad1[0x8c];
-    u32 m_8c;
-    u8 mPad2[0x8];
+    int mJumpCounter;
+    u8 m_90;
+    u8 mPad2[0x4];
     mEf::levelEffect_c mLevelEf1;
     mEf::levelEffect_c mLevelEf2;
     mAng m_2e8;
-    u8 mPad3[0x129c];
+    u8 mPad3[0xd6c];
+    u32 m_1058;
+    u8 mPad4[0x298];
+    u8 m_12f4;
+    u8 mPad5[0x290];
     dPyMdlMng_c mPyMdlMng;
-    u8 mPad4[0x10];
+    u8 mPad6[0x10];
     fBaseID_e mCarryActorID;
 
     static dAcPy_HIO_Speed_c m_speed_hio[2];

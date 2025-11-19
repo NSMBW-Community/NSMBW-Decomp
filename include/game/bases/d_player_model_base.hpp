@@ -51,6 +51,7 @@ public:
 
     bool isFootStepTiming();
     void getJointPos(mVec3_c *, int);
+    void fn_800d5e00(int);
 
     float getFrameMax() { return mAnm.mFrameMax; }
     mMtx_c &getMtx() { return mMtx; }
