@@ -1,5 +1,6 @@
 #pragma once
 #include <game/bases/d_a_player.hpp>
+#include <game/bases/d_player_model_manager.hpp>
 #include <game/bases/d_a_yoshi.hpp>
 #include <constants/game_constants.h>
 
@@ -14,6 +15,8 @@ public:
     static void setHipAttackQuake(int, u8);
     static int getNumInGame();
     static int getItemKinopioNum();
+    static dPyMdlMng_c::ModelType_e getCourseInPlayerModelType(int);
+    static void setPlayer(int, dAcPy_c *);
 
     static bool checkPlayer(u8 plrNo) { return mActPlayerInfo & (1 << plrNo); }
     static int getRest(PLAYER_TYPE_e plrNo) { return mRest[plrNo]; }
@@ -26,7 +29,10 @@ public:
     static u32 mPauseEnableInfo;
     static u32 mStopTimerInfo;
     static int mPlayerType[4];
-    static int mPlayerMode[4];
+    static PLAYER_POWERUP_e mPlayerMode[4];
+    static PLAYER_POWERUP_e mKinopioMode;
+    static u32 mCreateItem[4];
+    static int mPlayerEntry[4];
     static int mRest[4];
     static u32 mCtrlPlrNo;
 };

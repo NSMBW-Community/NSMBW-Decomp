@@ -972,6 +972,8 @@ public:
     int mTimer_f8;
     s8 m_fc;
     dEf::followEffect_c mTurnSmokeEffect; ///< The wind effect when turning around after running.
+    int mTurnGroundType;
+    u8 mTurnEffectFade;
     mEf::levelEffect_c mHitAttackDropEffect; ///< The wind effect when doing a ground pound.
     u32 m_344;
     mVec3_c m_348;
@@ -995,7 +997,7 @@ public:
     float mSomeYOffset;
     u8 mPad14[1];
     u8 m_ca1;
-    u8 mZPosLayer;
+    u8 mPlayerLayer;
     mVec3_c mLastPosDelta;
     mVec3_c mLiftRelatedPos;
     float m_cbc;

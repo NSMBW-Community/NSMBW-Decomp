@@ -1,4 +1,6 @@
 #include <game/bases/d_a_player.hpp>
+#include <game/bases/d_a_player_manager.hpp>
+#include <game/bases/d_info.hpp>
 #include <game/sLib/s_GlobalData.hpp>
 #include <constants/sound_list.h>
 
@@ -514,10 +516,133 @@ bool dAcPy_c::jump_common() {
     typedef void (dAcPy_c::*JumpActionProc)();
     static JumpActionProc l_JumpActionProc[] = {
         &dAcPy_c::jumpExeTakeOff,
-        &dAcPy_c::jumpExeTakeAir
+        &dAcPy_c::jumpExecAir
     };
     (this->*l_JumpActionProc[mSubstate])();
     return false;
 }
+
+void dAcPy_c::jumpExeTakeOff() {
+    if (isStatus(STATUS_0C)) {
+        mSubstate = JUMP_AIR;
+    } else if (isStatus(STATUS_10)) {
+        if (mPyMdlMng.isAnmStop()) {
+            mPyMdlMng.setAnm(6, 3.0f, 0.0f);
+            mSubstate = JUMP_AIR;
+        }
+    } else if (mSpeed.y < 0.0f) {
+        if (isStatus(STATUS_0D)) {
+            mPyMdlMng.setAnm(68, 10.0f, 0.0f);
+        } else if (isStatus(STATUS_0F)) {
+            mPyMdlMng.setAnm(119);
+        } else if (mJumpCounter != 2) {
+            static const int l_AnmIDs[] = { 6, 9, 12 };
+            u8 anmID = l_AnmIDs[mJumpCounter];
+            mPyMdlMng.setAnm(anmID);
+        }
+        mSubstate = JUMP_AIR;
+    }
+    jumpExecAir();
+}
+
+void dAcPy_c::jumpExecAir() {
+    if (isStatus(STATUS_0C) && !isStar()) {
+        offStatus(STATUS_0C);
+        mPyMdlMng.setAnm(6, 3.0f, 0.0f);
+    }
+    if (mJumpCounter == 2) {
+        if (mSubstate == JUMP_AIR) {
+            turnAngle();
+            if (mDirection != m_12f4 || isNowBgCross(BGC_IS_HEAD)) {
+                float f = mPyMdlMng.getLastFrame();
+                mPyMdlMng.setAnm(11, 0.0f, f);
+            }
+        }
+    } else if (!isStatus(STATUS_0D)) {
+        turnAngle();
+    }
+    setJumpGravity();
+    maxFallSpeedSet();
+    if (isStatus(STATUS_2D) && mSpeed.y < 0.0f) {
+        mAccelY = 0.0f;
+        float f = std::fabs(mSpeed.y) * 0.15f;
+        if (f < 0.1f) {
+            f = 0.1f;
+        }
+        if (f > 1.0f) {
+            f = 1.0f;
+        }
+        sLib::chase(&mSpeed.y, 0.0f, f);
+    }
+    if (
+        isNowBgCross(BGC_IS_FOOT) &&
+        !checkSlip() &&
+        !checkJumpTrigger() &&
+        !checkCrouch()
+    ) {
+        mAngle.x = 0;
+        if (isStatus(STATUS_0F)) {
+            changeState(StateID_Crouch, (void *) 2);
+            return;
+        }
+        if (
+            mPowerup != POWERUP_MINI_MUSHROOM &&
+            !isCarry() &&
+            isStatus(STATUS_0A) &&
+            isNowBgCross(BGC_37)
+        ) {
+            changeState(StateID_Land, (void *) 1);
+            return;
+        }
+        if ((isStatus(STATUS_10) || mJumpCounter == 2) && !mKey.buttonWalk(nullptr)) {
+            mSpeedF = 0.0f;
+        }
+        setLandJumpEffect(0);
+        if (mSpeedF) {
+            fn_801282d0(0);
+            return;
+        }
+        if (isStatus(STATUS_0D)) {
+            mPyMdlMng.setAnm(69, 10.0f, 0.0f);
+        } else {
+            if (mJumpCounter == 0) {
+                mPyMdlMng.setAnm(7);
+            } else {
+                mPyMdlMng.setAnm(10);
+            }
+        }
+        changeState(StateID_Land, 0);
+    }
+}
+
+void dAcPy_c::_jumpSet(int) {}
+
+ACTOR_PROFILE(PLAYER, dAcPy_c, 0);
+
+dAcPy_c::dAcPy_c() : mPyMdlMng(daPyMng_c::getCourseInPlayerModelType(ACTOR_PARAM(PlayerNo))) {
+    setKind(STAGE_ACTOR_PLAYER);
+    mExecStopMask = BIT_FLAG(STAGE_ACTOR_PLAYER);
+    mpMdlMng = &mPyMdlMng;
+    mPyMdlMng.mpMdl->mpOwner = this;
+    mPlayerNo = ACTOR_PARAM(PlayerNo);
+    mDokanCenterOffsetType = daPyMng_c::mPlayerType[mPlayerNo];
+    mPowerup = daPyMng_c::mPlayerMode[daPyMng_c::mPlayerType[mPlayerNo]];
+    mCreateItemRelated = 0;
+    if (daPyMng_c::mCreateItem[daPyMng_c::mPlayerType[mPlayerNo]] & 8) {
+        mCreateItemRelated = 1;
+        dInfo_c::m_instance->m_6c = true;
+        mDokanCenterOffsetType = 3;
+        mPowerup = daPyMng_c::mKinopioMode;
+        daPyMng_c::mPlayerEntry[mPlayerNo] = 0;
+        daPyMng_c::mCreateItem[daPyMng_c::mPlayerType[mPlayerNo]] &= ~8;
+    }
+    daPyMng_c::setPlayer(mPlayerNo, this);
+    mPlayerLayer = mPlayerNo;
+}
+
+dAcPy_c::~dAcPy_c() {
+    daPyMng_c::setPlayer(mPlayerNo, nullptr);
+}
+
 
 #pragma pop

@@ -1,6 +1,9 @@
 #pragma once
 #include <game/bases/d_a_player_base.hpp>
 #include <game/bases/d_a_player_hio.hpp>
+#include <game/bases/d_player_orchestra.hpp>
+#include <game/bases/d_propel_parts.hpp>
+#include <game/bases/d_pc.hpp>
 
 class dAcPy_c : public daPlBase_c {
 public:
@@ -19,7 +22,7 @@ public:
     /// @unofficial
     enum JumpSubstate_e {
         JUMP_TAKE_OFF,
-        JUMP_TAKE_AIR
+        JUMP_AIR
     };
 
     struct GlobalData_t {
@@ -28,6 +31,9 @@ public:
         mVec3_c mPos2;
         mVec3_c mPos3;
     };
+
+    dAcPy_c();
+    virtual ~dAcPy_c();
 
     virtual bool setHipAttackOnEnemy(mVec3_c *hitPos);
     virtual void setHipAttackEffect();
@@ -106,7 +112,9 @@ public:
     void fn_80145fd0(int); ///< Jump voice, some enum as param @unofficial
     bool checkCarryThrow();
     void jumpExeTakeOff();
-    void jumpExeTakeAir();
+    void jumpExecAir();
+    void fn_801282d0(int);
+    bool FUN_8012e540(dActor_c *, bool); ///< @unofficial
 
     bool isDrawingCarryFukidashi();
     void getCcBounds(sRangeDataF &bounds); ///< @unofficial
@@ -120,23 +128,52 @@ public:
         return mtx;
     }
 
-    bool FUN_8012e540(dActor_c *, bool); ///< @unofficial
-
-    u8 mPad1[0x8c];
+    int mCreateItemRelated;
+    u8 mPad1[0x20];
+    dPc_c mPc;
+    u8 mPad2[0x34];
     int mJumpCounter;
     u8 m_90;
-    u8 mPad2[0x4];
+    u8 mPad3[0x4];
     mEf::levelEffect_c mLevelEf1;
     mEf::levelEffect_c mLevelEf2;
     mAng m_2e8;
-    u8 mPad3[0xd6c];
+    u8 mPad4[0x10];
+    mEf::levelEffect_c mLevelEf3;
+    dEf::followEffect_c mFollowEf;
+    u8 mPad5[0x18];
+    mEf::levelEffect_c mLevelEf4;
+    mEf::levelEffect_c mLevelEf5;
+    u8 mPad6[0x28];
+    mEf::levelEffect_c mLevelEf6;
+    u8 mPad7[0x30];
+    mEf::levelEffect_c mLevelEf7;
+    mEf::levelEffect_c mLevelEf8;
+    u8 mPad8[0x2c];
+    mEf::levelEffect_c mLevelEf9;
+    mEf::levelEffect_c mLevelEf10;
+    mEf::levelEffect_c mLevelEf11;
+    mEf::levelEffect_c mLevelEf12;
+    u8 mPad9[0x1c];
     u32 m_1058;
-    u8 mPad4[0x298];
+    u8 mPad10[0x4];
+    dEf::followEffect_c mFollowEf2;
+    dEf::followEffect_c mFollowEf3;
+    u8 mPad11[0x6c];
     u8 m_12f4;
-    u8 mPad5[0x290];
+    u8 mPad12[0x34];
+    dEf::dLevelEffect_c mLevelEf14;
+    dEf::dLevelEffect_c mLevelEf15;
+    u8 mPad13[0xc];
     dPyMdlMng_c mPyMdlMng;
-    u8 mPad6[0x10];
+    u8 mPad14[0xc];
     fBaseID_e mCarryActorID;
+    u8 mPad15[0x18];
+    dEf::followEffect_c mFollowEf4;
+    dPropelParts_c mPropelParts;
+    dPlayerOrchestra_c mPlayerOrchestra;
+
+    ACTOR_PARAM_CONFIG(PlayerNo, 0, 4);
 
     static dAcPy_HIO_Speed_c m_speed_hio[2];
     static const float msc_JUMP_SPEED;

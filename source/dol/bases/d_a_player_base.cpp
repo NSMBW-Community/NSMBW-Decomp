@@ -2232,21 +2232,21 @@ void daPlBase_c::setTurnSmokeEffect() {
     }
     float sz = sc_turnSmokeScale[getTallType(-1)];
     mVec3_c size(sz, sz, sz);
-    if (mTurnSmokeEffect.m_118 == 1 && mTurnSmokeEffect.m_114 == mGroundType) {
+    if (mTurnEffectFade == 1 && mTurnGroundType == mGroundType) {
         mTurnSmokeEffect.follow(&pos, 0, 0);
     } else {
         dEf::createPlayerEffect(mPlayerNo, &mTurnSmokeEffect, sc_turnSmokeEffectID[mGroundType][mDirection], 0, &pos, nullptr, &size);
-        mTurnSmokeEffect.m_114 = mGroundType;
-        mTurnSmokeEffect.m_118 = 1;
+        mTurnGroundType = mGroundType;
+        mTurnEffectFade = 1;
     }
 }
 
 void daPlBase_c::fadeOutTurnEffect() {
-    if (mTurnSmokeEffect.m_118 != 1) {
+    if (mTurnEffectFade != 1) {
         return;
     }
     mTurnSmokeEffect.followFade();
-    mTurnSmokeEffect.m_118 = 0;
+    mTurnEffectFade = 0;
 }
 
 void daPlBase_c::setRunFootEffect() {
@@ -6198,15 +6198,15 @@ void daPlBase_c::setZPosition() {
     }
 
     if ((m_ca1 == 1) && (mLayer == 0)) {
-        mPos.z = 3000.0f - (float)(mZPosLayer * 32);
+        mPos.z = 3000.0f - (float) (mPlayerLayer * 32);
     } else {
-        mPos.z = -1800.0f - (float)(mZPosLayer * 32);
+        mPos.z = -1800.0f - (float) (mPlayerLayer * 32);
     }
 }
 
 void daPlBase_c::setZPosition(float a) {
     onStatus(STATUS_99);
-    mPos.z = a - (float)(mZPosLayer * 32);
+    mPos.z = a - (float) (mPlayerLayer * 32);
 }
 
 void daPlBase_c::setZPositionDirect(float a) {

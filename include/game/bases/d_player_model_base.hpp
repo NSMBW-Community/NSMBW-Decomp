@@ -4,6 +4,8 @@
 #include <game/mLib/m_vec.hpp>
 #include <game/mLib/m_mtx.hpp>
 
+class dAcPy_c;
+
 class dPyMdlBase_c {
 public:
     virtual ~dPyMdlBase_c();
@@ -62,18 +64,20 @@ public:
         m_200 = ang.z;
     }
 
-    u8 mPad1[0x24];
+    u8 mPad1[0x1c];
+    dAcPy_c *mpOwner;
+    u8 mPad2[0x4];
     m3d::anmChr_c mAnm;
-    u8 mPad2[0x6c];
+    u8 mPad3[0x6c];
     mVec3_c mHatPosMaybe;
-    u8 mPad3[0x30];
+    u8 mPad4[0x30];
     mMtx_c mMtx;
-    u8 mPad4[0x1a];
+    u8 mPad5[0x1a];
     u8 m_152;
     int m_154;
-    u8 mPad5[8];
+    u8 mPad6[8];
     u32 mFlags;
-    u8 mPad6[0x98];
+    u8 mPad7[0x98];
     s16 m_1fc;
     s16 m_1fe;
     s16 m_200;

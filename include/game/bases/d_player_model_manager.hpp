@@ -35,6 +35,9 @@ public:
 
 class dPyMdlMng_c {
 public:
+    enum ModelType_e {};
+
+    dPyMdlMng_c(ModelType_e modelType);
     virtual ~dPyMdlMng_c();
 
     void setAnm(int anmID, float rate, float blendDuration, float f) {
@@ -82,6 +85,7 @@ public:
     mVec3_c &getHatPos() const { return mpMdl->mHatPosMaybe; }
 
     dPyMdlBase_c *mpMdl;
+    u8 mPad[0x4];
 
     static dPyMdlBase_HIO_c m_hio;
 };
