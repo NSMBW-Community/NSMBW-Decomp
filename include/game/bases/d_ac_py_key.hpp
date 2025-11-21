@@ -10,6 +10,7 @@ public:
         STATUS_DISABLE_LR = 1, ///< Disable left and right directional buttons.
         STATUS_FORCE_JUMP = 3, ///< Force the jump button to be pressed down.
         STATUS_FORCE_NO_JUMP = 4, ///< Force a jump input to be ignored.
+        STATUS_5 = 5,
         STATUS_SHAKE_COOLDOWN = 6, ///< Is in cooldown for shake events
         STATUS_DEMO = 7, ///< Do not use inputs from the remote.
         STATUS_FORCE_RIGHT = 8, ///< Override the input to always only be the right button.
@@ -65,8 +66,8 @@ public:
     void update(); ///< Call each frame to process the inputs.
     void updateEnd(); ///< Get the new button states for the next frame.
 
-    void onStatus(u16 status); ///< Enables a status flag.
-    void offStatus(u16 status); ///< Disables a status flag.
+    void onStatus(u16 status); ///< Enables a status flag. @p status is a STATUS_e.
+    void offStatus(u16 status); ///< Disables a status flag. @p status is a STATUS_e.
 
     void clearAllKey(); ///< Clears all input state.
     void clearCrossKey(); ///< Clears the left and right directional buttons.
@@ -103,7 +104,7 @@ public:
 
     bool checkHipAttack(); ///< Checks whether a hip attack should be performed this frame.
 
-    u8 triggerShakeJump() const; ///< Returns whether a shake event was triggered this frame.
+    int triggerShakeJump() const; ///< Returns whether a shake event was triggered this frame.
     void clearShakeJump(); ///< Clears the shake event state.
 
     bool triggerJumpBuf(int n); ///< Returns whether a jump occurred in the last n frames.

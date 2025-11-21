@@ -44,5 +44,7 @@ public:
     int mPOWLength;
     int mMPGPLength;
 
+    static dQuake_c* getInstance() { return m_instance; }
+
     static dQuake_c *m_instance;
 };

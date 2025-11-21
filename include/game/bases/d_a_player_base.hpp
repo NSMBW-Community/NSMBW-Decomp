@@ -253,6 +253,7 @@ public:
         STATUS_0E = 0x0e,
         STATUS_0F = 0x0f,
         STATUS_10 = 0x10,
+        STATUS_11 = 0x11,
         STATUS_12 = 0x12,
         STATUS_13 = 0x13,
         STATUS_14 = 0x14,
@@ -346,6 +347,7 @@ public:
         STATUS_8B = 0x8b,
         STATUS_8C = 0x8c,
         STATUS_8D = 0x8d,
+        STATUS_8E = 0x8e,
         STATUS_8F = 0x8f,
         STATUS_91 = 0x91,
         STATUS_92 = 0x92,
@@ -382,6 +384,7 @@ public:
         STATUS_BA = 0xba,
         STATUS_BB = 0xbb,
         STATUS_BC = 0xbc,
+        STATUS_BD = 0xbd,
         STATUS_BE = 0xbe,
         STATUS_BF = 0xbf,
         STATUS_C0 = 0xc0,
@@ -404,6 +407,7 @@ public:
 
     class jmpInf_c {
     public:
+        jmpInf_c(float f, int a, int b) : m_04(f), m_08(a), m_0c(b) {}
         virtual ~jmpInf_c() {};
 
         float m_04;
@@ -919,6 +923,7 @@ public:
     void onNowBgCross(BgCross2_e m) { mNowBgCross2 |= m; }
     void offNowBgCross(BgCross1_e m) { mNowBgCross1 &= ~m; }
     void offNowBgCross(BgCross2_e m) { mNowBgCross2 &= ~m; }
+    void clearNowBgCross() { mNowBgCross1 = mNowBgCross2 = 0; }
 
     u32 isOldBgCross(BgCross1_e m) { return mOldBgCross1 & m; }
     u32 isOldBgCross(BgCross2_e m) { return mOldBgCross2 & m; }

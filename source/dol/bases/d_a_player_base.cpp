@@ -3406,8 +3406,7 @@ void daPlBase_c::executeState_DemoInWaterTank() {
             offStatus(STATUS_BB);
             mDemoSubstate = DEMO_IN_DOKAN_ACTION_1;
             mDemoWaitTimer = 60;
-            mNowBgCross2 = 0;
-            mNowBgCross1 = 0;
+            clearNowBgCross();
             checkWater();
             if (isNowBgCross(BGC_14)) {
                 mpMdlMng->setAnm(132);
@@ -4895,8 +4894,7 @@ void daPlBase_c::setOldBGCross() {
 
 void daPlBase_c::clearBgCheckInfo() {
     setOldBGCross();
-    mNowBgCross2 = 0;
-    mNowBgCross1 = 0;
+    clearNowBgCross();
     mPrevStandOnUnitType = mStandOnUnitType;
     mStandOnUnitType = 0;
     mBgPushForce.set(0.0f, 0.0f, 0.0f);
@@ -6276,10 +6274,7 @@ bool daPlBase_c::fn_800579c0(int a, int b) {
     }
 
     if (mKey.triggerJump()) {
-        daPlBase_c::jmpInf_c info;
-        info.m_04 = 0.0f;
-        info.m_08 = b;
-        info.m_0c = a;
+        daPlBase_c::jmpInf_c info(0.0f, b, a);
 
         changeState(StateID_Jump, &info);
 

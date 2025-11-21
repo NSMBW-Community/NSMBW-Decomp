@@ -31,6 +31,31 @@ public:
         LAND_ACTION_1
     };
 
+    /// @unofficial
+    enum SpinJumpSubstate_e {
+        SPIN_JUMP_ACTION_0,
+        SPIN_JUMP_ACTION_1
+    };
+
+    /// @unofficial
+    enum SitJumpSubstate_e {
+        SIT_JUMP_ACTION_0,
+        SIT_JUMP_ACTION_1
+    };
+
+    /// @unofficial
+    enum CannonJumpSubstate_e {
+        CANNON_JUMP_ACTION_0,
+        CANNON_JUMP_ACTION_1,
+        CANNON_JUMP_ACTION_2
+    };
+
+    /// @unofficial
+    enum BlockJumpSubstate_e {
+        BLOCK_JUMP_ACTION_0,
+        BLOCK_JUMP_ACTION_1
+    };
+
     struct GlobalData_t {
         float f1, f2, f3, f4, f5, f6, f7, f8;
         mVec3_c mPos1;
@@ -127,6 +152,23 @@ public:
     int checkWallSlideEnable(int);
     bool checkWallJump();
     void setWallSlideEffect();
+    void setSpinHoldReq(float);
+    bool setSpinSpeed(float, float);
+    void setSpinJumpEffect(int);
+    void endSpinJumpEffect();
+    void setSpinJumpEffectSub(int);
+    void setMissSpinJumpEffect(int);
+    void initRideSpinMove();
+    void setCcAtSpin();
+    void setSpinFireBall();
+    void endRideSpinMove();
+    bool isMissSpinEnableAnm();
+    s16 getMissSpinAngle();
+    void setMissSpin();
+    void resetMissSpin();
+    void updateMissSpin();
+    void setKaniMoveSpeed(bool);
+    void setCrouchSmokeEffect();
 
     bool isDrawingCarryFukidashi();
     void getCcBounds(sRangeDataF &bounds); ///< @unofficial
@@ -143,45 +185,60 @@ public:
     int mCreateItemRelated;
     u8 mPad1[0x20];
     dPc_c mPc;
-    u8 mPad2[0x34];
+    u8 mPad2[0x10];
+    int m_68;
+    u8 mPad3[0x20];
     int mJumpCounter;
     u8 m_90;
     u8 m_91;
-    u8 mPad3[0x3];
+    u8 mPad4[0x3];
     mEf::levelEffect_c mLevelEf1;
     mEf::levelEffect_c mLevelEf2;
     mAng m_2e8;
-    u8 mPad4[0x10];
+    u8 mPad5[0x10];
     mEf::levelEffect_c mLevelEf3;
     dEf::followEffect_c mFollowEf;
-    u8 mPad5[0x18];
+    u8 mPad6[0x18];
     mEf::levelEffect_c mLevelEf4;
     mEf::levelEffect_c mLevelEf5;
-    u8 mPad6[0x28];
+    u8 mPad7[0x28];
     mEf::levelEffect_c mLevelEf6;
-    u8 mPad7[0x30];
+    u8 mPad8[0x30];
     mEf::levelEffect_c mLevelEf7;
     mEf::levelEffect_c mLevelEf8;
-    u8 mPad8[0x2c];
+    u8 mPad9[0x2c];
     mEf::levelEffect_c mLevelEf9;
     mEf::levelEffect_c mLevelEf10;
     mEf::levelEffect_c mLevelEf11;
     mEf::levelEffect_c mLevelEf12;
-    u8 mPad9[0x1c];
+    u8 mPad10[0x8];
+    int m_1044;
+    s16 m_1048;
+    u8 mPad11[0x4];
+    float mSpinHoldReq;
+    u32 m_1054;
     u32 m_1058;
-    u8 mPad10[0x4];
+    s16 m_105c;
     dEf::followEffect_c mFollowEf2;
     dEf::followEffect_c mFollowEf3;
-    u8 mPad11[0x6c];
+    u32 m_1288;
+    u32 m_128c;
+    u8 mPad12[0x18];
+    mVec3_c m_12a8;
+    u32 m_12b4;
+    u8 mPad13[0x3c];
     u8 m_12f4;
-    u8 mPad12[0x34];
+    u8 mPad14[0x34];
     dEf::dLevelEffect_c mLevelEf14;
     dEf::dLevelEffect_c mLevelEf15;
-    u8 mPad13[0xc];
+    u8 mPad15[0xc];
     dPyMdlMng_c mPyMdlMng;
-    u8 mPad14[0xc];
+    u8 mPad16[0xc];
     fBaseID_e mCarryActorID;
-    u8 mPad15[0x18];
+    u8 mPad17[0xa];
+    short m_15ae;
+    u16 m_15b0;
+    u8 mPad18[0x8];
     dEf::followEffect_c mFollowEf4;
     dPropelParts_c mPropelParts;
     dPlayerOrchestra_c mPlayerOrchestra;
