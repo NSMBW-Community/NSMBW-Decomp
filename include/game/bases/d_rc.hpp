@@ -14,6 +14,8 @@ public:
 
     void set(dActor_c *actor, u8 lineKind);
 
+    void setRide(dRide_ctr_c *rideCtr);
+
     void clrLink();
     void chkLink();
 

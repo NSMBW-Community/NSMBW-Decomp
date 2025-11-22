@@ -236,11 +236,13 @@ public:
 
     char mPad1[0xc9e];
     float mSmallScoreOffset;
-    char mPad2[0x4c];
+    char mPad2[0x1];
+    u8 mAmiLayer;
+    char mPad3[0x4a];
     s8 mTreadCount;
     s8 m_ced;
     s8 m_cee;
-    char mPad3[0x52];
+    char mPad4[0x52];
     u32 mFlags;
-    u8 mPad4[0x3b4];
+    u8 mPad5[0x3b4];
 };

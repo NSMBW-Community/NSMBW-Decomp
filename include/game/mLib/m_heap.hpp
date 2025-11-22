@@ -7,7 +7,7 @@
 namespace mHeap {
     enum AllocOptBit_t {
         OPT_NONE = 0,
-        OPT_4 = BIT_FLAG(2)
+        OPT_THREAD_SAFE = BIT_FLAG(2)
     };
 
     void restoreCurrentHeap();
