@@ -105,4 +105,7 @@ public:
 
     static int sm_IceBallCount[4]; ///< The number of iceballs that currently exist for each player.
     static int sm_IceBallAliveCount[4]; ///< The number of "alive" iceballs for each player. @see #mAliveTimer
+
+    static const int smc_MAX_ICEBALL_COUNT = 6; ///< @unofficial
+    static const int smc_MAX_ALIVE_ICEBALL_COUNT = 2; ///< @unofficial
 };

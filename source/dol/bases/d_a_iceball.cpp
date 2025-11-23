@@ -33,9 +33,10 @@ const sBcSensorPoint l_iceball_wall = { SENSOR_IS_POINT, 0x3000, 0 };
 const sCcDatNewF l_fball_cc_data = {
     0.0f, 0.0f,
     6.0f, 6.0f,
-    CC_KIND_TAMA, CC_ATTACK_ICEBALL,
+    CC_KIND_TAMA,
+    CC_ATTACK_ICEBALL,
     BIT_FLAG(CC_KIND_PLAYER_ATTACK) | BIT_FLAG(CC_KIND_ENEMY) |
-    BIT_FLAG(CC_KIND_BALLOON) | BIT_FLAG(CC_KIND_ITEM) | BIT_FLAG(CC_KIND_TAMA) | BIT_FLAG(CC_KIND_KILLER),
+      BIT_FLAG(CC_KIND_BALLOON) | BIT_FLAG(CC_KIND_ITEM) | BIT_FLAG(CC_KIND_TAMA) | BIT_FLAG(CC_KIND_KILLER),
     BIT_FLAG(CC_ATTACK_ICE_BREAK) | BIT_FLAG(CC_ATTACK_KOOPA_FIRE) | BIT_FLAG(CC_ATTACK_YOSHI_EAT),
     CC_STATUS_NONE,
     daIceBall_c::ccCallback_Iceball
@@ -61,7 +62,7 @@ int daIceBall_c::create() {
 
     if (!isCreateOK) {
         deleteRequest();
-        return fBase_c::CANCELED;
+        return CANCELED;
     }
 
     mCc.mAmiLine = ACTOR_PARAM(AmiLine);
@@ -85,7 +86,7 @@ int daIceBall_c::create() {
 
         dAudio::SoundEffectID_t(SE_OBJ_PNGN_ICEBALL_DISAPP).playMapSound(mPos, 0);
         deleteRequest();
-        return fBase_c::CANCELED;
+        return CANCELED;
     }
 
     mCenterOffs.set(0.0f, 0.0f, 0.0f);
@@ -114,7 +115,7 @@ int daIceBall_c::create() {
     mStartPos = mPos;
     mStateMgr.changeState(StateID_FireMove);
 
-    return fBase_c::SUCCEEDED;
+    return SUCCEEDED;
 }
 
 int daIceBall_c::execute() {
@@ -124,12 +125,12 @@ int daIceBall_c::execute() {
     mStateMgr.executeState();
     lightProc();
 
-    return fBase_c::SUCCEEDED;
+    return SUCCEEDED;
 }
 
 int daIceBall_c::draw() {
     mLightMask.draw();
-    return fBase_c::SUCCEEDED;
+    return SUCCEEDED;
 }
 
 void daIceBall_c::deleteReady() {}
@@ -143,7 +144,7 @@ int daIceBall_c::doDelete() {
         sm_IceBallAliveCount[mPlayerNo]--;
     }
 
-    return fBase_c::SUCCEEDED;
+    return SUCCEEDED;
 }
 
 bool daIceBall_c::checkInitVanish() {
@@ -492,12 +493,12 @@ void daIceBall_c::finalizeState_Kill() {}
 void daIceBall_c::executeState_Kill() {}
 
 bool daIceBall_c::CheckIceballLimit(int playerId, int limitMode) {
-    if (daIceBall_c::sm_IceBallCount[playerId] < 6) {
+    if (daIceBall_c::sm_IceBallCount[playerId] < smc_MAX_ICEBALL_COUNT) {
         if (limitMode == 1) {
             return true;
         }
 
-        if (daIceBall_c::sm_IceBallAliveCount[playerId] < 2) {
+        if (daIceBall_c::sm_IceBallAliveCount[playerId] < smc_MAX_ALIVE_ICEBALL_COUNT) {
             return true;
         }
     }
