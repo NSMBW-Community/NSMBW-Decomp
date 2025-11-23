@@ -91,6 +91,7 @@ public:
     enum FLAGS_e {
         EN_IS_SHELL = BIT_FLAG(0),
         EN_IS_HARD = BIT_FLAG(1),
+        EN_FLAG_16 = BIT_FLAG(16),
         EN_FLAG_24 = BIT_FLAG(24)
     };
 
@@ -191,7 +192,7 @@ public:
     virtual void boyonBegin();
     virtual void calcBoyonScale();
 
-    virtual void createIceActor();
+    virtual bool createIceActor();
     virtual void setIceAnm();
     virtual void returnAnm_Ice();
     virtual void returnState_Ice();
@@ -261,6 +262,8 @@ public:
 
     static void normal_collcheck(dCc_c *self, dCc_c *other);
     static bool CeilCheck(float y, dCc_c *cc);
+
+    int getIceMode() const { return 0; }
 
     u8 getDeathFallDirection() const { return mDeathFallDirection; }
 
