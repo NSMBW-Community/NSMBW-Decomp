@@ -226,10 +226,10 @@ public:
 
     void hitdamageEffect(const mVec3_c &pos);
 
-    bool checkWallAndBg(); ///< @unofficial
+    u32 checkWallAndBg(); ///< @unofficial
     int Enfumi_check(dCc_c *self, dCc_c *other, int step);
     u32 EnBgCheck();
-    bool EnBgCheckFoot();
+    u32 EnBgCheckFoot();
     u32 EnBgCheckWall();
     bool LineBoundaryCheck(dActor_c *actor);
 

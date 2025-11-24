@@ -7,8 +7,6 @@
 #include <game/bases/d_bc.hpp>
 #include <game/bases/d_rc.hpp>
 
-class dBg_ctr_c;
-
 class dAcPy_c;
 class dPropelParts_c;
 
@@ -60,9 +58,9 @@ public:
     /// @brief The collision directions that an actor can respond to.
     enum BG_COLL_FLAG_e {
         COLL_NONE = BIT_FLAG(-1), ///< The actor does not collide with any surface.
-        COLL_HEAD = BIT_FLAG(0), ///< The actor can collide with ceilings.
+        COLL_WALL_R = BIT_FLAG(0), ///< The actor can collide with walls on its right.
         COLL_WALL_L = BIT_FLAG(1), ///< The actor can collide with walls on its left.
-        COLL_WALL_R = BIT_FLAG(2), ///< The actor can collide with walls on its right.
+        COLL_HEAD = BIT_FLAG(2), ///< The actor can collide with ceilings.
         COLL_FOOT = BIT_FLAG(3), ///< The actor can collide with the ground.
     };
 
@@ -211,7 +209,7 @@ public:
     /// @param destroyBound The actor's deletion bounding box.
     /// @param areaID The actor's zone ID (unused).
     /// @return Whether the actor should be culled.
-    static bool screenCullCheck(const mVec3_c &pos, const sRangeDataF &visibleBound, sRangeDataF destroyBound, u8 areaID);
+    static int screenCullCheck(const mVec3_c &pos, const sRangeDataF &visibleBound, sRangeDataF destroyBound, u8 areaID);
 
     /// @brief Returns whether the actor is colliding with any enabled collision sides.
     bool HasamareBgCheck();

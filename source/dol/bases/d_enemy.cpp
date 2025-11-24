@@ -7,7 +7,7 @@
 #include <game/bases/d_score_manager.hpp>
 #include <game/bases/d_ef.hpp>
 #include <game/bases/d_effectmanager.hpp>
-#include <game/bases/d_effactor_mng.hpp>
+#include <game/bases/d_eff_actor_manager.hpp>
 #include <game/bases/d_audio.hpp>
 #include <game/bases/d_multi_manager.hpp>
 #include <game/bases/d_bg_parameter.hpp>
@@ -237,7 +237,7 @@ void dEn_c::normal_collcheck(dCc_c *self, dCc_c *other) {
     } else if (kind == STAGE_ACTOR_PLAYER) {
         if (actor1->mFlags & EN_FLAG_24 || !CeilCheck(actor1->mPos.y, self)) {
             if (actor1->PlDamageCheck(self, other)) {
-                actor1->mCcValue = self->unk3;
+                actor1->mCcValue = self->mCanBounce;
                 self->mInfo |= CC_NO_HIT;
             } else if (other->mCcData.mKind != CC_KIND_PLAYER_ATTACK) {
                 s8 *plrNo = actor2->getPlrNo();
@@ -257,7 +257,7 @@ void dEn_c::normal_collcheck(dCc_c *self, dCc_c *other) {
             } else {
                 if (!CeilCheck(actor1->mPos.y, self)) {
                     if (actor1->YoshiDamageCheck(self, other)) {
-                        actor1->mCcValue = self->unk3;
+                        actor1->mCcValue = self->mCanBounce;
                         self->mInfo |= CC_NO_HIT;
                     } else if (actor1->mNoHitPlayer.mTimer[*plrNo] == 0) {
                         actor1->mNoHitPlayer.mTimer[*plrNo] = smc_NO_HIT_PLAYER_TIMER_DEFAULT;
@@ -268,7 +268,7 @@ void dEn_c::normal_collcheck(dCc_c *self, dCc_c *other) {
         }
     } else {
         if (actor1->EtcDamageCheck(self, other)) {
-            actor1->mCcValue = self->unk3;
+            actor1->mCcValue = self->mCanBounce;
             self->mInfo |= CC_NO_HIT;
         }
     }
@@ -426,7 +426,7 @@ bool dEn_c::carry_check(dActor_c *actor) {
     return false;
 }
 
-bool dEn_c::checkWallAndBg() {
+u32 dEn_c::checkWallAndBg() {
     float dir = l_EnMuki[mDirection];
     mBc.checkWall(&dir);
     mVec3_c truePos = mPos;
@@ -685,20 +685,20 @@ u32 dEn_c::EnBgCheck() {
     return flags;
 }
 
-bool dEn_c::EnBgCheckFoot() {
+u32 dEn_c::EnBgCheckFoot() {
     if (!mBc.hasSensorFoot()) {
         mFootPush2.set(0.0f, 0.0f, 0.0f);
         return false;
     }
-    bool res = mBc.checkFootEnm();
+    u32 res = mBc.checkFootEnm();
     mFootAttr3 = false;
     mFootAttr1 = false;
     if (mBc.isFoot()) {
-        u32 footAttr = mBc.getFootAttr();
-        if ((u16) footAttr == 3) {
+        u16 footAttr = mBc.getFootAttr();
+        if (footAttr == 3) {
             mFootAttr3 = true;
         }
-        if ((u16) footAttr == 1) {
+        if (footAttr == 1) {
             mFootAttr1 = true;
         }
         mFootPush = mBc.mPushForce;
