@@ -195,10 +195,23 @@
             }
         },
         {
+            "source": "dol/bases/d_bg.cpp",
+            "nonMatching": true,
+            "memoryRanges": {
+                ".text": "0x70850-0x77a00",
+                ".ctors": "0xb0-0xb4",
+                ".rodata": "0x1978-0x1be0",
+                ".data": "0x11040-0x11140",
+                ".sdata": "0x2d0-0x2d8",
+                ".sbss": "0x208-0x218",
+                ".sdata2": "0xc90-0xdd0"
+            }
+        },
+        {
             "source": "dol/bases/d_cc.cpp",
             "memoryRanges": {
                 ".text": "0x85a80-0x87500",
-                ".ctors": "0xc0-c4",
+                ".ctors": "0xc0-0xc4",
                 ".rodata": "0x2408-0x2418",
                 ".data": "0x12a00-0x12a60",
                 ".sbss": "0x2a0-0x2b0",
