@@ -473,9 +473,9 @@ bool daEnBomhei_c::hitCallback_Ice(dCc_c *cc1, dCc_c *cc2) {
 
     dActor_c *player = (dActor_c *) cc2->getOwner();
     if (player->mSpeed.x >= 0.0f) {
-        mBoyoMng.mDirection = 0;
+        mIceDirection = 0;
     } else {
-        mBoyoMng.mDirection = 1;
+        mIceDirection = 1;
     }
 
     mAnmMat.setFrame(0.0f, 0);

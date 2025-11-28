@@ -279,6 +279,7 @@ public:
     bool mFootAttr1;
     u8 mPad3[5];
     dEnBoyoMng_c mBoyoMng;
+    u8 mIceDirection;
     dIceMng_c mIceMng; ///< The ice manager for this enemy.
     float mAirAccelY; ///< The Y acceleration before entering a liquid.
     float mAirSpeedMaxY; ///< The maximum Y speed before entering a liquid.
