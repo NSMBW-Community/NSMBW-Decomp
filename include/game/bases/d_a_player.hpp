@@ -56,6 +56,20 @@ public:
         BLOCK_JUMP_ACTION_1
     };
 
+    /// @unofficial
+    enum RollSlipSubstate_e {
+        ROLL_SLIP_ACTION_0,
+        ROLL_SLIP_ACTION_1,
+        ROLL_SLIP_ACTION_2
+    };
+
+    /// @unofficial
+    enum PenguinSlideSubstate_e {
+        PENGUIN_SLIDE_ACTION_0,
+        PENGUIN_SLIDE_ACTION_1,
+        PENGUIN_SLIDE_ACTION_2
+    };
+
     struct GlobalData_t {
         float f1, f2, f3, f4, f5, f6, f7, f8;
         mVec3_c mPos1;
@@ -69,6 +83,16 @@ public:
     virtual bool setHipAttackOnEnemy(mVec3_c *hitPos);
     virtual void setHipAttackEffect();
     virtual void setHipAttack_AttackStart();
+    virtual void setSlipAction();
+    virtual void slipActionMove(int);
+    virtual bool isWaitFrameCountMax();
+    virtual bool checkWalkNextAction();
+    virtual void setWaitActionAnm(AnmBlend_e);
+    virtual void setWalkActionAnm(AnmBlend_e);
+    virtual void walkActionInit_Wait(AnmBlend_e);
+    virtual void walkAction_Wait();
+    virtual void walkActionInit_Move(AnmBlend_e);
+    virtual void walkAction_Move();
     virtual bool isCarry() const { return mCarryActorID != BASE_ID_NULL; }
 
     STATE_VIRTUAL_FUNC_DECLARE(dAcPy_c, Walk);
@@ -169,6 +193,14 @@ public:
     void updateMissSpin();
     void setKaniMoveSpeed(bool);
     void setCrouchSmokeEffect();
+    void setSlipSE();
+    void setSlipEffect();
+    void releaseCarryActor();
+    void setInvalidKeyTimer_LR(int, int);
+    bool checkPenguinSlideJump();
+    void setPenguinSlideEffect();
+    void setPenguinSlideLandEffect();
+    void setNormalWalkAnm(AnmBlend_e, float);
 
     bool isDrawingCarryFukidashi();
     void getCcBounds(sRangeDataF &bounds); ///< @unofficial
@@ -187,18 +219,25 @@ public:
     dPc_c mPc;
     u8 mPad2[0x10];
     int m_68;
-    u8 mPad3[0x20];
+    u8 mPad3[0x14];
+    int m_80;
+    int m_84;
+    u8 mPad4[0x4];
     int mJumpCounter;
     u8 m_90;
     u8 m_91;
-    u8 mPad4[0x3];
+    float m_94;
     mEf::levelEffect_c mLevelEf1;
     mEf::levelEffect_c mLevelEf2;
     mAng m_2e8;
     u8 mPad5[0x10];
     mEf::levelEffect_c mLevelEf3;
     dEf::followEffect_c mFollowEf;
-    u8 mPad6[0x18];
+    u8 mPad6[0x8];
+    int m_540;
+    int m_544;
+    int m_548;
+    float m_54c;
     mEf::levelEffect_c mLevelEf4;
     mEf::levelEffect_c mLevelEf5;
     u8 mPad7[0x28];
@@ -206,7 +245,8 @@ public:
     u8 mPad8[0x30];
     mEf::levelEffect_c mLevelEf7;
     mEf::levelEffect_c mLevelEf8;
-    u8 mPad9[0x2c];
+    u8 mPad9[0x28];
+    int m_b98;
     mEf::levelEffect_c mLevelEf9;
     mEf::levelEffect_c mLevelEf10;
     mEf::levelEffect_c mLevelEf11;
@@ -233,12 +273,15 @@ public:
     dEf::dLevelEffect_c mLevelEf15;
     u8 mPad15[0xc];
     dPyMdlMng_c mPyMdlMng;
-    u8 mPad16[0xc];
+    u8 mPad16[0x4];
+    float m_1598;
+    u8 mPad17[0x4];
     fBaseID_e mCarryActorID;
-    u8 mPad17[0xa];
+    u8 mPad18[0x8];
+    short m_15ac;
     short m_15ae;
     u16 m_15b0;
-    u8 mPad18[0x8];
+    u8 mPad19[0x8];
     dEf::followEffect_c mFollowEf4;
     dPropelParts_c mPropelParts;
     dPlayerOrchestra_c mPlayerOrchestra;

@@ -94,6 +94,7 @@ public:
     static bool checkBg(float, float, u8, u8, unsigned long);
     static bool checkGround(const mVec3_c *, float *, u8, u8, s8);
     static bool checkGround(const mVec3_c *, float *, int *, u8, u8, s8);
+    static bool checkGroundAngle(const mVec3_c *, float *, s16 *, u8, u8, s8, int *, int);
     static bool checkGroundHalf(const mVec3_c *, float *, u8, u8);
     static bool checkTenjou(const mVec3_c *, float *, u8, u8);
     static bool checkWall(const mVec3_c *, const mVec3_c *, float *p_hit_x, u8 layer, u8, dActor_c **p_hit_actor);

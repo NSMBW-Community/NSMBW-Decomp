@@ -77,7 +77,9 @@ public:
     int m_154;
     u8 mPad6[8];
     u32 mFlags;
-    u8 mPad7[0x98];
+    u8 mPad7[0x18];
+    u32 m_17c;
+    u8 mPad8[0x7c];
     s16 m_1fc;
     s16 m_1fe;
     s16 m_200;

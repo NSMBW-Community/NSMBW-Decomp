@@ -279,12 +279,14 @@ public:
         STATUS_2E = 0x2e,
         STATUS_30 = 0x30,
         STATUS_31 = 0x31,
+        STATUS_32 = 0x32,
         STATUS_33 = 0x33,
         STATUS_35 = 0x35,
         STATUS_36 = 0x36,
         STATUS_3A = 0x3a,
         STATUS_3B = 0x3b,
         STATUS_3C = 0x3c,
+        STATUS_3D = 0x3d,
         STATUS_3E = 0x3e,
         STATUS_40 = 0x40,
         STATUS_41 = 0x41,
@@ -390,6 +392,7 @@ public:
         STATUS_C0 = 0xc0,
         STATUS_C1 = 0xc1,
         STATUS_C2 = 0xc2,
+        STATUS_C3 = 0xc3,
         STATUS_C4 = 0xc4,
     };
 
@@ -1005,7 +1008,7 @@ public:
     fBaseID_e mHipAttackPlayerID;
     u32 mStatusFlags[7];
     float mSomeYOffset;
-    u8 mPad14[1];
+    u8 m_ca0;
     u8 m_ca1;
     u8 mPlayerLayer;
     mVec3_c mLastPosDelta;
