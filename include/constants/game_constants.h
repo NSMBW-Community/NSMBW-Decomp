@@ -42,6 +42,11 @@ enum DIRECTION_e {
     DIR_RIGHT
 };
 
+enum DIRECTION_LR_e {
+    DIR_LR_R,
+    DIR_LR_L
+};
+
 enum PATH_DIRECTION_e {
     PATH_DIR_NORMAL,
     PATH_DIR_REVERSE,

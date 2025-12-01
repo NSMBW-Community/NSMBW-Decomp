@@ -1412,7 +1412,7 @@ void dAcPy_c::executeState_CannonJump() {
                 mAccelF = 0.0f;
                 mAccelY = 0.0f;
             } else {
-                mAccelY = 0.5f;
+                mAccelY = -0.5f;
                 if (std::fabs(mSpeedF) >= 1.0f) {
                     mAccelF = 0.03f;
                 } else {
@@ -1485,7 +1485,7 @@ void dAcPy_c::initializeState_BlockJump() {
     onStatus(STATUS_7A);
     mSubstate = (int) mStateChangeParam;
     if (mSubstate == BLOCK_JUMP_ACTION_0) {
-        jmpInf_c jumpInf(3.628f, 0, 1);
+        jmpInf_c jumpInf(sc_JumpSpeed, 0, 1);
         _jumpSet(&jumpInf);
     } else {
         mSubstateTimer = 10;
@@ -1888,7 +1888,7 @@ void dAcPy_c::executeState_PenguinSlide() {
             } else {
                 m_548 = 0;
                 if (getPowerChangeType(true)) {
-                    mAccelF = 0.0f;
+                    mAccelF = 0.01f;
                 }
             }
         } else {
@@ -1965,7 +1965,7 @@ void dAcPy_c::setPenguinSlideLandEffect() {
 }
 
 bool dAcPy_c::isWaitFrameCountMax() {
-    return m_84 >= 80;
+    return mWaitFrameCount >= 80;
 }
 
 #pragma push
@@ -2087,8 +2087,8 @@ void dAcPy_c::setWaitActionAnm(AnmBlend_e blend) {
     if (count != 0) {
         ang = sum / count;
     }
-    static const int anmIDs1[] = { 135, 136 };
     static const int anmIDs2[] = { 150, 151 };
+    static const int anmIDs1[] = { 135, 136 };
     if (ang != 0 || m_80 != 0) {
         ang = -ang * sc_DirSpeed[mDirection];
         float f = ang * mAng::AngleToDegreeCoefficient + 70.0f;
@@ -2125,13 +2125,698 @@ bool dAcPy_c::isIceSlipAnmPlay() {
     return false;
 }
 
+void dAcPy_c::setNormalWalkAnm(AnmBlend_e blend, float speedRate) {
+    if (isIceSlipAnmPlay()) {
+        switch (m_f0) {
+            case 0:
+                if (isNowBgCross(BGC_IS_LIFT) && std::fabs(mBc.mIceSpeed) > 1.0f || std::fabs(mSpeedF) > 0.82f) {
+                    if (mSpeedF * sc_DirSpeed[mDirection] < 0.0f) {
+                        mPyMdlMng.setAnm(125);
+                    } else {
+                        mPyMdlMng.setAnm(124);
+                    }
+                    m_f0 = 1;
+                } else {
+                    setWaitActionAnm(blend);
+                }
+                break;
+            case 1:
+                calcAccOnIceLift();
+                if (mPyMdlMng.isAnmStop()) {
+                    setWaitActionAnm(blend);
+                    m_f0 = 2;
+                }
+                break;
+            case 2:
+                calcAccOnIceLift();
+                setWaitActionAnm(blend);
+                break;
+        }
+        fn_80057fd0(SE_PLY_ICE_SLIP, std::fabs(mSpeedF), false);
+    } else {
+        m_f0 = 0;
+        onStatus(STATUS_62);
+        u32 anmID = -1;
+        if (isCarry()) {
+            anmID = 26;
+            if (mPyMdlMng.mpMdl->m_17c & 0x4) {
+                anmID = 110;
+            }
+            blend = BLEND_0;
+        } else {
+            if (
+                isNowBgCross(BGC_ON_BELT_L) && mSpeedF > 0.0f ||
+                isNowBgCross(BGC_ON_BELT_R) && mSpeedF < 0.0f
+            ) {
+                anmID = 2;
+            } else {
+                float speed = std::fabs(mSpeedF);
+                if (speed <= getSpeedData()[0]) {
+                    anmID = 2;
+                } else if (speed < getSpeedData()[2]) {
+                    anmID = 3;
+                } else {
+                    anmID = 4;
+                }
+            }
+        }
+        if (!mPyMdlMng.isAnm(anmID)) {
+            float rate = 0.0f;
+            if (blend == BLEND_1) {
+                rate = dPyMdlMng_c::m_hio.mPyAnm.mAnm[anmID].mBlendDuration;
+            }
+            mPyMdlMng.setAnm(anmID, speedRate, rate, 0.0f);
+        } else {
+            mPyMdlMng.mpMdl->setRate(speedRate);
+        }
+    }
+}
+
+void dAcPy_c::walkActionInit_Wait(AnmBlend_e blend) {
+    mSubstate = 0;
+    mSubstateTimer = 150;
+    m_15b4 = 8;
+    setWaitActionAnm(blend);
+}
+
+void dAcPy_c::walkAction_Wait() {
+    if (!isWaitFrameCountMax()) {
+        mWaitFrameCount++;
+    }
+    if (mSpeedF) {
+        walkActionInit_Move(BLEND_1);
+        return;
+    }
+    setWaitActionAnm(BLEND_0);
+    if (isStatus(STATUS_63)) {
+        mAngle.y.chase(0, 0x400);
+    } else {
+        turnAngle();
+    }
+    if (mSubstateTimer == 0) {
+        m_15b2 = 8;
+    }
+    if (isStatus(STATUS_C1)) {
+        if (!sLib::calcTimer(&m_15b4)) {
+            offStatus(STATUS_C1);
+            m_15b6 = 30;
+        }
+    }
+}
+
+void dAcPy_c::walkActionInit_Move(AnmBlend_e blend) {
+    mSubstate = 1;
+    setWalkActionAnm(blend);
+}
+
+void dAcPy_c::walkAction_Move() {
+    m_80 = 0;
+    mWaitFrameCount = 0;
+    turnAngle();
+    setRunOnWaterEffect();
+    daPlBase_c::walkAction_Move();
+    if (m_88 == 0 && !isNowBgCross(BGC_15)) {
+        m_88 = 1;
+    }
+    if (m_88 == 1) {
+        setWaterWalkFlag();
+    }
+}
+
+void dAcPy_c::initializeState_Walk() {
+    AnmBlend_e blend = (AnmBlend_e) (int) mStateChangeParam;
+    calcSpeedOnIceLift();
+    m_88 = 1;
+    if (isOldBgCross(BGC_14)) {
+        m_88 = 0;
+    }
+    if (mSpeedF) {
+        walkActionInit_Move(blend);
+    } else {
+        walkActionInit_Wait(blend);
+    }
+    if (isItemKinopio()) {
+        setControlDemoKinopioWalk();
+    }
+    onStatus(STATUS_9B);
+    onStatus(STATUS_9D);
+    onStatus(STATUS_9E);
+    onStatus(STATUS_9F);
+    onStatus(STATUS_92);
+    onStatus(STATUS_A0);
+    onStatus(STATUS_C2);
+    onStatus(STATUS_A2);
+    onStatus(STATUS_A3);
+    m_80 = 0;
+}
+
+void dAcPy_c::executeState_Walk() {
+    daPlBase_c::executeState_Walk();
+    mAccelY = getGravityData()[0];
+    maxFallSpeedSet();
+    moveSpeedSet();
+    grandPowerSet();
+    if (isNowBgCross(BGC_IS_FOOT)) {
+        if (isNowBgCross(BGC_17)) {
+            onStatus(STATUS_C2);
+        } else {
+            offStatus(STATUS_C2);
+        }
+    }
+    offStatus(STATUS_8F);
+    if (isNowBgCross(BgCross1_e(BGC_ON_SINK_SAND | BGC_IN_SINK_SAND))) {
+        onStatus(STATUS_8F);
+    }
+    if (!checkWalkNextAction()) {
+        switch (mSubstate) {
+            case 0:
+                walkAction_Wait();
+                break;
+            case 1:
+                walkAction_Move();
+                break;
+        }
+        if (!(mPyMdlMng.getFlags() & 0x1000) && mPyMdlMng.getFlags2() & 0x40) {
+            mPyMdlMng.mpMdl->m_17c &= ~0x40;
+            mPyMdlMng.mpMdl->releaseBodyAnm(0.0f);
+        }
+    }
+}
+
+void dAcPy_c::finalizeState_Walk() {
+    daPlBase_c::finalizeState_Walk();
+    mWaitFrameCount = 0;
+    offStatus(STATUS_9B);
+    offStatus(STATUS_9D);
+    offStatus(STATUS_9E);
+    offStatus(STATUS_9F);
+    offStatus(STATUS_92);
+    offStatus(STATUS_A0);
+    offStatus(STATUS_A2);
+    offStatus(STATUS_8F);
+    offStatus(STATUS_A3);
+    m_f0 = 0;
+    if (mPyMdlMng.getFlags2() & 0x40) {
+        mPyMdlMng.mpMdl->m_17c &= ~0x40;
+        mPyMdlMng.mpMdl->releaseBodyAnm(0.0f);
+    }
+}
+
+void dAcPy_c::setRunOnWaterEffect() {
+    if (isNowBgCross(BGC_17)) {
+        static const char *efNames[] = {
+            "Wm_mr_waterrun_l_ss",
+            "Wm_mr_waterrun_r_ss"
+        };
+        dEf::createPlayerEffect(mPlayerNo, &mFunsuiSmokeEffect, efNames[mDirection], 0, &mPos, nullptr, nullptr);
+    }
+}
+
+void dAcPy_c::initializeState_Turn() {
+    onStatus(STATUS_9F);
+    onStatus(STATUS_A2);
+    mSubstate = 0;
+    if (getPowerChangeType(false) == POWER_CHANGE_1) {
+        mPyMdlMng.setAnm(122, 0.0f, 0.0f);
+    } else {
+        mPyMdlMng.setAnm(14, 0.0f, 0.0f);
+    }
+    mAngle.y = getMukiAngle((mSpeedF < 0.0f) ? DIR_LR_L : DIR_LR_R);
+    mDirection ^= 1;
+    mMaxSpeedF = 0.0f;
+    mAccelY = getGravityData()[0];
+    maxFallSpeedSet();
+    turnPowerSet();
+    mKey.onStatus(dAcPyKey_c::STATUS_SHAKE_COOLDOWN);
+}
+
+void dAcPy_c::finalizeState_Turn() {
+    offStatus(STATUS_9F);
+    offStatus(STATUS_A2);
+    fadeOutTurnEffect();
+}
+
+void dAcPy_c::turnPowerSet() {
+    u8 dir;
+    if (mSpeedF < 0.0f) {
+        dir = 1;
+    } else if (mSpeedF > 0.0f) {
+        dir = 0;
+    } else {
+        dir = mDirection;
+    }
+    sTurnPowerData data;
+    getTurnPower(data);
+    switch (mSubstate) {
+        case 0:
+        case 1:
+            if (isSaka()) {
+                if (mBc.getSakaUpDown(dir) == 1) {
+                    mAccelF = data.mSakaUp;
+                } else {
+                    mAccelF = data.mSakaDown;
+                }
+            } else {
+                mAccelF = data.mNormal;
+            }
+            if (isStatus(STATUS_89)) {
+                mAccelF = getAccelF() * scTurnPowerUpRate;
+            }
+            break;
+        case 2:
+            mAccelF = data.mAir;
+            break;
+    }
+}
+
+void dAcPy_c::setTurnSmokeEffect() {
+    mVec3_c efPos;
+    mPyMdlMng.mpMdl->getJointPos(&efPos, 7);
+    setBrakeSmokeEffect(efPos);
+    setTurnSmokeEffect();
+}
+
+void dAcPy_c::executeState_Turn() {
+    turnPowerSet();
+    if (!checkWalkNextAction()) {
+        switch (mSubstate) {
+            case 0:
+                setTurnSmokeEffect();
+                if (mSpeedF == 0.0f) {
+                    mSubstateTimer = 8;
+                    mSubstate = 1;
+                }
+                if (!mKey.buttonWalk(nullptr)) {
+                    if (mSpeedF) {
+                        mDirection = mSpeedF < 0.0f ? DIR_LR_L : DIR_LR_R;
+                    }
+                    setTurnEnd();
+                }
+                break;
+            case 1:
+                setTurnSmokeEffect();
+                if (mDirection != m_ca0) {
+                    setTurnEnd();
+                } else if (mSubstateTimer == 0) {
+                    fadeOutTurnEffect();
+                    mSubstate = 2;
+                    if (getPowerChangeType(false) == POWER_CHANGE_1) {
+                        mPyMdlMng.setAnm(123, 0.0f, 0.0f);
+                    } else {
+                        mPyMdlMng.setAnm(15, 0.0f, 0.0f);
+                    }
+                }
+                break;
+            case 2:
+                float maxSpeed = 0.0f;
+                int dir;
+                if (mKey.buttonWalk(&dir)) {
+                    if (mKey.buttonDush()) {
+                        maxSpeed = sc_DirSpeed[dir] * getSpeedData()[2];
+                    } else {
+                        maxSpeed = sc_DirSpeed[dir] * getSpeedData()[0];
+                    }
+                }
+                mMaxSpeedF = maxSpeed;
+                if (mDirection != m_ca0 || mPyMdlMng.isAnmStop()) {
+                    setTurnEnd();
+                }
+        }
+    }
+}
+
+bool dAcPy_c::checkCrouch() {
+    if (
+        !isStatus(STATUS_51) &&
+        !isStatus(STATUS_0F) &&
+        !isNowBgCross(BgCross1_e(BGC_IN_SINK_SAND | BGC_ON_SINK_SAND)) &&
+        !isStatus(STATUS_BE)
+    ) {
+        if (isCarry()) {
+            return false;
+        }
+        if (mKey.buttonCrouch()) {
+            if (mPowerup == POWERUP_PENGUIN_SUIT && isStatus(STATUS_0B)) {
+                changeState(StateID_PenguinSlide, 0);
+                return true;
+            }
+            changeState(StateID_Crouch, 0);
+            return true;
+        }
+    }
+    return false;
+}
+
+void dAcPy_c::setCrouchSmokeEffect() {
+    if (!mSpeedF) {
+        return;
+    }
+    if (!isNowBgCross(BGC_14)) {
+        mVec3_c efPos;
+        mPyMdlMng.mpMdl->getJointPos(&efPos, 1);
+        setBrakeSmokeEffect(efPos);
+    }
+    setSlipSE();
+}
+
+void dAcPy_c::initializeState_Crouch() {
+    if (!isNowBgCross(BGC_14)) {
+        mSubstate = CROUCH_GROUND;
+        onStatus(STATUS_9F);
+    } else {
+        mSubstate = CROUCH_WATER;
+        onStatus(STATUS_AA);
+    }
+    switch ((int) mStateChangeParam) {
+        case 0:
+            if (!isNowBgCross(BGC_14)) {
+                mPyMdlMng.setAnm(21, 3.0f);
+            } else {
+                mPyMdlMng.setAnm(21, dPyMdlBase_c::scWaterCrouchAnmSpeed, 3.0f, 0.0f);
+            }
+            break;
+        case 1:
+            mPyMdlMng.setAnm(20, 3.0f, 0.0f);
+            break;
+        case 2:
+            mPyMdlMng.setAnm(120);
+            break;
+    }
+    mAngle.y = getMukiAngle(mDirection);
+    fn_80057e70(SE_PLY_QUAT, true);
+    onStatus(STATUS_A8);
+    onStatus(STATUS_51);
+    onStatus(STATUS_A2);
+    onStatus(STATUS_A3);
+}
+
+void dAcPy_c::finalizeState_Crouch() {
+    offStatus(STATUS_A8);
+    offStatus(STATUS_9D);
+    offStatus(STATUS_9F);
+    offStatus(STATUS_AA);
+    offStatus(STATUS_51);
+    offStatus(STATUS_8F);
+    offStatus(STATUS_A2);
+    offStatus(STATUS_A3);
+    m_2e8 = 0;
+}
+
+void dAcPy_c::CrouchActionGround() {
+    if (isNowBgCross(BgCross1_e(BGC_IN_SINK_SAND | BGC_ON_SINK_SAND)) && setCancelCrouch()) {
+        return;
+    }
+    if (!setCrouchJump() && !checkCrouchSlip()) {
+        if (!isNowBgCross(BGC_IS_FOOT)) {
+            mSpeed.y = 0.0f;
+            changeState(StateID_SitJump, (void *) 1);
+        } else {
+            setCrouchSmokeEffect();
+            if (mKey.buttonCrouch() || !setCancelCrouch()) {
+                offStatus(STATUS_C1);
+            }
+        }
+    }
+}
+
+void dAcPy_c::CrouchActionWater() {
+    if (mKey.triggerJump()) {
+        if (!isNowBgCross(BGC_16)) {
+            setCrouchJump();
+            onStatus(STATUS_AA);
+        } else {
+            if (!checkStandUpRoofOnLift()) {
+                changeState(StateID_Swim, (void *) 0);
+                setWaterGroundJump();
+            }
+        }
+    } else {
+        if (!isNowBgCross(BGC_IS_FOOT)) {
+            changeState(StateID_Swim, (void *) 0);
+        } else {
+            if (!mKey.buttonCrouch() && setCancelCrouch()) {
+                changeState(StateID_Swim, (void *) 0);
+            }
+        }
+    }
+}
+
+void dAcPy_c::executeState_Crouch() {
+    gravitySet();
+    maxFallSpeedSet();
+    if (isNowBgCross(BGC_IS_FOOT)) {
+        mMaxSpeedF = 0.0f;
+        offStatus(STATUS_8F);
+    } else {
+        simpleMoveSpeedSet();
+        onStatus(STATUS_8F);
+    }
+    powerSet();
+    turnAngle();
+    m_2e8.chase(0, 0x200);
+    mAngle.y += m_2e8;
+    typedef void (dAcPy_c::*ActionProc)();
+    static const ActionProc l_CrouchActionProc[] = {
+        &dAcPy_c::CrouchActionGround,
+        &dAcPy_c::CrouchActionWater
+    };
+    (this->*l_CrouchActionProc[mSubstate])();
+    int anmID = mPyMdlMng.getAnm();
+    if (anmID == 21 || anmID == 120) {
+        if (mPyMdlMng.isAnmStop()) {
+            mPyMdlMng.setAnm(20);
+        }
+    }
+}
+
+bool dAcPy_c::setCancelCrouch() {
+    mAngle.y = getMukiAngle(mDirection);
+    return daPlBase_c::setCancelCrouch();
+}
+
+dAcPy_c *dAcPy_c::getCarryPlayer() {
+    dActor_c *actor = (dActor_c *) fManager_c::searchBaseByID(mCarryActorID);
+    if (actor != nullptr && actor->mKind == STAGE_ACTOR_PLAYER) {
+        return (dAcPy_c *) actor;
+    }
+    return nullptr;
+}
+
+dActor_c *dAcPy_c::getCarryPropelBlock() {
+    dActor_c *actor = (dActor_c *) fManager_c::searchBaseByID(mCarryActorID);
+    if (actor != nullptr && actor->mProfName == fProfile::AC_PROP_BLOCK) {
+        return actor;
+    }
+    return nullptr;
+}
+
+dActor_c *dAcPy_c::getCarryPropelActor() {
+    dActor_c *actor = (dActor_c *) fManager_c::searchBaseByID(mCarryActorID);
+    if (actor != nullptr) {
+        if (actor->mKind == STAGE_ACTOR_PLAYER) {
+            dAcPy_c *player = (dAcPy_c *) actor;
+            if (player->mPowerup == POWERUP_PROPELLER_SHROOM) {
+                return actor;
+            }
+        } else if (actor->mProfName == fProfile::AC_PROP_BLOCK) {
+            return actor;
+        }
+    }
+    return nullptr;
+}
+
+dActor_c *dAcPy_c::getCarryHardBlock() {
+    dActor_c *actor = (dActor_c *) fManager_c::searchBaseByID(mCarryActorID);
+    if (actor != nullptr && (
+        actor->mProfName == fProfile::AC_LIGHT_BLOCK ||
+        actor->mProfName == fProfile::AC_PROP_BLOCK
+    )) {
+        return actor;
+    }
+    return nullptr;
+}
+
+bool dAcPy_c::isLiftUp() {
+    if (isCarry() && m_1308 == 0) {
+        return true;
+    }
+    return false;
+}
+
+bool dAcPy_c::isCarryMamePlayer() {
+    dAcPy_c *player = getCarryPlayer();
+    if (player != nullptr && player->mPowerup == POWERUP_MINI_MUSHROOM) {
+        return true;
+    }
+    return false;
+}
+
+bool dAcPy_c::isLiftUpExceptMame() {
+    if (isLiftUp() && !isCarryMamePlayer()) {
+        return true;
+    }
+    return false;
+}
+
+float dAcPy_c::getLiftUpOffset() {
+    return m_1304 * sGlobalData_c<dAcPy_c>::mData.mPos[getTallType(-1)].y;
+}
+
+mVec3_c dAcPy_c::getCarryPos() {
+    mVec3_c jnt1, jnt2;
+    mPyMdlMng.mpMdl->getJointPos(&jnt1, 11);
+    mPyMdlMng.mpMdl->getJointPos(&jnt2, 14);
+    if (isCarry()) {
+        mVec3_c res = (jnt1 + jnt2) / 2.0f;
+        res.x = dScStage_c::getLoopPosX(res.x);
+        if (mPyMdlMng.getFlags2() & 4) {
+            res.y = mPos.y + getLiftUpOffset();
+        }
+        return res;
+    } else {
+        jnt2.x = dScStage_c::getLoopPosX(jnt2.x);
+        return jnt2;
+    }
+}
+
+mVec3_c dAcPy_c::getLiftUpPos() {
+    mMtx_c mtx;
+    getModel()->getJointMtx(&mtx, 11);
+    mtx.concat(mMtx_c::createTrans(5.0f, 0.0f, 0.0f));
+    mVec3_c tmp;
+    mtx.multVecZero(tmp);
+
+    getModel()->getJointMtx(&mtx, 14);
+    mtx.concat(mMtx_c::createTrans(5.0f, 0.0f, 0.0f));
+    mVec3_c tmp2;
+    mtx.multVecZero(tmp2);
+
+    mVec3_c res = (tmp + tmp2) / 2.0f;
+    res.x = dScStage_c::getLoopPosX(res.x);
+    if (mPyMdlMng.getFlags2() & 4) {
+        res.y = mPos.y + getLiftUpOffset();
+        if (res.y < mPos.y + 2.0f) {
+            res.y = mPos.y + 2.0f;
+        }
+    }
+    return res;
+}
+
+void dAcPy_c::clearSpinLiftUpReserve() {
+    m_12fc = BASE_ID_NULL;
+    m_1300 = 256.0f;
+}
+
+void dAcPy_c::checkSpinLiftUpReserve(dCc_c *cc) {
+    daPlBase_c *actor = (daPlBase_c *) cc->getOwner();
+    if (
+        actor == nullptr ||
+        !actor->isSpinLiftUpEnable() ||
+        !fn_8012e540(actor, false)
+    ) {
+        return;
+    }
+    float f = std::fabs(mPos.x - cc->getCenterPosX());
+    if (m_1300 > f) {
+        m_12fc = actor->mUniqueID;
+        m_1300 = f;
+    }
+}
+
+void dAcPy_c::setSpinLiftUpReserve() {
+    if (
+        !isStatus(STATUS_7A) &&
+        !isDemo() &&
+        !isCarry() &&
+        !isStatus(STATUS_04) &&
+        !isStatus(STATUS_06) &&
+        !isStatus(STATUS_08)
+    ) {
+        dActor_c *actor = (dActor_c *) fManager_c::searchBaseByID(m_12fc);
+        if (actor != nullptr && actor->isSpinLiftUpEnable()) {
+            mCarryActorID = actor->mUniqueID;
+            m_1308 = 0;
+            mPyMdlMng.mpMdl->m_17c |= 4;
+            if (actor->mKind == STAGE_ACTOR_PLAYER) {
+                dAcPy_c *player = (dAcPy_c *) actor;
+                mPyMdlMng.mpMdl->mpSpinLiftParentMdl = player->getModel();
+            }
+            changeState(StateID_LiftUp, 0);
+            dQuake_c::m_instance->shockMotor(mPlayerNo, dQuake_c::TYPE_7, 0, false);
+            actor->setSpinLiftUpActor(this);
+        }
+        clearSpinLiftUpReserve();
+    }
+}
+
+void dAcPy_c::checkSpinLiftUpRoofHeight() {
+    mVec3_c pos(mPos.x, mPos.y + 4.0f, mPos.z);
+    float _unused = m_d2c;
+    float height;
+    float f = 0.0f;
+    if (dBc_c::checkTenjou(&pos, &height, mLayer, 1) && f > height) {
+        f = height;
+    }
+    m_12f8 = f;
+}
+
+bool dAcPy_c::fn_8012e540(dActor_c *actor, bool b) {
+    if (actor == nullptr || isCarry() || !mKey.buttonCarry()) {
+        return false;
+    }
+    if (!b) {
+        return true;
+    }
+    if (isStatus(STATUS_92)) {
+        mCarryActorID = actor->mUniqueID;
+        m_1308 = 1;
+        mPyMdlMng.mpMdl->m_17c |= 2;
+        mPyMdlMng.mpMdl->setBodyAnm(28, 1.0f, 0.0f, 0.0f);
+        vf434(18, 0);
+        return true;
+    }
+    return false;
+}
+
+bool dAcPy_c::cancelCarry(dActor_c *carriedActor) {
+    dActor_c *actor = (dActor_c *) fManager_c::searchBaseByID(mCarryActorID);
+    if (actor == carriedActor || carriedActor == nullptr) {
+        mPyMdlMng.mpMdl->m_17c &= ~0x6;
+        mPyMdlMng.mpMdl->releaseBodyAnm(0.0f);
+        mPyMdlMng.mpMdl->mpSpinLiftParentMdl = nullptr;
+        mCarryActorID = BASE_ID_NULL;
+        return true;
+    }
+    return false;
+}
+
+void dAcPy_c::releaseCarryActor() {
+    if (!isCarry()) {
+        return;
+    }
+    dActor_c *actor = (dActor_c *) fManager_c::searchBaseByID(mCarryActorID);
+    if (actor != nullptr) {
+        if (actor->mKind == STAGE_ACTOR_PLAYER) {
+            dAcPy_c *player = (dAcPy_c *) actor;
+            player->setCarryOffFall(this);
+        } else {
+            actor->setCarryFall(this, 20);
+            actor->mCarryingFlags |= CARRY_RELEASE;
+            actor->mThrowDirection = mDirection;
+        }
+    }
+    cancelCarry(actor);
+}
+
 template <>
 dAcPy_c::GlobalData_t sGlobalData_c<dAcPy_c>::mData = {
     0.0f, 0.0f,
     1.5f, 4.5f, 0.5f, 4.0f, 1.4f, 1.0f,
-    mVec3_c(0.0f, 10.0f, 0.0f),
-    mVec3_c(0.0f, 16.0f, 0.0f),
-    mVec3_c(0.0f, 28.0f, 0.0f)
+    {
+        mVec3_c(0.0f, 10.0f, 0.0f),
+        mVec3_c(0.0f, 16.0f, 0.0f),
+        mVec3_c(0.0f, 28.0f, 0.0f)
+    }
 };
 
 dAcPy_HIO_Speed_c dAcPy_c::m_speed_hio[2];

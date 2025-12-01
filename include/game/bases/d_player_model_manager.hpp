@@ -57,6 +57,10 @@ public:
         setAnm(anmID, m_hio.mPyAnm.mAnm[anmID], f);
     }
 
+    bool isAnm(int anmID) const {
+        return mpMdl->m_154 == anmID;
+    }
+
     int getAnm() const {
         return mpMdl->m_154;
     }
@@ -80,6 +84,10 @@ public:
 
     u32 getFlags() const {
         return mpMdl->mFlags;
+    }
+
+    u32 getFlags2() const {
+        return mpMdl->m_17c;
     }
 
     mVec3_c &getHatPos() const { return mpMdl->mHatPosMaybe; }

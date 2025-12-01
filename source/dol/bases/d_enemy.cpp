@@ -419,7 +419,7 @@ bool dEn_c::CeilCheck(float y, dCc_c *cc) {
 
 bool dEn_c::carry_check(dActor_c *actor) {
     dAcPy_c *pl = (dAcPy_c *) actor;
-    if (pl->FUN_8012e540(this, true)) {
+    if (pl->fn_8012e540(this, true)) {
         mPlayerNo = *actor->getPlrNo();
         return true;
     }

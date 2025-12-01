@@ -70,11 +70,15 @@ public:
         PENGUIN_SLIDE_ACTION_2
     };
 
+    /// @unofficial
+    enum CrouchSubstate_e {
+        CROUCH_GROUND,
+        CROUCH_WATER
+    };
+
     struct GlobalData_t {
         float f1, f2, f3, f4, f5, f6, f7, f8;
-        mVec3_c mPos1;
-        mVec3_c mPos2;
-        mVec3_c mPos3;
+        mVec3_c mPos[3];
     };
 
     dAcPy_c();
@@ -93,6 +97,8 @@ public:
     virtual void walkAction_Wait();
     virtual void walkActionInit_Move(AnmBlend_e);
     virtual void walkAction_Move();
+    virtual bool checkCrouch();
+    virtual bool setCancelCrouch();
     virtual bool isCarry() const { return mCarryActorID != BASE_ID_NULL; }
 
     STATE_VIRTUAL_FUNC_DECLARE(dAcPy_c, Walk);
@@ -109,6 +115,8 @@ public:
     STATE_VIRTUAL_FUNC_DECLARE(dAcPy_c, Cloud);
 
     STATE_VIRTUAL_FUNC_DECLARE(dAcPy_c, DemoDown);
+
+    virtual bool isCarryMamePlayer();
 
     STATE_FUNC_DECLARE(dAcPy_c, RideOffJump);
     STATE_FUNC_DECLARE(dAcPy_c, SpinHipAttack);
@@ -169,7 +177,7 @@ public:
     void jumpExeTakeOff();
     void jumpExecAir();
     void fn_801282d0(int); ///< @unofficial
-    bool FUN_8012e540(dActor_c *, bool); ///< @unofficial
+    bool fn_8012e540(dActor_c *, bool); ///< @unofficial
     void setJumpCommonBase();
     dAcPy_c *getCarryPlayer();
     bool isIceSlipAnmPlay();
@@ -201,10 +209,27 @@ public:
     void setPenguinSlideEffect();
     void setPenguinSlideLandEffect();
     void setNormalWalkAnm(AnmBlend_e, float);
+    void setRunOnWaterEffect();
+    void turnPowerSet();
+    void setTurnSmokeEffect();
+    void CrouchActionGround();
+    void CrouchActionWater();
+    void setWaterGroundJump();
+    dActor_c *getCarryPropelBlock();
+    dActor_c *getCarryHardBlock();
+    bool isLiftUp();
+    bool isLiftUpExceptMame();
+    float getLiftUpOffset();
+    mVec3_c getLiftUpPos();
+    void clearSpinLiftUpReserve();
+    void checkSpinLiftUpReserve(dCc_c *cc);
+    void setSpinLiftUpReserve();
+    void checkSpinLiftUpRoofHeight();
+    void setCarryOffFall(const dAcPy_c *player);
 
     bool isDrawingCarryFukidashi();
     void getCcBounds(sRangeDataF &bounds); ///< @unofficial
-    void cancelCarry(dActor_c *carriedActor);
+    bool cancelCarry(dActor_c *carriedActor);
 
     mVec3_c getCarryPos();
     mMtx_c getCarryMtx() {
@@ -221,8 +246,8 @@ public:
     int m_68;
     u8 mPad3[0x14];
     int m_80;
-    int m_84;
-    u8 mPad4[0x4];
+    int mWaitFrameCount;
+    int m_88;
     int mJumpCounter;
     u8 m_90;
     u8 m_91;
@@ -268,20 +293,28 @@ public:
     u32 m_12b4;
     u8 mPad13[0x3c];
     u8 m_12f4;
-    u8 mPad14[0x34];
+    float m_12f8;
+    fBaseID_e m_12fc;
+    float m_1300;
+    float m_1304;
+    int m_1308;
+    u8 mPad15[0x20];
     dEf::dLevelEffect_c mLevelEf14;
     dEf::dLevelEffect_c mLevelEf15;
-    u8 mPad15[0xc];
+    u8 mPad16[0xc];
     dPyMdlMng_c mPyMdlMng;
-    u8 mPad16[0x4];
-    float m_1598;
     u8 mPad17[0x4];
+    float m_1598;
+    u8 mPad18[0x4];
     fBaseID_e mCarryActorID;
-    u8 mPad18[0x8];
+    u8 mPad19[0x8];
     short m_15ac;
     short m_15ae;
     u16 m_15b0;
-    u8 mPad19[0x8];
+    u16 m_15b2;
+    s16 m_15b4;
+    u16 m_15b6;
+    u8 mPad20[0x4];
     dEf::followEffect_c mFollowEf4;
     dPropelParts_c mPropelParts;
     dPlayerOrchestra_c mPlayerOrchestra;

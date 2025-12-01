@@ -248,6 +248,7 @@ public:
         STATUS_06 = 0x06,
         STATUS_08 = 0x08,
         STATUS_0A = 0x0a,
+        STATUS_0B = 0x0b,
         STATUS_0C = 0x0c,
         STATUS_0D = 0x0d,
         STATUS_0E = 0x0e,
@@ -980,7 +981,7 @@ public:
     int mBossDemoLandTimer;
     int m_d8[5];
     int m_ec;
-    u8 mPad11[0x4];
+    int m_f0;
     int mTimer_f4;
     int mTimer_f8;
     s8 m_fc;
@@ -994,7 +995,10 @@ public:
     int mFallTimer;
     DemoAnime_e mDemoAnime;
     u32 m_360;
-    mEf::levelEffect_c mFunsuiSmokeEffect; ///< Effect when being sent upwards by a sand fountain. Also used for the wall slide effect.
+
+    /// Effect when being sent upwards by a sand fountain.
+    /// Also used for the wall slide and water run effect.
+    mEf::levelEffect_c mFunsuiSmokeEffect;
     mEf::levelEffect_c mSlipSmokeEffect; ///< Smoke when sliding down a slope.
     mEf::levelEffect_c mBrakeSmokeEffect; ///< Smoke when turning around after running.
     mEf::levelEffect_c mRunEffect; ///< E.g. sand particles / snowflakes when running.

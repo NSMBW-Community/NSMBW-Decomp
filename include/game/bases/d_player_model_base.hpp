@@ -21,35 +21,35 @@ public:
     virtual void setPlayerMode();
     virtual void setColorType();
     virtual void setDark();
-    virtual void vf3c(); ///< @unofficial
+    virtual void setFunbariRate(float);
     virtual void onStarAnm();
     virtual void offStarAnm();
     virtual void onStarEffect();
     virtual void offStarEffect();
-    virtual void getJointMtx();
+    virtual void getJointMtx(mMtx_c *, int);
     virtual void getHeadPropelJointMtx();
     virtual void vf58(); ///< @unofficial
     virtual void setAnm(int, float, float, float);
-    virtual void vf60(); ///< @unofficial
-    virtual void vf64(); ///< @unofficial
-    virtual void vf68(); ///< @unofficial
+    virtual void setPersonalAnm(int, nw4r::g3d::ResAnmChr *, int);
+    virtual void setBodyAnm(int, float, float, float);
+    virtual void releaseBodyAnm(float);
     virtual void copyAnm();
-    virtual void vf70(); ///< @unofficial
-    virtual void vf74(); ///< @unofficial
+    virtual void _setFootAnm(nw4r::g3d::ResAnmChr &, m3d::playMode_e, float, float, float);
+    virtual void _setBodyAnm(nw4r::g3d::ResAnmChr &, m3d::playMode_e, float, float, float);
     virtual void setAnmBind();
-    virtual void vf7c(); ///< @unofficial
+    virtual void setPersonalRideAnm(int, nw4r::g3d::ResAnmChr *);
     virtual void setTexAnmType();
     virtual void setFrame(float);
     virtual void setBodyFrame();
     virtual void setRate(float);
     virtual void setBodyRate();
-    virtual void vf94(); ///< @unofficial
-    virtual void getPropelRollSpeed();
-    virtual void vf9c(); ///< @unofficial
-    virtual void vfa0(); ///< @unofficial
-    virtual void vfa4(); ///< @unofficial
-    virtual void vfa8(); ///< @unofficial
-    virtual void vfac(); ///< @unofficial
+    virtual void setPropelRollSpeed(s16); const
+    virtual s16 getPropelRollSpeed();
+    virtual void setPropelRollAngle(s16);
+    virtual s16 getPropelRollAngle() const;
+    virtual void setPropelScale(float);
+    virtual float *getLegLengthP(u8);
+    virtual void updateBonusCap();
 
     bool isFootStepTiming();
     void getJointPos(mVec3_c *, int);
@@ -66,7 +66,7 @@ public:
 
     u8 mPad1[0x1c];
     dAcPy_c *mpOwner;
-    u8 mPad2[0x4];
+    dPyMdlBase_c *mpSpinLiftParentMdl;
     m3d::anmChr_c mAnm;
     u8 mPad3[0x6c];
     mVec3_c mHatPosMaybe;
