@@ -3,7 +3,20 @@
 #include <game/bases/d_rc.hpp>
 
 /// @unofficial
-class dBcSensor_c;
+class dBcSensor_c {
+public:
+    u32 mFlags;
+    int mOffsetX;
+    int mOffsetY;
+};
+
+class sBcPointData {
+public:
+    u32 mFlags;
+    int mOffsetX;
+    int mOffsetY;
+    int mDist;
+};
 
 class dBg_ctr_c {
 public:

@@ -261,6 +261,7 @@ public:
         STATUS_15 = 0x15,
         STATUS_16 = 0x16,
         STATUS_17 = 0x17,
+        STATUS_18 = 0x18,
         STATUS_1A = 0x1a,
         STATUS_1B = 0x1b,
         STATUS_1C = 0x1c,
@@ -284,6 +285,7 @@ public:
         STATUS_33 = 0x33,
         STATUS_35 = 0x35,
         STATUS_36 = 0x36,
+        STATUS_39 = 0x39,
         STATUS_3A = 0x3a,
         STATUS_3B = 0x3b,
         STATUS_3C = 0x3c,
@@ -294,6 +296,7 @@ public:
         STATUS_42 = 0x42,
         STATUS_43 = 0x43,
         STATUS_45 = 0x45,
+        STATUS_46 = 0x46,
         STATUS_47 = 0x47,
         STATUS_48 = 0x48,
         STATUS_4B = 0x4b,
@@ -347,6 +350,7 @@ public:
         STATUS_87 = 0x87,
         STATUS_88 = 0x88,
         STATUS_89 = 0x89,
+        STATUS_8A = 0x8a,
         STATUS_8B = 0x8b,
         STATUS_8C = 0x8c,
         STATUS_8D = 0x8d,
@@ -354,6 +358,7 @@ public:
         STATUS_8F = 0x8f,
         STATUS_91 = 0x91,
         STATUS_92 = 0x92,
+        STATUS_93 = 0x93,
         STATUS_94 = 0x94,
         STATUS_95 = 0x95,
         STATUS_96 = 0x96,
@@ -371,6 +376,7 @@ public:
         STATUS_A3 = 0xa3,
         STATUS_A4 = 0xa4,
         STATUS_A5 = 0xa5,
+        STATUS_A6 = 0xa6,
         STATUS_A7 = 0xa7,
         STATUS_A8 = 0xa8,
         STATUS_A9 = 0xa9,
@@ -469,9 +475,9 @@ public:
     virtual bool isItemKinopio() { return false; }
     virtual void setPowerup(PLAYER_POWERUP_e, int); ///< @unofficial
     virtual u8 getTallType(s8);
-    virtual void *getHeadBgPointData() { return nullptr; };
-    virtual void *getWallBgPointData() { return nullptr; };
-    virtual void *getFootBgPointData() { return nullptr; };
+    virtual sBcPointData *getHeadBgPointData() { return nullptr; };
+    virtual sBcPointData *getWallBgPointData() { return nullptr; };
+    virtual sBcPointData *getFootBgPointData() { return nullptr; };
     virtual float getStandHeadBgPointY() { return 0.0f; }
     virtual void checkBgCrossSub() {}
     virtual void postBgCross();
@@ -896,8 +902,8 @@ public:
     mVec3_c getAnkleCenterPos();
 
     // [Needed to place getOldStateID in the correct location]
-    void dummy() {
-        mStateMgr.getOldStateID();
+    const sStateIDIf_c &getOldState() {
+        return *mStateMgr.getOldStateID();
     }
 
     bool isState(sStateIDIf_c &id) {
@@ -935,6 +941,9 @@ public:
     void onOldBgCross(BgCross2_e m) { mOldBgCross2 |= m; }
     void offOldBgCross(BgCross1_e m) { mOldBgCross1 &= ~m; }
     void offOldBgCross(BgCross2_e m) { mOldBgCross2 &= ~m; }
+
+
+    float getDirSpeed() { return sc_DirSpeed[mDirection]; }
 
     int mReductionMode;
     int mSquishKeyframeIdx;
@@ -1059,7 +1068,7 @@ public:
     int m_da0;
     float mWaterHeight;
     float mPrevWaterHeight;
-    u32 m_dac;
+    int m_dac;
     float m_db0;
     bool mIsBgDamage;
     s8 mBgDamageType;

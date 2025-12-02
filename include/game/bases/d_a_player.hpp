@@ -76,14 +76,45 @@ public:
         CROUCH_WATER
     };
 
+    /// @unofficial
+    enum ThrowSubstate_e {
+        THROW_ACTION_0,
+        THROW_ACTION_1,
+        THROW_ACTION_2
+    };
+
+    /// @unofficial
+    enum SwimParam_e {
+        SWIM_PARAM_0,
+        SWIM_PARAM_1,
+        SWIM_PARAM_2,
+        SWIM_PARAM_3
+    };
+
+    /// @unofficial
+    enum SwimSubstate_e {
+        SWIM_ACTION_0,
+        SWIM_ACTION_1,
+        SWIM_ACTION_2,
+        SWIM_ACTION_3
+    };
+
     struct GlobalData_t {
         float f1, f2, f3, f4, f5, f6, f7, f8;
         mVec3_c mPos[3];
+        float mThrowSpeed1;
+        float mThrowSpeed2;
+        float mThrowSpeedMax;
     };
 
     dAcPy_c();
     virtual ~dAcPy_c();
 
+    virtual bool isSpinLiftUpEnable();
+    virtual void setSpinLiftUpActor(dActor_c *carryingActor);
+    virtual sBcPointData *getHeadBgPointData() { return &getBgPointData()[1]; }
+    virtual sBcPointData *getWallBgPointData() { return &getBgPointData()[2]; }
+    virtual sBcPointData *getFootBgPointData() { return &getBgPointData()[0]; }
     virtual bool setHipAttackOnEnemy(mVec3_c *hitPos);
     virtual void setHipAttackEffect();
     virtual void setHipAttack_AttackStart();
@@ -226,6 +257,45 @@ public:
     void setSpinLiftUpReserve();
     void checkSpinLiftUpRoofHeight();
     void setCarryOffFall(const dAcPy_c *player);
+    bool checkEnableThrow();
+    void initializeThrowCommonBase();
+    void initializeThrowCommon();
+    void finalizeThrowCommonBase();
+    void finalizeThrowCommon();
+    void setThrowActor();
+    sBcPointData *getBgPointData();
+    void executeThrowCommon();
+    void setWaterMoveSpeed();
+    void calcUzuSwimSpeed(float, float, float *); ///< @unofficial
+    void setUzuSpeedY(float f);
+    void setUzuSpeedF(float f);
+    bool setUzuSwimAction();
+    void setSwimAction_Swim(AnmBlend_e blend);
+    bool setSwimAction();
+    void setWaterOutEffect();
+    void setPaddleSwimEffect();
+    void resetPaddleSwimEffect();
+    void setWaterSurfaceSwimEffect();
+    void setFlutterKickEffect();
+    void setSwimAction_Surface(AnmBlend_e blend);
+    void setSwimAction_Dive(AnmBlend_e blend);
+    void setInitSwimAction_FireBall();
+    sBcPointData *getBgPointData_Powerup(PLAYER_POWERUP_e, int); ///< @unofficial
+    bool setWaterSurfaceJump();
+    void createFireBall(int);
+    void SwimAction_Swim();
+    void setSwimAction_Walk(AnmBlend_e blend);
+    void setSwimAction_Penguin(AnmBlend_e blend);
+    void setSwimActionWalkAnm();
+    void SwimAction_Walk();
+    s16 getPenguinSwinAngleX();
+    void setPenWaterMoveSpeed(int i);
+    bool setPenguinPaddleSwim();
+    void SwimAction_Penguin();
+    void setSwimAction_FireBall();
+    void SwimAction_FireBall();
+    bool checkSetFireBall();
+    void calcPenguinSwimGroundRev();
 
     bool isDrawingCarryFukidashi();
     void getCcBounds(sRangeDataF &bounds); ///< @unofficial
@@ -270,16 +340,23 @@ public:
     u8 mPad8[0x30];
     mEf::levelEffect_c mLevelEf7;
     mEf::levelEffect_c mLevelEf8;
-    u8 mPad9[0x28];
+    u8 mPad9[0x10];
+    int m_b80;
+    int m_b84;
+    u8 m_b88;
+    u8 m_b89;
+    float m_b8c;
+    float m_b90;
+    float m_b94;
     int m_b98;
     mEf::levelEffect_c mLevelEf9;
     mEf::levelEffect_c mLevelEf10;
     mEf::levelEffect_c mLevelEf11;
     mEf::levelEffect_c mLevelEf12;
-    u8 mPad10[0x8];
+    u8 mPad11[0x8];
     int m_1044;
     s16 m_1048;
-    u8 mPad11[0x4];
+    u8 mPad12[0x4];
     float mSpinHoldReq;
     u32 m_1054;
     u32 m_1058;
@@ -288,17 +365,18 @@ public:
     dEf::followEffect_c mFollowEf3;
     u32 m_1288;
     u32 m_128c;
-    u8 mPad12[0x18];
+    u8 mPad13[0x18];
     mVec3_c m_12a8;
     u32 m_12b4;
-    u8 mPad13[0x3c];
+    u8 mPad14[0x3c];
     u8 m_12f4;
     float m_12f8;
     fBaseID_e m_12fc;
     float m_1300;
     float m_1304;
     int m_1308;
-    u8 mPad15[0x20];
+    int m_130c;
+    u8 mPad15[0x1c];
     dEf::dLevelEffect_c mLevelEf14;
     dEf::dLevelEffect_c mLevelEf15;
     u8 mPad16[0xc];

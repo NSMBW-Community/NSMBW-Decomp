@@ -28,9 +28,9 @@ public:
     virtual void setSpecDir(const nw4r::math::VEC3&, EGG::Effect::ERecursive);
     virtual void setSpecDirAdd(const nw4r::math::VEC3&, EGG::Effect::ERecursive);
     virtual void setVelocity(const nw4r::math::VEC3&);
-    virtual void setColor(unsigned char, unsigned char, unsigned char, unsigned char, EGG::Effect::ERecursive);
-    virtual void vf5c();
-    virtual void vf60();
+    virtual void setColor(u8, u8, u8, u8, EGG::Effect::ERecursive);
+    virtual void setRegisterColor(const _GXColor &, const _GXColor &, u8, EGG::Effect::ERecursive);
+    virtual void setRegisterAlpha(u8, u8, u8, EGG::Effect::ERecursive);
     virtual void setDefaultParticleSize(nw4r::math::VEC2&, EGG::Effect::ERecursive);
     virtual void setParticleScale(nw4r::math::VEC2&, EGG::Effect::ERecursive);
     virtual void setDefaultParticleRotate(const nw4r::math::VEC3&, EGG::Effect::ERecursive);

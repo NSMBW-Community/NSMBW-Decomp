@@ -2340,7 +2340,7 @@ void daPlBase_c::setFootSound() {
             startFootSoundPlayer(SE_PLY_FOOTNOTE_PNGN);
             return;
         }
-        static const dAudio::SoundEffectID_t scFootSoundID[] = {
+        static const dAudio::SoundEffectID_t scFootSeID[] = {
             SE_PLY_FOOTNOTE_ROCK,
             SE_PLY_FOOTNOTE_SNOW,
             SE_PLY_FOOTNOTE_SAND,
@@ -2355,7 +2355,7 @@ void daPlBase_c::setFootSound() {
             SE_PLY_FOOTNOTE_LEAF,
             SE_PLY_FOOTNOTE_WOOD
         };
-        startFootSoundPlayer(scFootSoundID[mGroundType]);
+        startFootSoundPlayer(scFootSeID[mGroundType]);
     }
 }
 

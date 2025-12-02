@@ -1,6 +1,9 @@
 #include <game/bases/d_a_player.hpp>
 #include <game/bases/d_a_player_manager.hpp>
+#include <game/bases/d_player_effect_manager.hpp>
+#include <game/bases/d_bg.hpp>
 #include <game/bases/d_info.hpp>
+#include <game/bases/d_water_entry_manager.hpp>
 #include <game/bases/d_s_stage.hpp>
 #include <game/sLib/s_GlobalData.hpp>
 #include <constants/sound_list.h>
@@ -66,7 +69,25 @@ const float data_802f5a0c[] = {
     1.0f, -6.0f
 };
 
-extern const float data_802f5a48[];
+inline float getSomeData(int idx) {
+    static const float data[] = {
+        0.0f, 0.08f, 0.07f, 0.11f, -1.5f, -1.25f,
+        -1.0f, -0.1f, 1.5f, 1.5f, 2.5f, 1.5f,
+        1.0f, -6.0f
+    };
+    return data[idx];
+}
+
+const float data_802f5a48[] = {
+    25.0f, 3.627f, 3.0f, 0.6f, 0.0f,
+    1.2f, 2.0f, 1.5f, 2.4f, 0.02f, 0.01f,
+    0.05f, 0.2f, 0.3f, 0.3f, 0.8f, 0.7f,
+    0.8f, 0.14f, 4.0f, 0.07f, 40.0f
+};
+
+inline float getData(int idx) {
+    return data_802f5a48[idx];
+}
 
 bool dAcPy_c::setHipAttackOnEnemy(mVec3_c *hitPos) {
     if (isState(StateID_HipAttack) && isStatus(STATUS_1C)) {
@@ -1733,7 +1754,7 @@ void dAcPy_c::initializeState_PenguinSlide() {
     mPyMdlMng.setAnm(139);
     vf434(27, 0);
     m_540 = 30;
-    m_544 = data_802f5a48[0];
+    m_544 = getData(0);
 }
 
 void dAcPy_c::finalizeState_PenguinSlide() {
@@ -1928,7 +1949,7 @@ void dAcPy_c::setPenguinSlideEffect() {
         dEf::createPlayerEffect(mPlayerNo, &mLevelEf5, "Wm_en_cmnwater02", 0, &efPos, &ang, nullptr);
     } else {
         mpMdlMng->mpMdl->getJointPos(&efPos, 1);
-        static const char *effectNames[] = {
+        static const char *sc_penguinSlidEffectID[] = {
             "Wm_mr_penguinsmoke",
             "Wm_mr_penguinsnow",
             "Wm_mr_pdesertsmoke",
@@ -1943,7 +1964,7 @@ void dAcPy_c::setPenguinSlideEffect() {
             "Wm_mr_penguinsmoke",
             "Wm_mr_penguinsmoke"
         };
-        dEf::createPlayerEffect(mPlayerNo, &mLevelEf4, effectNames[mGroundType], 0, &efPos, nullptr, nullptr);
+        dEf::createPlayerEffect(mPlayerNo, &mLevelEf4, sc_penguinSlidEffectID[mGroundType], 0, &efPos, nullptr, nullptr);
         switch (mGroundType) {
             case GROUND_TYPE_SNOW:
                 dEf::createPlayerEffect(mPlayerNo, &mLevelEf5, "Wm_mr_p_snowslip", 0, &efPos, &ang, nullptr);
@@ -2576,7 +2597,7 @@ void dAcPy_c::executeState_Crouch() {
     m_2e8.chase(0, 0x200);
     mAngle.y += m_2e8;
     typedef void (dAcPy_c::*ActionProc)();
-    static const ActionProc l_CrouchActionProc[] = {
+    static ActionProc l_CrouchActionProc[] = {
         &dAcPy_c::CrouchActionGround,
         &dAcPy_c::CrouchActionWater
     };
@@ -2808,6 +2829,1260 @@ void dAcPy_c::releaseCarryActor() {
     cancelCarry(actor);
 }
 
+void dAcPy_c::setCarryOffFall(const dAcPy_c *carrier) {
+    m_d8c = mPos.y;
+    mDirection = carrier->mDirection;
+    mSpeedF = sc_DirSpeed[mDirection];
+    mPos.x += mSpeedF * 5.0f;
+
+    changeState(StateID_Fall, 0);
+    onStatus(STATUS_4D);
+}
+
+#pragma push
+#pragma pool_data off
+bool dAcPy_c::checkEnableThrow() {
+    if (!isCarry()) {
+        return false;
+    }
+    dActor_c *actor = (dActor_c *) fManager_c::searchBaseByID(mCarryActorID);
+    if (actor == nullptr) {
+        cancelCarry(nullptr);
+        return false;
+    }
+    return !mKey.buttonCarry();
+}
+
+bool dAcPy_c::checkCarryThrow() {
+    if (checkEnableThrow()) {
+        if (isState(StateID_Propel)) {
+            changeState(StateID_PropelThrow, 0);
+            return true;
+        } else {
+            changeState(StateID_Throw, 0);
+            return true;
+        }
+    }
+    return false;
+}
+#pragma pop
+
+void dAcPy_c::initializeThrowCommonBase() {
+    vf434(19, 0);
+    if (isNowBgCross(BGC_14)) {
+        mPyMdlMng.setAnm(37);
+    } else {
+        dActor_c *actor = (dActor_c *) fManager_c::searchBaseByID(mCarryActorID);
+        if (actor->mKind == STAGE_ACTOR_PLAYER) {
+            mPyMdlMng.setAnm(111, 0.0f, 0.0f);
+        } else {
+            mPyMdlMng.setAnm(27, 0.0f, 0.0f);
+        }
+    }
+    mAngle.y = getMukiAngle(mDirection);
+    onStatus(STATUS_18);
+}
+
+void dAcPy_c::initializeThrowCommon() {
+    initializeThrowCommonBase();
+    onStatus(STATUS_AA);
+    onStatus(STATUS_97);
+}
+
+void dAcPy_c::finalizeThrowCommonBase() {
+    offStatus(STATUS_18);
+}
+
+void dAcPy_c::finalizeThrowCommon() {
+    finalizeThrowCommonBase();
+    if (mSubstate == 0) {
+        releaseCarryActor();
+    }
+    offStatus(STATUS_AA);
+    offStatus(STATUS_97);
+    offStatus(STATUS_92);
+    offStatus(STATUS_8F);
+}
+
+void dAcPy_c::setThrowActor() {
+    if (!isCarry()) {
+        return;
+    }
+    dActor_c *actor = (dActor_c *) fManager_c::searchBaseByID(mCarryActorID);
+    if (actor != nullptr) {
+        if (actor->mKind == STAGE_ACTOR_PLAYER) {
+            dAcPy_c *player = (dAcPy_c *) actor;
+            player->changeState(StateID_RollSlip, 0);
+
+            player->mSpeed.y = sGlobalData_c<dAcPy_c>::mData.mThrowSpeed1;
+            float speed = getDirSpeed();
+            speed *= sGlobalData_c<dAcPy_c>::mData.mThrowSpeed2;
+            if (getDirSpeed() * mSpeedF >= 0.0f) {
+                speed += mSpeedF * 0.35f;
+                if (speed > sGlobalData_c<dAcPy_c>::mData.mThrowSpeedMax) {
+                    speed = sGlobalData_c<dAcPy_c>::mData.mThrowSpeedMax;
+                }
+            }
+            player->mSpeedF = speed;
+            player->setNoHitPlayer(this, 10);
+
+            mVec3_c pos = player->mPos;
+
+            float spd = speed + sc_DirSpeed[mDirection] * 5.0f;
+            if (spd < -8.0f) {
+                spd = -8.0f;
+            } else if (spd > 8.0f) {
+                spd = 8.0f;
+            }
+
+            mVec3_c p(mPos.x, pos.y, pos.z);
+            pos.x += spd;
+
+            float thing = sc_DirSpeed[mDirection] * std::fabs(getWallBgPointData()->mDist / 4096.0f);
+            mVec3_c playerPos(pos.x + thing, pos.y, pos.z);
+            float hitX;
+            if (dBc_c::checkWall(&p, &playerPos, &hitX, mLayer, 1, nullptr)) {
+                bool stop = false;
+                if (mPowerup == POWERUP_NONE) {
+                    mVec3_c revPos(hitX, pos.y + 16.0f, pos.z);
+                    float hitY;
+                    if (dBc_c::checkGround(&revPos, &hitY, mLayer, 1, -1)) {
+                        if (hitY <= mPos.y + 16.0f) {
+                            pos.y = mPos.y + 16.0f;
+                            stop = true;
+                        }
+                    }
+                }
+                if (!stop) {
+                    player->mSpeedF = 0.0f;
+                    pos.x = hitX - thing;
+                }
+            }
+            p.set(pos.x, pos.y + 1.0f, pos.z);
+            if (dBc_c::checkTenjou(&p, &hitX, mLayer, 1)) {
+                float offsX = std::fabs(getHeadBgPointData()->mDist / 4096.0f);
+                // float tmp = hitX - offsX;
+                if (pos.y > hitX - offsX) {
+                    pos.y = hitX - offsX;
+                    player->mSpeed.y = 0.0f;
+                }
+            }
+            player->mPos = pos;
+            player->mLastPos = player->mPos;
+            fn_80055d00();
+        } else {
+            actor->mCarryingFlags |= CARRY_RELEASE | CARRY_THROW;
+            actor->mThrowDirection = mDirection;
+        }
+    }
+    cancelCarry(actor);
+}
+
+#pragma push
+#pragma pool_data off
+void dAcPy_c::executeThrowCommon() {
+    if (isNowBgCross(BGC_IS_FOOT)) {
+        offStatus(STATUS_8F);
+    } else {
+        onStatus(STATUS_8F);
+    }
+    switch ((ThrowSubstate_e) mSubstate) {
+        case THROW_ACTION_0:
+            if (mPyMdlMng.mpMdl->m_154 == 37) {
+                if (mPyMdlMng.mpMdl->mAnm.checkFrame(12.0f)) {
+                    mSubstate = THROW_ACTION_2;
+                    setThrowActor();
+                }
+            } else {
+                if (isNowBgCross(BGC_IS_FOOT) && mKey.triggerJump()) {
+                    fn_80145fd0(1);
+                    setJumpSpeed();
+                    setJumpCommonBase();
+                }
+                if (mPyMdlMng.mpMdl->mAnm.checkFrame(5.0f)) {
+                    mSubstate = THROW_ACTION_1;
+                    setThrowActor();
+                    onStatus(STATUS_92);
+                }
+            }
+            break;
+        case THROW_ACTION_1:
+            if (isNowBgCross(BGC_IS_FOOT) && checkJumpTrigger()) {
+                break;
+            }
+            if (mPyMdlMng.mpMdl->mAnm.getFrame() >= 20.0f) {
+                if (isNowBgCross(BGC_IS_FOOT)) {
+                    if (mSpeedF) {
+                        changeState(StateID_Walk, (void *) 1);
+                        break;
+                    }
+                } else {
+                    changeState(StateID_Fall, 0);
+                }
+            }
+            if (mPyMdlMng.isAnmStop()) {
+                changeState(StateID_Walk, (void *) 1);
+            }
+            break;
+        case THROW_ACTION_2:
+            if (mPyMdlMng.isAnmStop()) {
+                changeState(StateID_Swim, 0);
+            }
+            break;
+    }
+}
+#pragma pop
+
+void dAcPy_c::initializeState_Throw() {
+    initializeThrowCommon();
+}
+
+void dAcPy_c::finalizeState_Throw() {
+    finalizeThrowCommon();
+}
+
+void dAcPy_c::executeState_Throw() {
+    if (isNowBgCross(BGC_14)) {
+        setWaterMoveSpeed();
+    } else {
+        gravitySet();
+        maxFallSpeedSet();
+        simpleMoveSpeedSet();
+        powerSet();
+    }
+    executeThrowCommon();
+}
+
+void dAcPy_c::initializeState_PropelThrow() {
+    initializeThrowCommon();
+}
+
+void dAcPy_c::finalizeState_PropelThrow() {
+    finalizeThrowCommon();
+}
+
+void dAcPy_c::executeState_PropelThrow() {
+    if (!isNowBgCross(BGC_IS_FOOT) && mKey.buttonJump()) {
+        mAccelY = getSomeData(7);
+        mMaxFallSpeed = getSomeData(5);
+    } else {
+        mAccelY = getGravityData()[0];
+        mMaxFallSpeed = -4.0f;
+    }
+    mAccelF = getSpeedData()[8];
+    mMaxSpeedF = 0.0f;
+    executeThrowCommon();
+}
+
+bool dAcPy_c::isSpinLiftUpEnable() {
+    if (
+        isStatus(STATUS_7A) ||
+        isDemo() ||
+        isCarry() ||
+        mRideActorID != BASE_ID_NULL ||
+        isStatus(STATUS_93) ||
+        isStatus(STATUS_04) ||
+        isStatus(STATUS_06) ||
+        isStatus(STATUS_08)
+    ) {
+        return false;
+    }
+    return true;
+}
+
+void dAcPy_c::setSpinLiftUpActor(dActor_c *carryingActor) {
+    if (mRideActorID != BASE_ID_NULL) {
+        return;
+    }
+    mRideActorID = carryingActor->mUniqueID;
+    if (!isState(StateID_CarryPlayer)) {
+        changeState(StateID_CarryPlayer, 0);
+    }
+
+    dQuake_c::getInstance()->shockMotor(*getPlrNo(), dQuake_c::TYPE_7, 0, false);
+}
+
+void dAcPy_c::initializeState_LiftUp() {
+    onStatus(STATUS_8A);
+    onStatus(STATUS_97);
+    onStatus(STATUS_46);
+    m_1304 = 0.0f;
+    dAcPy_c *carryPlayer = getCarryPlayer();
+    setVirusStar(carryPlayer);
+    if (carryPlayer != nullptr) {
+        vf434(20, 0);
+    } else {
+        vf434(18, 0);
+    }
+    fn_80057e70(SE_PLY_OTHER_ON, false);
+    mPyMdlMng.setAnm(108, 0.0f, 0.0f);
+    mSpeedF = 0.0f;
+    mSpeed.y = 0.3f;
+    m_1048 = 10000;
+    m_130c = 0;
+}
+
+void dAcPy_c::finalizeState_LiftUp() {
+    offStatus(STATUS_97);
+    offStatus(STATUS_46);
+    m_1304 = 1.0f;
+    mAngle.y = getMukiAngle(mDirection);
+}
+
+void dAcPy_c::executeState_LiftUp() {
+    m_130c++;
+    float f = m_130c / 30.0f;
+    if (f > 1.0f) {
+        f = 1.0f;
+    }
+    m_1304 = f;
+    sLib::chase(&m_1048, 0, 250);
+    if (m_1048 != 0) {
+        mAngle.y += m_1048;
+    } else {
+        turnAngle();
+    }
+    setCcAtSpin();
+    gravitySet();
+    maxFallSpeedSet();
+    if (m_130c <= 18) {
+        mMaxSpeedF = 0.0f;
+        powerSet();
+    } else {
+        simpleMoveSpeedSet();
+        powerSet();
+        if (checkCarryThrow()) {
+            int dir;
+            if (mKey.buttonWalk(&dir)) {
+                mDirection = dir;
+                mAngle.y = getMukiAngle(mDirection);
+            }
+            return;
+        } else if (checkJumpTrigger()) {
+            // [TODO...]
+            onStatus(STATUS_48);
+            return;
+        }
+    }
+    if (mPyMdlMng.isAnmStop()) {
+        changeState(StateID_Walk, (void *) 1);
+    }
+}
+
+void dAcPy_c::calcUzuSwimSpeed(float f1, float f2, float *fOut) {
+    if (!isStatus(STATUS_3B)) {
+        return;
+    }
+
+    *fOut *= data_802f5a48[15];
+    if (*fOut * f1 >= 0.0f && std::fabs(f2) > data_802f5a48[17]) {
+        *fOut = 0.0f;
+        return;
+    }
+
+    if (*fOut * f1 < 0.0f) {
+        if (f2 * f1 > 0.0f) {
+            if (std::fabs(f2) > 0.5f) {
+                return;
+            }
+        } else {
+            *fOut *= data_802f5a48[16];
+        }
+        float lim = data_802f5a48[11] - 0.01f;
+        if (std::fabs(*fOut) > lim) {
+            if (*fOut < 0.0f) {
+                *fOut = -lim;
+            } else {
+                *fOut = lim;
+            }
+        }
+    }
+}
+
+void dAcPy_c::setUzuSpeedY(float f) {
+    if (std::fabs(mSpeed.y) < 2.0f) {
+        if (f > 0.0f) {
+            if (isNowBgCross(BGC_IS_FOOT)) {
+                setUzuSwimAction();
+            }
+            if (isNowBgCross(BGC_IS_HEAD)) {
+                return;
+            }
+        }
+        calcUzuSwimSpeed(m_b94, mSpeed.y, &f);
+        if (f > 0.0f) {
+            m_b88 = 20;
+        }
+        if (f * m_b94 < 0.0f) {
+            onStatus(STATUS_42);
+        }
+        mSpeed.y += f;
+    }
+}
+
+void dAcPy_c::setUzuSpeedF(float f) {
+    if (std::fabs(mSpeedF) < 4.0f) {
+        calcUzuSwimSpeed(m_b90, mSpeedF, &f);
+        if (f * m_b90 < 0.0f) {
+            onStatus(STATUS_41);
+        }
+        mSpeedF += f;
+    }
+}
+
+bool dAcPy_c::setUzuSwimAction() {
+    if (isNowBgCross(BGC_14) && isState(StateID_Swim) && mSubstate == 1) {
+        setSwimAction_Swim(BLEND_1);
+        return true;
+    }
+    return false;
+}
+
+bool dAcPy_c::setSwimAction() {
+    if (isStatus(STATUS_45) || isStatus(STATUS_AA) || isStatus(STATUS_3A)) {
+        return false;
+    }
+    if (isNowBgCross(BGC_14)) {
+        if (isOldBgCross(BGC_14)) {
+            changeState(StateID_Swim, 0);
+        } else if (isStatus(STATUS_A6)) {
+            changeState(StateID_Swim, (void *) 2);
+        } else {
+            changeState(StateID_Swim, (void *) 1);
+        }
+        return true;
+    }
+    return false;
+}
+
+void dAcPy_c::setWaterInEffect() {
+    dScStage_c *stage = dScStage_c::m_instance;
+    bool bigSplash = false;
+
+    if (isNowBgCross(BGC_WATER_BUBBLE)) {
+        fn_80057e70(SE_PLY_SPLASH_GEL, false);
+        mAng3_c efAng(0, 0, -mAirWaterHitAngle);
+        dEf::createPlayerEffect(mPlayerNo, "Wm_mr_wfloatsplash", 0, &mAirWaterHitPos, &efAng, nullptr);
+        return;
+    }
+    if (
+        stage->mCurrWorld == WORLD_4 &&
+        stage->mCurrLevel == STAGE_CASTLE &&
+        stage->mCurrFile == 1
+    ) {
+        bigSplash = true;
+    }
+    mVec3_c efPos(mPos.x, mWaterHeight, mPos.z);
+    if (bigSplash || m_dac == 3) {
+        float f = 1.0f;
+        u32 i;
+        if (mPowerup == POWERUP_MINI_MUSHROOM) {
+            fn_80057e70(SE_PLY_SPLASH_MAME, false);
+            i = 3;
+        } else {
+            fn_80057e70(SE_PLY_SPLASH, false);
+            i = 2;
+            if (mPowerup == POWERUP_NONE) {
+                f = 0.8f;
+            }
+        }
+        dPyEffectMng_c::mspInstance->fn_800d2de0(f, i, efPos, mLayer);
+        dBg_c::m_bg_p->setWaterInWave(efPos.x, efPos.y, 1);
+    } else {
+        float f = 1.0f;
+        if (mPowerup == POWERUP_MINI_MUSHROOM) {
+            f = 0.6f;
+        } else if (mPowerup == POWERUP_NONE) {
+            f = 0.8f;
+        }
+        dPyEffectMng_c::mspInstance->fn_800d2de0(f, 4, efPos, mLayer);
+        if (mPowerup == POWERUP_MINI_MUSHROOM) {
+            fn_80057e70(SE_PLY_SPLASH_SHALLOW_MAME, false);
+        } else {
+            fn_80057e70(SE_PLY_SPLASH_SHALLOW, false);
+        }
+        dBg_c::m_bg_p->setWaterInWave(efPos.x, efPos.y, 0);
+    }
+}
+
+void dAcPy_c::setWaterOutEffect() {
+    if (isOldBgCross(BGC_WATER_BUBBLE)) {
+        fn_80057e70(SE_PLY_SPLASH_GEL_OUT, false);
+        mAng3_c efAng(0, 0, -mAirWaterHitAngle);
+        dEf::createPlayerEffect(mPlayerNo, "Wm_mr_wfloatsplash", 0, &mAirWaterHitPos, &efAng, nullptr);
+        return;
+    }
+    mVec3_c efPos(mPos.x, mPrevWaterHeight, mPos.z);
+
+    if (m_dac == 3) {
+        float f = 1.0f;
+        u32 i;
+        if (mPowerup == POWERUP_MINI_MUSHROOM) {
+            i = 1;
+        } else {
+            i = 0;
+            if (mPowerup == POWERUP_NONE) {
+                f = 0.8f;
+            }
+        }
+        dPyEffectMng_c::mspInstance->fn_800d2de0(f, i, efPos, mLayer);
+        dBg_c::m_bg_p->setWaterInWave(efPos.x, efPos.y, 3);
+        fn_80057e70(SE_PLY_SPLASH_OUT, false);
+    } else {
+        float f = 1.0f;
+        if (mPowerup == POWERUP_MINI_MUSHROOM) {
+            f = 0.6f;
+        } else if (mPowerup == POWERUP_NONE) {
+            f = 0.8f;
+        }
+        dPyEffectMng_c::mspInstance->fn_800d2de0(f, 4, efPos, mLayer);
+        fn_80057e70(SE_PLY_SPLASH_SHALLOW_OUT, false);
+        dBg_c::m_bg_p->setWaterInWave(efPos.x, efPos.y, 2);
+    }
+}
+
+void dAcPy_c::setPaddleSwimEffect() {
+    mVec3_c efPos;
+    mPyMdlMng.mpMdl->getJointPos(&efPos, 11);
+    dEf::createPlayerEffect(mPlayerNo, &mLevelEf9, "Wm_mr_swimpaddle", 0, &efPos, nullptr, nullptr);
+    mPyMdlMng.mpMdl->getJointPos(&efPos, 14);
+    dEf::createPlayerEffect(mPlayerNo, &mLevelEf10, "Wm_mr_swimpaddle", 0, &efPos, nullptr, nullptr);
+}
+
+void dAcPy_c::resetPaddleSwimEffect() {
+    mLevelEf9.fade();
+    mLevelEf10.fade();
+}
+
+void dAcPy_c::setWaterSurfaceSwimEffect() {
+    if (getWaterCheckPosY() < mWaterHeight - 4.0f) {
+        return;
+    }
+    mVec3_c efPos(mPos.x, mWaterHeight, mPos.z);
+    mAng3_c efAng(0, 0, 0);
+    if (mDirection == DIR_LR_L) {
+        efAng.y = -0x8000;
+    }
+    static const float sc_waterFaceEffectScale[] = { 0.65f, 0.8f, 1.0f };
+    float s = sc_waterFaceEffectScale[getTallType(-1)];
+    mVec3_c scale(s, s, s);
+    dEf::createPlayerEffect(mPlayerNo, &mLevelEf11, "Wm_mr_waterswim", 0, &efPos, nullptr, &scale);
+    dEf::createPlayerEffect(mPlayerNo, &mLevelEf12, "Wm_en_cmnwater02", 0, &efPos, &efAng, &scale);
+}
+
+void dAcPy_c::setFlutterKickEffect() {
+    mVec3_c efPos;
+    mPyMdlMng.mpMdl->getJointPos(&efPos, 4);
+    dEf::createPlayerEffect(mPlayerNo, &mLevelEf9, "Wm_mr_flutterkick", 0, &efPos, nullptr, nullptr);
+    mPyMdlMng.mpMdl->getJointPos(&efPos, 7);
+    dEf::createPlayerEffect(mPlayerNo, &mLevelEf10, "Wm_mr_flutterkick", 0, &efPos, nullptr, nullptr);
+}
+
+void dAcPy_c::initializeState_Swim() {
+    onStatus(STATUS_3A);
+    onStatus(STATUS_AA);
+    onStatus(STATUS_A8);
+    onStatus(STATUS_92);
+    offStatus(STATUS_C1);
+    SwimParam_e param = (SwimParam_e) (int) mStateChangeParam;
+    m_b84 = 0;
+    m_b88 = 0;
+    m_b80 = 0.0f;
+    if (param == SWIM_PARAM_1 || param == SWIM_PARAM_2 || param == SWIM_PARAM_3) {
+        m_b80 = 1;
+        m_15b6 = 30;
+        if (mSpeed.y < -1.5f) {
+            mSpeed.y = -1.5f;
+        }
+        if (m_b98 != 0 && mSpeed.y < -0.5f) {
+            mSpeed.y = -0.5f;
+        }
+    }
+    if (param == SWIM_PARAM_2) {
+        setInitSwimAction_FireBall();
+    } else {
+        dAcPy_c *carryPlayer = getCarryPlayer();
+        if (carryPlayer != nullptr) {
+            mVec3_c pos(mPos.x, mPos.y + 4.0f, mPos.z);
+            float height;
+            if (dBc_c::checkTenjou(&pos, &height, mLayer, m_ca1)) {
+                if (mPos.y + getSomeYOffset() + getBgPointData_Powerup(mPowerup, 1)[1].mDist / 4096.0f > height) {
+                    releaseCarryActor();
+                }
+            }
+        }
+        AnmBlend_e blend = BLEND_1;
+        if (param == SWIM_PARAM_3) {
+            blend = BLEND_0;
+        }
+        if (mPowerup == POWERUP_PENGUIN_SUIT) {
+            if (!isCarry()) {
+                setSwimAction_Surface(blend);
+            } else {
+                setSwimAction_Swim(blend);
+            }
+        } else if (isNowBgCross(BGC_IS_FOOT)) {
+            setSwimAction_Swim(blend);
+        } else {
+            setSwimAction_Dive(blend);
+        }
+    }
+    if (isNowBgCross(BGC_14) && isOldBgCross(BGC_14) == 0) {
+        setWaterInEffect();
+    }
+    if (isItemKinopio()) {
+        setControlDemoKinopioSwim();
+    }
+}
+
+bool dAcPy_c::setWaterSurfaceJump() {
+    if (mKey.triggerJump()) {
+        if (mSubstate == SWIM_ACTION_2) {
+            if (mKey.buttonUp()) {
+                m_b88 = 20;
+            }
+        } else {
+            m_b88 = 20;
+        }
+    }
+    if (!isNowBgCross(BGC_14)) {
+        if (!isNowBgCross(BGC_15) && (!isCarry() || mPowerup != POWERUP_MINI_MUSHROOM)) {
+            if (mSubstate == SWIM_ACTION_3 && m_b89 == 0) {
+                createFireBall(0);
+            }
+            changeState(StateID_Fall, 0);
+            return true;
+        }
+        if (m_b88 != 0) {
+            if (mSubstate == SWIM_ACTION_3 && m_b89 == 0) {
+                createFireBall(0);
+            }
+            float h = 3.5f;
+            if (isMameAction()) {
+                h = 2.625f;
+            }
+            jmpInf_c jmpInf(h, 1, 1);
+            if (mSubstate == SWIM_ACTION_2) {
+                jmpInf.m_0c = 0;
+            }
+            changeState(StateID_Jump, &jmpInf);
+            mKey.onStatus(dAcPyKey_c::STATUS_FORCE_JUMP);
+            onStatus(STATUS_A8);
+            return true;
+        }
+    }
+    return false;
+}
+
+void dAcPy_c::setSwimAction_Swim(AnmBlend_e blend) {
+    m_b89 = 0;
+    mSubstate = SWIM_ACTION_0;
+    m_b84 = 4;
+    m_b88 = 0;
+    if (blend == BLEND_1) {
+        mPyMdlMng.setAnm(36);
+    } else {
+        mPyMdlMng.setAnm(36, 0.0f, 0.0f);
+    }
+    mAngle.x = 0;
+}
+
+void dAcPy_c::SwimAction_Swim() {
+    if (mPowerup == POWERUP_PENGUIN_SUIT && !isCarry()) {
+        setSwimAction_Penguin(BLEND_1);
+        return;
+    }
+    setWaterMoveSpeed();
+    turnAngle();
+    if (checkEnableThrow()) {
+        vf434(19, 0);
+        setThrowActor();
+        return;
+    }
+    if (setWaterSurfaceJump()) {
+        return;
+    }
+    if (isNowBgCross(BGC_IS_FOOT) && mPowerup != POWERUP_PENGUIN_SUIT) {
+        setSwimAction_Walk(BLEND_1);
+        return;
+    }
+    setWaterSurfaceSwimEffect();
+    if (isNowBgCross(BGC_14)) {
+        if (mKey.triggerJump()) {
+            fn_80057e70(SE_PLY_SWIM, 0);
+            mSpeed.y += 1.0f;
+            if (mSpeed.y > 1.8f) {
+                mSpeed.y = 1.8f;
+            }
+        }
+        if (isNowBgCross(BGC_53)) {
+            mSpeed.y = -1.875f;
+        }
+    }
+    switch (m_b89) {
+        case 0:
+            if (mKey.triggerJump()) {
+                m_b89 = 1;
+                mPyMdlMng.setAnm(40);
+                onStatus(STATUS_40);
+            } else if (mKey.buttonJump()) {
+                m_b89 = 3;
+                mPyMdlMng.setAnm(35);
+            }
+            break;
+        case 1:
+            setPaddleSwimEffect();
+            if (mKey.triggerJump() && mPyMdlMng.mpMdl->mAnm.getFrame() > 9.0f) {
+                mPyMdlMng.mpMdl->setFrame(0.0f);
+                resetPaddleSwimEffect();
+                onStatus(STATUS_40);
+            }
+            if (mPyMdlMng.isAnmStop()) {
+                if (mKey.buttonJump()) {
+                    m_b89 = 3;
+                    mPyMdlMng.setAnm(35);
+                } else {
+                    m_b89 = 2;
+                    mPyMdlMng.setAnm(41);
+                }
+            }
+            break;
+        case 3:
+            mPyMdlMng.mpMdl->setRate(1.5f);
+            if (mPyMdlMng.mpMdl->mAnm.checkFrame(1.0f) || mPyMdlMng.mpMdl->mAnm.checkFrame(9.0f)) {
+                fn_80057e70(SE_PLY_SWIM_KICK, 0);
+            }
+            setFlutterKickEffect();
+            if (!mKey.buttonJump()) {
+                m_b89 = 2;
+                mPyMdlMng.setAnm(41);
+            }
+            break;
+        case 2:
+            if (mPyMdlMng.isAnmStop()) {
+                m_b89 = 0;
+                mPyMdlMng.setAnm(36);
+            }
+            break;
+        case 4:
+            if (!isCarry()) {
+                m_b89 = 0;
+                mPyMdlMng.setAnm(36);
+            }
+            break;
+    }
+}
+
+void dAcPy_c::setSeaLandSmokeEffect() {
+    static const char *sc_hipAttackEffectID[] = {
+        "Wm_mr_sealandsmk_ss",
+        "Wm_mr_sealandsmk_s",
+        "Wm_mr_sealandsmk",
+    };
+    dEf::createPlayerEffect_change(mPlayerNo, sc_hipAttackEffectID[getTallType(-1)], 0, &mPos, nullptr, nullptr);
+}
+
+void dAcPy_c::setSwimActionWalkAnm() {
+    if (!mSpeedF) {
+        mPyMdlMng.setAnm(39);
+        return;
+    }
+    float f = 1.0f;
+    if (mMaxSpeedF && mSpeedF * mMaxSpeedF < 0.0f) {
+        f = std::fabs(mSpeedF) - sc_WaterWalkSpeed + 1.0f;
+        if (f < 1.0f) {
+            f = 1.0f;
+        } else if (f > 2.0f) {
+            f = 2.0f;
+        }
+    }
+    mPyMdlMng.setAnm(38, f, 10.0f, 0.0f);
+}
+
+void dAcPy_c::setSwimAction_Walk(AnmBlend_e blend) {
+    if (!isOldBgCross(BGC_IS_FOOT)) {
+        setSeaLandSmokeEffect();
+    }
+    m_b89 = 0;
+    mSubstate = SWIM_ACTION_1;
+    if (blend == BLEND_1) {
+        setSwimActionWalkAnm();
+    } else {
+        mPyMdlMng.setAnm(39);
+    }
+}
+
+void dAcPy_c::setWaterGroundJump() {
+    mSpeed.y = sc_WaterJumpSpeed;
+    setSwimAction_Swim(BLEND_1);
+    fn_80057e70(SE_PLY_SWIM, 0);
+    m_b88 = 20;
+}
+
+void dAcPy_c::SwimAction_Walk() {
+    if (mPowerup == POWERUP_PENGUIN_SUIT) {
+        setSwimAction_Penguin(BLEND_1);
+        return;
+    }
+    setWaterMoveSpeed();
+    turnAngle();
+    if (mKey.triggerJump()) {
+        if (!setWaterSurfaceJump()) {
+            setWaterGroundJump();
+        }
+    } else {
+        if (!isNowBgCross(BGC_IS_FOOT)) {
+            setSwimAction_Swim(BLEND_1);
+        } else {
+            if (!checkCrouch()) {
+                setSwimActionWalkAnm();
+            }
+        }
+    }
+}
+
+s16 dAcPy_c::getPenguinSwinAngleX() {
+    float f = std::fabs(m_b90);
+    if (f < 0.1f) {
+        f = 0.1f;
+    }
+    float cos = m_b94;
+    if (mKey.buttonUp()) {
+        if (cos < 0.0f) {
+            cos = 0.0f;
+        }
+    }
+    if (mKey.buttonDown()) {
+        if (cos < 0.0f) {
+            cos = 0.0f;
+        }
+    }
+    // [cos gets discarded here?]
+    return -(cM::atan2s(f, m_b94) - 0x4000);
+}
+
+void dAcPy_c::setSwimAction_Penguin(AnmBlend_e blend) {
+    mSubstate = SWIM_ACTION_2;
+    m_b88 = 0;
+    if (m_b80 != 0 || getOldState() == StateID_HipAttack) {
+        m_b80 = 0;
+        if (blend == BLEND_1) {
+            mPyMdlMng.setAnm(34);
+        } else {
+            mPyMdlMng.setAnm(34, 0.0f, 0.0f);
+        }
+        mSubstateTimer = 15;
+        m_b89 = 0;
+        return;
+    }
+    if (mSpeedF > 0.1f || mSpeed.y > 0.1f) {
+        m_b8c = 1.0f;
+    } else {
+        m_b8c = 0.0f;
+    }
+    m_b89 = 1;
+    if (blend == BLEND_1) {
+        mPyMdlMng.setAnm(34);
+    } else {
+        mPyMdlMng.setAnm(34, 0.0f, 0.0f);
+    }
+}
+
+void dAcPy_c::setPenWaterMoveSpeed(int i) {
+    if (m_b98 != 0 && mKey.triggerDown()) {
+        m_b98 = 0;
+    }
+    bool noUpDown = false;
+    if (mKey.buttonUp() || m_b98 == 0 && mKey.buttonDown()) {
+        noUpDown = true;
+    }
+    bool b = 0;
+    if (mKey.buttonWalk(nullptr)) {
+        b = 1;
+    }
+    s16 ang = 0;
+    if (noUpDown) {
+        ang = 0x3e00;
+        if (b) {
+            ang = 0x2000;
+        }
+        if (mKey.buttonDown()) {
+            ang = -ang;
+        }
+    }
+    mAngle.y.chase(getMukiAngle(mDirection), 0x400);
+    mAngle.x.chase(getPenguinSwinAngleX(), 0x300);
+    float f3 = getData(9);
+    float f2 = 0.0f;
+    if (i != 0) {
+        if (noUpDown) {
+            f2 = getData(6);
+            if (isStatus(STATUS_42)) {
+                f3 = getData(18);
+            } else {
+                f3 = getData(12);
+            }
+        }
+    } else {
+        if (noUpDown) {
+            f2 = getData(5);
+            f3 = getData(11);
+        } else if (b) {
+            f3 = getData(14);
+        }
+        float d = getData(5);
+        if (std::fabs(mSpeed.y) >= d) {
+            f3 = getData(13);
+        }
+    }
+    float target = mAng(ang).sin() * f2;
+    m_b94 = target;
+    float offs = mPos.y + getSomeYOffset() / 2.0f;
+    if (mWaterHeight <= offs) {
+        target = -1.5f;
+        if (mSpeed.y > 0.0f) {
+            f3 = std::fabs(-24.0f / 256.0f);
+        } else {
+            f3 = std::fabs(-7.0f / 256.0f);
+        }
+    } else {
+        if (mSpeed.y < -getData(6)) {
+            f3 = std::fabs(-24.0f / 256.0f);
+        }
+    }
+    sLib::addCalc(&mSpeed.y, target, 0.5f, f3, 0.01f);
+    mMaxFallSpeed = sc_MaxFallSpeed;
+    mAccelY = 0.0f;
+    if (i != 0) {
+        f2 = getData(8);
+        if (isStatus(STATUS_41)) {
+            f3 = getData(18);
+        } else {
+            f3 = getData(12);
+        }
+    } else {
+        if (b) {
+            f2 = getData(7);
+            f3 = getData(11);
+        } else {
+            f2 = 0.3f;
+            if (std::fabs(mSpeedF) < 0.3f) {
+                f3 = 0.005f;
+            } else if (noUpDown) {
+                f3 = getData(14);
+            } else {
+                f3 = getData(10);
+            }
+        }
+        float d = getData(7);
+        if (std::fabs(mSpeedF) >= d) {
+            f3 = getData(13);
+        }
+    }
+    f3 = sc_DirSpeed[mDirection] * f3;
+    m_b90 = mAng(ang).cos() * f2 * sc_DirSpeed[mDirection];
+    float f4 = 0.0f;
+    if (dWaterEntryMng_c::m_instance->m_8c0) {
+        f4 = 8.25f;
+    }
+    float f5 = m_b90 + f4 * 0.3f;
+    float f10 = f3 + f4 * 0.005f;
+    if (m_b90 * f4 < 0.0f) {
+        if (i != 0) {
+            f5 = m_b90 + f4 * 0.1f;
+            f10 = f3 + f4 * 0.0001f;
+        } else if (b) {
+            f5 = m_b90 + f4 * 0.13f;
+            if (std::fabs(mSpeedF) < 1.0f) {
+                f10 = f10;
+            } else {
+                f10 = f3 + f4 * 0.003f;
+            }
+        }
+    }
+    mMaxSpeedF = f5;
+    if (f3 < 0.0f) {
+        f3 = f3;
+    }
+    mAccelF = std::fabs(f10);
+    if (b || noUpDown || i != 0) {
+        m_b8c = 1.0f;
+    } else {
+        m_b8c = 0.3f;
+    }
+}
+
+bool dAcPy_c::setPenguinPaddleSwim() {
+    if (mKey.triggerJump()) {
+        m_b89 = 2;
+        mPyMdlMng.setAnm(160);
+        fn_80057e70(SE_PLY_PNGN_SWIM, false);
+        onStatus(STATUS_40);
+        return true;
+    }
+    return false;
+}
+
+void dAcPy_c::SwimAction_Penguin() {
+    if (mPowerup != POWERUP_PENGUIN_SUIT || isCarry()) {
+        setSwimAction_Swim(BLEND_1);
+        return;
+    }
+    if (setWaterSurfaceJump()) {
+        return;
+    }
+    setWaterSurfaceSwimEffect();
+    int moveMode = 0;
+    switch (m_b89) {
+        case 0:
+            if (mSubstateTimer == 0) {
+                m_b8c = 1.0f;
+                m_b89 = 1;
+                mPyMdlMng.setAnm(34);
+            }
+            break;
+        case 1: {
+            if (mPyMdlMng.mpMdl->mAnm.checkFrame(1.0f) || mPyMdlMng.mpMdl->mAnm.checkFrame(9.0f)) {
+                fn_80057e70(SE_PLY_SWIM_KICK_PENGUIN, false);
+            }
+            float rate = mPyMdlMng.mpMdl->mAnm.getRate();
+            if (m_b8c == 1.0f) {
+                setFlutterKickEffect();
+                sLib::chase(&rate, m_b8c, 0.1f);
+            } else {
+                sLib::chase(&rate, m_b8c, 0.03f);
+            }
+            mPyMdlMng.mpMdl->setRate(rate);
+            if (setPenguinPaddleSwim()) {
+                return;
+            }
+            break;
+        }
+        case 2:
+            setPaddleSwimEffect();
+            if (mPyMdlMng.mpMdl->mAnm.getFrame() < 9.0f) {
+                moveMode = 1;
+            }
+            if (mPyMdlMng.isAnmStop()) {
+                m_b89 = 3;
+                mPyMdlMng.setAnm(161);
+            }
+            break;
+        case 3:
+            if (setPenguinPaddleSwim()) {
+                return;
+            }
+            if (mPyMdlMng.isAnmStop()) {
+                m_b8c = 1.0f;
+                m_b89 = 1;
+                mPyMdlMng.setAnm(34);
+            }
+            break;
+    }
+    onStatus(STATUS_3B);
+    setPenWaterMoveSpeed(moveMode);
+}
+
+void dAcPy_c::setInitSwimAction_FireBall() {
+    mSubstate = SWIM_ACTION_3;
+    m_b89 = 1;
+    createFireBall(0);
+    mPyMdlMng.setAnm(31);
+    mAngle.y = getMukiAngle(mDirection);
+    m_12f4 = mDirection;
+}
+
+void dAcPy_c::setSwimAction_FireBall() {
+    mSubstate = SWIM_ACTION_3;
+    m_b89 = 0;
+    if (mAngle.x > 0x1800) {
+        mPyMdlMng.setAnm(32);
+    } else {
+        mPyMdlMng.setAnm(31);
+    }
+    mPyMdlMng.mpMdl->setFrame(0.0f);
+    mAngle.y = getMukiAngle(mDirection);
+    m_12f4 = mDirection;
+}
+
+void dAcPy_c::SwimAction_FireBall() {
+    if (setWaterSurfaceJump()) {
+        return;
+    }
+    if (mPowerup != POWERUP_PENGUIN_SUIT) {
+        setWaterMoveSpeed();
+    } else {
+        onStatus(STATUS_3B);
+        setPenWaterMoveSpeed(0);
+    }
+    switch (m_b89) {
+        case 0:
+            if (mPyMdlMng.mpMdl->mAnm.checkFrame(4.0f)) {
+                createFireBall(0);
+                m_b89 = 1;
+            }
+            break;
+        case 1:
+            if (checkSetFireBall()) {
+                setSwimAction_FireBall();
+            } else if (mPyMdlMng.isAnmStop()) {
+                if (mPowerup == POWERUP_PENGUIN_SUIT) {
+                    setSwimAction_Penguin(BLEND_1);
+                } else if (isNowBgCross(BGC_IS_FOOT)) {
+                    setSwimAction_Walk(BLEND_1);
+                } else {
+                    setSwimAction_Swim(BLEND_1);
+                }
+            }
+            break;
+    }
+}
+
+void dAcPy_c::setWaterMoveSpeed() {
+    float targetY = -1.5f;
+    float accelY = getGravityData()[0];
+    if (isCarry()) {
+        float posY = mPos.y + getSomeYOffset() / 2.0f;
+        if (std::fabs(mWaterHeight - posY) < 0.2f && std::fabs(mSpeed.y) < 0.1f) {
+            targetY = 0.0f;
+            mSpeed.y = 0.0f;
+            accelY = targetY;
+        } else if (mWaterHeight > posY) {
+            targetY = 1.0f;
+            accelY = -0.04296875f;
+        } else {
+            targetY = -1.5f;
+            accelY = -0.04296875f;
+            if (mSpeed.y > 0.0f) {
+                sLib::chase(&mSpeed.y, 0.0f, 0.1f);
+            }
+        }
+    } else {
+        if (isNowBgCross(BGC_14)) {
+            if (isStatus(STATUS_39)) {
+                targetY = 1.0f;
+            } else if (!mKey.buttonJump()) {
+                targetY = -1.5f;
+            } else {
+                targetY = -0.5f;
+            }
+            float speedY = mSpeed.y;
+            if (speedY < 0.0f) {
+                if (speedY < targetY) {
+                    accelY = -0.09375f;
+                } else {
+                    accelY = -0.02734375f;
+                }
+            } else {
+                accelY = -0.04296875f;
+            }
+        }
+    }
+    sLib::chase(&mSpeed.y, targetY, std::fabs(accelY));
+    mMaxFallSpeed = -4.0f;
+    mAccelY = 0.0f;
+    float maxSpeedF;
+    if (mPowerup == POWERUP_PENGUIN_SUIT) {
+        if (isNowBgCross(BGC_IS_FOOT)) {
+            maxSpeedF = 0.84375f;
+        } else {
+            maxSpeedF = 1.6875f;
+        }
+    } else if (isNowBgCross(BGC_IS_FOOT)) {
+        maxSpeedF = sc_WaterWalkSpeed;
+    } else {
+        maxSpeedF = sc_WaterSwimSpeed;
+        if (m_b84 != 0 && std::fabs(mSpeedF) > std::fabs(sc_WaterSwimSpeed)) {
+            sLib::chase(&mSpeedF, sc_WaterSwimSpeed, 0.5f);
+        }
+    }
+    float targetF = 0.0f;
+    if (mKey.buttonWalk(nullptr)) {
+        targetF = maxSpeedF * sc_DirSpeed[mDirection];
+    }
+    targetF += dWaterEntryMng_c::m_instance->get_8c0() * 0.3f;
+    mMaxSpeedF = targetF;
+    float absSpeedF = std::fabs(mSpeedF);
+    float speedF = mSpeedF;
+    if (mPowerup == POWERUP_PENGUIN_SUIT) {
+        if (targetF) {
+            if (speedF * targetF < 0.0f) {
+                mAccelF = 0.0625f;
+            } else if (absSpeedF > std::fabs(targetF)) {
+                mAccelF = 0.0546875f;
+            } else {
+                mAccelF = 0.0625f;
+            }
+        } else if (isState(StateID_Crouch)) {
+            mAccelF = 0.0546875f;
+        } else {
+            mAccelF = 0.015625f;
+        }
+    } else {
+        if (targetF) {
+            if (speedF * targetF < 0.0f) {
+                mAccelF = 0.017f;
+            } else if (absSpeedF > std::fabs(targetF)) {
+                if (isNowBgCross(BGC_IS_FOOT)) {
+                    mAccelF = 0.05f;
+                } else {
+                    mAccelF = 0.017f;
+                }
+            } else {
+                mAccelF = 0.025f;
+            }
+        } else if (absSpeedF > std::fabs(targetF)) {
+            if (isNowBgCross(BGC_IS_FOOT)) {
+                mAccelF = 0.05f;
+            } else {
+                mAccelF = 0.017f;
+            }
+        } else if (isState(StateID_Crouch)) {
+            mAccelF = 0.027f;
+        } else {
+            mAccelF = 0.004f;
+        }
+    }
+    if (mKey.buttonWalk(nullptr)) {
+        mAccelF = std::fabs(sc_DirSpeed[mDirection] * mAccelF + dWaterEntryMng_c::m_instance->get_8c0() * 0.03f);
+    }
+}
+
+void dAcPy_c::executeState_Swim() {
+    if (isStatus(STATUS_60) && isNowBgCross(BGC_IS_FOOT)) {
+        offNowBgCross(BGC_IS_FOOT);
+        mSpeed.y = 1.0f;
+    }
+    if (m_b84 != 0) {
+        m_b84--;
+    }
+    if (m_b88 != 0) {
+        m_b88--;
+    }
+    if (isStatus(STATUS_39)) {
+        if (mSpeed.y >= -0.25f) {
+            offStatus(STATUS_39);
+        }
+    }
+    if (!isNowBgCross(BGC_14) && isNowBgCross(BGC_IS_FOOT)) {
+        changeState(StateID_Walk, 0);
+    } else {
+        if (mSubstate != SWIM_ACTION_3 && checkSetFireBall()) {
+            setSwimAction_FireBall();
+        }
+        offStatus(STATUS_3B);
+        typedef void (dAcPy_c::*SwimActionProc)();
+        static SwimActionProc l_SwimActionProc[] = {
+            &dAcPy_c::SwimAction_Swim,
+            &dAcPy_c::SwimAction_Walk,
+            &dAcPy_c::SwimAction_Penguin,
+            &dAcPy_c::SwimAction_FireBall,
+        };
+        (this->*l_SwimActionProc[mSubstate])();
+        calcPenguinSwimGroundRev();
+    }
+}
+
 template <>
 dAcPy_c::GlobalData_t sGlobalData_c<dAcPy_c>::mData = {
     0.0f, 0.0f,
@@ -2816,7 +4091,8 @@ dAcPy_c::GlobalData_t sGlobalData_c<dAcPy_c>::mData = {
         mVec3_c(0.0f, 10.0f, 0.0f),
         mVec3_c(0.0f, 16.0f, 0.0f),
         mVec3_c(0.0f, 28.0f, 0.0f)
-    }
+    },
+    -3.0f, 3.0f, 3.2f
 };
 
 dAcPy_HIO_Speed_c dAcPy_c::m_speed_hio[2];

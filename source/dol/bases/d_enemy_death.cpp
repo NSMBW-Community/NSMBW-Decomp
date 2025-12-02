@@ -412,10 +412,9 @@ void dEn_c::setDeadMode(dActor_c *actor, int i) {
         } else {
             setDeathInfo_SpinFumi(actor, 0);
 
-            // @unofficial
-            static const float dir[] = { -6.0f, 6.0f };
+            static const float cs_effect_offset_x[] = { -6.0f, 6.0f };
             mVec3_c center = getCenterPos();
-            center.x += dir[mDeathInfo.mDirection];
+            center.x += cs_effect_offset_x[mDeathInfo.mDirection];
             hitdamageEffect(center);
 
             dAudio::g_pSndObjEmy->startSound(SE_EMY_DOWN, mPos, 0);
