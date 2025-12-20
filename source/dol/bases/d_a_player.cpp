@@ -4083,6 +4083,507 @@ void dAcPy_c::executeState_Swim() {
     }
 }
 
+void dAcPy_c::calcPenguinSwimGroundRev() {
+    if (!isStatus(STATUS_3B)) {
+        m_1594 = 0.0f;
+        m_1598 = 0.0f;
+        return;
+    }
+    float f1 = 0.0f;
+    float f2 = 0.0f;
+    mMtx_c rotMtx;
+    rotMtx.trans(mPos);
+    rotMtx.YrotM(mAngle.y);
+    rotMtx.concat(mMtx_c::createTrans(0.0f, 8.0f, 0.0f));
+    rotMtx.XrotM(-mAngle.x);
+    rotMtx.concat(mMtx_c::createTrans(0.0f, 8.0f, 0.0f));
+    rotMtx.ZrotM(mAngle.z);
+    rotMtx.concat(mMtx_c::createTrans(0.0f, 0.0f, 20.0f));
+    mVec3_c resVec;
+    rotMtx.multVecZero(resVec);
+    sBcPointData *bgPointData = getWallBgPointData();
+    if (bgPointData != nullptr) {
+        float bgOffs[2];
+        bgOffs[0] = bgPointData->mOffsetX / 4096.0f;
+        bgOffs[1] = bgPointData->mOffsetY / 4096.0f;
+        mVec3_c wallPos1(mPos.x, mPos.y + bgOffs[0], mPos.z);
+        mVec3_c wallPos2(resVec.x, mPos.y + bgOffs[0], resVec.z);
+        for (int i = 0; i < 2; i++) {
+            wallPos1.set(mPos.x, mPos.y + bgOffs[i], mPos.z);
+            wallPos2.set(resVec.x, mPos.y + bgOffs[i], resVec.z);
+            float wallX;
+            if (dBc_c::checkWall(&wallPos1, &wallPos2, &wallX, mLayer, 1, nullptr)) {
+                f1 = wallX - resVec.x;
+                if (mPos.x < resVec.x) {
+                    resVec.x = wallX - 1.0f;
+                } else {
+                    resVec.x = wallX + 1.0f;
+                }
+            }
+        }
+    }
+    mVec3_c groundPos(resVec.x, mPos.y + 4.0f, resVec.z);
+    float groundHeight;
+    if (dBc_c::checkGround(&groundPos, &groundHeight, mLayer, 1, -1) && groundHeight > resVec.y) {
+        f2 = groundHeight - resVec.y;
+    }
+    sLib::chase(&m_1594, f1, 1.0f);
+    sLib::chase(&m_1598, f2, 1.0f);
+}
+
+void dAcPy_c::finalizeState_Swim() {
+    m_1594 = 0.0f;
+    m_1598 = 0.0f;
+    m_b88 = 0;
+    mAngle.z = 0;
+    mAngle.x = 0;
+    offStatus(STATUS_3A);
+    if (isStatus(STATUS_3B)) {
+        float groundHeight;
+        mVec3_c checkPos(mPos.x, mPos.y - 5.0f, mPos.z);
+        if (dBc_c::checkGround(&mPos, &groundHeight, mLayer, 1, -1)) {
+            if (mPos.y <= groundHeight) {
+                mPos.y = groundHeight;
+                mLastPos.y = mPos.y;
+            }
+        }
+        offStatus(STATUS_3B);
+    }
+    offStatus(STATUS_97);
+    offStatus(STATUS_AA);
+    offStatus(STATUS_A8);
+    offStatus(STATUS_92);
+    if (!isNowBgCross(BGC_14)) {
+        setWaterOutEffect();
+    }
+}
+
+void dAcPy_c::setIvyHangEffect() {
+    mMtx_c jntMtx;
+    mPyMdlMng.mpMdl->getJointMtx(&jntMtx, 11);
+    mVec3_c v1;
+    jntMtx.multVecZero(v1);
+    mPyMdlMng.mpMdl->getJointMtx(&jntMtx, 14);
+    mVec3_c v2;
+    jntMtx.multVecZero(v2);
+    mVec3_c efPos = (v1 + v2) / 2.0f;
+    efPos.z = mPos.z;
+    dEf::createPlayerEffect(mPlayerNo, &mLevelEf6, "Wm_mr_ivy", 0, &efPos, nullptr, nullptr);
+}
+
+bool dAcPy_c::setVineAction() {
+    if (isStatus(STATUS_9B)) {
+        if (isCarry()) {
+            return false;
+        }
+        if (mSpeed.y <= 0.0f && mKey.buttonUp() && isNowBgCross(BGC_46)) {
+            if (mBc.mFenceType == 1) {
+                changeState(StateID_Vine, (void *) 2);
+            } else {
+                changeState(StateID_Vine, (void *) 0);
+            }
+            return true;
+        }
+    }
+    return false;
+}
+
+float dAcPy_c::getHangBcOffsetY() {
+    // [probably some inline?]
+    if (!(mDokanCenterOffsetType != 0 && mDokanCenterOffsetType != 1)) {
+        static const float scHangOffsetY[] = {
+            13.0f, 21.0f, 21.0f, 9.0f, 21.0f, 21.0f, 21.0f
+        };
+        return scHangOffsetY[mPowerup];
+    } else {
+        static const float scKinopioHangOffsetY[] = {
+            4.5f, 10.0f, 10.0f, 1.0f, 10.0f, 9.0f, 10.0f
+        };
+        return scKinopioHangOffsetY[mPowerup];
+    }
+}
+
+bool dAcPy_c::setKaniHangToVineAction() {
+    if (mKey.buttonDown()) {
+        float y = mPos.y - 1.0f;
+        float x2 = mPos.x + (m_14.mWidth / 4096.0f);
+        float x1 = mPos.x - (m_14.mWidth / 4096.0f + 1.0f);
+        if (
+            dBc_c::getUnitType(x1, y, mLayer) & 0x400 ||
+            dBc_c::getUnitType(x2, y, mLayer) & 0x400
+        ) {
+            mPos.y -= getHangBcOffsetY();
+            m_60 = 10;
+            changeState(StateID_Vine, (void *) 3);
+            return true;
+        }
+    }
+    return false;
+}
+
+bool dAcPy_c::setVineToKaniHangAction() {
+    if (mKey.buttonUp()) {
+        sPcRect r = m_14;
+        r.mTop = getHangBcOffsetY() * 4096.0f;
+        if (!(mBc.checkPole(&r) & 3)) {
+            float y = mPos.y + getHangBcOffsetY();
+            float x = mPos.x;
+            short groundY = (((short) y) & 0xfff0) - 16;
+            u32 unitKind = dBc_c::getUnitType(x, groundY + 1.0f, mLayer);
+            if ((unitKind >> 16 & 0xff) == 8) {
+                mPos.y += getHangBcOffsetY();
+                m_60 = 10;
+                changeState(StateID_Kani, (void *) 4);
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+void dAcPy_c::initializeState_Vine() {
+    setScrollMode(2);
+    onStatus(STATUS_33);
+    mAccelY = 0.0f;
+    mSpeedF = 0.0f;
+    mAccelF = 0.0f;
+    mMaxSpeedF = 0.0f;
+    mSpeed.x = 0.0f;
+    mSpeed.y = 0.0f;
+    m_7c4 = 0;
+    if (m_ca1 == 1) {
+        m_7c0 = -0x8000;
+    } else {
+        m_7c0 = 0;
+    }
+    int changeParam = (int) mStateChangeParam;
+    mAngle.y = m_7c0;
+    mBc.mPlayerFlags |= 1;
+    switch (changeParam) {
+        case 0:
+        case 2:
+            vf434(28, 0);
+            switch (mBc.mFenceType) {
+                case 0:
+                    fn_80057e70(SE_PLY_CATCH_IVY, 0);
+                    if (!isNowBgCross(BGC_IS_FOOT)) {
+                        mPyMdlMng.setAnm(57);
+                        mSubstate = VINE_ACTION_IVY;
+                        mSubstateTimer2 = 0;
+                    } else {
+                        mPyMdlMng.setAnm(58);
+                        mSubstate = VINE_ACTION_IVY;
+                        mSubstateTimer2 = 1;
+                    }
+                    break;
+                case 1:
+                    mPyMdlMng.setAnm(52);
+                    mSubstate = VINE_ACTION_NET;
+                    break;
+                case 2:
+                    fn_80057e70(SE_PLY_LAND_FENCE, 0);
+                    mPyMdlMng.setAnm(52);
+                    mSubstate = VINE_ACTION_NET;
+                    break;
+            }
+            break;
+        case 1:
+            mPyMdlMng.setAnm(58);
+            mSubstate = VINE_ACTION_IVY;
+            mSubstateTimer2 = 1;
+            break;
+        case 3:
+            mPyMdlMng.setAnm(52, 0.0f, 0.0f);
+            mSubstate = VINE_ACTION_NET;
+            break;
+    }
+}
+
+void dAcPy_c::calcVineSpeed() {
+    float speed;
+    switch (mBc.mFenceType) {
+        case 0:
+        case 2:
+            if (mKey.buttonDush()) {
+                speed = 1.5f;
+            } else {
+                speed = 1.0f;
+            }
+            break;
+        case 1:
+            if (mKey.buttonDush()) {
+                speed = sGlobalData_c<dAcPy_c>::mData.mVineSpeedRelated[1];
+            } else {
+                speed = sGlobalData_c<dAcPy_c>::mData.mVineSpeedRelated[0];
+            }
+            break;
+    }
+    mSpeed.y = 0.0f;
+    if (mKey.buttonUp()) {
+        if (isNowBgCross(BGC_46) && isNowBgCross(BGC_48)) {
+            mSpeed.y = speed;
+        }
+    } else if (mKey.buttonDown()) {
+        mSpeed.y = -speed;
+    }
+    mSpeedF = 0.0f;
+    float tmp = 0.0f;
+    switch (mBc.mFenceType) {
+        case 0:
+            if (mKey.buttonDush()) {
+                tmp = 0.5f;
+            } else {
+                tmp = 0.7f;
+            }
+            if (mKey.buttonUp() || mKey.buttonDown()) {
+                tmp = 0.0f;
+            }
+            break;
+        case 1:
+            if (mKey.buttonDush()) {
+                tmp = sGlobalData_c<dAcPy_c>::mData.mVineSpeedRelated[3];
+            } else {
+                tmp = sGlobalData_c<dAcPy_c>::mData.mVineSpeedRelated[2];
+            }
+            break;
+        case 2:
+            if (mKey.buttonDush()) {
+                tmp = 1.25f;
+            } else {
+                tmp = 0.875f;
+            }
+            break;
+    }
+    if (mKey.buttonLeft()) {
+        if (!isNowBgCross(BGC_WALL_TOUCH_L_2)) {
+            mSpeedF = -tmp;
+        }
+    } else if (mKey.buttonRight()) {
+        if (!isNowBgCross(BGC_WALL_TOUCH_R_2)) {
+            mSpeedF = tmp;
+        }
+    }
+}
+
+bool dAcPy_c::checkVineEnd() {
+    if (!isNowBgCross(BGC_45) || isNowBgCross(BGC_IS_FOOT) && !mKey.buttonUp()) {
+        mAngle.y = getMukiAngle(mDirection);
+        if (isNowBgCross(BGC_40)) {
+            changeState(StateID_Kani, (void *) 3);
+            return true;
+        } else {
+            changeState(StateID_Walk, 0);
+            return true;
+        }
+    }
+    return false;
+}
+
+void dAcPy_c::setVineWalkSE() {
+    if (mPyMdlMng.mpMdl->mAnm.checkFrame(10.0f) || mPyMdlMng.mpMdl->mAnm.checkFrame(30.0f)) {
+        switch (mBc.mFenceType) {
+            case 0:
+                fn_80057e70(SE_PLY_MOVE_IVY, false);
+                break;
+            case 2:
+                fn_80057e70(SE_PLY_WALK_METAL, false);
+                break;
+            case 1:
+                fn_80057e70(SE_PLY_FOOTNOTE_ROCK_CLIMB, false);
+                break;
+        }
+    }
+}
+
+void dAcPy_c::VineActionIvy() {
+    if (setRideOffPlayerJump(sc_JumpSpeed, 0.0f) || fn_800579c0(0, 1)) {
+        return;
+    }
+    if (checkVineEnd()) {
+        return;
+    }
+    calcVineSpeed();
+    if (mSubstateTimer2 == 0) {
+        if (mPyMdlMng.isAnmStop()) {
+            mSubstateTimer2++;
+        }
+    } else {
+        if (mSpeed.x || mSpeed.y) {
+            float blend = 0.0f;
+            if (mKey.buttonDush()) {
+                blend = 1.875f;
+            } else {
+                blend = 1.5f;
+            }
+            if (mSpeed.y < 0.0f) {
+                blend = -blend;
+            }
+            mPyMdlMng.setAnm(56, blend, 0.0f, 0.0f);
+            if (mBc.mFenceType == 0 && m_7c4 == 0) {
+                setIvyHangEffect();
+                setVineWalkSE();
+            }
+        } else {
+            mPyMdlMng.setAnm(58, 0.0f);
+            m_7c4 = 3;
+        }
+    }
+}
+
+void dAcPy_c::VineActionNet() {
+    if (checkVineEnd()) {
+        return;
+    }
+    switch (mBc.mFenceType) {
+        default:
+            if (setRideOffPlayerJump(sc_JumpSpeed, 0.0f) || fn_800579c0(0, 0)) {
+                switch (mPowerup) {
+                    case POWERUP_NONE:
+                        fn_80057e70(SE_PLY_JUMP_FENCE_S, false);
+                        break;
+                    case POWERUP_MINI_MUSHROOM:
+                        fn_80057e70(SE_PLY_JUMP_FENCE_SS, false);
+                        break;
+                    default:
+                        fn_80057e70(SE_PLY_JUMP_FENCE, false);
+                        break;
+                }
+                mAngle.y = getMukiAngle(mDirection);
+                return;
+            }
+            if (mKey.triggerAttack()) {
+                mSubstate = VINE_ACTION_ATTACK;
+                mSubstateTimer2 = 0;
+                mPyMdlMng.setAnm(55);
+                mSpeed.y = 0.0f;
+                mSpeedF = 0.0f;
+                onStatus(STATUS_4A);
+                return;
+            }
+            break;
+        case 1:
+            if (setVineToKaniHangAction()) {
+                return;
+            }
+            break;
+    }
+    calcVineSpeed();
+    float f = 1.0f;
+    if (mBc.mpFenceCollision != nullptr) {
+        short s = abs(mBc.mpFenceCollision->m_c2);
+        if (s > 128) {
+            s = 128;
+        }
+        float tmp = s * 0.5f;
+        f = tmp / 128.0f + 1.0f;
+    }
+    if (!mKey.buttonUp()) {
+        m_7c4 = 0;
+    }
+    if (mSpeed.y) {
+        float rate;
+        if (mKey.buttonDush()) {
+            rate = 1.875f;
+        } else {
+            rate = 1.5f;
+        }
+        rate = rate * f;
+        if (mSpeed.y < 0.0f) {
+            rate = -rate;
+        }
+        mPyMdlMng.setAnm(53, rate, 0.0f, 0.0f);
+        m_7c4 = 5;
+        setVineWalkSE();
+    } else if (mSpeed.x) {
+        if (m_7c4 == 0) {
+            float rate;
+            if (mKey.buttonDush()) {
+                rate = 1.875f;
+            } else {
+                rate = 1.5f;
+            }
+            rate = rate * f;
+            mPyMdlMng.setAnm(54, rate, 0.0f, 0.0f);
+        }
+        setVineWalkSE();
+    } else if (f > 1.0f) {
+        if (mKey.buttonLeft() || mKey.buttonRight()) {
+            mPyMdlMng.setAnm(54, 0.6f * f, 0.0f, 0.0f);
+        } else {
+            mPyMdlMng.setAnm(53, 0.6f * f, 0.0f, 0.0f);
+        }
+    } else {
+        mPyMdlMng.setAnm(52);
+    }
+}
+
+void dAcPy_c::VineActionAttack() {
+    if (checkVineEnd()) {
+        return;
+    }
+    u16 frame = mPyMdlMng.mpMdl->mAnm.getFrame();
+    if (mPyMdlMng.mpMdl->mAnm.checkFrame(3.0f)) {
+        onStatus(STATUS_49);
+        mMtx_c jntMtx;
+        mPyMdlMng.mpMdl->getJointMtx(&jntMtx, 14);
+        jntMtx.concat(mMtx_c::createTrans(3.0f, 0.0f, 0.0f));
+        mVec3_c efPos;
+        jntMtx.multVecZero(efPos);
+        dEf::createPlayerEffect_change(mPlayerNo, "Wm_mr_wirehit", 0, &efPos, nullptr, nullptr);
+        fn_80057e70(SE_PLY_ATTACK_FENCE, false);
+    }
+    if (!isStatus(STATUS_85)) {
+        if (frame >= 12.0f && mKey.buttonCross() || mPyMdlMng.isAnmStop()) {
+            mSubstate = VINE_ACTION_NET;
+            return;
+        }
+        if (mKey.triggerAttack()) {
+            mSubstateTimer2 = 1;
+        }
+        if (frame >= 23.0f && mSubstateTimer2 != 0) {
+            mPyMdlMng.mpMdl->setFrame(0.0f);
+            mSubstateTimer2 = 0;
+        }
+    }
+    if (frame < 24.0f) {
+        onStatus(STATUS_4A);
+        setCcAtNetPunch();
+    }
+}
+
+void dAcPy_c::VineActionRoll() {
+    onStatus(STATUS_7A);
+    switch (m_7bc) {
+        case 0:
+            if (mPyMdlMng.isAnmStop()) {
+                m_7bc = 1;
+                mPyMdlMng.setAnm(52);
+            }
+            break;
+        case 2:
+            offStatus(STATUS_7A);
+            mPyMdlMng.setAnm(52);
+            mSubstate = VINE_ACTION_NET;
+            break;
+    }
+}
+
+void dAcPy_c::executeState_Vine() {
+    offStatus(STATUS_49);
+    offStatus(STATUS_4A);
+    if (m_7c4 != 0) {
+        m_7c4--;
+    }
+    typedef void (dAcPy_c::*VineActionProc_t)();
+    static const VineActionProc_t l_VineActionProc[] = {
+        &dAcPy_c::VineActionIvy,
+        &dAcPy_c::VineActionNet,
+        &dAcPy_c::VineActionAttack,
+        &dAcPy_c::VineActionRoll
+    };
+    (this->*l_VineActionProc[mSubstate])();
+}
+
 template <>
 dAcPy_c::GlobalData_t sGlobalData_c<dAcPy_c>::mData = {
     0.0f, 0.0f,
@@ -4092,7 +4593,9 @@ dAcPy_c::GlobalData_t sGlobalData_c<dAcPy_c>::mData = {
         mVec3_c(0.0f, 16.0f, 0.0f),
         mVec3_c(0.0f, 28.0f, 0.0f)
     },
-    -3.0f, 3.0f, 3.2f
+    -3.0f, 3.0f, 3.2f,
+    0.5f, 3.2f, 3.0f, 1.2f,
+    0.5f, 0.625f, 0.5f, 0.625f
 };
 
 dAcPy_HIO_Speed_c dAcPy_c::m_speed_hio[2];

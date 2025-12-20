@@ -2,6 +2,14 @@
 
 #include <types.h>
 
+/// @unofficial
+struct sPcRect {
+    int mLeft;
+    int mTop;
+    int mHeight;
+    int mWidth;
+};
+
 class dPc_c {
 public:
     dPc_c() : m_0c(0) {}

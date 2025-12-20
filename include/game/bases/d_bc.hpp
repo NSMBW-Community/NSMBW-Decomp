@@ -1,6 +1,7 @@
 #pragma once
 
 #include <game/bases/d_rc.hpp>
+#include <game/bases/d_pc.hpp>
 
 /// @unofficial
 class dBcSensor_c {
@@ -26,7 +27,9 @@ public:
     mVec2_c m_ac;
     u8 mPad2[0xc];
     short *m_bc;
-    u8 mPad4[0x8];
+    short m_c0;
+    short m_c2;
+    u8 mPad4[0x4];
     int m_c8;
     u32 mFlags;
     int m_d0;
@@ -91,7 +94,9 @@ public:
     char mPad6[0x4];
     int m_c4;
     mAng mAdjacentSlopeAngle;
-    char mPad7[0x12];
+    int mFenceType;
+    dBg_ctr_c *mpFenceCollision;
+    char mPad7[0x8];
     float mIceSpeed;
     bool m_e0;
     u8 m_e1;
@@ -113,6 +118,7 @@ public:
     static bool checkWall(const mVec3_c *, const mVec3_c *, float *p_hit_x, u8 layer, u8, dActor_c **p_hit_actor);
     static void getAirWaterHitPos(mVec2_c *);
     static void getAirWaterHitAngle(short *);
+    static u32 getUnitType(float x, float y, u8);
 
     bool checkRoofPlayer(const mVec3_c *, float *);
     u16 getFootAttr();
@@ -127,6 +133,7 @@ public:
     short getHeadSakaMoveAngle(u8 direction);
     short getSakaMoveAngle(u8 direction);
     void clearBgcSaveAll();
+    u32 checkPole(sPcRect *); ///< @unofficial
 
     bool getSakaUpDown(u8 direction);
     short getSakaAngle(u8 direction);

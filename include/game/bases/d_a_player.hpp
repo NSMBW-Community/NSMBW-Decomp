@@ -99,12 +99,21 @@ public:
         SWIM_ACTION_3
     };
 
+    enum VineSubstate_e {
+        VINE_ACTION_IVY,
+        VINE_ACTION_NET,
+        VINE_ACTION_ATTACK,
+        VINE_ACTION_ROLL
+    };
+
     struct GlobalData_t {
         float f1, f2, f3, f4, f5, f6, f7, f8;
         mVec3_c mPos[3];
         float mThrowSpeed1;
         float mThrowSpeed2;
         float mThrowSpeedMax;
+        float mSpitRelated[4];
+        float mVineSpeedRelated[4];
     };
 
     dAcPy_c();
@@ -296,6 +305,20 @@ public:
     void SwimAction_FireBall();
     bool checkSetFireBall();
     void calcPenguinSwimGroundRev();
+    void setIvyHangEffect();
+    bool setVineAction();
+    float getHangBcOffsetY();
+    bool setKaniHangToVineAction();
+    bool setVineToKaniHangAction();
+    void calcVineSpeed();
+    bool checkVineEnd();
+    void setVineWalkSE();
+    void VineActionIvy();
+    bool setRideOffPlayerJump(float, float);
+    void VineActionNet();
+    void VineActionAttack();
+    void VineActionRoll();
+    void setCcAtNetPunch();
 
     bool isDrawingCarryFukidashi();
     void getCcBounds(sRangeDataF &bounds); ///< @unofficial
@@ -310,9 +333,12 @@ public:
     }
 
     int mCreateItemRelated;
-    u8 mPad1[0x20];
+    u8 mPad1[0x10];
+    sPcRect m_14;
     dPc_c mPc;
-    u8 mPad2[0x10];
+    u8 mPad2[0x8];
+    int m_60;
+    int m_64;
     int m_68;
     u8 mPad3[0x14];
     int m_80;
@@ -335,7 +361,10 @@ public:
     float m_54c;
     mEf::levelEffect_c mLevelEf4;
     mEf::levelEffect_c mLevelEf5;
-    u8 mPad7[0x28];
+    u8 mPad7[0x1c];
+    int m_7bc;
+    u16 m_7c0;
+    u32 m_7c4;
     mEf::levelEffect_c mLevelEf6;
     u8 mPad8[0x30];
     mEf::levelEffect_c mLevelEf7;
@@ -381,7 +410,7 @@ public:
     dEf::dLevelEffect_c mLevelEf15;
     u8 mPad16[0xc];
     dPyMdlMng_c mPyMdlMng;
-    u8 mPad17[0x4];
+    float m_1594;
     float m_1598;
     u8 mPad18[0x4];
     fBaseID_e mCarryActorID;
