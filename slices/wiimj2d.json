@@ -249,6 +249,16 @@
             }
         },
         {
+            "source": "dol/bases/d_enemy_state.cpp",
+            "memoryRanges": {
+                ".text": "0xa1620-0xa1f90",
+                ".ctors": "0xec-0xf0",
+                ".data": "0x15b30-0x15cc0",
+                ".bss": "0x6978-0x6ab8",
+                ".sdata2": "0x1380-0x1388"
+            }
+        },
+        {
             "source": "dol/bases/d_lyttextbox.cpp",
             "memoryRanges": {
                 ".text": "0xc33d0-0xc3880",
