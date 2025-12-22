@@ -43,6 +43,20 @@
                 ".data": "0x3a748-0x3a960",
                 ".bss": "0xdd88-0xde48"
             }
+        },
+        {
+            "source": "d_basesNP/bases/d_s_autoselect.cpp",
+            "memoryRanges": {
+                ".text": "0x1b13f0-0x1b14a0",
+                ".data": "0x4dfa0-0x4dff8"
+            }
+        },
+        {
+            "source": "d_basesNP/bases/d_s_select.cpp",
+            "memoryRanges": {
+                ".text": "0x1b63f0-0x1b64a0",
+                ".data": "0x4f1a8-0x4f200"
+            }
         }
     ]
 }
