@@ -189,6 +189,11 @@ public:
     /// @brief Inequality operator.
     bool operator!=(const mVec3_c &v) const { return x != v.x || y != v.y || z != v.z; }
 
+    /// @brief Returns the length of the vector.
+    float len() const {
+        return EGG::Mathf::sqrt(x * x + y * y + z * z);
+    }
+
     float xzLen() const {
         return EGG::Mathf::sqrt(x * x + z * z);
     }

@@ -5,6 +5,7 @@ namespace sLib {
 bool chase(short *, short, short);
 bool chase(float *, float, float);
 short addCalcAngle(short *, short, short, short, short);
+void addCalc(float *, float, float, float, float);
 
 template <typename T>
 T calcTimer(T *val) {
