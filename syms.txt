@@ -645,6 +645,7 @@ ms_instance__12daWmPlayer_c=0x8042A480
 ms_instance__11dCsSeqMng_c=0x8042A48C
 m_instance__10dScMovie_c=0x8042A498
 m_instance__10dScStage_c=0x8042A4A8
+m_exeFrame__10dScStage_c=0x8042A4E0
 m_loopType__10dScStage_c=0x8042A4E8
 m_isCourseOut__10dScStage_c=0x8042A4FD
 m_KoopaJrEscape__10dScStage_c=0x8042A507

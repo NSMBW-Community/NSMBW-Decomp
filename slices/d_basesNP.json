@@ -43,6 +43,15 @@
             }
         },
         {
+            "source": "d_basesNP/bases/d_a_obj_fruit_tree.cpp",
+            "nonMatching": true,
+            "memoryRanges": {
+                ".text": "0x108360-0x108970",
+                ".rodata": "0x6180-0x6198",
+                ".data": "0x34058-0x343e0"
+            }
+        },
+        {
             "source": "d_basesNP/bases/d_a_remo_door.cpp",
             "memoryRanges": {
                 ".text": "0x128170-0x128b00",
