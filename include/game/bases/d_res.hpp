@@ -192,17 +192,17 @@ public:
      * @param size A pointer where the uncompressed size of the resource will be written to, or @p nullptr .
      * @param compressionType A pointer where the compression type of the resource will be written to, or
      * @p nullptr . See CXCompressionType.
-     * @return A pointer to the compressed contents of the resource.
+     * @return The compressed resource file.
      */
-    void *getRes(const char *arcName, const char *resPath, unsigned long *size, int *compressionType) const;
+    nw4r::g3d::ResFile getRes(const char *arcName, const char *resPath, unsigned long *size, int *compressionType) const;
 
     /// @brief Gets a resource without logging a message if the resource is not found.
     /// @see getRes(const char*, const char*) const
-    void *getResSilently(const char *arcName, const char *resPath) const;
+    nw4r::g3d::ResFile getResSilently(const char *arcName, const char *resPath) const;
 
     /// @brief Gets a resource without logging a message if the resource is not found.
     /// @see getRes(const char*, const char*, unsigned long*) const
-    void *getResSilently(const char *arcName, const char *resPath, unsigned long *size) const;
+    nw4r::g3d::ResFile getResSilently(const char *arcName, const char *resPath, unsigned long *size) const;
 
     /// @brief Attempts to load the resources of an archive that has finished loading since the last call to this function. The callback is executed on all files and folders.
     /// @return Whether such an archive was found.

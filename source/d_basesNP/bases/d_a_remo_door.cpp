@@ -13,10 +13,9 @@ STATE_DEFINE(daRemoDoor_c, Close);
 
 void daRemoDoor_c::init() {
     mAllocator.createFrmHeap(-1, mHeap::g_gameHeaps[0], nullptr, 0x20);
-    const char *fileName = "g3d/obj_door.brres";
-    mRes = dResMng_c::m_instance->mRes.getRes("obj_door", fileName);
+    mRes = dResMng_c::m_instance->getRes("obj_door", "g3d/obj_door.brres");
     nw4r::g3d::ResMdl mdl = mRes.GetResMdl("obj_doorA");
-    mDoorModel.create(mdl, &mAllocator, 0x20, 1, nullptr);
+    mDoorModel.create(mdl, &mAllocator, nw4r::g3d::ScnMdl::BUFFER_RESMATMISC, 1, nullptr);
     dActor_c::setSoftLight_MapObj(mDoorModel);
     mAllocator.adjustFrmHeap();
 }
