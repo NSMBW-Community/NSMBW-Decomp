@@ -27,7 +27,7 @@ void dCdFile_c::loadCourseData(int fileNo) {
         sizeof(sRailNodeData)
     };
 
-    sBlockInfo *res = (sBlockInfo *) dResMng_c::m_instance->mRes.getResSilently(dScStage_c::mCdArcName, path);
+    sBlockInfo *res = (sBlockInfo *) dResMng_c::m_instance->getResSilently(dScStage_c::mCdArcName, path).ptr();
     for (int i = 0; i < CD_BLOCK_COUNT; i++) {
         if (res != nullptr) {
             mpBlocks[i] = (u8 *) res + res[i].mOffset;

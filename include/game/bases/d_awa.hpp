@@ -1,5 +1,4 @@
 #pragma once
-#include "game/framework/f_base.hpp"
 #include <game/bases/d_heap_allocator.hpp>
 #include <game/bases/d_actor.hpp>
 
