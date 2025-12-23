@@ -19,6 +19,7 @@ public:
     u8 mCurrFile;
 
     static float getLoopPosX(float x);
+    static u32 m_exeFrame;
     static int m_loopType;
     static int mCollectionCoin[STAR_COIN_COUNT];
 
