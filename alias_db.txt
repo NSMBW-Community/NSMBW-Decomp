@@ -207,7 +207,6 @@ R_3_5_32e60  = g_profile_EN_SLIP_PENGUIN2
 R_2_5_3d850  = g_profile_SLIP_PENGUIN2_GLASSES
 R_3_5_1a970  = g_profile_EN_IGA_KURIBO
 R_3_5_3a160  = g_profile_EN_WATERSTREAM
-R_2_5_13190  = g_profile_AWA
 R_2_5_1aae8  = g_profile_DUMMY_DOOR_PARENT
 R_2_5_1aa08  = g_profile_DUMMY_DOOR_CHILD
 R_2_5_1a8d8  = g_profile_DUMMY_DOOR

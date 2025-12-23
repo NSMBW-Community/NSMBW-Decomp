@@ -38,6 +38,10 @@ public:
      */
     bool setRes(const char *path, const char *name, EGG::Heap *heap);
 
+    nw4r::g3d::ResFile getRes(const char *arcName, const char *resPath) const {
+        return mRes.getRes(arcName, resPath);
+    }
+
     dRes_c mRes; ///< The resource manager.
 
 private:

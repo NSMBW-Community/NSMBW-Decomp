@@ -693,3 +693,4 @@ checkInstantBreak__9dIceMng_cFi=800b8a70
 breakEffect__9dIceMng_cFv=800b8c00
 manageProc__9dIceMng_cFv=800b8f30
 __dt__8dIceInfoFv=80024c20
+GetResAnmChr__Q34nw4r3g3d7ResFileCFPCc=8023a1f0

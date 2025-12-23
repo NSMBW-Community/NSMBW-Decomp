@@ -35,6 +35,14 @@
             }
         },
         {
+            "source": "d_basesNP/bases/d_awa.cpp",
+            "memoryRanges": {
+                ".text": "0x4b0d0-0x4b730",
+                ".rodata": "0x1f98-0x1fe8",
+                ".data": "0x13190-0x132b0"
+            }
+        },
+        {
             "source": "d_basesNP/bases/da_remo_door.cpp",
             "memoryRanges": {
                 ".text": "0x128170-0x128b00",
