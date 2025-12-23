@@ -532,3 +532,10 @@ div.toc li {
 .icona {
     display: none;
 }
+
+/* Fix table placeholder excessive margin */
+#state-table-placeholder,
+#param-table-placeholder {
+    margin-top: calc(var(--spacing-large) * -1);
+    margin-bottom: calc(var(--spacing-medium) * -1);
+}
