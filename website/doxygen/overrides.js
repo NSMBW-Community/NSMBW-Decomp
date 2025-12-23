@@ -253,23 +253,55 @@ if (tablePlaceholder) {
 // Create parameter table //
 ////////////////////////////
 
-const paramEntries = new Array(32).fill(null).map(() => ({ name: "", empty: true, isInherited: false }));
+const paramDescInfo = new Map();
+const paramEntries = new Array(32).fill(null).map(() => ({
+    name: "",
+    empty: true,
+    isInherited: false
+}));
 
-[...document.querySelectorAll('.memberdecls .memItemRight')].filter(row => {
-    return row.innerText.startsWith('ACTOR_PARAM_CONFIG');
-}).forEach(r => {
-    const m = r.innerText.match(/ACTOR_PARAM_CONFIG\s*\(([^,]+),\s*([^,]+),\s*([^,]+)\)/);
-    const isInherited = r.closest('.inherit') != null;
-    if (m) {
-        const offset = parseInt(m[2]);
-        const size = parseInt(m[3]);
-        for (let i = offset; i < offset + size; i++) {
-            paramEntries[i] = {
-                name: m[1],
-                empty: false,
-                isInherited
-            };
+// Find member rows
+const memberRows = [...document.querySelectorAll('table.memberdecls tr[class^="memitem"]')];
+memberRows.forEach(memItem => {
+    const memRight = memItem.querySelector('.memItemRight');
+    if (!memRight) {
+        return;
+    }
+    const match = memRight.innerText.match(/ACTOR_PARAM_CONFIG\s*\(([^,]+),\s*([^,]+),\s*([^,]+)\)/);
+    if (!match) {
+        return;
+    }
+
+    const name = match[1];
+    const offset = parseInt(match[2]);
+    const size = parseInt(match[3]);
+    const isInherited = memItem.closest('.inherit') != null;
+
+    // Fill bit table
+    for (let i = offset; i < offset + size; i++) {
+        paramEntries[i] = {
+            name: name,
+            empty: false,
+            isInherited
+        };
+    }
+
+    // Grab description from following memdesc
+    let descText = "";
+    const next = memItem.nextElementSibling;
+    if (next && next.className.startsWith('memdesc')) {
+        const descTd = next.querySelector('.mdescRight');
+        if (descTd) {
+            descText = descTd.innerHTML;
         }
+    }
+
+    paramDescInfo.set(name, descText);
+
+    // Remove memitem + memdesc
+    memItem.remove();
+    if (next && next.className.startsWith('memdesc')) {
+        next.remove();
     }
 });
 
@@ -277,9 +309,13 @@ const paramTablePlaceholder = document.getElementById('param-table-placeholder')
 
 // Only generate if placeholder was found and at least one field is present
 if (paramTablePlaceholder != null && paramEntries.some(e => !e.empty)) {
+
+    /////////////////////
+    // Bit usage table //
+    /////////////////////
+
     let paramTable = document.createElement('table');
-    paramTable.classList.add('doxtable');
-    paramTable.classList.add('paramtable');
+    paramTable.classList.add('doxtable', 'paramtable');
 
     let paramTBody = document.createElement('tbody');
     paramTable.appendChild(paramTBody);
@@ -296,9 +332,11 @@ if (paramTablePlaceholder != null && paramEntries.some(e => !e.empty)) {
             paramHeaderRow.appendChild(td);
         }
         paramTBody.appendChild(paramHeaderRow);
+
         let paramRow = document.createElement('tr');
         let idx = 15;
         let currTD = document.createElement('td');
+
         while (idx >= 0) {
             const entry = paramEntries[rowNum * 16 + idx];
 
@@ -312,19 +350,50 @@ if (paramTablePlaceholder != null && paramEntries.some(e => !e.empty)) {
 
             currTD.classList.add('param-name');
             currTD.innerHTML = entry.name;
+
             if (entry.isInherited) {
                 currTD.classList.add('param-inherit');
             }
+
             if (entry.empty) {
                 currTD.classList.add('param-empty');
                 currTD.innerHTML = '&nbsp;';
             }
+
             paramRow.appendChild(currTD);
             currTD = document.createElement('td');
         }
+
         paramTBody.appendChild(paramRow);
     }
+
     paramTablePlaceholder.appendChild(paramTable);
+
+    ///////////////////////
+    // Description table //
+    ///////////////////////
+
+    let descTable = document.createElement('table');
+    descTable.classList.add('doxtable', 'paramdesctable');
+
+    let descBody = document.createElement('tbody');
+    descTable.appendChild(descBody);
+
+    let descHeader = document.createElement('tr');
+    descHeader.innerHTML = `<th>Parameter</th><th>Description</th>`;
+    descBody.appendChild(descHeader);
+
+    for (const [name, desc] of paramDescInfo.entries()) {
+        let row = document.createElement('tr');
+        row.innerHTML = `
+            <td class="param-name">${name}</td>
+            <td>${desc || '<em>No description.</em>'}</td>
+        `;
+        descBody.appendChild(row);
+    }
+
+    paramTablePlaceholder.appendChild(descTable);
+
 } else if (paramTablePlaceholder) {
     paramTablePlaceholder.innerHTML = '<em>No parameter fields available.</em>';
 }

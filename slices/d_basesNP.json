@@ -35,7 +35,7 @@
             }
         },
         {
-            "source": "d_basesNP/bases/da_remo_door.cpp",
+            "source": "d_basesNP/bases/d_a_remo_door.cpp",
             "memoryRanges": {
                 ".text": "0x128170-0x128b00",
                 ".ctors": "0x2f8-0x2fc",
