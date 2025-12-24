@@ -28,8 +28,7 @@ int dAwa_c::create() {
 
 void dAwa_c::createModel() {
     mAllocator.createFrmHeap(0x80000, mHeap::g_gameHeaps[0], nullptr, 0x20);
-    const char* fileName = "g3d/waterbubble.brres";
-    mResFile = dResMng_c::m_instance->getRes("waterbubble", fileName);
+    mResFile = dResMng_c::m_instance->getRes("waterbubble", "g3d/waterbubble.brres");
 
     nw4r::g3d::ResMdl model = mResFile.GetResMdl("waterbubble");
     mBubbleModel.create(model, &mAllocator, nw4r::g3d::ScnMdl::BUFFER_RESMATMISC, 1, nullptr);

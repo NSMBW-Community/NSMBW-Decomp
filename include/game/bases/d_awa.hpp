@@ -14,13 +14,13 @@ public:
     typedef void (dAwa_c::*CalcSpeed)(); ///< The speed update function.
 
     dAwa_c() : mCalcSpeedFn(), mLifeTimer(LIFE_TIME) {} ///< @copydoc dActor_c::dActor_c
+    virtual ~dAwa_c() {} ///< @copydoc dActor_c::~dActor_c
 
     virtual int create();
     virtual int doDelete();
     virtual int execute();
     virtual int draw();
     virtual void deleteReady();
-    virtual ~dAwa_c() {} ///< @copydoc dActor_c::~dActor_c
 
     void createModel(); ///< Initializes the resources for the actor.
     void setAnim(); ///< Initializes the model animation.
