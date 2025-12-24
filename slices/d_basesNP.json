@@ -38,8 +38,8 @@
             "source": "d_basesNP/bases/d_awa.cpp",
             "memoryRanges": {
                 ".text": "0x4b0d0-0x4b730",
-                ".data": "0x13190-0x132b0"
                 ".rodata": "0x1f98-0x1fe8",
+                ".data": "0x13190-0x132b0"
             }
         },
         {
