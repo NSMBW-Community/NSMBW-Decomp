@@ -38,9 +38,23 @@ public:
      */
     bool setRes(const char *path, const char *name, EGG::Heap *heap);
 
-    dRes_c mRes; ///< The resource manager.
+    /// @copydoc dRes_c::getRes(const char *, const char*) const
+    nw4r::g3d::ResFile getRes(const char *arcName, const char *resPath) const {
+        return mRes.getRes(arcName, resPath);
+    }
+
+    /// @copydoc dRes_c::getResSilently(const char *, const char*) const
+    nw4r::g3d::ResFile getResSilently(const char *arcName, const char *resPath) const {
+        return mRes.getResSilently(arcName, resPath);
+    }
+
+    /// @copydoc dRes_c::syncAllRes()
+    bool syncAllRes() {
+        return mRes.syncAllRes();
+    }
 
 private:
+    dRes_c mRes; ///< The resource manager.
     resCallback_c mCallback; ///< The callback for after a file has been loaded.
 
 public:

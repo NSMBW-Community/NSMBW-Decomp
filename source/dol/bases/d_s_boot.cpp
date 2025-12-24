@@ -224,7 +224,7 @@ sPhase_c::METHOD_RESULT_e myReadArc_RegRes(void *) {
 
 
 sPhase_c::METHOD_RESULT_e myReadArc_resWait(void *) {
-    if (dResMng_c::m_instance->mRes.syncAllRes()) {
+    if (dResMng_c::m_instance->syncAllRes()) {
         return sPhase_c::WAIT;
     }
     return sPhase_c::OK;
@@ -742,7 +742,7 @@ void dScBoot_c::executeState_NandSpaceCheck() {
     } else {
         const char *save_icon = "save_icon.bti";
         const char *save_banner = "save_banner";
-        if (dResMng_c::m_instance->mRes.getRes(save_banner, save_icon).IsValid()) {
+        if (dResMng_c::m_instance->getRes(save_banner, save_icon).IsValid()) {
             mStateMgr.changeState(StateID_CreateFile);
         }
     }

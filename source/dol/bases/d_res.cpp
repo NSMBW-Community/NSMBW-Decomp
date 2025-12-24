@@ -84,7 +84,7 @@ nw4r::g3d::ResFile dRes_c::getRes(const char *arcName, const char *resPath, unsi
     return nw4r::g3d::ResFile(data);
 }
 
-void *dRes_c::getRes(const char *arcName, const char *resPath, unsigned long *size, int *compressionType) const {
+nw4r::g3d::ResFile dRes_c::getRes(const char *arcName, const char *resPath, unsigned long *size, int *compressionType) const {
     void *data = nullptr;
     int newSize = 0;
     info_c *info = getResInfoLoaded(arcName);
@@ -124,7 +124,7 @@ void *dRes_c::getRes(const char *arcName, const char *resPath, unsigned long *si
             }
         }
     }
-    return data;
+    return nw4r::g3d::ResFile(data);
 }
 
  void dRes_c::copyRes(const void *from, void *to, int size) {
@@ -139,7 +139,7 @@ void *dRes_c::getRes(const char *arcName, const char *resPath, unsigned long *si
     }
 }
 
-void *dRes_c::getResSilently(const char *arcName, const char *resPath) const {
+nw4r::g3d::ResFile dRes_c::getResSilently(const char *arcName, const char *resPath) const {
     void *data = nullptr;
 
     info_c *info = getResInfoLoaded(arcName);
@@ -153,10 +153,10 @@ void *dRes_c::getResSilently(const char *arcName, const char *resPath) const {
         }
     }
 
-    return data;
+    return nw4r::g3d::ResFile(data);
 }
 
-void *dRes_c::getResSilently(const char *arcName, const char *resPath, unsigned long *size) const {
+nw4r::g3d::ResFile dRes_c::getResSilently(const char *arcName, const char *resPath, unsigned long *size) const {
     void *data = nullptr;
     int newSize = 0;
 
@@ -175,7 +175,7 @@ void *dRes_c::getResSilently(const char *arcName, const char *resPath, unsigned 
 
     *size = newSize;
 
-    return data;
+    return nw4r::g3d::ResFile(data);
 }
 
 bool dRes_c::syncAllRes() {
