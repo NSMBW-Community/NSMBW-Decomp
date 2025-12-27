@@ -115,8 +115,7 @@ sPhase_c::METHOD_RESULT_e myDylinkInitPhase_3b(void *) {
 
 } // anonymous namespace
 
-/// @unofficial
-sPhase_c::METHOD_RESULT_e myCreate_Controller(void *) {
+sPhase_c::METHOD_RESULT_e myCreate_linkWaitProc(void *) {
     if (dDyl::LinkASync(fProfile::YES_NO_WINDOW) != 1) {
         return sPhase_c::WAIT;
     }
@@ -300,7 +299,7 @@ sPhase_c::METHOD_RESULT_e myCreate_YesNoWindowReady(void *selfPtr) {
 }
 
 sPhase_c::phaseMethod myBackGround_PhaseMethod[] = {
-    myCreate_Controller,
+    myCreate_linkWaitProc,
     dSystem::createFontManagerPhase,
     dSystem::createMessageManagerPhase,
     myCreate_CreateYesNoWindow,
