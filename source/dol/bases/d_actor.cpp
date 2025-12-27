@@ -39,7 +39,7 @@ const u8 l_Ami_Line[] = { 1, 2 };
 const float l_Ami_Zpos[] = { 1500.0f, -2500.0f };
 
 u8* dActor_c::m_read_p_keep;
-u16 dActor_c::m_flag_keep;
+u8 dActor_c::m_flag_keep[2];
 u64 dActor_c::m_flagbit_keep;
 u8 dActor_c::m_mbgchoice_keep;
 

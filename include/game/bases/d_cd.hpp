@@ -1,7 +1,7 @@
 #pragma once
 #include <types.h>
 #include <constants/game_constants.h>
-#include <game/bases/d_cd_blocks.hpp>
+#include <game/bases/d_cd_data.hpp>
 #include <game/sLib/s_RangeData.hpp>
 #include <lib/egg/core/eggHeap.h>
 
@@ -51,7 +51,7 @@ public:
             sBgData *mpBg2Data;
             sBgData *mpBg3Data;
             sNextGotoData *mpNextGotos;
-            sActorCreateData *mpActorCreates;
+            sMapActorData *mpActorCreates;
             sBlock8Data *mBlock8;
             sAreaData *mpAreas;
             sRangeData *mpRangeData;
@@ -80,9 +80,9 @@ public:
             int mRailNodeCount;
         };
     };
-    u32 mArr1[64];
-    u32 mArr2[64];
-    u32 mArr3[64];
+    sMapActorData *mMapActorCreatesByArea[MAX_AREAS]; ///< Pointers to the first map actor for an area.
+    u32 mMapActorCreateCountByArea[MAX_AREAS]; ///< Number of map actors per area.
+    u32 mMapActorCreateIdxForArea[MAX_AREAS]; ///< Index of the first map actor for an area.
 };
 
 /// @brief Current course data holder.
