@@ -18,7 +18,7 @@ void dCdFile_c::loadCourseData(int fileNo) {
         sizeof(sBgData),
         sizeof(sBgData),
         sizeof(sNextGotoData),
-        sizeof(sActorCreateData),
+        sizeof(sMapActorData),
         sizeof(sBlock8Data),
         sizeof(sAreaData),
         sizeof(sRangeData),
@@ -40,28 +40,28 @@ void dCdFile_c::loadCourseData(int fileNo) {
         }
     }
     for (int i = 0; i < MAX_AREAS; i++) {
-        mActorCreatesByArea[i] = 0;
-        mActorCreateCountByArea[i] = 0;
-        mActorCreateIdxForArea[i] = 0;
+        mMapActorCreatesByArea[i] = 0;
+        mMapActorCreateCountByArea[i] = 0;
+        mMapActorCreateIdxForArea[i] = 0;
     }
     u32 count = mActorCreateCount;
     if (count != 0) {
         // This assumes that the actor creates are sorted by area already.
-        sActorCreateData *currCreate = mpActorCreates;
+        sMapActorData *currCreate = mpActorCreates;
         for (int i = 0; i < count; i++) {
             u8 n = currCreate->mAreaNo;
             if (n < MAX_AREAS) {
-                mActorCreateCountByArea[n]++;
+                mMapActorCreateCountByArea[n]++;
             }
             currCreate++;
         }
         int sum = 0;
         currCreate = mpActorCreates;
         for (int i = 0; i < MAX_AREAS; i++) {
-            mActorCreatesByArea[i] = currCreate;
-            currCreate += mActorCreateCountByArea[i];
-            mActorCreateIdxForArea[i] = sum;
-            sum += mActorCreateCountByArea[i];
+            mMapActorCreatesByArea[i] = currCreate;
+            currCreate += mMapActorCreateCountByArea[i];
+            mMapActorCreateIdxForArea[i] = sum;
+            sum += mMapActorCreateCountByArea[i];
         }
     }
 }

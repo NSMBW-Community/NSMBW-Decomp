@@ -15,11 +15,11 @@
 
 #define HINT_MOVIE_COUNT 70 ///< The total hint movie count.
 
-#define MAX_ACTOR_COUNT 1000 ///< The maximum number of actors that can exist simultaneously.
-
 #define MAX_AREAS 64 ///< The maximum number of areas per course file.
 
 #define MAX_LIVES 99 ///< The maximum life count.
+
+#define MAX_MAP_ACTOR_COUNT 1000 ///< The maximum number of map actors that can exist simultaneously.
 
 #define MAX_STOCK_ITEM 99 ///< The maximum inventory amount per item.
 
