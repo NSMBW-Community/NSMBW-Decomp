@@ -40,28 +40,28 @@ void dCdFile_c::loadCourseData(int fileNo) {
         }
     }
     for (int i = 0; i < MAX_AREAS; i++) {
-        mMapActorCreatesByArea[i] = 0;
-        mMapActorCreateCountByArea[i] = 0;
-        mMapActorCreateIdxForArea[i] = 0;
+        mMapActorsByArea[i] = 0;
+        mMapActorCountByArea[i] = 0;
+        mMapActorIdxForArea[i] = 0;
     }
-    u32 count = mActorCreateCount;
+    u32 count = mMapActorCount;
     if (count != 0) {
         // This assumes that the actor creates are sorted by area already.
-        sMapActorData *currCreate = mpActorCreates;
+        sMapActorData *currCreate = mpMapActors;
         for (int i = 0; i < count; i++) {
             u8 n = currCreate->mAreaNo;
             if (n < MAX_AREAS) {
-                mMapActorCreateCountByArea[n]++;
+                mMapActorCountByArea[n]++;
             }
             currCreate++;
         }
         int sum = 0;
-        currCreate = mpActorCreates;
+        currCreate = mpMapActors;
         for (int i = 0; i < MAX_AREAS; i++) {
-            mMapActorCreatesByArea[i] = currCreate;
-            currCreate += mMapActorCreateCountByArea[i];
-            mMapActorCreateIdxForArea[i] = sum;
-            sum += mMapActorCreateCountByArea[i];
+            mMapActorsByArea[i] = currCreate;
+            currCreate += mMapActorCountByArea[i];
+            mMapActorIdxForArea[i] = sum;
+            sum += mMapActorCountByArea[i];
         }
     }
 }

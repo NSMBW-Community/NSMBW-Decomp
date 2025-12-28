@@ -10,7 +10,8 @@ public:
     mVec2_c mPos;
     mVec2_c mSize;
     u8 mPad2[0x38];
-    u8 m_80, m_81;
+    u8 mScrollDirX; ///< 0 = none, 1 = left, 2 = right
+    u8 mScrollDirY; ///< 0 = none, 1 = down, 2 = up
 
     const mVec2_c &pos() const { return mPos; }
     const mVec2_c &size() const { return mSize; }

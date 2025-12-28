@@ -7,7 +7,7 @@
 
 /// @brief Course data file holder.
 /// A course data file contains the actual course elements -
-/// areas, actor create information, background data, etc.
+/// areas, map actor information, background data, etc.
 class dCdFile_c {
 public:
     dCdFile_c() {}
@@ -51,7 +51,7 @@ public:
             sBgData *mpBg2Data;
             sBgData *mpBg3Data;
             sNextGotoData *mpNextGotos;
-            sMapActorData *mpActorCreates;
+            sMapActorData *mpMapActors;
             sBlock8Data *mBlock8;
             sAreaData *mpAreas;
             sRangeData *mpRangeData;
@@ -71,7 +71,7 @@ public:
             int mBg2DataCount;
             int mBg3DataCount;
             int mNextGotoCount;
-            int mActorCreateCount;
+            int mMapActorCount;
             int mBlock8ElementCount;
             int mAreaCount;
             int mRangeCount;
@@ -80,9 +80,9 @@ public:
             int mRailNodeCount;
         };
     };
-    sMapActorData *mMapActorCreatesByArea[MAX_AREAS]; ///< Pointers to the first map actor for an area.
-    u32 mMapActorCreateCountByArea[MAX_AREAS]; ///< Number of map actors per area.
-    u32 mMapActorCreateIdxForArea[MAX_AREAS]; ///< Index of the first map actor for an area.
+    sMapActorData *mMapActorsByArea[MAX_AREAS]; ///< Pointers to the first map actor for an area.
+    u32 mMapActorCountByArea[MAX_AREAS]; ///< Number of map actors per area.
+    u32 mMapActorIdxForArea[MAX_AREAS]; ///< Index of the first map actor for an area.
 };
 
 /// @brief Current course data holder.
