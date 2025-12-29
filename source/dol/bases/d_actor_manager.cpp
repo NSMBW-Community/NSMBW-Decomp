@@ -19,15 +19,15 @@ void dActorCreateMng_c::ActorCreateInfoClear() {
     mMapObjZPosCountLayer2 = 0;
 }
 
-bool dActorCreateMng_c::ScroolAreaInCheck(int a, int b, int boundMin, int boundMax, int areaMin, int areaMax) {
-    if (a == b) {
+bool dActorCreateMng_c::ScroolAreaInCheck(int boundsEdge, int areaEdge, int boundMin, int boundMax, int areaMin, int areaMax) {
+    if (boundsEdge == areaEdge) {
         return boundMax >= areaMin && boundMin <= areaMax;
     }
     return false;
 }
 
-bool dActorCreateMng_c::ScroolAreaInLoopCheck(int a, int b, int boundMin, int boundMax, int areaMin, int areaMax) {
-    return ScroolAreaInCheck(a, b, boundMin, boundMax, areaMin, areaMax);
+bool dActorCreateMng_c::ScroolAreaInLoopCheck(int boundsEdge, int areaEdge, int boundMin, int boundMax, int areaMin, int areaMax) {
+    return ScroolAreaInCheck(boundsEdge, areaEdge, boundMin, boundMax, areaMin, areaMax);
 }
 
 void dActorCreateMng_c::setMapActorCreate() {
@@ -40,8 +40,8 @@ void dActorCreateMng_c::setMapActorCreate() {
     }
     mPosX = 0;
     mPosY = 0;
-    mTileX = 0;
-    mTileY = 0;
+    mPrevEdgeTileX = 0;
+    mPrevEdgeTileY = 0;
     MapActorInital_set();
 }
 
@@ -58,8 +58,8 @@ void dActorCreateMng_c::setMapActorCreate_next() {
     }
     mPosX = 0;
     mPosY = 0;
-    mTileX = 0;
-    mTileY = 0;
+    mPrevEdgeTileX = 0;
+    mPrevEdgeTileY = 0;
     MapActorInital_next();
 }
 
@@ -98,7 +98,7 @@ bool dActorCreateMng_c::GlobalActorCheck(sMapActorData *data) {
     };
     u16 curr = 0;
     while (sc_globalProfiles[curr] != 0xffff) {
-        if (data->mActorCreateID == sc_globalProfiles[curr]) {
+        if (data->mMapActorID == sc_globalProfiles[curr]) {
             break;
         }
         curr++;
@@ -149,52 +149,53 @@ void dActorCreateMng_c::MapActorInitialCreate(sMapActorData *data, u16 *deleteNu
     dCdFile_c *file = dCd_c::m_instance->getFileP(stage->mCurrFile);
     u8 areaNo = dScStage_c::m_instance->getCurrArea();
 
-    bool spawnActor;
-    bool spawnIfInBounds;
-    bool canSpawnWithAreaCheck;
-
     while (i != count) {
         if ((*spawnFlags & dActor_c::ACTOR_SPAWNED) == 0) {
-            sMapActorInfo *curr = dActorCreate::getActorCreateInfo(data->mActorCreateID);
-            spawnActor = false;
-            spawnIfInBounds = false;
+            sMapActorInfo *mapActorInfo = dActorCreate::getMapActorInfo(data->mMapActorID);
+
+            bool globalActor = false;
+            bool canSpawn = false;
             if (!isAreaReload) {
-                canSpawnWithAreaCheck = false;
-                if (curr->mFlags & ACTOR_CREATE_GROUPED) {
+                bool invalidGroupId = false;
+                if (mapActorInfo->mFlags & ACTOR_CREATE_GROUP_0) {
                     if (!GroupIdCheck(data->mParam)) {
                         processGroupId(data, stage->mCurrFile, i);
-                        canSpawnWithAreaCheck = true;
+                        invalidGroupId = true;
                     }
                 } else if (GlobalActorCheck(data)) {
-                    spawnActor = true;
+                    globalActor = true;
                 }
-                if (!canSpawnWithAreaCheck) {
-                    sRangePosSize bound;
-                    bound.mX = data->mX;
-                    bound.mY = data->mY;
-                    bound.mWidth = curr->mSpawnRangeWidth * 2;
-                    bound.mHeight = curr->mSpawnRangeHeight * 2;
+
+                if (!invalidGroupId) {
+                    sRangePosSize bound = {
+                        data->mX,
+                        data->mY,
+                        (u16) (mapActorInfo->mSpawnRangeWidth * 2),
+                        (u16) (mapActorInfo->mSpawnRangeHeight * 2)
+                    };
                     if (file->getAreaNo(&bound) == areaNo) {
-                        spawnIfInBounds = true;
+                        canSpawn = true;
                     }
                 }
             } else {
-                if (curr->mFlags & ACTOR_CREATE_GROUPED) {
+                if (mapActorInfo->mFlags & ACTOR_CREATE_GROUP_0) {
                     if (GroupIdCheck(data->mParam)) {
-                        spawnIfInBounds = true;
+                        canSpawn = true;
                     }
                 } else {
-                    spawnIfInBounds = true;
+                    canSpawn = true;
                 }
             }
-            if (!spawnActor && spawnIfInBounds) {
-                if (curr->mFlags & ACTOR_CREATE_ALWAYS_SPAWN) {
+
+            bool spawnActor = globalActor;
+            if (!globalActor && canSpawn) {
+                if (mapActorInfo->mFlags & ACTOR_CREATE_GLOBAL) {
                     spawnActor = true;
                 } else {
-                    actorWidth = curr->mSpawnRangeWidth + ((curr->mSpawnMarginLeft + curr->mSpawnMarginRight) >> 1);
-                    actorHeight = curr->mSpawnRangeHeight + ((curr->mSpawnMarginTop + curr->mSpawnMarginBottom) >> 1);
-                    actorCenterX = data->mX + curr->mSpawnRangeOffsetX;
-                    actorCenterY = data->mY - curr->mSpawnRangeOffsetY;
+                    actorWidth = mapActorInfo->mSpawnRangeWidth + ((mapActorInfo->mSpawnMarginLeft + mapActorInfo->mSpawnMarginRight) >> 1);
+                    actorHeight = mapActorInfo->mSpawnRangeHeight + ((mapActorInfo->mSpawnMarginTop + mapActorInfo->mSpawnMarginBottom) >> 1);
+                    actorCenterX = data->mX + mapActorInfo->mSpawnRangeOffsetX;
+                    actorCenterY = data->mY - mapActorInfo->mSpawnRangeOffsetY;
                     if (
                         abs(boundCenterX - actorCenterX) <= abs(boundWidth + actorWidth) &&
                         abs(boundCenterY - actorCenterY) <= abs(boundHeight + actorHeight)
@@ -203,8 +204,9 @@ void dActorCreateMng_c::MapActorInitialCreate(sMapActorData *data, u16 *deleteNu
                     }
                 }
             }
+
             if (spawnActor) {
-                mapActorSpawn(data, curr, spawnFlags, deleteNum, areaNo);
+                mapActorSpawn(data, mapActorInfo, spawnFlags, deleteNum, areaNo);
             }
         }
         data++;
@@ -240,40 +242,41 @@ void dActorCreateMng_c::MapActorScroolCreateCheck() {
     int tileTop = (boundY - 16) >> 4;
     int tileBottom = (boundY + (int) bgSizeY + 32) >> 4;
 
-    sMapActorCreateBounds s;
+    sMapActorCreateBounds createBounds;
 
-    int endTileX, endTileY;
+    int edgeTileX, edgeTileY;
 
     if (dBg_c::m_bg_p->getDispScale() != dBg_c::m_bg_p->getPrevDispScale()) {
-        s.m_00 = tileLeft;
-        s.m_04 = tileBottom;
-        s.mTileLeft = tileLeft;
-        s.mTileRight = tileRight;
-        s.mTileTop = tileTop;
-        s.mTileBottom = tileBottom;
-        s.mScrollDirX = SCROLL_X_LEFT;
-        s.mScrollDirY = SCROLL_Y_DOWN;
-        MapActorScrollCreate(&s, false);
-        s.m_00 = tileRight;
-        s.m_04 = tileBottom;
-        s.mTileLeft = tileLeft;
-        s.mTileRight = tileRight;
-        s.mTileTop = tileTop;
-        s.mTileBottom = tileBottom;
-        s.mScrollDirX = SCROLL_X_RIGHT;
-        s.mScrollDirY = SCROLL_Y_DOWN;
-        MapActorScrollCreate(&s, false);
+        createBounds.mEdgeTileX = tileLeft;
+        createBounds.mEdgeTileY = tileBottom;
+        createBounds.mTileLeft = tileLeft;
+        createBounds.mTileRight = tileRight;
+        createBounds.mTileTop = tileTop;
+        createBounds.mTileBottom = tileBottom;
+        createBounds.mScrollDirX = SCROLL_X_LEFT;
+        createBounds.mScrollDirY = SCROLL_Y_DOWN;
+        MapActorScrollCreate(&createBounds, false);
+
+        createBounds.mEdgeTileX = tileRight;
+        createBounds.mEdgeTileY = tileBottom;
+        createBounds.mTileLeft = tileLeft;
+        createBounds.mTileRight = tileRight;
+        createBounds.mTileTop = tileTop;
+        createBounds.mTileBottom = tileBottom;
+        createBounds.mScrollDirX = SCROLL_X_RIGHT;
+        createBounds.mScrollDirY = SCROLL_Y_DOWN;
+        MapActorScrollCreate(&createBounds, false);
 
         mPosX = boundX;
         mPosY = boundY;
-        endTileX = tileRight;
-        endTileY = tileTop;
+        edgeTileX = tileRight;
+        edgeTileY = tileTop;
 
-        s.m_00 = tileRight;
-        s.m_04 = tileTop;
-        s.mScrollDirX = SCROLL_X_RIGHT;
-        s.mScrollDirY = SCROLL_Y_UP;
-        MapActorScrollCreate(&s, false);
+        createBounds.mEdgeTileX = tileRight;
+        createBounds.mEdgeTileY = tileTop;
+        createBounds.mScrollDirX = SCROLL_X_RIGHT;
+        createBounds.mScrollDirY = SCROLL_Y_UP;
+        MapActorScrollCreate(&createBounds, false);
     } else {
         int bgScrollDirY = bgParam->mScrollDirY;
         int bgScrollDirX = bgParam->mScrollDirX;
@@ -281,52 +284,53 @@ void dActorCreateMng_c::MapActorScroolCreateCheck() {
         if (bgScrollDirX != 0) {
             if (bgScrollDirX == 2) {
                 // right
-                endTileX = tileRight;
+                edgeTileX = tileRight;
                 scrollDirX = SCROLL_X_RIGHT;
             } else {
                 // left
-                endTileX = tileLeft;
+                edgeTileX = tileLeft;
             }
         } else {
             // none
-            endTileX = mTileY; // [Bug? Should be mTileX]
+            edgeTileX = mPrevEdgeTileY; // [Bug? Should be mTileX]
             scrollDirX = SCROLL_X_NONE;
         }
 
         if (bgScrollDirY != 0) {
             if (bgScrollDirY == 1U) {
                 // down
-                endTileY = tileBottom;
+                edgeTileY = tileBottom;
                 scrollDirY = SCROLL_Y_DOWN;
             } else {
                 // up
-                endTileY = tileTop;
+                edgeTileY = tileTop;
             }
         } else {
             // none
-            endTileY = mTileY;
+            edgeTileY = mPrevEdgeTileY;
             scrollDirY = SCROLL_Y_NONE;
         }
 
-        if (mTileX != endTileX || mTileY != endTileY) {
-            s.m_00 = endTileX;
-            s.m_04 = endTileY;
-            s.mTileLeft = tileLeft;
-            s.mTileRight = tileRight;
-            s.mTileTop = tileTop;
-            s.mTileBottom = tileBottom;
-            s.mScrollDirX = scrollDirX;
-            s.mScrollDirY = scrollDirY;
-            MapActorScrollCreate(&s, true);
+        // Only if the camera actually moved
+        if (mPrevEdgeTileX != edgeTileX || mPrevEdgeTileY != edgeTileY) {
+            createBounds.mEdgeTileX = edgeTileX;
+            createBounds.mEdgeTileY = edgeTileY;
+            createBounds.mTileLeft = tileLeft;
+            createBounds.mTileRight = tileRight;
+            createBounds.mTileTop = tileTop;
+            createBounds.mTileBottom = tileBottom;
+            createBounds.mScrollDirX = scrollDirX;
+            createBounds.mScrollDirY = scrollDirY;
+            MapActorScrollCreate(&createBounds, true);
         }
     }
     mPosX = boundX;
     mPosY = boundY;
-    mTileX = endTileX;
-    mTileY = endTileY;
+    mPrevEdgeTileX = edgeTileX;
+    mPrevEdgeTileY = edgeTileY;
 }
 
-void dActorCreateMng_c::MapActorScrollCreate(sMapActorCreateBounds *s, int noDispScaleChange) {
+void dActorCreateMng_c::MapActorScrollCreate(sMapActorCreateBounds *createBounds, int noDispScaleChange) {
     dScStage_c *stage = dScStage_c::m_instance;
     u8 areaNo = stage->mCurrArea;
     dCdFile_c *file = dCd_c::m_instance->getFileP(stage->mCurrFile);
@@ -347,21 +351,21 @@ void dActorCreateMng_c::MapActorScrollCreate(sMapActorCreateBounds *s, int noDis
 
     bool spawnActor;
     int centerX, centerY;
-    int iVar6, tileL, tileR;
-    int iVar17, tileT, tileB;
+    int edgeTileX, tileL, tileR;
+    int edgeTileY, tileT, tileB;
 
-    int c0 = s->m_00;
-    int c4 = s->m_04;
-    int ctl = s->mTileLeft;
-    int ctr = s->mTileRight;
-    int ctt = s->mTileTop;
-    int ctb = s->mTileBottom;
-    SCROLL_DIR_X_e dirX = s->mScrollDirX;
-    SCROLL_DIR_Y_e dirY = s->mScrollDirY;
+    int boundsEdgeX = createBounds->mEdgeTileX;
+    int boundsEdgeY = createBounds->mEdgeTileY;
+    int boundsLeft = createBounds->mTileLeft;
+    int boundsRight = createBounds->mTileRight;
+    int boundsTop = createBounds->mTileTop;
+    int boundsBottom = createBounds->mTileBottom;
+    SCROLL_DIR_X_e dirX = createBounds->mScrollDirX;
+    SCROLL_DIR_Y_e dirY = createBounds->mScrollDirY;
 
     for (u32 i = 0; i != mapActorCount; i++) {
         if ((*spawnFlags & dActor_c::ACTOR_SPAWNED) == 0) {
-            curr = dActorCreate::getActorCreateInfo(data->mActorCreateID);
+            curr = dActorCreate::getMapActorInfo(data->mMapActorID);
             spawnActor = false;
             centerX = data->mX + curr->mSpawnRangeOffsetX;
             centerY = data->mY - curr->mSpawnRangeOffsetY;
@@ -369,48 +373,51 @@ void dActorCreateMng_c::MapActorScrollCreate(sMapActorCreateBounds *s, int noDis
             tileR = (centerX + curr->mSpawnRangeWidth + curr->mSpawnMarginRight) >> 4;
             tileT = (centerY - curr->mSpawnRangeHeight - curr->mSpawnMarginTop) >> 4;
             tileB = (centerY + curr->mSpawnRangeHeight + curr->mSpawnMarginBottom) >> 4;
-            iVar6 = tileR;
-            if (dirX != 0) {
-                iVar6 = tileL;
+            edgeTileX = tileR;
+            if (dirX != SCROLL_X_LEFT) {
+                edgeTileX = tileL;
             }
-            iVar17 = tileB;
-            if (dirY != 0) {
-                iVar17 = tileT;
+            edgeTileY = tileB;
+            if (dirY != SCROLL_Y_UP) {
+                edgeTileY = tileT;
             }
+
             bool wrongGroupID = false;
-            if (curr->mFlags & ACTOR_CREATE_GROUPED) {
+            if (curr->mFlags & ACTOR_CREATE_GROUP_0) {
                 if (!GroupIdCheck(data->mParam)) {
                     wrongGroupID = true;
                 }
             }
+
             if (!wrongGroupID) {
                 if (noDispScaleChange) {
-                    if (iVar6 == c0) {
+                    if (edgeTileX == boundsEdgeX) {
                         if (dirX != SCROLL_X_NONE) {
                             if (dirX < 0) {
-                                spawnActor = ScroolAreaInCheck(ctr, tileL, ctt, ctb, tileT, tileB);
+                                spawnActor = ScroolAreaInCheck(boundsRight, tileL, boundsTop, boundsBottom, tileT, tileB);
                             } else {
-                                spawnActor = ScroolAreaInCheck(ctl, tileR, ctt, ctb, tileT, tileB);
+                                spawnActor = ScroolAreaInCheck(boundsLeft, tileR, boundsTop, boundsBottom, tileT, tileB);
                             }
                         }
-                    } else if (iVar17 == c4) {
+                    } else if (edgeTileY == boundsEdgeY) {
                         if (dirY != SCROLL_Y_NONE) {
                             if (dirY < 0) {
-                                spawnActor = ScroolAreaInLoopCheck(ctb, tileT, ctl, ctr, tileL, tileR);
+                                spawnActor = ScroolAreaInLoopCheck(boundsBottom, tileT, boundsLeft, boundsRight, tileL, tileR);
                             } else {
-                                spawnActor = ScroolAreaInLoopCheck(ctt, tileB, ctl, ctr, tileL, tileR);
+                                spawnActor = ScroolAreaInLoopCheck(boundsTop, tileB, boundsLeft, boundsRight, tileL, tileR);
                             }
                         }
                     }
                 } else {
-                    if (ScroolAreaInCheck(c0, iVar6, ctt, ctb, tileT, tileB)) {
+                    if (ScroolAreaInCheck(boundsEdgeX, edgeTileX, boundsTop, boundsBottom, tileT, tileB)) {
                         spawnActor = true;
                     }
-                    if (ScroolAreaInCheck(c4, iVar17, ctl, ctr, tileL, tileR)) {
+                    if (ScroolAreaInCheck(boundsEdgeY, edgeTileY, boundsLeft, boundsRight, tileL, tileR)) {
                         spawnActor = true;
                     }
                 }
             }
+
             if (spawnActor) {
                 mapActorSpawn(data, curr, spawnFlags, deleteNum, areaNo);
             }
@@ -474,7 +481,7 @@ float dActorCreateMng_c::addMapObjZposCount_layer2() {
 }
 
 dActor_c *dActorCreateMng_c::mapActorSpawn(sMapActorData *data, sMapActorInfo *info, u8 *spawnFlags, u16 *deleteNum, u8 areaNo) {
-    sMapActorInfo *ci = dActorCreate::getActorCreateInfo(data->mActorCreateID);
+    sMapActorInfo *ci = dActorCreate::getMapActorInfo(data->mMapActorID);
     if (ci->mProfileName == fProfile::DUMMY_ACTOR) {
         return nullptr;
     }
@@ -509,10 +516,10 @@ dActor_c *dActorCreateMng_c::mapActorSpawn(sMapActorData *data, sMapActorInfo *i
         dActor_c::m_flagbit_keep = 1LL << (flagKeepLo - 1);
     }
 
-    ci = dActorCreate::getActorCreateInfo(data->mActorCreateID);
+    ci = dActorCreate::getMapActorInfo(data->mMapActorID);
     dActor_c *actor = dActor_c::construct(ci->mProfileName, data->mParam, &pos, nullptr, data->mLayer);
     if (actor != nullptr) {
-        if (data->mActorCreateID >= 10) {
+        if (data->mMapActorID >= 10) {
             actor->mAreaNo = areaNo;
             actor->mpSpawnFlags = spawnFlags;
             actor->mpDeleteVal = deleteNum;

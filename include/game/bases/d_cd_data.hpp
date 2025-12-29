@@ -58,7 +58,7 @@ struct sNextGotoData {
 
 /// @unofficial
 struct sMapActorData {
-    u16 mActorCreateID;
+    u16 mMapActorID;
     u16 mX, mY;
     u8 mEventNums[2];
     u32 mParam;
