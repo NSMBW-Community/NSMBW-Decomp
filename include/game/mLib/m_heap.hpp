@@ -1,25 +1,44 @@
 #pragma once
-#include <types.h>
+#include <lib/egg/core/eggAssertHeap.h>
 #include <lib/egg/core/eggFrmHeap.h>
 #include <lib/egg/core/eggExpHeap.h>
-#include <nw4r/ut.h>
+#include <lib/egg/core/eggUnitHeap.h>
 
 namespace mHeap {
+    
     enum AllocOptBit_t {
         OPT_NONE = 0,
+        OPT_CLEAR_ALLOC = BIT_FLAG(0),
+        OPT_DEBUG_FILL = BIT_FLAG(1),
         OPT_THREAD_SAFE = BIT_FLAG(2)
     };
 
-    void restoreCurrentHeap();
-    EGG::Heap *setCurrentHeap(EGG::Heap *);
-    size_t frmHeapCost(size_t, size_t);
-    void destroyFrmHeap(EGG::FrmHeap *);
-    unsigned long adjustFrmHeap(EGG::FrmHeap *);
-    void saveCurrentHeap();
+    u16 GetOptFlag(AllocOptBit_t opt);
 
-    EGG::ExpHeap *createExpHeap(size_t, EGG::Heap *, const char *, size_t, mHeap::AllocOptBit_t);
-    EGG::FrmHeap *createFrmHeapToCurrent(unsigned long size, EGG::Heap *parent, const char *name, ulong align, mHeap::AllocOptBit_t opt);
-    EGG::FrmHeap *createFrmHeap(unsigned long size, EGG::Heap *parent, const char *name, ulong align, mHeap::AllocOptBit_t opt);
+    EGG::Heap *setCurrentHeap(EGG::Heap *heap);
+    void saveCurrentHeap();
+    void restoreCurrentHeap();
+
+    size_t expHeapCost(size_t size, ulong align);
+    size_t frmHeapCost(size_t size, ulong align);
+    size_t untHeapCost(size_t size, ulong count, ulong align);
+
+    void destroyFrmHeap(EGG::FrmHeap *heap);
+    size_t adjustFrmHeap(EGG::FrmHeap *heap); 
+
+    EGG::ExpHeap *createExpHeap(size_t size, EGG::Heap *parent, const char *name, ulong align, mHeap::AllocOptBit_t opt);
+    EGG::FrmHeap *createFrmHeapToCurrent(size_t size, EGG::Heap *parent, const char *name, ulong align, mHeap::AllocOptBit_t opt);
+    EGG::FrmHeap *createFrmHeap(size_t size, EGG::Heap *parent, const char *name, ulong align, mHeap::AllocOptBit_t opt);
+    EGG::UnitHeap *createUntHeap(size_t size, ulong count, EGG::Heap *parent, const char *name, ulong align, mHeap::AllocOptBit_t opt);
+    EGG::Heap *createHeap(size_t size, EGG::Heap *parent, const char *name);
+
+    EGG::Heap *createGameHeap(int idx, size_t size, EGG::Heap* parent);
+    void createGameHeap1(size_t size, EGG::Heap *parent);
+    void createGameHeap2(size_t size, EGG::Heap *parent);
+    void createArchiveHeap(size_t size, EGG::Heap *parent);
+    void createCommandHeap(size_t size, EGG::Heap *parent);
+    void createDylinkHeap(size_t size, EGG::Heap *parent);
+    EGG::Heap *createAssertHeap(EGG::Heap *parent);
 
     extern EGG::Heap *g_gameHeaps[3];
 };

@@ -19,3 +19,21 @@
 
 // [Translation: 2D resource heap (d2d::ResAccMultLoader_c::create)]
 #define D2D_HEAP_NAME "２Ｄリソース用ヒープ(d2d::ResAccMultLoader_c::create)"
+
+// [Translation: General-purpose file reading heap (mHeap::archiveHeap)]
+#define ARCHIVE_HEAP_NAME "汎用ファイル読み込み用ヒープ(mHeap::archiveHeap)"
+
+// [Translation: DVD read command heap (mHeap::commandHeap)]
+#define COMMAND_HEAP_NAME "DVD読み込みコマンド用ヒープ(mHeap::commandHeap)"
+
+// [Translation: Dynamic linking heap (mHeap::dylinkHeap)]
+#define DYLINK_HEAP_NAME "ダイナミックリンク用ヒープ(mHeap::dylinkHeap)"
+
+// [Translation: General-purpose heap for games 1(mHeap::gameHeaps[1])]
+#define GAME_HEAP_1_NAME "ゲーム用汎用ヒープ1(mHeap::gameHeaps[1])"
+
+// [Translation: General-purpose heap for games 2(mHeap::gameHeaps[2])]
+#define GAME_HEAP_2_NAME "ゲーム用汎用ヒープ2(mHeap::gameHeaps[2])"
+
+// [Translation: Assert Heap (mHeap::assertHeap)]
+#define ASSERT_HEAP_NAME "アサートヒープ(mHeap::assertHeap)"
