@@ -35,6 +35,15 @@
             }
         },
         {
+            "source": "runtime/global_destructor_chain.c",
+            "compilerFlags": "-c -Cpp_exceptions off -O4 -fp hard -sdata 0 -sdata2 0",
+            "memoryRanges": {
+                ".text": "0x70-0xf0",
+                ".dtors": "0x0-0x4",
+                ".bss": "0x0-0x8"
+            }
+        },
+        {
             "source": "d_basesNP/bases/d_awa.cpp",
             "memoryRanges": {
                 ".text": "0x4b0d0-0x4b730",
