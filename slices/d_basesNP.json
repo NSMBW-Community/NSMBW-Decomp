@@ -44,7 +44,6 @@
         },
         {
             "source": "d_basesNP/bases/d_a_obj_fruit_tree.cpp",
-            "nonMatching": true,
             "memoryRanges": {
                 ".text": "0x108360-0x108970",
                 ".rodata": "0x6180-0x6198",

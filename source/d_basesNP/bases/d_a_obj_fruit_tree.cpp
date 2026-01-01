@@ -64,7 +64,7 @@ int daObjFruitTree_c::create() {
     }
 
     // [Bug: the actor's bounding box is not updated based on the bush size]
-    mBushModel.create(model, &mHeapAllocator, 0x20, 1, nullptr);
+    createModel(model);
     dActor_c::setSoftLight_MapObj(mBushModel);
 
     if (style == STYLE_REGULAR) {
@@ -105,7 +105,7 @@ int daObjFruitTree_c::create() {
         }
     }
 
-    mBushAnim.create(model, anim, &mHeapAllocator, nullptr);
+    createAnim(model, anim);
     mBushAnim.setAnm(mBushModel, anim, m3d::FORWARD_LOOP);
     mBushModel.setAnm(mBushAnim, 1.0f);
     mBushAnim.setFrame(dScStage_c::m_exeFrame % (u32)mBushAnim.mFrameMax);
