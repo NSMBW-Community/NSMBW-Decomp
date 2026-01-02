@@ -11,7 +11,9 @@
             ".text":                { "index": 1,  "align": 16, "addr": "0x80006780", "size": "0x2e7544" },
             ".ctors$10":            { "index": 9,  "align": 4,  "addr": "0x802edce0", "size": "0x4" },
             ".ctors":               { "index": 9,  "align": 4,  "addr": "0x802edce0", "size": "0x2d0", "offset": "0x4" },
-            ".dtors":               { "index": 10, "align": 4,  "addr": "0x802edfc0", "size": "0xc" },
+            ".dtors$10":            { "index": 10, "align": 4,  "addr": "0x802edfc0", "size": "0x4" },
+            ".dtors$15":            { "index": 10, "align": 4,  "addr": "0x802edfc0", "size": "0x4", "offset": "0x4" },
+            ".dtors":               { "index": 10, "align": 4,  "addr": "0x802edfc0", "size": "0x4", "offset": "0x8" },
             ".rodata":              { "index": 11, "align": 8,  "addr": "0x802edfe0", "size": "0x106b0" },
             ".data":                { "index": 12, "align": 8,  "addr": "0x802fe6a0", "size": "0x532d0" },
             ".bss":                 { "index": -1, "align": 8,  "addr": "0x80351980", "size": "0xd5ff0" },
@@ -809,7 +811,8 @@
             "memoryRanges": {
                 ".text": "0x2d6e50-0x2d6ec0",
                 ".ctors$10": "0x0-0x4",
-                ".dtors": "0x0-0xc",
+                ".dtors$10": "0x0-0x4",
+                ".dtors$15": "0x4-0x8",
                 ".sdata": "0x2508-0x2510"
             }
         }

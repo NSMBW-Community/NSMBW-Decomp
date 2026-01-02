@@ -29,33 +29,39 @@ parser = argparse.ArgumentParser(description='Sets up the project for use with o
 parser.add_argument('--skip-download', action='store_true', help='Skip downloading symbols file')
 args = parser.parse_args()
 
-def text_to_syms(original_file: str):
+type dtk_sym_dict = dict[tuple[str, int], tuple[str, dict[str, str]]]
+
+# Converts a dtk symbols file to a dictionary
+# TODO: Handle multiple symbols at the same address
+def text_to_syms(syms_text: str) -> dtk_sym_dict:
     orig_syms = dict()
     count = defaultdict(int)
-    for line in original_file.splitlines():
+    for line in syms_text.splitlines():
         m = re.match(r'(.+) = (.+):(.+); // (.+)', line)
         assert m
         sym, sec, addr, comment = m.group(1), m.group(2), int(m.group(3), 0), m.group(4)
         count[sym] += 1
         comment_dict = dict(part.split(':', 1) for part in comment.split())
         if re.match(r'^\@\d+$', sym):
+            # All @<number> symbols are local
             comment_dict['scope'] = 'local'
         orig_syms[(sec, addr)] = (sym, comment_dict)
+
+    # Symbols that appear multiple times must also be local
     for _, (sym, comment_dict) in orig_syms.items():
         if count[sym] > 1:
             comment_dict['scope'] = 'local'
     return orig_syms
 
-def syms_to_text(syms: dict):
-    res = ''
-    keys = list(syms.keys())
-    for sec, addr in keys:
-        sym, comment = syms[(sec, addr)]
+# Converts a symbol dictionary into a dtk symbols text file
+def syms_to_text(syms: dtk_sym_dict):
+    syms_text = ''
+    for (sec, addr), (sym, comment) in syms.items():
         comment_str = ' '.join(f'{k}:{v}' for k, v in comment.items())
-        res += f'{sym} = {sec}:0x{addr:08X}; // {comment_str}\n'
-    return res
+        syms_text += f'{sym} = {sec}:0x{addr:08X}; // {comment_str}\n'
+    return syms_text
 
-
+# Downloads a specific dtk version
 def get_dtk(tag: str) -> str:
     uname = platform.uname()
     suffix = ''
@@ -85,29 +91,7 @@ def get_dtk(tag: str) -> str:
 
     return bin_path
 
-slices: list[SliceFile] = []
-
-for file in SLICEDIR.glob('*.json'):
-    slices.append(load_slice_file(file))
-
-# Ensure correct order of slices
-slices = sorted(slices, key=lambda x: x.meta.moduleNum)
-
-config_yaml = {
-    'modules': [],
-    'write_asm': False
-}
-
-symbols_url = 'https://github.com/RootCubed/NSMBW-Maps/releases/download/v1.0/wiimj2d_symbols.txt'
-symbols_path = BUILDDIR / 'dtk/wiimj2d_symbols.txt'
-if not symbols_path.exists() or not args.skip_download:
-    symbols_path.parent.mkdir(parents=True, exist_ok=True)
-    print(f'Downloading symbols from {symbols_url}')
-    req = urllib.request.Request(symbols_url, headers={'User-Agent': 'Mozilla/5.0'})
-    with urllib.request.urlopen(req) as response:
-        symbols_path.write_text(response.read().decode('utf-8'))
-config_yaml['symbols'] = symbols_path.as_posix()
-
+# Whether a section contains code or data
 SECTION_TYPES = {
     '.init': 'code',
     'extab': 'data',
@@ -124,15 +108,42 @@ SECTION_TYPES = {
     '.sdata2': 'bss',
 }
 
+# Step 1: Get DTK, load slices and symbols
+dtk_path = get_dtk('v1.8.0')
+
+slices: list[SliceFile] = []
+
+for file in SLICEDIR.glob('*.json'):
+    slices.append(load_slice_file(file))
+
+# Ensure correct order of slices
+slices = sorted(slices, key=lambda x: x.meta.moduleNum)
+
+symbols_url = 'https://github.com/RootCubed/NSMBW-Maps/releases/download/v1.0/wiimj2d_symbols.txt'
+symbols_path = BUILDDIR / 'dtk/wiimj2d_symbols.txt'
+if not symbols_path.exists() or not args.skip_download:
+    symbols_path.parent.mkdir(parents=True, exist_ok=True)
+    print(f'Downloading symbols from {symbols_url}')
+    req = urllib.request.Request(symbols_url, headers={'User-Agent': 'Mozilla/5.0'})
+    with urllib.request.urlopen(req) as response:
+        symbols_path.write_text(response.read().decode('utf-8'))
+
+# Step 2: Create config.yaml and splits files
 Path(f'{BUILDDIR}/dtk').mkdir(parents=True, exist_ok=True)
 
-# Step 1: Create config.yaml and splits files
+config_yaml = {
+    'modules': [],
+    'write_asm': False
+}
+
+config_yaml['symbols'] = symbols_path.as_posix()
 
 for slice_file in slices:
     if slice_file.meta.type == SliceType.DOL:
         config_yaml['object'] = f'original/{slice_file.meta.fileName}'
         config_yaml['splits'] = f'{BUILDDIR}/dtk/dtk_splits_{Path(slice_file.meta.fileName).stem}.txt'
         config_yaml['mw_comment_version'] = 14
+        # One incorrectly detected relocation needs to be patched
         config_yaml['block_relocations'] = [
             {
                 'source': '.data:0x803463E0',
@@ -154,9 +165,10 @@ for slice_file in slices:
         if info.size == 0:
             continue
         if not '$' in secname:
-            align = info.align if info.secAlign == -1 else info.secAlign
             if slice_file.meta.type == SliceType.DOL:
                 align = 32
+            else:
+                align = info.align
             splits_file += f'\t{secname: <15} type:{SECTION_TYPES[secname.split("$")[0]]} align:{align}\n'
         sec_origin[secname] = info.addr
 
@@ -169,40 +181,40 @@ for slice_file in slices:
         name = slice.source if slice.source else slice.sliceName
         splits_file += f'{name}:\n'
         for slice_sec in slice.sliceSecs:
+            sec_name = slice_sec.sec_name
             start = slice_sec.start_offs + sec_origin[slice_sec.sec_name]
             end = slice_sec.end_offs + sec_origin[slice_sec.sec_name]
+            rename_str = ''
+            if '$' in sec_name:
+                rename_str = f' rename:{sec_name}'
+                sec_name = sec_name.split('$')[0]
+            splits_file += f'\t{sec_name: <15} start:0x{start:08X} end:0x{end:08X}{rename_str}\n'
 
-            if '__init_cpp_exceptions' in name and slice_sec.sec_name in ['.ctors$10', '.dtors']:
-                if slice_sec.sec_name == '.ctors$10':
-                    splits_file += f'\t{".ctors": <15} start:0x{start:08X} end:0x{start+4:08X} rename:.ctors$10\n'
-                elif slice_sec.sec_name == '.dtors':
-                    splits_file += f'\t{slice_sec.sec_name: <15} start:0x{start:08X} end:0x{start+4:08X} rename:.dtors$10\n'
-                    splits_file += f'\t{slice_sec.sec_name: <15} start:0x{start+4:08X} end:0x{start+8:08X} rename:.dtors$15\n'
-            else:
-                splits_file += f'\t{slice_sec.sec_name: <15} start:0x{start:08X} end:0x{end:08X}\n'
         splits_file += '\n'
 
     with open(f'{BUILDDIR}/dtk/dtk_splits_{Path(slice_file.meta.fileName).stem}.txt', 'w') as f:
         f.write(splits_file)
 
-
 with open(f'{BUILDDIR}/dtk/config.yaml', 'w') as f:
     f.write(yaml.dump(config_yaml))
 
-# Clear out symbols to start
+# Step 3: Generate splits with dtk
+
+# Clear out module symbols to start
 for i, m in enumerate(config_yaml['modules']):
     Path(m['symbols']).write_text('')
 
-# Step 2: Generate splits with dtk
-
-dtk_path = get_dtk('v0.9.6')
+# Initial split
 cmd = [dtk_path, 'dol', 'split', f'{BUILDDIR}/dtk/config.yaml', f'{BUILDDIR}/dtkspl']
 out = subprocess.run(cmd)
 if out.returncode != 0:
     sys.exit()
 
-old_syms = text_to_syms(symbols_path.read_text())
+module_syms = [text_to_syms(Path(config_yaml['symbols']).read_text())]
+for m in config_yaml['modules']:
+    module_syms.append(text_to_syms(Path(m['symbols']).read_text()))
 
+# Apply symbols from built main elf
 cmd = [dtk_path, 'dol', 'apply', f'{BUILDDIR}/dtk/config.yaml', f'{BUILDDIR}/wiimj2d.elf']
 out = subprocess.run(cmd)
 if out.returncode != 0:
@@ -210,8 +222,10 @@ if out.returncode != 0:
 
 new_syms = text_to_syms(symbols_path.read_text())
 
-for sec, addr in old_syms:
-    o_sym, o_attrs = old_syms[(sec, addr)]
+# Dummy symbols added via syms.txt have size 0, so we want to revert back to the autodetected size from before.
+dol_syms = module_syms[0]
+for sec, addr in dol_syms:
+    o_sym, o_attrs = dol_syms[(sec, addr)]
     n_sym, n_attrs = new_syms[(sec, addr)]
     if 'size' in o_attrs and o_attrs['size'] != 0:
         if 'size' not in n_attrs or n_attrs['size'] != o_attrs['size']:
@@ -219,17 +233,11 @@ for sec, addr in old_syms:
     if re.match(r'\.\.\..+', n_sym) and n_sym != o_sym:
         new_syms[(sec, addr)] = (o_sym, o_attrs)
 
-symbols_path.write_text(syms_to_text(new_syms))
-
-module_syms = [dict()]
-for m in config_yaml['modules']:
-    module_syms.append(text_to_syms(Path(m['symbols']).read_text()))
-
 module_sections = [
     list(slice.meta.sections.keys()) for slice in slices
 ]
 
-# Apply REL symbols from compiled sources
+# Apply REL symbols from compiled PLF
 for i, m in enumerate(config_yaml['modules']):
     modpath = BUILDDIR / (Path(m['object']).stem + '.plf')
     sym_dict = module_syms[i + 1]
@@ -244,20 +252,26 @@ for i, m in enumerate(config_yaml['modules']):
             name = sym.name
             if name == '' or name == sec.replace('.', '_') or name.startswith('...' + sec[1:]):
                 continue
-            orig_comment = {} if (sec, addr) not in sym_dict else sym_dict[(sec, addr)][1]
-            orig_comment['type'] = 'function' if sym.st_info_type == STT.STT_FUNC else 'object'
-            orig_comment['scope'] = 'local' if sym.st_info_bind == STB.STB_LOCAL else 'global'
-            # DTK sometimes incorrectly detects an unnecessary blr at the end as a separate function
-            if 'size' in orig_comment and sym.st_size > int(orig_comment['size'], 0):
-                if (sec, addr + sym.st_size - 4) in sym_dict:
-                    del sym_dict[(sec, addr + sym.st_size - 4)]
-            orig_comment['size'] = sym.st_size
-            sym_dict[(sec, addr)] = (name, orig_comment)
-            if sym.name == '__register_global_object':
-                del sym_dict[(sec, addr)]
+            attributes = {} if (sec, addr) not in sym_dict else sym_dict[(sec, addr)][1]
+            # Size 0 indicates dummy symbols from alias_db.txt
+            if sym.st_size != 0:
+                attributes['type'] = 'function' if sym.st_info_type == STT.STT_FUNC else 'object'
+                attributes['scope'] = 'local' if sym.st_info_bind == STB.STB_LOCAL else 'global'
+
+                # DTK sometimes incorrectly detects an unnecessary blr at the end as a separate function
+                if 'size' in attributes and sym.st_size > int(attributes['size'], 0):
+                    if (sec, addr + sym.st_size - 4) in sym_dict:
+                        del sym_dict[(sec, addr + sym.st_size - 4)]
+                attributes['size'] = str(sym.st_size)
+
+            sym_dict[(sec, addr)] = (name, attributes)
+
+# Write back updated symbols
+symbols_path.write_text(syms_to_text(new_syms))
 for i, m in enumerate(config_yaml['modules']):
     Path(m['symbols']).write_text(syms_to_text(module_syms[i + 1]))
 
+# Split again to have the new symbols in the split object files
 cmd = [dtk_path, 'dol', 'split', f'{BUILDDIR}/dtk/config.yaml', f'{BUILDDIR}/dtkspl']
 out = subprocess.run(cmd)
 if out.returncode != 0:
@@ -265,8 +279,7 @@ if out.returncode != 0:
 
 print_success('Successfully generated splits with dtk. Now generating objdiff.json...')
 
-# Step 3: Generate objdiff.json
-
+# Step 4: Generate objdiff.json
 with open(f'{BUILDDIR}/dtkspl/config.json', 'r') as f:
     objdiff_json = json.load(f)
 

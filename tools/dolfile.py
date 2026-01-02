@@ -93,6 +93,7 @@ class Dol:
                 file.seek(sec_offsets[i])
                 file.write(sec.data)
 
+                # DOL sections are always aligned to 0x20
                 sec_end = sec_offsets[i] + len(sec.data)
                 end_aligned = align(sec_end, 0x20)
                 pad_len = end_aligned - sec_end
