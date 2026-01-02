@@ -174,7 +174,7 @@ for slice_file in slices:
 
             if '__init_cpp_exceptions' in name and slice_sec.sec_name in ['.ctors$10', '.dtors']:
                 if slice_sec.sec_name == '.ctors$10':
-                    splits_file += f'\t{'.ctors': <15} start:0x{start:08X} end:0x{start+4:08X} rename:.ctors$10\n'
+                    splits_file += f'\t{".ctors": <15} start:0x{start:08X} end:0x{start+4:08X} rename:.ctors$10\n'
                 elif slice_sec.sec_name == '.dtors':
                     splits_file += f'\t{slice_sec.sec_name: <15} start:0x{start:08X} end:0x{start+4:08X} rename:.dtors$10\n'
                     splits_file += f'\t{slice_sec.sec_name: <15} start:0x{start+4:08X} end:0x{start+8:08X} rename:.dtors$15\n'
