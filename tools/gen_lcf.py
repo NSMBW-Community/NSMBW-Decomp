@@ -73,6 +73,8 @@ def gen_lcf(slice_file_path: Path, preplfs: list[Path], out_path: Path) -> None:
         if '$' in name or section.size == 0:
             continue
         align = section.align if section.secAlign == -1 else section.secAlign
+        if slice_file.meta.type == SliceType.DOL:
+            align = 0x20
         lcf_file.write(f'\t\t{name} ALIGN(0x{align:0x}) : {{}}\n')
     lcf_file.write('\t} > text\n')
     lcf_file.write('}\n\n')

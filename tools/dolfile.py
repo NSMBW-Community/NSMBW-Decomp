@@ -92,3 +92,10 @@ class Dol:
             if not sec.unused:
                 file.seek(sec_offsets[i])
                 file.write(sec.data)
+
+                sec_end = sec_offsets[i] + len(sec.data)
+                end_aligned = align(sec_end, 0x20)
+                pad_len = end_aligned - sec_end
+                if pad_len > 0:
+                    file.write(b'\0' * pad_len)
+

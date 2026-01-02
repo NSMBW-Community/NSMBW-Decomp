@@ -15,9 +15,15 @@ def add_symbol(module_classify: dict[int, list], i: int, reloc: ElfRela, sym: El
 
     module_classify[i].append((reloc, sym))
 
-
+# TODO: Speed this up even more
+sym_cache = dict()
 def find_symbol(syms: ElfSymtab, i: int, name: str, module_classify: dict[int, list], reloc: ElfRela) -> bool:
-    try_found = syms.get_symbols(name)
+    global sym_cache
+    if (i, name) in sym_cache:
+        try_found = sym_cache[(i, name)]
+    else:
+        try_found = syms.get_symbols(name)
+        sym_cache[(i, name)] = try_found
     if try_found and try_found[0].st_shndx != SHN.SHN_UNDEF.value:
         add_symbol(module_classify, i, reloc, try_found[0])
         return True
