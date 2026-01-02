@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# Build script
+# Build script using DTK split objects for shiftability
 
 import argparse
 import subprocess
@@ -14,13 +14,24 @@ from build_rel import build_rel
 from color_term import *
 from project_settings import *
 
-parser = argparse.ArgumentParser(description='Builds the game executables.')
+parser = argparse.ArgumentParser(description='Builds the game executables using DTK split object for shiftability.')
 parser.add_argument('-v', help='Prints commands for debugging', action='store_true')
-parser.add_argument('--objdiff-o', help='Object file to build for objdiff')
+parser.add_argument('--game_folder', type=Path, help='Path to the root of the extracted ISO (will replace main.dol and the REL files)')
 args = parser.parse_args()
+
+def exec_cmd(*nargs, **kwargs):
+    global args
+    if args.v:
+        print(*nargs, **kwargs)
+    out = subprocess.run(*nargs, **kwargs)
+    if out.returncode != 0:
+        sys.exit(out.returncode)
+
+Path(f'{BUILDDIR}/mod').mkdir(parents=True, exist_ok=True)
 
 config_json = json.loads(open(BUILDDIR / 'dtkspl/config.json').read())
 
+# Builds the main elf
 def build_main(module_name, ldscript, units):
     ldflags = '-proc gekko -fp hard'
     out_file = f'mod/{module_name}'
@@ -35,11 +46,10 @@ def build_main(module_name, ldscript, units):
 
     cmd = [] if sys.platform == 'win32' else ['wine']
     cmd.extend([LD, *ldflags.split(' '), *file_names, '-lcf', ldscript, '-o', BUILDDIR / (out_file + '.elf')])
-    out = subprocess.run(cmd)
-    if out.returncode != 0:
-        sys.exit(out.returncode)
+    exec_cmd(cmd)
     print_success(f'Linked {module_name}.elf.')
 
+# Builds a module plf
 def build_module_plf(module_name, ldscript, units):
     ldflags = '-proc gekko -fp hard -sdata 0 -sdata2 0 -m _prolog -r1 -strip_partial'
     out_file = f'mod/{module_name}'
@@ -55,26 +65,35 @@ def build_module_plf(module_name, ldscript, units):
 
     cmd = [] if sys.platform == 'win32' else ['wine']
     cmd.extend([LD, *ldflags.split(' '), *file_names, '-lcf', ldscript, '-o', out_plf])
-    out = subprocess.run(cmd)
-    if out.returncode != 0:
-        sys.exit(out.returncode)
+    exec_cmd(cmd)
     print_success(f'Linked {module_name}.plf.')
 
-Path(f'{BUILDDIR}/mod').mkdir(parents=True, exist_ok=True)
-
-modules = [BUILDDIR / f'mod/{config_json["name"]}.elf', *[BUILDDIR / f'mod/{x["name"]}.plf' for x in config_json['modules']]]
+modules = [BUILDDIR / f'mod/{config_json['name']}.elf', *[BUILDDIR / f'mod/{x['name']}.plf' for x in config_json['modules']]]
 
 build_main(config_json['name'], config_json['ldscript'], config_json['units'])
 for mods in config_json['modules']:
     build_module_plf(mods['name'], Path(mods['ldscript']), mods['units'])
 
-fake_path = 'd:\\home\\Project\\WIIMJ2D\\EU\\PRD\\RVL\\bin\\'
-out_rel_names = [Path(f'{fake_path}/{x.with_suffix(".plf").name}') for x in modules[1:]]
-str_path = BUILDDIR / 'mod' / f'{config_json["name"]}.str'
+# Convert into Wii-specific file formats
+
+dol_out_dir = (args.game_folder / 'sys') if args.game_folder else BUILDDIR / 'mod'
+str_out_dir = (args.game_folder / 'files') if args.game_folder else BUILDDIR / 'mod'
+rel_out_dir = (args.game_folder / 'files/rels') if args.game_folder else BUILDDIR / 'mod'
+
+out_rel_names = [rel_out_dir / x.with_suffix('.plf').name for x in modules[1:]]
+str_path = str_out_dir / f'{config_json['name']}.str'
 str_path.write_bytes(b'\0'.join(str(p).replace('/', '\\').encode() for p in out_rel_names))
 
-build_dol(BUILDDIR / 'mod' / (config_json['name'] + '.elf'), BUILDDIR / 'mod/main.dol')
+build_dol(BUILDDIR / 'mod' / (config_json['name'] + '.elf'), dol_out_dir / 'main.dol')
 print_success('Built main.dol.')
+
 for mod in config_json['modules']:
-    build_rel(modules[0], modules[1:], BUILDDIR / 'mod' / (mod['name'] + '.rel'), str_path)
-    print_success(f'Built {mod["name"]}.rel.')
+    build_rel(modules[0], modules[1:], rel_out_dir / (mod['name'] + '.rel'), str_path)
+    print_success(f'Built {mod['name']}.rel.')
+
+# Rename the old RELs from the game folder
+if args.game_folder:
+    for mod in modules[1:]:
+        file: Path = args.game_folder / 'files/rels' / mod.with_suffix('.rel.LZ').name
+        if file.exists():
+            file.rename(file.with_suffix('.LZ.orig'))

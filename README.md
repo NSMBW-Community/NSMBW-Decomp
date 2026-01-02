@@ -73,6 +73,42 @@ ninja
 ./progress.py --verify-bin
 ```
 
+## Building a modded game version
+If you wish to modify any source files and recompile the project into a working game, do the following:
+
+1. Create a matching build of the game as described in the previous section:
+```bash
+./configure.py
+ninja
+./progress.py --verify-bin
+```
+
+2. Run `prepare_objdiff.py`
+```bash
+python prepare_objdiff.py
+```
+
+*Important: Do not run this command again after modifying game files! Revert back to the original state if you need to.*
+
+3. Modify the game files as much as you want
+
+4. Compile the sources:
+```bash
+ninja
+```
+
+5. Create the modded game executables:
+```bash
+python build_modded.py
+```
+
+Optionally, you can specify the location of an extracted game disk. This way, you don't have to copy over the files each time.
+```bash
+python build_modded.py --game_folder <...>
+```
+
+Repeat steps 4 and 5 after making new changes.
+
 ## Documentation
 You can generate source documentation using [Doxygen](https://www.doxygen.nl/).
 

@@ -68,7 +68,7 @@ def convert_to_rel_relocations(elf_relocs: list[tuple[ElfRela, ElfSymbol]], sec_
     return res_relocs
 
 
-def process_file(module: ElfFile, symbols: list[ElfSymtab], module_index: int, filename: Path, str_file: Path) -> int:
+def process_file(module: ElfFile, symbols: list[ElfSymtab], module_index: int, filename: Path, out_file: Path, str_file: Path) -> int:
     unresolved_symbol_count: int = 0
 
     # Read offset and length from .str file
@@ -76,7 +76,6 @@ def process_file(module: ElfFile, symbols: list[ElfSymtab], module_index: int, f
     filename_offset = strs.find(filename.name)
     str_file_offset = strs.rfind('\0', 0, filename_offset) + 1
     str_len = filename_offset + len(filename.name) - str_file_offset + 1
-    outfile = filename.with_suffix('.rel')
 
     # Create REL
     rel_file = Rel(module_index, path_offset=str_file_offset, path_size=str_len)
@@ -204,7 +203,7 @@ def process_file(module: ElfFile, symbols: list[ElfSymtab], module_index: int, f
         rel_file.add_section(RelSection())
 
     # Write file
-    with open(outfile, 'wb') as f:
+    with open(out_file, 'wb') as f:
         rel_file.write(f)
 
     # Return unresolved symbols
@@ -227,7 +226,7 @@ def build_rel(elf_file: Path, plf_paths: list[Path], output_file: Path, str_file
 
         plf = ElfFile.read(files[i])
 
-        unresolved_symbol_count = process_file(plf, symbols, i, plf_path, str_file)
+        unresolved_symbol_count = process_file(plf, symbols, i, plf_path, output_file, str_file)
         if unresolved_symbol_count > 0:
             print_warn('Processed', str(plf_path), 'with', unresolved_symbol_count, 'unresolved symbol(s).')
 
