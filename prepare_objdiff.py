@@ -169,7 +169,7 @@ for slice_file in slices:
                 align = 32
             else:
                 align = info.align
-            splits_file += f'\t{secname: <15} type:{SECTION_TYPES[secname.split("$")[0]]} align:{align}\n'
+            splits_file += f'\t{secname: <15} type:{SECTION_TYPES[secname.split('$')[0]]} align:{align}\n'
         sec_origin[secname] = info.addr
 
     splits_file += '\n'
