@@ -157,7 +157,7 @@ for slice_file in slices:
             align = info.align if info.secAlign == -1 else info.secAlign
             if slice_file.meta.type == SliceType.DOL:
                 align = 32
-            splits_file += f'\t{secname: <15} type:{SECTION_TYPES[secname.split('$')[0]]} align:{align}\n'
+            splits_file += f'\t{secname: <15} type:{SECTION_TYPES[secname.split("$")[0]]} align:{align}\n'
         sec_origin[secname] = info.addr
 
     splits_file += '\n'
