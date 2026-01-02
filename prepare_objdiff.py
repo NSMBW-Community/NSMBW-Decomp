@@ -232,7 +232,8 @@ for sec, addr in dol_syms:
         new_syms[(sec, addr)] = (o_sym, o_attrs)
 
 symbols_to_remove = [
-    ('.data', 0x80327F95)
+    ('.data', 0x80327F95),
+    ('.data', 0x80328A1F)
 ]
 
 for sec, addr in symbols_to_remove:
