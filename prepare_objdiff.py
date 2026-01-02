@@ -29,11 +29,9 @@ parser = argparse.ArgumentParser(description='Sets up the project for use with o
 parser.add_argument('--skip-download', action='store_true', help='Skip downloading symbols file')
 args = parser.parse_args()
 
-type dtk_sym_dict = dict[tuple[str, int], tuple[str, dict[str, str]]]
-
 # Converts a dtk symbols file to a dictionary
 # TODO: Handle multiple symbols at the same address
-def text_to_syms(syms_text: str) -> dtk_sym_dict:
+def text_to_syms(syms_text: str) -> dict[tuple[str, int], tuple[str, dict[str, str]]]:
     orig_syms = dict()
     count = defaultdict(int)
     for line in syms_text.splitlines():
@@ -54,7 +52,7 @@ def text_to_syms(syms_text: str) -> dtk_sym_dict:
     return orig_syms
 
 # Converts a symbol dictionary into a dtk symbols text file
-def syms_to_text(syms: dtk_sym_dict):
+def syms_to_text(syms: dict[tuple[str, int], tuple[str, dict[str, str]]]):
     syms_text = ''
     for (sec, addr), (sym, comment) in syms.items():
         comment_str = ' '.join(f'{k}:{v}' for k, v in comment.items())
@@ -169,7 +167,7 @@ for slice_file in slices:
                 align = 32
             else:
                 align = info.align
-            splits_file += f'\t{secname: <15} type:{SECTION_TYPES[secname.split('$')[0]]} align:{align}\n'
+            splits_file += f'\t{secname: <15} type:{SECTION_TYPES[secname.split("$")[0]]} align:{align}\n'
         sec_origin[secname] = info.addr
 
     splits_file += '\n'
@@ -232,6 +230,14 @@ for sec, addr in dol_syms:
             n_attrs['size'] = o_attrs['size']
     if re.match(r'\.\.\..+', n_sym) and n_sym != o_sym:
         new_syms[(sec, addr)] = (o_sym, o_attrs)
+
+symbols_to_remove = [
+    ('.data', 0x80327F95)
+]
+
+for sec, addr in symbols_to_remove:
+    if (sec, addr) in new_syms:
+        del new_syms[(sec, addr)]
 
 module_sections = [
     list(slice.meta.sections.keys()) for slice in slices
