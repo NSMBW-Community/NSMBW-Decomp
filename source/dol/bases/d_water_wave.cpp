@@ -265,108 +265,106 @@ void dWaterWave_c::waveDecoExecute() {
     }
 
     int i = 0;
-    if (count <= 0) {
-        goto end;
-    }
-    while (i < count) {
-        int frameIdx = (i + dScStage_c::m_exeFrame) % 5;
-        int state = (s8) mWaveDeco.mState[i];
-        switch (state) {
-            case 0:
-                mWaveDeco.mVertices[i].x = mPos.x + scale + (m_d284 * 2.0f - 2.0 * scale) * dGameCom::rndF(1.0f);
-                mWaveDeco.mVertices[i].y = -2.5f;
-                mWaveDeco.mVertices[i].z = 0.0f;
-                mWaveDeco.mState[i] = 1;
-                break;
-            case 1:
-                mVec3_c copy;
-                copy = *mWaveDeco.getVertex(i);
-                mVec3_c *quad = mWaveQuad.getQuad(i);
-                if (quad != nullptr) {
-                    copy.y = quad->y - 5.0f;
+    if (count > 0) {
+        for (; i < count; i++) {
+            int frameIdx = (i + dScStage_c::m_exeFrame) % 5;
+            s8 state = mWaveDeco.mState[i];
+            switch (state) {
+                case 0: {
+                    mWaveDeco.mVertices[i].x = mPos.x + scale + (m_d284 * 2.0f - 2.0 * scale) * dGameCom::rndF(1.0f);
+                    mWaveDeco.mVertices[i].y = -2.5f;
+                    mWaveDeco.mVertices[i].z = 0.0f;
+                    mWaveDeco.mState[i] = 1;
+                    break;
                 }
-                if (copy.x < bgParam->xStart()) {
-                    if (copy.x + bgParam->xSize() < mPos.x + m_d284 * 8.0f) {
-                        copy.x += bgParam->xSize() - 2.0f * scale;
+                case 1:
+                    mVec3_c copy;
+                    copy = *mWaveDeco.getVertex(i);
+                    mVec3_c *quad = mWaveQuad.getQuad(i);
+                    if (quad != nullptr) {
+                        copy.y = quad->y - 5.0f;
                     }
-                } else {
-                    if (copy.x > bgParam->xStart() + bgParam->xSize() && copy.x - bgParam->xSize() > mPos.x) {
-                        copy.x -= bgParam->xSize() - 2.0f * scale;
+                    if (copy.x < bgParam->xStart()) {
+                        if (copy.x + bgParam->xSize() < mPos.x + m_d284 * 8.0f) {
+                            copy.x += bgParam->xSize() - 2.0f * scale;
+                        }
+                    } else {
+                        if (copy.x > bgParam->xStart() + bgParam->xSize() && copy.x - bgParam->xSize() > mPos.x) {
+                            copy.x -= bgParam->xSize() - 2.0f * scale;
+                        }
                     }
-                }
-                mWaveDeco.mVertices[i] = copy;
-                if (frameIdx == 0) {
-                    mWaveDeco.mObjIndices[i] = (float) (mWaveDeco.mObjIndices[i] + 1);
-                    if (mWaveDeco.mObjIndices[i] > 11) {
-                        mWaveDeco.mVertices[i].x = mPos.x + scale + (m_d284 * 8.0f - 2.0f * scale) * dGameCom::rndF(1.0f);
-                        mWaveDeco.mVertices[i].y = -5.0f;
-                        mWaveDeco.mVertices[i].z = 0.0f;
-                        mWaveDeco.mObjIndices[i] = 0;
+                    mWaveDeco.mVertices[i] = copy;
+                    if (frameIdx == 0) {
+                        float nextIndex = mWaveDeco.mObjIndices[i] + 1;
+                        mWaveDeco.mObjIndices[i] = nextIndex;
+                        if (mWaveDeco.mObjIndices[i] > 11) {
+                            mWaveDeco.mVertices[i].x = mPos.x + scale + (m_d284 * 8.0f - 2.0f * scale) * dGameCom::rndF(1.0f);
+                            mWaveDeco.mVertices[i].y = -5.0f;
+                            mWaveDeco.mVertices[i].z = 0.0f;
+                            mWaveDeco.mObjIndices[i] = 0;
+                        }
                     }
-                }
-                break;
-        }
-        int r1Min, g1Min, b1Min;
-        int r1Mid, g1Mid, b1Mid;
-        int r1Max, g1Max, b1Max;
-        int r2Min, g2Min, b2Min;
-        int r2Mid, g2Mid, b2Mid;
-        int r2Max, g2Max, b2Max;
+                    break;
+            }
+            int r1Min, g1Min, b1Min;
+            int r1Mid, g1Mid, b1Mid;
+            int r1Max, g1Max, b1Max;
+            int r2Min, g2Min, b2Min;
+            int r2Mid, g2Mid, b2Mid;
+            int r2Max, g2Max, b2Max;
 
-        bool pastMid = false;
+            bool pastMid = false;
 
-        r1Min = 255; g1Min = 255; b1Min = 255; // #FFFFFF
-        r1Mid = 255; g1Mid = 255; b1Mid = 0;   // #FFFF00
-        r1Max = 255; g1Max = 135; b1Max = 0;   // #FF8700
-
-        r2Min = 255; g2Min = 255; b2Min = 255; // #FFFFFF
-        r2Mid = 255; g2Mid = 0; b2Mid = 0;     // #FF0000
-        r2Max = 200; g2Max = 0; b2Max = 0;     // #C80000
-
-        float tFull = (mWaveDeco.mObjIndices[i] * 4 + frameIdx) / 48.0f;
-        if (m_d308 == 2) {
             r1Min = 255; g1Min = 255; b1Min = 255; // #FFFFFF
-            r1Mid = 255; g1Mid = 0; b1Mid = 255;   // #FF00FF
-            r1Max = 100; g1Max = 0; b1Max = 100;   // #640064
+            r1Mid = 255; g1Mid = 255; b1Mid = 0;   // #FFFF00
+            r1Max = 255; g1Max = 135; b1Max = 0;   // #FF8700
 
-            r2Min = 255; g2Min = 0; b2Min = 255;   // #FF00FF
-            r2Mid = 100; g2Mid = 0; b2Mid = 100;   // #640064
-            r2Max = 50; g2Max = 0; b2Max = 50;     // #320032
-        }
+            r2Min = 255; g2Min = 255; b2Min = 255; // #FFFFFF
+            r2Mid = 255; g2Mid = 0; b2Mid = 0;     // #FF0000
+            r2Max = 200; g2Max = 0; b2Max = 0;     // #C80000
 
-        float tScaled;
-        if (tFull < 0.5f) {
-            tScaled = tFull * 2.0f;
-        } else {
-            tScaled = (tFull - 0.5f) * 2.0f;
-            pastMid = true;
+            float tFull = (mWaveDeco.mObjIndices[i] * 4 + frameIdx) / 48.0f;
+            if (m_d308 == 2) {
+                r1Min = 255; g1Min = 255; b1Min = 255; // #FFFFFF
+                r1Mid = 255; g1Mid = 0; b1Mid = 255;   // #FF00FF
+                r1Max = 100; g1Max = 0; b1Max = 100;   // #640064
+
+                r2Min = 255; g2Min = 0; b2Min = 255;   // #FF00FF
+                r2Mid = 100; g2Mid = 0; b2Mid = 100;   // #640064
+                r2Max = 50; g2Max = 0; b2Max = 50;     // #320032
+            }
+
+            float tScaled;
+            if (tFull < 0.5f) {
+                tScaled = tFull * 2.0f;
+            } else {
+                tScaled = (tFull - 0.5f) * 2.0f;
+                pastMid = true;
+            }
+            GXColor c1, c2;
+            if (!pastMid) {
+                c1.r = r1Min + (int) (tScaled * (r1Mid - r1Min));
+                c1.g = g1Min + (int) (tScaled * (g1Mid - g1Min));
+                c1.b = b1Min + (int) (tScaled * (b1Mid - b1Min));
+                c1.a = 255;
+                c2.r = r2Min + (int) (tScaled * (r2Mid - r2Min));
+                c2.g = g2Min + (int) (tScaled * (g2Mid - g2Min));
+                c2.b = b2Min + (int) (tScaled * (b2Mid - b2Min));
+                c2.a = 255;
+            } else {
+                c1.r = r1Mid + (int) (tScaled * (r1Max - r1Mid));
+                c1.g = g1Mid + (int) (tScaled * (g1Max - g1Mid));
+                c1.b = b1Mid + (int) (tScaled * (b1Max - b1Mid));
+                c1.a = 255;
+                c2.r = r2Mid + (int) (tScaled * (r2Max - r2Mid));
+                c2.g = g2Mid + (int) (tScaled * (g2Max - g2Mid));
+                c2.b = b2Mid + (int) (tScaled * (b2Max - b2Mid));
+                c2.a = 255;
+            }
+            mWaveDeco.mColor1[i] = nw4r::ut::Color(c1);
+            mWaveDeco.mColor2[i] = nw4r::ut::Color(c2);
         }
-        GXColor c1, c2;
-        if (!pastMid) {
-            c1.r = r1Min + (int) (tScaled * (r1Mid - r1Min));
-            c1.g = g1Min + (int) (tScaled * (g1Mid - g1Min));
-            c1.b = b1Min + (int) (tScaled * (b1Mid - b1Min));
-            c1.a = 255;
-            c2.r = r2Min + (int) (tScaled * (r2Mid - r2Min));
-            c2.g = g2Min + (int) (tScaled * (g2Mid - g2Min));
-            c2.b = b2Min + (int) (tScaled * (b2Mid - b2Min));
-            c2.a = 255;
-        } else {
-            c1.r = r1Mid + (int) (tScaled * (r1Max - r1Mid));
-            c1.g = g1Mid + (int) (tScaled * (g1Max - g1Mid));
-            c1.b = b1Mid + (int) (tScaled * (b1Max - b1Mid));
-            c1.a = 255;
-            c2.r = r2Mid + (int) (tScaled * (r2Max - r2Mid));
-            c2.g = g2Mid + (int) (tScaled * (g2Max - g2Mid));
-            c2.b = b2Mid + (int) (tScaled * (b2Max - b2Mid));
-            c2.a = 255;
-        }
-        mWaveDeco.mColor1[i] = nw4r::ut::Color(c1);
-        mWaveDeco.mColor2[i] = nw4r::ut::Color(c2);
-        i++;
     }
-
-end:
 
     mPos2 = mPos;
     mPos2.x = 0.0f;
