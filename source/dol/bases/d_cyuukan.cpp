@@ -21,7 +21,7 @@ void dCyuukan_c::clear() {
     mIsKinopioInChuukan = false;
     mPlayerSetPos.x = 0.0f;
     mPlayerSetPos.y = 0.0f;
-    mActiveCheckpoint = -1;
+    mActiveCheckpointIndex = -1;
 
     for (int i = 0; i < CHECKPOINT_COUNT; i++) {
         mHitPlayer[i] = PLAYER_COUNT;
@@ -34,20 +34,21 @@ void dCyuukan_c::clear() {
 
 void dCyuukan_c::courseIN() {
     dInfo_c *info = dInfo_c::m_instance;
+
     u8 world = dInfo_c::m_startGameInfo.mWorld1;
     u8 course = dInfo_c::m_startGameInfo.mLevel1;
     if (STAGE_KINOKO_HOUSE <= course && course <= STAGE_KINOKO_HOUSE_7 || course == STAGE_PEACH_CASTLE) {
         return;
     }
+
     if (
-        info->m_3b3 != 0 ||
+        info->mClearCyuukan ||
         dInfo_c::m_startGameInfo.mScreenType != 0 ||
-        course != mCourseNo || world != mWorldNo
+        course != mCourseNo ||
+        world != mWorldNo
     ) {
         clear();
-        return;
-    }
-    if (!checkEntry()) {
+    } else if (!checkEntry()) {
         clear();
     }
 }
@@ -67,21 +68,24 @@ bool dCyuukan_c::checkEntry() {
 void dCyuukan_c::setCyuukanData(int checkpointIndex, u8 nextGoto, s8 player, ulong ambushType) {
     dScStage_c *stage = dScStage_c::getInstance();
     PLAYER_TYPE_e hitPlayer = daPyMng_c::getPlayerType(player);
+
     mWorldNo = stage->mCurrWorld;
     mCourseNo = stage->mCurrCourse;
     mFileNo = stage->mCurrFile;
     mNextGoto = nextGoto;
     mHitPlayer[checkpointIndex] = hitPlayer;
     mAmbushType = ambushType & 0xFF;
-    mActiveCheckpoint = checkpointIndex;
+    mActiveCheckpointIndex = checkpointIndex;
+
     setPos(daPyMng_c::getPlayerSetPos(stage->mCurrFile, nextGoto));
+
     for (int i = 0; i < ARRAY_SIZE(mCoinCollection); i++) {
         mCoinCollection[i] = dScStage_c::mCollectionCoin[i];
     }
 }
 
 bool dCyuukan_c::isCyuukanStart(int idx, u8 world, u8 course) {
-    if (mActiveCheckpoint == -1) {
+    if (mActiveCheckpointIndex == -1) {
         return false;
     }
     if (world == 0xff || course == 0xff) {
@@ -94,7 +98,7 @@ bool dCyuukan_c::isCyuukanStart(int idx, u8 world, u8 course) {
 }
 
 s8 dCyuukan_c::getPlrNo(int idx) const {
-    if (mActiveCheckpoint == -1) {
+    if (mActiveCheckpointIndex == -1) {
         return -1;
     }
     if (mHitPlayer[idx] == PLAYER_COUNT) {
