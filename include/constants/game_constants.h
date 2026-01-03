@@ -48,6 +48,12 @@ enum DIRECTION_e {
     DIR_RIGHT
 };
 
+enum LAYER_e {
+    LAYER_1,
+    LAYER_2,
+    LAYER_0,
+};
+
 enum PATH_DIRECTION_e {
     PATH_DIR_NORMAL,
     PATH_DIR_REVERSE,

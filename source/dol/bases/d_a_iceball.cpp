@@ -242,7 +242,7 @@ void daIceBall_c::ccCallback_Iceball(dCc_c *self, dCc_c *other) {
 }
 
 void daIceBall_c::chgZpos() {
-    if (mLayer == 0) {
+    if (mLayer == LAYER_1) {
         if (dBc_c::checkWireNet(mPos.x, mPos.y, mLayer)) {
             if (mStartPos.z >= 0.0f) {
                 mPos.z = 2000.0f;
@@ -252,7 +252,7 @@ void daIceBall_c::chgZpos() {
         } else {
             mPos.z = 2000.0f;
         }
-    } else if (mLayer == 1) {
+    } else if (mLayer == LAYER_2) {
         mPos.z = -1800.0f;
     }
 }

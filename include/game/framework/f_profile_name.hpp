@@ -5,6 +5,7 @@ namespace fProfile {
     /// @brief A name of a profile. Can be used to index into fProfile::sProfileList.
     /// @ingroup profile
     enum PROFILE_NAME_e {
+        PROFILE_NULL = -1,
         BOOT,
         AUTO_SELECT,
         SELECT,
