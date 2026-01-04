@@ -35,14 +35,8 @@ public:
     virtual int draw();
     virtual ~daObjFruitTree_c() {} ///< Deletes the daObjFruitTree_c.
 
-    void createModel(nw4r::g3d::ResMdl resMdl) {
-        mBushModel.create(resMdl, &mHeapAllocator, 0x20, 1, nullptr);
-    }
-    void createAnim2(nw4r::g3d::ResMdl resMdl, nw4r::g3d::ResAnmChr animChr) {
-        mBushAnim.create(resMdl, animChr, &mHeapAllocator, nullptr);
-    }
-    void createAnim(nw4r::g3d::ResMdl resMdl,nw4r::g3d::ResAnmChr animChr) {
-        createAnim2(resMdl, animChr);
+    void createBushAnim(nw4r::g3d::ResMdl resMdl, nw4r::g3d::ResAnmChr animChr) {
+        mBushAnim.create(resMdl, animChr, &mHeapAllocator);
     }
 
     dHeapAllocator_c mHeapAllocator; ///< The allocator.

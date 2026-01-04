@@ -49,6 +49,10 @@ namespace m3d {
 
         void play();
 
+        bool create(nw4r::g3d::ResMdl resMdl, mAllocator_c *allocator, ulong bufferOption, int viewCount) {
+            return create(resMdl, allocator, bufferOption, viewCount, nullptr);
+        }
+
     private:
         mdlCallback_c mCallback;
     };
