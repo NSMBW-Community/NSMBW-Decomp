@@ -6,17 +6,14 @@
 ACTOR_PROFILE(OBJ_FRUITTREE, daObjFruitTree_c, 0);
 
 int daObjFruitTree_c::create() {
-
     u32 param = mParam;
 
     nw4r::g3d::ResMdl model;
     nw4r::g3d::ResAnmChr anim;
     nw4r::g3d::ResFile res;
-
     mHeapAllocator.createFrmHeap(-1, mHeap::g_gameHeaps[0], nullptr, 0x20);
 
     int style = ACTOR_PARAM_LOCAL(param, Style);
-
     if (style == STYLE_REGULAR) {
         res = dResMng_c::m_instance->getRes("fruits_kusa", "g3d/fruits_kusa.brres");
     } else {
@@ -24,7 +21,6 @@ int daObjFruitTree_c::create() {
     }
 
     mResFile = res;
-
     if (style == STYLE_REGULAR) {
         switch (ACTOR_PARAM_LOCAL(param, Size)) {
             case SIZE_SMALL:
@@ -125,7 +121,7 @@ int daObjFruitTree_c::draw() {
     mAng3_c rot = mAngle;
     changePosAngle(&pos, &rot, 1);
 
-    if (mLayer == 0) {
+    if (mLayer == LAYER_1) {
         pos.z = -200.0f;
     } else {
         pos.z = -3700.0f;
