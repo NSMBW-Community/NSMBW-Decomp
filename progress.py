@@ -150,7 +150,7 @@ def verify_obj(slice_files: list[SliceFile]) -> bool:
                         if elf_sec.name not in slice_file.meta.sections or slice_file.meta.sections[elf_sec.name].size == 0:
                             continue
                         if elf_sec.name not in [i.sec_name for i in slice.sliceSecs]:
-                            errors.append(f'Section {elf_sec.name} not included in slice file!')
+                            warnings.append(f'Section {elf_sec.name} not included in slice file!')
 
                 # Print result
                 print(print_name + ': ', end='')

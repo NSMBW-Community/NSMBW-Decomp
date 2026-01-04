@@ -31,7 +31,7 @@ def extract_slice(dol_file: Dol, slice: Slice, syms: dict[str, int]) -> ElfFile:
         # Does this section contain __start?
         offs = dol_file.entry - dol_file.sections[0].virt_addr
         if sec.contains(0, offs):
-            symtab_sec.add_symbol(ElfSymbol('__start', st_value=offs-sec.start_offs, st_size=4, st_info_bind=STB.STB_GLOBAL, st_info_type=STT.STT_FUNC, st_shndx=sec_idx))
+            symtab_sec.add_symbol(ElfSymbol('__start', st_value=offs-sec.start_offs, st_info_bind=STB.STB_GLOBAL, st_info_type=STT.STT_FUNC, st_shndx=sec_idx))
 
         # TODO: loading from a proper map should speed this up, as we also have the section indices there
         for sym in syms:
@@ -73,6 +73,9 @@ def extract_slice(dol_file: Dol, slice: Slice, syms: dict[str, int]) -> ElfFile:
                         break
 
             if elfsym != None:
+                if sec.sec_name in ['.init', '.text']:
+                    elfsym.st_info_type = STT.STT_FUNC
+                elfsym.st_size = 0
                 symtab_sec.add_symbol(elfsym)
 
     elf_file.add_section(symtab_sec)
