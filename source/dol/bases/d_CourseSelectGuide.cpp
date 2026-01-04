@@ -479,7 +479,7 @@ void dCourseSelectGuide_c::CollectionCoinSet() {
             } else if (
                 mWorldNo == checkpoint->mWorldNo
                 && mCourseNo == checkpoint->mCourseNo
-                && checkpoint->mCoinCollection[i] != 4
+                && checkpoint->mCoinCollection[i] != PLAYER_COUNT
             ) {
                 mpPicturePanes[P_cC_1s_00 + i]->SetAlpha(0);
                 mpPicturePanes[P_cC_1_00 + i]->SetVisible(true);
