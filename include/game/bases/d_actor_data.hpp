@@ -12,8 +12,8 @@ enum MAP_ACTOR_INFO_FLAG_e {
 };
 
 /// @brief The configuration for a map actor.
-/// @unofficial
-struct sMapActorInfo {
+class dActorData_c {
+public:
     ProfileName mProfileName; ///< The profile spawned by the map actor.
     int mSpawnOffsetX; ///< The horizontal offset from the map actor to the actor's spawn position.
     int mSpawnOffsetY; ///< The vertical offset from the map actor to the actor's spawn position.
@@ -25,11 +25,8 @@ struct sMapActorInfo {
     u16 mSpawnMarginBottom; ///< The additional padding added to the bottom of the bounding box to prevent pop-in.
     u16 mSpawnMarginLeft;   ///< The additional padding added to the left of the bounding box to prevent pop-in.
     u16 mSpawnMarginRight;  ///< The additional padding added to the right of the bounding box to prevent pop-in.
-    u16 mFlags; ///< Various flags that control map actor spawning behaviour. Value is a MAP_ACTOR_INFO_FLAG_e.
-};
+    u16 mFlags; ///< Various flags that control map actor spawning behaviour. Value is a bitfield from MAP_ACTOR_INFO_FLAG_e.
 
-class dActorData_c {
-public:
-    static sMapActorInfo l_actor_data_tbl[]; ///< The configuration for each map actor.
-    static inline sMapActorInfo *getMapActorInfo(int idx) { return &l_actor_data_tbl[idx]; }
+    static dActorData_c l_actor_data_tbl[]; ///< The configuration for each map actor.
+    static inline dActorData_c *getMapActorInfo(int idx) { return &l_actor_data_tbl[idx]; }
 };

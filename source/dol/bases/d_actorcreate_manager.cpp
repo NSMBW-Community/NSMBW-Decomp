@@ -1,5 +1,5 @@
 #include <cstdlib>
-#include <game/bases/d_actor_manager.hpp>
+#include <game/bases/d_actorcreate_manager.hpp>
 #include <game/bases/d_actor_group_manager.hpp>
 #include <game/bases/d_bg.hpp>
 #include <game/bases/d_info.hpp>
@@ -156,7 +156,7 @@ void dActorCreateMng_c::MapActorInitialCreate(sMapActorData *levelData, u16 *del
 
     while (i != mapActorCount) {
         if ((*spawnFlags & dActor_c::ACTOR_SPAWNED) == 0) {
-            sMapActorInfo *mapActorInfo = dActorData_c::getMapActorInfo(levelData->mMapActorID);
+            dActorData_c *mapActorInfo = dActorData_c::getMapActorInfo(levelData->mMapActorID);
 
             bool globalActor = false;
             bool canSpawn = false;
@@ -383,7 +383,7 @@ void dActorCreateMng_c::MapActorScrollCreate(sMapActorCreateBounds *createBounds
 
     for (u32 i = 0; i != mapActorCount; i++) {
         if ((*spawnFlags & dActor_c::ACTOR_SPAWNED) == 0) {
-            sMapActorInfo *mapActorInfo = dActorData_c::getMapActorInfo(data->mMapActorID);
+            dActorData_c *mapActorInfo = dActorData_c::getMapActorInfo(data->mMapActorID);
             spawnActor = false;
             actorCenterX = data->mX + mapActorInfo->mSpawnRangeOffsetX;
             actorCenterY = data->mY - mapActorInfo->mSpawnRangeOffsetY;
@@ -499,7 +499,7 @@ float dActorCreateMng_c::addMapObjZposCount_layer2() {
     return res;
 }
 
-dActor_c *dActorCreateMng_c::mapActorSpawn(sMapActorData *data, sMapActorInfo *info, u8 *spawnFlags, u16 *deleteVal, u8 areaNo) {
+dActor_c *dActorCreateMng_c::mapActorSpawn(sMapActorData *data, dActorData_c *info, u8 *spawnFlags, u16 *deleteVal, u8 areaNo) {
     if (data->getProfileName() == fProfile::DUMMY_ACTOR) {
         return nullptr;
     }
