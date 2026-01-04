@@ -268,6 +268,7 @@ public:
         STATUS_16 = 0x16,
         STATUS_17 = 0x17,
         STATUS_18 = 0x18,
+        STATUS_19 = 0x19,
         STATUS_1A = 0x1a,
         STATUS_1B = 0x1b,
         STATUS_1C = 0x1c,
@@ -289,8 +290,11 @@ public:
         STATUS_31 = 0x31,
         STATUS_32 = 0x32,
         STATUS_33 = 0x33,
+        STATUS_34 = 0x34,
         STATUS_35 = 0x35,
         STATUS_36 = 0x36,
+        STATUS_37 = 0x37,
+        STATUS_38 = 0x38,
         STATUS_39 = 0x39,
         STATUS_3A = 0x3a,
         STATUS_3B = 0x3b,
@@ -1054,7 +1058,8 @@ public:
     u32 mFollowMameKuribo;
     u8 mPad15[4];
     PLAYER_POWERUP_e mPowerup;
-    u8 mPad18[0x2c];
+    int m_d00[4];
+    u8 mPad18[0x1c];
     int m_d2c;
     mVec3_c mBgPushForce; ///< Belts, quicksand etc.
     float m_d3c;
@@ -1115,7 +1120,7 @@ public:
     float m_1134;
     float m_1138;
     float m_113c;
-    int mDokanCenterOffsetType;
+    int mPlayerType;
 
     static const float sc_DirSpeed[];
     static const float sc_JumpSpeed;

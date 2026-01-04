@@ -106,6 +106,12 @@ public:
         VINE_ACTION_ROLL
     };
 
+    enum HangSubstate_e {
+        HANG_ACTION_START,
+        HANG_ACTION_WAIT,
+        HANG_ACTION_MOVE
+    };
+
     struct GlobalData_t {
         float f1, f2, f3, f4, f5, f6, f7, f8;
         mVec3_c mPos[3];
@@ -114,6 +120,7 @@ public:
         float mThrowSpeedMax;
         float mSpitRelated[4];
         float mVineSpeedRelated[4];
+        float mKaniSpeedRelated[4];
     };
 
     dAcPy_c();
@@ -319,6 +326,46 @@ public:
     void VineActionAttack();
     void VineActionRoll();
     void setCcAtNetPunch();
+    bool checkNetPunch();
+
+    bool setAmiRollAction(mVec3_c *);
+    bool isAmiRollAction();
+    void setAmiRollPos(short, float);
+    void setAmiRollPos(short, float, mVec3_c &);
+    void endAmiRollAction(short ang);
+
+    void setCarryPlayerHang(float height);
+    bool setHangAction();
+    void HangActionStart();
+    void setHangActionWait();
+    void HangActionWait();
+    void setHangActionMove();
+    void HangActionMove();
+
+    void setPoleTurnAngle();
+    bool setPoleAction();
+    void PoleActionStart();
+    void setPoleActionWait();
+    void PoleActionWait();
+    void setPoleActionUp();
+    void PoleActionUp();
+    void setPoleActionDown();
+    void PoleActionDown();
+    void setPoleJump();
+    bool setPoleShakeJump();
+
+    bool setKaniHangAction();
+    void setKaniWalkEffect();
+    void setKaniHangEffect();
+    void setKaniCliffCatchEffect();
+    void setKaniAction_Walk();
+    void setKaniAction_Hang();
+    void setKaniAction_HangUp();
+    void setKaniAction_HangFall();
+    void setKaniAction_JumpHang();
+    void setKaniAction_HangUpVine();
+    void setKaniAction_HangHand();
+    void setKaniHangStartEffect();
 
     bool isDrawingCarryFukidashi();
     void getCcBounds(sRangeDataF &bounds); ///< @unofficial
@@ -340,7 +387,8 @@ public:
     int m_60;
     int m_64;
     int m_68;
-    u8 mPad3[0x14];
+    float mAmiRelated2;
+    u8 mPad3[0x10];
     int m_80;
     int mWaitFrameCount;
     int m_88;
@@ -361,15 +409,25 @@ public:
     float m_54c;
     mEf::levelEffect_c mLevelEf4;
     mEf::levelEffect_c mLevelEf5;
-    u8 mPad7[0x1c];
+    u8 mPad7[0x4];
+    mVec3_c mAmiRollPos;
+    float mAmiXDiff;
+    float mAmiRelated;
+    s16 mAmiAng;
     int m_7bc;
     u16 m_7c0;
     u32 m_7c4;
     mEf::levelEffect_c mLevelEf6;
-    u8 mPad8[0x30];
+    u8 m_8f0;
+    mVec2_c m_8f4;
+    int m_8fc;
+    u8 mPad9[0x20];
     mEf::levelEffect_c mLevelEf7;
     mEf::levelEffect_c mLevelEf8;
-    u8 mPad9[0x10];
+    int m_b70;
+    int m_b74;
+    float m_b78;
+    int m_b7c;
     int m_b80;
     int m_b84;
     u8 m_b88;
