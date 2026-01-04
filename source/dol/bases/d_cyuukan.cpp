@@ -54,7 +54,7 @@ void dCyuukan_c::courseIN() {
 }
 
 bool dCyuukan_c::checkEntry() {
-    for (int i = 0; i < 2; i++) {
+    for (int i = 0; i < CHECKPOINT_COUNT; i++) {
         if (mHitPlayer[i] != PLAYER_COUNT) {
             int idx = daPyMng_c::getPlayerIndex(mHitPlayer[i]);
             if (!dGameCom::PlayerEnterCheck(idx)) {

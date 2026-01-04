@@ -8,13 +8,14 @@
 /// This is intended to be used as a singleton and kept for the entire game session.
 /// It deals with managing the active checkpoint and the collected star coins up until the checkpoint
 /// - clearing the data if another level is entered, for example.
+/// @ingroup bases
 class dCyuukan_c {
 public:
     dCyuukan_c(); ///< Creates a new checkpoint manager.
     virtual ~dCyuukan_c() {} ///< Destroys the checkpoint manager.
     void clear(); ///< Clears the active checkpoint.
-    void courseIN(); ///< Check whether we want to clear the active checkpoint. Call this function when entering a course.
-    bool checkEntry(); ///< If the player that hit the checkpoint leaves the party, the checkpoint is no longer active.
+    void courseIN(); ///< Prepares the checkpoint manager when entering a course, clearing the active checkpoint if required.
+    bool checkEntry(); ///< Checks whether all players who have hit any checkpoint are still active.
 
     /// @brief Sets the checkpoint data after hitting it.
     /// @param checkpointIndex The index of the checkpoint that was hit.
@@ -42,7 +43,7 @@ public:
     u8 mCourseNo; ///< The course in which the active checkpoint is located.
     u8 mFileNo; ///< The file in which the active checkpoint is located.
     u8 mNextGoto; ///< The next goto of the active checkpoint.
-    bool mIsKinopioInChuukan; ///< Whether Toad was saved before hitting the midway point.
+    bool mIsKinopioInChuukan; ///< Whether Toad was saved before hitting a checkpoint.
     PLAYER_TYPE_e mCoinCollection[STAR_COIN_COUNT]; ///< The collected star coins up until the active checkpoint.
     PLAYER_TYPE_e mHitPlayer[CHECKPOINT_COUNT]; ///< The player who has hit each checkpoint.
 };
