@@ -1,5 +1,4 @@
 #pragma once
-
 #include <game/bases/d_scene.hpp>
 #include <game/mLib/m_vec.hpp>
 #include <constants/game_constants.h>
@@ -15,15 +14,18 @@ public:
         LOOP_COUNT,
     };
 
-    char mPad[0x119a];
+    char pad[0x1198];
+    u8 mCurrWorld;
+    u8 mCurrCourse;
     u8 mCurrFile;
     u8 mCurrArea;
 
     u8 getCurrArea() const { return mCurrArea; }
 
+    static dScStage_c *getInstance() { return m_instance; }
     static float getLoopPosX(float x);
     static int m_loopType;
-    static int mCollectionCoin[STAR_COIN_COUNT];
+    static PLAYER_TYPE_e mCollectionCoin[STAR_COIN_COUNT];
 
     static const char mCdArcName[];
 

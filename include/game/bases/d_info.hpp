@@ -1,29 +1,12 @@
 #pragma once
 #include <types.h>
+#include <game/bases/d_cyuukan.hpp>
 #include <game/mLib/m_vec.hpp>
 #include <constants/game_constants.h>
 
-class dCyuukan_c {
-public:
-    virtual ~dCyuukan_c();
-
-    bool isCyuukanStart(int, u8, u8);
-
-    int mActivatingPlayer;
-    mVec3_c mPlayerSetPos;
-    u32 mIsAmbush;
-    u8 mWorldNo;
-    u8 mCourseNo;
-    u8 mAreaNo;
-    u8 mEntranceNo;
-    u32 mIsKinopioInChukan;
-    int mCoinCollection[3];
-    int mPlayerType[2];
-};
-
 class dInfo_c {
 public:
-    struct StartGameInfo {
+    struct StartGameInfo_s {
         u32 mReplayDuration;
         u8 mMovieType;
         u8 mEntrance;
@@ -36,6 +19,7 @@ public:
         u8 mLevel2;
     };
 
+    /// @unofficial
     /// @todo Fill out this enum.
     enum GAME_FLAG_e {
         GAME_FLAG_0 = BIT_FLAG(0),
@@ -52,13 +36,13 @@ public:
 
     dInfo_c();
 
-    dCyuukan_c *getCyuukan() { return &mCyuukan; }
     void GetMapEnemyInfo(int, int, enemy_s &);
     void SetMapEnemyInfo(int, int, int, int);
     void FUN_800bbc40(int, int, int);
 
     u8 getCourse() const { return m_startGameInfo.mLevel1; }
     u8 getWorld() const { return m_startGameInfo.mWorld1; }
+    dCyuukan_c *getCyuukan() { return &mCyuukan; }
 
     static dInfo_c *getInstance() { return m_instance; }
 
@@ -71,7 +55,8 @@ public:
     u8 pad4[0x2e4];
     int mCharIDs[4];
     bool mIsWorldSelect; ///< Whether the World Select Menu is being displayed.
-    int pad5[7];
+    u8 pad5[30];
+    bool mClearCyuukan; ///< Clear the checkpoint data if this is @p true. [Used for the backdoor entrance of 7-C]
     int mDisplayCourseWorld;
     int mDisplayCourseNum;
     u8 pad6[0x14];
@@ -89,5 +74,5 @@ public:
 
     static dInfo_c *m_instance;
     static unsigned int mGameFlag; ///< See GAME_FLAG_e
-    static StartGameInfo m_startGameInfo;
+    static StartGameInfo_s m_startGameInfo;
 };

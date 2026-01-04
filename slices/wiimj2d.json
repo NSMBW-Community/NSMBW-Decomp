@@ -224,6 +224,14 @@
             }
         },
         {
+            "source": "dol/bases/d_cyuukan.cpp",
+            "memoryRanges": {
+                ".text": "0x885f0-0x88990",
+                ".data": "0x12a90-0x12aa0",
+                ".sdata2": "0xfc0-0xfc8"
+            }
+        },
+        {
             "source": "dol/bases/d_enemy.cpp",
             "memoryRanges": {
                 ".text": "0x8e700-0x91bd0",
