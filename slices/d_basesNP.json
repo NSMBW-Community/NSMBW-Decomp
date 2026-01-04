@@ -35,11 +35,28 @@
             }
         },
         {
+            "source": "runtime/global_destructor_chain.c",
+            "compilerFlags": "-c -Cpp_exceptions off -O4 -fp hard -sdata 0 -sdata2 0",
+            "memoryRanges": {
+                ".text": "0x70-0xf0",
+                ".dtors": "0x0-0x4",
+                ".bss": "0x0-0x8"
+            }
+        },
+        {
             "source": "d_basesNP/bases/d_awa.cpp",
             "memoryRanges": {
                 ".text": "0x4b0d0-0x4b730",
                 ".rodata": "0x1f98-0x1fe8",
                 ".data": "0x13190-0x132b0"
+            }
+        },
+        {
+            "source": "d_basesNP/bases/d_a_obj_fruit_tree.cpp",
+            "memoryRanges": {
+                ".text": "0x108360-0x108970",
+                ".rodata": "0x6180-0x6198",
+                ".data": "0x34058-0x343e0"
             }
         },
         {
