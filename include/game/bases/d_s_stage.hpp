@@ -18,6 +18,9 @@ public:
     u8 mCurrWorld;
     u8 mCurrCourse;
     u8 mCurrFile;
+    u8 mCurrArea;
+
+    u8 getCurrArea() const { return mCurrArea; }
 
     static dScStage_c *getInstance() { return m_instance; }
     static float getLoopPosX(float x);

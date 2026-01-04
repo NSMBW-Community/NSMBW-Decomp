@@ -3,15 +3,22 @@
 
 class dBg_c {
 public:
-    char pad[0x8fea0];
+    char mPad1[0x8fea0];
     float mLoopOffset;
-
-    char pad2[0x8fec4 - 0x8fea4];
+    u8 mPad2[0x20];
     float mLiquidHeight;
+    u8 mPad3[0x144];
+    float mDispScale;
+    float m_8ffa8;
+    float mPrevDispScale;
+
 
     float getLiquidHeight() const { return mLiquidHeight; }
 
     void setWaterInWave(float x, float y, u8 type);
+
+    float getDispScale() { return mDispScale; }
+    float getPrevDispScale() { return mPrevDispScale; }
 
     static dBg_c *m_bg_p;
 };

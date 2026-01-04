@@ -1,11 +1,14 @@
 #pragma once
 
+#include <types.h>
+
 namespace fProfile {
 
     /// @brief A name of a profile. Can be used to index into fProfile::sProfileList.
     /// @ingroup profile
     enum PROFILE_NAME_e {
-        BOOT,
+        PROFILE_NULL = (u16) -1,
+        BOOT = 0,
         AUTO_SELECT,
         SELECT,
         WORLD_MAP,

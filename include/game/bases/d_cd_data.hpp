@@ -1,6 +1,7 @@
 #pragma once
 
 #include <types.h>
+#include <game/bases/d_actor_data.hpp>
 #include <game/mLib/m_vec.hpp>
 
 #define CD_BLOCK_COUNT 14
@@ -57,9 +58,18 @@ struct sNextGotoData {
 };
 
 /// @unofficial
-struct sActorCreateData {
-    int mPad1[3];
-    u8 m_0c;
+struct sMapActorData {
+
+    ProfileName getProfileName() {
+        return dActorData_c::getMapActorInfo(mMapActorID)->mProfileName;
+    }
+
+    u16 mMapActorID;
+    u16 mX, mY;
+    u8 mEventNums[2];
+    u32 mParam;
+    u8 mAreaNo;
+    u8 mLayer;
 };
 
 /// @unofficial

@@ -177,6 +177,15 @@
             }
         },
         {
+            "source": "dol/bases/d_actorcreate_manager.cpp",
+            "memoryRanges": {
+                ".text": "0x618c0-0x628a0",
+                ".rodata": "0x16a8-0x16b8",
+                ".sdata2": "0xb40-0xb68",
+                ".sbss": "0x188-0x190"
+            }
+        },
+        {
             "source": "dol/bases/d_base.cpp",
             "memoryRanges": {
                 ".text": "0x65ca0-0x65f50",

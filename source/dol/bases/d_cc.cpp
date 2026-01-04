@@ -30,7 +30,7 @@ dCc_c::dCc_c() {
     mIsLinked = false;
     mFriendActor = nullptr;
     mAmiLine = true;
-    mLayer = 0;
+    mLayer = LAYER_1;
     clear();
 }
 
