@@ -23,11 +23,18 @@ public:
     virtual void *alloc(size_t, long) = 0;
     virtual void free(void *) = 0;
     virtual void destroy() = 0;
+    virtual size_t resizeForMBlock(void* block, size_t size) = 0;
+    virtual u32 getTotalFreeSize();
+    virtual size_t getAllocatableSize(long align) = 0;
+    virtual size_t adjust() = 0;
+
+    void dump();
 
     static void *alloc(size_t, int, EGG::Heap *);
     static void free(void *, EGG::Heap *);
 
     static Heap *findContainHeap(const void *);
+    Heap *becomeCurrentHeap();
 
     void appendDisposer(Disposer *disposer) { nw4r::ut::List_Append(&mChildren, disposer); }
     void removeDisposer(Disposer *disposer) { nw4r::ut::List_Remove(&mChildren, disposer); }

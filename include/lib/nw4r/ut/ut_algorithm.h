@@ -85,7 +85,7 @@ inline int ComparePtr(const void* pPtr1, const void* pPtr2) {
  *
  ******************************************************************************/
 template <typename T> inline T RoundUp(T t, unsigned int alignment) {
-    return (alignment + t - 1) & ~(alignment - 1);
+    return (t + (alignment - 1)) & ~(alignment - 1);
 }
 
 template <typename T> inline void* RoundUp(T* pPtr, unsigned int alignment) {

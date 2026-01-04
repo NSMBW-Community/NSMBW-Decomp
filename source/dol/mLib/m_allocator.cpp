@@ -37,7 +37,7 @@ void mAllocatorDummyHeap_c::free(void *ptr) {}
 
 void mAllocatorDummyHeap_c::destroy() {}
 
-void *mAllocatorDummyHeap_c::resizeForMBlock(void *ptr, size_t newSize) {
+size_t mAllocatorDummyHeap_c::resizeForMBlock(void *ptr, size_t newSize) {
     return 0;
 }
 
@@ -45,11 +45,11 @@ u32 mAllocatorDummyHeap_c::getTotalFreeSize() {
     return 0;
 }
 
-u32 mAllocatorDummyHeap_c::getAllocatableSize(long alignment) {
+size_t mAllocatorDummyHeap_c::getAllocatableSize(long alignment) {
     return 0;
 }
 
-bool mAllocatorDummyHeap_c::adjust() {
+size_t mAllocatorDummyHeap_c::adjust() {
     return 0;
 }
 

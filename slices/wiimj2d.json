@@ -749,6 +749,17 @@
             }
         },
         {
+            "source": "dol/mLib/m_heap.cpp",
+            "memoryRanges": {
+                ".text": "0x167e70-0x168560",
+                ".rodata": "0x7d60-0x7d70",
+                ".data": "0x2b7a8-0x2b8c0",
+                ".bss": "0x265c8-0x265d8",
+                ".sdata": "0x1e08-0x1e10",
+                ".sbss": "0x888-0x8a0"
+            }
+        },
+        {
             "source": "dol/mLib/m_mtx.cpp",
             "memoryRanges": {
                 ".text": "0x168560-0x168bb0",

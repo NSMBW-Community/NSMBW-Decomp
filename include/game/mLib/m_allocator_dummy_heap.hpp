@@ -19,11 +19,11 @@ public:
     virtual void free(void *ptr);
 
     virtual void destroy();
-    virtual void *resizeForMBlock(void *ptr, size_t newSize);
+    virtual size_t resizeForMBlock(void *ptr, size_t newSize);
 
     virtual u32 getTotalFreeSize();
-    virtual u32 getAllocatableSize(long alignment);
-    virtual bool adjust();
+    virtual size_t getAllocatableSize(long alignment);
+    virtual size_t adjust();
 
     static void *AllocatorAllocForDummyHeap(MEMAllocator *, size_t);
     static void AllocatorFreeForDummyHeap(MEMAllocator *, void *);
