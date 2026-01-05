@@ -215,6 +215,15 @@
             }
         },
         {
+            "source": "dol/bases/d_coin.cpp",
+            "memoryRanges": {
+                ".text": "0x87750-0x87870",
+                ".ctors": "0xc8-0xcc",
+                ".sbss": "0x2c0-0x2d8",
+                ".sdata2": "0xfa0-0xfa8"
+            }
+        },
+        {
             "source": "dol/bases/d_cd.cpp",
             "memoryRanges": {
                 ".text": "0x87870-0x88540",
