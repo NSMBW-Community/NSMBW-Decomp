@@ -17,6 +17,8 @@ public:
     static int getItemKinopioNum();
     static dPyMdlMng_c::ModelType_e getCourseInPlayerModelType(int);
     static void setPlayer(int, dAcPy_c *);
+    static bool fn_8005f570(PLAYER_POWERUP_e, int); ///< @unofficial
+    static void setCarryOverYoshiInfo(u8, u8, int);
 
     static bool checkPlayer(u8 plrNo) { return mActPlayerInfo & (1 << plrNo); }
     static int getRest(PLAYER_TYPE_e plrNo) { return mRest[plrNo]; }
@@ -35,4 +37,6 @@ public:
     static int mPlayerEntry[4];
     static int mRest[4];
     static u32 mCtrlPlrNo;
+    static s16 m_star_time[4];
+    static s16 m_star_count[4];
 };

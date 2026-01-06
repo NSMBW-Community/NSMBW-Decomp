@@ -80,6 +80,8 @@ namespace dGameCom {
     /// @param fukidashiAction The action prompt type to be hidden.
     void hideFukidashiForSession(int playerId, int fukidashiAction);
 
+    void fn_800b37b0(int playerId, int fukidashiAction); ///< @unofficial
+
     ////////////////
     // Other APIs //
     ////////////////

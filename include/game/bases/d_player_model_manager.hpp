@@ -36,9 +36,14 @@ public:
 class dPyMdlMng_c {
 public:
     enum ModelType_e {};
+    enum SceneType_e {
+        SCENE_TYPE_0
+    };
 
     dPyMdlMng_c(ModelType_e modelType);
     virtual ~dPyMdlMng_c();
+
+    void create(u8 playerNo, u8 powerup, SceneType_e sceneType);
 
     void setAnm(int anmID, float rate, float blendDuration, float f) {
         mpMdl->setAnm(anmID, rate, blendDuration, f);
@@ -55,6 +60,14 @@ public:
 
     void setAnm(int anmID, float f = 0.0f) {
         setAnm(anmID, m_hio.mPyAnm.mAnm[anmID], f);
+    }
+
+    void setAnmOnlyRate(int anmID, const dPyAnm_HIO_c &hio, float a, float b) {
+        mpMdl->setAnm(anmID, hio.mRate, a, b);
+    }
+
+    void setAnmOnlyRate(int anmID, float a, float b) {
+        setAnmOnlyRate(anmID, m_hio.mPyAnm.mAnm[anmID], a, b);
     }
 
     bool isAnm(int anmID) const {

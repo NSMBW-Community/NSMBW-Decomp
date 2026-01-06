@@ -15,12 +15,21 @@ public:
         LOOP_COUNT,
     };
 
+    enum EXIT_MODE_e {
+        EXIT_0,
+        EXIT_1,
+        EXIT_2,
+        EXIT_3
+    };
+
     char pad[0x1198];
     u8 mCurrWorld;
     u8 mCurrLevel;
     u8 mCurrFile;
     u8 mCurrAreaNo;
     u8 mCurrLayer;
+
+    static NOINLINE EXIT_MODE_e getExitMode() { return m_exitMode; }
 
     static float getLoopPosX(float x);
     static int m_loopType;
@@ -37,6 +46,8 @@ public:
     static void setTitleReplayRandomTable();
 
     static int m_gameMode;
+    static int m_miniGame;
+    static EXIT_MODE_e m_exitMode;
     static bool m_isStaffCredit;
     static changePosFunc changePos;
     static dScStage_c *m_instance;

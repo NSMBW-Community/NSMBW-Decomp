@@ -5,6 +5,8 @@
 #include <game/bases/d_propel_parts.hpp>
 #include <game/bases/d_pc.hpp>
 
+class daYoshi_c;
+
 class dAcPy_c : public daPlBase_c {
 public:
     /// @unofficial
@@ -99,6 +101,7 @@ public:
         SWIM_ACTION_3
     };
 
+    /// @unofficial
     enum VineSubstate_e {
         VINE_ACTION_IVY,
         VINE_ACTION_NET,
@@ -106,10 +109,50 @@ public:
         VINE_ACTION_ROLL
     };
 
+    /// @unofficial
     enum HangSubstate_e {
         HANG_ACTION_START,
         HANG_ACTION_WAIT,
         HANG_ACTION_MOVE
+    };
+
+    /// @unofficial
+    enum KaniChangeParam_e {
+        KANI_CHANGE_WALK,
+        KANI_CHANGE_HANG,
+        KANI_CHANGE_JUMP_HANG,
+        KANI_CHANGE_WALK_2,
+        KANI_CHANGE_HANG_UP_VINE,
+        KANI_CHANGE_HANG_HAND
+    };
+
+    /// @unofficial
+    enum KaniSubstate_e {
+        KANI_ACTION_WALK,
+        KANI_ACTION_HANG_INIT,
+        KANI_ACTION_JUMP_HANG_INIT,
+        KANI_ACTION_HANG,
+        KANI_ACTION_HANG_FALL,
+        KANI_ACTION_HANG_UP,
+        KANI_ACTION_HANG_UP_VINE
+    };
+
+    /// @unofficial
+    enum RopeSwingState_e {
+        ROPE_SWING_0,
+        ROPE_SWING_1,
+        ROPE_SWING_2,
+        ROPE_SWING_3,
+        ROPE_SWING_4,
+        ROPE_SWING_5,
+        ROPE_SWING_6,
+        ROPE_SWING_7,
+        ROPE_SWING_8,
+        ROPE_SWING_9,
+        ROPE_SWING_10
+    };
+
+    enum QuakeMode_e {
     };
 
     struct GlobalData_t {
@@ -126,6 +169,9 @@ public:
     dAcPy_c();
     virtual ~dAcPy_c();
 
+    virtual int create();
+    virtual int preExecute();
+    virtual int doDelete();
     virtual bool isSpinLiftUpEnable();
     virtual void setSpinLiftUpActor(dActor_c *carryingActor);
     virtual sBcPointData *getHeadBgPointData() { return &getBgPointData()[1]; }
@@ -147,6 +193,7 @@ public:
     virtual bool checkCrouch();
     virtual bool setCancelCrouch();
     virtual bool isCarry() const { return mCarryActorID != BASE_ID_NULL; }
+    virtual void setCreateAction(int);
 
     STATE_VIRTUAL_FUNC_DECLARE(dAcPy_c, Walk);
     STATE_VIRTUAL_FUNC_DECLARE(dAcPy_c, Jump);
@@ -366,6 +413,62 @@ public:
     void setKaniAction_HangUpVine();
     void setKaniAction_HangHand();
     void setKaniHangStartEffect();
+    void KaniAction_Walk();
+    void KaniAction_HangInit();
+    void KaniAction_JumpHangInit();
+    bool checkCliffHangFootGround();
+    bool checkCliffHangWater();
+    void KaniAction_Hang();
+    void KaniAction_HangFall();
+    void KaniAction_HangUp();
+    void KaniAction_HangUpVine();
+
+    void setCatchRopeSE();
+    void setClimbRopeSE();
+    void setSlideRopeSE();
+    void setRopeHasigoSE();
+    void releasePoleCheck();
+
+    bool setTarzanRopeAction();
+    bool setTarzanRopeJump();
+
+    daYoshi_c *getRideYoshi();
+    bool isNotBalloonCourse();
+    bool fn_801477c0(); ///< @unofficial
+    void setSceneChangeInfo();
+    bool updateRopeAngle();
+    void setRopeSwingAnm(float, float);
+    bool checkStartSwingUp();
+    bool checkStartSwingDown();
+    void updateRopeSwingAnm();
+    void TarzanRopeActionStart();
+    void setTarzanRopeActionWait();
+    void TarzanRopeActionWait();
+    void setTarzanRopeActionUp();
+    void TarzanRopeActionUp();
+    void setTarzanRopeActionDown();
+    void TarzanRopeActionDown();
+    void setTarzanRopeActionHasigoMove();
+    void TarzanRopeActionHasigoMove();
+    void TarzanRopeActionHasigoHangDown();
+    void setTarzanRopeActionHasigoHangUp();
+    void TarzanRopeActionHasigoHangUp();
+
+    void startQuakeAction(QuakeMode_e);
+    void setQuakeAction(int, QuakeMode_e);
+    void setQuakeActionLocal(int, QuakeMode_e);
+    void endQuakeAction();
+    void setQuakeNumbEffect();
+
+    void initElecShock();
+    bool executeElecShock();
+    void setElecEffect();
+
+    bool setFlyDamageAction(int, dActor_c *);
+
+    void initCcData();
+    void initBcData();
+    void calcModel();
 
     bool isDrawingCarryFukidashi();
     void getCcBounds(sRangeDataF &bounds); ///< @unofficial
@@ -380,10 +483,11 @@ public:
     }
 
     int mCreateItemRelated;
-    u8 mPad1[0x10];
+    int mPowerupCopy;
+    int mPowerupCopy2;
+    u8 mPad1[0x8];
     sPcRect m_14;
     dPc_c mPc;
-    u8 mPad2[0x8];
     int m_60;
     int m_64;
     int m_68;
@@ -421,7 +525,13 @@ public:
     u8 m_8f0;
     mVec2_c m_8f4;
     int m_8fc;
-    u8 mPad9[0x20];
+    short m_900, m_902, m_904, m_906;
+    int m_908;
+    RopeSwingState_e m_90c;
+    int m_910;
+    int m_914;
+    float m_918;
+    int m_91c;
     mEf::levelEffect_c mLevelEf7;
     mEf::levelEffect_c mLevelEf8;
     int m_b70;
@@ -440,7 +550,8 @@ public:
     mEf::levelEffect_c mLevelEf10;
     mEf::levelEffect_c mLevelEf11;
     mEf::levelEffect_c mLevelEf12;
-    u8 mPad11[0x8];
+    u8 mPad11[0x4];
+    int m_1040;
     int m_1044;
     s16 m_1048;
     u8 mPad12[0x4];
@@ -485,6 +596,8 @@ public:
     dPlayerOrchestra_c mPlayerOrchestra;
 
     ACTOR_PARAM_CONFIG(PlayerNo, 0, 4);
+    ACTOR_PARAM_CONFIG(CreateAction, 16, 8);
+    ACTOR_PARAM_CONFIG(Direction, 24, 1);
 
     static dAcPy_HIO_Speed_c m_speed_hio[2];
     static const float msc_JUMP_SPEED;

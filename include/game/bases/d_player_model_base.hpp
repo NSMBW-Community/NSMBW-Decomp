@@ -58,6 +58,7 @@ public:
     float getFrameMax() { return mAnm.mFrameMax; }
     mMtx_c &getMtx() { return mMtx; }
 
+    int get_152() { return m_152; }
     void setAng(mAng3_c ang) {
         m_1fc = ang.x;
         m_1fe = ang.y;

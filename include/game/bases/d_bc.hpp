@@ -119,6 +119,7 @@ public:
     static void getAirWaterHitPos(mVec2_c *);
     static void getAirWaterHitAngle(short *);
     static u32 getUnitType(float x, float y, u8);
+    static u32 getUnitKind(float x, float y, u8);
 
     bool checkRoofPlayer(const mVec3_c *, float *);
     u16 getFootAttr();

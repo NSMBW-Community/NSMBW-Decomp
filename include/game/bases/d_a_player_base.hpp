@@ -28,7 +28,11 @@ public:
         DOKAN_ROLL
     };
 
-    enum StarSet_e {};
+    enum StarSet_e {
+        STAR_SET_0,
+        STAR_SET_1,
+        STAR_SET_2
+    };
 
     enum AnmBlend_e {
         BLEND_0,
@@ -247,6 +251,7 @@ public:
 
     /// @unofficial
     enum Status_e {
+        STATUS_00 = 0x00,
         STATUS_01 = 0x01,
         STATUS_02 = 0x02,
         STATUS_03 = 0x03,
@@ -317,6 +322,7 @@ public:
         STATUS_51 = 0x51,
         STATUS_52 = 0x52,
         STATUS_53 = 0x53,
+        STATUS_55 = 0x55,
         STATUS_58 = 0x58,
         STATUS_59 = 0x59,
         STATUS_5B = 0x5b,
@@ -414,6 +420,7 @@ public:
         STATUS_C2 = 0xc2,
         STATUS_C3 = 0xc3,
         STATUS_C4 = 0xc4,
+        STATUS_C5 = 0xc5
     };
 
     /// @unofficial
@@ -933,6 +940,7 @@ public:
     float getSomeYOffset() const { return mSomeYOffset; }
 
     float get_1064() const { return m_1064; }
+    float get_1068() const { return m_1068; }
     float get_106c() const { return m_106c; }
 
     float getAnkleCenterX() { return getAnkleCenterPos().x; }
@@ -954,7 +962,6 @@ public:
     void onOldBgCross(BgCross2_e m) { mOldBgCross2 |= m; }
     void offOldBgCross(BgCross1_e m) { mOldBgCross1 &= ~m; }
     void offOldBgCross(BgCross2_e m) { mOldBgCross2 &= ~m; }
-
 
     float getDirSpeed() { return sc_DirSpeed[mDirection]; }
 
@@ -1030,7 +1037,7 @@ public:
     dAudio::SndObjctPly_c mSndObj;
     dAcPyKey_c mKey;
     fBaseID_e mRideActorID;
-    u8 mPad12[0x4];
+    fBaseID_e mUnkActorID;
     fBaseID_e mHipAttackPlayerID;
     u32 mStatusFlags[7];
     float mSomeYOffset;
