@@ -461,7 +461,6 @@
         },
         {
             "source": "dol/bases/d_a_player.cpp",
-            "nonMatching": true,
             "memoryRanges": {
                 ".text": "0x11fed0-0x1440b0",
                 ".ctors": "0x1e8-0x1ec",
