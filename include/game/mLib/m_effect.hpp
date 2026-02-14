@@ -19,9 +19,6 @@ public:
     virtual bool follow(const mMtx_c *);
 
     void copyExEffectParam();
-
-    u8 mPad[0x92];
-    mAng mAng;
 };
 
 class levelEffect_c : public effect_c {

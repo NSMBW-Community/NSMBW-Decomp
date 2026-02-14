@@ -56,7 +56,7 @@ void dEnemyCarry_c::setDeathInfo_CarryBgIn(dActor_c *actor) {
 void dEnemyCarry_c::initializeState_Carry() {
     dAcPy_c *player = daPyMng_c::getPlayer(mPlayerNo);
 
-    if (player->m_ca1 == 1) {
+    if (player->mAmiLayer == 1) {
         mAmiLayer = 0;
     } else {
         mAmiLayer = 1;

@@ -51,7 +51,7 @@ public:
     void getEffect() const;
     void getRootEmitter() const;
 
-    u8 mPad[0x7c];
+    u8 mPad[0x110];
 };
 
 } // namespace EGG

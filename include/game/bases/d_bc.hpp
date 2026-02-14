@@ -63,7 +63,7 @@ public:
     mVec2_c m_a0;
     mVec2_c m_ac;
     u8 mPad2[0xc];
-    short *m_bc;
+    short *mRotation;
     short m_c0;
     short m_c2;
     u8 mPad4[0x4];

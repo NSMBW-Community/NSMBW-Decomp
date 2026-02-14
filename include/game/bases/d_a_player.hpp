@@ -193,32 +193,16 @@ public:
     virtual void postExecute(MAIN_STATE_e status);
     virtual int doDelete();
     virtual int draw();
-    virtual bool setRideJrCrown(const dActor_c *);
-    virtual bool isRideJrCrownOwn(const dActor_c *);
-    virtual void setRideJrCrownMtx(const mMtx_c *);
-    virtual void setRideJrCrownAnm(int);
-    virtual const float *getHeadTopPosP();
-    virtual const float *getGravityData();
-    virtual void setStar(daPlBase_c::StarSet_e, int);
-    virtual void endStar();
-    virtual void setVirusStar(daPlBase_c *);
-    virtual bool isNoDamage();
-    virtual bool setDamage(dActor_c *, DamageType_e);
-    virtual bool setForcedDamage(dActor_c *, DamageType_e);
-    virtual bool vf3fc(float, float, int, int, int);
-    virtual bool vf400(float, float, int, int, int);
-    virtual bool setSwimSpeed(float speedY, float speedF);
+
+    virtual bool isSpinLiftUpEnable();
+    virtual void setSpinLiftUpActor(dActor_c *carryingActor);
+
     virtual void setEatTongue(dActor_c *eatingActor);
     virtual void setEatTongueOff(dActor_c *eatingActor);
     virtual void setEatMouth(dActor_c *eatingActor);
     virtual bool setEatSpitOut(dActor_c *eatingActor);
     virtual void eatMove(dActor_c *eatingActor);
-    virtual bool setTimeOverDemo();
-    virtual void setFallDownDemo();
-    virtual bool setBalloonInDispOut(int);
-    virtual bool isChange();
-    virtual bool isSpinLiftUpEnable();
-    virtual void setSpinLiftUpActor(dActor_c *carryingActor);
+
     virtual void executeMain();
     virtual void executeLastPlayer();
     virtual void executeLastAll();
@@ -233,34 +217,33 @@ public:
     virtual void postBgCross();
     virtual float getSandSinkRate();
     virtual bool setPressBgDamage(int, int);
-    virtual bool setHideNotGoalPlayer();
-    virtual bool setHipAttackOnEnemy(mVec3_c *hitPos);
-    virtual void clearJumpActionInfo(int);
-    virtual void startQuakeShock(dQuake_c::TYPE_SHOCK_e);
-    virtual void startPatternRumble(const char *pattern);
-    virtual void setHipAttackEffect();
-    virtual void setHipAttack_AttackStart();
-    virtual void setSlipAction();
-    virtual void slipActionMove(int);
-    virtual bool isWaitFrameCountMax();
-    virtual bool checkWalkNextAction();
-    virtual void setWaitActionAnm(AnmBlend_e);
-    virtual void setWalkActionAnm(AnmBlend_e);
-    virtual void walkActionInit_Wait(AnmBlend_e);
-    virtual void walkAction_Wait();
-    virtual void walkActionInit_Move(AnmBlend_e);
-    virtual void walkAction_Move();
-    virtual bool checkCrouch();
-    virtual bool setCancelCrouch();
-    virtual bool isCarry() const { return mCarryActorID != BASE_ID_NULL; }
-    virtual void setCreateAction(int);
+    virtual bool setBalloonInDispOut(int);
+    virtual bool isChange();
     virtual bool isEnableDokanInStatus();
+    virtual bool setHideNotGoalPlayer();
     virtual int vf130(float f, mVec2_c *v, int param3);
     virtual bool setDemoCannonWarp(int, short, short);
+
+    STATE_VIRTUAL_FUNC_DECLARE(dAcPy_c, DemoStartWait);
+    STATE_VIRTUAL_FUNC_DECLARE(dAcPy_c, DemoDown);
+
+    virtual void initialDoor();
+    virtual void initialVine();
+    virtual void initialJumpRight();
+    virtual void initialJumpLeft();
+    virtual void initialSwim();
+    virtual void initialBlockJump();
+    virtual void initialBlockJumpBelow();
+
+    virtual void setCreateAction(int);
+    virtual bool setTimeOverDemo();
+    virtual void setFallDownDemo();
+    virtual bool setDokanIn(DokanDir_e dir);
+    virtual void initDemoOutDokan();
+    virtual bool vf284(int);
     virtual void initDemoGoalBase();
     virtual void executeDemoGoal_Run();
     virtual void initializeDemoControl();
-    virtual bool setDamage2(dActor_c *, daPlBase_c::DamageType_e);
 
     STATE_VIRTUAL_FUNC_DECLARE(dAcPy_c, Walk);
     STATE_VIRTUAL_FUNC_DECLARE(dAcPy_c, Jump);
@@ -275,19 +258,56 @@ public:
     STATE_VIRTUAL_FUNC_DECLARE(dAcPy_c, Kani);
     STATE_VIRTUAL_FUNC_DECLARE(dAcPy_c, Cloud);
 
-    STATE_VIRTUAL_FUNC_DECLARE(dAcPy_c, DemoDown);
-    STATE_VIRTUAL_FUNC_DECLARE(dAcPy_c, DemoStartWait);
+    virtual bool isWaitFrameCountMax();
+    virtual bool checkWalkNextAction();
+    virtual void setWaitActionAnm(AnmBlend_e);
+    virtual void setWalkActionAnm(AnmBlend_e);
+    virtual void walkActionInit_Wait(AnmBlend_e);
+    virtual void walkAction_Wait();
+    virtual void walkActionInit_Move(AnmBlend_e);
+    virtual void walkAction_Move();
+    virtual bool checkCrouch();
+    virtual bool setCancelCrouch();
+    virtual void setSlipAction();
+    virtual void slipActionMove(int);
+    virtual void setHipAttack_AttackStart();
 
-    virtual void initialDoor();
-    virtual void initialJumpRight();
-    virtual void initialJumpLeft();
-    virtual void initialVine();
-    virtual void initialSwim();
-    virtual void initialBlockJump();
-    virtual void initialBlockJumpBelow();
-    virtual bool setDokanIn(DokanDir_e dir);
-    virtual void initDemoOutDokan();
-    virtual bool vf284(int);
+    virtual float getCloudOffsetY();
+    virtual bool setRideJrCrown(const dActor_c *);
+    virtual bool isRideJrCrownOwn(const dActor_c *);
+    virtual void setRideJrCrownMtx(const mMtx_c *);
+    virtual void setRideJrCrownAnm(int);
+
+    virtual const float *getHeadTopPosP();
+    virtual const float *getGravityData();
+    virtual bool isCarry() const { return mCarryActorID != BASE_ID_NULL; }
+    virtual bool isLiftUp();
+    virtual bool isLiftUpExceptMame();
+
+    virtual void setStar(daPlBase_c::StarSet_e, int);
+    virtual void endStar();
+    virtual void setVirusStar(daPlBase_c *);
+
+    virtual bool isNoDamage();
+    virtual bool setDamage(dActor_c *, DamageType_e);
+    virtual bool setForcedDamage(dActor_c *, DamageType_e);
+    virtual bool vf3fc(float, float, int, int, int);
+    virtual bool vf400(float, float, int, int, int);
+
+    virtual bool setHipAttackOnEnemy(mVec3_c *hitPos);
+
+    virtual void clearJumpActionInfo(int);
+    virtual bool setSwimSpeed(float speedY, float speedF);
+
+    virtual void set1UpKinokoEffect();
+    virtual void setFlagGetEffect();
+    virtual void setHipAttackEffect();
+
+    virtual void startQuakeShock(dQuake_c::TYPE_SHOCK_e);
+    virtual void startPatternRumble(const char *pattern);
+
+    virtual bool setDamage2(dActor_c *, daPlBase_c::DamageType_e);
+
     virtual bool isCarryMamePlayer();
 
     STATE_FUNC_DECLARE(dAcPy_c, RideOffJump);
@@ -388,8 +408,6 @@ public:
     void setWaterGroundJump();
     dActor_c *getCarryPropelBlock();
     dActor_c *getCarryHardBlock();
-    bool isLiftUp();
-    bool isLiftUpExceptMame();
     float getLiftUpOffset();
     mVec3_c getLiftUpPos();
     void clearSpinLiftUpReserve();
@@ -564,7 +582,6 @@ public:
     bool setRideOffYoshiJump(daPlBase_c *yoshi);
     void setRideOnYoshi(daYoshi_c *yoshi);
 
-    float getCloudOffsetY();
     void setCloudStateMove();
     bool checkCloudStateCrouch();
     void setCloudStateFireCreate();
@@ -671,8 +688,6 @@ public:
     bool updateChange();
 
     void maxFallSpeedSet();
-    void set1UpKinokoEffect();
-    void setFlagGetEffect();
     void setFollowEffect(int);
     void setItemGetEffect();
     void setChukanPowerUpEffect();
@@ -712,6 +727,7 @@ public:
     static void atCcCallBack(dCc_c *self, dCc_c *other);
 
     mVec3_c getCarryPos();
+
     mMtx_c getCarryMtx() {
         mMtx_c mtx;
         mtx.trans(getCarryPos());
@@ -721,22 +737,13 @@ public:
     PLAYER_POWERUP_e getPowerupCopy() { return mPowerupCopy; }
     bool someAttackCheck() {
         return isStatus(STATUS_36) ||
-            isStatus(STATUS_33) ||
-            isStatus(STATUS_34) ||
-            isStatus(STATUS_37) ||
-            isStatus(STATUS_35);
+            isStatus(STATUS_VINE) ||
+            isStatus(STATUS_HANG) ||
+            isStatus(STATUS_KANI_HANG) ||
+            isStatus(STATUS_POLE);
     }
     float getDirSpeed() const {
         return sc_DirSpeed[mDirection];
-    }
-    float getDirSpeed(u8 dir) const {
-        return sc_DirSpeed[dir];
-    }
-    float getDirSpeed(float f) const {
-        return f * getDirSpeed();
-    }
-    float getDirSpeed(float f, u8 dir) const {
-        return f * sc_DirSpeed[dir];
     }
 
     int mCreateItemRelated;
@@ -769,8 +776,8 @@ public:
     int m_2ec;
     int m_2f0;
     s16 m_2f4;
-    s16 m_2f6;
-    s16 m_2f8;
+    s16 mPropelRollSpeed;
+    s16 mIsPropelFall;
     mEf::levelEffect_c mLevelEf3;
     dEf::followEffect_c mFollowEf;
     int m_538;
@@ -781,7 +788,7 @@ public:
     float m_54c;
     mEf::levelEffect_c mLevelEf4;
     mEf::levelEffect_c mLevelEf5;
-    u8 mPad7[0x4];
+    u8 mPad1[0x4];
     mVec3_c mAmiRollPos;
     float mAmiXDiff;
     float mAmiRelated;
@@ -811,8 +818,7 @@ public:
     u8 m_b88;
     u8 m_b89;
     float m_b8c;
-    float m_b90;
-    float m_b94;
+    mVec2_c mUzuSwimSpeed;
     int m_b98;
     mEf::levelEffect_c mLevelEf9;
     mEf::levelEffect_c mLevelEf10;
@@ -822,7 +828,7 @@ public:
     int m_1040;
     int m_1044;
     s16 m_1048;
-    u8 mPad12[0x4];
+    u8 mPad2[0x4];
     float mSpinHoldReq;
     u32 m_1054;
     u32 m_1058;
@@ -831,14 +837,14 @@ public:
     dEf::followEffect_c mFollowEf3;
     u32 m_1288;
     u32 m_128c;
-    u8 mPad13[0x8];
+    u8 mPad3[0x8];
     int m_1298;
     mVec2_c m_129c;
-    u8 mPad14[0x4];
+    u8 mPad4[0x4];
     mVec3_c m_12a8;
     u32 m_12b4;
     int m_12b8;
-    u32 m_12bc;
+    u32 mAllBalloonFadeTimer;
     mMtx_c mRideJrClownMtx;
     int m_12f0;
     u8 m_12f4;
@@ -863,7 +869,7 @@ public:
     float m_1598;
     float m_159c;
     fBaseID_e mCarryActorID;
-    int m_15a4;
+    int mFastRunFrames; ///< How many frames the player has been running at over 1 unit/frame.
     int m_15a8;
     short m_15ac;
     short m_15ae;

@@ -175,6 +175,14 @@ public:
     };
 
     /// @unofficial
+    enum SquishState_e {
+        SQUISH_OFF,
+        SQUISH_INIT,
+        SQUISH_SET_REDUCTION,
+        SQUISH_ANIMATION
+    };
+
+    /// @unofficial
     enum BgPress_e {
         BG_PRESS_FOOT = 9,
         BG_PRESS_HEAD,
@@ -221,15 +229,15 @@ public:
 
     /// @unofficial
     enum BgCross2_e {
-        BGC_32 = BIT_FLAG(0),
-        BGC_IS_LIFT = BIT_FLAG(1),
+        BGC_32 = BIT_FLAG(0), ///< [Ghost house semisolid?]
+        BGC_LIFT = BIT_FLAG(1),
         BGC_34 = BIT_FLAG(2),
-        BGC_IS_SLIP = BIT_FLAG(3),
+        BGC_AUTOSLIP = BIT_FLAG(3),
         BGC_36 = BIT_FLAG(4),
         BGC_37 = BIT_FLAG(5),
         BGC_38 = BIT_FLAG(6),
-        BGC_IS_SAKA = BIT_FLAG(7),
-        BGC_40 = BIT_FLAG(8),
+        BGC_SLOPE = BIT_FLAG(7),
+        BGC_CLIFF = BIT_FLAG(8),
         BGC_41 = BIT_FLAG(9),
         BGC_42 = BIT_FLAG(10),
         BGC_43 = BIT_FLAG(11),
@@ -244,10 +252,10 @@ public:
         BGC_53 = BIT_FLAG(21),
         BGC_54 = BIT_FLAG(22),
         BGC_55 = BIT_FLAG(23),
-        BGC_56 = BIT_FLAG(24),
+        BGC_BLOCK_HIT = BIT_FLAG(24),
         BGC_57 = BIT_FLAG(25),
         BGC_58 = BIT_FLAG(26),
-        BGC_59 = BIT_FLAG(27),
+        BGC_LINE_BLOCK_HIT = BIT_FLAG(27),
         BGC_60 = BIT_FLAG(28),
         BGC_61 = BIT_FLAG(29),
         BGC_62 = BIT_FLAG(30),
@@ -256,192 +264,192 @@ public:
 
     /// @unofficial
     enum Status_e {
-        STATUS_00 = 0x00,
-        STATUS_01 = 0x01,
-        STATUS_02 = 0x02,
-        STATUS_03 = 0x03,
-        STATUS_04 = 0x04,
-        STATUS_05 = 0x05,
-        STATUS_06 = 0x06,
-        STATUS_07 = 0x07,
-        STATUS_08 = 0x08,
-        STATUS_0A = 0x0a,
-        STATUS_0B = 0x0b,
-        STATUS_0C = 0x0c,
-        STATUS_0D = 0x0d,
-        STATUS_0E = 0x0e,
-        STATUS_0F = 0x0f,
-        STATUS_10 = 0x10,
-        STATUS_11 = 0x11,
-        STATUS_12 = 0x12,
-        STATUS_13 = 0x13,
-        STATUS_14 = 0x14,
-        STATUS_15 = 0x15,
-        STATUS_16 = 0x16,
-        STATUS_17 = 0x17,
-        STATUS_18 = 0x18,
-        STATUS_19 = 0x19,
-        STATUS_1A = 0x1a,
-        STATUS_1B = 0x1b,
-        STATUS_1C = 0x1c,
-        STATUS_1D = 0x1d,
-        STATUS_1E = 0x1e,
-        STATUS_1F = 0x1f,
-        STATUS_20 = 0x20,
-        STATUS_21 = 0x21,
-        STATUS_22 = 0x22,
-        STATUS_23 = 0x23,
-        STATUS_24 = 0x24,
-        STATUS_26 = 0x26,
-        STATUS_27 = 0x27,
-        STATUS_29 = 0x29,
-        STATUS_2A = 0x2a,
-        STATUS_2B = 0x2b,
-        STATUS_2C = 0x2c,
-        STATUS_2D = 0x2d,
-        STATUS_2E = 0x2e,
+        STATUS_CREATED, ///< The player was created.
+        STATUS_CAN_EXECUTE, ///< The player can execute this frame or not.
+        STATUS_NO_ANIM, ///< Don't play any animations.
+        STATUS_DISABLE_STATE_CHANGE, ///< Disallow state changes.
+        STATUS_OUT_OF_PLAY, ///< The player is in a bubble or has died.
+        STATUS_ALL_DOWN_FADE, ///< All players have died and the screen is transitioning.
+        STATUS_STUNNED, ///< Stunned by electric shock or ice.
+        STATUS_07, ///< [Ice related]
+        STATUS_QUAKE, ///< The player was stunned by an earthquake.
+        STATUS_0A = 0x0a, ///< [Jump related]
+        STATUS_CAN_PENGUIN_SLIDE, ///< If the player can start sliding as a penguin.
+        STATUS_STAR_JUMP, ///< The player is jumping while in star mode.
+        STATUS_KANI_JUMP, ///< The player is doing a crab jump on a cliff.
+        STATUS_SINK_SAND_JUMP, ///< The player is jumping while in sinking sand.
+        STATUS_SIT_JUMP, ///< The player is doing a sitting jump.
+        STATUS_YOSHI_DISMOUNT_JUMP, ///< The player is doing a jump to dismount Yoshi.
+        STATUS_CANNON_JUMP, ///< The player is flying out of a pipe cannon.
+        STATUS_12, ///< ["Wait jump?"]
+        STATUS_WALL_SLIDE, ///< The player is sliding down a wall.
+        STATUS_BIG_JUMP, ///< The player is doing a jump on a spring or another player.
+        STATUS_SPRING_JUMP, ///< The player is doing a jump on a springboard.
+        STATUS_PLAYER_JUMP, ///< The player is doing a jump on another player.
+        STATUS_17, ///< [Dokan related]
+        STATUS_THROW, ///< The player is throwing something.
+        STATUS_KANI_WALK, ///< The player is doing a crab walk on a cliff.
+        STATUS_1A,
+        STATUS_1B,
+        STATUS_HIP_ATTACK_FALL, ///< The player is falling while ground pounding.
+        STATUS_HIP_ATTACK_LAND, ///< The player has landed after ground pounding. Only active on one frame.
+        STATUS_HIP_ATTACK_STAND_UP, ///< The player is standing up after ground pounding. Only active on one frame.
+        STATUS_SPIN_HIP_ATTACK_FALL, ///< The player is falling while doing a down spin.
+        STATUS_SPIN_HIP_ATTACK_LANDED,
+        STATUS_SPIN_HIP_ATTACK_LANDING,
+        STATUS_PRESS_ATTACH, ///< The player is is attached to a enemy while ground pounding or doing a down spin. [Used for the big goombas].
+        STATUS_HIP_ATTACK_DAMAGE_PLAYER, ///< The player was ground pounded by another player.
+        STATUS_24,
+        STATUS_PROPEL = 0x26, ///< The player is flying with the propeller suit.
+        STATUS_PROPEL_UP, ///< The player is flying upwards with the propeller suit.
+        STATUS_PROPEL_SLOW_FALL = 0x29, ///< The player will fall slowly while spinning down with the propeller suit.
+        STATUS_PROPEL_NO_ROLL, ///< Don't rotate the player because of the propeller suit.
+        STATUS_2B,
+        STATUS_2C,
+        STATUS_TWIRL, ///< The player is twirling in midair.
+        STATUS_WAS_TWIRL, ///< The player was twirling in midair the previous frame.
         STATUS_30 = 0x30,
-        STATUS_31 = 0x31,
-        STATUS_32 = 0x32,
-        STATUS_33 = 0x33,
-        STATUS_34 = 0x34,
-        STATUS_35 = 0x35,
-        STATUS_36 = 0x36,
-        STATUS_37 = 0x37,
-        STATUS_38 = 0x38,
-        STATUS_39 = 0x39,
-        STATUS_3A = 0x3a,
-        STATUS_3B = 0x3b,
-        STATUS_3C = 0x3c,
-        STATUS_3D = 0x3d,
-        STATUS_3E = 0x3e,
-        STATUS_3F = 0x3f,
-        STATUS_40 = 0x40,
-        STATUS_41 = 0x41,
-        STATUS_42 = 0x42,
-        STATUS_43 = 0x43,
+        STATUS_31,
+        STATUS_32,
+        STATUS_VINE, ///< The player is clinging to a vine or a mesh net.
+        STATUS_HANG, ///< The player is hanging from a ceiling rope.
+        STATUS_POLE, ///< The player is climbing a pole.
+        STATUS_36,
+        STATUS_KANI_HANG, ///< The player is hanging from a cliff.
+        STATUS_KANI_HANG_ANIMATION, ///< The player is animating into the hanging pose on a cliff.
+        STATUS_39, ///< [Swim related]
+        STATUS_SWIM, ///< The player is swimming.
+        STATUS_PENGUIN_SWIM, ///< The player is swimming with the penguin suit.
+        STATUS_PENGUIN_SLIDE, ///< The player is sliding with the penguin suit.
+        STATUS_PENGUIN_SLIDE_JUMP, ///< The player is doing a penguin slide jump.
+        STATUS_INITIAL_SLIDE, ///< The player is in an initial slide action. [Used in 6-6 to slide all the way down automatically].
+        STATUS_PENGUIN_RECOIL, ///< The player is bouncing back after hitting an enemy that cannot be killed by a penguin slide.
+        STATUS_40, ///< [Water jump?]
+        STATUS_SWIM_AGAINST_JET_H, ///< The player is swimming against a horizontal water jet stream.
+        STATUS_SWIM_AGAINST_JET_V, ///< The player is swimming against a vertical water jet stream.
+        STATUS_43,
         STATUS_45 = 0x45,
-        STATUS_46 = 0x46,
-        STATUS_47 = 0x47,
-        STATUS_48 = 0x48,
-        STATUS_49 = 0x49,
-        STATUS_4A = 0x4a,
-        STATUS_4B = 0x4b,
+        STATUS_46,
+        STATUS_47,
+        STATUS_48,
+        STATUS_49,
+        STATUS_4A,
+        STATUS_4B,
         STATUS_4D = 0x4d,
-        STATUS_4E = 0x4e,
-        STATUS_4F = 0x4f,
-        STATUS_50 = 0x50,
-        STATUS_51 = 0x51,
-        STATUS_52 = 0x52,
-        STATUS_53 = 0x53,
-        STATUS_54 = 0x54,
-        STATUS_55 = 0x55,
-        STATUS_56 = 0x56,
-        STATUS_57 = 0x57,
-        STATUS_58 = 0x58,
-        STATUS_59 = 0x59,
-        STATUS_5A = 0x5a,
-        STATUS_5B = 0x5b,
-        STATUS_5C = 0x5c,
-        STATUS_5D = 0x5d,
-        STATUS_5E = 0x5e,
-        STATUS_5F = 0x5f,
-        STATUS_60 = 0x60,
-        STATUS_61 = 0x61,
-        STATUS_62 = 0x62,
-        STATUS_63 = 0x63,
-        STATUS_64 = 0x64,
-        STATUS_65 = 0x65,
-        STATUS_66 = 0x66,
-        STATUS_67 = 0x67,
-        STATUS_68 = 0x68,
-        STATUS_69 = 0x69,
-        STATUS_6A = 0x6a,
-        STATUS_6B = 0x6b,
-        STATUS_6C = 0x6c,
-        STATUS_6D = 0x6d,
-        STATUS_6E = 0x6e,
-        STATUS_6F = 0x6f,
-        STATUS_70 = 0x70,
-        STATUS_71 = 0x71,
-        STATUS_72 = 0x72,
-        STATUS_73 = 0x73,
-        STATUS_74 = 0x74,
-        STATUS_75 = 0x75,
-        STATUS_76 = 0x76,
-        STATUS_77 = 0x77,
-        STATUS_78 = 0x78,
-        STATUS_79 = 0x79,
-        STATUS_7A = 0x7a,
+        STATUS_4E,
+        STATUS_4F,
+        STATUS_50,
+        STATUS_51,
+        STATUS_52,
+        STATUS_53,
+        STATUS_54,
+        STATUS_55,
+        STATUS_56,
+        STATUS_57,
+        STATUS_58,
+        STATUS_59,
+        STATUS_5A,
+        STATUS_5B,
+        STATUS_5C,
+        STATUS_5D,
+        STATUS_5E,
+        STATUS_5F,
+        STATUS_60,
+        STATUS_61,
+        STATUS_62,
+        STATUS_63,
+        STATUS_64,
+        STATUS_65,
+        STATUS_66,
+        STATUS_67,
+        STATUS_GOAL_POLE_FINISHED_SLIDE_DOWN,
+        STATUS_GOAL_POLE_READY_FOR_MULTI_JUMP,
+        STATUS_6A,
+        STATUS_6B,
+        STATUS_6C,
+        STATUS_6D,
+        STATUS_6E,
+        STATUS_6F,
+        STATUS_70,
+        STATUS_71,
+        STATUS_72,
+        STATUS_73,
+        STATUS_74,
+        STATUS_75,
+        STATUS_76,
+        STATUS_77,
+        STATUS_78,
+        STATUS_79,
+        STATUS_7A,
         STATUS_7D = 0x7d,
-        STATUS_7E = 0x7e,
-        STATUS_7F = 0x7f,
-        STATUS_80 = 0x80,
-        STATUS_81 = 0x81,
-        STATUS_82 = 0x82,
-        STATUS_83 = 0x83,
-        STATUS_84 = 0x84,
-        STATUS_85 = 0x85,
-        STATUS_86 = 0x86,
-        STATUS_87 = 0x87,
-        STATUS_88 = 0x88,
-        STATUS_89 = 0x89,
-        STATUS_8A = 0x8a,
-        STATUS_8B = 0x8b,
-        STATUS_8C = 0x8c,
-        STATUS_8D = 0x8d,
-        STATUS_8E = 0x8e,
-        STATUS_8F = 0x8f,
+        STATUS_7E,
+        STATUS_7F,
+        STATUS_80,
+        STATUS_81,
+        STATUS_82,
+        STATUS_83,
+        STATUS_84,
+        STATUS_85,
+        STATUS_86,
+        STATUS_87,
+        STATUS_88,
+        STATUS_89,
+        STATUS_8A,
+        STATUS_8B,
+        STATUS_8C,
+        STATUS_8D,
+        STATUS_8E,
+        STATUS_8F,
         STATUS_91 = 0x91,
-        STATUS_92 = 0x92,
-        STATUS_93 = 0x93,
-        STATUS_94 = 0x94,
-        STATUS_95 = 0x95,
-        STATUS_96 = 0x96,
-        STATUS_97 = 0x97,
-        STATUS_98 = 0x98,
-        STATUS_99 = 0x99,
+        STATUS_92,
+        STATUS_93,
+        STATUS_94,
+        STATUS_95,
+        STATUS_96,
+        STATUS_97,
+        STATUS_98,
+        STATUS_99,
         STATUS_9B = 0x9b,
-        STATUS_9C = 0x9c,
-        STATUS_9D = 0x9d,
-        STATUS_9E = 0x9e,
-        STATUS_9F = 0x9f,
-        STATUS_A0 = 0xa0,
-        STATUS_A1 = 0xa1,
-        STATUS_A2 = 0xa2,
-        STATUS_A3 = 0xa3,
-        STATUS_A4 = 0xa4,
-        STATUS_A5 = 0xa5,
-        STATUS_A6 = 0xa6,
-        STATUS_A7 = 0xa7,
-        STATUS_A8 = 0xa8,
-        STATUS_A9 = 0xa9,
-        STATUS_AA = 0xaa,
-        STATUS_AB = 0xab,
-        STATUS_AC = 0xac,
-        STATUS_AD = 0xad,
-        STATUS_AE = 0xae,
+        STATUS_9C,
+        STATUS_9D,
+        STATUS_9E,
+        STATUS_9F,
+        STATUS_A0,
+        STATUS_A1,
+        STATUS_A2,
+        STATUS_A3,
+        STATUS_A4,
+        STATUS_A5,
+        STATUS_A6,
+        STATUS_A7,
+        STATUS_A8,
+        STATUS_A9,
+        STATUS_AA,
+        STATUS_AB,
+        STATUS_AC,
+        STATUS_AD,
+        STATUS_AE,
         STATUS_B3 = 0xb3, /// [Yoshi only?]
         STATUS_B5 = 0xb5,
-        STATUS_B6 = 0xb6,
-        STATUS_B7 = 0xb7,
-        STATUS_B8 = 0xb8,
-        STATUS_B9 = 0xb9,
-        STATUS_BA = 0xba,
-        STATUS_BB = 0xbb,
-        STATUS_BC = 0xbc,
-        STATUS_BD = 0xbd,
-        STATUS_BE = 0xbe,
-        STATUS_BF = 0xbf,
-        STATUS_C0 = 0xc0,
-        STATUS_C1 = 0xc1,
-        STATUS_C2 = 0xc2,
-        STATUS_C3 = 0xc3,
-        STATUS_C4 = 0xc4,
-        STATUS_C5 = 0xc5,
+        STATUS_B6,
+        STATUS_B7,
+        STATUS_B8,
+        STATUS_B9,
+        STATUS_BA,
+        STATUS_BB,
+        STATUS_BC,
+        STATUS_BD,
+        STATUS_BE,
+        STATUS_BF,
+        STATUS_C0,
+        STATUS_C1,
+        STATUS_C2,
+        STATUS_C3,
+        STATUS_C4,
+        STATUS_C5,
         STATUS_C8 = 0xc8,
-        STATUS_C9 = 0xc9,
-        STATUS_CA = 0xca
+        STATUS_C9,
+        STATUS_CA
     };
 
     class jmpInf_c {
@@ -950,45 +958,50 @@ public:
     u8 getDirection() const { return mDirection; }
     PLAYER_POWERUP_e getPowerup() const { return mPowerup; }
 
-    int mReductionMode;
-    int mSquishKeyframeIdx;
-    float mSquishScale;
-    int mTimer_0c;
-    int mTimer_10;
-    const daPlBase_c *mpNoHitPlayer;
-    int mNoHitTimer;
+    SquishState_e mSquishState; ///< The player's current squish state for being jumped on by another player.
+    int mSquishKeyframeIdx; ///< The current target index for the squishing animation keyframes.
+    float mSquishScale; ///< The current scale of the player during the squish animation.
+    int mSquishNoMoveTimer; ///< Timer for how long to freeze the squished player in position.
+    int mSquishCooldownTimer; ///< Cooldown for another player to squish this player.
+
+    const daPlBase_c *mpNoHitPlayer; ///< The player that cannot collide with this player.
+    int mNoHitTimer; ///< Timer for how long the no-hit status lasts.
+
     u32 mBgPressActive;
     u32 mBgPressFlags;
     fBaseID_e mBgPressIDs[13]; ///< Index into this array with BgPress_e.
     float mViewLimitPadding;
+
     int mKimePoseState;
     s8 mDemoState; /// Value is a ControlDemoState_e.
+
     int mDokanNextGoto;
     mVec3_c mWarpPos; ///< Position of the door or pipe the player is entering.
-    mVec2_c m_74;
-    short m_7c;
+    mVec2_c mDokanMoveSpeed; ///< Direction to move the player while entering a rolling hill pipe or a rail pipe.
+    short mRollDokanAngle;
     int m_80;
-    u8 m_84;
-    dBg_ctr_c *mpBgCtr;
+    u8 mDokanDir;
+    dBg_ctr_c *mpDokanBgCtr;
     /// Counts up while walking to the left, and allows the
     /// player to enter a pipe when it reaches #sc_DokanEnterThreshold.
     u8 mDokanCounterL;
     /// Counts up while walking to the right, and allows the
     /// player to enter a pipe when it reaches #sc_DokanEnterThreshold.
     u8 mDokanCounterR;
-    float m_90;
-    float m_94;
-    short m_98;
-    short m_9a;
+    float mDokanOffsetY;
+    float mDokanOffsetX;
+    short mRailDokanRailIndex;
+    short mRailDokanNextNodeTimer;
+
     int m_9c;
-    int m_a0;
-    float m_a4;
+    int mGoalTouchOrder;
+    float mGoalPoleEndY;
     int mTimer_a8;
-    mVec3_c m_ac;
-    int m_b8;
+    mVec3_c mGoalJumpTarget;
+    int mGoalJumpFrameCount;
+
     float m_bc;
-    u8 mPad9[0x4];
-    int m_c4;
+    u8 mPad1[0x8];
     float m_c8;
     int m_cc;
     int m_d0;
@@ -997,8 +1010,8 @@ public:
     int m_ec;
     int m_f0;
     int mTimer_f4;
-    int mTimer_f8;
-    s8 m_fc;
+    int mSlipEndTimer;
+    s8 mAutoSlipTimer;
     dEf::followEffect_c mTurnSmokeEffect; ///< The wind effect when turning around after running.
     int mTurnGroundType;
     u8 mTurnEffectFade;
@@ -1027,7 +1040,7 @@ public:
     u32 mStatusFlags[7];
     float mSomeYOffset;
     u8 m_ca0;
-    u8 m_ca1;
+    u8 mAmiLayer;
     u8 mPlayerLayer;
     mVec3_c mLastPosDelta;
     mVec3_c mLiftRelatedPos;
@@ -1105,7 +1118,7 @@ public:
     int mSubstate; ///< States can use this as a kind of sub-state variable (cast to some enum)
     int mSubstateTimer; ///< States can use this generic timer for various purposes.
     int mSubstateTimer2; ///< States can use this generic timer for various purposes.
-    mVec3_c mHitAttackRelated;
+    mVec3_c mPressAttachPos;
     int m_1128;
     float m_112c;
     float m_1130;
