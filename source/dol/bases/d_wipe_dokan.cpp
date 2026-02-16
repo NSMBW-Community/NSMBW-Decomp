@@ -119,7 +119,7 @@ void dWipeDokan_c::AnimeEndCheck() {
 }
 
 bool dWipeDokan_c::MuKiDecision() {
-    int actPlayer = daPyDemoMng_c::mspInstance->mPlNo;
+    int actPlayer = daPyDemoMng_c::mspInstance->mPlayerNo;
     if (actPlayer < 0) {
         return false;
     }

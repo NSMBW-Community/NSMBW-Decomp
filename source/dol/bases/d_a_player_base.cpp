@@ -1385,11 +1385,11 @@ void daPlBase_c::DemoAnmBossGlad() {
             }
             break;
         case ANIME_PLAY_ACTION_2: {
-            int arg = 1;
+            ClearType_e clearType = CLEAR_TYPE_BOSS;
             if (mDemoAnime == DEMO_ANIME_BOSS_GLAD_2) {
-                arg = 2;
+                clearType = CLEAR_TYPE_FINAL_BOSS;
             }
-            if (!vf284(arg)) {
+            if (!updateDemoKimePose(clearType)) {
                 break;
             }
             mpMdlMng->setAnm(PLAYER_ANIM_WAIT, 5.0f, 0.0f);
@@ -1440,7 +1440,7 @@ void daPlBase_c::DemoAnmBossKeyGet() {
         case ANIME_PLAY_ACTION_1:
             if (mSubstateTimer == 0) {
                 mpMdlMng->setAnm(PLAYER_ANIM_BOSS_KEY_GET);
-                playClearVoice(1);
+                startKimePoseVoice(CLEAR_TYPE_BOSS);
                 mSubstate++;
                 offStatus(STATUS_DISABLE_STATE_CHANGE);
             }
@@ -2579,7 +2579,7 @@ void daPlBase_c::changeNextScene(int param1) {
     daPyDemoMng_c::mspInstance->setCourseOutList(mPlayerNo);
     if (mPlayerNo == daPyDemoMng_c::mspInstance->m_70) {
         dNext_c::m_instance->m_19 = true;
-        daPyDemoMng_c::mspInstance->mPlNo = mPlayerNo;
+        daPyDemoMng_c::mspInstance->mPlayerNo = mPlayerNo;
     }
     if (param1 == 1) {
         daPlBase_c *pl = daPyMng_c::getPlayer(mPlayerNo);
@@ -3063,7 +3063,7 @@ bool daPlBase_c::setDokanIn(DokanDir_e dir) {
             }
             break;
         case DOKAN_L:
-        case DOKAN_R:
+        case DOKAN_R: {
             float x = 0.0f;
             float y = x;
             if (isStatus(STATUS_SWIM)) {
@@ -3076,6 +3076,9 @@ bool daPlBase_c::setDokanIn(DokanDir_e dir) {
                 }
             }
             res = mBc.checkDokanLR(&mWarpPos, mDirection, &res2, x, y);
+            break;
+        }
+        case DOKAN_ROLL:
             break;
     }
     if (res == 1 && setDemoOutDokanAction(res2, dir)) {
@@ -3640,45 +3643,49 @@ void daPlBase_c::initializeState_DemoDown() {}
 void daPlBase_c::finalizeState_DemoDown() {}
 void daPlBase_c::executeState_DemoDown() {}
 
-int daPlBase_c::vf130(float f, mVec2_c *v, int param3) {
+int daPlBase_c::setDemoGoal(mVec3_c &landPos, float goalCastleX, u8 goalType) {
     if (daPyDemoMng_c::mspInstance->mFlags & 4) {
         return -1;
     }
-    mPos.x = v->x;
+
+    mPos.x = landPos.x;
     changeState(StateID_None, nullptr);
     changeDemoState(StateID_DemoGoal, 0);
-    mWarpPos.x = f;
-    mWarpPos.y = v->y;
-    mWarpPos.z = v->x + 80.0f;
-    m_9c = daPyDemoMng_c::mspInstance->setGoalDemoList(mPlayerNo);
-    if (m_9c == 0) {
+
+    mWarpPos.x = goalCastleX;
+    mWarpPos.y = landPos.y;
+    mWarpPos.z = landPos.x + 80.0f;
+
+    mGoalDemoIndex = daPyDemoMng_c::mspInstance->setGoalDemoList(mPlayerNo);
+    if (mGoalDemoIndex == 0) {
+        // Only set once, when the first player reaches the goal
         daPyDemoMng_c::mspInstance->setDemoMode(daPyDemoMng_c::MODE_1, 0);
-        daPyDemoMng_c::mspInstance->m_14 = param3;
-        daPyDemoMng_c::mspInstance->mPlNo = mPlayerNo;
-        mVec3_c pos(f - 112.0f, v->y, 5500.0f);
-        float tmp;
-        if (dBc_c::checkGround(&pos, &tmp, mLayer, 1, -1)) {
-            pos.y = tmp + 112.0f;
+        daPyDemoMng_c::mspInstance->mGoalType = goalType;
+        daPyDemoMng_c::mspInstance->mPlayerNo = mPlayerNo;
+
+        mVec3_c fireworkPos(goalCastleX - 112.0f, landPos.y, 5500.0f);
+        float height;
+        if (dBc_c::checkGround(&fireworkPos, &height, mLayer, 1, -1)) {
+            fireworkPos.y = height + 112.0f;
         }
-        daPyDemoMng_c::mspInstance->mFireworkPos = pos;
+        daPyDemoMng_c::mspInstance->mFireworkPos = fireworkPos;
     }
-    bool cond = false;
-    daPlBase_c *pl = daPyMng_c::getPlayer(mPlayerNo);
-    if (pl != nullptr && pl->isItemKinopio()) {
-        cond = true;
-    }
-    if (!cond) {
-        if (m_9c != 0 && m_9c + 1 == daPyMng_c::getNumInGame()) {
+
+    if (!daPyMng_c::isPlayerKinopio(mPlayerNo)) {
+        if (mGoalDemoIndex != 0 && mGoalDemoIndex + 1 == daPyMng_c::getNumInGame()) {
+            // All players have reached the goal
             dMultiMng_c::mspInstance->setClapSE();
         }
     } else {
         daPyDemoMng_c::mspInstance->m_42 = 1;
         dGameCom::hideFukidashiForSession(mPlayerNo, 8);
     }
-    int sum = daPyMng_c::getNumInGame() + daPyMng_c::getItemKinopioNum();
-    if (sum == m_9c + 1) {
+
+    int totalPlayers = daPyMng_c::getNumInGame() + daPyMng_c::getItemKinopioNum();
+    if (totalPlayers == mGoalDemoIndex + 1) {
         daPyDemoMng_c::mspInstance->stopBgmGoalDemo();
     }
+
     return -1;
 }
 
@@ -3896,7 +3903,7 @@ void daPlBase_c::executeDemoGoal_KimePose() {
                 }
             } else {
                 if (dInfo_c::mGameFlag & 0x10 && dInfo_c::mGameFlag & 0x40) {
-                    if (m_9c == 0) {
+                    if (mGoalDemoIndex == 0) {
                         SndAudioMgr::sInstance->startSystemSe(SE_OBJ_GOAL_GET_COIN_BONUS, 1);
                     }
                     static const int scGoalCoin[] = {20, 15, 10, 5 };
@@ -3905,7 +3912,7 @@ void daPlBase_c::executeDemoGoal_KimePose() {
             }
         }
     }
-    if (vf284(0)) {
+    if (updateDemoKimePose(CLEAR_TYPE_GOAL)) {
         setDemoGoalMode(GOAL_DEMO_ACTION_WAIT, 0);
     }
 }
@@ -3979,13 +3986,13 @@ void daPlBase_c::initDemoKimePose() {
     mKimePoseMode = KIME_POSE_NONE;
 }
 
-bool daPlBase_c::vf284(int) {
+bool daPlBase_c::updateDemoKimePose(ClearType_e clearType) {
     return false;
 }
 
-void daPlBase_c::playClearVoice(int clearType) {
+void daPlBase_c::startKimePoseVoice(ClearType_e clearType) {
     int playerCount;
-    if (clearType == 0) {
+    if (clearType == CLEAR_TYPE_GOAL) {
         playerCount = daPyDemoMng_c::mspInstance->m_1c;
     } else {
         playerCount = daPyDemoMng_c::mspInstance->getControlDemoPlayerNum();
@@ -3996,12 +4003,12 @@ void daPlBase_c::playClearVoice(int clearType) {
         } else {
             startPlayerVoice(VOICE_CLEAR_HELPED, 0);
         }
-    } else if (clearType == 2) {
+    } else if (clearType == CLEAR_TYPE_FINAL_BOSS) {
         startPlayerVoice(VOICE_CLEAR_LAST_BOSS, 0);
     } else if (playerCount >= 2) {
         startPlayerVoice(VOICE_CLEAR_MULTI, 0);
-    } else if (clearType == 0) {
-        if (daPyDemoMng_c::mspInstance->m_14 == 0) {
+    } else if (clearType == CLEAR_TYPE_GOAL) {
+        if (daPyDemoMng_c::mspInstance->mGoalType == 0) {
             startPlayerVoice(VOICE_CLEAR_NORMAL, 0);
         } else {
             startPlayerVoice(VOICE_CLEAR_ANOTHER, 0);

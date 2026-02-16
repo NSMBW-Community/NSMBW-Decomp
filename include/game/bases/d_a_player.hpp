@@ -221,7 +221,7 @@ public:
     virtual bool isChange();
     virtual bool isEnableDokanInStatus();
     virtual bool setHideNotGoalPlayer();
-    virtual int vf130(float f, mVec2_c *v, int param3);
+    virtual int setDemoGoal(mVec3_c &landPos, float goalCastleX, u8 goalType);
     virtual bool setDemoCannonWarp(int, short, short);
 
     STATE_VIRTUAL_FUNC_DECLARE(dAcPy_c, DemoStartWait);
@@ -240,7 +240,7 @@ public:
     virtual void setFallDownDemo();
     virtual bool setDokanIn(DokanDir_e dir);
     virtual void initDemoOutDokan();
-    virtual bool vf284(int);
+    virtual bool updateDemoKimePose(ClearType_e clearType);
     virtual void initDemoGoalBase();
     virtual void executeDemoGoal_Run();
     virtual void initializeDemoControl();

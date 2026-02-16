@@ -8721,19 +8721,19 @@ void dAcPy_c::executeState_DemoDokanCannon() {
     }
 }
 
-int dAcPy_c::vf130(float f, mVec2_c *v, int param3) {
+int dAcPy_c::setDemoGoal(mVec3_c &landPos, float goalCastleX, u8 goalType) {
     daYoshi_c *yoshi = getRideYoshi();
     if (yoshi != nullptr) {
-        return yoshi->vf130(f, v, param3);
+        return yoshi->setDemoGoal(landPos, goalCastleX, goalType);
     } else {
-        return daPlBase_c::vf130(f, v, param3);
+        return daPlBase_c::setDemoGoal(landPos, goalCastleX, goalType);
     }
 }
 
 void dAcPy_c::setOffYoshiInGoal(daPlBase_c *yoshi) {
     changeState(StateID_RideOffJump, 0);
     changeDemoState(StateID_DemoGoal, 1);
-    m_9c = yoshi->m_9c;
+    mGoalDemoIndex = yoshi->mGoalDemoIndex;
     mGoalTouchOrder = yoshi->mGoalTouchOrder;
     mWarpPos = yoshi->mWarpPos;
 }
@@ -8849,7 +8849,7 @@ void dAcPy_c::executeDemoGoal_Run() {
     }
 }
 
-bool dAcPy_c::vf284(int arg) {
+bool dAcPy_c::updateDemoKimePose(ClearType_e clearType) {
     switch (mKimePoseMode) {
         case KIME_POSE_NONE:
             mPyMdlMng.setAnm(PLAYER_ANIM_WAIT);
@@ -8871,7 +8871,7 @@ bool dAcPy_c::vf284(int arg) {
                 }
                 mPyMdlMng.setAnm(PLAYER_ANIM_GOAL_PUTON_CAP);
             }
-            playClearVoice(arg);
+            startKimePoseVoice(clearType);
             // fallthrough
         case KIME_POSE_WITH_HAT: {
             dMarioMdl_c *mdl = (dMarioMdl_c *) mPyMdlMng.mpMdl;
@@ -8999,8 +8999,8 @@ void dAcPy_c::executeState_DemoCannonWarp() {
             if (mDemoSubstateTimer == 0) {
                 mDemoSubstate = 4;
                 dScStage_c::setNextScene(3, 0, dScStage_c::EXIT_0, dFader_c::FADER_CIRCLE_TARGET);
-                if (daPyDemoMng_c::mspInstance->mPlNo < 0) {
-                    daPyDemoMng_c::mspInstance->mPlNo = mPlayerNo;
+                if (daPyDemoMng_c::mspInstance->mPlayerNo < 0) {
+                    daPyDemoMng_c::mspInstance->mPlayerNo = mPlayerNo;
                 }
             }
             break;

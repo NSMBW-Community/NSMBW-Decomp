@@ -23,7 +23,7 @@ public:
 
     char mPad1[0x10];
     u32 mFlags;
-    u32 m_14;
+    u32 mGoalType;
     char mPad2[0x4];
     int m_1c;
     char mPad3[0x22];
@@ -35,14 +35,14 @@ public:
     char mPad6[0x10];
     int m_70;
     char mPad7[0xc];
-    int mPlNo;
+    int mPlayerNo;
     int m_84;
     int m_88;
     u8 mPad8[0x8];
     int m_94;
 
-    int getPlrNo() const { return mPlNo; }
-    void setPlrNo(int playerNo) { mPlNo = playerNo; }
+    int getPlrNo() const { return mPlayerNo; }
+    void setPlrNo(int playerNo) { mPlayerNo = playerNo; }
     int get_88() const { return m_88; }
     void inc_88() { m_88++; }
 

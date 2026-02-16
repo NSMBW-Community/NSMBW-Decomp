@@ -46,6 +46,12 @@ public:
         BLEND_1
     };
 
+    enum ClearType_e {
+        CLEAR_TYPE_GOAL,
+        CLEAR_TYPE_BOSS,
+        CLEAR_TYPE_FINAL_BOSS
+    };
+
     /// @unofficial
     enum GroundType_e {
         GROUND_TYPE_DEFAULT,
@@ -510,7 +516,7 @@ public:
     virtual void changeNextScene(int);
     virtual bool isEnableDokanInStatus();
     virtual bool setHideNotGoalPlayer();
-    virtual int vf130(float f, mVec2_c *v, int param3); ///< @unofficial
+    virtual int setDemoGoal(mVec3_c &landPos, float goalCastleX, u8 goalType);
     virtual bool setDemoCannonWarp(int, short, short) { return false; }
 
     STATE_VIRTUAL_FUNC_DECLARE(daPlBase_c, DemoNone);
@@ -560,7 +566,7 @@ public:
     virtual void setFallDownDemo() {}
     virtual bool setDokanIn(DokanDir_e dir);
     virtual void initDemoOutDokan();
-    virtual bool vf284(int); ///< @unofficial
+    virtual bool updateDemoKimePose(ClearType_e clearType);
     virtual void initDemoGoalBase();
     virtual void executeDemoGoal_Run();
     virtual void initializeDemoControl() {}
@@ -859,7 +865,7 @@ public:
     void setTurnSmokeEffect();
     void fadeOutTurnEffect();
 
-    void playClearVoice(int clearType); ///< @unofficial
+    void startKimePoseVoice(ClearType_e clearType);
     void setSoundPlyMode();
     void setItemCompleteVoice();
     void startFootSoundPlayer(unsigned long);
@@ -1013,7 +1019,9 @@ public:
     s8 mDemoState; /// Value is a ControlDemoState_e.
 
     int mDokanNextGoto;
-    mVec3_c mWarpPos; ///< Position of the door or pipe the player is entering.
+    /// Position of the door or pipe the player is entering.
+    /// Also used as the target for the player running towards the castle after touching the goal pole.
+    mVec3_c mWarpPos;
     mVec2_c mDokanMoveSpeed; ///< Direction to move the player while entering a rolling hill pipe or a rail pipe.
     short mRollDokanAngle;
     int m_80;
@@ -1030,7 +1038,7 @@ public:
     short mRailDokanRailIndex;
     short mRailDokanNextNodeTimer;
 
-    int m_9c;
+    int mGoalDemoIndex; ///< Indicates where the player is in the order of players which have touched the goal pole, 0 being the first.
     int mGoalTouchOrder;
     float mGoalPoleEndY;
     int mTimer_a8;
