@@ -368,7 +368,7 @@ public:
     void jumpExeTakeOff();
     void jumpExecAir();
     void fn_801282d0(int); ///< @unofficial
-    bool fn_8012e540(dActor_c *, bool); ///< @unofficial
+    bool spinLiftUp(dActor_c *, bool); ///< @unofficial
     void setJumpCommonBase();
     dAcPy_c *getCarryPlayer();
     bool isIceSlipAnmPlay();

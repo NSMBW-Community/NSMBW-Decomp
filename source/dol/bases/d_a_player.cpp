@@ -425,11 +425,11 @@ void dAcPy_c::fn_80127740(int jumpMode, int b) {
                 anmNum = 5;
                 break;
             case 1:
-                startPlayerVoice(21, 0);
+                startPlayerVoice(VOICE_JUMP_2ND, 0);
                 anmNum = 8;
                 break;
             default:
-                startPlayerVoice(22, 0);
+                startPlayerVoice(VOICE_JUMP_3RD, 0);
                 anmNum = 11;
                 break;
         }
@@ -880,7 +880,7 @@ void dAcPy_c::executeState_WallJump() {
     }
     jmpInf_c jumpInf(f, 0, 1);
     changeState(StateID_Jump, &jumpInf);
-    startPlayerVoice(25, 0);
+    startPlayerVoice(VOICE_WALL_KICK, 0);
     startSound(SE_PLY_KABE_KICK, false);
     m_91 = 16;
 }
@@ -1323,7 +1323,7 @@ void dAcPy_c::initializeState_CannonJump() {
     }
     clearNowBgCross();
     dQuake_c::m_instance->shockMotor(mPlayerNo, dQuake_c::TYPE_5, 0, false);
-    startPlayerVoice(35, 0);
+    startPlayerVoice(VOICE_CANNON_SHOT_S, 0);
     mPyMdlMng.setAnm(127);
     mKey.onStatus(dAcPyKey_c::STATUS_DISABLE_LR);
     mKey.onStatus(dAcPyKey_c::STATUS_FORCE_NO_JUMP);
@@ -1685,7 +1685,7 @@ void dAcPy_c::initializeState_PenguinSlide() {
     onStatus(STATUS_88);
 
     mPyMdlMng.setAnm(139);
-    startPlayerVoice(27, 0);
+    startPlayerVoice(VOICE_PNGN_SLIDE, 0);
     m_540 = 30;
     m_544 = getData(0);
 }
@@ -2656,7 +2656,7 @@ void dAcPy_c::checkSpinLiftUpReserve(dCc_c *cc) {
     if (
         actor == nullptr ||
         !actor->isSpinLiftUpEnable() ||
-        !fn_8012e540(actor, false)
+        !spinLiftUp(actor, false)
     ) {
         return;
     }
@@ -2704,7 +2704,7 @@ void dAcPy_c::checkSpinLiftUpRoofHeight() {
     m_12f8 = f;
 }
 
-bool dAcPy_c::fn_8012e540(dActor_c *actor, bool b) {
+bool dAcPy_c::spinLiftUp(dActor_c *actor, bool b) {
     if (actor == nullptr || isCarry() || !mKey.buttonCarry()) {
         return false;
     }
@@ -2716,7 +2716,7 @@ bool dAcPy_c::fn_8012e540(dActor_c *actor, bool b) {
         m_1308 = 1;
         mPyMdlMng.mpMdl->m_17c |= 2;
         mPyMdlMng.mpMdl->setBodyAnm(28, 1.0f, 0.0f, 0.0f);
-        startPlayerVoice(18, 0);
+        startPlayerVoice(VOICE_MOTIAGE, 0);
         return true;
     }
     return false;
@@ -2790,7 +2790,7 @@ bool dAcPy_c::checkCarryThrow() {
 }
 
 void dAcPy_c::initializeThrowCommonBase() {
-    startPlayerVoice(19, 0);
+    startPlayerVoice(VOICE_NAGERU, 0);
     if (isNowBgCross(BGC_14)) {
         mPyMdlMng.setAnm(37);
     } else {
@@ -3029,9 +3029,9 @@ void dAcPy_c::initializeState_LiftUp() {
     dAcPy_c *carryPlayer = getCarryPlayer();
     setVirusStar(carryPlayer);
     if (carryPlayer != nullptr) {
-        startPlayerVoice(20, 0);
+        startPlayerVoice(VOICE_MOTIAGE_PLAYER, 0);
     } else {
-        startPlayerVoice(18, 0);
+        startPlayerVoice(VOICE_MOTIAGE, 0);
     }
     startSound(SE_PLY_OTHER_ON, false);
     mPyMdlMng.setAnm(108, 0.0f, 0.0f);
@@ -3419,7 +3419,7 @@ void dAcPy_c::SwimAction_Swim() {
     setWaterMoveSpeed();
     turnAngle();
     if (checkEnableThrow()) {
-        startPlayerVoice(19, 0);
+        startPlayerVoice(VOICE_NAGERU, 0);
         setThrowActor();
         return;
     }
@@ -4186,7 +4186,7 @@ void dAcPy_c::initializeState_Vine() {
     switch (changeParam) {
         case 0:
         case 2:
-            startPlayerVoice(28, 0);
+            startPlayerVoice(VOICE_ROPE_CATCH, 0);
             switch (mBc.mFenceType) {
                 case 0:
                     startSound(SE_PLY_CATCH_IVY, 0);
@@ -4625,7 +4625,7 @@ void dAcPy_c::initializeState_Hang() {
     }
     mPyMdlMng.setAnm(47);
     setZPositionDirect(400.0f);
-    startPlayerVoice(28, 0);
+    startPlayerVoice(VOICE_ROPE_CATCH, 0);
 }
 
 void dAcPy_c::HangActionStart() {
@@ -4679,7 +4679,7 @@ void dAcPy_c::HangActionMove() {
 void dAcPy_c::executeState_Hang() {
     if (!isNowBgCross(BGC_34) || mKey.buttonDown()) {
         changeState(StateID_Fall, 0);
-        startPlayerVoice(29, 0);
+        startPlayerVoice(VOICE_ROPE_RELEASE, 0);
     } else {
         turnBesideAngle();
         typedef void (dAcPy_c::*HangActionProc_t)();
@@ -4742,7 +4742,7 @@ void dAcPy_c::initializeState_Pole() {
     } else {
         mPyMdlMng.setAnm(43);
         startSound(SE_PLY_POLE_CATCH, false);
-        startPlayerVoice(28, 0);
+        startPlayerVoice(VOICE_ROPE_CATCH, 0);
         mSubstate = 0;
     }
 }
@@ -4843,7 +4843,7 @@ void dAcPy_c::PoleActionDown() {
 }
 
 void dAcPy_c::setPoleJump() {
-    startPlayerVoice(29, 0);
+    startPlayerVoice(VOICE_ROPE_RELEASE, 0);
     m_8fc = 5;
     changeState(StateID_Jump, 0);
     u8 dir = mDirection;
@@ -4855,7 +4855,7 @@ bool dAcPy_c::setPoleShakeJump() {
     u8 dir = mDirection;
     float baseSpeed = getSpeedData()[0];
     if (setRideOffPlayerJump(sc_JumpSpeed, baseSpeed * sc_DirSpeed[dir])) {
-        startPlayerVoice(29, 0);
+        startPlayerVoice(VOICE_ROPE_RELEASE, 0);
         m_8fc = 5;
         return true;
     }
@@ -5054,7 +5054,7 @@ void dAcPy_c::setKaniAction_Hang() {
     mAngle.y = 0x8000;
     mSpeedF = 0.0f;
     mPyMdlMng.setAnm(62);
-    startPlayerVoice(34, 0);
+    startPlayerVoice(VOICE_CLIFF_DOWN, 0);
     mSubstate = KANI_ACTION_HANG_INIT;
     onStatus(STATUS_KANI_HANG_ANIMATION);
 }
@@ -5065,7 +5065,7 @@ void dAcPy_c::setKaniAction_JumpHang() {
     mSpeedF = 0.0f;
     mPyMdlMng.setAnm(70);
     setKaniCliffCatchEffect();
-    startPlayerVoice(32, 0);
+    startPlayerVoice(VOICE_CLIFF_DIVE, 0);
     mSubstate = KANI_ACTION_JUMP_HANG_INIT;
 }
 
@@ -5079,7 +5079,7 @@ void dAcPy_c::setKaniAction_HangUp() {
     mSpeedF = 0.0f;
     setKaniHangStartEffect();
     mPyMdlMng.setAnm(63);
-    startPlayerVoice(33, 0);
+    startPlayerVoice(VOICE_CLIFF_UP, 0);
     mSubstate = KANI_ACTION_HANG_UP;
 }
 
@@ -5312,7 +5312,7 @@ void dAcPy_c::setCatchRopeSE() {
             startSound(SE_PLY_CATCH_KUSARI, false);
             break;
     }
-    startPlayerVoice(28, 0);
+    startPlayerVoice(VOICE_ROPE_CATCH, 0);
 }
 
 void dAcPy_c::setClimbRopeSE() {
@@ -5414,7 +5414,7 @@ void dAcPy_c::initializeState_TarzanRope() {
             releasePoleCheck();
             mAngle.y = 0x8000;
             mPyMdlMng.setAnm(62);
-            startPlayerVoice(34, 0);
+            startPlayerVoice(VOICE_CLIFF_DOWN, 0);
             m_914 = 2;
             mSubstate = 5;
     }
@@ -5465,7 +5465,7 @@ bool dAcPy_c::setTarzanRopeJump() {
         jumpSpeed = mPc.getPos().y;
     }
     if (setRideOffPlayerJump(jumpSpeed, h)) {
-        startPlayerVoice(29, 0);
+        startPlayerVoice(VOICE_ROPE_RELEASE, 0);
         if (h * sc_DirSpeed[mDirection] < 0.0f) {
             mDirection ^= 1;
         }
@@ -5473,7 +5473,7 @@ bool dAcPy_c::setTarzanRopeJump() {
         return true;
     } else {
         if (mKey.triggerJump()) {
-            startPlayerVoice(29, 0);
+            startPlayerVoice(VOICE_ROPE_RELEASE, 0);
             if (h * sc_DirSpeed[mDirection] < 0.0f) {
                 mDirection ^= 1;
             }
@@ -5735,7 +5735,7 @@ void dAcPy_c::setTarzanRopeActionHasigoHangUp() {
     mSubstate = 6;
     m_91c = 0;
     mPyMdlMng.setAnmOnlyRate(64, 0.0f, 0.0f);
-    startPlayerVoice(33, 0);
+    startPlayerVoice(VOICE_CLIFF_UP, 0);
     offStatus(STATUS_36);
     releasePoleCheck();
 }
@@ -5832,7 +5832,7 @@ void dAcPy_c::initializeState_Quake() {
     mPyMdlMng.setAnm(82);
     onStatus(STATUS_QUAKE);
     mKey.onStatus(dAcPyKey_c::STATUS_NO_INPUT);
-    startPlayerVoice(51, 0);
+    startPlayerVoice(VOICE_QUAKE, 0);
     startQuakeShock(dQuake_c::TYPE_6);
     m_1040 = 8;
     mSubstate = (int) mStateChangeParam;
@@ -5896,7 +5896,7 @@ void dAcPy_c::executeState_ElecShock() {
 }
 
 void dAcPy_c::initElecShock() {
-    startPlayerVoice(48, 0);
+    startPlayerVoice(VOICE_DAMAGE_ELEC, 0);
     startSound(SE_PLY_TOUCH_BIRI, false);
     mPyMdlMng.setAnm(82);
     mSubstateTimer = 60;
@@ -5983,7 +5983,7 @@ void dAcPy_c::initializeState_FlyDamage() {
     u32 crash = ((int) mStateChangeParam) & 0x100;
     mPyMdlMng.setAnm(sc_DamageAnmID[m_103c], 0.0f, 0.0f);
     if (crash == 0) {
-        startPlayerVoice(53, 0);
+        startPlayerVoice(VOICE_HIP_ATTACKED, 0);
         if (m_103c == 0 || m_103c == 1) {
             startSound(SE_PLY_CRASH_S, false);
         } else {
@@ -6130,7 +6130,7 @@ void dAcPy_c::executeState_FlyDamage() {
 
 void dAcPy_c::setBreakBalloonJump(u8 playerNo, short angle) {
     offStatus(STATUS_DISABLE_STATE_CHANGE);
-    startPlayerVoice(39, 0);
+    startPlayerVoice(VOICE_HUKKATSU, 0);
     startSound(SE_PLY_BALLOON_BRAKE, false);
     dQuake_c::m_instance->shockMotor(mPlayerNo, dQuake_c::TYPE_4, 0, false);
     mFallTimer = 30;
@@ -6292,7 +6292,7 @@ void dAcPy_c::executeState_Balloon() {
             if (isNotBalloonCourse()) {
                 break;
             }
-            startPlayerVoice(17, 0);
+            startPlayerVoice(VOICE_CONTINUE_COURSE, 0);
             mSubstate = 0;
             mSubstateTimer = 60;
             daPyMng_c::mPauseEnableInfo |= 1 << mPlayerNo;
@@ -6301,7 +6301,7 @@ void dAcPy_c::executeState_Balloon() {
 
 void dAcPy_c::setBalloonHelpVoice() {
     if (isStatus(STATUS_53) && mSubstate == 1 && !isStatus(STATUS_B9) && m_15ba == 0) {
-        startPlayerVoice(38, 0);
+        startPlayerVoice(VOICE_BALLOON_HELP_2, 0);
         m_15ba = 120;
     }
 }
@@ -6420,7 +6420,7 @@ bool dAcPy_c::setBalloonInDispOutBase(int i, int j) {
         setPressBgDamage(11, 0);
     }
     if (i == 2 || i == 0) {
-        startPlayerVoice(44, 0);
+        startPlayerVoice(VOICE_SCROLL_OUT, 0);
         dQuake_c::m_instance->shockMotor(mPlayerNo, dQuake_c::TYPE_4, 0, false);
     }
     return true;
@@ -6451,7 +6451,7 @@ void dAcPy_c::initializeState_IceDamage() {
     mAccelY = 0.0f;
     mSpeed.y = 0.0f;
     mSubstateTimer = 300;
-    startPlayerVoice(46, 0);
+    startPlayerVoice(VOICE_DAMAGE_FREEZE, 0);
     onStatus(STATUS_7E);
     onStatus(STATUS_7A);
     onStatus(STATUS_STUNNED);
@@ -6516,7 +6516,7 @@ bool dAcPy_c::setRideOffYoshiJump(daPlBase_c *yoshi) {
         if (!yoshi->isNowBgCross(BGC_IS_FOOT)) {
             m_1058 = 10;
             setJump(sc_JumpSpeed + 0.1f, yoshi->mSpeedF, true, 1, 1);
-            startPlayerVoice(23, 0);
+            startPlayerVoice(VOICE_YOSHI_JUMP, 0);
         } else {
             float speed = 0.0f;
             if (std::fabs(yoshi->mSpeedF) < 1.5f) {
@@ -7417,7 +7417,7 @@ void dAcPy_c::setPropelActionFlyInit() {
     onStatus(STATUS_2B);
     mPropelRollSpeed = 12000;
     mIsPropelFall = 0;
-    startPlayerVoice(26, 0);
+    startPlayerVoice(VOICE_PRPL_JUMP, 0);
     startSound(SE_PLY_PRPL_JUMP, false);
     mPyMdlMng.setAnm(134);
     mAccelY = 0.0f;
@@ -7775,18 +7775,18 @@ void dAcPy_c::initDemo_DownFall() {
     DemoDownChangeParam_e val = (DemoDownChangeParam_e) (int) mDemoStateChangeParam;
     switch (val) {
         case DEMO_DOWN_CHANGE_0:
-            startPlayerVoice(41, 0);
+            startPlayerVoice(VOICE_DAMAGE_LAST_2, 0);
             break;
         case DEMO_DOWN_CHANGE_1:
             if (daPyMng_c::mTimeUpPlayerNum >= 2) {
-                startPlayerVoice(43, 0);
+                startPlayerVoice(VOICE_TIMEUP_MULTI, 0);
             } else {
-                startPlayerVoice(42, 0);
+                startPlayerVoice(VOICE_TIMEUP, 0);
             }
             break;
         case DEMO_DOWN_CHANGE_2:
         case DEMO_DOWN_CHANGE_3:
-            startPlayerVoice(47, 0);
+            startPlayerVoice(VOICE_DAMAGE_POISON, 0);
             break;
     }
     mPyMdlMng.setAnm(83);
@@ -8088,7 +8088,7 @@ void dAcPy_c::executeState_DemoFireDown() {
             if (mDemoWaitTimer == 0) {
                 daPyMng_c::startMissBGM(mPlayerNo);
                 mDemoWaitTimer = 80;
-                startPlayerVoice(45, 0);
+                startPlayerVoice(VOICE_DAMAGE_FIRE, 0);
                 startSound(SE_PLY_BURN_DOWN, false);
                 setZPosition(5000.0f);
                 mPyMdlMng.setAnm(81);
@@ -8231,7 +8231,7 @@ bool dAcPy_c::setEatDieSpitOut() {
 
 void dAcPy_c::setEatDieScreamVoice() {
     if (isDemoState(StateID_DemoEatDie)) {
-        startPlayerVoice(49, 0);
+        startPlayerVoice(VOICE_DAMAGE_EATEN, 0);
         mDemoSubstate = 2;
         mDemoWaitTimer = 30;
     }
@@ -8394,7 +8394,7 @@ void dAcPy_c::executeState_DemoInJump() {
                 int world = dScStage_c::m_instance->mCurrWorld;
                 if (world == WORLD_4 || world == WORLD_6 || world == WORLD_8) {
                     if (dScStage_c::m_instance->mCurrCourse == STAGE_DOOMSHIP) {
-                        startPlayerVoice(24, 0);
+                        startPlayerVoice(VOICE_JR_A_BATTLE_APP, 0);
                     }
                 }
             }
@@ -8868,7 +8868,7 @@ bool dAcPy_c::vf284(int arg) {
                 }
                 mPyMdlMng.setAnm(90);
             }
-            fn_80051d00(arg);
+            playClearVoice(arg);
             // fallthrough
         case KIME_POSE_WITH_HAT: {
             dMarioMdl_c *mdl = (dMarioMdl_c *) mPyMdlMng.mpMdl;
@@ -8950,7 +8950,7 @@ void dAcPy_c::executeState_DemoCannonWarp() {
                 mSpeed.z = mSpeedF * mAng(mAngle.y).cos();
                 mAmiRelated2 = 1.0f;
                 dQuake_c::m_instance->shockMotor(mPlayerNo, dQuake_c::TYPE_5, 0, false);
-                startPlayerVoice(36, 0);
+                startPlayerVoice(VOICE_CANNON_SHOT, 0);
             }
             break;
         case 1: {
@@ -9370,13 +9370,13 @@ void dAcPy_c::finalizeState_DemoStartWait() {
 void dAcPy_c::setFireBallDamage(u8 type) {
     switch (type) {
         case 1:
-            startPlayerVoice(45, 0);
+            startPlayerVoice(VOICE_DAMAGE_FIRE, 0);
             break;
         case 2:
-            startPlayerVoice(46, 0);
+            startPlayerVoice(VOICE_DAMAGE_FREEZE, 0);
             break;
         default:
-            startPlayerVoice(53, 0);
+            startPlayerVoice(VOICE_HIP_ATTACKED, 0);
             break;
     }
     dQuake_c::m_instance->shockMotor(mPlayerNo, dQuake_c::TYPE_7, 0, false);
@@ -10321,7 +10321,7 @@ void dAcPy_c::set1UpKinokoEffect() {
 }
 
 void dAcPy_c::setFlagGetEffect() {
-    startPlayerVoice(54, 0);
+    startPlayerVoice(VOICE_TYUKAN, 0);
     setFollowEffect(2);
 }
 
@@ -11233,7 +11233,7 @@ void dAcPy_c::setStar(StarSet_e starSet, int timer) {
 
 void dAcPy_c::setStarBase(StarSet_e starSet, int timer) {
     if (starSet == STAR_SET_0) {
-        startPlayerVoice(55, 0);
+        startPlayerVoice(VOICE_GET_STAR, 0);
     }
     if (timer != 0) {
         mStarTimer = timer;

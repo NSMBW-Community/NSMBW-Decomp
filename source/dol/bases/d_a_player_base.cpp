@@ -1202,7 +1202,7 @@ void daPlBase_c::initializeState_Funsui() {
     mSubstate = FUNSUI_ACTION_NONE;
     mpMdlMng->setAnm(138);
     if (mPlayerNo >= 0) {
-        startPlayerVoice(50, 0);
+        startPlayerVoice(VOICE_INTO_SANDPILLAR, 0);
         dQuake_c::m_instance->shockMotor(mPlayerNo, dQuake_c::TYPE_7, 0, false);
         mSubstateTimer = 8;
     }
@@ -1434,7 +1434,7 @@ void daPlBase_c::DemoAnmBossKeyGet() {
         case ANIME_PLAY_ACTION_1:
             if (mSubstateTimer == 0) {
             mpMdlMng->setAnm(148);
-                fn_80051d00(1);
+                playClearVoice(1);
                 mSubstate++;
                 offStatus(STATUS_DISABLE_STATE_CHANGE);
             }
@@ -3721,7 +3721,7 @@ void daPlBase_c::playGoalOther() {
 void daPlBase_c::initDemoGoalBase() {
     onStatus(STATUS_65);
     if ((int) mDemoStateChangeParam == 0) {
-        startPlayerVoice(31, 0);
+        startPlayerVoice(VOICE_GOAL_POLE_CATCH, 0);
         onStatus(STATUS_7E);
     }
     clearJumpActionInfo(0);
@@ -3967,31 +3967,31 @@ bool daPlBase_c::vf284(int) {
     return false;
 }
 
-void daPlBase_c::fn_80051d00(int p) {
+void daPlBase_c::playClearVoice(int clearType) {
     int playerCount;
-    if (p == 0) {
+    if (clearType == 0) {
         playerCount = daPyDemoMng_c::mspInstance->m_1c;
     } else {
         playerCount = daPyDemoMng_c::mspInstance->getControlDemoPlayerNum();
     }
     if (dInfo_c::m_startGameInfo.mScreenType == 1) {
         if (playerCount >= 2) {
-            startPlayerVoice(59, 0);
+            startPlayerVoice(VOICE_CLEAR_MULTI, 0);
         } else {
-            startPlayerVoice(60, 0);
+            startPlayerVoice(VOICE_CLEAR_HELPED, 0);
         }
-    } else if (p == 2) {
-        startPlayerVoice(62, 0);
+    } else if (clearType == 2) {
+        startPlayerVoice(VOICE_CLEAR_LAST_BOSS, 0);
     } else if (playerCount >= 2) {
-        startPlayerVoice(59, 0);
-    } else if (p == 0) {
+        startPlayerVoice(VOICE_CLEAR_MULTI, 0);
+    } else if (clearType == 0) {
         if (daPyDemoMng_c::mspInstance->m_14 == 0) {
-            startPlayerVoice(57, 0);
+            startPlayerVoice(VOICE_CLEAR_NORMAL, 0);
         } else {
-            startPlayerVoice(58, 0);
+            startPlayerVoice(VOICE_CLEAR_ANOTHER, 0);
         }
     } else {
-        startPlayerVoice(61, 0);
+        startPlayerVoice(VOICE_CLEAR_BOSS, 0);
     }
 }
 
@@ -4787,7 +4787,7 @@ void daPlBase_c::initStampReduction() {
         mSquishNoMoveTimer = 4;
     }
     mSquishCooldownTimer = 10;
-    startPlayerVoice(52, 0);
+    startPlayerVoice(VOICE_STOMPED, 0);
     dQuake_c::m_instance->shockMotor(mPlayerNo, dQuake_c::TYPE_7, 0, false);
 }
 
@@ -6423,7 +6423,7 @@ void daPlBase_c::startFootSoundPlayer(unsigned long a) {
 }
 
 void daPlBase_c::setItemCompleteVoice() {
-    startPlayerVoice(56, 0);
+    startPlayerVoice(VOICE_ITEM_COMPLETE, 0);
 }
 
 void daPlBase_c::setStar(daPlBase_c::StarSet_e, int) {}

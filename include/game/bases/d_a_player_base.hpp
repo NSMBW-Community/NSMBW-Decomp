@@ -828,7 +828,6 @@ public:
     bool setEnemyStageClearDemo();
     void updateEndingDance();
     void initDemoKimePose();
-    void fn_80051d00(int); ///< @unofficial
     void fn_80052ef0(int, int, int); ///< @unofficial
 
     bool isBossDemoLand();
@@ -853,6 +852,7 @@ public:
     void setTurnSmokeEffect();
     void fadeOutTurnEffect();
 
+    void playClearVoice(int clearType); ///< @unofficial
     void setSoundPlyMode();
     void setItemCompleteVoice();
     void startFootSoundPlayer(unsigned long);
