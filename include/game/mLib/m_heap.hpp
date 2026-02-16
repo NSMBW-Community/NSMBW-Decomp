@@ -33,6 +33,7 @@ namespace mHeap {
     };
 
     /// @brief The identifiers for the predefined game heaps.
+    /// @unofficial
     enum GAME_HEAP_e {
         GAME_HEAP_DEFAULT, ///< The default game heap (alias of MEM1 or MEM2).
         GAME_HEAP_MEM1,    ///< The game heap allocated in MEM1.
@@ -80,7 +81,7 @@ namespace mHeap {
     /// @param heap The frame heap to destroy, or @p nullptr .
     void destroyFrmHeap(EGG::FrmHeap *heap);
 
-    /// @brief Adjusts a frame heap to compress unused memory.
+    /// @brief Adjusts a frame heap to release unused memory.
     /// @param heap The frame heap to adjust, or @p nullptr .
     /// @return The total available space in the heap, or @p 0 if the adjust operation failed.
     size_t adjustFrmHeap(EGG::FrmHeap *heap); 
