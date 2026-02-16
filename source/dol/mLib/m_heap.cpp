@@ -156,7 +156,6 @@ size_t mHeap::untHeapCost(size_t size, ulong count, ulong align) {
 }
 
 EGG::Heap *mHeap::createHeap(size_t size, EGG::Heap *parent, const char *name) {
-
     EGG::ExpHeap *heap = EGG::ExpHeap::create(size, parent, MEM_HEAP_OPT_CAN_LOCK);
     if (heap != nullptr) {
         heap->setAllocMode(MEM_EXP_HEAP_ALLOC_FAST);
