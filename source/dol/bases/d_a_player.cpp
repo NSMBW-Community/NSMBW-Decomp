@@ -46,7 +46,7 @@ bool dAcPy_c::setHipAttackOnEnemy(mVec3_c *hitPos) {
 }
 
 void dAcPy_c::setHipAttackEffect() {
-    if (isNowBgCross(BGC_14)) {
+    if (isNowBgCross(BGC_WATER_SHALLOW)) {
         setSeaLandSmokeEffect();
         startSound(SE_PLY_HPDP_SPLASH, 0);
         if (mPowerup == POWERUP_MINI_MUSHROOM) {
@@ -62,7 +62,7 @@ void dAcPy_c::setHipAttackEffect() {
 bool dAcPy_c::setHipAttackAction() {
     if (
         !isStatus(STATUS_A7) &&
-        !isNowBgCross(BGC_IS_FOOT) && !isNowBgCross(BGC_38) &&
+        !isNowBgCross(BGC_IS_FOOT) && !isNowBgCross(BGC_37) &&
         mKey.checkHipAttack() &&
         !isDemoType(DEMO_ENDING_DANCE)
     ) {
@@ -97,7 +97,7 @@ void dAcPy_c::finalizeState_HipAttack() {
 }
 
 void dAcPy_c::executeState_HipAttack() {
-    if (isNowBgCross(BGC_14) && isOldBgCross(BGC_14) == 0) {
+    if (isNowBgCross(BGC_WATER_SHALLOW) && isOldBgCross(BGC_WATER_SHALLOW) == 0) {
         setWaterInEffect();
     }
     daPlBase_c::executeState_HipAttack();
@@ -121,12 +121,12 @@ void dAcPy_c::initializeState_SpinHipAttack() {
     mMaxSpeedF = 0.0f;
     mAccelY = 0.0f;
     if (changeParam == 0) {
-        mSubstateTimer2 = 0;
+        mSubstateValue = 0;
         mSpeed.y = 0.0f;
         float v = data_802f5a0c[13];
         mMaxFallSpeed = v;
     } else {
-        mSubstateTimer2 = 1;
+        mSubstateValue = 1;
         mSpeed.y = -6.0f;
         mMaxFallSpeed = -6.0f;
     }
@@ -140,7 +140,7 @@ void dAcPy_c::executeState_SpinHipAttack() {
     if (isStatus(STATUS_SPIN_HIP_ATTACK_FALL)) {
         setCcAtSpinFall();
     }
-    if (isNowBgCross(BGC_14) && isOldBgCross(BGC_14) == 0) {
+    if (isNowBgCross(BGC_WATER_SHALLOW) && isOldBgCross(BGC_WATER_SHALLOW) == 0) {
         setWaterInEffect();
     }
     if (mPowerup != POWERUP_PROPELLER_SHROOM && getCarryPropelActor() == nullptr) {
@@ -150,14 +150,14 @@ void dAcPy_c::executeState_SpinHipAttack() {
     switch ((SpinHipAttackSubstate_e) mSubstate) {
         case SPIN_HIP_ATTACK_ACTION_0:
             holdSound(SE_PLY_PRPL_LETDOWN_FAST, 0);
-            if (isNowBgCross(BGC_14)) {
+            if (isNowBgCross(BGC_WATER_SHALLOW)) {
                 mMaxFallSpeed = sc_WaterMaxFallSpeed;
             } else {
                 sLib::chase(&mMaxFallSpeed, data_802f5a0c[13], 0.1f);
             }
             mAccelY = getGravityData()[0];
             onStatus(STATUS_AA);
-            if (isNowBgCross(BGC_16)) {
+            if (isNowBgCross(BGC_WATER_SUBMERGED)) {
                 offStatus(STATUS_AA);
             }
             if (isNowBgCross(BGC_62)) {
@@ -189,13 +189,13 @@ void dAcPy_c::executeState_SpinHipAttack() {
                 return;
             }
             if (!mKey.buttonDown() && mSubstateTimer == 0) {
-                if (mSubstateTimer2 == 0) {
+                if (mSubstateValue == 0) {
                     mMaxFallSpeed = data_802f5a0c[5];
                 }
                 changeState(StateID_Propel, (void *) 1);
                 return;
             }
-            if (isNowBgCross(BGC_15)) {
+            if (isNowBgCross(BGC_WATER_TOUCH)) {
                 m_2e8.chase(0, 0x1000);
             } else {
                 m_2e8.chase(0x2000, 0x400);
@@ -248,7 +248,7 @@ void dAcPy_c::initializeState_Fall() {
     onStatus(STATUS_92);
     onStatus(STATUS_8F);
     onStatus(STATUS_A1);
-    if (!isNowBgCross(BGC_15)) {
+    if (!isNowBgCross(BGC_WATER_TOUCH)) {
         setWaterWalkFlag();
     }
     mSpeedMax.x = 0.0;
@@ -384,7 +384,7 @@ float dAcPy_c::getJumpSpeed() {
             jumpSpeed = sc_JumpSpeedNuma2;
         } else {
             jumpSpeed = sc_JumpSpeedNuma1;
-            if (mPos.y < m_db0 - 4.0f) {
+            if (mPos.y < mSinkSandHeight - 4.0f) {
                 jumpSpeed += -0.15f;
             }
         }
@@ -537,7 +537,7 @@ void dAcPy_c::jumpExecAir() {
             mPowerup != POWERUP_MINI_MUSHROOM &&
             !isCarry() &&
             isStatus(STATUS_0A) &&
-            isNowBgCross(BGC_37)
+            isNowBgCross(BGC_GROUNDED_MOVE_UP)
         ) {
             changeState(StateID_Land, (void *) 1);
             return;
@@ -564,7 +564,7 @@ void dAcPy_c::jumpExecAir() {
 }
 
 void dAcPy_c::setJumpCommonBase() {
-    if (isStatus(STATUS_AC)) {
+    if (isStatus(STATUS_FOLLOW_MAME_KURIBO)) {
         int v = getFollowMameKuribo() - 1;
         if (v < 0) {
             v = 0;
@@ -694,11 +694,11 @@ void dAcPy_c::executeState_Land() {
 
 int dAcPy_c::checkWallSlideEnable(int dir) {
     if (
-        !isNowBgCross(BGC_14) &&
+        !isNowBgCross(BGC_WATER_SHALLOW) &&
         m_91 == 0 &&
         !isStatus(STATUS_VINE) &&
         !isStatus(STATUS_A8) &&
-        !isNowBgCross(BGC_38) &&
+        !isNowBgCross(BGC_37) &&
         !isNowBgCross(BGC_IS_FOOT) &&
         !mIsBgDamage &&
         mBc.getWallAttr(dir) != 7 &&
@@ -726,7 +726,7 @@ bool dAcPy_c::checkWallJump() {
     int dir;
     if (
         mKey.buttonWalk(&dir) &&
-        !isNowBgCross(BGC_38) &&
+        !isNowBgCross(BGC_37) &&
         !checkWallSlideEnable(dir)
     ) {
         if (!isStatus(STATUS_A9) && mSpeed.y < 0.0f) {
@@ -806,12 +806,12 @@ void dAcPy_c::executeState_WallSlide() {
     }
     int dir;
     if (mKey.buttonWalk(&dir) && dir != mDirection) {
-        mSubstateTimer2 += 1;
-        if (mSubstateTimer2 >= 15) {
+        mSubstateValue += 1;
+        if (mSubstateValue >= 15) {
             changeState(StateID_Fall, 0);
         }
     } else {
-        mSubstateTimer2 = 0;
+        mSubstateValue = 0;
     }
     if (checkWallSlideEnable(mDirection)) {
         changeState(StateID_Fall, 0);
@@ -846,7 +846,7 @@ void dAcPy_c::initializeState_WallJump() {
             if (!dBc_c::checkWall(&mPos, &pos2, nullptr, mLayer, mAmiLayer, nullptr)) {
                 pos.y += 8.0f;
                 float f;
-                if (dBc_c::checkTenjou(&pos2, &f, mLayer, mAmiLayer) && f < mPos.y + getSomeYOffset()) {
+                if (dBc_c::checkTenjou(&pos2, &f, mLayer, mAmiLayer) && f < mPos.y + getHeight()) {
                     pos.y = f + 8.0f;
                 }
             }
@@ -932,7 +932,7 @@ void dAcPy_c::setSpinJumpEffectSub(int i) {
     float s;
     static const float scSpinJumpEffectScale[3] = { 0.6f, 0.8f, 1.0f };
     static const float scSpinJumpEffectScale_K[3] = { 0.6f, 0.7f, 0.8f };
-    if (2 <= mPlayerType && mPlayerType <= 3) {
+    if (PLAYER_YELLOW_TOAD <= mPlayerType && mPlayerType <= PLAYER_BLUE_TOAD) {
         s = scSpinJumpEffectScale_K[getTallType(-1)];
     } else {
         s = scSpinJumpEffectScale[getTallType(-1)];
@@ -1016,7 +1016,7 @@ void dAcPy_c::initializeState_SpinJump() {
         }
         if (
             isNowBgCross(BgCross1_e(BGC_IN_SINK_SAND | BGC_ON_SINK_SAND)) &&
-            (isNowBgCross(BGC_IN_SINK_SAND) || mPos.y < m_db0 - 4.0f)
+            (isNowBgCross(BGC_IN_SINK_SAND) || mPos.y < mSinkSandHeight - 4.0f)
         ) {
             jumpInf.m_04 = sc_JumpSpeed - 0.7f;
         }
@@ -1253,7 +1253,7 @@ void dAcPy_c::executeState_SitJump() {
     airPowerSet();
     onStatus(STATUS_0A);
     if (dScStage_c::m_instance->mCurrWorld == WORLD_5 && dScStage_c::m_instance->mCurrCourse == STAGE_GHOST_HOUSE) {
-        if (isNowBgCross(BGC_BLOCK_HIT) && isOldBgCross(BGC_32)) {
+        if (isNowBgCross(BGC_BLOCK_HIT) && isOldBgCross(BGC_SEMISOLID)) {
             if (mLastPosDelta.x < 0.0f) {
                 mPos.x -= 4.0f;
             } else {
@@ -1330,7 +1330,7 @@ void dAcPy_c::initializeState_CannonJump() {
     mAngle.y = getMukiAngle(mDirection);
     int ang = cM::atan2s(std::fabs(mSpeedF), mSpeed.y);
     mAngle.x = 0x4000 - ang;
-    mSubstateTimer2 = 0;
+    mSubstateValue = 0;
     m_12b4 = (u32) mStateChangeParam;
     m_12a8 = mPos;
 }
@@ -1494,7 +1494,7 @@ void dAcPy_c::setSlipSE() {
     if (!mSpeedF) {
         return;
     }
-    if (isNowBgCross(BGC_15) && mPowerup == POWERUP_MINI_MUSHROOM) {
+    if (isNowBgCross(BGC_WATER_TOUCH) && mPowerup == POWERUP_MINI_MUSHROOM) {
         holdSound(SE_PLY_SLIP_W, 0);
     } else {
         daPlBase_c::setSlipSE();
@@ -1574,25 +1574,25 @@ void dAcPy_c::executeState_RollSlip() {
     moveSpeedSet();
     powerSet();
     turnAngle();
-    if (mSubstateTimer2 != 0 && mKey.triggerJump()) {
+    if (mSubstateValue != 0 && mKey.triggerJump()) {
         setJump(sc_JumpSpeed, mSpeedF * 0.8f, true, 0, 1);
         return;
     }
     switch ((RollSlipSubstate_e) mSubstate) {
         case ROLL_SLIP_ACTION_0:
             holdSound(SE_PLY_MOVE_ROLLING, false);
-            switch (mSubstateTimer2) {
+            switch (mSubstateValue) {
                 case 0:
                     mAccelF = 0.0f;
                     m_94 = 1.5f;
                     mPyMdlMng.mpMdl->setRate(m_94);
                     if (isNowBgCross(BGC_IS_FOOT)) {
-                        mSubstateTimer2 = 1;
+                        mSubstateValue = 1;
                         mSpeedF = sc_DirSpeed[mDirection];
                         mSpeed.y = 2.0f;
                         mPyMdlMng.mpMdl->setFrame(0.0f);
                     } else if (isNowBgCross(BgCross1_e(BGC_WALL_TOUCH_L_2 | BGC_WALL_TOUCH_R_2))) {
-                        mSubstateTimer2 = 1;
+                        mSubstateValue = 1;
                         mDirection = mDirection ^ 1;
                         mSpeedF = sc_DirSpeed[mDirection];
                         mSpeed.y = 0.0f;
@@ -1779,7 +1779,7 @@ void dAcPy_c::executeState_PenguinSlide() {
     int ang = turnAngle();
     switch ((PenguinSlideSubstate_e) mSubstate) {
         case PENGUIN_SLIDE_ACTION_0:
-            if (mPlayerType == 1) {
+            if (mPlayerType == PLAYER_LUIGI) {
                 m_1598 = -0.5f;
             } else {
                 m_1598 = 1.0f;
@@ -1858,7 +1858,7 @@ void dAcPy_c::executeState_PenguinSlide() {
         mMaxSpeedF = std::fabs(mSpeedF);
     }
     if (m_548 == 1) {
-        if (isStatus(STATUS_AC) || std::fabs(mSpeedF) >= std::fabs(m_54c)) {
+        if (isStatus(STATUS_FOLLOW_MAME_KURIBO) || std::fabs(mSpeedF) >= std::fabs(m_54c)) {
             m_548 = 0;
         } else {
             mAccelF = 0.1f;
@@ -1937,12 +1937,12 @@ bool dAcPy_c::checkWalkNextAction() {
         if (setDelayHelpJump()) {
             return true;
         }
-        if (m_da0 == 0) {
+        if (mAirWalkTimer == 0) {
             changeState(StateID_Fall, 0);
             return true;
         }
     }
-    if (isState(StateID_Walk) && mKey.buttonWalk(nullptr) && mDirection != m_ca0) {
+    if (isState(StateID_Walk) && mKey.buttonWalk(nullptr) && mDirection != mPrevDirection) {
         mKey.onStatus(dAcPyKey_c::STATUS_SHAKE_COOLDOWN);
         if (checkTurn()) {
             return true;
@@ -2179,7 +2179,7 @@ void dAcPy_c::walkAction_Move() {
     turnAngle();
     setRunOnWaterEffect();
     daPlBase_c::walkAction_Move();
-    if (m_88 == 0 && !isNowBgCross(BGC_15)) {
+    if (m_88 == 0 && !isNowBgCross(BGC_WATER_TOUCH)) {
         m_88 = 1;
     }
     if (m_88 == 1) {
@@ -2191,7 +2191,7 @@ void dAcPy_c::initializeState_Walk() {
     AnmBlend_e blend = (AnmBlend_e) (int) mStateChangeParam;
     calcSpeedOnIceLift();
     m_88 = 1;
-    if (isOldBgCross(BGC_14)) {
+    if (isOldBgCross(BGC_WATER_SHALLOW)) {
         m_88 = 0;
     }
     if (mSpeedF) {
@@ -2359,7 +2359,7 @@ void dAcPy_c::executeState_Turn() {
                 break;
             case 1:
                 setTurnSmokeEffect();
-                if (mDirection != m_ca0) {
+                if (mDirection != mPrevDirection) {
                     setTurnEnd();
                 } else if (mSubstateTimer == 0) {
                     fadeOutTurnEffect();
@@ -2382,7 +2382,7 @@ void dAcPy_c::executeState_Turn() {
                     }
                 }
                 mMaxSpeedF = maxSpeed;
-                if (mDirection != m_ca0 || mPyMdlMng.isAnmStop()) {
+                if (mDirection != mPrevDirection || mPyMdlMng.isAnmStop()) {
                     setTurnEnd();
                 }
         }
@@ -2415,7 +2415,7 @@ void dAcPy_c::setCrouchSmokeEffect() {
     if (!mSpeedF) {
         return;
     }
-    if (!isNowBgCross(BGC_14)) {
+    if (!isNowBgCross(BGC_WATER_SHALLOW)) {
         mVec3_c efPos;
         mPyMdlMng.mpMdl->getJointPos(&efPos, 1);
         setBrakeSmokeEffect(efPos);
@@ -2424,7 +2424,7 @@ void dAcPy_c::setCrouchSmokeEffect() {
 }
 
 void dAcPy_c::initializeState_Crouch() {
-    if (!isNowBgCross(BGC_14)) {
+    if (!isNowBgCross(BGC_WATER_SHALLOW)) {
         mSubstate = CROUCH_GROUND;
         onStatus(STATUS_9F);
     } else {
@@ -2433,7 +2433,7 @@ void dAcPy_c::initializeState_Crouch() {
     }
     switch ((int) mStateChangeParam) {
         case 0:
-            if (!isNowBgCross(BGC_14)) {
+            if (!isNowBgCross(BGC_WATER_SHALLOW)) {
                 mPyMdlMng.setAnm(21);
             } else {
                 mPyMdlMng.setAnm(21, dPyMdlBase_c::scWaterCrouchAnmSpeed, 3.0f, 0.0f);
@@ -2485,7 +2485,7 @@ void dAcPy_c::CrouchActionGround() {
 
 void dAcPy_c::CrouchActionWater() {
     if (mKey.triggerJump()) {
-        if (!isNowBgCross(BGC_16)) {
+        if (!isNowBgCross(BGC_WATER_SUBMERGED)) {
             setCrouchJump();
             onStatus(STATUS_AA);
         } else {
@@ -2791,7 +2791,7 @@ bool dAcPy_c::checkCarryThrow() {
 
 void dAcPy_c::initializeThrowCommonBase() {
     startPlayerVoice(VOICE_NAGERU, 0);
-    if (isNowBgCross(BGC_14)) {
+    if (isNowBgCross(BGC_WATER_SHALLOW)) {
         mPyMdlMng.setAnm(37);
     } else {
         dActor_c *actor = (dActor_c *) fManager_c::searchBaseByID(mCarryActorID);
@@ -2961,7 +2961,7 @@ void dAcPy_c::finalizeState_Throw() {
 }
 
 void dAcPy_c::executeState_Throw() {
-    if (isNowBgCross(BGC_14)) {
+    if (isNowBgCross(BGC_WATER_SHALLOW)) {
         setWaterMoveSpeed();
     } else {
         gravitySet();
@@ -3155,7 +3155,7 @@ void dAcPy_c::setUzuSpeedF(float f) {
 }
 
 bool dAcPy_c::setUzuSwimAction() {
-    if (isNowBgCross(BGC_14) && isState(StateID_Swim) && mSubstate == 1) {
+    if (isNowBgCross(BGC_WATER_SHALLOW) && isState(StateID_Swim) && mSubstate == 1) {
         setSwimAction_Swim(BLEND_1);
         return true;
     }
@@ -3166,8 +3166,8 @@ bool dAcPy_c::setSwimAction() {
     if (isStatus(STATUS_45) || isStatus(STATUS_AA) || isStatus(STATUS_SWIM)) {
         return false;
     }
-    if (isNowBgCross(BGC_14)) {
-        if (isOldBgCross(BGC_14)) {
+    if (isNowBgCross(BGC_WATER_SHALLOW)) {
+        if (isOldBgCross(BGC_WATER_SHALLOW)) {
             changeState(StateID_Swim, 0);
         } else if (isStatus(STATUS_A6)) {
             changeState(StateID_Swim, (void *) 2);
@@ -3197,7 +3197,7 @@ void dAcPy_c::setWaterInEffect() {
         bigSplash = true;
     }
     mVec3_c efPos(mPos.x, mWaterHeight, mPos.z);
-    if (bigSplash || m_dac == 3) {
+    if (bigSplash || mWaterDepth == 3) {
         float f = 1.0f;
         u32 i;
         if (mPowerup == POWERUP_MINI_MUSHROOM) {
@@ -3238,7 +3238,7 @@ void dAcPy_c::setWaterOutEffect() {
     }
     mVec3_c efPos(mPos.x, mPrevWaterHeight, mPos.z);
 
-    if (m_dac == 3) {
+    if (mWaterDepth == 3) {
         float f = 1.0f;
         u32 i;
         if (mPowerup == POWERUP_MINI_MUSHROOM) {
@@ -3330,7 +3330,7 @@ void dAcPy_c::initializeState_Swim() {
             mVec3_c pos(mPos.x, mPos.y + 4.0f, mPos.z);
             float height;
             if (dBc_c::checkTenjou(&pos, &height, mLayer, mAmiLayer)) {
-                if (mPos.y + getSomeYOffset() + getBgPointData_Powerup(mPowerup, 1)->mHead.mOffset / 4096.0f > height) {
+                if (mPos.y + getHeight() + getBgPointData_Powerup(mPowerup, 1)->mHead.mOffset / 4096.0f > height) {
                     releaseCarryActor();
                 }
             }
@@ -3351,7 +3351,7 @@ void dAcPy_c::initializeState_Swim() {
             setSwimAction_Swim(blend);
         }
     }
-    if (isNowBgCross(BGC_14) && isOldBgCross(BGC_14) == 0) {
+    if (isNowBgCross(BGC_WATER_SHALLOW) && isOldBgCross(BGC_WATER_SHALLOW) == 0) {
         setWaterInEffect();
     }
     if (isItemKinopio()) {
@@ -3369,8 +3369,8 @@ bool dAcPy_c::setWaterSurfaceJump() {
             m_b88 = 20;
         }
     }
-    if (!isNowBgCross(BGC_14)) {
-        if (!isNowBgCross(BGC_15) && (!isCarry() || mPowerup != POWERUP_MINI_MUSHROOM)) {
+    if (!isNowBgCross(BGC_WATER_SHALLOW)) {
+        if (!isNowBgCross(BGC_WATER_TOUCH) && (!isCarry() || mPowerup != POWERUP_MINI_MUSHROOM)) {
             if (mSubstate == SWIM_ACTION_3 && m_b89 == 0) {
                 createFireBall(0);
             }
@@ -3431,7 +3431,7 @@ void dAcPy_c::SwimAction_Swim() {
         return;
     }
     setWaterSurfaceSwimEffect();
-    if (isNowBgCross(BGC_14)) {
+    if (isNowBgCross(BGC_WATER_SHALLOW)) {
         if (mKey.triggerJump()) {
             startSound(SE_PLY_SWIM, 0);
             mSpeed.y += 1.0f;
@@ -3661,7 +3661,7 @@ void dAcPy_c::setPenWaterMoveSpeed(int i) {
     }
     float target = mAng(ang).sin() * f2;
     mUzuSwimSpeed.y = target;
-    float offs = mPos.y + getSomeYOffset() / 2.0f;
+    float offs = mPos.y + getHeight() / 2.0f;
     if (mWaterHeight <= offs) {
         target = -1.5f;
         if (mSpeed.y > 0.0f) {
@@ -3866,7 +3866,7 @@ void dAcPy_c::setWaterMoveSpeed() {
     float targetY = -1.5f;
     float accelY = getGravityData()[0];
     if (isCarry()) {
-        float posY = mPos.y + getSomeYOffset() / 2.0f;
+        float posY = mPos.y + getHeight() / 2.0f;
         if (std::fabs(mWaterHeight - posY) < 0.2f && std::fabs(mSpeed.y) < 0.1f) {
             targetY = 0.0f;
             mSpeed.y = 0.0f;
@@ -3882,7 +3882,7 @@ void dAcPy_c::setWaterMoveSpeed() {
             }
         }
     } else {
-        if (isNowBgCross(BGC_14)) {
+        if (isNowBgCross(BGC_WATER_SHALLOW)) {
             if (isStatus(STATUS_39)) {
                 targetY = 1.0f;
             } else if (!mKey.buttonJump()) {
@@ -3988,7 +3988,7 @@ void dAcPy_c::executeState_Swim() {
             offStatus(STATUS_39);
         }
     }
-    if (!isNowBgCross(BGC_14) && isNowBgCross(BGC_IS_FOOT)) {
+    if (!isNowBgCross(BGC_WATER_SHALLOW) && isNowBgCross(BGC_IS_FOOT)) {
         changeState(StateID_Walk, 0);
     } else {
         if (mSubstate != SWIM_ACTION_3 && checkSetFireBall()) {
@@ -4077,7 +4077,7 @@ void dAcPy_c::finalizeState_Swim() {
     offStatus(STATUS_AA);
     offStatus(STATUS_A8);
     offStatus(STATUS_92);
-    if (!isNowBgCross(BGC_14)) {
+    if (!isNowBgCross(BGC_WATER_SHALLOW)) {
         setWaterOutEffect();
     }
 }
@@ -4120,7 +4120,7 @@ float dAcPy_c::getHangBcOffsetY() {
         13.0f, 21.0f, 21.0f, 9.0f, 21.0f, 21.0f, 21.0f
     };
     // [probably some inline?]
-    if (!(mPlayerType != 0 && mPlayerType != 1)) {
+    if (!(mPlayerType != PLAYER_MARIO && mPlayerType != PLAYER_LUIGI)) {
         return scHangOffsetY[mPowerup];
     } else {
         return scKinopioHangOffsetY[mPowerup];
@@ -4193,11 +4193,11 @@ void dAcPy_c::initializeState_Vine() {
                     if (!isNowBgCross(BGC_IS_FOOT)) {
                         mPyMdlMng.setAnm(57);
                         mSubstate = VINE_ACTION_IVY;
-                        mSubstateTimer2 = 0;
+                        mSubstateValue = 0;
                     } else {
                         mPyMdlMng.setAnm(58);
                         mSubstate = VINE_ACTION_IVY;
-                        mSubstateTimer2 = 1;
+                        mSubstateValue = 1;
                     }
                     break;
                 case 1:
@@ -4214,7 +4214,7 @@ void dAcPy_c::initializeState_Vine() {
         case 1:
             mPyMdlMng.setAnm(58);
             mSubstate = VINE_ACTION_IVY;
-            mSubstateTimer2 = 1;
+            mSubstateValue = 1;
             break;
         case 3:
             mPyMdlMng.setAnm(52, 0.0f, 0.0f);
@@ -4327,9 +4327,9 @@ void dAcPy_c::VineActionIvy() {
         return;
     }
     calcVineSpeed();
-    if (mSubstateTimer2 == 0) {
+    if (mSubstateValue == 0) {
         if (mPyMdlMng.isAnmStop()) {
-            mSubstateTimer2++;
+            mSubstateValue++;
         }
     } else {
         if (mSpeed.x || mSpeed.y) {
@@ -4377,7 +4377,7 @@ void dAcPy_c::VineActionNet() {
             }
             if (mKey.triggerAttack()) {
                 mSubstate = VINE_ACTION_ATTACK;
-                mSubstateTimer2 = 0;
+                mSubstateValue = 0;
                 mPyMdlMng.setAnm(55);
                 mSpeed.y = 0.0f;
                 mSpeedF = 0.0f;
@@ -4462,11 +4462,11 @@ void dAcPy_c::VineActionAttack() {
             return;
         }
         if (mKey.triggerAttack()) {
-            mSubstateTimer2 = 1;
+            mSubstateValue = 1;
         }
-        if (frame >= 23.0f && mSubstateTimer2 != 0) {
+        if (frame >= 23.0f && mSubstateValue != 0) {
             mPyMdlMng.mpMdl->setFrame(0.0f);
-            mSubstateTimer2 = 0;
+            mSubstateValue = 0;
         }
     }
     if (frame < 24.0f) {
@@ -4590,12 +4590,12 @@ void dAcPy_c::finalizeState_Vine() {
 
 void dAcPy_c::setCarryPlayerHang(float height) {
     mPos.y = height - mHeadBcData.mOffset / 4096.0f;
-    onNowBgCross(BGC_34);
+    onNowBgCross(BGC_HANG_ROPE);
     changeState(StateID_Hang, 0);
 }
 
 bool dAcPy_c::setHangAction() {
-    if (isNowBgCross(BGC_34)) {
+    if (isNowBgCross(BGC_HANG_ROPE)) {
         dAcPy_c *carryPlayer = getCarryPlayer();
         if (carryPlayer != nullptr && carryPlayer->isStatus(STATUS_9C) && !carryPlayer->isCarry()) {
             float hangHeight = mPos.y + mHeadBcData.mOffset / 4096.0f;
@@ -4619,7 +4619,7 @@ void dAcPy_c::initializeState_Hang() {
     mSpeed.x = 0.0f;
     mSpeed.y = 0.0f;
     m_1598 = 0.0f;
-    if (mPlayerType == 2 || mPlayerType == 3) {
+    if (mPlayerType == PLAYER_YELLOW_TOAD || mPlayerType == PLAYER_BLUE_TOAD) {
         static const float scHangOffsetY[POWERUP_COUNT] = { 4.5f, 10.0f, 10.0f, 1.0f, 10.0f, 9.0f, 10.0f };
         m_1598 = scHangOffsetY[mPowerup];
     }
@@ -4677,7 +4677,7 @@ void dAcPy_c::HangActionMove() {
 }
 
 void dAcPy_c::executeState_Hang() {
-    if (!isNowBgCross(BGC_34) || mKey.buttonDown()) {
+    if (!isNowBgCross(BGC_HANG_ROPE) || mKey.buttonDown()) {
         changeState(StateID_Fall, 0);
         startPlayerVoice(VOICE_ROPE_RELEASE, 0);
     } else {
@@ -4709,7 +4709,7 @@ bool dAcPy_c::setPoleAction() {
         if (m_8fc || isCarry()) {
             return false;
         }
-        if (mSpeed.y <= 3.0f && mKey.buttonUp() && isNowBgCross(BGC_43)) {
+        if (mSpeed.y <= 3.0f && mKey.buttonUp() && isNowBgCross(BGC_CAN_CLIMB)) {
             changeState(StateID_Pole, 0);
             return true;
         }
@@ -4730,7 +4730,7 @@ void dAcPy_c::initializeState_Pole() {
     mAngle.y = getBesideMukiAngle(mDirection);
     m_8f4.x = (int) (mPos.x / 16.0f) * 16.0f + 8.0f;
     setZPositionDirect(400.0f);
-    if (isNowBgCross(BGC_43)) {
+    if (isNowBgCross(BGC_CAN_CLIMB)) {
         m_8f4.y = mPos.y;
     }
     if (isNowBgCross(BGC_IS_FOOT)) {
@@ -4749,9 +4749,9 @@ void dAcPy_c::initializeState_Pole() {
 
 void dAcPy_c::PoleActionStart() {
     if (mKey.triggerJump()) {
-        mSubstateTimer2 = 1;
+        mSubstateValue = 1;
     }
-    if (mPyMdlMng.mpMdl->mAnm.getFrame() >= 5.0f && mSubstateTimer2 != 0) {
+    if (mPyMdlMng.mpMdl->mAnm.getFrame() >= 5.0f && mSubstateValue != 0) {
         int dir;
         if (mKey.buttonWalk(&dir)) {
             mDirection = dir;
@@ -4771,7 +4771,7 @@ void dAcPy_c::setPoleActionWait() {
 }
 
 void dAcPy_c::PoleActionWait() {
-    if (!isNowBgCross(BGC_43)) {
+    if (!isNowBgCross(BGC_CAN_CLIMB)) {
         mDirection ^= 1;
         changeState(StateID_Fall, 0);
     } else {
@@ -4796,7 +4796,7 @@ void dAcPy_c::PoleActionUp() {
         startSound(SE_PLY_POLE_CLIMB, false);
     }
     mSpeed.y = 0.0f;
-    if (!isNowBgCross(BGC_43)) {
+    if (!isNowBgCross(BGC_CAN_CLIMB)) {
         mPos.y = m_8f4.y;
     }
     if (mKey.buttonDown()) {
@@ -4818,7 +4818,7 @@ void dAcPy_c::setPoleActionDown() {
 }
 
 void dAcPy_c::PoleActionDown() {
-    if (!isNowBgCross(BGC_43)) {
+    if (!isNowBgCross(BGC_CAN_CLIMB)) {
         mDirection ^= 1;
         changeState(StateID_Fall, 0);
         return;
@@ -4876,7 +4876,7 @@ void dAcPy_c::executeState_Pole() {
                 return;
             }
             mPos.x = m_8f4.x;
-            if (isNowBgCross(BGC_43)) {
+            if (isNowBgCross(BGC_CAN_CLIMB)) {
                 m_8f4.y = mPos.y;
             }
             typedef void (dAcPy_c::*PoleActionProc_t)();
@@ -5179,7 +5179,7 @@ bool dAcPy_c::checkCliffHangWater() {
     u8 waterType = dBc_c::checkWater(mPos.x, currHeight, mLayer, &waterHeight);
     if (waterType == dBc_c::WATER_CHECK_WATER) {
         if (getWaterCheckPosY() - getHangBcOffsetY() <= waterHeight) {
-            onNowBgCross(BGC_14);
+            onNowBgCross(BGC_WATER_SHALLOW);
             mPos.y = currHeight;
             m_60 = 10;
             changeState(StateID_Swim, (void *) 3);
@@ -5802,12 +5802,12 @@ void dAcPy_c::executeState_TarzanRope() {
 
 void dAcPy_c::startQuakeAction(QuakeMode_e mode) {
     setQuakeActionLocal(0, mode);
-    mSubstateTimer2 = 1;
+    mSubstateValue = 1;
 }
 
 void dAcPy_c::setQuakeAction(int i, QuakeMode_e mode) {
     setQuakeActionLocal(i, mode);
-    mSubstateTimer2 = 0;
+    mSubstateValue = 0;
 }
 
 void dAcPy_c::setQuakeActionLocal(int i, QuakeMode_e mode) {
@@ -5853,7 +5853,7 @@ void dAcPy_c::executeState_Quake() {
         startQuakeShock(dQuake_c::TYPE_8);
     }
     setQuakeNumbEffect();
-    if (mSubstateTimer2 == 0 && mSubstateTimer == 0) {
+    if (mSubstateValue == 0 && mSubstateTimer == 0) {
         changeState(StateID_Walk, (void *) 1);
     }
 }
@@ -6077,15 +6077,15 @@ void dAcPy_c::executeState_FlyDamage() {
             if (mPyMdlMng.mpMdl->mAnm.getFrame() >= sc_damageStopFrame[m_103c]) {
                 mPyMdlMng.mpMdl->setRate(0.0f);
                 mSubstate = 3;
-                mSubstateTimer2 = 10;
+                mSubstateValue = 10;
             }
             break;
         case 3:
             if (isNowBgCross(BGC_IS_FOOT)) {
-                if (mSubstateTimer2 != 0) {
-                    mSubstateTimer2--;
+                if (mSubstateValue != 0) {
+                    mSubstateValue--;
                 }
-                if (mSubstateTimer2 == 0) {
+                if (mSubstateValue == 0) {
                     onStatus(STATUS_9B);
                     onStatus(STATUS_9C);
                     onStatus(STATUS_9D);
@@ -6136,7 +6136,7 @@ void dAcPy_c::setBreakBalloonJump(u8 playerNo, short angle) {
     mFallTimer = 30;
     mTimer_ce8 = 30;
     mTimer_1074 = 30;
-    if (isNowBgCross(BGC_14)) {
+    if (isNowBgCross(BGC_WATER_SHALLOW)) {
         changeState(StateID_Swim, 0);
         float cos = mAng(angle).cos();
         float sin = mAng(angle).sin();
@@ -6204,7 +6204,7 @@ void dAcPy_c::initializeState_Balloon() {
         mAllBalloonFadeTimer = 210;
         daPyMng_c::mAllBalloon = true;
     }
-    if (mPlayerType == 0 && mPyMdlMng.mpMdl->m_151 == 0) {
+    if (mPlayerType == PLAYER_MARIO && mPyMdlMng.mpMdl->m_151 == 0) {
         ((dMarioMdl_c *) mPyMdlMng.mpMdl)->fn_800cab00(0);
     }
     if (mPowerup != POWERUP_NONE && mPowerup != POWERUP_MINI_MUSHROOM) {
@@ -6757,7 +6757,7 @@ bool dAcPy_c::setDropCarryPlayer() {
                 onStatus(STATUS_4D);
                 return true;
             }
-            if (ridePlayer->isNowBgCross(BGC_25)) {
+            if (ridePlayer->isNowBgCross(BGC_SLOPE_AND_HEAD)) {
                 setJump(0.0f, 0.0f, true, 0, 0);
                 onStatus(STATUS_4D);
             }
@@ -7073,8 +7073,8 @@ void dAcPy_c::executeState_PlayerEat() {
         changeState(StateID_Jump, 0);
         return;
     }
-    if (mSubstateTimer2 != 0) {
-        mSubstateTimer2--;
+    if (mSubstateValue != 0) {
+        mSubstateValue--;
     }
     if (mKey.triggerShakeJump() && yoshi->fn_8014f030(this)) {
         m_1298 = 1;
@@ -7207,7 +7207,7 @@ bool dAcPy_c::setFireBallAction() {
 
 bool dAcPy_c::checkFireJump() {
     if (isNowBgCross(BGC_IS_FOOT) && mKey.triggerJump()) {
-        if (isNowBgCross(BGC_14)) {
+        if (isNowBgCross(BGC_WATER_SHALLOW)) {
             mSpeed.y = sc_WaterJumpSpeed;
         } else {
             fn_80145fd0(1);
@@ -7551,9 +7551,9 @@ void dAcPy_c::initializeState_Propel() {
     onStatus(STATUS_A0);
     onStatus(STATUS_A8);
     onStatus(STATUS_8F);
-    mSubstateTimer2 = 0;
+    mSubstateValue = 0;
     if (getCarryPropelActor() != nullptr) {
-        mSubstateTimer2 = 1;
+        mSubstateValue = 1;
     }
     setScrollMode(2);
 }
@@ -7581,7 +7581,7 @@ void dAcPy_c::finalizeState_Propel() {
 
 void dAcPy_c::executeState_Propel() {
     offStatus(STATUS_92);
-    if (mSubstateTimer2 == 0) {
+    if (mSubstateValue == 0) {
         if (mPowerup != POWERUP_PROPELLER_SHROOM) {
             changeState(StateID_Fall, 0);
             return;
@@ -7858,7 +7858,7 @@ void dAcPy_c::initPlayerDownCommon() {
             SndSceneMgr::sInstance->fn_8019be60(1);
         }
     }
-    mDemoWaitTimer = 30;
+    mDemoSubstateTimer = 30;
 }
 
 void dAcPy_c::stopOtherDownDemo() {
@@ -7895,7 +7895,7 @@ void dAcPy_c::playOtherDownDemo() {
 bool dAcPy_c::setTimeOverDemo() {
     if (
         !isStatus(STATUS_53) &&
-        !isStatus(STATUS_6F) &&
+        !isStatus(STATUS_GOAL_POLE_NOT_GOAL_NO_MOVE) &&
         !isStatus(STATUS_OUT_OF_PLAY) &&
         !isStatus(STATUS_STUNNED)
     ) {
@@ -7942,7 +7942,7 @@ void dAcPy_c::finalizeState_DemoDown() {
 void dAcPy_c::executeState_DemoDown() {
     switch (mDemoSubstate) {
         case 0:
-            if (mDemoWaitTimer == 0) {
+            if (mDemoSubstateTimer == 0) {
                 daPyMng_c::startMissBGM(mPlayerNo);
                 mDemoSubstate = 1;
                 initDemo_DownFall();
@@ -7951,9 +7951,9 @@ void dAcPy_c::executeState_DemoDown() {
                 }
                 if ((int) mDemoStateChangeParam != 1) {
                     playOtherDownDemo();
-                    mDemoWaitTimer = 80;
+                    mDemoSubstateTimer = 80;
                 } else {
-                    mDemoWaitTimer = 150;
+                    mDemoSubstateTimer = 150;
                 }
             }
             break;
@@ -7980,7 +7980,7 @@ void dAcPy_c::executeState_DemoDown() {
                     checkRest();
                     mDemoSubstate = 2;
                 }
-            } else if (mDemoWaitTimer == 0) {
+            } else if (mDemoSubstateTimer == 0) {
                 checkRest();
                 mDemoSubstate = 2;
             }
@@ -8031,19 +8031,19 @@ void dAcPy_c::finalizeState_DemoFallDown() {
 void dAcPy_c::executeState_DemoFallDown() {
     switch (mDemoSubstate) {
         case 0:
-            if (mDemoWaitTimer == 0) {
+            if (mDemoSubstateTimer == 0) {
                 mDemoSubstate = 1;
                 daPyMng_c::startMissBGM(mPlayerNo);
                 if (!m_7c) {
                     playOtherDownDemo();
-                    mDemoWaitTimer = 50;
+                    mDemoSubstateTimer = 50;
                 } else {
-                    mDemoWaitTimer = 80;
+                    mDemoSubstateTimer = 80;
                 }
             }
             break;
         case 1:
-            if (mDemoWaitTimer == 0) {
+            if (mDemoSubstateTimer == 0) {
                 checkRest();
                 mDemoSubstate = 2;
             }
@@ -8085,9 +8085,9 @@ void dAcPy_c::finalizeState_DemoFireDown() {}
 void dAcPy_c::executeState_DemoFireDown() {
     switch (mDemoSubstate) {
         case 0:
-            if (mDemoWaitTimer == 0) {
+            if (mDemoSubstateTimer == 0) {
                 daPyMng_c::startMissBGM(mPlayerNo);
-                mDemoWaitTimer = 80;
+                mDemoSubstateTimer = 80;
                 startPlayerVoice(VOICE_DAMAGE_FIRE, 0);
                 startSound(SE_PLY_BURN_DOWN, false);
                 setZPosition(5000.0f);
@@ -8112,7 +8112,7 @@ void dAcPy_c::executeState_DemoFireDown() {
                     checkRest();
                     mDemoSubstate = 2;
                 }
-            } else if (mDemoWaitTimer == 0) {
+            } else if (mDemoSubstateTimer == 0) {
                 checkRest();
                 mDemoSubstate = 2;
             }
@@ -8163,7 +8163,7 @@ void dAcPy_c::finalizeState_DemoEatDie() {
 void dAcPy_c::executeState_DemoEatDie() {
     switch (mDemoSubstate) {
         case 2:
-            if (mDemoWaitTimer == 0) {
+            if (mDemoSubstateTimer == 0) {
                 if (m_15a8 != 0) {
                     startSound(SE_PLY_DOWN, false);
                 } else if (!isStar()) {
@@ -8185,7 +8185,7 @@ void dAcPy_c::executeState_DemoEatDie() {
             }
             break;
         case 3:
-            if (mDemoWaitTimer == 0) {
+            if (mDemoSubstateTimer == 0) {
                 checkRest();
                 mDemoSubstate = 4;
             }
@@ -8215,7 +8215,7 @@ bool dAcPy_c::setEatDieFadeOut() {
     if (isDemoState(StateID_DemoEatDie)) {
         daPyMng_c::startMissBGM(mPlayerNo);
         mDemoSubstate = 3;
-        mDemoWaitTimer = 80;
+        mDemoSubstateTimer = 80;
         return true;
     }
     return false;
@@ -8233,7 +8233,7 @@ void dAcPy_c::setEatDieScreamVoice() {
     if (isDemoState(StateID_DemoEatDie)) {
         startPlayerVoice(VOICE_DAMAGE_EATEN, 0);
         mDemoSubstate = 2;
-        mDemoWaitTimer = 30;
+        mDemoSubstateTimer = 30;
     }
 }
 
@@ -8286,7 +8286,7 @@ void dAcPy_c::finalizeState_DemoInDoor() {
 void dAcPy_c::setDemoInDoor_Walk() {
     offStatus(STATUS_BB);
     mDemoSubstate = 4;
-    mDemoWaitTimer = 10;
+    mDemoSubstateTimer = 10;
 }
 
 void dAcPy_c::executeState_DemoInDoor() {
@@ -8325,7 +8325,7 @@ void dAcPy_c::executeState_DemoInDoor() {
         case 4:
             sLib::chase(&m_74, 0, 15);
             onStatus(STATUS_79);
-            if (mDemoWaitTimer == 0) {
+            if (mDemoSubstateTimer == 0) {
                 if (daPyDemoMng_c::mspInstance->getNextDemoNo() == -1) {
                     mDemoSubstate = 5;
                     if (mRelatedActorID != BASE_ID_NULL) {
@@ -8360,7 +8360,7 @@ void dAcPy_c::executeState_DemoInDoor() {
 
 void dAcPy_c::initializeState_DemoInJump() {
     offStatus(STATUS_BB);
-    mDemoWaitTimer = 30;
+    mDemoSubstateTimer = 30;
     mPyMdlMng.setAnm(5, 0.0f, 0.0f);
     u8 jumpDir = (int) mDemoStateChangeParam;
     mDirection = jumpDir;
@@ -8381,15 +8381,15 @@ void dAcPy_c::finalizeState_DemoInJump() {}
 void dAcPy_c::executeState_DemoInJump() {
     switch (mDemoSubstate) {
         case 0:
-            if (mDemoWaitTimer == 0 && daPyDemoMng_c::mspInstance->checkDemoNo(mPlayerNo)) {
-                mDemoWaitTimer = 30;
+            if (mDemoSubstateTimer == 0 && daPyDemoMng_c::mspInstance->checkDemoNo(mPlayerNo)) {
+                mDemoSubstateTimer = 30;
                 mDemoSubstate++;
             }
             break;
         case 1:
-            if (mDemoWaitTimer == 0) {
+            if (mDemoSubstateTimer == 0) {
                 daPyDemoMng_c::mspInstance->turnNextDemoNo();
-                mDemoWaitTimer = 95;
+                mDemoSubstateTimer = 95;
                 mDemoSubstate++;
                 int world = dScStage_c::m_instance->mCurrWorld;
                 if (world == WORLD_4 || world == WORLD_6 || world == WORLD_8) {
@@ -8414,7 +8414,7 @@ void dAcPy_c::executeState_DemoInJump() {
 void dAcPy_c::initializeState_DemoInVine() {
     mPyMdlMng.setAnm(56, 0.0f, 0.0f);
     offStatus(STATUS_BB);
-    mDemoWaitTimer = 30;
+    mDemoSubstateTimer = 30;
     mDirection = DIR_LR_R;
     mAngle.y = 0x8000;
     dEnemyMng_c::m_instance->demo_ivy_create(&mPos);
@@ -8425,15 +8425,15 @@ void dAcPy_c::finalizeState_DemoInVine() {}
 void dAcPy_c::executeState_DemoInVine() {
     switch (mDemoSubstate) {
         case 0:
-            if (mDemoWaitTimer == 0 && daPyDemoMng_c::mspInstance->checkDemoNo(mPlayerNo) != 0) {
-                mDemoWaitTimer = 30;
+            if (mDemoSubstateTimer == 0 && daPyDemoMng_c::mspInstance->checkDemoNo(mPlayerNo) != 0) {
+                mDemoSubstateTimer = 30;
                 mDemoSubstate++;
             }
             break;
         case 1:
-            if (mDemoWaitTimer == 0) {
+            if (mDemoSubstateTimer == 0) {
                 daPyDemoMng_c::mspInstance->turnNextDemoNo();
-                mDemoWaitTimer = 95;
+                mDemoSubstateTimer = 95;
                 mDemoSubstate++;
             }
             break;
@@ -8442,7 +8442,7 @@ void dAcPy_c::executeState_DemoInVine() {
             setIvyHangEffect();
             setVineWalkSE();
             mBc.checkHead(0);
-            if (mDemoWaitTimer == 0) {
+            if (mDemoSubstateTimer == 0) {
                 changeNormalAction();
                 changeState(StateID_Vine, (void *) 1);
             }
@@ -8548,8 +8548,8 @@ void dAcPy_c::exeDemoOutDoor_OpenDoor() {
 }
 
 void dAcPy_c::initDemoOutDoor_MoveCenter() {
-    mDemoWaitTimer = 10;
-    float speed = std::fabs(mPos.x - mWarpPos.x) / mDemoWaitTimer;
+    mDemoSubstateTimer = 10;
+    float speed = std::fabs(mPos.x - mWarpPos.x) / mDemoSubstateTimer;
     if (speed > 1.0f) {
         speed = 1.0f;
     }
@@ -8574,7 +8574,7 @@ void dAcPy_c::exeDemoOutDoor_MoveCenter() {
 }
 
 void dAcPy_c::initDemoOutDoor_MoveInter() {
-    mDemoWaitTimer = 30;
+    mDemoSubstateTimer = 30;
     mDemoSubstate = DEMO_OUT_DOOR_MOVE_INTER;
     mPyMdlMng.setAnm(133);
     endPowerUpEffect();
@@ -8587,7 +8587,7 @@ void dAcPy_c::exeDemoOutDoor_MoveInter() {
     if (mDoorSize == 0) {
         sLib::chase(&mPos.x, mWarpPos.x, 0.4f);
     }
-    if (mDemoWaitTimer != 0) {
+    if (mDemoSubstateTimer != 0) {
         return;
     }
     bool hasNonEnteredPlayer = false;
@@ -8622,12 +8622,12 @@ void dAcPy_c::exeDemoOutDoor_MoveInter() {
     }
     m_1598 = 0.0f;
     onStatus(STATUS_BB);
-    mDemoWaitTimer = 20;
+    mDemoSubstateTimer = 20;
 }
 
 void dAcPy_c::exeDemoOutDoor_WaitClose() {
     addCalcAngleY(0x8000, 2);
-    if (mDemoWaitTimer != 0) {
+    if (mDemoSubstateTimer != 0) {
         return;
     }
     if (mRelatedActorID != nullptr) {
@@ -8640,7 +8640,7 @@ void dAcPy_c::exeDemoOutDoor_WaitClose() {
 }
 
 void dAcPy_c::exeDemoOutDoor_WaitEnter() {
-    if (mDemoWaitTimer == 0) {
+    if (mDemoSubstateTimer == 0) {
         changeNextScene(1);
         mDemoSubstate = DEMO_OUT_DOOR_FINISHED;
     }
@@ -8766,29 +8766,29 @@ void dAcPy_c::executeDemoGoal_Run() {
     switch (mDemoState) {
         case 0:
             if (mGoalTouchOrder >= 3 && dGameCom::rnd() < 0.5f) {
-                mDemoWaitTimer = 60;
+                mDemoSubstateTimer = 60;
                 mDemoState = 2;
             } else {
-                mDemoWaitTimer = mGoalTouchOrder * 5 + 10;
+                mDemoSubstateTimer = mGoalTouchOrder * 5 + 10;
                 mDemoState = 1;
             }
             for (int i = 0; i < PLAYER_COUNT; i++) {
                 daYoshi_c *yoshi = daPyMng_c::getYoshi(i);
-                if (yoshi != nullptr && yoshi->isStatus(STATUS_65)) {
-                    mDemoWaitTimer += 14;
+                if (yoshi != nullptr && yoshi->isStatus(STATUS_GOAL_POLE_TOUCHED)) {
+                    mDemoSubstateTimer += 14;
                     break;
                 }
             }
         case 1:
         case 2:
-            if (mDemoWaitTimer == 0) {
+            if (mDemoSubstateTimer == 0) {
                 daPyDemoMng_c::mspInstance->mFlags |= 0x20;
                 if (mGoalTouchOrder == 0) {
                     daPyDemoMng_c::mspInstance->setDemoMode(daPyDemoMng_c::MODE_2, 0);
                 }
                 mDirection = DIR_LR_R;
                 mSpeed.set(0.0f, 0.0f, 0.0f);
-                mDemoWaitTimer = 60;
+                mDemoSubstateTimer = 60;
                 mSpeedF = 1.9499999f;
                 float f = 2.6f;
                 if (mPowerup == POWERUP_MINI_MUSHROOM) {
@@ -8840,7 +8840,7 @@ void dAcPy_c::executeDemoGoal_Run() {
             if (mPyMdlMng.isAnmStop()) {
                 mPyMdlMng.setAnm(0);
                 mDemoState = 1;
-                mDemoWaitTimer = mGoalTouchOrder * 5;
+                mDemoSubstateTimer = mGoalTouchOrder * 5;
             }
             break;
     }
@@ -8923,7 +8923,7 @@ bool dAcPy_c::setDemoCannonWarp(int delay, short angX, short angY) {
         changeDemoState(StateID_DemoCannonWarp, 0);
         mAngle.x = angX + 0x2000;
         mAngle.y = angY + 0x6000;
-        mDemoWaitTimer = delay;
+        mDemoSubstateTimer = delay;
         return true;
     }
     return false;
@@ -8941,7 +8941,7 @@ void dAcPy_c::finalizeState_DemoCannonWarp() {}
 void dAcPy_c::executeState_DemoCannonWarp() {
     switch (mDemoSubstate) {
         case 0:
-            if (mDemoWaitTimer == 0) {
+            if (mDemoSubstateTimer == 0) {
                 mDemoSubstate = 1;
                 mAccelF = 0.0f;
                 mSpeed.y = mAng(mAngle.x).sin() * 4.0f;
@@ -8980,20 +8980,20 @@ void dAcPy_c::executeState_DemoCannonWarp() {
             if (sLib::chase(&mAmiRelated2, 0.0f, 0.008f)) {
                 onStatus(STATUS_BB);
                 mDemoSubstate = 2;
-                mDemoWaitTimer = 30;
+                mDemoSubstateTimer = 30;
             }
             break;
         }
         case 2:
-            if (mDemoWaitTimer == 0) {
+            if (mDemoSubstateTimer == 0) {
                 mDemoSubstate = 3;
-                mDemoWaitTimer = 90;
+                mDemoSubstateTimer = 90;
                 dEf::createPlayerEffect(mPlayerNo, "Wm_ob_warpcannonkira", 0, &mPos, nullptr, nullptr);
                 dAudio::g_pSndObjMap->startSound(SE_OBJ_WARP_CANNON_SHINE, mPos, 0);
             }
             break;
         case 3:
-            if (mDemoWaitTimer == 0) {
+            if (mDemoSubstateTimer == 0) {
                 mDemoSubstate = 4;
                 dScStage_c::setNextScene(3, 0, dScStage_c::EXIT_0, dFader_c::FADER_CIRCLE_TARGET);
                 if (daPyDemoMng_c::mspInstance->mPlNo < 0) {
@@ -9122,7 +9122,7 @@ void dAcPy_c::setCreateAction(int action) {
 }
 
 void dAcPy_c::initChangeInit() {
-    if (!isStatus(STATUS_65)) {
+    if (!isStatus(STATUS_GOAL_POLE_TOUCHED)) {
         playOther();
     } else {
         playGoalOther();
@@ -9353,10 +9353,10 @@ void dAcPy_c::initializeState_DemoStartWait() {
 }
 
 void dAcPy_c::executeState_DemoStartWait() {
-    if (!isNowBgCross(BGC_14)) {
+    if (!isNowBgCross(BGC_WATER_SHALLOW)) {
         bgCheck(0);
-        if (isNowBgCross(BGC_14)) {
-            onOldBgCross(BGC_14);
+        if (isNowBgCross(BGC_WATER_SHALLOW)) {
+            onOldBgCross(BGC_WATER_SHALLOW);
             changeState(daPlBase_c::StateID_Swim, 0); // [why daPlBase_c?]
         }
     }
@@ -9699,7 +9699,7 @@ void dAcPy_c::setCcAtNetPunch() {
 }
 
 void dAcPy_c::setCcAtSpin() {
-    float y = (getSomeYOffset() + 4.0f) / 2.0f;
+    float y = (getHeight() + 4.0f) / 2.0f;
     mAttCc1.mCcData.mBase.mOffset.set(mCc.mCcData.mBase.mOffset.x, y);
     float x = mCc.mCcData.mBase.mSize.x;
     mAttCc1.mCcData.mBase.mSize.set(x * 3.5f, y);
@@ -9726,7 +9726,7 @@ void dAcPy_c::getCcBounds(sRangeDataF *bounds) {
     if (bounds == nullptr) {
         return;
     }
-    float h = (getSomeYOffset() + 4.0f) / 2.0f;
+    float h = (getHeight() + 4.0f) / 2.0f;
     bounds->mOffset.x = 0.0f;
     bounds->mSize.x = f;
     bounds->mOffset.y = h;
@@ -10431,7 +10431,7 @@ void dAcPy_c::executeMain() {
     if (mSpeed.y < 0.75f) {
         offStatus(STATUS_96);
     }
-    m_ca0 = mDirection;
+    mPrevDirection = mDirection;
     int dir;
     if (!isStatus(STATUS_96) && !isStatus(STATUS_97) && mKey.buttonWalk(&dir)) {
         mDirection = dir;
@@ -10456,7 +10456,7 @@ void dAcPy_c::executeMain() {
 
 void dAcPy_c::checkBgCrossSub() {
     if (mBc.checkCollision(&mVineBcData)) {
-        onNowBgCross(BGC_43);
+        onNowBgCross(BGC_CAN_CLIMB);
     }
     u32 resFlags = mBc.checkCollision2(&mVineBcData);
     if (resFlags & 0x0F) {
@@ -10500,7 +10500,7 @@ void dAcPy_c::postBgCross() {
     if (!isMameAction()) {
         offStatus(STATUS_C1);
     }
-    if (isNowBgCross(BGC_15) && !isNowBgCross(BGC_WATER_BUBBLE)) {
+    if (isNowBgCross(BGC_WATER_TOUCH) && !isNowBgCross(BGC_WATER_BUBBLE)) {
         if (isNowBgCross(BGC_IS_HEAD)) {
             m_15b6 = 10;
             offStatus(STATUS_C1);
@@ -10512,9 +10512,9 @@ void dAcPy_c::postBgCross() {
                 if (isStatus(STATUS_PENGUIN_SLIDE)) {
                     onNowBgCross(BGC_ON_ICE);
                 }
-                offNowBgCross(BGC_14);
-                offNowBgCross(BGC_16);
-                m_dac = 0;
+                offNowBgCross(BGC_WATER_SHALLOW);
+                offNowBgCross(BGC_WATER_SUBMERGED);
+                mWaterDepth = 0;
                 mBc.mpCtrHead = nullptr;
                 mRc.clrLink();
             }
@@ -10523,7 +10523,7 @@ void dAcPy_c::postBgCross() {
 
     if (isNowBgCross(BGC_ON_SINK_SAND)) {
         if (isStatus(STATUS_PENGUIN_SLIDE) && mSpeed.y < 0.0f) {
-            mPos.y = m_db0;
+            mPos.y = mSinkSandHeight;
             onNowBgCross(BGC_IS_FOOT);
             offNowBgCross(BGC_ON_SINK_SAND);
             offNowBgCross(BGC_IN_SINK_SAND);
@@ -10580,7 +10580,7 @@ void dAcPy_c::postBgCross() {
 
     if (
         isNowBgCross(BGC_IS_FOOT) ||
-        isNowBgCross(BGC_14) ||
+        isNowBgCross(BGC_WATER_SHALLOW) ||
         (isStatus(STATUS_VINE) && mBc.mFenceType == 1) ||
         isStatus(STATUS_53) ||
         isStatus(STATUS_STUNNED) ||
@@ -10594,7 +10594,7 @@ void dAcPy_c::postBgCross() {
 
     if (
         isNowBgCross(BGC_IS_FOOT) ||
-        isNowBgCross(BGC_14) ||
+        isNowBgCross(BGC_WATER_SHALLOW) ||
         isStatus(STATUS_4B) ||
         isStatus(STATUS_VINE) ||
         isStatus(STATUS_HANG) ||
@@ -10846,11 +10846,11 @@ dAcPy_c::dAcPy_c() : mPyMdlMng(daPyMng_c::getCourseInPlayerModelType(ACTOR_PARAM
     mPlayerNo = ACTOR_PARAM(PlayerNo);
     mPlayerType = daPyMng_c::getPlayerType(mPlayerNo);
     mPowerup = daPyMng_c::mPlayerMode[daPyMng_c::getPlayerType(mPlayerNo)];
-    mCreateItemRelated = 0;
+    mIsRescueKinopio = 0;
     if (daPyMng_c::mCreateItem[daPyMng_c::getPlayerType(mPlayerNo)] & 8) {
-        mCreateItemRelated = 1;
+        mIsRescueKinopio = 1;
         dInfo_c::m_instance->m_6c = true;
-        mPlayerType = 3;
+        mPlayerType = PLAYER_BLUE_TOAD;
         mPowerup = daPyMng_c::mKinopioMode;
         daPyMng_c::mPlayerEntry[mPlayerNo] = 0;
         daPyMng_c::mCreateItem[daPyMng_c::getPlayerType(mPlayerNo)] &= ~CREATE_ITEM_RESCUE_TOAD;
@@ -10878,7 +10878,7 @@ void dAcPy_c::setSceneChangeInfo() {
             dAcPy_c *ctrlPlayer = daPyMng_c::getCtrlPlayer(mPlayerNo);
             if (
                 ctrlPlayer != nullptr &&
-                !ctrlPlayer->isStatus(STATUS_65) &&
+                !ctrlPlayer->isStatus(STATUS_GOAL_POLE_TOUCHED) &&
                 !isStatus(STATUS_OUT_OF_PLAY) &&
                 !isStatus(STATUS_B6)
             ) {
@@ -10967,15 +10967,16 @@ int dAcPy_c::create() {
             mStarCount = daPyMng_c::m_star_count[mPlayerNo];
         }
     }
-    if (!isItemKinopio() && dScStage_c::m_gameMode == 0) {
+    if (!isItemKinopio() && dScStage_c::m_gameMode == dScStage_c::GAME_MODE_NORMAL) {
         mSndObj.m_58 = dAudio::getRemotePlayer(mPlayerNo);
     }
     int x = 0;
     switch (mPlayerType) {
-        case 0: x = 0; break;
-        case 1: x = 1; break;
-        case 2: x = 2; break;
-        case 3: x = 3; break;
+        case PLAYER_MARIO: x = 0; break;
+        case PLAYER_LUIGI: x = 1; break;
+        case PLAYER_YELLOW_TOAD: x = 2; break;
+        case PLAYER_BLUE_TOAD: x = 3; break;
+        default: break;
     }
     mSndObj.m_ac = x;
     setSoundPlyMode();
@@ -11296,7 +11297,7 @@ void dAcPy_c::setVirusStar(daPlBase_c *otherPlayer) {
 }
 
 void dAcPy_c::setWaterWalkFlag() {
-    if (isMameAction() && !isNowBgCross(BGC_14)) {
+    if (isMameAction() && !isNowBgCross(BGC_WATER_SHALLOW)) {
         onStatus(STATUS_C1);
     }
 }
@@ -11472,15 +11473,15 @@ void dAcPy_c::setCenterOffset() {
         16.0f, 31.0f, 31.0f, 6.0f, 34.0f, 31.0f, 31.0f
     };
 
-    mSomeYOffset = l_powerup_offsets[mPowerup];
+    mHeight = l_powerup_offsets[mPowerup];
 
     mVec3_c offset(0.0f, 0.0f, 0.0f);
     if (mPyMdlMng.mpMdl->mFlags & 1) {
-        offset.y = mSomeYOffset / 4.0f;
+        offset.y = mHeight / 4.0f;
     } else if (mPyMdlMng.mpMdl->mFlags & 4) {
-        offset.y = -(mSomeYOffset / 2.0f);
+        offset.y = -(mHeight / 2.0f);
     } else {
-        offset.y = mSomeYOffset / 2.0f;
+        offset.y = mHeight / 2.0f;
     }
     mCenterOffs = offset;
 
@@ -11633,7 +11634,7 @@ bool dAcPy_c::_setJump(float jumpSpeed, float speedF, bool allowSteer, int keyMo
 }
 
 bool dAcPy_c::fn_80146e40(float a, float b, bool c) {
-    if (isDemo() || isStatus(STATUS_OUT_OF_PLAY) || isNowBgCross(BGC_14)) {
+    if (isDemo() || isStatus(STATUS_OUT_OF_PLAY) || isNowBgCross(BGC_WATER_SHALLOW)) {
         return false;
     }
     checkSinkSand();
@@ -11667,7 +11668,7 @@ bool dAcPy_c::setCannonJump(float speedY, float speedF, int jumpType) {
 }
 
 bool dAcPy_c::setSwimSpeed(float speedY, float speedF) {
-    if (isNowBgCross(BGC_14)) {
+    if (isNowBgCross(BGC_WATER_SHALLOW)) {
         setUzuSwimAction();
         mSpeed.y = speedY;
         mSpeedF = speedF;
@@ -11678,7 +11679,7 @@ bool dAcPy_c::setSwimSpeed(float speedY, float speedF) {
 }
 
 bool dAcPy_c::isEnablePropelJump() {
-    if (m_12f0 != 0 || isNowBgCross(BGC_14) || !isStatus(STATUS_9F)) {
+    if (m_12f0 != 0 || isNowBgCross(BGC_WATER_SHALLOW) || !isStatus(STATUS_9F)) {
         return false;
     }
 
@@ -11715,7 +11716,7 @@ bool dAcPy_c::setSpinActionReq() {
     if (
         m_12f0 != 0 ||
         !mKey.triggerShakeJump() ||
-        isNowBgCross(BGC_14) ||
+        isNowBgCross(BGC_WATER_SHALLOW) ||
         !isStatus(STATUS_9F)
     ) {
         return false;
@@ -11983,8 +11984,8 @@ bool dAcPy_c::isDrawingFukidashi() {
         !isStatus(STATUS_9F) ||
         isDemoAll() ||
         m_12f0 != 0 ||
-        isNowBgCross(BGC_14) ||
-        isStatus(STATUS_65) ||
+        isNowBgCross(BGC_WATER_SHALLOW) ||
+        isStatus(STATUS_GOAL_POLE_TOUCHED) ||
         isStatus(STATUS_OUT_OF_PLAY) ||
         dScStage_c::m_miniGame != 0
     ) {

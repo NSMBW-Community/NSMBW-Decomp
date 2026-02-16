@@ -912,7 +912,7 @@ bool dEn_c::PlayerCarryCheck(dActor_c *actor) {
 
 mVec3_c dEn_c::calcCarryPos(const mVec3_c &pos) {
     dAcPy_c *player = daPyMng_c::getPlayer(mPlayerNo);
-    if (player->isStatus(4)) {
+    if (player->isStatus(daPlBase_c::STATUS_OUT_OF_PLAY)) {
         return mPos;
     }
     mMtx_c mtx = player->getCarryMtx();

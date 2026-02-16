@@ -163,7 +163,7 @@ public:
     void setRideOnObjBg(dBg_ctr_c *, const mVec3_c &);
     bool checkWallPlayer(const mVec3_c *, const mVec3_c *, float *);
     u32 checkBgPlr(dActor_c *);
-    u32 getHeadAttr();
+    u16 getHeadAttr();
     short getHeadSakaMoveAngle(u8 direction);
     void clearBgcSaveAll();
 

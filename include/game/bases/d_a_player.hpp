@@ -278,7 +278,7 @@ public:
     virtual void setRideJrCrownMtx(const mMtx_c *);
     virtual void setRideJrCrownAnm(int);
 
-    virtual const float *getHeadTopPosP();
+    virtual const mVec3_c *getHeadTopPosP();
     virtual const float *getGravityData();
     virtual bool isCarry() const { return mCarryActorID != BASE_ID_NULL; }
     virtual bool isLiftUp();
@@ -746,7 +746,7 @@ public:
         return sc_DirSpeed[mDirection];
     }
 
-    int mCreateItemRelated;
+    int mIsRescueKinopio;
     PLAYER_POWERUP_e mPowerupCopy;
     PLAYER_POWERUP_e mPowerupCopy2;
     mVec2_c m_0c;

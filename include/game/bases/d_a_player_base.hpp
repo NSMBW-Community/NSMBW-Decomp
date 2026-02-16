@@ -13,6 +13,9 @@
 #include <game/bases/d_audio.hpp>
 #include <constants/game_constants.h>
 
+/**
+ * @brief The base class for the player and Yoshi.
+ */
 class daPlBase_c : public dActor_c {
 public:
     enum DamageType_e {
@@ -143,15 +146,15 @@ public:
 
     /// @unofficial
     enum DemoGoalState_Pole_e {
-        GOAL_DEMO_POLE_0,
-        GOAL_DEMO_POLE_1,
-        GOAL_DEMO_POLE_2,
-        GOAL_DEMO_POLE_3,
-        GOAL_DEMO_POLE_4,
-        GOAL_DEMO_POLE_5,
-        GOAL_DEMO_POLE_6,
-        GOAL_DEMO_POLE_7,
-        GOAL_DEMO_POLE_8
+        GOAL_DEMO_POLE_SWING, ///< Swinging around the pole to the other side.
+        GOAL_DEMO_WAIT_BELOW_PLAYER, ///< Waiting for the player below to slide far enough down the pole to not be in the way of this player.
+        GOAL_DEMO_POLE_SLIDE, ///< Sliding down the pole.
+        GOAL_DEMO_POLE_WAIT_JUMP, ///< Waiting at the bottom of the pole to jump off.
+        GOAL_DEMO_POLE_JUMP, ///< Jumping off the pole.
+        GOAL_DEMO_POLE_LAND, ///< Playing the landing animation after landing.
+        GOAL_DEMO_POLE_WAIT_TURN, ///< Waiting #sc_DemoPoleWaitTurn frames to turn toward the screen.
+        GOAL_DEMO_POLE_TURN, ///< Turning toward the screen.
+        GOAL_DEMO_POLE_WAIT_END ///< Waiting #sc_DemoPoleWaitEnd frames before transitioning to the course clear dance.
     };
 
     /// @unofficial
@@ -216,18 +219,17 @@ public:
         BGC_11 = BIT_FLAG(11),
         BGC_12 = BIT_FLAG(12),
         BGC_13 = BIT_FLAG(13),
-        BGC_14 = BIT_FLAG(14), // Water surface?
-        BGC_15 = BIT_FLAG(15),
-        BGC_16 = BIT_FLAG(16),
+        BGC_WATER_SHALLOW = BIT_FLAG(14), ///< At least slightly inside of water (hip height or higher).
+        BGC_WATER_TOUCH = BIT_FLAG(15), ///< At least touching water.
+        BGC_WATER_SUBMERGED = BIT_FLAG(16), ///< Fully submerged in water.
         BGC_17 = BIT_FLAG(17),
         BGC_WATER_BUBBLE = BIT_FLAG(18),
         BGC_SIDE_LIMIT_L = BIT_FLAG(19),
         BGC_SIDE_LIMIT_R = BIT_FLAG(20),
-        BGC_21 = BIT_FLAG(21),
         BGC_ON_SNOW = BIT_FLAG(22),
         BGC_ON_ICE = BIT_FLAG(23),
         BGC_ON_ICE_LOW_SLIP = BIT_FLAG(24),
-        BGC_25 = BIT_FLAG(25),
+        BGC_SLOPE_AND_HEAD = BIT_FLAG(25),
         BGC_ON_SAND = BIT_FLAG(26),
         BGC_ON_SINK_SAND = BIT_FLAG(27),
         BGC_IN_SINK_SAND = BIT_FLAG(28),
@@ -238,18 +240,18 @@ public:
 
     /// @unofficial
     enum BgCross2_e {
-        BGC_32 = BIT_FLAG(0), ///< [Ghost house semisolid?]
-        BGC_LIFT = BIT_FLAG(1),
-        BGC_34 = BIT_FLAG(2),
+        BGC_SEMISOLID = BIT_FLAG(0),
+        BGC_LIFT = BIT_FLAG(1), ///< [Figure out a better name for this].
+        BGC_HANG_ROPE = BIT_FLAG(2),
         BGC_AUTOSLIP = BIT_FLAG(3),
         BGC_36 = BIT_FLAG(4),
-        BGC_37 = BIT_FLAG(5),
-        BGC_38 = BIT_FLAG(6),
+        BGC_GROUNDED_MOVE_UP = BIT_FLAG(5),
+        BGC_37 = BIT_FLAG(6), ///< Cannot wall kick or ground pound while this is set.
         BGC_SLOPE = BIT_FLAG(7),
         BGC_CLIFF = BIT_FLAG(8),
         BGC_41 = BIT_FLAG(9),
         BGC_42 = BIT_FLAG(10),
-        BGC_43 = BIT_FLAG(11),
+        BGC_CAN_CLIMB = BIT_FLAG(11),
         BGC_44 = BIT_FLAG(12),
         BGC_45 = BIT_FLAG(13),
         BGC_46 = BIT_FLAG(14),
@@ -271,6 +273,7 @@ public:
         BGC_63 = BIT_FLAG(31)
     };
 
+    /// @brief The status IDs to be used with onStatus(), offStatus(), isStatus() and setStatus().
     /// @unofficial
     enum Status_e {
         STATUS_CREATED, ///< The player was created.
@@ -355,8 +358,8 @@ public:
         STATUS_55,
         STATUS_56,
         STATUS_57,
-        STATUS_58,
-        STATUS_59,
+        STATUS_RIDE_NUT_2,
+        STATUS_RIDE_NUT,
         STATUS_5A,
         STATUS_5B,
         STATUS_5C,
@@ -368,17 +371,17 @@ public:
         STATUS_62,
         STATUS_63,
         STATUS_64,
-        STATUS_65,
-        STATUS_66,
+        STATUS_GOAL_POLE_TOUCHED, ///< The player has touched the goal pole.
+        STATUS_GOAL_POLE_WAIT_BELOW_PLAYER, ///< The player is waiting for the player below to slide down the goal pole.
         STATUS_67,
-        STATUS_GOAL_POLE_FINISHED_SLIDE_DOWN,
-        STATUS_GOAL_POLE_READY_FOR_MULTI_JUMP,
-        STATUS_6A,
+        STATUS_GOAL_POLE_FINISHED_SLIDE_DOWN, ///< The player has reached the bottom of the goal pole after sliding down.
+        STATUS_GOAL_POLE_READY_FOR_JUMP_OFF, ///< The player is ready to jump off the goal pole.
+        STATUS_GOAL_POLE_TURN, ///< The player is turning toward the screen after jumping off the goal pole.
         STATUS_6B,
         STATUS_6C,
         STATUS_6D,
         STATUS_6E,
-        STATUS_6F,
+        STATUS_GOAL_POLE_NOT_GOAL_NO_MOVE, ///< The player did not reach the goal pole in time and mustn't move anymore.
         STATUS_70,
         STATUS_71,
         STATUS_72,
@@ -435,7 +438,7 @@ public:
         STATUS_A9,
         STATUS_AA,
         STATUS_AB,
-        STATUS_AC,
+        STATUS_FOLLOW_MAME_KURIBO, ///< Mini Goombas are attached to the player.
         STATUS_AD,
         STATUS_AE,
         STATUS_B3 = 0xb3, /// [Yoshi only?]
@@ -606,7 +609,7 @@ public:
     virtual void setRideJrCrownMtx(const mMtx_c *) {}
     virtual void setRideJrCrownAnm(int) {}
 
-    virtual const float *getHeadTopPosP() { return nullptr; }
+    virtual const mVec3_c *getHeadTopPosP() { return nullptr; }
     virtual const float *getGravityData() { return mGravityData; }
     virtual bool isCarry() const { return false; }
     virtual bool isLiftUp() { return false; }
@@ -668,10 +671,14 @@ public:
     void executeState();
     void changeDemoState(const sStateIDIf_c &, int);
 
-    void onStatus(int);
-    void offStatus(int);
-    bool isStatus(int);
-    void setStatus(int);
+    void onStatus(int id); ///< Enables the status with the given ID. See Status_e.
+    void offStatus(int id); ///< Disables the status with the given ID. See Status_e.
+    bool isStatus(int id); ///< Checks if the status with the given ID is active. See Status_e.
+    /// Enables the status with the given ID and disables all others.
+    /// @bug The implemententation of this is broken. Presumably this was written before
+    /// the status bits were split up into multiple bytes, because it only clears the bits in the byte
+    /// where the selected status bit is and leaves the other status bytes unchanged.
+    void setStatus(int id);
 
     void calcPlayerSpeedXY();
     void posMoveAnglePenguin(mVec3_c, u16);
@@ -958,7 +965,7 @@ public:
 
     float calcStarAccel(float f) { return 3.0f * f; }
     void set_m_d80(int i, float f) { m_d80[i] = f; }
-    float getSomeYOffset() const { return mSomeYOffset; }
+    float getHeight() const { return mHeight; }
     float get_1064() const { return m_1064; }
     float get_1068() const { return m_1068; }
     float get_106c() const { return m_106c; }
@@ -984,6 +991,7 @@ public:
 
     float getDirSpeed() const { return sc_DirSpeed[mDirection]; }
 
+    PLAYER_TYPE_e getPlayerType() const { return mPlayerType; }
     u8 getDirection() const { return mDirection; }
     PLAYER_POWERUP_e getPowerup() const { return mPowerup; }
 
@@ -1067,8 +1075,8 @@ public:
     fBaseID_e mRelatedActorID; ///< Actor that is eating the player, or the door actor.
     fBaseID_e mHipAttackPlayerID;
     u32 mStatusFlags[7];
-    float mSomeYOffset;
-    u8 m_ca0;
+    float mHeight;
+    u8 mPrevDirection;
     u8 mAmiLayer;
     u8 mPlayerLayer;
     mVec3_c mLastPosDelta;
@@ -1088,7 +1096,7 @@ public:
     s8 mTreadCount;
     s8 mStarCount;
     s8 mPlComboCount;
-    u32 m_cf0;
+    u32 mNewFollowMameKuribo;
     u32 mFollowMameKuribo;
     fBaseID_e mIceActorID;
     PLAYER_POWERUP_e mPowerup;
@@ -1098,33 +1106,38 @@ public:
     mVec3_c mBgPushForce; ///< Belts, quicksand etc.
     float m_d3c;
 
-    u32 mNowBgCross1;
-    u32 mNowBgCross2;
-    u32 mOldBgCross1;
-    u32 mOldBgCross2;
-    u32 mBgCrossHistory[10];
+    u32 mNowBgCross1, mNowBgCross2;
+    u32 mOldBgCross1, mOldBgCross2;
+    u32 mBgFootHistory[10];
 
     u32 mStandOnUnitType;
     u32 mPrevStandOnUnitType;
     float m_d80[2];
     GroundType_e mGroundType;
+
     float m_d8c;
     int mNoHitObjTimer;
-    mAng m_d94;
+
+    short m_d94;
     short m_d96;
-    mAng m_d98, m_d9a, m_d9c;
-    int m_da0;
+    short m_d98;
+    short m_d9a;
+    short m_d9c;
+
+    int mAirWalkTimer; ///< Timer to wait before changing to the falling state after walking off a ledge.
+
     float mWaterHeight;
     float mPrevWaterHeight;
-    int m_dac;
-    float m_db0;
+    int mWaterDepth;
+    float mSinkSandHeight;
     bool mIsBgDamage;
     s8 mBgDamageType;
     u8 mWaterType; ///< Value is a dBc_c::WATER_TYPE_e.
     mVec3_c mAirWaterHitPos;
     short mAirWaterHitAngle;
     float m_dc8;
-    float m_dcc;
+    float mRideNutHeight;
+
     dCc_c mCc1, mAttCc1, mAttCc2, mAttCc3;
     float m_1060;
     float m_1064;
@@ -1137,16 +1150,24 @@ public:
     u8 mDispLimitRelatedR;
     float mDispLimitRelatedL2;
     float mDispLimitRelatedR2;
-    sFStateMgr_c<daPlBase_c, sStateMethodUsr_FI_c> mDemoStateMgr;
+
+    sFStateMgr_c<daPlBase_c, sStateMethodUsr_FI_c> mDemoStateMgr; ///< The state manager for demo (cutscene) states.
     void *mDemoStateChangeParam; ///< To be used as a kind of argument to the new demo state.
     int mDemoSubstate; ///< Demo states can use this as a kind of sub-state variable (cast to some enum)
-    int mDemoWaitTimer;
-    u8 mIsDemoMode;
-    sFStateMgr_c<daPlBase_c, sStateMethodUsr_FI_c> mStateMgr;
-    void *mStateChangeParam; ///< To be used as a kind of argument to the new state.
-    int mSubstate; ///< States can use this as a kind of sub-state variable (cast to some enum)
-    int mSubstateTimer; ///< States can use this generic timer for various purposes.
-    int mSubstateTimer2; ///< States can use this generic timer for various purposes.
+    /// Demo states can use this generic timer for various purposes.
+    /// It is automatically decrememented in executeState() every frame.
+    int mDemoSubstateTimer;
+    bool mIsDemoMode; ///< Whether the player is currently in a demo (cutscene) state.
+
+    sFStateMgr_c<daPlBase_c, sStateMethodUsr_FI_c> mStateMgr; ///< The state manager for regular player states.
+    void *mStateChangeParam; ///< To be used as an argument to the new state.
+    int mSubstate; ///< States can use this as a sub-state variable (cast to some enum).
+    /// States can use this generic timer for various purposes.
+    /// It is automatically decrememented in executeState() every frame.
+    int mSubstateTimer;
+    /// States can use this field for various purposes - as a timer, boolean flag, etc.
+    int mSubstateValue;
+
     mVec3_c mPressAttachPos;
     int m_1128;
     float m_112c;
@@ -1154,7 +1175,7 @@ public:
     float m_1134;
     float m_1138;
     float m_113c;
-    int mPlayerType;
+    PLAYER_TYPE_e mPlayerType;
 
     static const float sc_DirSpeed[];
     static const float sc_JumpSpeed;
@@ -1178,4 +1199,6 @@ public:
     /// Number of walking frames before being able to enter a pipe.
     /// @see mDokanCounterL, mDokanCounterR
     static const int sc_DokanEnterThreshold = 10;
+    static const int sc_DemoPoleWaitTurn = 5; ///< Number of frames to wait before turning towards the screen in the goal pole animation.
+    static const int sc_DemoPoleWaitEnd = 7; ///< Number of frames to wait before doing the course clear pose in the goal pole animation.
 };
