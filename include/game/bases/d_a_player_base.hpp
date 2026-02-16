@@ -155,6 +155,15 @@ public:
     };
 
     /// @unofficial
+    enum KimePoseMode_e {
+        KIME_POSE_NONE,
+        KIME_POSE_WITH_HAT,
+        KIME_POSE_PENGUIN,
+        KIME_POSE_NO_HAT,
+        KIME_POSE_PROPELLER
+    };
+
+    /// @unofficial
     enum ControlDemoState_e {
         CONTROL_DEMO_WAIT,
         CONTROL_DEMO_WALK,
@@ -375,7 +384,7 @@ public:
         STATUS_72,
         STATUS_73,
         STATUS_74,
-        STATUS_75,
+        STATUS_ENDING_DANCE_AUTO,
         STATUS_76,
         STATUS_77,
         STATUS_78,
@@ -437,7 +446,7 @@ public:
         STATUS_B9,
         STATUS_BA,
         STATUS_BB,
-        STATUS_BC,
+        STATUS_INVULNERABLILITY_BLINK, ///< Skip drawing the player this frame to create a blinking effect.
         STATUS_BD,
         STATUS_BE,
         STATUS_BF,
@@ -615,8 +624,18 @@ public:
     virtual bool setDamage(dActor_c *, DamageType_e);
     virtual bool setForcedDamage(dActor_c *, DamageType_e);
 
-    virtual bool vf3fc(float, float, int, int, int); ///< @unofficial
-    virtual bool vf400(float, float, int, int, int); ///< @unofficial
+    /**
+     * @brief Starts a jump action with the given parameters.
+     * Does not start a jump if the player is in a climbing state.
+     * @param jumpSpeed The vertical speed of the jump.
+     * @param speedF The @ref mSpeedF "forward speed".
+     * @param allowSteer Whether the player can steer in midair.
+     * @param keyMode The input settings for the jump. (0: none, 1: force jump pressed, 2: force jump not pressed)
+     * @param jumpMode The type of jump to perform. [TODO: document the jump modes]
+     */
+    virtual bool setJump(float jumpSpeed, float speedF, bool allowSteer, int keyMode, int jumpMode); ///< @unofficial
+    /// @brief Starts a jump action unconditionally. See setJump().
+    virtual bool _setJump(float jumpSpeed, float speedF, bool allowSteer, int keyMode, int jumpMode); ///< @unofficial
     virtual bool setWaitJump(float);
 
     virtual bool setHipAttackOnEnemy(mVec3_c *);
@@ -634,8 +653,8 @@ public:
     virtual void setZPositionDirect(float);
     virtual void offZPosSetNone();
 
-    virtual void vf434(int, int); ///< @unofficial
-    virtual void vf438(int, int); ///< @unofficial
+    virtual void startPlayerVoice(int, int); ///< @unofficial
+    virtual void holdPlayerVoice(int, int); ///< @unofficial
 
     virtual void startQuakeShock(dQuake_c::TYPE_SHOCK_e);
     virtual void startPatternRumble(const char *pattern);
@@ -652,39 +671,89 @@ public:
     void onStatus(int);
     void offStatus(int);
     bool isStatus(int);
-    void clearFollowMameKuribo();
-    void clearCcPlayerRev();
-    void clearComboCount();
-    void updateEndingDance();
+    void setStatus(int);
+
+    void calcPlayerSpeedXY();
+    void posMoveAnglePenguin(mVec3_c, u16);
+    void posMoveAnglePlayer(mVec3_c);
+    bool setSandMoveSpeed();
+    void calcWindSpeed();
+    void calcHeadAttentionAngle();
+
+    void calcSpeedOnIceLift();
+    void calcAccOnIceLift();
+    bool checkStandUpRoofOnLift();
+    bool checkStandUpRoof();
+
+    void gravitySet();
+    void powerSet();
+    void moveSpeedSet();
+    void airPowerSet();
+    void simpleMoveSpeedSet();
+    void normalPowerSet();
+    void grandPowerSet(); // [misspelling of "ground"]
+    void slipPowerSet(int);
+    void icePowerChange(int);
+    void fn_8004bf80(SpeedData_t *data); ///< @unofficial
+    void getTurnPower(sTurnPowerData &); ///< @unofficial
+    PowerChangeType_e getPowerChangeType(bool);
+    const float *getSpeedData();
+
     int addCalcAngleY(short, short);
     short getBesideMukiAngle(u8 direction);
     void turnBesideAngle();
-    bool checkRideActor(daPlBase_c *other);
-    void setRunFootEffect();
-    void calcSpeedOnIceLift();
-    void calcAccOnIceLift();
+    bool checkTurn();
+    void setTurnEnd();
+
+    void setJumpGravity();
+    void setButtonJumpGravity();
+    void setNormalJumpGravity();
+    float setJumpAddSpeedF(float);
+    float setAddLiftSpeedF();
+    bool setDelayHelpJump();
     bool setCrouchJump();
-    bool checkStandUpRoofOnLift();
-    bool checkStandUpRoof();
-    void gravitySet();
-    void moveSpeedSet();
-    void powerSet();
     bool checkJumpTrigger();
+    bool fn_800579c0(int, int); ///< @unofficial
+
+    void setStampReduction();
+    void setStampPlayerJump(bool b, float f);
+    void calcReductionScale();
+    mVec3_c getReductionModelScale();
+
+    bool setJumpDaiRide();
+    bool setPlayerJumpDai(daPlBase_c *other);
+    void setPlayerJumoDaiPos();
+
+    bool setCloudOn(dActor_c *cloudActor);
+    void cancelCloudOn();
+    mVec3_c getCloudPos();
+    bool updateCloudMove();
+
+    bool setFunsui();
+    bool updateFunsuiPos(float, float);
+    bool releaseFunsui(float);
+
+    void setRideNat(float);
+    void updateRideNat();
+
+    bool isSaka();
+    bool isSlipSaka();
+    bool checkSakaReverse();
+    bool checkSlip();
+    bool checkCrouchSlip();
+    bool checkSlipEndKey();
+    float getSlipMaxSpeedF();
+    float getSakaMaxSpeedRatio(u8 direction);
+    float getSakaStopAccele(u8 direction);
+    float getSakaMoveAccele(u8 direction);
+    float getIceSakaSlipOffSpeed();
+
     void changeActionSlipEnd(AnmBlend_e);
     void setSlipAction_ToStoop();
     void setSlipAction_ToEnd();
     void setSlipActionEnd();
     void setSlipActionViewLimitEnd();
-    bool checkSakaReverse();
-    bool checkBGCrossWall(u8 direction);
-    bool checkTurn();
-    void setTurnEnd();
-    void setVsPlHipAttackEffect();
-    void setLandSmokeEffect(int);
-    void fn_80057e70(ulong soundID, bool);
-    void fn_80057ee0(ulong soundID, short, bool);
-    void fn_80057f60(ulong soundID, bool);
-    void fn_80057fd0(ulong soundID, short, bool);
+
     void setHipAttackDropEffect();
     void setHipBlockBreak();
     void setHipAttack_Ready();
@@ -700,212 +769,179 @@ public:
     void HipAction_StandNormal();
     void HipAction_StandNormalEnd();
     void HipAction_ToStoop();
-    bool isSlipSaka();
-    bool isSaka();
-    bool setJumpDaiRide();
-    bool setPlayerJumpDai(daPlBase_c *other);
-    void setPlayerJumoDaiPos();
-    void setNoHitPlayer(const daPlBase_c *, int);
-    void updateNoHitPlayer();
-    bool isMameAction();
+
+    void onFollowMameKuribo();
+    void clearFollowMameKuribo();
+    u32 getFollowMameKuribo();
+
     bool isDemo();
-    void setControlDemoWait();
-    void initDemoKimePose();
-    void fn_80051d00(int);
-    void airPowerSet();
-    bool checkSlip();
-    bool checkCrouchSlip();
-    bool checkSlipEndKey();
-    float getSlipMaxSpeedF();
-    float getSakaMaxSpeedRatio(u8 direction);
-    float getSakaStopAccele(u8 direction);
-    float getSakaMoveAccele(u8 direction);
-    float getIceSakaSlipOffSpeed();
-    PowerChangeType_e getPowerChangeType(bool);
-    const float *getSpeedData();
-    void calcWindSpeed();
-    void startFootSoundPlayer(unsigned long);
-    void setSlipSE();
-    bool setSandFunsuiLandEffect();
-    void setLandSmokeEffectLight();
-    void setStartJumpEffect(int);
-    bool setSandJumpEffect();
-    void setLandJumpEffect(int);
-    void setSlipOnWaterEffect(mEf::levelEffect_c *effect);
-    void setSlipSmokeEffect();
-    void setBrakeSmokeEffect(mVec3_c &offset);
-    void setTurnSmokeEffect();
-    void fadeOutTurnEffect();
-    void setSandEffect();
-    void setSoundPlyMode();
-    void setFootSound();
-    void bgCheck(int);
-    bool startControlDemo();
-    bool isDemoType(DemoType_e);
-    bool isDemoMode() const;
     bool isControlDemoAll();
     bool isDemoAll();
+    bool isDemoType(DemoType_e);
+    bool isDemoMode() const;
     void onDemo();
     void offDemo();
-    bool isPlayerGameStop();
-    void stopOther();
-    void playOther();
-    void changeNormalAction();
-    bool checkTimeOut();
     bool executeDemoState();
-    void initDemoInDokanUD(u8);
-    void initDemoInDokanLR(u8);
-    void endDemoInDokan();
-    void executeDemoInDokan(u8);
-    float getWaterDokanCenterOffset(float);
-    void initDemoInDokan();
-    bool demo_dokan_move_x(float, float);
-    bool demo_dokan_move_y(float, float);
-    bool setDemoOutDokanAction(int, DokanDir_e dir);
-    void endDemoOutDokan();
-    void initDemoOutDokanUD(u8);
-    void executeDemoOutDokanUD();
-    void initDemoOutDokanLR(u8);
-    void executeDemoOutDokanLR();
-    void checkWater();
-    void setExitRailDokan();
-    void stopGoalOther();
-    void playGoalOther();
-    void setDemoGoalMode(int, int);
-    void finalizeDemoGoalBase();
-    float getDemoGoalLandPos();
-    void setDemoGoal_MultiJump();
-    void initGoalJump(mVec3_c &, float);
-    void executeDemoGoal_Pole();
-    bool calcGoalJump();
-    void executeDemoGoal_Wait();
-    void executeDemoGoal_KimePose();
-    void setObjDokanIn(dBg_ctr_c *, mVec3_c &, int);
-    bool isDispOutCheckOn();
-    void endControlDemo(int);
+
+    bool startControlDemo();
     void setControlDemoDir(u8);
     bool isControlDemoWait();
-    void setControlDemoWalk(const float &, const float &);
-    bool isControlDemoWalk();
-    void setControlDemoAnm(int);
+    void setControlDemoWait();
     bool isControlDemoAnm(int);
-    void fn_80052290(int);
+    void setControlDemoAnm(int);
+    bool isControlDemoWalk();
+    void fn_80052290(int); ///< @unofficial
     void setControlDemoKinopioWalk();
     void setControlDemoKinopioSwim();
     void setControlDemoEndingDance();
-    bool isBossDemoLand();
-    bool fn_80052500(int, float, int);
-    bool isHitWallKinopioWalk(int);
-    bool checkKinopioWaitBG(int);
-    void fn_80052ef0(int, int, int);
+    void setControlDemoWalk(const float &, const float &);
+    void endControlDemo(int);
+
+    void initDemoInDokan();
+    void initDemoInDokanUD(u8);
+    void initDemoInDokanLR(u8);
+    void executeDemoInDokan(u8);
+    void endDemoInDokan();
+    bool setDemoOutDokanAction(int, DokanDir_e dir);
+    void initDemoOutDokanUD(u8);
+    void initDemoOutDokanLR(u8);
+    void executeDemoOutDokanUD();
+    void executeDemoOutDokanLR();
+    void endDemoOutDokan();
+    float getWaterDokanCenterOffset(float);
+    bool demo_dokan_move_x(float, float);
+    bool demo_dokan_move_y(float, float);
+    void setObjDokanIn(dBg_ctr_c *, mVec3_c &, int);
+    void setExitRailDokan();
+
+    void stopGoalOther();
+    void playGoalOther();
+    void setDemoGoalMode(int, int);
+    void setDemoGoal_MultiJump();
+    void finalizeDemoGoalBase();
+    float getDemoGoalLandPos();
+    void initGoalJump(mVec3_c &, float);
+    bool calcGoalJump();
+    void executeDemoGoal_Pole();
+    void executeDemoGoal_Wait();
+    void executeDemoGoal_KimePose();
     bool setEnemyStageClearDemo();
-    void calcHeadAttentionAngle();
-    bool calcSideLimitMultL(float);
-    bool calcSideLimitMultR(float);
-    bool checkDispSideLemit();
-    bool revSideLimitCommon(float);
-    void fn_80055d00();
-    void underOverCheck();
-    void checkDispOver();
-    bool checkPressBg();
-    void checkDisplayOutDead();
-    bool isBgPress(dActor_c *);
-    bool checkInsideCrossBg(float);
+    void updateEndingDance();
+    void initDemoKimePose();
+    void fn_80051d00(int); ///< @unofficial
+    void fn_80052ef0(int, int, int); ///< @unofficial
 
-    int getCcLineKind();
-    void initCollision(sCcDatNewF *dat1, sCcDatNewF *dat2);
-    void releaseCcData();
-    void clearCcData();
-    void setCcAtBody(int);
-    void setCcAtSlip();
-    void setCcAtPenguinSlip();
-    void setCcAtHipAttack();
-    void setCcAtStar();
-    void setCcAtCannon();
-    void entryCollision();
-    bool isActionRevisionY();
-    void setCcPlayerRev(dCc_c *, dCc_c *, float, int);
-    bool calcCcPlayerRev(float *);
-    bool isEnableStampPlayerJump(dCc_c *, dCc_c *);
-    void setStampReduction();
-    void setStampPlayerJump(bool b, float f);
-    void calcReductionScale();
-    mVec3_c getReductionModelScale();
-    void checkSideViewLemit();
-    bool checkSinkSand();
-    void fn_80056370(dActor_c *, BgPress_e);
-    bool isCarryObjBgCarried(u8);
-    float getWaterCheckPosY();
-    bool setBgDamage();
-    bool isEnablePressUD();
-    bool isEnablePressLR();
-    void setStatus87(); ///< @unofficial
-    bool isRideCheckEnable();
-    void setStatus5D(float f); ///< @unofficial
-
-    daPlBase_c *getHipAttackDamagePlayer();
-    void setHipAttackDamagePlayer(daPlBase_c *player);
-    void clearHipAttackDamagePlayer();
-
-    void setNoHitObjBg(dActor_c *, int);
-    void calcNoHitObjBgTimer();
-
-    void setOldBGCross();
-    void clearBgCheckInfo();
-    void checkBgCross();
-    void checkDamageBg();
-
-    bool setSandMoveSpeed();
-
-    bool setFunsui();
-    bool updateFunsuiPos(float, float);
-    bool releaseFunsui(float);
-
-    bool setCloudOn(dActor_c *cloudActor);
-    void cancelCloudOn();
-    mVec3_c getCloudPos();
-    bool updateCloudMove();
-
+    bool isBossDemoLand();
     void DemoAnmNormal();
     void DemoAnmBossSetUp();
     void DemoAnmBossGlad();
     void DemoAnmBossAttention();
     void DemoAnmBossKeyGet();
 
-    void simpleMoveSpeedSet();
-    void grandPowerSet(); // [misspelling of "ground"]
-    void slipPowerSet(int);
+    void setRunFootEffect();
+    void setVsPlHipAttackEffect();
+    void setLandSmokeEffect(int);
+    void setLandSmokeEffectLight();
+    void setSandEffect();
+    bool setSandJumpEffect();
+    bool setSandFunsuiLandEffect();
+    void setStartJumpEffect(int);
+    void setLandJumpEffect(int);
+    void setSlipOnWaterEffect(mEf::levelEffect_c *effect);
+    void setSlipSmokeEffect();
+    void setBrakeSmokeEffect(mVec3_c &offset);
+    void setTurnSmokeEffect();
+    void fadeOutTurnEffect();
 
-    void getTurnPower(sTurnPowerData &); ///< @unofficial
-    void icePowerChange(int);
-    void normalPowerSet();
-    void fn_8004bf80(SpeedData_t *data);
-
-    void setJumpGravity();
-    void setButtonJumpGravity();
-    void setNormalJumpGravity();
-
-    void setStatus(int);
-    void calcTimerProc();
-    dPyMdlBase_c *getModel();
-    void calcPlayerSpeedXY();
-    void posMoveAnglePenguin(mVec3_c, u16);
-    void posMoveAnglePlayer(mVec3_c);
-    float setJumpAddSpeedF(float);
-    float setAddLiftSpeedF();
-    bool setDelayHelpJump();
-    bool fn_800579c0(int, int);
-    void onFollowMameKuribo();
-    u32 getFollowMameKuribo();
-    bool isMaskDraw();
-    void setRideNat(float);
-    void updateRideNat();
-    bool fn_80057E00(int);
+    void setSoundPlyMode();
     void setItemCompleteVoice();
+    void startFootSoundPlayer(unsigned long);
+    void setFootSound();
+    void setSlipSE();
+    bool suppressSound(int suppressionMode); ///< @unofficial
+    void startSound(ulong soundID, bool); ///< @unofficial
+    void startSound(ulong soundID, short, bool); ///< @unofficial
+    void holdSound(ulong soundID, bool); ///< @unofficial
+    void holdSound(ulong soundID, short, bool); ///< @unofficial
+
+    void initCollision(sCcDatNewF *dat1, sCcDatNewF *dat2);
+    void entryCollision();
+    void releaseCcData();
+    void clearCcData();
+    void clearCcPlayerRev();
+    int getCcLineKind();
+    void setCcAtBody(int);
+    void setCcAtSlip();
+    void setCcAtPenguinSlip();
+    void setCcAtHipAttack();
+    void setCcAtStar();
+    void setCcAtCannon();
+    bool isActionRevisionY();
+    void setCcPlayerRev(dCc_c *, dCc_c *, float, int);
+    bool calcCcPlayerRev(float *);
+    bool isEnableStampPlayerJump(dCc_c *, dCc_c *);
+
+    void bgCheck(int);
+    void setOldBGCross();
+    void checkBgCross();
+    bool checkInsideCrossBg(float);
+    void clearBgCheckInfo();
+    bool isCarryObjBgCarried(u8);
+    bool checkBGCrossWall(u8 direction);
+    void checkDamageBg();
+    bool setBgDamage();
+    bool checkSinkSand();
+    float getWaterCheckPosY();
+    void checkWater();
+    bool isHitWallKinopioWalk(int);
+    bool checkKinopioWaitBG(int);
+    void underOverCheck();
+    void checkDispOver();
+    bool checkPressBg();
+    bool isBgPress(dActor_c *);
+    bool isEnablePressUD();
+    bool isEnablePressLR();
+    void checkDisplayOutDead();
+    bool fn_80052500(int, float, int); ///< @unofficial
+    void fn_80055d00(); ///< @unofficial
+    void fn_80056370(dActor_c *, BgPress_e); ///< @unofficial
+
+    bool isDispOutCheckOn();
+    bool calcSideLimitMultL(float);
+    bool calcSideLimitMultR(float);
+    void checkSideViewLemit();
+    bool checkDispSideLemit();
+    bool revSideLimitCommon(float);
+
+    void calcTimerProc();
+    void changeNormalAction();
+    void stopOther();
+    void playOther();
+    void setStatus87(); ///< @unofficial
+    void setStatus5D(float f); ///< @unofficial
+
+    daPlBase_c *getHipAttackDamagePlayer();
+    void setHipAttackDamagePlayer(daPlBase_c *player);
+    void clearHipAttackDamagePlayer();
+
+    void setNoHitPlayer(const daPlBase_c *, int);
+    void updateNoHitPlayer();
+    void setNoHitObjBg(dActor_c *, int);
+    void calcNoHitObjBgTimer();
+
     void clearTreadCount();
     s8 calcTreadCount(int);
+    void clearComboCount();
     s8 calcComboCount(int);
+
+    dPyMdlBase_c *getModel();
     mVec3_c getAnkleCenterPos();
+    bool isMaskDraw();
+    bool isMameAction();
+    bool isPlayerGameStop();
+    bool checkTimeOut();
+    bool checkRideActor(daPlBase_c *other);
+    bool isRideCheckEnable();
 
     // [Needed to place getOldStateID in the correct location]
     const sStateIDIf_c &getOldState() {
@@ -921,18 +957,11 @@ public:
     }
 
     float calcStarAccel(float f) { return 3.0f * f; }
-    float calcIdkAccel(float f) { return 0.375f * f; }
     void set_m_d80(int i, float f) { m_d80[i] = f; }
     float getSomeYOffset() const { return mSomeYOffset; }
-
     float get_1064() const { return m_1064; }
     float get_1068() const { return m_1068; }
     float get_106c() const { return m_106c; }
-
-    float getAnkleCenterX() { return getAnkleCenterPos().x; }
-    float getAnkleCenterY() { return getAnkleCenterPos().y; }
-
-    int getTreadCount() { return mTreadCount; }
 
     u32 isNowBgCross(BgCross1_e m) { return mNowBgCross1 & m; }
     u32 isNowBgCross(BgCross2_e m) { return mNowBgCross2 & m; }
@@ -972,7 +1001,7 @@ public:
     fBaseID_e mBgPressIDs[13]; ///< Index into this array with BgPress_e.
     float mViewLimitPadding;
 
-    int mKimePoseState;
+    KimePoseMode_e mKimePoseMode;
     s8 mDemoState; /// Value is a ControlDemoState_e.
 
     int mDokanNextGoto;
@@ -1053,8 +1082,8 @@ public:
     const float *mGravityData;
     int mNoGravityTimer;
     int mStarTimer;
-    int mTimer_ce0;
-    int mTimer_ce4;
+    int mDamageInvulnTimer;
+    int mPowerupChangeInvulnTimer;
     int mTimer_ce8;
     s8 mTreadCount;
     s8 mStarCount;

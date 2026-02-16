@@ -48,11 +48,11 @@ bool dAcPy_c::setHipAttackOnEnemy(mVec3_c *hitPos) {
 void dAcPy_c::setHipAttackEffect() {
     if (isNowBgCross(BGC_14)) {
         setSeaLandSmokeEffect();
-        fn_80057e70(SE_PLY_HPDP_SPLASH, 0);
+        startSound(SE_PLY_HPDP_SPLASH, 0);
         if (mPowerup == POWERUP_MINI_MUSHROOM) {
-            fn_80057e70(SE_PLY_HIP_ATTACK_M, 0);
+            startSound(SE_PLY_HIP_ATTACK_M, 0);
         } else {
-            fn_80057e70(SE_PLY_HIP_ATTACK, 0);
+            startSound(SE_PLY_HIP_ATTACK, 0);
         }
     } else {
         daPlBase_c::setHipAttackEffect();
@@ -81,7 +81,7 @@ bool dAcPy_c::setHipAttackAction() {
 
 void dAcPy_c::setHipAttack_AttackStart() {
     daPlBase_c::setHipAttack_AttackStart();
-    fn_80057e70(SE_PLY_ROLLING, 0);
+    startSound(SE_PLY_ROLLING, 0);
 }
 
 void dAcPy_c::initializeState_HipAttack() {
@@ -149,7 +149,7 @@ void dAcPy_c::executeState_SpinHipAttack() {
     }
     switch ((SpinHipAttackSubstate_e) mSubstate) {
         case SPIN_HIP_ATTACK_ACTION_0:
-            fn_80057f60(SE_PLY_PRPL_LETDOWN_FAST, 0);
+            holdSound(SE_PLY_PRPL_LETDOWN_FAST, 0);
             if (isNowBgCross(BGC_14)) {
                 mMaxFallSpeed = sc_WaterMaxFallSpeed;
             } else {
@@ -167,7 +167,7 @@ void dAcPy_c::executeState_SpinHipAttack() {
             }
             if (isNowBgCross(BGC_IS_FOOT) && !isOldBgCross(BGC_62)) {
                 startQuakeShock(dQuake_c::TYPE_7);
-                fn_80057e70(SE_PLY_PRPL_LETDOWN_FAST_LAND, 0);
+                startSound(SE_PLY_PRPL_LETDOWN_FAST_LAND, 0);
                 if (isNowBgCross(BGC_CLIFF)) {
                     changeState(daPlBase_c::StateID_Kani, (void *) KANI_CHANGE_JUMP_HANG); // [why daPlBase_c?]
                     return;
@@ -425,11 +425,11 @@ void dAcPy_c::fn_80127740(int jumpMode, int b) {
                 anmNum = 5;
                 break;
             case 1:
-                vf434(21, 0);
+                startPlayerVoice(21, 0);
                 anmNum = 8;
                 break;
             default:
-                vf434(22, 0);
+                startPlayerVoice(22, 0);
                 anmNum = 11;
                 break;
         }
@@ -765,7 +765,7 @@ void dAcPy_c::finalizeState_WallSlide() {
 }
 
 void dAcPy_c::setWallSlideEffect() {
-    fn_80057f60(SE_PLY_SLIP_TATE, 0);
+    holdSound(SE_PLY_SLIP_TATE, 0);
     if (getTallType(-1) > 2) {
         return;
     }
@@ -880,8 +880,8 @@ void dAcPy_c::executeState_WallJump() {
     }
     jmpInf_c jumpInf(f, 0, 1);
     changeState(StateID_Jump, &jumpInf);
-    vf434(25, 0);
-    fn_80057e70(SE_PLY_KABE_KICK, false);
+    startPlayerVoice(25, 0);
+    startSound(SE_PLY_KABE_KICK, false);
     m_91 = 16;
 }
 
@@ -1004,7 +1004,7 @@ void dAcPy_c::initializeState_SpinJump() {
     setSpinJumpEffect(1);
     u32 substate = (u32) mStateChangeParam;
     if (substate <= SPIN_JUMP_ACTION_1) {
-        fn_80057e70(SE_PLY_SPIN_ATTACK, true);
+        startSound(SE_PLY_SPIN_ATTACK, true);
     }
     if (isStatus(STATUS_2C)) {
         mPyMdlMng.setAnm(71, 0.0f, 0.0f);
@@ -1132,7 +1132,7 @@ s16 dAcPy_c::getMissSpinAngle() {
 
 void dAcPy_c::setMissSpin() {
     m_105c = 0x1400;
-    fn_80057e70(SE_PLY_SPIN_ONCE, true);
+    startSound(SE_PLY_SPIN_ONCE, true);
     if (isMissSpinEnableAnm()) {
         setMissSpinJumpEffect(1);
     }
@@ -1172,7 +1172,7 @@ void dAcPy_c::initializeState_RideOffJump() {
     mSpeedF = sc_DirSpeed[mDirection] * -1.0f;
     jmpInf_c jumpInf(2.85f, 0, 1);
     _jumpSet(&jumpInf);
-    fn_80057e70(SE_PLY_BREAK_FREE_YOSHI, false);
+    startSound(SE_PLY_BREAK_FREE_YOSHI, false);
 }
 
 void dAcPy_c::finalizeState_RideOffJump() {
@@ -1323,7 +1323,7 @@ void dAcPy_c::initializeState_CannonJump() {
     }
     clearNowBgCross();
     dQuake_c::m_instance->shockMotor(mPlayerNo, dQuake_c::TYPE_5, 0, false);
-    vf434(35, 0);
+    startPlayerVoice(35, 0);
     mPyMdlMng.setAnm(127);
     mKey.onStatus(dAcPyKey_c::STATUS_DISABLE_LR);
     mKey.onStatus(dAcPyKey_c::STATUS_FORCE_NO_JUMP);
@@ -1447,7 +1447,7 @@ void dAcPy_c::initializeState_BlockJump() {
     mSpeedF = 0.5f;
     mKey.onStatus(dAcPyKey_c::STATUS_FORCE_JUMP);
     if (isItemKinopio()) {
-        fn_80057e70(SE_VOC_ITEM_KO_FOUND, false);
+        startSound(SE_VOC_ITEM_KO_FOUND, false);
     }
 }
 
@@ -1495,7 +1495,7 @@ void dAcPy_c::setSlipSE() {
         return;
     }
     if (isNowBgCross(BGC_15) && mPowerup == POWERUP_MINI_MUSHROOM) {
-        fn_80057f60(SE_PLY_SLIP_W, 0);
+        holdSound(SE_PLY_SLIP_W, 0);
     } else {
         daPlBase_c::setSlipSE();
     }
@@ -1575,12 +1575,12 @@ void dAcPy_c::executeState_RollSlip() {
     powerSet();
     turnAngle();
     if (mSubstateTimer2 != 0 && mKey.triggerJump()) {
-        vf3fc(sc_JumpSpeed, mSpeedF * 0.8f, 1, 0, 1);
+        setJump(sc_JumpSpeed, mSpeedF * 0.8f, true, 0, 1);
         return;
     }
     switch ((RollSlipSubstate_e) mSubstate) {
         case ROLL_SLIP_ACTION_0:
-            fn_80057f60(SE_PLY_MOVE_ROLLING, false);
+            holdSound(SE_PLY_MOVE_ROLLING, false);
             switch (mSubstateTimer2) {
                 case 0:
                     mAccelF = 0.0f;
@@ -1685,7 +1685,7 @@ void dAcPy_c::initializeState_PenguinSlide() {
     onStatus(STATUS_88);
 
     mPyMdlMng.setAnm(139);
-    vf434(27, 0);
+    startPlayerVoice(27, 0);
     m_540 = 30;
     m_544 = getData(0);
 }
@@ -1708,7 +1708,7 @@ bool dAcPy_c::checkPenguinSlideJump() {
         int dir = -1;
         if (mKey.buttonDown() || (mKey.buttonWalk(&dir) && dir == mDirection)) {
             mPyMdlMng.setAnm(140);
-            fn_80057e70(SE_PLY_PNGN_JUMP, false);
+            startSound(SE_PLY_PNGN_JUMP, false);
             onStatus(STATUS_PENGUIN_SLIDE_JUMP);
             offNowBgCross(BGC_IS_FOOT);
             float tmp = std::fabs(mSpeedF) - 1.5f;
@@ -1720,7 +1720,7 @@ bool dAcPy_c::checkPenguinSlideJump() {
                 mSpeed.y = data_802f5a48[2];
             }
         } else {
-            vf3fc(sc_JumpSpeed, mSpeedF * 0.8f, 1, 0, 1);
+            setJump(sc_JumpSpeed, mSpeedF * 0.8f, true, 0, 1);
         }
         return true;
     }
@@ -1814,9 +1814,9 @@ void dAcPy_c::executeState_PenguinSlide() {
             daPlBase_c::slipActionMove(ang);
             if (isNowBgCross(BGC_IS_FOOT)) {
                 if (mGroundType == GROUND_TYPE_WATER) {
-                    fn_80057fd0(SE_PLY_PNGN_SLIP_SEA, std::fabs(mSpeedF), false);
+                    holdSound(SE_PLY_PNGN_SLIP_SEA, std::fabs(mSpeedF), false);
                 } else {
-                    fn_80057f60(SE_PLY_PNGN_SLIP, false);
+                    holdSound(SE_PLY_PNGN_SLIP, false);
                 }
             }
             break;
@@ -1914,7 +1914,7 @@ void dAcPy_c::setPenguinSlideEffect() {
 void dAcPy_c::setPenguinSlideLandEffect() {
     setLandSmokeEffect(0);
     if (mGroundType == GROUND_TYPE_WATER) {
-        fn_80057e70(SE_PLY_SPLASH_SHALLOW, false);
+        startSound(SE_PLY_SPLASH_SHALLOW, false);
     }
 }
 
@@ -2013,7 +2013,7 @@ void dAcPy_c::setWalkActionAnm(AnmBlend_e blend) {
 }
 
 void dAcPy_c::setWaitActionAnm(AnmBlend_e blend) {
-    if (dScStage_c::m_isStaffCredit && isStatus(STATUS_75)) {
+    if (dScStage_c::m_isStaffCredit && isStatus(STATUS_ENDING_DANCE_AUTO)) {
         mPyMdlMng.setAnm(175);
         return;
     }
@@ -2099,7 +2099,7 @@ void dAcPy_c::setNormalWalkAnm(AnmBlend_e blend, float speedRate) {
                 setWaitActionAnm(blend);
                 break;
         }
-        fn_80057fd0(SE_PLY_ICE_SLIP, std::fabs(mSpeedF), false);
+        holdSound(SE_PLY_ICE_SLIP, std::fabs(mSpeedF), false);
     } else {
         m_f0 = 0;
         onStatus(STATUS_62);
@@ -2447,7 +2447,7 @@ void dAcPy_c::initializeState_Crouch() {
             break;
     }
     mAngle.y = getMukiAngle(mDirection);
-    fn_80057e70(SE_PLY_QUAT, true);
+    startSound(SE_PLY_QUAT, true);
     onStatus(STATUS_A8);
     onStatus(STATUS_51);
     onStatus(STATUS_A2);
@@ -2716,7 +2716,7 @@ bool dAcPy_c::fn_8012e540(dActor_c *actor, bool b) {
         m_1308 = 1;
         mPyMdlMng.mpMdl->m_17c |= 2;
         mPyMdlMng.mpMdl->setBodyAnm(28, 1.0f, 0.0f, 0.0f);
-        vf434(18, 0);
+        startPlayerVoice(18, 0);
         return true;
     }
     return false;
@@ -2790,7 +2790,7 @@ bool dAcPy_c::checkCarryThrow() {
 }
 
 void dAcPy_c::initializeThrowCommonBase() {
-    vf434(19, 0);
+    startPlayerVoice(19, 0);
     if (isNowBgCross(BGC_14)) {
         mPyMdlMng.setAnm(37);
     } else {
@@ -3029,11 +3029,11 @@ void dAcPy_c::initializeState_LiftUp() {
     dAcPy_c *carryPlayer = getCarryPlayer();
     setVirusStar(carryPlayer);
     if (carryPlayer != nullptr) {
-        vf434(20, 0);
+        startPlayerVoice(20, 0);
     } else {
-        vf434(18, 0);
+        startPlayerVoice(18, 0);
     }
-    fn_80057e70(SE_PLY_OTHER_ON, false);
+    startSound(SE_PLY_OTHER_ON, false);
     mPyMdlMng.setAnm(108, 0.0f, 0.0f);
     mSpeedF = 0.0f;
     mSpeed.y = 0.3f;
@@ -3184,7 +3184,7 @@ void dAcPy_c::setWaterInEffect() {
     bool bigSplash = false;
 
     if (isNowBgCross(BGC_WATER_BUBBLE)) {
-        fn_80057e70(SE_PLY_SPLASH_GEL, false);
+        startSound(SE_PLY_SPLASH_GEL, false);
         mAng3_c efAng(0, 0, -mAirWaterHitAngle);
         dEf::createPlayerEffect(mPlayerNo, "Wm_mr_wfloatsplash", 0, &mAirWaterHitPos, &efAng, nullptr);
         return;
@@ -3201,10 +3201,10 @@ void dAcPy_c::setWaterInEffect() {
         float f = 1.0f;
         u32 i;
         if (mPowerup == POWERUP_MINI_MUSHROOM) {
-            fn_80057e70(SE_PLY_SPLASH_MAME, false);
+            startSound(SE_PLY_SPLASH_MAME, false);
             i = 3;
         } else {
-            fn_80057e70(SE_PLY_SPLASH, false);
+            startSound(SE_PLY_SPLASH, false);
             i = 2;
             if (mPowerup == POWERUP_NONE) {
                 f = 0.8f;
@@ -3221,9 +3221,9 @@ void dAcPy_c::setWaterInEffect() {
         }
         dPyEffectMng_c::mspInstance->fn_800d2de0(f, 4, efPos, mLayer);
         if (mPowerup == POWERUP_MINI_MUSHROOM) {
-            fn_80057e70(SE_PLY_SPLASH_SHALLOW_MAME, false);
+            startSound(SE_PLY_SPLASH_SHALLOW_MAME, false);
         } else {
-            fn_80057e70(SE_PLY_SPLASH_SHALLOW, false);
+            startSound(SE_PLY_SPLASH_SHALLOW, false);
         }
         dBg_c::m_bg_p->setWaterInWave(efPos.x, efPos.y, 0);
     }
@@ -3231,7 +3231,7 @@ void dAcPy_c::setWaterInEffect() {
 
 void dAcPy_c::setWaterOutEffect() {
     if (isOldBgCross(BGC_WATER_BUBBLE)) {
-        fn_80057e70(SE_PLY_SPLASH_GEL_OUT, false);
+        startSound(SE_PLY_SPLASH_GEL_OUT, false);
         mAng3_c efAng(0, 0, -mAirWaterHitAngle);
         dEf::createPlayerEffect(mPlayerNo, "Wm_mr_wfloatsplash", 0, &mAirWaterHitPos, &efAng, nullptr);
         return;
@@ -3251,7 +3251,7 @@ void dAcPy_c::setWaterOutEffect() {
         }
         dPyEffectMng_c::mspInstance->fn_800d2de0(f, i, efPos, mLayer);
         dBg_c::m_bg_p->setWaterInWave(efPos.x, efPos.y, 3);
-        fn_80057e70(SE_PLY_SPLASH_OUT, false);
+        startSound(SE_PLY_SPLASH_OUT, false);
     } else {
         float f = 1.0f;
         if (mPowerup == POWERUP_MINI_MUSHROOM) {
@@ -3260,7 +3260,7 @@ void dAcPy_c::setWaterOutEffect() {
             f = 0.8f;
         }
         dPyEffectMng_c::mspInstance->fn_800d2de0(f, 4, efPos, mLayer);
-        fn_80057e70(SE_PLY_SPLASH_SHALLOW_OUT, false);
+        startSound(SE_PLY_SPLASH_SHALLOW_OUT, false);
         dBg_c::m_bg_p->setWaterInWave(efPos.x, efPos.y, 2);
     }
 }
@@ -3419,7 +3419,7 @@ void dAcPy_c::SwimAction_Swim() {
     setWaterMoveSpeed();
     turnAngle();
     if (checkEnableThrow()) {
-        vf434(19, 0);
+        startPlayerVoice(19, 0);
         setThrowActor();
         return;
     }
@@ -3433,7 +3433,7 @@ void dAcPy_c::SwimAction_Swim() {
     setWaterSurfaceSwimEffect();
     if (isNowBgCross(BGC_14)) {
         if (mKey.triggerJump()) {
-            fn_80057e70(SE_PLY_SWIM, 0);
+            startSound(SE_PLY_SWIM, 0);
             mSpeed.y += 1.0f;
             if (mSpeed.y > 1.8f) {
                 mSpeed.y = 1.8f;
@@ -3474,7 +3474,7 @@ void dAcPy_c::SwimAction_Swim() {
         case 3:
             mPyMdlMng.mpMdl->setRate(1.0f);
             if (mPyMdlMng.mpMdl->mAnm.checkFrame(1.0f) || mPyMdlMng.mpMdl->mAnm.checkFrame(9.0f)) {
-                fn_80057e70(SE_PLY_SWIM_KICK, 0);
+                startSound(SE_PLY_SWIM_KICK, 0);
             }
             setFlutterKickEffect();
             if (!mKey.buttonJump()) {
@@ -3539,7 +3539,7 @@ void dAcPy_c::setSwimAction_Walk(AnmBlend_e blend) {
 void dAcPy_c::setWaterGroundJump() {
     mSpeed.y = sc_WaterJumpSpeed;
     setSwimAction_Swim(BLEND_1);
-    fn_80057e70(SE_PLY_SWIM, 0);
+    startSound(SE_PLY_SWIM, 0);
     m_b88 = 20;
 }
 
@@ -3740,7 +3740,7 @@ bool dAcPy_c::setPenguinPaddleSwim() {
     if (mKey.triggerJump()) {
         m_b89 = 2;
         mPyMdlMng.setAnm(160);
-        fn_80057e70(SE_PLY_PNGN_SWIM, false);
+        startSound(SE_PLY_PNGN_SWIM, false);
         onStatus(STATUS_40);
         return true;
     }
@@ -3767,7 +3767,7 @@ void dAcPy_c::SwimAction_Penguin() {
             break;
         case 1: {
             if (mPyMdlMng.mpMdl->mAnm.checkFrame(1.0f) || mPyMdlMng.mpMdl->mAnm.checkFrame(9.0f)) {
-                fn_80057e70(SE_PLY_SWIM_KICK_PENGUIN, false);
+                startSound(SE_PLY_SWIM_KICK_PENGUIN, false);
             }
             float rate = mPyMdlMng.mpMdl->mAnm.getRate();
             if (m_b8c == 1.0f) {
@@ -4186,10 +4186,10 @@ void dAcPy_c::initializeState_Vine() {
     switch (changeParam) {
         case 0:
         case 2:
-            vf434(28, 0);
+            startPlayerVoice(28, 0);
             switch (mBc.mFenceType) {
                 case 0:
-                    fn_80057e70(SE_PLY_CATCH_IVY, 0);
+                    startSound(SE_PLY_CATCH_IVY, 0);
                     if (!isNowBgCross(BGC_IS_FOOT)) {
                         mPyMdlMng.setAnm(57);
                         mSubstate = VINE_ACTION_IVY;
@@ -4205,7 +4205,7 @@ void dAcPy_c::initializeState_Vine() {
                     mSubstate = VINE_ACTION_NET;
                     break;
                 case 2:
-                    fn_80057e70(SE_PLY_LAND_FENCE, 0);
+                    startSound(SE_PLY_LAND_FENCE, 0);
                     mPyMdlMng.setAnm(52);
                     mSubstate = VINE_ACTION_NET;
                     break;
@@ -4307,13 +4307,13 @@ void dAcPy_c::setVineWalkSE() {
     if (mPyMdlMng.mpMdl->mAnm.checkFrame(10.0f) || mPyMdlMng.mpMdl->mAnm.checkFrame(30.0f)) {
         switch (mBc.mFenceType) {
             case 0:
-                fn_80057e70(SE_PLY_MOVE_IVY, false);
+                startSound(SE_PLY_MOVE_IVY, false);
                 break;
             case 2:
-                fn_80057e70(SE_PLY_WALK_METAL, false);
+                startSound(SE_PLY_WALK_METAL, false);
                 break;
             case 1:
-                fn_80057e70(SE_PLY_FOOTNOTE_ROCK_CLIMB, false);
+                startSound(SE_PLY_FOOTNOTE_ROCK_CLIMB, false);
                 break;
         }
     }
@@ -4363,13 +4363,13 @@ void dAcPy_c::VineActionNet() {
             if (setRideOffPlayerJump(sc_JumpSpeed, 0.0f) || fn_800579c0(0, 0)) {
                 switch (mPowerup) {
                     case POWERUP_NONE:
-                        fn_80057e70(SE_PLY_JUMP_FENCE_S, false);
+                        startSound(SE_PLY_JUMP_FENCE_S, false);
                         break;
                     case POWERUP_MINI_MUSHROOM:
-                        fn_80057e70(SE_PLY_JUMP_FENCE_SS, false);
+                        startSound(SE_PLY_JUMP_FENCE_SS, false);
                         break;
                     default:
-                        fn_80057e70(SE_PLY_JUMP_FENCE, false);
+                        startSound(SE_PLY_JUMP_FENCE, false);
                         break;
                 }
                 mAngle.y = getMukiAngle(mDirection);
@@ -4454,7 +4454,7 @@ void dAcPy_c::VineActionAttack() {
         mVec3_c efPos;
         jntMtx.multVecZero(efPos);
         dEf::createPlayerEffect_change(mPlayerNo, "Wm_mr_wirehit", 0, &efPos, nullptr, nullptr);
-        fn_80057e70(SE_PLY_ATTACK_FENCE, false);
+        startSound(SE_PLY_ATTACK_FENCE, false);
     }
     if (!isStatus(STATUS_85)) {
         if (frame >= 12.0f && mKey.buttonCross() || mPyMdlMng.isAnmStop()) {
@@ -4625,7 +4625,7 @@ void dAcPy_c::initializeState_Hang() {
     }
     mPyMdlMng.setAnm(47);
     setZPositionDirect(400.0f);
-    vf434(28, 0);
+    startPlayerVoice(28, 0);
 }
 
 void dAcPy_c::HangActionStart() {
@@ -4656,7 +4656,7 @@ void dAcPy_c::setHangActionMove() {
     static const int scHangMoveAnm[] = { 50, 51 };
     mPyMdlMng.setAnm(scHangMoveAnm[m_8f0]);
     m_8f0 ^= 1;
-    fn_80057e70(SE_PLY_MONKEY_BARS, false);
+    startSound(SE_PLY_MONKEY_BARS, false);
 }
 
 void dAcPy_c::HangActionMove() {
@@ -4679,7 +4679,7 @@ void dAcPy_c::HangActionMove() {
 void dAcPy_c::executeState_Hang() {
     if (!isNowBgCross(BGC_34) || mKey.buttonDown()) {
         changeState(StateID_Fall, 0);
-        vf434(29, 0);
+        startPlayerVoice(29, 0);
     } else {
         turnBesideAngle();
         typedef void (dAcPy_c::*HangActionProc_t)();
@@ -4741,8 +4741,8 @@ void dAcPy_c::initializeState_Pole() {
         offStatus(STATUS_97);
     } else {
         mPyMdlMng.setAnm(43);
-        fn_80057e70(SE_PLY_POLE_CATCH, false);
-        vf434(28, 0);
+        startSound(SE_PLY_POLE_CATCH, false);
+        startPlayerVoice(28, 0);
         mSubstate = 0;
     }
 }
@@ -4793,7 +4793,7 @@ void dAcPy_c::setPoleActionUp() {
 void dAcPy_c::PoleActionUp() {
     setPoleTurnAngle();
     if (mPyMdlMng.mpMdl->mAnm.checkFrame(0.0f)) {
-        fn_80057e70(SE_PLY_POLE_CLIMB, false);
+        startSound(SE_PLY_POLE_CLIMB, false);
     }
     mSpeed.y = 0.0f;
     if (!isNowBgCross(BGC_43)) {
@@ -4838,12 +4838,12 @@ void dAcPy_c::PoleActionDown() {
             mSpeed.y = -2.0f;
             mPyMdlMng.mpMdl->setRate(1.0f);
         }
-        fn_80057f60(SE_PLY_POLE_SLIDE, false);
+        holdSound(SE_PLY_POLE_SLIDE, false);
     }
 }
 
 void dAcPy_c::setPoleJump() {
-    vf434(29, 0);
+    startPlayerVoice(29, 0);
     m_8fc = 5;
     changeState(StateID_Jump, 0);
     u8 dir = mDirection;
@@ -4855,7 +4855,7 @@ bool dAcPy_c::setPoleShakeJump() {
     u8 dir = mDirection;
     float baseSpeed = getSpeedData()[0];
     if (setRideOffPlayerJump(sc_JumpSpeed, baseSpeed * sc_DirSpeed[dir])) {
-        vf434(29, 0);
+        startPlayerVoice(29, 0);
         m_8fc = 5;
         return true;
     }
@@ -5054,7 +5054,7 @@ void dAcPy_c::setKaniAction_Hang() {
     mAngle.y = 0x8000;
     mSpeedF = 0.0f;
     mPyMdlMng.setAnm(62);
-    vf434(34, 0);
+    startPlayerVoice(34, 0);
     mSubstate = KANI_ACTION_HANG_INIT;
     onStatus(STATUS_KANI_HANG_ANIMATION);
 }
@@ -5065,7 +5065,7 @@ void dAcPy_c::setKaniAction_JumpHang() {
     mSpeedF = 0.0f;
     mPyMdlMng.setAnm(70);
     setKaniCliffCatchEffect();
-    vf434(32, 0);
+    startPlayerVoice(32, 0);
     mSubstate = KANI_ACTION_JUMP_HANG_INIT;
 }
 
@@ -5079,7 +5079,7 @@ void dAcPy_c::setKaniAction_HangUp() {
     mSpeedF = 0.0f;
     setKaniHangStartEffect();
     mPyMdlMng.setAnm(63);
-    vf434(33, 0);
+    startPlayerVoice(33, 0);
     mSubstate = KANI_ACTION_HANG_UP;
 }
 
@@ -5135,7 +5135,7 @@ void dAcPy_c::KaniAction_Walk() {
             }
             mPyMdlMng.mpMdl->setRate(rate);
             if (mPyMdlMng.mpMdl->mAnm.checkFrame(1.0f)) {
-                fn_80057e70(SE_PLY_SHUFFLE, false);
+                startSound(SE_PLY_SHUFFLE, false);
             }
         }
     }
@@ -5222,7 +5222,7 @@ void dAcPy_c::KaniAction_Hang() {
                 }
                 mPyMdlMng.mpMdl->setRate(rate);
                 if (mPyMdlMng.mpMdl->mAnm.checkFrame(1.0f)) {
-                    fn_80057e70(SE_PLY_HANG_MOVE, false);
+                    startSound(SE_PLY_HANG_MOVE, false);
                 }
             }
             int dir;
@@ -5306,23 +5306,23 @@ void dAcPy_c::setCatchRopeSE() {
     switch (m_914) {
         case 0:
         case 2:
-            fn_80057e70(SE_PLY_CATCH_ROPE, false);
+            startSound(SE_PLY_CATCH_ROPE, false);
             break;
         default:
-            fn_80057e70(SE_PLY_CATCH_KUSARI, false);
+            startSound(SE_PLY_CATCH_KUSARI, false);
             break;
     }
-    vf434(28, 0);
+    startPlayerVoice(28, 0);
 }
 
 void dAcPy_c::setClimbRopeSE() {
     switch (m_914) {
         case 0:
         case 2:
-            fn_80057e70(SE_PLY_CLIMB_ROPE, false);
+            startSound(SE_PLY_CLIMB_ROPE, false);
             break;
         default:
-            fn_80057e70(SE_PLY_CLIMB_KUSARI, false);
+            startSound(SE_PLY_CLIMB_KUSARI, false);
             break;
     }
 }
@@ -5331,17 +5331,17 @@ void dAcPy_c::setSlideRopeSE() {
     switch (m_914) {
         case 0:
         case 2:
-            fn_80057f60(SE_PLY_SLIDE_ROPE, false);
+            holdSound(SE_PLY_SLIDE_ROPE, false);
             break;
         default:
-            fn_80057f60(SE_PLY_SLIDE_KUSARI, false);
+            holdSound(SE_PLY_SLIDE_KUSARI, false);
             break;
     }
 }
 
 void dAcPy_c::setRopeHasigoSE() {
     if (mPyMdlMng.mpMdl->mAnm.checkFrame(10.0f) || mPyMdlMng.mpMdl->mAnm.checkFrame(30.0f)) {
-        fn_80057e70(SE_PLY_FOOTNOTE_HASHIGO_NAWA, false);
+        startSound(SE_PLY_FOOTNOTE_HASHIGO_NAWA, false);
     }
 }
 
@@ -5414,7 +5414,7 @@ void dAcPy_c::initializeState_TarzanRope() {
             releasePoleCheck();
             mAngle.y = 0x8000;
             mPyMdlMng.setAnm(62);
-            vf434(34, 0);
+            startPlayerVoice(34, 0);
             m_914 = 2;
             mSubstate = 5;
     }
@@ -5465,7 +5465,7 @@ bool dAcPy_c::setTarzanRopeJump() {
         jumpSpeed = mPc.getPos().y;
     }
     if (setRideOffPlayerJump(jumpSpeed, h)) {
-        vf434(29, 0);
+        startPlayerVoice(29, 0);
         if (h * sc_DirSpeed[mDirection] < 0.0f) {
             mDirection ^= 1;
         }
@@ -5473,7 +5473,7 @@ bool dAcPy_c::setTarzanRopeJump() {
         return true;
     } else {
         if (mKey.triggerJump()) {
-            vf434(29, 0);
+            startPlayerVoice(29, 0);
             if (h * sc_DirSpeed[mDirection] < 0.0f) {
                 mDirection ^= 1;
             }
@@ -5735,7 +5735,7 @@ void dAcPy_c::setTarzanRopeActionHasigoHangUp() {
     mSubstate = 6;
     m_91c = 0;
     mPyMdlMng.setAnmOnlyRate(64, 0.0f, 0.0f);
-    vf434(33, 0);
+    startPlayerVoice(33, 0);
     offStatus(STATUS_36);
     releasePoleCheck();
 }
@@ -5832,7 +5832,7 @@ void dAcPy_c::initializeState_Quake() {
     mPyMdlMng.setAnm(82);
     onStatus(STATUS_QUAKE);
     mKey.onStatus(dAcPyKey_c::STATUS_NO_INPUT);
-    vf434(51, 0);
+    startPlayerVoice(51, 0);
     startQuakeShock(dQuake_c::TYPE_6);
     m_1040 = 8;
     mSubstate = (int) mStateChangeParam;
@@ -5896,8 +5896,8 @@ void dAcPy_c::executeState_ElecShock() {
 }
 
 void dAcPy_c::initElecShock() {
-    vf434(48, 0);
-    fn_80057e70(SE_PLY_TOUCH_BIRI, false);
+    startPlayerVoice(48, 0);
+    startSound(SE_PLY_TOUCH_BIRI, false);
     mPyMdlMng.setAnm(82);
     mSubstateTimer = 60;
 }
@@ -5983,11 +5983,11 @@ void dAcPy_c::initializeState_FlyDamage() {
     u32 crash = ((int) mStateChangeParam) & 0x100;
     mPyMdlMng.setAnm(sc_DamageAnmID[m_103c], 0.0f, 0.0f);
     if (crash == 0) {
-        vf434(53, 0);
+        startPlayerVoice(53, 0);
         if (m_103c == 0 || m_103c == 1) {
-            fn_80057e70(SE_PLY_CRASH_S, false);
+            startSound(SE_PLY_CRASH_S, false);
         } else {
-            fn_80057e70(SE_PLY_CRASH_L, false);
+            startSound(SE_PLY_CRASH_L, false);
         }
     }
     if (m_103c == 0 || m_103c == 1) {
@@ -6130,8 +6130,8 @@ void dAcPy_c::executeState_FlyDamage() {
 
 void dAcPy_c::setBreakBalloonJump(u8 playerNo, short angle) {
     offStatus(STATUS_DISABLE_STATE_CHANGE);
-    vf434(39, 0);
-    fn_80057e70(SE_PLY_BALLOON_BRAKE, false);
+    startPlayerVoice(39, 0);
+    startSound(SE_PLY_BALLOON_BRAKE, false);
     dQuake_c::m_instance->shockMotor(mPlayerNo, dQuake_c::TYPE_4, 0, false);
     mFallTimer = 30;
     mTimer_ce8 = 30;
@@ -6147,7 +6147,7 @@ void dAcPy_c::setBreakBalloonJump(u8 playerNo, short angle) {
         if (cos < 0.0f) {
             cos = 0.0f;
         }
-        vf3fc(cos, sin, 1, 1, 0);
+        setJump(cos, sin, true, 1, 0);
     }
 }
 
@@ -6194,7 +6194,7 @@ void dAcPy_c::initializeState_Balloon() {
             }
             break;
         case 3:
-            fn_80057e70(SE_PLY_BALLOON_SELF, false);
+            startSound(SE_PLY_BALLOON_SELF, false);
             break;
     }
     m_12b8 = 0;
@@ -6230,7 +6230,7 @@ void dAcPy_c::finalizeState_Balloon() {
     daPyMng_c::addNum(mPlayerNo);
     mAmiRelated2 = 1.0f;
     setScrollMode(0);
-    mTimer_ce0 = 127;
+    mDamageInvulnTimer = 127;
     offZPosSetNone();
     daPyMng_c::mPauseEnableInfo |= 1 << mPlayerNo;
 }
@@ -6292,7 +6292,7 @@ void dAcPy_c::executeState_Balloon() {
             if (isNotBalloonCourse()) {
                 break;
             }
-            vf434(17, 0);
+            startPlayerVoice(17, 0);
             mSubstate = 0;
             mSubstateTimer = 60;
             daPyMng_c::mPauseEnableInfo |= 1 << mPlayerNo;
@@ -6301,7 +6301,7 @@ void dAcPy_c::executeState_Balloon() {
 
 void dAcPy_c::setBalloonHelpVoice() {
     if (isStatus(STATUS_53) && mSubstate == 1 && !isStatus(STATUS_B9) && m_15ba == 0) {
-        vf434(38, 0);
+        startPlayerVoice(38, 0);
         m_15ba = 120;
     }
 }
@@ -6365,7 +6365,7 @@ bool dAcPy_c::setBalloonButtonA() {
         return false;
     }
     if (getFollowMameKuribo()) {
-        fn_80057e70(SE_EMY_MAMEKURIBO_CLINGING_NOW, false);
+        startSound(SE_EMY_MAMEKURIBO_CLINGING_NOW, false);
         return false;
     }
     changeDemoState(StateID_DemoNone, 0);
@@ -6420,7 +6420,7 @@ bool dAcPy_c::setBalloonInDispOutBase(int i, int j) {
         setPressBgDamage(11, 0);
     }
     if (i == 2 || i == 0) {
-        vf434(44, 0);
+        startPlayerVoice(44, 0);
         dQuake_c::m_instance->shockMotor(mPlayerNo, dQuake_c::TYPE_4, 0, false);
     }
     return true;
@@ -6451,7 +6451,7 @@ void dAcPy_c::initializeState_IceDamage() {
     mAccelY = 0.0f;
     mSpeed.y = 0.0f;
     mSubstateTimer = 300;
-    vf434(46, 0);
+    startPlayerVoice(46, 0);
     onStatus(STATUS_7E);
     onStatus(STATUS_7A);
     onStatus(STATUS_STUNNED);
@@ -6473,7 +6473,7 @@ void dAcPy_c::finalizeState_IceDamage() {
     offStatus(STATUS_07);
     offStatus(STATUS_NO_ANIM);
     offStatus(STATUS_DISABLE_STATE_CHANGE);
-    mTimer_ce0 = 127;
+    mDamageInvulnTimer = 127;
 }
 
 void dAcPy_c::executeState_IceDamage() {
@@ -6515,8 +6515,8 @@ bool dAcPy_c::setRideOffYoshiJump(daPlBase_c *yoshi) {
         }
         if (!yoshi->isNowBgCross(BGC_IS_FOOT)) {
             m_1058 = 10;
-            vf3fc(sc_JumpSpeed + 0.1f, yoshi->mSpeedF, 1, 1, 1);
-            vf434(23, 0);
+            setJump(sc_JumpSpeed + 0.1f, yoshi->mSpeedF, true, 1, 1);
+            startPlayerVoice(23, 0);
         } else {
             float speed = 0.0f;
             if (std::fabs(yoshi->mSpeedF) < 1.5f) {
@@ -6725,7 +6725,7 @@ bool dAcPy_c::setDropCarryPlayer() {
     if (ridePlayer->isNowBgCross(BGC_IS_FOOT) && !ridePlayer->isStatus(STATUS_0A)) {
         if (ridePlayer->isStatus(STATUS_46)) {
             if (ridePlayer->isNowBgCross(BGC_IS_HEAD)) {
-                vf3fc(0.0f, ridePlayer->mSpeedF / 2.0f, 1, 0, 0);
+                setJump(0.0f, ridePlayer->mSpeedF / 2.0f, true, 0, 0);
                 onStatus(STATUS_4D);
                 return true;
             }
@@ -6736,7 +6736,7 @@ bool dAcPy_c::setDropCarryPlayer() {
                 if (dBc_c::checkTenjou(&pos2, &height, mLayer, mAmiLayer)) {
                     const sBcPlayerPointData *p = getBgPointData_Powerup(mPowerup, 1);
                     if (mPos.y + p->mHead.mOffset / 4096.0f + 2.0f > height) {
-                        vf3fc(0.0f, ridePlayer->mSpeedF / 2.0f, 1, 0, 0);
+                        setJump(0.0f, ridePlayer->mSpeedF / 2.0f, true, 0, 0);
                         onStatus(STATUS_4D);
                         return true;
                     }
@@ -6753,12 +6753,12 @@ bool dAcPy_c::setDropCarryPlayer() {
                     f = 1.0f;
                     mPos.x += 3.0f;
                 }
-                vf3fc(ridePlayer->mSpeed.y, f, 1, 0, 0);
+                setJump(ridePlayer->mSpeed.y, f, true, 0, 0);
                 onStatus(STATUS_4D);
                 return true;
             }
             if (ridePlayer->isNowBgCross(BGC_25)) {
-                vf3fc(0.0f, 0.0f, 1, 0, 0);
+                setJump(0.0f, 0.0f, true, 0, 0);
                 onStatus(STATUS_4D);
             }
         }
@@ -7086,7 +7086,7 @@ void dAcPy_c::setPlayerEatReact() {
     if (
         isDemo() ||
         isChange() ||
-        (mTimer_ce0 | mTimer_ce4) != 0 || // [maybe an inline?]
+        (mDamageInvulnTimer | mPowerupChangeInvulnTimer) != 0 || // [maybe an inline?]
         m_15ac != 0 ||
         isStatus(STATUS_B9) ||
         isStatus(STATUS_OUT_OF_PLAY) ||
@@ -7238,12 +7238,12 @@ void dAcPy_c::createFireBall(int i) {
         mPos.z
     );
     if (mPowerup == POWERUP_FIRE_FLOWER) {
-        fn_80057e70(SE_PLY_THROW_FIRE, false);
+        startSound(SE_PLY_THROW_FIRE, false);
         pos = loopPos;
         u32 param = (i << 16) | (mAmiLayer << 12) | (mLayer << 8) | (m_12f4 << 4) | mPlayerNo;
         dActor_c::construct(fProfile::PL_FIREBALL, param, &pos, nullptr, 0);
     } else if (mPowerup == POWERUP_PENGUIN_SUIT || mPowerup == POWERUP_ICE_FLOWER) {
-        fn_80057e70(SE_PLY_THROW_ICEBALL, false);
+        startSound(SE_PLY_THROW_ICEBALL, false);
         pos = loopPos;
         u32 param = (i << 16) | (mAmiLayer << 12) | (mLayer << 8) | (m_12f4 << 4) | mPlayerNo;
         dActor_c::construct(fProfile::ICEBALL, param, &pos, nullptr, 0);
@@ -7417,8 +7417,8 @@ void dAcPy_c::setPropelActionFlyInit() {
     onStatus(STATUS_2B);
     mPropelRollSpeed = 12000;
     mIsPropelFall = 0;
-    vf434(26, 0);
-    fn_80057e70(SE_PLY_PRPL_JUMP, false);
+    startPlayerVoice(26, 0);
+    startSound(SE_PLY_PRPL_JUMP, false);
     mPyMdlMng.setAnm(134);
     mAccelY = 0.0f;
     mMaxFallSpeed = data_802f5a0c[5];
@@ -7516,7 +7516,7 @@ void dAcPy_c::PropelActionFall() {
                 mPyMdlMng.mpMdl->mAnm.checkFrame(19.0f)
             )
         ) {
-            fn_80057e70(SE_PLY_PRPL_FLY, false);
+            startSound(SE_PLY_PRPL_FLY, false);
         }
         if (mKey.triggerShakeJump()) {
             mPropelRollSpeed = 5000;
@@ -7698,7 +7698,7 @@ void dAcPy_c::setStartPropelJumpEffect() {
 }
 
 void dAcPy_c::setPropelFallSpinEffect() {
-    fn_80057e70(SE_PLY_PRPL_LETDOWN_SPIN, false);
+    startSound(SE_PLY_PRPL_LETDOWN_SPIN, false);
     if (m_538 == 0) {
         m_538 = 1;
     }
@@ -7775,18 +7775,18 @@ void dAcPy_c::initDemo_DownFall() {
     DemoDownChangeParam_e val = (DemoDownChangeParam_e) (int) mDemoStateChangeParam;
     switch (val) {
         case DEMO_DOWN_CHANGE_0:
-            vf434(41, 0);
+            startPlayerVoice(41, 0);
             break;
         case DEMO_DOWN_CHANGE_1:
             if (daPyMng_c::mTimeUpPlayerNum >= 2) {
-                vf434(43, 0);
+                startPlayerVoice(43, 0);
             } else {
-                vf434(42, 0);
+                startPlayerVoice(42, 0);
             }
             break;
         case DEMO_DOWN_CHANGE_2:
         case DEMO_DOWN_CHANGE_3:
-            vf434(47, 0);
+            startPlayerVoice(47, 0);
             break;
     }
     mPyMdlMng.setAnm(83);
@@ -7849,7 +7849,7 @@ void dAcPy_c::initPlayerDownCommon() {
     endStar();
     setScrollMode(3);
     onStatus(STATUS_OUT_OF_PLAY);
-    mTimer_ce0 = 0;
+    mDamageInvulnTimer = 0;
     mStarTimer = 0;
     mVisible = true;
     if (!isItemKinopio()) {
@@ -7908,7 +7908,7 @@ bool dAcPy_c::setTimeOverDemo() {
 void dAcPy_c::initializeState_DemoDown() {
     initPlayerDownCommon();
     initDemo_DownPose();
-    fn_80057e70(SE_PLY_DOWN, false);
+    startSound(SE_PLY_DOWN, false);
     DemoDownChangeParam_e param = (DemoDownChangeParam_e) (int) mDemoStateChangeParam;
     switch (param) {
         case DEMO_DOWN_CHANGE_0:
@@ -7922,7 +7922,7 @@ void dAcPy_c::initializeState_DemoDown() {
                 mPos.z
             );
             dEf::createPlayerEffect(mPlayerNo, "Wm_mr_poisonwave", nullptr, &efPos, nullptr, nullptr);
-            fn_80057e70(SE_PLY_SPLASH_POISON, 0);
+            startSound(SE_PLY_SPLASH_POISON, 0);
             dBg_c::m_bg_p->setWaterInWave(mPos.x, mWaterHeight, 20);
             stopOtherDownDemo();
             break;
@@ -8017,7 +8017,7 @@ void dAcPy_c::initializeState_DemoFallDown() {
     float f1 = f - 96.0f;
     float f2 = f + dBgParameter_c::ms_Instance_p->xSize() + 96.0f;
     if (f1 <= mPos.x && mPos.x < f2) {
-        fn_80057e70(SE_PLY_DOWN, false);
+        startSound(SE_PLY_DOWN, false);
     }
     stopOtherDownDemo();
     onStatus(STATUS_BB);
@@ -8074,8 +8074,8 @@ void dAcPy_c::initializeState_DemoFireDown() {
     }
     initDemo_DownPose();
     setZPosition(3000.0f);
-    fn_80057e70(SE_PLY_SPLASH_LAVA, false);
-    fn_80057e70(SE_PLY_DOWN, false);
+    startSound(SE_PLY_SPLASH_LAVA, false);
+    startSound(SE_PLY_DOWN, false);
     dQuake_c::m_instance->shockMotor(mPlayerNo, dQuake_c::TYPE_4, 0, false);
     stopOtherDownDemo();
 }
@@ -8088,8 +8088,8 @@ void dAcPy_c::executeState_DemoFireDown() {
             if (mDemoWaitTimer == 0) {
                 daPyMng_c::startMissBGM(mPlayerNo);
                 mDemoWaitTimer = 80;
-                vf434(45, 0);
-                fn_80057e70(SE_PLY_BURN_DOWN, false);
+                startPlayerVoice(45, 0);
+                startSound(SE_PLY_BURN_DOWN, false);
                 setZPosition(5000.0f);
                 mPyMdlMng.setAnm(81);
                 mSpeed.x = 0.0f;
@@ -8165,15 +8165,15 @@ void dAcPy_c::executeState_DemoEatDie() {
         case 2:
             if (mDemoWaitTimer == 0) {
                 if (m_15a8 != 0) {
-                    fn_80057e70(SE_PLY_DOWN, false);
+                    startSound(SE_PLY_DOWN, false);
                 } else if (!isStar()) {
                     if (mPowerup == POWERUP_MUSHROOM) {
                         fn_801416c0(POWERUP_NONE);
                     } else {
                         fn_801416c0(POWERUP_MUSHROOM);
                     }
-                    fn_80057e70(SE_PLY_CHANGE_SMALL, false);
-                    mTimer_ce0 = 127;
+                    startSound(SE_PLY_CHANGE_SMALL, false);
+                    mDamageInvulnTimer = 127;
                 }
                 mDemoSubstate = 1;
             }
@@ -8231,7 +8231,7 @@ bool dAcPy_c::setEatDieSpitOut() {
 
 void dAcPy_c::setEatDieScreamVoice() {
     if (isDemoState(StateID_DemoEatDie)) {
-        vf434(49, 0);
+        startPlayerVoice(49, 0);
         mDemoSubstate = 2;
         mDemoWaitTimer = 30;
     }
@@ -8267,7 +8267,7 @@ void dAcPy_c::initializeState_DemoInDoor() {
     } else {
         setZPosition(-2000.0f);
     }
-    mTimer_ce0 = 35;
+    mDamageInvulnTimer = 35;
     searchDoorActor();
     if (daPyDemoMng_c::mspInstance->checkDemoNo(mPlayerNo) != 0) {
         mDemoSubstate = 0;
@@ -8277,8 +8277,8 @@ void dAcPy_c::initializeState_DemoInDoor() {
 }
 
 void dAcPy_c::finalizeState_DemoInDoor() {
-    mTimer_ce0 = 0;
-    mTimer_ce4 = 0;
+    mDamageInvulnTimer = 0;
+    mPowerupChangeInvulnTimer = 0;
     m_74 = 0;
     mRelatedActorID = BASE_ID_NULL;
 }
@@ -8394,7 +8394,7 @@ void dAcPy_c::executeState_DemoInJump() {
                 int world = dScStage_c::m_instance->mCurrWorld;
                 if (world == WORLD_4 || world == WORLD_6 || world == WORLD_8) {
                     if (dScStage_c::m_instance->mCurrCourse == STAGE_DOOMSHIP) {
-                        vf434(24, 0);
+                        startPlayerVoice(24, 0);
                     }
                 }
             }
@@ -8847,14 +8847,14 @@ void dAcPy_c::executeDemoGoal_Run() {
 }
 
 bool dAcPy_c::vf284(int arg) {
-    switch (mKimePoseState) {
-        case 0:
+    switch (mKimePoseMode) {
+        case KIME_POSE_NONE:
             mPyMdlMng.setAnm(0);
             if (mPowerup == POWERUP_PROPELLER_SHROOM) {
-                mKimePoseState = 4;
+                mKimePoseMode = KIME_POSE_PROPELLER;
                 mPyMdlMng.setAnm(91);
             } else if (mPowerup == POWERUP_PENGUIN_SUIT) {
-                mKimePoseState = 2;
+                mKimePoseMode = KIME_POSE_PENGUIN;
                 mPyMdlMng.setAnm(92);
             } else {
                 if (
@@ -8862,15 +8862,15 @@ bool dAcPy_c::vf284(int arg) {
                     mPyMdlMng.mpMdl->m_151 == 3 ||
                     mPyMdlMng.mpMdl->m_151 == 4
                 ) {
-                    mKimePoseState = 3;
+                    mKimePoseMode = KIME_POSE_NO_HAT;
                 } else {
-                    mKimePoseState = 1;
+                    mKimePoseMode = KIME_POSE_WITH_HAT;
                 }
                 mPyMdlMng.setAnm(90);
             }
             fn_80051d00(arg);
             // fallthrough
-        case 1: {
+        case KIME_POSE_WITH_HAT: {
             dMarioMdl_c *mdl = (dMarioMdl_c *) mPyMdlMng.mpMdl;
             if (mPyMdlMng.mpMdl->mAnm.checkFrame(41.0f)) {
                 mdl->fn_800cab00(1);
@@ -8880,13 +8880,13 @@ bool dAcPy_c::vf284(int arg) {
                 mdl->fn_800cab00(0);
                 break;
             }
-            if (!mPyMdlMng.isAnmStop()) {
-                break;
+            if (mPyMdlMng.isAnmStop()) {
+                offStatus(STATUS_6C);
+                return true;
             }
-            offStatus(STATUS_6C);
-            return true;
+            break;
         }
-        case 4:
+        case KIME_POSE_PROPELLER:
             if (mPyMdlMng.mpMdl->mAnm.checkFrame(5.0f)) {
                 onStatus(STATUS_70);
                 break;
@@ -8895,13 +8895,13 @@ bool dAcPy_c::vf284(int arg) {
                 offStatus(STATUS_70);
                 break;
             }
-            if (!mPyMdlMng.isAnmStop()) {
-                break;
+            if (mPyMdlMng.isAnmStop()) {
+                offStatus(STATUS_6C);
+                return true;
             }
-            offStatus(STATUS_6C);
-            return true;
-        case 2:
-        case 3:
+            break;
+        case KIME_POSE_PENGUIN:
+        case KIME_POSE_NO_HAT:
             if (mPyMdlMng.isAnmStop()) {
                 offStatus(STATUS_6C);
                 return true;
@@ -8950,7 +8950,7 @@ void dAcPy_c::executeState_DemoCannonWarp() {
                 mSpeed.z = mSpeedF * mAng(mAngle.y).cos();
                 mAmiRelated2 = 1.0f;
                 dQuake_c::m_instance->shockMotor(mPlayerNo, dQuake_c::TYPE_5, 0, false);
-                vf434(36, 0);
+                startPlayerVoice(36, 0);
             }
             break;
         case 1: {
@@ -9245,27 +9245,27 @@ void dAcPy_c::initChangeNormal() {
         case 1:
         case 3:
             if (mPowerup == POWERUP_PROPELLER_SHROOM) {
-                fn_80057e70(SE_PLY_CHANGE_PRPL, false);
+                startSound(SE_PLY_CHANGE_PRPL, false);
             } else if (mPowerup == POWERUP_PENGUIN_SUIT) {
-                fn_80057e70(SE_PLY_CHANGE_PNGN, false);
+                startSound(SE_PLY_CHANGE_PNGN, false);
             } else {
-                fn_80057e70(SE_PLY_CHANGE_BIG, false);
+                startSound(SE_PLY_CHANGE_BIG, false);
             }
             break;
         case 2:
         case 4:
-            fn_80057e70(SE_PLY_CHANGE_MAME, false);
+            startSound(SE_PLY_CHANGE_MAME, false);
             break;
         case 5:
         case 6:
             if (mPowerup == POWERUP_PROPELLER_SHROOM) {
-                fn_80057e70(SE_PLY_CHANGE_PRPL, false);
+                startSound(SE_PLY_CHANGE_PRPL, false);
             } else if (mPowerup == POWERUP_PENGUIN_SUIT) {
-                fn_80057e70(SE_PLY_CHANGE_PNGN, false);
+                startSound(SE_PLY_CHANGE_PNGN, false);
             } else if (mPowerup == POWERUP_FIRE_FLOWER || mPowerup == POWERUP_ICE_FLOWER) {
-                fn_80057e70(SE_PLY_CHANGE_BIG, false);
+                startSound(SE_PLY_CHANGE_BIG, false);
             } else {
-                fn_80057e70(SE_PLY_CHANGE_SMALL, false);
+                startSound(SE_PLY_CHANGE_SMALL, false);
             }
             break;
     }
@@ -9291,7 +9291,7 @@ bool dAcPy_c::executeChangeNormal() {
         }
     } else {
         setChange(0);
-        mTimer_ce4 = 8;
+        mPowerupChangeInvulnTimer = 8;
     }
     mPyMdlMng.mpMdl->setPlayerMode(powerup);
     switch (powerup) {
@@ -9370,13 +9370,13 @@ void dAcPy_c::finalizeState_DemoStartWait() {
 void dAcPy_c::setFireBallDamage(u8 type) {
     switch (type) {
         case 1:
-            vf434(45, 0);
+            startPlayerVoice(45, 0);
             break;
         case 2:
-            vf434(46, 0);
+            startPlayerVoice(46, 0);
             break;
         default:
-            vf434(53, 0);
+            startPlayerVoice(53, 0);
             break;
     }
     dQuake_c::m_instance->shockMotor(mPlayerNo, dQuake_c::TYPE_7, 0, false);
@@ -9538,7 +9538,7 @@ bool dAcPy_c::ccCheckAttack(dCc_c *self, dCc_c *other) {
         case CC_ATTACK_HIP_ATTACK:
         case CC_ATTACK_SPIN_FALL: {
             DamageType_e damageType = DAMAGE_3;
-            if (selfPlayer->someAttackCheck()) {
+            if (selfPlayer->isClimbing()) {
                 damageType = DAMAGE_5;
             }
             if (selfPlayer->setDamage(otherActor, damageType)) {
@@ -10321,7 +10321,7 @@ void dAcPy_c::set1UpKinokoEffect() {
 }
 
 void dAcPy_c::setFlagGetEffect() {
-    vf434(54, 0);
+    startPlayerVoice(54, 0);
     setFollowEffect(2);
 }
 
@@ -11201,8 +11201,8 @@ mVec3_c dAcPy_c::getModelScale() {
 }
 
 int dAcPy_c::draw() {
-    if (isStatus(STATUS_BC)) {
-        offStatus(STATUS_BC);
+    if (isStatus(STATUS_INVULNERABLILITY_BLINK)) {
+        offStatus(STATUS_INVULNERABLILITY_BLINK);
         return SUCCEEDED;
     }
 
@@ -11233,7 +11233,7 @@ void dAcPy_c::setStar(StarSet_e starSet, int timer) {
 
 void dAcPy_c::setStarBase(StarSet_e starSet, int timer) {
     if (starSet == STAR_SET_0) {
-        vf434(55, 0);
+        startPlayerVoice(55, 0);
     }
     if (timer != 0) {
         mStarTimer = timer;
@@ -11265,8 +11265,8 @@ void dAcPy_c::calcStarTimer() {
         }
         if (mStarTimer == 120) {
             mStarTimer--;
-            fn_80057e70(SE_SYS_STAR_FINISH, false);
-            fn_80057e70(SE_SYS_STAR_FINISH_RC, false);
+            startSound(SE_SYS_STAR_FINISH, false);
+            startSound(SE_SYS_STAR_FINISH_RC, false);
         }
         if (mStarTimer < 60) {
             daPyMng_c::stopStarBGM();
@@ -11312,26 +11312,26 @@ void dAcPy_c::fn_80145fd0(int jumpMode) {
         case 1:
             switch (mPowerup) {
                 case POWERUP_NONE:
-                    fn_80057e70(sc_JumpSoundSuper[mJumpCounter], true);
+                    startSound(sc_JumpSoundSuper[mJumpCounter], true);
                     break;
                 case POWERUP_MINI_MUSHROOM:
-                    fn_80057e70(sc_JumpSoundMame[mJumpCounter], true);
+                    startSound(sc_JumpSoundMame[mJumpCounter], true);
                     break;
                 default:
-                    fn_80057e70(sc_JumpSoundNormal[mJumpCounter], true);
+                    startSound(sc_JumpSoundNormal[mJumpCounter], true);
                     break;
             }
             break;
         case 2:
             switch (mPowerup) {
                 case POWERUP_NONE:
-                    fn_80057e70(SE_PLY_JUMP_SS_HIGH, false);
+                    startSound(SE_PLY_JUMP_SS_HIGH, false);
                     break;
                 case POWERUP_MINI_MUSHROOM:
-                    fn_80057e70(SE_PLY_JUMP_S_HIGH, false);
+                    startSound(SE_PLY_JUMP_S_HIGH, false);
                     break;
                 default:
-                    fn_80057e70(SE_PLY_JUMP_HIGH, false);
+                    startSound(SE_PLY_JUMP_HIGH, false);
                     break;
             }
     }
@@ -11339,7 +11339,7 @@ void dAcPy_c::fn_80145fd0(int jumpMode) {
 
 bool dAcPy_c::isNoDamage() {
     if (
-        (mTimer_ce0 | mTimer_ce4) != 0 ||
+        (mDamageInvulnTimer | mPowerupChangeInvulnTimer) != 0 ||
         isDemo() ||
         isDemoType(DEMO_PLAYER) ||
         isStatus(STATUS_BA) ||
@@ -11442,13 +11442,13 @@ bool dAcPy_c::setDamage2(dActor_c *actor, daPlBase_c::DamageType_e damageType) {
                     fn_80145c00(POWERUP_MUSHROOM);
                 }
                 if (damageType == DAMAGE_2) {
-                    mTimer_ce0 = 127;
+                    mDamageInvulnTimer = 127;
                     return setFlyDamageAction(damageType, actor);
                 }
                 if (damageType == DAMAGE_F) {
                     changeState(StateID_IceDamage, 0);
                 } else {
-                    mTimer_ce0 = 127;
+                    mDamageInvulnTimer = 127;
                 }
             }
             break;
@@ -11555,23 +11555,21 @@ void dAcPy_c::setPowerup(PLAYER_POWERUP_e powerup, int) {
     setSoundPlyMode();
 }
 
-bool dAcPy_c::vf3fc(float a, float b, int c, int d, int e) {
-    if (mPowerup != POWERUP_MINI_MUSHROOM) {
-        if (someAttackCheck()) {
-            return false;
-        }
+bool dAcPy_c::setJump(float jumpSpeed, float speedF, bool allowSteer, int keyMode, int jumpMode) {
+    if (mPowerup != POWERUP_MINI_MUSHROOM && isClimbing()) {
+        return false;
     }
-    return vf400(a, b, c, d, e);
+    return _setJump(jumpSpeed, speedF, allowSteer, keyMode, jumpMode);
 }
 
-bool dAcPy_c::vf400(float speedY, float speedF, int keyMode, int keyMode2, int spinMode) {
+bool dAcPy_c::_setJump(float jumpSpeed, float speedF, bool allowSteer, int keyMode, int jumpMode) {
     if (isDemo() || isStatus(STATUS_OUT_OF_PLAY)) {
         return false;
     }
     if (isStatus(STATUS_DISABLE_STATE_CHANGE) && isStatus(STATUS_53)) {
         return false;
     }
-    if (setSwimSpeed(speedY * 0.5f, speedF * 0.5f)) {
+    if (setSwimSpeed(jumpSpeed * 0.5f, speedF * 0.5f)) {
         return true;
     }
     clearJumpActionInfo(0);
@@ -11580,7 +11578,7 @@ bool dAcPy_c::vf400(float speedY, float speedF, int keyMode, int keyMode2, int s
     } else {
         bool res = false;
         mSpeedF = speedF;
-        if (speedY <= 0.0f) {
+        if (jumpSpeed <= 0.0f) {
             if (isStatus(STATUS_80)) {
                 if (isOldBgCross(BGC_IS_FOOT)) {
                     res = true;
@@ -11592,28 +11590,28 @@ bool dAcPy_c::vf400(float speedY, float speedF, int keyMode, int keyMode2, int s
             }
         }
         if (!res) {
-            bool tmp1 = false;
-            bool tmp2 = false;
+            bool isSpinJump = false;
+            bool isSitJump = false;
             if (isStatus(STATUS_2B) && isStatus(STATUS_0A)) {
-                tmp1 = true;
+                isSpinJump = true;
             } else if (isStatus(STATUS_SIT_JUMP)) {
-                tmp2 = true;
+                isSitJump = true;
             }
-            if (speedY == 0.0f) {
+            if (jumpSpeed == 0.0f) {
                 changeState(StateID_Fall, 0);
             } else {
-                jmpInf_c jump(speedY, spinMode, 1);
+                jmpInf_c jump(jumpSpeed, jumpMode, 1);
                 changeState(StateID_Jump, &jump);
             }
             onStatus(STATUS_AB);
             onStatus(STATUS_88);
-            if (tmp1) {
+            if (isSpinJump) {
                 int param = 2;
-                if (spinMode == 1) {
+                if (jumpMode == 1) {
                     param = 1;
                 }
                 changeState(StateID_SpinJump, (void *) param);
-            } else if (tmp2) {
+            } else if (isSitJump) {
                 changeState(StateID_SitJump, (void *) 1);
             }
         }
@@ -11621,13 +11619,13 @@ bool dAcPy_c::vf400(float speedY, float speedF, int keyMode, int keyMode2, int s
     offStatus(STATUS_A7);
     offNowBgCross(BGC_IS_FOOT);
     m_91 = 4;
-    if (keyMode == 0) {
+    if (!allowSteer) {
         mKey.onStatus(dAcPyKey_c::STATUS_DISABLE_LR);
         onStatus(STATUS_A7);
     }
-    if (keyMode2 == 1) {
+    if (keyMode == 1) {
         mKey.onStatus(dAcPyKey_c::STATUS_FORCE_JUMP);
-    } else if (keyMode2 == 2) {
+    } else if (keyMode == 2) {
         mKey.onStatus(dAcPyKey_c::STATUS_FORCE_NO_JUMP);
     }
 

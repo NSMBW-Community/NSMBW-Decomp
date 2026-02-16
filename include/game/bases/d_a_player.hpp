@@ -291,8 +291,8 @@ public:
     virtual bool isNoDamage();
     virtual bool setDamage(dActor_c *, DamageType_e);
     virtual bool setForcedDamage(dActor_c *, DamageType_e);
-    virtual bool vf3fc(float, float, int, int, int);
-    virtual bool vf400(float, float, int, int, int);
+    virtual bool setJump(float jumpSpeed, float speedF, bool allowSteer, int keyMode, int jumpMode);
+    virtual bool _setJump(float jumpSpeed, float speedF, bool allowSteer, int keyMode, int jumpMode);
 
     virtual bool setHipAttackOnEnemy(mVec3_c *hitPos);
 
@@ -735,7 +735,7 @@ public:
         return mtx;
     }
     PLAYER_POWERUP_e getPowerupCopy() { return mPowerupCopy; }
-    bool someAttackCheck() {
+    bool isClimbing() {
         return isStatus(STATUS_36) ||
             isStatus(STATUS_VINE) ||
             isStatus(STATUS_HANG) ||

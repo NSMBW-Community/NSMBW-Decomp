@@ -220,7 +220,7 @@ public:
     virtual void yoshifumiEffect(dActor_c *actor);
     void fumistepSE(dActor_c *actor);
     void yoshifumistepSE(dActor_c *actor);
-    void PlayerFumiJump(dActor_c *actor, float);
+    void PlayerFumiJump(dActor_c *actor, float jumpSpeed);
     void setFumiComboScore(dActor_c *actor);
 
     // Nonvirtuals

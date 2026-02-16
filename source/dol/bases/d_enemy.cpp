@@ -513,8 +513,8 @@ void dEn_c::SpinFumiScoreSet(dActor_c *actor) {
     FumiScoreSet(actor);
 }
 
-void dEn_c::PlayerFumiJump(dActor_c *actor, float param_2) {
-    ((daPlBase_c *) actor)->vf3fc(param_2, actor->mSpeedF, 1, 0, 2);
+void dEn_c::PlayerFumiJump(dActor_c *actor, float jumpSpeed) {
+    ((daPlBase_c *) actor)->setJump(jumpSpeed, actor->mSpeedF, true, 0, 2);
     dEnemyMng_c::m_instance->m_138 = 1;
 }
 
@@ -560,7 +560,7 @@ void dEn_c::fumiSE(dActor_c *actor) {
         SE_EMY_FUMU_7
     };
 
-    int count = ((daPlBase_c *) actor)->getTreadCount();
+    int count = ((daPlBase_c *) actor)->mTreadCount;
     if (count >= ARRAY_SIZE(cs_combo_se)) {
         count = ARRAY_SIZE(cs_combo_se) - 1;
     };
@@ -584,7 +584,7 @@ void dEn_c::spinfumiSE(dActor_c *actor) {
         SE_EMY_DOWN_SPIN_7
     };
 
-    int count = ((daPlBase_c *) actor)->getTreadCount();
+    int count = ((daPlBase_c *) actor)->mTreadCount;
     if (count >= ARRAY_SIZE(cs_combo_se)) {
         count = ARRAY_SIZE(cs_combo_se) - 1;
     };
@@ -608,7 +608,7 @@ void dEn_c::yoshifumiSE(dActor_c *actor) {
         SE_EMY_YOSHI_FUMU_7
     };
 
-    int count = ((daPlBase_c *) actor)->getTreadCount();
+    int count = ((daPlBase_c *) actor)->mTreadCount;
     if (count >= ARRAY_SIZE(cs_combo_se)) {
         count = ARRAY_SIZE(cs_combo_se) - 1;
     };
@@ -638,8 +638,8 @@ void dEn_c::fumiEffect(dActor_c *actor) {
 
     daPlBase_c *pl = (daPlBase_c *) actor;
     mVec3_c efPos;
-    efPos.x = pl->getAnkleCenterX();
-    efPos.y = pl->getAnkleCenterY();
+    efPos.x = pl->getAnkleCenterPos().x;
+    efPos.y = pl->getAnkleCenterPos().y;
     efPos.z = 5500.0f;
     mEf::createEffect("Wm_en_hit", 0, &efPos, nullptr, nullptr);
 }
@@ -936,7 +936,7 @@ void dEn_c::slipBound(dActor_c *actor) {
     daPlBase_c *pl = (daPlBase_c *) actor;
 
     u8 idx = !(pl->mPos.x >= mPos.x);
-    pl->vf3fc(3.0f, cs_jump_xspeed[idx], 1, 0, 0);
+    pl->setJump(3.0f, cs_jump_xspeed[idx], true, 0, 0);
 
     int plrNo = *pl->getPlrNo();
     mNoHitPlayer.mTimer[plrNo] = 3;
