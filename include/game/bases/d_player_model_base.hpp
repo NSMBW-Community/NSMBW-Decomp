@@ -80,7 +80,7 @@ public:
     u8 mPad6[0x1];
     u8 m_151;
     u8 m_152;
-    int m_154;
+    int mCurrAnmID;
     u8 mPad7[8];
     u32 mFlags;
     u8 mPad8[0x18];

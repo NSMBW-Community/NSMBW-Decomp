@@ -414,7 +414,7 @@ void daPlBase_c::initializeState_Fall() {
         onStatus(STATUS_4D);
     }
     if (!mStateChangeParam) {
-        mpMdlMng->setAnm(6, 10.0f, 0.0f);
+        mpMdlMng->setAnm(PLAYER_ANIM_JUMP2, 10.0f, 0.0f);
     }
     if (isOldBgCross(BGC_LIFT)) {
         if (m_1134 * mSpeedF > 0.0f) {
@@ -448,8 +448,8 @@ bool daPlBase_c::setCancelCrouch() {
     if (checkStandUpRoofOnLift()) {
         return false;
     }
-    if (mpMdlMng->getAnm() != 21) {
-        mpMdlMng->setAnm(21);
+    if (mpMdlMng->getAnm() != PLAYER_ANIM_STOOP_START) {
+        mpMdlMng->setAnm(PLAYER_ANIM_STOOP_START);
         mpMdlMng->mpMdl->setFrame(mpMdlMng->getLastFrame());
     }
     if (!isNowBgCross(BGC_WATER_SHALLOW)) {
@@ -498,7 +498,7 @@ void daPlBase_c::executeState_Crouch() {}
 
 void daPlBase_c::initializeState_Slip() {
     mSubstate = SLIP_ACTION_NONE;
-    mpMdlMng->setAnm(22);
+    mpMdlMng->setAnm(PLAYER_ANIM_SLIP);
     mMaxSpeedF = getSlipMaxSpeedF();
     mSubstateTimer = 8;
     mAutoSlipTimer = 0;
@@ -562,7 +562,7 @@ void daPlBase_c::setSlipAction_ToStoop() {
         offStatus(STATUS_PENGUIN_SLIDE);
     }
     mSubstate = SLIP_ACTION_STOOP;
-    mpMdlMng->setAnm(24);
+    mpMdlMng->setAnm(PLAYER_ANIM_SLIP_TO_STOOP);
 }
 
 void daPlBase_c::setSlipAction_ToEnd() {
@@ -576,7 +576,7 @@ void daPlBase_c::setSlipAction_ToEnd() {
     mSubstate = SLIP_ACTION_END;
     mSpeedF = 0.0f;
     mMaxSpeedF = 0.0f;
-    mpMdlMng->setAnm(23);
+    mpMdlMng->setAnm(PLAYER_ANIM_SLIPED);
 }
 
 void daPlBase_c::setSlipActionEnd() {
@@ -764,7 +764,7 @@ void daPlBase_c::setHipBlockBreak() {
 
 void daPlBase_c::setHipAttack_Ready() {
     mSubstate = HIP_ACTION_READY;
-    mpMdlMng->setAnm(16);
+    mpMdlMng->setAnm(PLAYER_ANIM_HIPSR);
     mSpeed.y = 1.0f;
 }
 
@@ -779,7 +779,7 @@ void daPlBase_c::setHipAttack_KinopioStart() {
 
 void daPlBase_c::setHipAttack_AttackStart() {
     mSubstate = HIP_ACTION_ATTACK_START;
-    mpMdlMng->setAnm(17);
+    mpMdlMng->setAnm(PLAYER_ANIM_HIPAT);
     mSubstateTimer = 5;
     mSpeed.y = 0.0f;
 }
@@ -803,7 +803,7 @@ void daPlBase_c::setHipAttack_AttackFall() {
 void daPlBase_c::setHipAttack_StandNormal() {
     mSubstateTimer = 20;
     mSubstate = HIP_ACTION_STAND_NORMAL;
-    mpMdlMng->setAnm(18);
+    mpMdlMng->setAnm(PLAYER_ANIM_HIPED);
     onStatus(STATUS_HIP_ATTACK_STAND_UP);
     offStatus(STATUS_HIP_ATTACK_FALL);
     onStatus(STATUS_9F);
@@ -814,13 +814,13 @@ void daPlBase_c::setHipAttack_StandNormal() {
 
 void daPlBase_c::setHipAttack_StandNormalEnd() {
     mSubstate = HIP_ACTION_STAND_NORMAL_END;
-    mpMdlMng->setAnm(23);
+    mpMdlMng->setAnm(PLAYER_ANIM_SLIPED);
     offStatus(STATUS_HIP_ATTACK_STAND_UP);
 }
 
 void daPlBase_c::setHipAttack_ToStoop() {
     mSubstate = HIP_ACTION_TO_STOOP;
-    mpMdlMng->setAnm(19);
+    mpMdlMng->setAnm(PLAYER_ANIM_HIP_TO_STOOP);
     offStatus(STATUS_HIP_ATTACK_STAND_UP);
 }
 
@@ -901,8 +901,8 @@ void daPlBase_c::HipAction_Ground() {
 }
 
 void daPlBase_c::HipAction_StandNormal() {
-    if (mpMdlMng->getAnm() != 18) {
-        mpMdlMng->setAnm(18);
+    if (mpMdlMng->getAnm() != PLAYER_ANIM_HIPED) {
+        mpMdlMng->setAnm(PLAYER_ANIM_HIPED);
     }
     if (isNowBgCross(BGC_IS_FOOT)) {
         if (mpMdlMng->isAnmStop()) {
@@ -1034,10 +1034,10 @@ void daPlBase_c::initializeState_JumpDai() {
     mKey.onStatus(dAcPyKey_c::STATUS_NO_INPUT);
     mSpeed.y = 0.0f;
     mSpeedF = 0.0f;
-    if (mpMdlMng->getAnm() == 20) {
-        mSubstate = JUMP_DAI_ACTION_1;
+    if (mpMdlMng->getAnm() == PLAYER_ANIM_STOOP) {
+        mSubstate = JUMP_DAI_HIGH_JUMP;
     } else {
-        mpMdlMng->setAnm(7);
+        mpMdlMng->setAnm(PLAYER_ANIM_JUMPED);
     }
 }
 void daPlBase_c::finalizeState_JumpDai() {
@@ -1050,9 +1050,15 @@ void daPlBase_c::executeState_JumpDai() {
         changeState(StateID_Fall, nullptr);
     } else {
         turnAngle();
-        if (mSubstate == JUMP_DAI_ACTION_0 && mpMdlMng->mpMdl->mAnm.isStop()) {
-            setWaitActionAnm(BLEND_1);
-            mSubstate = JUMP_DAI_ACTION_1;
+        switch ((JumpDaiSubstate_e) mSubstate) {
+            case JUMP_DAI_MOVE_DOWN:
+                if (mpMdlMng->mpMdl->mAnm.isStop()) {
+                    setWaitActionAnm(BLEND_1);
+                    mSubstate = JUMP_DAI_HIGH_JUMP;
+                }
+                break;
+            case JUMP_DAI_HIGH_JUMP:
+                break;
         }
     }
 }
@@ -1097,16 +1103,16 @@ void daPlBase_c::initializeState_PlayerJumpDai() {
         setNoHitPlayer(rideActor, 5);
         m_348 = mPos - rideActor->mPos;
     }
-    m_354 = mSpeedF;
+    mJumpDaiSpeedF = mSpeedF;
     mSpeedF = 0.0f;
     mSpeed.y = 0.0f;
-    if (mpMdlMng->getAnm() != 20) {
-        mpMdlMng->setAnm(7);
+    if (mpMdlMng->getAnm() != PLAYER_ANIM_STOOP) {
+        mpMdlMng->setAnm(PLAYER_ANIM_JUMPED);
     }
     if (mKey.triggerJumpBuf(5)) {
-        mSubstate = JUMP_DAI_ACTION_1;
+        mSubstate = JUMP_DAI_HIGH_JUMP;
     } else {
-        mSubstate = JUMP_DAI_ACTION_0;
+        mSubstate = JUMP_DAI_MOVE_DOWN;
     }
     mSubstateValue = 0;
 }
@@ -1125,33 +1131,33 @@ void daPlBase_c::executeState_PlayerJumpDai() {
     } else {
         setNoHitPlayer(rideActor, 5);
         turnAngle();
-        if (mpMdlMng->mpMdl->m_154 == 7 && mpMdlMng->mpMdl->mAnm.isStop()) {
+        if (mpMdlMng->mpMdl->mCurrAnmID == PLAYER_ANIM_JUMPED && mpMdlMng->mpMdl->mAnm.isStop()) {
             setWaitActionAnm(BLEND_1);
         }
         switch ((JumpDaiSubstate_e) mSubstate) {
-            case JUMP_DAI_ACTION_0:
+            case JUMP_DAI_MOVE_DOWN:
                 if (mSubstateValue < 5) {
                     if (mKey.triggerJump()) {
-                        mSubstate = JUMP_DAI_ACTION_1;
+                        mSubstate = JUMP_DAI_HIGH_JUMP;
                     }
                 } else if (isMameAction()) {
-                    setJump(daPlBase_c::sc_JumpSpeed - 0.35f, m_354, true, 0, 0);
+                    setJump(daPlBase_c::sc_JumpSpeed - 0.35f, mJumpDaiSpeedF, true, 0, 0);
                     return;
                 } else if (mKey.buttonJump()) {
-                    setJump(daPlBase_c::sc_JumpSpeed + 0.2f, m_354, true, 0, 2);
+                    setJump(daPlBase_c::sc_JumpSpeed + 0.2f, mJumpDaiSpeedF, true, 0, 2);
                     return;
                 } else {
-                    setJump(daPlBase_c::sc_JumpSpeed + 1.0f, m_354, true, 2, 0);
+                    setJump(daPlBase_c::sc_JumpSpeed + 1.0f, mJumpDaiSpeedF, true, 2, 0);
                     return;
                 }
                 break;
-            case JUMP_DAI_ACTION_1:
+            case JUMP_DAI_HIGH_JUMP:
                 if (mSubstateValue > 5) {
-                    float f = 4.428f;
+                    float jumpSpeed = daPlBase_c::sc_JumpSpeed + 0.8f;
                     if (isMameAction()) {
-                        f = 3.828f;
+                        jumpSpeed = daPlBase_c::sc_JumpSpeed + 0.2f;
                     }
-                    setJump(f, 0.0f, true, 1, 2);
+                    setJump(jumpSpeed, 0.0f, true, 1, 2);
                     return;
                 }
                 break;
@@ -1200,7 +1206,7 @@ void daPlBase_c::initializeState_Funsui() {
     mSpeedF *= 0.7f;
     mSpeed.y = 0.0f;
     mSubstate = FUNSUI_ACTION_NONE;
-    mpMdlMng->setAnm(138);
+    mpMdlMng->setAnm(PLAYER_ANIM_BLOW_UP);
     if (mPlayerNo >= 0) {
         startPlayerVoice(VOICE_INTO_SANDPILLAR, 0);
         dQuake_c::m_instance->shockMotor(mPlayerNo, dQuake_c::TYPE_7, 0, false);
@@ -1280,7 +1286,7 @@ void daPlBase_c::initializeState_Cloud() {
     mSpeed.y = 0.1f;
     mSpeedF = 0.0f;
     mMaxSpeedF = 0.0f;
-    mpMdlMng->setAnm(7);
+    mpMdlMng->setAnm(PLAYER_ANIM_JUMPED);
     mRc.mFlags |= 4;
 }
 
@@ -1359,7 +1365,7 @@ void daPlBase_c::DemoAnmNormal() {
 
 void daPlBase_c::DemoAnmBossSetUp() {
     if (mSubstate == ANIME_PLAY_ACTION_0) {
-        mpMdlMng->setAnm(147);
+        mpMdlMng->setAnm(PLAYER_ANIM_WAIT_L3);
         mSubstate++;
         offStatus(STATUS_DISABLE_STATE_CHANGE);
     }
@@ -1386,7 +1392,7 @@ void daPlBase_c::DemoAnmBossGlad() {
             if (!vf284(arg)) {
                 break;
             }
-            mpMdlMng->setAnm(0, 5.0f, 0.0f);
+            mpMdlMng->setAnm(PLAYER_ANIM_WAIT, 5.0f, 0.0f);
             mSubstate++;
             offStatus(STATUS_DISABLE_STATE_CHANGE);
             break;
@@ -1409,10 +1415,10 @@ void daPlBase_c::DemoAnmBossAttention() {
         default:
             break;
         case HIP_ACTION_READY:
-            if (!mDirection) {
-                mpMdlMng->setAnm(145);
+            if (mDirection == DIR_LR_R) {
+                mpMdlMng->setAnm(PLAYER_ANIM_WAIT_L_DUPLICATE);
             } else {
-                mpMdlMng->setAnm(144);
+                mpMdlMng->setAnm(PLAYER_ANIM_WAIT_R_DUPLICATE);
             }
             mSubstate++;
             break;
@@ -1433,7 +1439,7 @@ void daPlBase_c::DemoAnmBossKeyGet() {
             mSubstate++;
         case ANIME_PLAY_ACTION_1:
             if (mSubstateTimer == 0) {
-            mpMdlMng->setAnm(148);
+                mpMdlMng->setAnm(PLAYER_ANIM_BOSS_KEY_GET);
                 playClearVoice(1);
                 mSubstate++;
                 offStatus(STATUS_DISABLE_STATE_CHANGE);
@@ -1449,7 +1455,7 @@ void daPlBase_c::initializeState_WaitJump() {
     onStatus(STATUS_12);
     mKey.onStatus(dAcPyKey_c::STATUS_FORCE_NO_JUMP);
     mSpeedF = 0.0f;
-    mpMdlMng->setAnm(0);
+    mpMdlMng->setAnm(PLAYER_ANIM_WAIT);
     mAngle.y = getMukiAngle(mDirection);
 }
 
@@ -2857,7 +2863,7 @@ void daPlBase_c::executeDemoInDokan(u8 dir) {
             }
             if (isNowBgCross(BGC_WATER_SHALLOW)) {
                 if (isDemoState(StateID_DemoInDokanL) || isDemoState(StateID_DemoInDokanR)) {
-                    mpMdlMng->setAnm(132);
+                    mpMdlMng->setAnm(PLAYER_ANIM_SWIM_PIPE);
                     if ((int) mDemoStateChangeParam != 1) {
                         mPos.y = getWaterDokanCenterOffset(mPos.y);
                         mWarpPos.y = mPos.y;
@@ -2913,7 +2919,7 @@ void daPlBase_c::initDemoInDokanUD(u8 dir) {
     static const float tmps[] = { 34.0f, 36.0f, 38.0f, 38.0f };
     /// @unofficial
     static const float tmps_big[] = { 40.0f, 42.0f, 44.0f, 44.0f };
-    mpMdlMng->setAnm(0);
+    mpMdlMng->setAnm(PLAYER_ANIM_WAIT);
     mWarpPos = mPos;
     if (dir == 1) {
         if ((int) mDemoStateChangeParam == 2) {
@@ -2973,7 +2979,7 @@ void daPlBase_c::initDemoInDokanUD(u8 dir) {
 
 void daPlBase_c::initDemoInDokanLR(u8 dir) {
     static const float l_dokanOffset[] = { 32.0f, 32.0f, 20.0f };
-    mpMdlMng->setAnm(131);
+    mpMdlMng->setAnm(PLAYER_ANIM_LOW_WALK);
     onStatus(STATUS_PROPEL_NO_ROLL);
     if (dir == 3) {
         mPos.x += 8.0f;
@@ -3148,7 +3154,7 @@ void daPlBase_c::endDemoOutDokan() {
 void daPlBase_c::initDemoOutDokanUD(u8 dir) {
     mDokanDir = dir;
     changeState(StateID_Walk, nullptr);
-    mpMdlMng->setAnm(0, 0.0f, 5.0f, 85.0f);
+    mpMdlMng->setAnm(PLAYER_ANIM_WAIT, 0.0f, 5.0f, 85.0f);
     if (m_80 == 2) {
         if (dir == 0) {
             mDokanOffsetY = 0.0f;
@@ -3226,9 +3232,9 @@ void daPlBase_c::executeDemoOutDokanUD() {
 void daPlBase_c::initDemoOutDokanLR(u8 dir) {
     mDokanDir = dir;
     if (isStatus(STATUS_SWIM)) {
-        mpMdlMng->setAnm(132);
+        mpMdlMng->setAnm(PLAYER_ANIM_SWIM_PIPE);
     } else {
-        mpMdlMng->setAnm(130);
+        mpMdlMng->setAnm(PLAYER_ANIM_LOW_WALK_START);
     }
     onStatus(STATUS_PROPEL_NO_ROLL);
     if (m_80 == 1 && daPyMng_c::mNum == 1) {
@@ -3246,7 +3252,7 @@ void daPlBase_c::initDemoOutDokanLR(u8 dir) {
 
 void daPlBase_c::executeDemoOutDokanLR() {
     if (mpMdlMng->mpMdl->mAnm.isStop()) {
-        mpMdlMng->setAnm(131);
+        mpMdlMng->setAnm(PLAYER_ANIM_LOW_WALK);
     }
     switch ((DemoInDokanSubstate_e) mDemoSubstate) {
         case DEMO_IN_DOKAN_ACTION_0: {
@@ -3296,6 +3302,8 @@ void daPlBase_c::executeDemoOutDokanLR() {
                 changeState(StateID_Walk, nullptr);
                 changeDemoState(StateID_DemoInWaterTank, 1);
             }
+            break;
+        case DEMO_IN_DOKAN_ACTION_4:
             break;
     }
 }
@@ -3386,7 +3394,7 @@ void daPlBase_c::executeState_DemoOutDokanRoll() {
 void daPlBase_c::initializeState_DemoInWaterTank() {
     onStatus(STATUS_BB);
     mDirection = (u8) (int) mDemoStateChangeParam;
-    mpMdlMng->setAnm(131);
+    mpMdlMng->setAnm(PLAYER_ANIM_LOW_WALK);
     mAngle.y = 0;
     if ((int) mDemoStateChangeParam == 1) {
         mDamageInvulnTimer = 0;
@@ -3418,7 +3426,7 @@ void daPlBase_c::executeState_DemoInWaterTank() {
             clearNowBgCross();
             checkWater();
             if (isNowBgCross(BGC_WATER_SHALLOW)) {
-                mpMdlMng->setAnm(132);
+                mpMdlMng->setAnm(PLAYER_ANIM_SWIM_PIPE);
                 mPos.y = getWaterDokanCenterOffset(mPos.y);
                 startSound(SE_PLY_WATER_DOKAN_IN_OUT, false);
             } else {
@@ -3436,7 +3444,7 @@ void daPlBase_c::executeState_DemoInWaterTank() {
 }
 
 void daPlBase_c::initializeState_DemoOutWaterTank() {
-    mpMdlMng->setAnm(0);
+    mpMdlMng->setAnm(PLAYER_ANIM_WAIT);
     mSpeedF = 0.0f;
     mMaxSpeedF = 0.0f;
     mSpeed.set(0.0f, 0.0f, 0.0f);
@@ -3450,7 +3458,7 @@ void daPlBase_c::executeState_DemoOutWaterTank() {
     switch ((DemoInDokanSubstate_e) mDemoSubstate) {
         case DEMO_IN_DOKAN_ACTION_0:
             if (sLib::chase(&mPos.x, mWarpPos.x, 1.0f)) {
-                mpMdlMng->setAnm(130);
+                mpMdlMng->setAnm(PLAYER_ANIM_LOW_WALK_START);
                 startSound(SE_PLY_DOKAN_IN_OUT, false);
                 mDemoSubstateTimer = 60;
                 mDemoSubstate = DEMO_IN_DOKAN_ACTION_1;
@@ -3458,7 +3466,7 @@ void daPlBase_c::executeState_DemoOutWaterTank() {
             break;
         case DEMO_IN_DOKAN_ACTION_1:
             if (mpMdlMng->mpMdl->mAnm.isStop()) {
-                mpMdlMng->setAnm(131);
+                mpMdlMng->setAnm(PLAYER_ANIM_LOW_WALK);
             }
             if (mDemoSubstateTimer == 0) {
                 onStatus(STATUS_BB);
@@ -3735,7 +3743,7 @@ void daPlBase_c::initDemoGoalBase() {
     clearJumpActionInfo(0);
     endStar();
     setDemoGoalMode(0, 0);
-    mpMdlMng->setAnm(85);
+    mpMdlMng->setAnm(PLAYER_ANIM_RTREE_START);
     mAngle.x = 0;
     setZPositionDirect(3000.0f);
     mSpeed.x = 0.0f;
@@ -3778,7 +3786,7 @@ void daPlBase_c::setDemoGoal_MultiJump() {
     dBc_c::checkGround(&pos, &pos.y, mLayer, 1, -1);
     mAngle.y = 0x4000;
     mDemoState = GOAL_DEMO_POLE_JUMP;
-    mpMdlMng->setAnm(88);
+    mpMdlMng->setAnm(PLAYER_ANIM_GOAL_JUMP);
     if (daPyDemoMng_c::mspInstance->m_1c > 1) {
         initGoalJump(pos, daPlBase_c::sc_JumpSpeed + 1.5f);
     } else {
@@ -3791,7 +3799,7 @@ void daPlBase_c::executeDemoGoal_Pole() {
         case GOAL_DEMO_POLE_SWING:
             if (!addCalcAngleY(-0x4000, 10) && mpMdlMng->mpMdl->mAnm.isStop()) {
                 mDemoState = GOAL_DEMO_WAIT_BELOW_PLAYER;
-                mpMdlMng->setAnm(86);
+                mpMdlMng->setAnm(PLAYER_ANIM_RTREE_WAIT);
                 onStatus(STATUS_GOAL_POLE_WAIT_BELOW_PLAYER);
             }
             break;
@@ -3820,7 +3828,7 @@ void daPlBase_c::executeDemoGoal_Pole() {
                 onStatus(STATUS_GOAL_POLE_FINISHED_SLIDE_DOWN);
                 mSpeed.y = 0.0f;
                 mDemoState = GOAL_DEMO_POLE_WAIT_JUMP;
-                mpMdlMng->setAnm(87);
+                mpMdlMng->setAnm(PLAYER_ANIM_RTREE_POSE);
             }
             break;
         }
@@ -3832,13 +3840,13 @@ void daPlBase_c::executeDemoGoal_Pole() {
         case GOAL_DEMO_POLE_JUMP:
             if (calcGoalJump()) {
                 mDemoState = GOAL_DEMO_POLE_LAND;
-                mpMdlMng->setAnm(89);
+                mpMdlMng->setAnm(PLAYER_ANIM_GOAL_JUMP_ED);
                 setLandSE();
             }
             break;
         case GOAL_DEMO_POLE_LAND:
             if (mpMdlMng->mpMdl->mAnm.isStop()) {
-                mpMdlMng->setAnm(143);
+                mpMdlMng->setAnm(PLAYER_ANIM_STAMP);
                 mDemoState = GOAL_DEMO_POLE_WAIT_TURN;
                 mDemoSubstateTimer = sc_DemoPoleWaitTurn;
             }
@@ -4076,7 +4084,7 @@ void daPlBase_c::setControlDemoAnm(int anmNo) {
 }
 bool daPlBase_c::isControlDemoAnm(int anmNo) {
     if (isStatus(STATUS_72)) {
-        if (mDemoState == CONTROL_DEMO_ANM && anmNo == mpMdlMng->mpMdl->m_154) {
+        if (mDemoState == CONTROL_DEMO_ANM && anmNo == mpMdlMng->mpMdl->mCurrAnmID) {
             return true;
         }
     }

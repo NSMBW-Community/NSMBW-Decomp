@@ -83,8 +83,8 @@ public:
 
     /// @unofficial
     enum JumpDaiSubstate_e {
-        JUMP_DAI_ACTION_0,
-        JUMP_DAI_ACTION_1,
+        JUMP_DAI_MOVE_DOWN, ///< Moving down on the player or spring.
+        JUMP_DAI_HIGH_JUMP, ///< The jump button was pressed to do a higher jump.
     };
 
     /// @unofficial
@@ -1055,7 +1055,7 @@ public:
     mEf::levelEffect_c mHitAttackDropEffect; ///< The wind effect when doing a ground pound.
     u32 m_344;
     mVec3_c m_348;
-    float m_354;
+    float mJumpDaiSpeedF; ///< The forward speed before doing a big jump.
     int mFallTimer;
     DemoAnime_e mDemoAnime;
     int m_360;
