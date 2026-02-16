@@ -5,9 +5,8 @@
 extern "C" {
 #endif
 
-#define MEM_EXP_HEAP_MIN_SIZE                                                  \
-    (sizeof(MEMiHeapHead) + sizeof(MEMiExpHeapHead) +                          \
-     sizeof(MEMiExpHeapMBlock) + 4)
+#define MEM_EXP_HEAP_HEAD_SIZE (sizeof(MEMiHeapHead) + sizeof(MEMiExpHeapHead))
+#define MEM_EXP_HEAP_MIN_SIZE (MEM_EXP_HEAP_HEAD_SIZE + sizeof(MEMiExpHeapMBlock) + 4)
 
 // Forward declarations
 typedef struct MEMiHeapHead MEMiHeapHead;
