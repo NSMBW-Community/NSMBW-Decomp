@@ -375,7 +375,7 @@ public:
     int checkWallSlideEnable(int);
     bool checkWallJump();
     void setWallSlideEffect();
-    void setSpinHoldReq(float);
+    void setSpinHoldReq(float targetX);
     bool setSpinSpeed(float, float);
     void setSpinJumpEffect(int);
     void endSpinJumpEffect();
@@ -767,8 +767,8 @@ public:
     int mWaitFrameCount;
     int m_88;
     int mJumpCounter;
-    u8 m_90;
-    u8 m_91;
+    u8 mJumpComboTimer; ///< Timer for allowing a slight delay between jumps to still count as a combo.
+    u8 mWallSlideCooldown; ///< Timer to disable wall sliding while active.
     float m_94;
     mEf::levelEffect_c mLevelEf1;
     mEf::levelEffect_c mLevelEf2;
@@ -799,11 +799,11 @@ public:
     mEf::levelEffect_c mLevelEf6;
     u8 m_8f0;
     mVec2_c m_8f4;
-    int m_8fc;
+    int mPoleGrabCooldown; ///< Timer to disable grabbing a pole while active.
     short m_900, m_902, m_904, m_906;
     int m_908;
     RopeSwingState_e m_90c;
-    int m_910;
+    int mTarzanRopeCooldown; ///< Timer to disable swinging on a vine while active.
     int m_914;
     float m_918;
     int m_91c;
@@ -826,11 +826,11 @@ public:
     mEf::levelEffect_c mLevelEf12;
     int m_103c;
     int m_1040;
-    int m_1044;
+    int mSpinTimer; ///< Timer for the duration of a spin jump.
     s16 m_1048;
     u8 mPad2[0x4];
-    float mSpinHoldReq;
-    u32 m_1054;
+    float mSpinHoldReqTarget; ///< The target X position to move to while doing a spin in place.
+    u32 mSpinFireBallCooldown; ///< Timer to control how often fireballs the player automatically shoots while spinning.
     u32 m_1058;
     s16 m_105c;
     dEf::followEffect_c mFollowEf2;
@@ -846,7 +846,7 @@ public:
     int m_12b8;
     u32 mAllBalloonFadeTimer;
     mMtx_c mRideJrClownMtx;
-    int m_12f0;
+    int mSpinCooldown; ///< Timer to disable another spin action while active.
     u8 m_12f4;
     float m_12f8;
     fBaseID_e m_12fc;
@@ -857,10 +857,10 @@ public:
     int m_1310[2];
     int m_1318[2];
     int mFollowType;
-    int m_1324;
-    int m_1328;
-    dEf::dLevelEffect_c mLevelEf13;
-    dEf::dLevelEffect_c mLevelEf14;
+    int mPowerUpEffectTimer; ///< Timer controlling the powerup effect duration and opacity.
+    int mPowerUpType; ///< 0: Touching an item, 1: Touching the midway point.
+    dEf::dLevelEffect_c mItemGetEffect1;
+    dEf::dLevelEffect_c mItemGetEffect2;
     int m_157c;
     int m_1580;
     int m_1584;
@@ -871,14 +871,15 @@ public:
     fBaseID_e mCarryActorID;
     int mFastRunFrames; ///< How many frames the player has been running at over 1 unit/frame.
     int m_15a8;
-    short m_15ac;
+    /// Disables interaction with other players and enemies while the timer is non-zero.
+    short mNoInteractTimer;
     short m_15ae;
     short m_15b0;
     short m_15b2;
     short m_15b4;
     short m_15b6;
     short m_15b8;
-    short m_15ba;
+    short mBalloonHelpVoiceCooldown; ///< Timer to only allow the help voice to play every 2 seconds.
     dEf::followEffect_c mFollowEf4;
     dPropelParts_c mPropelParts;
     dPlayerOrchestra_c mPlayerOrchestra;

@@ -353,8 +353,8 @@ void daPlBase_c::initializeState_Jump() {
     onStatus(STATUS_A0);
     onStatus(STATUS_A5);
     offStatus(STATUS_88);
-    if (mFallTimer != 0) {
-        onStatus(STATUS_4D);
+    if (mJumpDaiFallTimer != 0) {
+        onStatus(STATUS_JUMP_DAI_COOLDOWN);
     }
 }
 void daPlBase_c::finalizeState_Jump() {
@@ -362,20 +362,20 @@ void daPlBase_c::finalizeState_Jump() {
     if (isStatus(STATUS_A5)) {
         mSndObj.stopPlyJumpSound();
     }
-    offStatus(STATUS_0A);
+    offStatus(STATUS_JUMP);
     offStatus(STATUS_88);
     offStatus(STATUS_A5);
     offStatus(STATUS_AB);
     offStatus(STATUS_A0);
-    offStatus(STATUS_4D);
-    mFallTimer = 0;
+    offStatus(STATUS_JUMP_DAI_COOLDOWN);
+    mJumpDaiFallTimer = 0;
     mKey.offStatus(dAcPyKey_c::STATUS_FORCE_JUMP);
     mKey.offStatus(dAcPyKey_c::STATUS_FORCE_NO_JUMP);
     mKey.offStatus(dAcPyKey_c::STATUS_DISABLE_LR);
 }
 void daPlBase_c::executeState_Jump() {
-    if (mFallTimer == 0) {
-        offStatus(STATUS_4D);
+    if (mJumpDaiFallTimer == 0) {
+        offStatus(STATUS_JUMP_DAI_COOLDOWN);
     }
     if (isStatus(STATUS_A5)) {
         if (!mKey.buttonJump() || isNowBgCross(BGC_IS_HEAD)) {
@@ -386,7 +386,7 @@ void daPlBase_c::executeState_Jump() {
             offStatus(STATUS_A5);
         }
     }
-    onStatus(STATUS_0A);
+    onStatus(STATUS_JUMP);
 }
 
 bool daPlBase_c::setCrouchJump() {
@@ -410,8 +410,8 @@ void daPlBase_c::setFallAction() {
 
 void daPlBase_c::initializeState_Fall() {
     onStatus(STATUS_A0);
-    if (mFallTimer != 0) {
-        onStatus(STATUS_4D);
+    if (mJumpDaiFallTimer != 0) {
+        onStatus(STATUS_JUMP_DAI_COOLDOWN);
     }
     if (!mStateChangeParam) {
         mpMdlMng->setAnm(PLAYER_ANIM_JUMP2, 10.0f, 0.0f);
@@ -427,12 +427,12 @@ void daPlBase_c::initializeState_Fall() {
 void daPlBase_c::finalizeState_Fall() {
     offStatus(STATUS_A0);
     offStatus(STATUS_88);
-    offStatus(STATUS_4D);
-    mFallTimer = 0;
+    offStatus(STATUS_JUMP_DAI_COOLDOWN);
+    mJumpDaiFallTimer = 0;
 }
 void daPlBase_c::executeState_Fall() {
-    if (mFallTimer == 0) {
-        offStatus(STATUS_4D);
+    if (mJumpDaiFallTimer == 0) {
+        offStatus(STATUS_JUMP_DAI_COOLDOWN);
     }
 }
 
@@ -1127,7 +1127,7 @@ void daPlBase_c::executeState_PlayerJumpDai() {
         changeState(StateID_Fall, nullptr);
     } else if (isNowBgCross(BGC_IS_HEAD)) {
         changeState(StateID_Fall, nullptr);
-        mFallTimer = 30;
+        mJumpDaiFallTimer = 30;
     } else {
         setNoHitPlayer(rideActor, 5);
         turnAngle();
@@ -1312,7 +1312,7 @@ bool daPlBase_c::updateCloudMove() {
     mPos = rideActor->mPos;
     mPos.y += getCloudOffsetY();
     mSpeed.y = 0.0f;
-    if (!isStatus(STATUS_2B)) {
+    if (!isStatus(STATUS_SPIN)) {
         mAngle.set(rideActor->mAngle);
         mDirection = rideActor->mDirection;
     }
@@ -1569,7 +1569,7 @@ bool daPlBase_c::setSandMoveSpeed() {
     if (isOnSinkSand()) {
         int dir;
         if (mKey.buttonWalk(&dir)) {
-            if (isStatus(STATUS_2B)) {
+            if (isStatus(STATUS_SPIN)) {
                 mMaxSpeedF = sc_DirSpeed[dir];
             } else {
                 mMaxSpeedF = sc_DirSpeed[dir] * 0.5f;
@@ -4702,7 +4702,7 @@ void daPlBase_c::clearCcPlayerRev() {
 bool daPlBase_c::calcCcPlayerRev(float *f) {
     if (m_1070) {
         float tmp = m_106c;
-        if (isStatus(STATUS_2C) || mTimer_1074 != 0) {
+        if (isStatus(STATUS_IS_SPIN_HOLD_REQ) || mTimer_1074 != 0) {
             tmp = 0.0f;
         }
         if (isDemoType(DEMO_PLAYER) && isNowBgCross(BGC_IS_FOOT)) {
@@ -4806,7 +4806,7 @@ void daPlBase_c::setReductionScale() {
 }
 
 void daPlBase_c::initStampReduction() {
-    if (!isStatus(STATUS_0A) || mSquishKeyframeIdx == 0) {
+    if (!isStatus(STATUS_JUMP) || mSquishKeyframeIdx == 0) {
         mSquishNoMoveTimer = 4;
     }
     mSquishCooldownTimer = 10;
@@ -4928,7 +4928,7 @@ void daPlBase_c::clearBgCheckInfo() {
 void daPlBase_c::bgCheck(int i) {
     offStatus(STATUS_87);
     offStatus(STATUS_86);
-    offStatus(STATUS_2C);
+    offStatus(STATUS_IS_SPIN_HOLD_REQ);
     offStatus(STATUS_5D);
     if (isNowBgCross(BGC_IS_FOOT)) {
         m_d8c = mPos.y;
@@ -5993,7 +5993,7 @@ void daPlBase_c::calcTimerProc() {
     sLib::calcTimer(&mTimer_a8);
     sLib::calcTimer(&mSquishNoMoveTimer);
     sLib::calcTimer(&mSquishCooldownTimer);
-    sLib::calcTimer(&mFallTimer);
+    sLib::calcTimer(&mJumpDaiFallTimer);
     sLib::calcTimer(&mTimer_1074);
     sLib::calcTimer(&mBossDemoLandTimer);
     sLib::calcTimer(&mTimer_f4);

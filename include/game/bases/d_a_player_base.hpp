@@ -291,7 +291,7 @@ public:
         STATUS_STUNNED, ///< Stunned by electric shock or ice.
         STATUS_07, ///< [Ice related]
         STATUS_QUAKE, ///< The player was stunned by an earthquake.
-        STATUS_0A = 0x0a, ///< [Jump related]
+        STATUS_JUMP = 0x0a, ///< The player is jumping.
         STATUS_CAN_PENGUIN_SLIDE, ///< If the player can start sliding as a penguin.
         STATUS_STAR_JUMP, ///< The player is jumping while in star mode.
         STATUS_KANI_JUMP, ///< The player is doing a crab jump on a cliff.
@@ -322,8 +322,8 @@ public:
         STATUS_PROPEL_UP, ///< The player is flying upwards with the propeller suit.
         STATUS_PROPEL_SLOW_FALL = 0x29, ///< The player will fall slowly while spinning down with the propeller suit.
         STATUS_PROPEL_NO_ROLL, ///< Don't rotate the player because of the propeller suit.
-        STATUS_2B,
-        STATUS_2C,
+        STATUS_SPIN, ///< The player is spinning, either from a spin jump, a propeller spin (upwards or downwards) or screw spinning.
+        STATUS_IS_SPIN_HOLD_REQ, ///< If the player spins, stay in place. [Used for the twisting screws].
         STATUS_TWIRL, ///< The player is twirling in midair.
         STATUS_WAS_TWIRL, ///< The player was twirling in midair the previous frame.
         STATUS_30 = 0x30,
@@ -353,7 +353,7 @@ public:
         STATUS_49,
         STATUS_4A,
         STATUS_4B,
-        STATUS_4D = 0x4d,
+        STATUS_JUMP_DAI_COOLDOWN = 0x4d, ///< The player recently failed to perform a big jump because of a ceiling.
         STATUS_4E,
         STATUS_4F,
         STATUS_50,
@@ -417,7 +417,7 @@ public:
         STATUS_8C,
         STATUS_8D,
         STATUS_8E,
-        STATUS_8F,
+        STATUS_CAN_LAND, ///< The player can land on Yoshi or another player.
         STATUS_91 = 0x91,
         STATUS_92,
         STATUS_93,
@@ -437,7 +437,7 @@ public:
         STATUS_A2,
         STATUS_A3,
         STATUS_A4,
-        STATUS_A5,
+        STATUS_A5, ///< [Jump moving up?]
         STATUS_A6,
         STATUS_A7,
         STATUS_A8,
@@ -1064,7 +1064,9 @@ public:
     u32 m_344;
     mVec3_c m_348;
     float mJumpDaiSpeedF; ///< The forward speed before doing a big jump.
-    int mFallTimer;
+    /// Timer for disabling another big jump after being unable to do a big jump
+    /// due to colliding with a ceiling.
+    int mJumpDaiFallTimer;
     DemoAnime_e mDemoAnime;
     int m_360;
 
