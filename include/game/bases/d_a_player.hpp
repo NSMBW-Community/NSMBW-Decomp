@@ -7,6 +7,10 @@
 
 class daYoshi_c;
 
+/**
+ * @brief The player class for Mario, Luigi and the Toads.
+ * @statetable
+ */
 class dAcPy_c : public daPlBase_c {
 public:
     /// @unofficial

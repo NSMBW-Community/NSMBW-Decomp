@@ -3055,17 +3055,17 @@ bool daPlBase_c::setDokanIn(DokanDir_e dir) {
     if (isStatus(STATUS_7E)) {
         return false;
     }
-    int res = false;
-    int res2;
+    int res = 0;
+    int entranceNextGotoID;
     switch (dir) {
         case DOKAN_D:
             if (mKey.buttonDown()) {
-                res = mBc.checkDokanDown(&mWarpPos, &res2);
+                res = mBc.checkDokanDown(&mWarpPos, &entranceNextGotoID);
             }
             break;
         case DOKAN_U:
             if (mKey.buttonUp()) {
-                res = mBc.checkDokanUp(&mWarpPos, &res2);
+                res = mBc.checkDokanUp(&mWarpPos, &entranceNextGotoID);
             }
             break;
         case DOKAN_L:
@@ -3081,58 +3081,60 @@ bool daPlBase_c::setDokanIn(DokanDir_e dir) {
                     y = 8.0f;
                 }
             }
-            res = mBc.checkDokanLR(&mWarpPos, mDirection, &res2, x, y);
+            res = mBc.checkDokanLR(&mWarpPos, mDirection, &entranceNextGotoID, x, y);
             break;
         }
         case DOKAN_ROLL:
             break;
     }
-    if (res == 1 && setDemoOutDokanAction(res2, dir)) {
+    if (res == 1 && setDemoOutDokanAction(entranceNextGotoID, dir)) {
         return true;
     }
     return false;
 }
 
-bool daPlBase_c::setDemoOutDokanAction(int param1, DokanDir_e dir) {
-    mDokanNextGoto = param1;
+bool daPlBase_c::setDemoOutDokanAction(int entranceNextGotoID, DokanDir_e dir) {
+    mDokanEnterNextGotoID = entranceNextGotoID;
     dCdFile_c *cdFile = dCd_c::m_instance->getFileP(dScStage_c::m_instance->mCurrFile);
-    sNextGotoData *nextGoto = cdFile->getNextGotoP(mDokanNextGoto);
-    m_80 = 1;
-    if (nextGoto->mFlags & 8) {
-        m_80 = 2;
-    } else if (nextGoto->mFlags & 4) {
-        m_80 = 3;
+    sNextGotoData *nextGoto = cdFile->getNextGotoP(mDokanEnterNextGotoID);
+
+    mDokanMode = DEMO_DOKAN_NORMAL;
+    if (nextGoto->mFlags & NEXT_GOTO_RAIL) {
+        mDokanMode = DEMO_DOKAN_RAIL;
+    } else if (nextGoto->mFlags & NEXT_GOTO_WATER_TANK) {
+        mDokanMode = DEMO_DOKAN_WATER_TANK;
     }
 
-    // [official symbol - sic]
-    static sFStateVirtualID_c<daPlBase_c> *l_dokanInAction[] = {
+    static sStateIDIf_c *l_dokanInAction[] = {
         &StateID_DemoOutDokanU,
         &StateID_DemoOutDokanD,
         &StateID_DemoOutDokanL,
         &StateID_DemoOutDokanR,
         &StateID_DemoOutDokanRoll,
     };
-    switch (m_80) {
-        case 1:
-            if (dNext_c::m_instance->fn_800cfed0(dScStage_c::m_instance->mCurrFile, mDokanNextGoto)) {
+    switch (mDokanMode) {
+        case DEMO_DOKAN_NONE:
+            break;
+        case DEMO_DOKAN_NORMAL:
+            if (dNext_c::m_instance->fn_800cfed0(dScStage_c::m_instance->mCurrFile, mDokanEnterNextGotoID)) {
                 return false;
             }
             if (daPyDemoMng_c::mspInstance->m_5c) {
                 return false;
             }
-            dNext_c::m_instance->setChangeSceneNextDat(dScStage_c::m_instance->mCurrFile, mDokanNextGoto, dFader_c::FADER_CIRCLE_TARGET);
-            if (nextGoto->m_0b == 22) {
+            dNext_c::m_instance->setChangeSceneNextDat(dScStage_c::m_instance->mCurrFile, mDokanEnterNextGotoID, dFader_c::FADER_CIRCLE_TARGET);
+            if (nextGoto->mType == 22) {
                 changeDemoState(StateID_DemoOutWaterTank, 0);
             } else {
                 changeDemoState(*l_dokanInAction[dir], 0);
             }
             return true;
-        case 2:
-            dRail_c::getRailInfoP(nextGoto->m_0f);
+        case DEMO_DOKAN_RAIL:
+            dRail_c::getRailInfoP(nextGoto->mRailID); // [Unused return value]
             changeDemoState(*l_dokanInAction[dir], 0);
             return true;
-        case 3:
-            if (nextGoto->m_0b == 22) {
+        case DEMO_DOKAN_WATER_TANK:
+            if (nextGoto->mType == 22) {
                 changeDemoState(StateID_DemoOutWaterTank, dir);
             } else {
                 changeDemoState(*l_dokanInAction[dir], 0);
@@ -3164,7 +3166,7 @@ void daPlBase_c::initDemoOutDokanUD(u8 dir) {
     mDokanDir = dir;
     changeState(StateID_Walk, nullptr);
     mpMdlMng->setAnm(PLAYER_ANIM_WAIT, 0.0f, 5.0f, 85.0f);
-    if (m_80 == 2) {
+    if (mDokanMode == DEMO_DOKAN_RAIL) {
         if (dir == 0) {
             mDokanOffsetY = 0.0f;
         } else {
@@ -3178,7 +3180,7 @@ void daPlBase_c::initDemoOutDokanUD(u8 dir) {
         mDokanOffsetY = -10.0f;
     }
     mDokanOffsetX = 0.0f;
-    if (m_80 == 1 && daPyMng_c::mNum == 1) {
+    if (mDokanMode == DEMO_DOKAN_NORMAL && daPyMng_c::mNum == 1) {
         stopOther();
     }
     initDemoOutDokan();
@@ -3206,11 +3208,11 @@ void daPlBase_c::executeDemoOutDokanUD() {
         case DEMO_IN_DOKAN_ACTION_1:
             if (demo_dokan_move_y(0.75f, mDokanOffsetY)) {
                 onStatus(STATUS_5E);
-                switch (m_80) {
-                    case 2:
+                switch (mDokanMode) {
+                    case DEMO_DOKAN_RAIL:
                         changeDemoState(StateID_DemoRailDokan, 0);
                         break;
-                    case 3:
+                    case DEMO_DOKAN_WATER_TANK:
                         onStatus(STATUS_BB);
                         mLayer = 0;
                         if (mDokanDir == 0) {
@@ -3246,7 +3248,7 @@ void daPlBase_c::initDemoOutDokanLR(u8 dir) {
         mpMdlMng->setAnm(PLAYER_ANIM_LOW_WALK_START);
     }
     onStatus(STATUS_PROPEL_NO_ROLL);
-    if (m_80 == 1 && daPyMng_c::mNum == 1) {
+    if (mDokanMode == DEMO_DOKAN_NORMAL && daPyMng_c::mNum == 1) {
         stopOther();
     }
     if (isStatus(STATUS_SWIM) || mKind == 2) {
@@ -3277,11 +3279,11 @@ void daPlBase_c::executeDemoOutDokanLR() {
             }
             if (cond && demo_dokan_move_x(0.75f, 0.0f)) {
                 onStatus(STATUS_5E);
-                switch (m_80) {
-                    case 2:
+                switch (mDokanMode) {
+                    case DEMO_DOKAN_RAIL:
                         changeDemoState(StateID_DemoRailDokan, 0);
                         break;
-                    case 3:
+                    case DEMO_DOKAN_WATER_TANK:
                         onStatus(STATUS_BB);
                         mLayer = 0;
                         mWarpPos.x = mPos.x + sc_DirSpeed[mDirection] * 48.0f;
@@ -3335,7 +3337,7 @@ void daPlBase_c::executeState_DemoOutDokanR() { executeDemoOutDokanLR(); }
 
 void daPlBase_c::initializeState_DemoOutDokanRoll() {
     initDemoOutDokanUD(4);
-    m_80 = 1;
+    mDokanMode = DEMO_DOKAN_NORMAL;
     mDokanMoveSpeed.x = 0.0f;
     mDokanMoveSpeed.y = 0.0f;
     mBc.setRideOnObjBg(mpDokanBgCtr, mPos);
@@ -3479,7 +3481,7 @@ void daPlBase_c::executeState_DemoOutWaterTank() {
             }
             if (mDemoSubstateTimer == 0) {
                 onStatus(STATUS_BB);
-                if (m_80 == 3) {
+                if (mDokanMode == DEMO_DOKAN_WATER_TANK) {
                     setZPosition(-1800.0f);
                     if ((int) mDemoStateChangeParam <= 1) {
                         mWarpPos.x = mPos.x + sc_DirSpeed[(int) mDemoStateChangeParam] * 32.0f;
@@ -3534,15 +3536,16 @@ void daPlBase_c::initializeState_DemoRailDokan() {
     onStatus(STATUS_BB);
     sNextGotoData *nextGoto = dCd_c::m_instance->
         getFileP(dScStage_c::m_instance->mCurrFile)->
-        getNextGotoP(mDokanNextGoto);
+        getNextGotoP(mDokanEnterNextGotoID);
 
-    sRailInfoData *rail = dRail_c::getRailInfoP(nextGoto->m_0f);
+    sRailInfoData *rail = dRail_c::getRailInfoP(nextGoto->mRailID);
 
+    // @bug This line should appear after setting mRailDokanRailIndex, not before.
     sRailNodeData *node = &dCd_c::m_instance->
         getFileP(dScStage_c::m_instance->mCurrFile)->
         mpRailNodes[rail->mNodeIdx + mRailDokanRailIndex];
 
-    if (nextGoto->mFlags & 1) {
+    if (nextGoto->mFlags & NEXT_GOTO_RAIL_REVERSE) {
         mRailDokanRailIndex = rail->mCount - 2;
     } else {
         mRailDokanRailIndex = 1;
@@ -3561,9 +3564,17 @@ void daPlBase_c::finalizeState_DemoRailDokan() {
 
 void daPlBase_c::setExitRailDokan() {
     dCdFile_c *cdFile = dCd_c::m_instance->getFileP(dScStage_c::m_instance->mCurrFile);
-    sNextGotoData *nextGoto = cdFile->getNextGotoP(mDokanNextGoto);
+
+    sNextGotoData *nextGoto = cdFile->getNextGotoP(mDokanEnterNextGotoID);
+
+    // @bug This will the entered next-goto, not the one the player will exit from.
+    // To fix this, we'd need to do
+    // nextGoto = cdFile->getNextGotoP(nextGoto->mDestID);
+    // here.
+
     mLayer = nextGoto->mLayer;
-    switch (nextGoto->m_0b) {
+
+    switch (nextGoto->mType) {
         case 3:
             changeDemoState(StateID_DemoInDokanU, 1);
             break;
@@ -3583,8 +3594,8 @@ void daPlBase_c::executeState_DemoRailDokan() {
     if (--mRailDokanNextNodeTimer < 0) {
         sNextGotoData *ngt = dCd_c::m_instance->
             getFileP(dScStage_c::m_instance->mCurrFile)->
-            getNextGotoP(mDokanNextGoto & 0xFF);
-        sRailInfoData *rail = dRail_c::getRailInfoP(ngt->m_0f);
+            getNextGotoP(mDokanEnterNextGotoID);
+        sRailInfoData *rail = dRail_c::getRailInfoP(ngt->mRailID);
 
         sRailNodeData *currNode = &dCd_c::m_instance->
             getFileP(dScStage_c::m_instance->mCurrFile)->
@@ -3625,11 +3636,11 @@ void daPlBase_c::executeState_DemoRailDokan() {
     }
 }
 
-void daPlBase_c::setObjDokanIn(dBg_ctr_c *bgCtr, mVec3_c &pos, int param3) {
+void daPlBase_c::setObjDokanIn(dBg_ctr_c *bgCtr, mVec3_c &pos, int nextGotoID) {
     mpDokanBgCtr = bgCtr;
     mWarpPos.set(pos.x, pos.y, mPos.z);
     mRollDokanAngle = *bgCtr->mRotation;
-    setDemoOutDokanAction(param3, DOKAN_ROLL);
+    setDemoOutDokanAction(nextGotoID, DOKAN_ROLL);
 }
 
 bool daPlBase_c::isDispOutCheckOn() {

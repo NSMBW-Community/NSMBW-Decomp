@@ -120,6 +120,14 @@ public:
     };
 
     /// @unofficial
+    enum DemoDokanMode_e {
+        DEMO_DOKAN_NONE,
+        DEMO_DOKAN_NORMAL,
+        DEMO_DOKAN_RAIL,
+        DEMO_DOKAN_WATER_TANK
+    };
+
+    /// @unofficial
     enum DemoInDokanSubstate_e {
         DEMO_IN_DOKAN_ACTION_0,
         DEMO_IN_DOKAN_ACTION_1,
@@ -856,7 +864,7 @@ public:
     void initDemoInDokanLR(u8);
     void executeDemoInDokan(u8);
     void endDemoInDokan();
-    bool setDemoOutDokanAction(int, DokanDir_e dir);
+    bool setDemoOutDokanAction(int entranceNextGotoID, DokanDir_e dir);
     void initDemoOutDokanUD(u8);
     void initDemoOutDokanLR(u8);
     void executeDemoOutDokanUD();
@@ -1073,13 +1081,13 @@ public:
     KimePoseMode_e mKimePoseMode;
     s8 mDemoState; /// Value is a ControlDemoState_e.
 
-    int mDokanNextGoto;
+    int mDokanEnterNextGotoID; ///< The ID of the next-goto of the pipe being entered.
     /// Position of the door or pipe the player is entering.
     /// Also used as the target for the player running towards the castle after touching the goal pole.
     mVec3_c mWarpPos;
     mVec2_c mDokanMoveSpeed; ///< Direction to move the player while entering a rolling hill pipe or a rail pipe.
     short mRollDokanAngle;
-    int m_80;
+    DemoDokanMode_e mDokanMode;
     u8 mDokanDir;
     dBg_ctr_c *mpDokanBgCtr;
     /// Counts up while walking to the left, and allows the

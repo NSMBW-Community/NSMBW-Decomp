@@ -8475,14 +8475,14 @@ bool dAcPy_c::setDoorDemo(dActor_c *door) {
         );
         int nextGoto;
         if (dNext_c::m_instance->searchNextNum(dScStage_c::m_instance->mCurrFile, doorEnterPos.x, doorEnterPos.y + 1.0f, &nextGoto)) {
-            mDokanNextGoto = nextGoto;
-            if (dNext_c::m_instance->fn_800cfed0(dScStage_c::m_instance->mCurrFile, mDokanNextGoto)) {
+            mDokanEnterNextGotoID = nextGoto;
+            if (dNext_c::m_instance->fn_800cfed0(dScStage_c::m_instance->mCurrFile, mDokanEnterNextGotoID)) {
                 return false;
             }
             if (daPyDemoMng_c::mspInstance->m_5c != 0) {
                 return false;
             }
-            dNext_c::m_instance->setChangeSceneNextDat(dScStage_c::m_instance->mCurrFile, mDokanNextGoto, dFader_c::FADER_CIRCLE_TARGET);
+            dNext_c::m_instance->setChangeSceneNextDat(dScStage_c::m_instance->mCurrFile, mDokanEnterNextGotoID, dFader_c::FADER_CIRCLE_TARGET);
             mRelatedActorID = door->mUniqueID;
             mWarpPos = doorEnterPos;
             mDoorSize = 0;
