@@ -222,7 +222,7 @@ const stateIDList = [...document.querySelectorAll('.memberdecls .memItemRight a'
     const descriptionElement = document.getElementsByClassName(`memdesc:${id}`);
     let description = '';
     if (descriptionElement.length == 1) {
-        description = descriptionElement[0].querySelector('.mdescRight').innerText.trim();
+        description = descriptionElement[0].querySelector('.mdescRight').innerHTML.trim();
     }
     return { name, description, href, isInherited };
 });
