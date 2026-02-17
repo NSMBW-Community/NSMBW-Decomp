@@ -348,12 +348,12 @@ public:
     void calcJumpCount();
     float getJumpSpeed();
     void setJumpSpeed();
-    void fn_80127740(int, int); ///< Jump animation set, some enum as first param @unofficial
-    void fn_80145fd0(int); ///< Jump voice, some enum as param @unofficial
+    void fn_80127740(int jumpType, AnmBlend_e blendMode); ///< Jump animation set, some enum as first param @unofficial
+    void fn_80145fd0(int jumpType); ///< Jump voice, some enum as param @unofficial
     bool checkCarryThrow();
     void jumpExeTakeOff();
     void jumpExecAir();
-    void fn_801282d0(int); ///< @unofficial
+    void fn_801282d0(AnmBlend_e blendMode); ///< @unofficial
     bool spinLiftUp(dActor_c *, bool); ///< @unofficial
     void setJumpCommonBase();
     dAcPy_c *getCarryPlayer();
@@ -862,7 +862,7 @@ public:
     short m_15ae;
     short m_15b0;
     short m_15b2;
-    short m_15b4;
+    short mWaterWalkTimer;
     short m_15b6;
     short m_15b8;
     short mBalloonHelpVoiceCooldown; ///< Timer to only allow the help voice to play every 2 seconds.

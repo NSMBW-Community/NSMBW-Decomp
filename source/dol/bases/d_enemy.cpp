@@ -742,7 +742,7 @@ void dEn_c::WaterCheck(mVec3_c &pos, float h) {
 bool dEn_c::LineBoundaryCheck(dActor_c *actor) {
     daPlBase_c *pl = (daPlBase_c *) actor;
     if ((pl->mPos.z > 0.0f && mAmiLayer == 1) || (pl->mPos.z < 0.0f && mAmiLayer == 0)) {
-        if (pl->isNowBgCross(daPlBase_c::BGC_51) || pl->isNowBgCross(daPlBase_c::BGC_52)) {
+        if (pl->isNowBgCross(daPlBase_c::BGC_VINE_TOUCH_L) || pl->isNowBgCross(daPlBase_c::BGC_VINE_TOUCH_R)) {
             return true;
         }
     }

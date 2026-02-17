@@ -233,9 +233,9 @@ public:
 
     /// @unofficial
     enum PowerChangeType_e {
-        POWER_CHANGE_0,
-        POWER_CHANGE_1,
-        POWER_CHANGE_2
+        POWER_CHANGE_NORMAL,
+        POWER_CHANGE_ICE,
+        POWER_CHANGE_ICE_LOW_SLIP
     };
 
     /// @unofficial
@@ -257,25 +257,25 @@ public:
 
     /// @unofficial
     enum BgCross1_e {
-        BGC_IS_FOOT = BIT_FLAG(0),
-        BGC_IS_HEAD = BIT_FLAG(1),
-        BGC_IS_WALL = BIT_FLAG(2),
+        BGC_FOOT = BIT_FLAG(0), ///< Colliding with the foot sensor.
+        BGC_HEAD = BIT_FLAG(1), ///< Colliding with the head sensor.
+        BGC_WALL = BIT_FLAG(2), ///< Colliding with the wall sensor.
         BGC_WALL_TOUCH_L = BIT_FLAG(3),
         BGC_WALL_TOUCH_R = BIT_FLAG(4),
         BGC_WALL_TOUCH_L_2 = BIT_FLAG(5),
         BGC_WALL_TOUCH_R_2 = BIT_FLAG(6),
-        BGC_CARRY_RELATED_L = BIT_FLAG(7),
-        BGC_CARRY_RELATED_R = BIT_FLAG(8),
-        BGC_OBJBG_CARRY_RELATED_L = BIT_FLAG(9),
-        BGC_OBJBG_CARRY_RELATED_R = BIT_FLAG(10),
+        BGC_OBJBG_TOUCH_L = BIT_FLAG(7), ///< Touching a background object on the left.
+        BGC_OBJBG_TOUCH_R = BIT_FLAG(8), ///< Touching a background object on the right.
+        BGC_OBJBG_TOUCH_CARRIED_L = BIT_FLAG(9), ///< The touching background object on the left is being carried by a player.
+        BGC_OBJBG_TOUCH_CARRIED_R = BIT_FLAG(10), ///< The touching background object on the right is being carried by a player.
         BGC_11 = BIT_FLAG(11),
         BGC_12 = BIT_FLAG(12),
         BGC_13 = BIT_FLAG(13),
         BGC_WATER_SHALLOW = BIT_FLAG(14), ///< At least slightly inside of water (hip height or higher).
         BGC_WATER_TOUCH = BIT_FLAG(15), ///< At least touching water.
         BGC_WATER_SUBMERGED = BIT_FLAG(16), ///< Fully submerged in water.
-        BGC_17 = BIT_FLAG(17),
-        BGC_WATER_BUBBLE = BIT_FLAG(18),
+        BGC_ON_WATER_MOVE = BIT_FLAG(17), ///< On water by being mini or sliding with the penguin suit.
+        BGC_WATER_BUBBLE = BIT_FLAG(18), ///< Inside a floating water bubble.
         BGC_SIDE_LIMIT_L = BIT_FLAG(19),
         BGC_SIDE_LIMIT_R = BIT_FLAG(20),
         BGC_ON_SNOW = BIT_FLAG(22),
@@ -301,20 +301,20 @@ public:
         BGC_37 = BIT_FLAG(6), ///< Cannot wall kick or ground pound while this is set.
         BGC_SLOPE = BIT_FLAG(7),
         BGC_CLIFF = BIT_FLAG(8),
-        BGC_41 = BIT_FLAG(9),
-        BGC_42 = BIT_FLAG(10),
+        BGC_CLIFF_ABOVE_1 = BIT_FLAG(9),
+        BGC_CLIFF_ABOVE_2 = BIT_FLAG(10),
         BGC_CAN_CLIMB = BIT_FLAG(11),
         BGC_44 = BIT_FLAG(12),
-        BGC_45 = BIT_FLAG(13),
-        BGC_46 = BIT_FLAG(14),
-        BGC_47 = BIT_FLAG(15),
-        BGC_48 = BIT_FLAG(16),
-        BGC_49 = BIT_FLAG(17),
-        BGC_51 = BIT_FLAG(19),
-        BGC_52 = BIT_FLAG(20),
-        BGC_53 = BIT_FLAG(21),
+        BGC_VINE_TOUCH_FULL = BIT_FLAG(13), ///< Fully touching a vine / mesh net / rock wall.
+        BGC_VINE_TOUCH_U = BIT_FLAG(14), ///< Touching a vine / mesh net / rock wall on the top.
+        BGC_VINE_TOUCH_D = BIT_FLAG(15), ///< Touching a vine / mesh net / rock wall on the bottom.
+        BGC_VINE_TOUCH_2 = BIT_FLAG(16),
+        BGC_VINE_TOUCH = BIT_FLAG(17), ///< Touching a vine / mesh net / rock wall on any side.
+        BGC_VINE_TOUCH_L = BIT_FLAG(19), ///< Touching a vine / mesh net / rock wall on the left.
+        BGC_VINE_TOUCH_R = BIT_FLAG(20), ///< Touching a vine / mesh net / rock wall on the right.
+        BGC_NON_BREAK_BLOCK_HIT = BIT_FLAG(21),
         BGC_54 = BIT_FLAG(22),
-        BGC_55 = BIT_FLAG(23),
+        BGC_PRESS_HEAD_HIT = BIT_FLAG(23),
         BGC_BLOCK_HIT = BIT_FLAG(24),
         BGC_57 = BIT_FLAG(25),
         BGC_58 = BIT_FLAG(26),
@@ -375,7 +375,7 @@ public:
         STATUS_30 = 0x30,
         STATUS_31,
         STATUS_32,
-        STATUS_VINE, ///< The player is clinging to a vine or a mesh net.
+        STATUS_VINE, ///< The player is clinging to a vine / mesh net / rock wall.
         STATUS_HANG, ///< The player is hanging from a ceiling rope.
         STATUS_POLE, ///< The player is climbing a pole.
         STATUS_36,
@@ -418,7 +418,7 @@ public:
         STATUS_5D,
         STATUS_5E,
         STATUS_5F,
-        STATUS_60,
+        STATUS_ENEMY_STAGE_CLEAR, ///< The player has cleared an enemy ambush.
         STATUS_61,
         STATUS_62,
         STATUS_63,
@@ -440,7 +440,7 @@ public:
         STATUS_73,
         STATUS_74,
         STATUS_ENDING_DANCE_AUTO,
-        STATUS_76,
+        STATUS_DEMO_NEXT_GOTO_BLOCK, ///< The player is transitioning after touching a next goto area.
         STATUS_77,
         STATUS_78,
         STATUS_79,
@@ -491,8 +491,8 @@ public:
         STATUS_AA,
         STATUS_AB,
         STATUS_FOLLOW_MAME_KURIBO, ///< Mini Goombas are attached to the player.
-        STATUS_AD,
-        STATUS_AE,
+        STATUS_IS_PENGUIN, ///< The player is in the penguin suit.
+        STATUS_HIP_ATTACK, ///< The player is in the ground pound action and is not yet about to stand back up.
         STATUS_B3 = 0xb3, /// [Yoshi only?]
         STATUS_ABOUT_TO_BE_DELETED = 0xb5,
         STATUS_B6,
@@ -506,9 +506,9 @@ public:
         STATUS_BE,
         STATUS_BF,
         STATUS_C0,
-        STATUS_C1,
-        STATUS_C2,
-        STATUS_C3,
+        STATUS_CAN_WATER_WALK, ///< The player can walk on water because of the mini mushroom.
+        STATUS_ON_WATER_MOVE, ///< The player is on water by being mini or sliding with the penguin suit.
+        STATUS_CAN_WATER_SLIDE, ///< The player can slide on water because of the penguin suit.
         STATUS_C4,
         STATUS_C5,
         STATUS_C8 = 0xc8,
@@ -518,12 +518,12 @@ public:
 
     class jmpInf_c {
     public:
-        jmpInf_c(float f, int a, int b) : m_04(f), m_08(a), m_0c(b) {}
+        jmpInf_c(float speed, int jumpMode, AnmBlend_e blendMode) : mSpeed(speed), mJumpMode(jumpMode), mBlendMode(blendMode) {}
         virtual ~jmpInf_c() {};
 
-        float m_04;
-        int m_08;
-        int m_0c;
+        float mSpeed;
+        int mJumpMode;
+        AnmBlend_e mBlendMode;
     };
 
     typedef void (daPlBase_c::*ProcFunc)();
@@ -617,17 +617,17 @@ public:
     virtual void executeDemoGoal_Run();
     virtual void initializeDemoControl() {}
 
-    /// @brief Transition to a new state with the given state ID and argument.
+    /// @brief Transitions to a new state with the given state ID and argument.
     /// @param stateID The ID of the state to transition to.
     /// @param arg An optional argument to pass to the new state. The type of this argument depends on the state being transitioned to.
-    virtual void changeState(const sStateIDIf_c &, void *);
+    virtual void changeState(const sStateIDIf_c &stateID, void *arg);
 
     STATE_VIRTUAL_FUNC_DECLARE(daPlBase_c, None); ///< Default state, does nothing. Argument: None.
     STATE_VIRTUAL_FUNC_DECLARE(daPlBase_c, Walk); ///< Player on the ground. Argument: Blending mode (AnmBlend_e).
     STATE_VIRTUAL_FUNC_DECLARE(daPlBase_c, Jump); ///< Jumping. Argument: Jump information (jmpInf_c *).
     STATE_VIRTUAL_FUNC_DECLARE(daPlBase_c, SitJump); ///< Crouch jump. Argument: Should initiate jump (@p bool).
     STATE_VIRTUAL_FUNC_DECLARE(daPlBase_c, Fall); ///< Falling. Argument: Should play animation (@p bool).
-    STATE_VIRTUAL_FUNC_DECLARE(daPlBase_c, Land); ///< Landing after a jump. Argument: None.
+    STATE_VIRTUAL_FUNC_DECLARE(daPlBase_c, Land); ///< Landing after a jump. Argument: @p bool [Unknown purpose, never read from].
     STATE_VIRTUAL_FUNC_DECLARE(daPlBase_c, Crouch); ///< Crouching on the ground. Argument: See CrouchArg_e.
     STATE_VIRTUAL_FUNC_DECLARE(daPlBase_c, Slip); ///< Sliding down a slope. Argument: None.
     STATE_VIRTUAL_FUNC_DECLARE(daPlBase_c, Turn); ///< Turning around after running fast. Argument: None.
@@ -724,7 +724,11 @@ public:
     virtual bool setDamage2(dActor_c *, daPlBase_c::DamageType_e);
 
     void executeState();
-    void changeDemoState(const sStateIDIf_c &, int);
+
+    /// @brief Transitions to a new state with the given state ID and argument.
+    /// @param stateID The ID of the state to transition to.
+    /// @param arg An argument to pass to the new state.
+    void changeDemoState(const sStateIDIf_c &stateID, int arg);
 
     void onStatus(int id); ///< Enables the status with the given ID. See Status_e.
     void offStatus(int id); ///< Disables the status with the given ID. See Status_e.
@@ -756,9 +760,9 @@ public:
     void grandPowerSet(); // [misspelling of "ground"]
     void slipPowerSet(int);
     void icePowerChange(int);
-    void fn_8004bf80(SpeedData_t *data); ///< @unofficial
+    void getPowerChangeSpeedData(SpeedData_t *data); ///< @unofficial
     void getTurnPower(sTurnPowerData &); ///< @unofficial
-    PowerChangeType_e getPowerChangeType(bool);
+    PowerChangeType_e getPowerChangeType(bool affectPenguin);
     const float *getSpeedData();
 
     int addCalcAngleY(short, short);
@@ -775,7 +779,7 @@ public:
     bool setDelayHelpJump();
     bool setCrouchJump();
     bool checkJumpTrigger();
-    bool fn_800579c0(int, int); ///< @unofficial
+    bool startJump(AnmBlend_e blendMode, int jumpType); ///< @unofficial
 
     void setStampReduction();
     void setStampPlayerJump(bool b, float f);
@@ -875,6 +879,7 @@ public:
     bool demo_dokan_move_y(float, float);
     void setObjDokanIn(dBg_ctr_c *, mVec3_c &, int);
     void setExitRailDokan();
+    void setDemoOutNextGotoBlock(int nextGotoID, int delay, int fadeType); ///< @unofficial
 
     void stopGoalOther();
     void playGoalOther();
@@ -890,7 +895,6 @@ public:
     bool setEnemyStageClearDemo();
     void updateEndingDance();
     void initDemoKimePose();
-    void fn_80052ef0(int, int, int); ///< @unofficial
 
     bool isBossDemoLand();
     void DemoAnmNormal();
@@ -1020,7 +1024,7 @@ public:
 
     float calcStarAccel(float f) { return 3.0f * f; }
     void set_m_d80(int i, float f) { m_d80[i] = f; }
-    float getHeight() const { return mHeight; }
+    float getModelHeight() const { return mModelHeight; }
     float get_1064() const { return m_1064; }
     float get_1068() const { return m_1068; }
     float get_106c() const { return m_106c; }
@@ -1060,8 +1064,8 @@ public:
     }
 
     template <typename T>
-    T stateChangeArg() const {
-        return (T) mStateChangeArg;
+    T stateArg() const {
+        return (T) mStateArg;
     }
 
     SquishState_e mSquishState; ///< The player's current squish state for being jumped on by another player.
@@ -1104,19 +1108,20 @@ public:
     int mGoalDemoIndex; ///< Indicates where the player is in the order of players which have touched the goal pole, 0 being the first.
     int mGoalTouchOrder;
     float mGoalPoleEndY;
-    int mTimer_a8;
+    int mTimer_a8; ///< [Seems unused - set to 0 when leaving a rolling hill].
     mVec3_c mGoalJumpTarget;
     int mGoalJumpFrameCount;
 
-    float m_bc;
-    u8 mPad1[0x8];
-    float m_c8;
-    int m_cc;
-    int m_d0;
+    mVec3_c mControlDemoTargetPos;
+    float mControlDemoSpeedF;
+    int mItemKinopioDirection;
+    int mItemKinopioTurnTimer;
+
     int mBossDemoLandTimer;
-    int m_d8[5];
-    int m_ec;
-    int m_f0;
+    int mEndingDanceKeyTimers[5];
+    int mEndingDanceInactivityTimer;
+
+    int mWalkAnmState;
     int mTimer_f4;
     int mSlipEndTimer;
     s8 mAutoSlipTimer;
@@ -1124,8 +1129,8 @@ public:
     int mTurnGroundType;
     u8 mTurnEffectFade;
     mEf::levelEffect_c mHitAttackDropEffect; ///< The wind effect when doing a ground pound.
-    u32 m_344;
-    mVec3_c m_348;
+    int m_344; ///< [Staff credit ground pound break related]
+    mVec3_c mJumpDaiOffset; ///< The difference vector between this player and the player being jumped on.
     float mJumpDaiSpeedF; ///< The forward speed before doing a big jump.
     /// Timer for disabling another big jump after being unable to do a big jump
     /// due to colliding with a ceiling.
@@ -1143,31 +1148,37 @@ public:
     mEf::levelEffect_c mRunEffect; ///< E.g. sand particles / snowflakes when running.
     mEf::levelEffect_c mQuicksandSplashEffect; ///< Sand splash effect when landing on quicksand.
     mEf::levelEffect_c mQuicksandSinkEffect; ///< Sand particles when the player is submerged in quicksand.
+
     dPyMdlMng_c *mpMdlMng;
     dAudio::SndObjctPly_c mSndObj;
     dAcPyKey_c mKey;
+
     fBaseID_e mRideActorID;
     fBaseID_e mRelatedActorID; ///< Actor that is eating the player, or the door actor.
     fBaseID_e mHipAttackPlayerID;
+
     u32 mStatusFlags[7];
-    float mHeight;
+    float mModelHeight;
     u8 mPrevDirection;
     u8 mAmiLayer;
     u8 mPlayerLayer;
+
     mVec3_c mLastPosDelta;
     mVec3_c mLiftRelatedPos;
-    float m_cbc;
-    float m_cc0;
-    float mAirTopHeight; ///< The highest Y position since being on the ground last.
-    float m_cc8;
+    float mPrevSpeedF;
+    float mPrevSpeedY;
+    float mTopHeight; ///< Stores the highest Y position reached, resets when landing on the ground again.
+    float mAirTopHeight; ///< The highest Y position since being on the ground last. Not reset when landing on the ground.
     const float *mSpeedDataNormal;
     const float *mSpeedDataStar;
     const float *mGravityData;
+
     int mNoGravityTimer;
     int mStarTimer;
     int mDamageInvulnTimer;
     int mPowerupChangeInvulnTimer;
-    int mTimer_ce8;
+    int mTimer_ce8; ///< [Related to balloon break jump]
+
     s8 mTreadCount;
     s8 mStarCount;
     s8 mPlComboCount;
@@ -1179,7 +1190,7 @@ public:
     sBcPointData mFootBcData;
     sBcPointData mWallBcData;
     mVec3_c mBgPushForce; ///< Belts, quicksand etc.
-    float m_d3c;
+    float mExtraPushForceX;
 
     u32 mNowBgCross1, mNowBgCross2;
     u32 mOldBgCross1, mOldBgCross2;
@@ -1210,7 +1221,7 @@ public:
     u8 mWaterType; ///< Value is a dBc_c::WATER_TYPE_e.
     mVec3_c mAirWaterHitPos;
     short mAirWaterHitAngle;
-    float m_dc8;
+    float mKaniHeight; ///< The height of the last cliff the player interacted with.
     float mRideNutHeight;
 
     dCc_c mCc1, mAttCc1, mAttCc2, mAttCc3;
@@ -1220,22 +1231,22 @@ public:
     float m_106c;
     bool m_1070;
     bool m_1071;
-    int mTimer_1074;
+    int m_1072;
     u8 mDispLimitRelatedL;
     u8 mDispLimitRelatedR;
     float mDispLimitRelatedL2;
     float mDispLimitRelatedR2;
 
     sFStateMgr_c<daPlBase_c, sStateMethodUsr_FI_c> mDemoStateMgr; ///< The state manager for demo (cutscene) states.
-    void *mDemoStateChangeParam; ///< To be used as a kind of argument to the new demo state.
-    int mDemoSubstate; ///< Demo states can use this as a kind of sub-state variable (cast to some enum)
+    int mDemoStateArg; ///< To be used as an argument to the new demo state.
+    int mDemoSubstate; ///< Demo states can use this as a sub-state variable (cast to some enum)
     /// Demo states can use this generic timer for various purposes.
     /// It is automatically decrememented in executeState() every frame.
     int mDemoSubstateTimer;
     bool mIsDemoMode; ///< Whether the player is currently in a demo (cutscene) state.
 
     sFStateMgr_c<daPlBase_c, sStateMethodUsr_FI_c> mStateMgr; ///< The state manager for regular player states.
-    void *mStateChangeArg; ///< To be used as an argument to the new state.
+    void *mStateArg; ///< To be used as an argument to the new state.
     int mSubstate; ///< States can use this as a sub-state variable (cast to some enum).
     /// States can use this generic timer for various purposes.
     /// It is automatically decrememented in executeState() every frame.
@@ -1244,12 +1255,14 @@ public:
     int mSubstateValue;
 
     mVec3_c mPressAttachPos;
-    int m_1128;
-    float m_112c;
-    float m_1130;
+
+    int mWindGroundTimer;
+    float mWindSpeed;
+    float mFinalAirPushForceX;
     float m_1134;
     float m_1138;
     float m_113c;
+
     PLAYER_TYPE_e mPlayerType;
 
     static const float sc_DirSpeed[];

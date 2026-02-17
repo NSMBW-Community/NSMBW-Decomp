@@ -35,7 +35,7 @@ public:
     static int getYoshiFruit(u8 plrNo);
     static daYoshi_c *createYoshi(mVec3_c &, int, dAcPy_c *);
 
-    static bool isPlayerKinopio(int plrNo) {
+    static bool isItemKinopio(int plrNo) {
         bool res = false;
         daPlBase_c *player = getPlayer(plrNo);
         if (player != nullptr && player->isItemKinopio()) {
