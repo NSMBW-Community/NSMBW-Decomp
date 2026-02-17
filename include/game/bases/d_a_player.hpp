@@ -86,14 +86,6 @@ public:
     };
 
     /// @unofficial
-    enum SwimParam_e {
-        SWIM_PARAM_0,
-        SWIM_PARAM_1,
-        SWIM_PARAM_2,
-        SWIM_PARAM_3
-    };
-
-    /// @unofficial
     enum SwimSubstate_e {
         SWIM_ACTION_0,
         SWIM_ACTION_1,
@@ -114,16 +106,6 @@ public:
         HANG_ACTION_START,
         HANG_ACTION_WAIT,
         HANG_ACTION_MOVE
-    };
-
-    /// @unofficial
-    enum KaniChangeParam_e {
-        KANI_CHANGE_WALK,
-        KANI_CHANGE_HANG,
-        KANI_CHANGE_JUMP_HANG,
-        KANI_CHANGE_WALK_2,
-        KANI_CHANGE_HANG_UP_VINE,
-        KANI_CHANGE_HANG_HAND
     };
 
     /// @unofficial
@@ -312,18 +294,18 @@ public:
 
     STATE_FUNC_DECLARE(dAcPy_c, RideOffJump);
     STATE_FUNC_DECLARE(dAcPy_c, SpinHipAttack);
-    STATE_FUNC_DECLARE(dAcPy_c, RollSlip);
+    STATE_FUNC_DECLARE(dAcPy_c, RollSlip); ///< Flying through the air after being thrown by another player.
     STATE_FUNC_DECLARE(dAcPy_c, Vine);
     STATE_FUNC_DECLARE(dAcPy_c, Hang);
     STATE_FUNC_DECLARE(dAcPy_c, Pole);
     STATE_FUNC_DECLARE(dAcPy_c, Fire);
-    STATE_FUNC_DECLARE(dAcPy_c, LiftUp);
+    STATE_FUNC_DECLARE(dAcPy_c, LiftUp); ///< Lifting up another player.
     STATE_FUNC_DECLARE(dAcPy_c, Throw);
     STATE_FUNC_DECLARE(dAcPy_c, PropelThrow);
     STATE_FUNC_DECLARE(dAcPy_c, WallJump);
     STATE_FUNC_DECLARE(dAcPy_c, WallSlide);
     STATE_FUNC_DECLARE(dAcPy_c, Propel);
-    STATE_FUNC_DECLARE(dAcPy_c, CarryPlayer);
+    STATE_FUNC_DECLARE(dAcPy_c, CarryPlayer); ///< Being carried by another player.
     STATE_FUNC_DECLARE(dAcPy_c, RideYoshi);
     STATE_FUNC_DECLARE(dAcPy_c, SpinJump);
     STATE_FUNC_DECLARE(dAcPy_c, PenguinSlide);
@@ -336,7 +318,7 @@ public:
     STATE_FUNC_DECLARE(dAcPy_c, TarzanRope);
     STATE_FUNC_DECLARE(dAcPy_c, PlayerEat);
     STATE_FUNC_DECLARE(dAcPy_c, Balloon);
-    STATE_FUNC_DECLARE(dAcPy_c, BlockJump);
+    STATE_FUNC_DECLARE(dAcPy_c, BlockJump); ///< Rescue Toad jumping out of his block.
     STATE_FUNC_DECLARE(dAcPy_c, JrCrown);
     STATE_FUNC_DECLARE(dAcPy_c, DemoInDoor);
     STATE_FUNC_DECLARE(dAcPy_c, DemoInJump);
@@ -429,7 +411,6 @@ public:
     void setUzuSpeedY(float f);
     void setUzuSpeedF(float f);
     bool setUzuSwimAction();
-    void setSwimAction_Swim(AnmBlend_e blend);
     bool setSwimAction();
     void setWaterOutEffect();
     void setPaddleSwimEffect();
@@ -441,8 +422,9 @@ public:
     bool setWaterSurfaceJump();
     void createFireBall(int);
     void SwimAction_Swim();
-    void setSwimAction_Walk(AnmBlend_e blend);
-    void setSwimAction_Penguin(AnmBlend_e blend);
+    void setSwimAction_Swim(AnmBlend_e blendMode);
+    void setSwimAction_Walk(AnmBlend_e blendMode);
+    void setSwimAction_Penguin(AnmBlend_e blendMode);
     void setSwimActionWalkAnm();
     void SwimAction_Walk();
     s16 getPenguinSwinAngleX();

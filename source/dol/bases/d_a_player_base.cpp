@@ -76,7 +76,7 @@ daPlBase_c::daPlBase_c() :
     mAmiLayer = 1;
     mBc.mOwningPlrNo = mPlayerNo;
     changeDemoState(StateID_DemoNone, 0);
-    changeState(StateID_None, 0);
+    changeState(StateID_None);
     mAttentionMode = 3;
     mViewLimitPadding = 16.0f;
     mEatBehaviour = EAT_TYPE_NONE;
@@ -146,8 +146,8 @@ void daPlBase_c::postExecute(fBase_c::MAIN_STATE_e status) {
         offStatus(STATUS_5B);
         offStatus(STATUS_5C);
         offStatus(STATUS_89);
-        offStatus(STATUS_8B);
-        offStatus(STATUS_8C);
+        offStatus(STATUS_QUAKE_BIG);
+        offStatus(STATUS_QUAKE_SMALL);
         offStatus(STATUS_SWIM_AGAINST_JET_H);
         offStatus(STATUS_SWIM_AGAINST_JET_V);
         offStatus(STATUS_82);
@@ -171,8 +171,8 @@ void daPlBase_c::postExecute(fBase_c::MAIN_STATE_e status) {
 }
 
 int daPlBase_c::doDelete() {
-    m_360 = 1;
-    onStatus(STATUS_B5);
+    mIsBeingDeleted = 1;
+    onStatus(STATUS_ABOUT_TO_BE_DELETED);
     mStateMgr.finalizeState();
     return SUCCEEDED;
 }
@@ -222,7 +222,7 @@ void daPlBase_c::changeState(const sStateIDIf_c &state, void *param) {
     mSubstateValue = 0;
     offStatus(STATUS_97);
     offStatus(STATUS_98);
-    mStateChangeParam = param;
+    mStateChangeArg = param;
     mStateMgr.changeState(state);
 }
 
@@ -266,39 +266,39 @@ void daPlBase_c::initializeState_None() {}
 void daPlBase_c::finalizeState_None() {}
 void daPlBase_c::executeState_None() {}
 
-void daPlBase_c::setWaitActionAnm(AnmBlend_e blend) {}
-void daPlBase_c::setWalkActionAnm(AnmBlend_e blend) {}
-void daPlBase_c::walkActionInit_Wait(AnmBlend_e blend) {}
+void daPlBase_c::setWaitActionAnm(AnmBlend_e blendMode) {}
+void daPlBase_c::setWalkActionAnm(AnmBlend_e blendMode) {}
+void daPlBase_c::walkActionInit_Wait(AnmBlend_e blendMode) {}
 void daPlBase_c::walkAction_Wait() {}
-void daPlBase_c::walkActionInit_Move(AnmBlend_e blend) {}
+void daPlBase_c::walkActionInit_Move(AnmBlend_e blendMode) {}
 void daPlBase_c::walkAction_Move() {
-    AnmBlend_e arg = BLEND_1;
+    AnmBlend_e blendMode = BLEND_DEFAULT;
     if (!mSpeedF) {
         if (isNowBgCross(BGC_11) || mTimer_f4 != 0 || m_112c) {
             if (mKey.buttonWalk(nullptr)) {
-                arg = BLEND_0;
+                blendMode = BLEND_NONE;
             } else {
-                walkActionInit_Wait(BLEND_1);
+                walkActionInit_Wait(BLEND_DEFAULT);
                 return;
             }
         } else {
             if (isNowBgCross(BGC_IS_WALL)) {
                 if (mPowerup == POWERUP_MINI_MUSHROOM && mBc.getSakaUpDown(mDirection) == 1) {
-                    arg = BLEND_0;
+                    blendMode = BLEND_NONE;
                 } else {
-                    walkActionInit_Wait(BLEND_1);
+                    walkActionInit_Wait(BLEND_DEFAULT);
                     return;
                 }
             }
             if (isNowBgCross(BGC_SLOPE_AND_HEAD) || !mKey.buttonWalk(nullptr)) {
-                walkActionInit_Wait(BLEND_1);
+                walkActionInit_Wait(BLEND_DEFAULT);
                 return;
             }
         }
     } else if (isNowBgCross(BGC_LIFT)) {
         mTimer_f4 = 3;
     }
-    setWalkActionAnm(arg);
+    setWalkActionAnm(blendMode);
     setRunFootEffect();
 }
 
@@ -391,7 +391,7 @@ void daPlBase_c::executeState_Jump() {
 
 bool daPlBase_c::setCrouchJump() {
     if (mKey.triggerJump()) {
-        changeState(StateID_SitJump, nullptr);
+        changeState(StateID_SitJump, false);
         return true;
     }
     return false;
@@ -405,7 +405,7 @@ void daPlBase_c::setFallAction() {
     if (isNowBgCross(BGC_IS_FOOT)) {
         return;
     }
-    changeState(StateID_Fall, nullptr);
+    changeState(StateID_Fall, false);
 }
 
 void daPlBase_c::initializeState_Fall() {
@@ -413,7 +413,7 @@ void daPlBase_c::initializeState_Fall() {
     if (mJumpDaiFallTimer != 0) {
         onStatus(STATUS_JUMP_DAI_COOLDOWN);
     }
-    if (!mStateChangeParam) {
+    if (!stateChangeArg<bool>()) {
         mpMdlMng->setAnm(PLAYER_ANIM_JUMP2, 10.0f, 0.0f);
     }
     if (isOldBgCross(BGC_LIFT)) {
@@ -527,7 +527,7 @@ void daPlBase_c::executeState_Slip() {
     } else if (checkJumpTrigger()) {
         return;
     } else if (angle && mAutoSlipTimer == 0 && checkSlipEndKey()) {
-        changeActionSlipEnd(BLEND_0);
+        changeActionSlipEnd(BLEND_NONE);
         return;
     }
     switch ((SlipSubstate_e) mSubstate) {
@@ -541,12 +541,12 @@ void daPlBase_c::executeState_Slip() {
         case SLIP_ACTION_STOOP:
             mMaxSpeedF = 0.0f;
             if (mpMdlMng->mpMdl->mAnm.isStop()) {
-                changeState(StateID_Crouch, (void *) 1);
+                changeState(StateID_Crouch, CROUCH_ARG_FROM_OTHER);
             }
             break;
         case SLIP_ACTION_END:
             if (mpMdlMng->mpMdl->mAnm.isStop()) {
-                changeActionSlipEnd(BLEND_1);
+                changeActionSlipEnd(BLEND_DEFAULT);
             }
         default:
             break;
@@ -790,7 +790,7 @@ void daPlBase_c::setHipAttack_AttackFall() {
     mMaxSpeedF = 0.0f;
     mAccelY = *getGravityData();
     mMaxFallSpeed = -6.0f;
-    if ((int) mStateChangeParam == 1) {
+    if (stateChangeArg<HipAttackArg_e>() == HIP_ATTACK_ARG_ITEM_KINOPIO) {
         mSpeed.y = -2.0f;
     } else {
         mSpeed.y = -6.0f;
@@ -872,7 +872,7 @@ void daPlBase_c::HipAction_AttackFall() {
         onStatus(STATUS_HIP_ATTACK_LAND);
         offStatus(STATUS_91);
         if (isNowBgCross(BGC_CLIFF)) {
-            changeState(StateID_Kani, (void *) 2);
+            changeState(StateID_Kani, KANI_ARG_JUMP_HANG);
         } else if (isSlipSaka()) {
             if (!isNowBgCross(BGC_WATER_TOUCH)) {
                 if (mBc.getSakaType() >= 2) {
@@ -949,7 +949,7 @@ void daPlBase_c::HipAction_StandNormalEnd() {
 
 void daPlBase_c::HipAction_ToStoop() {
     if (mpMdlMng->mpMdl->mAnm.isStop()) {
-        changeState(StateID_Crouch, (void *) 1);
+        changeState(StateID_Crouch, CROUCH_ARG_FROM_OTHER);
     } else {
         turnAngle();
     }
@@ -960,11 +960,11 @@ void daPlBase_c::initializeState_HipAttack() {
     mSpeedF = 0.0f;
     mMaxSpeedF = 0.0f;
     mAccelY = 0.0f;
-    switch ((int) mStateChangeParam) {
-        case 0:
+    switch (stateChangeArg<HipAttackArg_e>()) {
+        case HIP_ATTACK_ARG_PLAYER:
             setHipAttack_Ready();
             break;
-        case 1:
+        case HIP_ATTACK_ARG_ITEM_KINOPIO:
             setHipAttack_KinopioStart();
             break;
     }
@@ -1023,7 +1023,7 @@ bool daPlBase_c::setJumpDaiRide() {
     if (isStatus(STATUS_45) || isNowBgCross(BGC_IS_HEAD)) {
         return false;
     }
-    changeState(StateID_JumpDai, nullptr);
+    changeState(StateID_JumpDai);
     return true;
 }
 
@@ -1040,11 +1040,13 @@ void daPlBase_c::initializeState_JumpDai() {
         mpMdlMng->setAnm(PLAYER_ANIM_JUMPED);
     }
 }
+
 void daPlBase_c::finalizeState_JumpDai() {
     offStatus(STATUS_BIG_JUMP);
     offStatus(STATUS_SPRING_JUMP);
     mKey.offStatus(dAcPyKey_c::STATUS_NO_INPUT);
 }
+
 void daPlBase_c::executeState_JumpDai() {
     if (!isStatus(STATUS_86)) {
         changeState(StateID_Fall, nullptr);
@@ -1053,7 +1055,7 @@ void daPlBase_c::executeState_JumpDai() {
         switch ((JumpDaiSubstate_e) mSubstate) {
             case JUMP_DAI_MOVE_DOWN:
                 if (mpMdlMng->mpMdl->mAnm.isStop()) {
-                    setWaitActionAnm(BLEND_1);
+                    setWaitActionAnm(BLEND_DEFAULT);
                     mSubstate = JUMP_DAI_HIGH_JUMP;
                 }
                 break;
@@ -1076,7 +1078,7 @@ bool daPlBase_c::setPlayerJumpDai(daPlBase_c *other) {
             return false;
         }
         mRideActorID = other->mUniqueID;
-        changeState(StateID_PlayerJumpDai, nullptr);
+        changeState(StateID_PlayerJumpDai);
         return true;
     }
     return false;
@@ -1116,11 +1118,13 @@ void daPlBase_c::initializeState_PlayerJumpDai() {
     }
     mSubstateValue = 0;
 }
+
 void daPlBase_c::finalizeState_PlayerJumpDai() {
     offStatus(STATUS_PLAYER_JUMP);
     offStatus(STATUS_BIG_JUMP);
     mRideActorID = (fBaseID_e) 0;
 }
+
 void daPlBase_c::executeState_PlayerJumpDai() {
     daPlBase_c *rideActor = (daPlBase_c *) fManager_c::searchBaseByID(mRideActorID);
     if (rideActor == nullptr) {
@@ -1132,7 +1136,7 @@ void daPlBase_c::executeState_PlayerJumpDai() {
         setNoHitPlayer(rideActor, 5);
         turnAngle();
         if (mpMdlMng->mpMdl->mCurrAnmID == PLAYER_ANIM_JUMPED && mpMdlMng->mpMdl->mAnm.isStop()) {
-            setWaitActionAnm(BLEND_1);
+            setWaitActionAnm(BLEND_DEFAULT);
         }
         switch ((JumpDaiSubstate_e) mSubstate) {
             case JUMP_DAI_MOVE_DOWN:
@@ -1213,10 +1217,12 @@ void daPlBase_c::initializeState_Funsui() {
         mSubstateTimer = 8;
     }
 }
+
 void daPlBase_c::finalizeState_Funsui() {
     offStatus(STATUS_7F);
     mKey.offStatus(dAcPyKey_c::STATUS_FORCE_NO_JUMP);
 }
+
 void daPlBase_c::executeState_Funsui() {
     if (mPlayerNo >= 0) {
         dEf::createPlayerEffect(mPlayerNo, &mSmokeEffect, "Wm_mr_sprisesmoke", 0, &mPos, nullptr, nullptr);
@@ -1257,7 +1263,7 @@ bool daPlBase_c::setCloudOn(dActor_c *cloudActor) {
     }
     if (cloudActor->mPos.y + getCloudOffsetY() >= mPos.y && mSpeed.y < 0.0f && mRideActorID == 0) {
         mRideActorID = cloudActor->mUniqueID;
-        changeState(StateID_Cloud, nullptr);
+        changeState(StateID_Cloud);
         return true;
     }
     return false;
@@ -1322,7 +1328,7 @@ bool daPlBase_c::updateCloudMove() {
 void daPlBase_c::executeState_Cloud() {}
 
 void daPlBase_c::initializeState_AnimePlay() {
-    mDemoAnime = (DemoAnime_e) (int) mStateChangeParam;
+    mDemoAnime = stateChangeArg<AnimePlayArg_e>();
     if (mDemoAnime != DEMO_ANIME_NORMAL) {
         onStatus(STATUS_DISABLE_STATE_CHANGE);
     }
@@ -1347,7 +1353,7 @@ void daPlBase_c::executeState_AnimePlay() {
     maxFallSpeedSet();
     moveSpeedSet();
     powerSet();
-    if (isStatus(STATUS_DISABLE_STATE_CHANGE) || checkWalkNextAction() == 0) {
+    if (isStatus(STATUS_DISABLE_STATE_CHANGE) || !checkWalkNextAction()) {
         (this->*scDemoAnmFunc[mDemoAnime])();
     }
 }
@@ -2285,7 +2291,7 @@ void daPlBase_c::setRunFootEffect() {
 }
 
 void daPlBase_c::setSandEffect() {
-    if (isStatus(STATUS_4E) || isStatus(STATUS_4B)) {
+    if (isStatus(STATUS_4E) || isStatus(STATUS_RIDE_YOSHI)) {
         return;
     }
     if (isOnSinkSand() && !isNowBgCross(BGC_INSIDE_SINK_SAND) || isStatus(STATUS_SINK_SAND_JUMP)) {
@@ -3649,7 +3655,7 @@ int daPlBase_c::setDemoGoal(mVec3_c &landPos, float goalCastleX, u8 goalType) {
     }
 
     mPos.x = landPos.x;
-    changeState(StateID_None, nullptr);
+    changeState(StateID_None);
     changeDemoState(StateID_DemoGoal, 0);
 
     mWarpPos.x = goalCastleX;
@@ -4083,25 +4089,22 @@ bool daPlBase_c::isControlDemoWalk() {
 
 void daPlBase_c::setControlDemoAnm(int anmNo) {
     if (isStatus(STATUS_72)) {
-        mDemoState = CONTROL_DEMO_ANM;
-        changeState(StateID_AnimePlay, nullptr);
-        dPyAnm_HIO_c &hio = dPyMdlMng_c::m_hio.mPyAnm.mAnm[anmNo & 0xff];
-        mpMdlMng->setAnm(anmNo, hio, 0.0f);
+        mDemoState = CONTROL_DEMO_REGULAR_ANIM;
+        changeState(StateID_AnimePlay, DEMO_ANIME_NORMAL);
+        mpMdlMng->setAnm(anmNo);
     }
 }
 bool daPlBase_c::isControlDemoAnm(int anmNo) {
-    if (isStatus(STATUS_72)) {
-        if (mDemoState == CONTROL_DEMO_ANM && anmNo == mpMdlMng->mpMdl->mCurrAnmID) {
-            return true;
-        }
+    if (isStatus(STATUS_72) && mDemoState == CONTROL_DEMO_REGULAR_ANIM && anmNo == mpMdlMng->mpMdl->mCurrAnmID) {
+        return true;
     }
     return false;
 }
 
-void daPlBase_c::fn_80052290(int param) {
+void daPlBase_c::setControlDemoCutscene(AnimePlayArg_e animID) {
     if (isStatus(STATUS_72)) {
-        mDemoState = CONTROL_DEMO_ANM_2;
-        changeState(StateID_AnimePlay, (void *) param);
+        mDemoState = CONTROL_DEMO_CUTSCENE_ANIM;
+        changeState(StateID_AnimePlay, animID);
     }
 }
 
@@ -6336,14 +6339,14 @@ bool daPlBase_c::_setJump(float jumpSpeed, float speedF, bool allowSteer, int ke
     return false;
 }
 
-bool daPlBase_c::setWaitJump(float a) {
+bool daPlBase_c::setWaitJump(float jumpSpeed) {
     if (isDemo() || isStatus(STATUS_OUT_OF_PLAY)) {
         return false;
     }
 
     mSpeedF = 0.0f;
-    mSpeed.y = a;
-    changeState(StateID_WaitJump, nullptr);
+    mSpeed.y = jumpSpeed;
+    changeState(StateID_WaitJump);
     return true;
 }
 
@@ -6393,7 +6396,7 @@ bool daPlBase_c::suppressSound(int suppressionMode) {
         return true;
     }
 
-    if (isStatus(STATUS_B5)) {
+    if (isStatus(STATUS_ABOUT_TO_BE_DELETED)) {
         return true;
     }
 

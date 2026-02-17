@@ -15,6 +15,7 @@
 
 /**
  * @brief The base class for the player and Yoshi.
+ * @statetable
  */
 class daPlBase_c : public dActor_c {
 public:
@@ -41,9 +42,10 @@ public:
         STAR_SET_2
     };
 
+    /// @brief Blending modes for animations.
     enum AnmBlend_e {
-        BLEND_0,
-        BLEND_1
+        BLEND_NONE, ///< Do not blend between animations.
+        BLEND_DEFAULT ///< Use the default blend duration specified in the animation HIO.
     };
 
     enum ClearType_e {
@@ -107,16 +109,6 @@ public:
     };
 
     /// @unofficial
-    enum DemoAnime_e {
-        DEMO_ANIME_NORMAL,
-        DEMO_ANIME_BOSS_SET_UP,
-        DEMO_ANIME_BOSS_GLAD,
-        DEMO_ANIME_BOSS_ATTENTION,
-        DEMO_ANIME_BOSS_KEY_GET,
-        DEMO_ANIME_BOSS_GLAD_2
-    };
-
-    /// @unofficial
     enum DemoType_e {
         DEMO_0,
         DEMO_1,
@@ -176,13 +168,59 @@ public:
     enum ControlDemoState_e {
         CONTROL_DEMO_WAIT,
         CONTROL_DEMO_WALK,
-        CONTROL_DEMO_ANM,
-        CONTROL_DEMO_ANM_2,
+        CONTROL_DEMO_REGULAR_ANIM,
+        CONTROL_DEMO_CUTSCENE_ANIM,
         CONTROL_DEMO_4,
         CONTROL_DEMO_KINOPIO_WALK,
         CONTROL_DEMO_KINOPIO_SWIM,
         CONTROL_DEMO_KINOPIO_SINK_SAND,
         CONTROL_DEMO_ENDING_DANCE,
+    };
+
+    /// @brief Arguments for transitioning to the @ref StateID_Crouch "crouch" state.
+    /// @unofficial
+    enum CrouchArg_e {
+        CROUCH_ARG_FROM_WALK, ///< Crouching while already on the ground.
+        CROUCH_ARG_FROM_OTHER, ///< Crouching after a slide or a ground pound.
+        CROUCH_ARG_FROM_SIT_JUMP ///< Landing from a crouch jump.
+    };
+
+    /// @brief Arguments for transitioning to the @ref StateID_HipAttack "ground pound" state.
+    /// @unofficial
+    enum HipAttackArg_e {
+        HIP_ATTACK_ARG_PLAYER, ///< A regular player is doing a ground pound.
+        HIP_ATTACK_ARG_ITEM_KINOPIO ///< The rescue Toad is doing a ground pound out of the item block. @unused
+    };
+
+    /// @brief Arguments for transitioning to the @ref StateID_Swim "swim" state.
+    /// @unofficial
+    enum SwimArg_e {
+        SWIM_ARG_INITIAL, ///< Already in water at the start of the swim action.
+        SWIM_ARG_ENTERING, ///< Just entered the water.
+        SWIM_ARG_FIREBALL, ///< Player was about to shoot a fireball, shoot it while in water.
+        SWIM_ARG_CLIFF_HANG ///< Falling from a cliff into water.
+    };
+
+    /// @brief Arguments for transitioning to the @ref StateID_Kani "cliff" state.
+    /// @unofficial
+    enum KaniArg_e {
+        KANI_ARG_WALK, ///< Standing on the cliff and walking.
+        KANI_ARG_HANG, ///< Landing high enough on the cliff to stand on it, but hang down from it instead.
+        KANI_ARG_JUMP_HANG, ///< Falling onto the cliff, immediately hang from it.
+        KANI_ARG_WALK_FORCE, ///< Standing on the cliff, disallow immediately hanging from it by holding down.
+        KANI_ARG_HANG_UP_VINE, ///< Climbing onto the cliff from a vine.
+        KANI_ARG_HANG_HAND ///< Catching the cliff from below, hang from it.
+    };
+
+    /// @brief Arguments for transitioning to the @ref StateID_AnimePlay "animation" state.
+    /// @unofficial
+    enum AnimePlayArg_e {
+        DEMO_ANIME_NORMAL,
+        DEMO_ANIME_BOSS_SET_UP,
+        DEMO_ANIME_BOSS_GLAD,
+        DEMO_ANIME_BOSS_ATTENTION,
+        DEMO_ANIME_BOSS_KEY_GET,
+        DEMO_ANIME_BOSS_GLAD_2
     };
 
     /// @unofficial
@@ -352,7 +390,7 @@ public:
         STATUS_48,
         STATUS_49,
         STATUS_4A,
-        STATUS_4B,
+        STATUS_RIDE_YOSHI, ///< The player is riding Yoshi.
         STATUS_JUMP_DAI_COOLDOWN = 0x4d, ///< The player recently failed to perform a big jump because of a ceiling.
         STATUS_4E,
         STATUS_4F,
@@ -413,8 +451,8 @@ public:
         STATUS_88,
         STATUS_89,
         STATUS_8A,
-        STATUS_8B,
-        STATUS_8C,
+        STATUS_QUAKE_BIG, ///< A big quake that stuns the player was triggered.
+        STATUS_QUAKE_SMALL, ///< A small quake that makes the player do a hop was triggered.
         STATUS_8D,
         STATUS_8E,
         STATUS_CAN_LAND, ///< The player can land on Yoshi or another player.
@@ -438,7 +476,7 @@ public:
         STATUS_A3,
         STATUS_A4,
         STATUS_A5, ///< [Jump moving up?]
-        STATUS_A6,
+        STATUS_FIREBALL_PREPARE_SHOOT, ///< The player is about to shoot a fireball.
         STATUS_A7,
         STATUS_A8,
         STATUS_A9,
@@ -448,7 +486,7 @@ public:
         STATUS_AD,
         STATUS_AE,
         STATUS_B3 = 0xb3, /// [Yoshi only?]
-        STATUS_B5 = 0xb5,
+        STATUS_ABOUT_TO_BE_DELETED = 0xb5,
         STATUS_B6,
         STATUS_B7,
         STATUS_B8,
@@ -571,26 +609,29 @@ public:
     virtual void executeDemoGoal_Run();
     virtual void initializeDemoControl() {}
 
+    /// @brief Transition to a new state with the given state ID and argument.
+    /// @param stateID The ID of the state to transition to.
+    /// @param arg An optional argument to pass to the new state. The type of this argument depends on the state being transitioned to.
     virtual void changeState(const sStateIDIf_c &, void *);
 
-    STATE_VIRTUAL_FUNC_DECLARE(daPlBase_c, None);
-    STATE_VIRTUAL_FUNC_DECLARE(daPlBase_c, Walk);
-    STATE_VIRTUAL_FUNC_DECLARE(daPlBase_c, Jump);
-    STATE_VIRTUAL_FUNC_DECLARE(daPlBase_c, SitJump);
-    STATE_VIRTUAL_FUNC_DECLARE(daPlBase_c, Fall);
-    STATE_VIRTUAL_FUNC_DECLARE(daPlBase_c, Land);
-    STATE_VIRTUAL_FUNC_DECLARE(daPlBase_c, Crouch);
-    STATE_VIRTUAL_FUNC_DECLARE(daPlBase_c, Slip);
-    STATE_VIRTUAL_FUNC_DECLARE(daPlBase_c, Turn);
-    STATE_VIRTUAL_FUNC_DECLARE(daPlBase_c, HipAttack);
-    STATE_VIRTUAL_FUNC_DECLARE(daPlBase_c, Swim);
-    STATE_VIRTUAL_FUNC_DECLARE(daPlBase_c, JumpDai);
-    STATE_VIRTUAL_FUNC_DECLARE(daPlBase_c, PlayerJumpDai);
-    STATE_VIRTUAL_FUNC_DECLARE(daPlBase_c, Funsui);
-    STATE_VIRTUAL_FUNC_DECLARE(daPlBase_c, Kani);
-    STATE_VIRTUAL_FUNC_DECLARE(daPlBase_c, Cloud);
-    STATE_VIRTUAL_FUNC_DECLARE(daPlBase_c, AnimePlay);
-    STATE_VIRTUAL_FUNC_DECLARE(daPlBase_c, WaitJump);
+    STATE_VIRTUAL_FUNC_DECLARE(daPlBase_c, None); ///< Default state, does nothing. Argument: None.
+    STATE_VIRTUAL_FUNC_DECLARE(daPlBase_c, Walk); ///< Player on the ground. Argument: Blending mode (AnmBlend_e).
+    STATE_VIRTUAL_FUNC_DECLARE(daPlBase_c, Jump); ///< Jumping. Argument: Jump information (jmpInf_c *).
+    STATE_VIRTUAL_FUNC_DECLARE(daPlBase_c, SitJump); ///< Crouch jump. Argument: Should initiate jump (@p bool).
+    STATE_VIRTUAL_FUNC_DECLARE(daPlBase_c, Fall); ///< Falling. Argument: Should play animation (@p bool).
+    STATE_VIRTUAL_FUNC_DECLARE(daPlBase_c, Land); ///< Landing after a jump. Argument: None.
+    STATE_VIRTUAL_FUNC_DECLARE(daPlBase_c, Crouch); ///< Crouching on the ground. Argument: See CrouchArg_e.
+    STATE_VIRTUAL_FUNC_DECLARE(daPlBase_c, Slip); ///< Sliding down a slope. Argument: None.
+    STATE_VIRTUAL_FUNC_DECLARE(daPlBase_c, Turn); ///< Turning around after running fast. Argument: None.
+    STATE_VIRTUAL_FUNC_DECLARE(daPlBase_c, HipAttack); ///< Ground pounding. Argument: See HipAttackArg_e.
+    STATE_VIRTUAL_FUNC_DECLARE(daPlBase_c, Swim); ///< Swimming. Argument: See SwimArg_e.
+    STATE_VIRTUAL_FUNC_DECLARE(daPlBase_c, JumpDai); ///< Jumping on a spring. Argument: None.
+    STATE_VIRTUAL_FUNC_DECLARE(daPlBase_c, PlayerJumpDai); ///< Jumping on a player. Argument: None.
+    STATE_VIRTUAL_FUNC_DECLARE(daPlBase_c, Funsui); ///< Being blown upwards by a fountain. Argument: None.
+    STATE_VIRTUAL_FUNC_DECLARE(daPlBase_c, Kani); ///< Moving on a cliff. Argument: See KaniArg_e.
+    STATE_VIRTUAL_FUNC_DECLARE(daPlBase_c, Cloud); ///< Riding a cloud. Argument: None.
+    STATE_VIRTUAL_FUNC_DECLARE(daPlBase_c, AnimePlay); ///< Playing a cutscene animation. Argument: See AnimePlayArg_e.
+    STATE_VIRTUAL_FUNC_DECLARE(daPlBase_c, WaitJump); ///< Doing a hop caused by a small quake. Argument: None.
 
     virtual bool isWaitFrameCountMax() { return false; }
     virtual bool checkWalkNextAction() { return false; }
@@ -645,7 +686,7 @@ public:
     virtual bool setJump(float jumpSpeed, float speedF, bool allowSteer, int keyMode, int jumpMode); ///< @unofficial
     /// @brief Starts a jump action unconditionally. See setJump().
     virtual bool _setJump(float jumpSpeed, float speedF, bool allowSteer, int keyMode, int jumpMode); ///< @unofficial
-    virtual bool setWaitJump(float);
+    virtual bool setWaitJump(float jumpSpeed);
 
     virtual bool setHipAttackOnEnemy(mVec3_c *);
 
@@ -803,7 +844,7 @@ public:
     bool isControlDemoAnm(int);
     void setControlDemoAnm(int);
     bool isControlDemoWalk();
-    void fn_80052290(int); ///< @unofficial
+    void setControlDemoCutscene(AnimePlayArg_e animID); ///< @unofficial
     void setControlDemoKinopioWalk();
     void setControlDemoKinopioSwim();
     void setControlDemoEndingDance();
@@ -1001,6 +1042,20 @@ public:
     u8 getDirection() const { return mDirection; }
     PLAYER_POWERUP_e getPowerup() const { return mPowerup; }
 
+    void changeState(const sStateIDIf_c &stateID) {
+        changeState(stateID, 0);
+    }
+
+    template <typename T>
+    void changeState(const sStateIDIf_c &stateID, T arg) {
+        changeState(stateID, (void *) arg);
+    }
+
+    template <typename T>
+    T stateChangeArg() const {
+        return (T) mStateChangeArg;
+    }
+
     SquishState_e mSquishState; ///< The player's current squish state for being jumped on by another player.
     int mSquishKeyframeIdx; ///< The current target index for the squishing animation keyframes.
     float mSquishScale; ///< The current scale of the player during the squish animation.
@@ -1067,8 +1122,10 @@ public:
     /// Timer for disabling another big jump after being unable to do a big jump
     /// due to colliding with a ceiling.
     int mJumpDaiFallTimer;
-    DemoAnime_e mDemoAnime;
-    int m_360;
+
+    AnimePlayArg_e mDemoAnime;
+
+    int mIsBeingDeleted;
 
     /// Effect when being sent upwards by a sand fountain,
     /// also used for the wall slide, water run and death smoke effect.
@@ -1170,7 +1227,7 @@ public:
     bool mIsDemoMode; ///< Whether the player is currently in a demo (cutscene) state.
 
     sFStateMgr_c<daPlBase_c, sStateMethodUsr_FI_c> mStateMgr; ///< The state manager for regular player states.
-    void *mStateChangeParam; ///< To be used as an argument to the new state.
+    void *mStateChangeArg; ///< To be used as an argument to the new state.
     int mSubstate; ///< States can use this as a sub-state variable (cast to some enum).
     /// States can use this generic timer for various purposes.
     /// It is automatically decrememented in executeState() every frame.
