@@ -25,7 +25,7 @@ public:
         DAMAGE_5, DAMAGE_6, DAMAGE_YOGAN, DAMAGE_8,
         DAMAGE_9, DAMAGE_POISON, DAMAGE_B, DAMAGE_C,
         DAMAGE_D, DAMAGE_E, DAMAGE_F, DAMAGE_10,
-        DAMAGE_11, DAMAGE_12
+        DAMAGE_11, DAMAGE_POISON_FOG
     };
 
     enum DokanDir_e {
@@ -127,64 +127,6 @@ public:
         DEMO_DOKAN_WATER_TANK
     };
 
-    /// @unofficial
-    enum DemoInDokanSubstate_e {
-        DEMO_IN_DOKAN_ACTION_0,
-        DEMO_IN_DOKAN_ACTION_1,
-        DEMO_IN_DOKAN_ACTION_2,
-        DEMO_IN_DOKAN_ACTION_3,
-        DEMO_IN_DOKAN_ACTION_4
-    };
-
-    /// @unofficial
-    enum DemoGoalSubstate_e {
-        GOAL_DEMO_ACTION_POLE,
-        GOAL_DEMO_ACTION_WAIT,
-        GOAL_DEMO_ACTION_KIME_POSE,
-        GOAL_DEMO_ACTION_RUN
-    };
-
-    /// @unofficial
-    enum DemoWaitSubstate_e {
-        DEMO_WAIT_ACTION_0,
-        DEMO_WAIT_ACTION_1
-    };
-
-    /// @unofficial
-    enum DemoGoalState_Pole_e {
-        GOAL_DEMO_POLE_SWING, ///< Swinging around the pole to the other side.
-        GOAL_DEMO_WAIT_BELOW_PLAYER, ///< Waiting for the player below to slide far enough down the pole to not be in the way of this player.
-        GOAL_DEMO_POLE_SLIDE, ///< Sliding down the pole.
-        GOAL_DEMO_POLE_WAIT_JUMP, ///< Waiting at the bottom of the pole to jump off.
-        GOAL_DEMO_POLE_JUMP, ///< Jumping off the pole.
-        GOAL_DEMO_POLE_LAND, ///< Playing the landing animation after landing.
-        GOAL_DEMO_POLE_WAIT_TURN, ///< Waiting #sc_DemoPoleWaitTurn frames to turn toward the screen.
-        GOAL_DEMO_POLE_TURN, ///< Turning toward the screen.
-        GOAL_DEMO_POLE_WAIT_END ///< Waiting #sc_DemoPoleWaitEnd frames before transitioning to the course clear dance.
-    };
-
-    /// @unofficial
-    enum KimePoseMode_e {
-        KIME_POSE_NONE,
-        KIME_POSE_WITH_HAT,
-        KIME_POSE_PENGUIN,
-        KIME_POSE_NO_HAT,
-        KIME_POSE_PROPELLER
-    };
-
-    /// @unofficial
-    enum ControlDemoState_e {
-        CONTROL_DEMO_WAIT,
-        CONTROL_DEMO_WALK,
-        CONTROL_DEMO_REGULAR_ANIM,
-        CONTROL_DEMO_CUTSCENE_ANIM,
-        CONTROL_DEMO_4,
-        CONTROL_DEMO_KINOPIO_WALK,
-        CONTROL_DEMO_KINOPIO_SWIM,
-        CONTROL_DEMO_KINOPIO_SINK_SAND,
-        CONTROL_DEMO_ENDING_DANCE,
-    };
-
     /// @brief Arguments for transitioning to the @ref StateID_Crouch "crouch" state.
     /// @unofficial
     enum CrouchArg_e {
@@ -229,6 +171,77 @@ public:
         DEMO_ANIME_BOSS_ATTENTION,
         DEMO_ANIME_BOSS_KEY_GET,
         DEMO_ANIME_BOSS_GLAD_2
+    };
+
+    /// @brief Arguments for transitioning to the @ref StateID_DemoWait "demo wait" state.
+    /// @unofficial
+    enum DemoWaitArg_e {
+        DEMO_WAIT_ARG_TO_NONE,
+        DEMO_WAIT_ARG_TO_CONTROL
+    };
+
+    /// @unofficial
+    enum DemoWaitSubstate_e {
+        DEMO_WAIT_DELAY,
+        DEMO_WAIT_TRANSITION
+    };
+
+    /// @unofficial
+    enum DokanType_e {
+        DOKAN_TYPE_NORMAL,
+        DOKAN_TYPE_CONNECTED,
+        DOKAN_TYPE_MINI
+    };
+
+    /// @unofficial
+    enum DemoDownArg_e {
+        DEMO_DOWN_ARG_HIT,
+        DEMO_DOWN_ARG_TIME_UP,
+        DEMO_DOWN_ARG_POISON,
+        DEMO_DOWN_ARG_POISON_FOG
+    };
+
+    /// @unofficial
+    enum DemoGoalSubstate_e {
+        GOAL_DEMO_ACTION_POLE,
+        GOAL_DEMO_ACTION_WAIT,
+        GOAL_DEMO_ACTION_KIME_POSE,
+        GOAL_DEMO_ACTION_RUN
+    };
+
+    /// @unofficial
+    enum DemoGoalState_Pole_e {
+        GOAL_DEMO_POLE_SWING, ///< Swinging around the pole to the other side.
+        GOAL_DEMO_WAIT_BELOW_PLAYER, ///< Waiting for the player below to slide far enough down the pole to not be in the way of this player.
+        GOAL_DEMO_POLE_SLIDE, ///< Sliding down the pole.
+        GOAL_DEMO_POLE_WAIT_JUMP, ///< Waiting at the bottom of the pole to jump off.
+        GOAL_DEMO_POLE_JUMP, ///< Jumping off the pole.
+        GOAL_DEMO_POLE_LAND, ///< Playing the landing animation after landing.
+        GOAL_DEMO_POLE_WAIT_TURN, ///< Waiting #sc_DemoPoleWaitTurn frames to turn toward the screen.
+        GOAL_DEMO_POLE_TURN, ///< Turning toward the screen.
+        GOAL_DEMO_POLE_WAIT_END ///< Waiting #sc_DemoPoleWaitEnd frames before transitioning to the course clear dance.
+    };
+
+    /// @unofficial
+    enum KimePoseMode_e {
+        KIME_POSE_NONE,
+        KIME_POSE_WITH_HAT,
+        KIME_POSE_PENGUIN,
+        KIME_POSE_NO_HAT,
+        KIME_POSE_PROPELLER
+    };
+
+    /// @unofficial
+    enum ControlDemoSubstate_e {
+        CONTROL_DEMO_WAIT,
+        CONTROL_DEMO_WALK,
+        CONTROL_DEMO_REGULAR_ANIM,
+        CONTROL_DEMO_CUTSCENE_ANIM,
+        CONTROL_DEMO_4,
+        CONTROL_DEMO_KINOPIO_WALK,
+        CONTROL_DEMO_KINOPIO_SWIM,
+        CONTROL_DEMO_KINOPIO_SINK_SAND,
+        CONTROL_DEMO_ENDING_DANCE,
     };
 
     /// @unofficial
@@ -345,7 +358,7 @@ public:
         STATUS_SIT_JUMP, ///< The player is doing a sitting jump.
         STATUS_YOSHI_DISMOUNT_JUMP, ///< The player is doing a jump to dismount Yoshi.
         STATUS_CANNON_JUMP, ///< The player is flying out of a pipe cannon.
-        STATUS_12, ///< ["Wait jump?"]
+        STATUS_WAIT_JUMP, ///< The player is doing a small hop after being affected by a small quake.
         STATUS_WALL_SLIDE, ///< The player is sliding down a wall.
         STATUS_BIG_JUMP, ///< The player is doing a jump on a spring or another player.
         STATUS_SPRING_JUMP, ///< The player is doing a jump on a springboard.
@@ -445,7 +458,7 @@ public:
         STATUS_78,
         STATUS_79,
         STATUS_7A,
-        STATUS_7D = 0x7d,
+        STATUS_STOP_EXECUTE = 0x7d, ///< Stop executing this player indefinitely.
         STATUS_7E,
         STATUS_7F,
         STATUS_80,
@@ -461,8 +474,8 @@ public:
         STATUS_8A,
         STATUS_QUAKE_BIG, ///< A big quake that stuns the player was triggered.
         STATUS_QUAKE_SMALL, ///< A small quake that makes the player do a hop was triggered.
-        STATUS_8D,
-        STATUS_8E,
+        STATUS_8D, ///< [Cannon shot related]
+        STATUS_8E, ///< [Cannon shot related]
         STATUS_CAN_LAND, ///< The player can land on Yoshi or another player.
         STATUS_91 = 0x91,
         STATUS_92,
@@ -495,12 +508,12 @@ public:
         STATUS_HIP_ATTACK, ///< The player is in the ground pound action and is not yet about to stand back up.
         STATUS_B3 = 0xb3, /// [Yoshi only?]
         STATUS_ABOUT_TO_BE_DELETED = 0xb5,
-        STATUS_B6,
+        STATUS_ITEM_KINOPIO_DISPLAY_OUT,
         STATUS_B7,
         STATUS_B8,
-        STATUS_B9,
-        STATUS_BA,
-        STATUS_BB,
+        STATUS_DISPLAY_OUT_DEAD, ///< The player is outside of the screen bounds and should die as a result.
+        STATUS_DISPLAY_OUT_NO_DAMAGE, ///< The player is outside of the screen bounds and should not be able to be attacked.
+        STATUS_INVISIBLE, ///< The player is invisible.
         STATUS_INVULNERABLILITY_BLINK, ///< Skip drawing the player this frame to create a blinking effect.
         STATUS_BD,
         STATUS_BE,
@@ -565,25 +578,25 @@ public:
     virtual int setDemoGoal(mVec3_c &landPos, float goalCastleX, u8 goalType);
     virtual bool setDemoCannonWarp(int, short, short) { return false; }
 
-    STATE_VIRTUAL_FUNC_DECLARE(daPlBase_c, DemoNone);
-    STATE_VIRTUAL_FUNC_DECLARE(daPlBase_c, DemoStartWait);
-    STATE_VIRTUAL_FUNC_DECLARE(daPlBase_c, DemoWait);
-    STATE_VIRTUAL_FUNC_DECLARE(daPlBase_c, DemoInDokanU);
-    STATE_VIRTUAL_FUNC_DECLARE(daPlBase_c, DemoInDokanD);
-    STATE_VIRTUAL_FUNC_DECLARE(daPlBase_c, DemoInDokanR);
-    STATE_VIRTUAL_FUNC_DECLARE(daPlBase_c, DemoInDokanL);
-    STATE_VIRTUAL_FUNC_DECLARE(daPlBase_c, DemoOutDokanU);
-    STATE_VIRTUAL_FUNC_DECLARE(daPlBase_c, DemoOutDokanD);
-    STATE_VIRTUAL_FUNC_DECLARE(daPlBase_c, DemoOutDokanR);
-    STATE_VIRTUAL_FUNC_DECLARE(daPlBase_c, DemoOutDokanL);
-    STATE_VIRTUAL_FUNC_DECLARE(daPlBase_c, DemoOutDokanRoll);
-    STATE_VIRTUAL_FUNC_DECLARE(daPlBase_c, DemoInWaterTank);
-    STATE_VIRTUAL_FUNC_DECLARE(daPlBase_c, DemoOutWaterTank);
-    STATE_VIRTUAL_FUNC_DECLARE(daPlBase_c, DemoRailDokan);
-    STATE_VIRTUAL_FUNC_DECLARE(daPlBase_c, DemoDown);
-    STATE_VIRTUAL_FUNC_DECLARE(daPlBase_c, DemoNextGotoBlock);
-    STATE_VIRTUAL_FUNC_DECLARE(daPlBase_c, DemoGoal);
-    STATE_VIRTUAL_FUNC_DECLARE(daPlBase_c, DemoControl);
+    STATE_VIRTUAL_FUNC_DECLARE(daPlBase_c, DemoNone); ///< Default demo state, checking for pipe entry. Argument: Whether to not force execution start (@p bool).
+    STATE_VIRTUAL_FUNC_DECLARE(daPlBase_c, DemoStartWait); ///< Course in default state. Argument: None.
+    STATE_VIRTUAL_FUNC_DECLARE(daPlBase_c, DemoWait); ///< Waiting before transitioning to StateID_DemoNone or StateID_DemoControl. Argument: See DemoWaitArg_e.
+    STATE_VIRTUAL_FUNC_DECLARE(daPlBase_c, DemoInDokanU); ///< Entering an area via a pipe above the player. Argument: Pipe type (DokanType_e).
+    STATE_VIRTUAL_FUNC_DECLARE(daPlBase_c, DemoInDokanD); ///< Entering an area via a pipe below the player. Argument: Pipe type (DokanType_e).
+    STATE_VIRTUAL_FUNC_DECLARE(daPlBase_c, DemoInDokanR); ///< Entering an area via a pipe to the right of the player. Argument: Pipe type (DokanType_e).
+    STATE_VIRTUAL_FUNC_DECLARE(daPlBase_c, DemoInDokanL); ///< Entering an area via a pipe to the left of the player. Argument: Pipe type (DokanType_e).
+    STATE_VIRTUAL_FUNC_DECLARE(daPlBase_c, DemoOutDokanU); ///< Leaving an area via a pipe above the player. Argument: None.
+    STATE_VIRTUAL_FUNC_DECLARE(daPlBase_c, DemoOutDokanD); ///< Leaving an area via a pipe below the player. Argument: None.
+    STATE_VIRTUAL_FUNC_DECLARE(daPlBase_c, DemoOutDokanR); ///< Leaving an area via a pipe to the right of the player. Argument: None.
+    STATE_VIRTUAL_FUNC_DECLARE(daPlBase_c, DemoOutDokanL); ///< Leaving an area via a pipe to the left of the player. Argument: None.
+    STATE_VIRTUAL_FUNC_DECLARE(daPlBase_c, DemoOutDokanRoll); ///< Leaving an area via a rolling hill pipe. Argument: None.
+    STATE_VIRTUAL_FUNC_DECLARE(daPlBase_c, DemoInWaterTank); ///< Entering an area via a water tank pipe. @unused Argument: Pipe type (DokanType_e).
+    STATE_VIRTUAL_FUNC_DECLARE(daPlBase_c, DemoOutWaterTank); ///< Leaving an area via a water tank pipe. @unused Argument: None.
+    STATE_VIRTUAL_FUNC_DECLARE(daPlBase_c, DemoRailDokan); ///< Transitioning between two rail pipes without leaving the area. Argument: None.
+    STATE_VIRTUAL_FUNC_DECLARE(daPlBase_c, DemoDown); ///< Death animation. Argument: See DemoDownArg_e.
+    STATE_VIRTUAL_FUNC_DECLARE(daPlBase_c, DemoNextGotoBlock); ///< Transition to a new area. Argument: Lower 8 bits: next goto ID, upper 8 bits: fader type (dFader_c::fader_type_e)
+    STATE_VIRTUAL_FUNC_DECLARE(daPlBase_c, DemoGoal); ///< Goal pole cutscene. Argument: Is Yoshi (@p bool).
+    STATE_VIRTUAL_FUNC_DECLARE(daPlBase_c, DemoControl); ///< Cutscene controlling the player. Argument: See ControlDemoSubstate_e.
 
     virtual void initialDokanUnder();
     virtual void initialDokanUper();
@@ -1022,7 +1035,7 @@ public:
         return mDemoStateMgr.getStateID()->isEqual(id);
     }
 
-    float calcStarAccel(float f) { return 3.0f * f; }
+    float calcSomeAccel(float f) { return 3.0f * f; }
     void set_m_d80(int i, float f) { m_d80[i] = f; }
     float getModelHeight() const { return mModelHeight; }
     float get_1064() const { return m_1064; }
@@ -1063,6 +1076,10 @@ public:
         changeState(stateID, (void *) arg);
     }
 
+    void changeDemoState(const sStateIDIf_c &stateID) {
+        changeDemoState(stateID, 0);
+    }
+
     template <typename T>
     T stateArg() const {
         return (T) mStateArg;
@@ -1101,7 +1118,7 @@ public:
     /// player to enter a pipe when it reaches #sc_DokanEnterThreshold.
     u8 mDokanCounterR;
     float mDokanOffsetY;
-    float mDokanOffsetX;
+    float mDokanShiftXEpsilon;
     short mRailDokanRailIndex;
     short mRailDokanNextNodeTimer;
 
@@ -1204,11 +1221,11 @@ public:
     float m_d8c;
     int mNoHitObjTimer;
 
-    short m_d94;
-    short m_d96;
-    short m_d98;
-    short m_d9a;
-    short m_d9c;
+    short mMoveSakaAngle;
+    short mPrevMoveSakaAngle;
+    short mStillSakaAngle;
+    short mPrevStillSakaAngle;
+    short mAdjacentSlopeAngle;
 
     int mAirWalkTimer; ///< Timer to wait before changing to the falling state after walking off a ledge.
 
@@ -1287,6 +1304,7 @@ public:
     /// Number of walking frames before being able to enter a pipe.
     /// @see mDokanCounterL, mDokanCounterR
     static const int sc_DokanEnterThreshold = 10;
+    static const int sc_DemoWaitDuration = 10; ///< Number of frames to wait before transitioning from StateID_DemoWait.
     static const int sc_DemoPoleWaitTurn = 5; ///< Number of frames to wait before turning towards the screen in the goal pole animation.
     static const int sc_DemoPoleWaitEnd = 7; ///< Number of frames to wait before doing the course clear pose in the goal pole animation.
 };

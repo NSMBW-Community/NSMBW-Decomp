@@ -139,14 +139,6 @@ public:
     };
 
     /// @unofficial
-    enum DemoDownChangeParam_e {
-        DEMO_DOWN_CHANGE_0,
-        DEMO_DOWN_CHANGE_1,
-        DEMO_DOWN_CHANGE_2,
-        DEMO_DOWN_CHANGE_3
-    };
-
-    /// @unofficial
     enum DemoOutDoorState_e {
         DEMO_OUT_DOOR_OPEN_DOOR,
         DEMO_OUT_DOOR_MOVE_CENTER,
@@ -693,10 +685,10 @@ public:
     void setCcData();
     void setCcDataDirect();
 
-    void fn_80143060(sBcPointData &data1, sBcPointData &data2, bool);
-    bool fn_80143220(sBcPointData &data1, sBcPointData &data2);
-    void fn_80143430(sBcPointData &data1, sBcPointData &data2);
-    void fn_80143550(sBcPointData &data1, sBcPointData &data2);
+    void fn_80143060(sBcPointData &data1, sBcPointData &data2, bool); ///< @unofficial
+    bool fn_80143220(sBcPointData &data1, sBcPointData &data2); ///< @unofficial
+    void reviseBcDataCarryPlayer(sBcPointData &data1, sBcPointData &data2); ///< @unofficial
+    void reviseBcDataCarryHardBlock(sBcPointData &data1, sBcPointData &data2); ///< @unofficial
 
     void setStarBase(StarSet_e, int);
 

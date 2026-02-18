@@ -75,7 +75,7 @@ daPlBase_c::daPlBase_c() :
     mLayer = dScStage_c::m_instance->mCurrLayer;
     mAmiLayer = 1;
     mBc.mOwningPlrNo = mPlayerNo;
-    changeDemoState(StateID_DemoNone, 0);
+    changeDemoState(StateID_DemoNone, false);
     changeState(StateID_None);
     mAttentionMode = 3;
     mViewLimitPadding = 16.0f;
@@ -101,7 +101,7 @@ int daPlBase_c::preExecute() {
     if (dActor_c::preExecute() == NOT_READY) {
         return NOT_READY;
     }
-    if (isStatus(STATUS_7D)) {
+    if (isStatus(STATUS_STOP_EXECUTE)) {
         return NOT_READY;
     }
     onStatus(STATUS_CAN_EXECUTE);
@@ -153,8 +153,8 @@ void daPlBase_c::postExecute(fBase_c::MAIN_STATE_e status) {
         offStatus(STATUS_82);
         if (isStatus(STATUS_8D)) {
             offStatus(STATUS_8D);
-            if (isStatus(STATUS_B9)) {
-                onStatus(STATUS_7D);
+            if (isStatus(STATUS_DISPLAY_OUT_DEAD)) {
+                onStatus(STATUS_STOP_EXECUTE);
             }
         }
         offStatus(STATUS_WAS_TWIRL);
@@ -171,14 +171,14 @@ void daPlBase_c::postExecute(fBase_c::MAIN_STATE_e status) {
 }
 
 int daPlBase_c::doDelete() {
-    mIsBeingDeleted = 1;
+    mIsBeingDeleted = true;
     onStatus(STATUS_ABOUT_TO_BE_DELETED);
     mStateMgr.finalizeState();
     return SUCCEEDED;
 }
 
 int daPlBase_c::preDraw() {
-    if (isStatus(STATUS_BB)) {
+    if (isStatus(STATUS_INVISIBLE)) {
         mVisible = false;
     } else {
         mVisible = true;
@@ -212,7 +212,7 @@ STATE_VIRTUAL_DEFINE(daPlBase_c, Cloud);
 STATE_VIRTUAL_DEFINE(daPlBase_c, AnimePlay);
 STATE_VIRTUAL_DEFINE(daPlBase_c, WaitJump);
 
-void daPlBase_c::changeState(const sStateIDIf_c &state, void *param) {
+void daPlBase_c::changeState(const sStateIDIf_c &stateID, void *arg) {
     if (isStatus(STATUS_DISABLE_STATE_CHANGE)) {
         return;
     }
@@ -222,8 +222,8 @@ void daPlBase_c::changeState(const sStateIDIf_c &state, void *param) {
     mSubstateValue = 0;
     offStatus(STATUS_97);
     offStatus(STATUS_98);
-    mStateArg = param;
-    mStateMgr.changeState(state);
+    mStateArg = arg;
+    mStateMgr.changeState(stateID);
 }
 
 void daPlBase_c::executeState() {
@@ -268,8 +268,10 @@ void daPlBase_c::executeState_None() {}
 
 void daPlBase_c::setWaitActionAnm(AnmBlend_e blendMode) {}
 void daPlBase_c::setWalkActionAnm(AnmBlend_e blendMode) {}
+
 void daPlBase_c::walkActionInit_Wait(AnmBlend_e blendMode) {}
 void daPlBase_c::walkAction_Wait() {}
+
 void daPlBase_c::walkActionInit_Move(AnmBlend_e blendMode) {}
 void daPlBase_c::walkAction_Move() {
     AnmBlend_e blendMode = BLEND_DEFAULT;
@@ -303,9 +305,11 @@ void daPlBase_c::walkAction_Move() {
 }
 
 void daPlBase_c::initializeState_Walk() {}
+
 void daPlBase_c::finalizeState_Walk() {
     offStatus(STATUS_52);
 }
+
 void daPlBase_c::executeState_Walk() {
     if (isStatus(STATUS_52)) {
         offStatus(STATUS_52);
@@ -317,7 +321,12 @@ void daPlBase_c::calcSpeedOnIceLift() {
     static const float csSpeedMult[] = { 0.5f, 0.8f };
     /// @unofficial
     static const float csSpeedMultNoMove[] = { 0.3f, 1.0f };
-    if (mPowerup != POWERUP_PENGUIN_SUIT && isNowBgCross(BGC_LIFT) && isNowBgCross(BGC_ON_ICE) && std::fabs(mBc.mIceSpeed) > 1.0f) {
+    if (
+        mPowerup != POWERUP_PENGUIN_SUIT &&
+        isNowBgCross(BGC_LIFT) &&
+        isNowBgCross(BGC_ON_ICE) &&
+        std::fabs(mBc.mIceSpeed) > 1.0f
+    ) {
         u8 idx = 0;
         if (mBc.mIceSpeed < 0.0f) {
             idx = 1;
@@ -344,8 +353,13 @@ void daPlBase_c::calcSpeedOnIceLift() {
 }
 
 void daPlBase_c::calcAccOnIceLift() {
-    if (isNowBgCross(BGC_LIFT) && isNowBgCross(BGC_ON_ICE) && !mKey.buttonWalk(nullptr) && std::fabs(mBc.mIceSpeed) > 1.0f) {
-        mAccelF = calcStarAccel(mAccelF);
+    if (
+        isNowBgCross(BGC_LIFT) &&
+        isNowBgCross(BGC_ON_ICE) &&
+        !mKey.buttonWalk(nullptr) &&
+        std::fabs(mBc.mIceSpeed) > 1.0f
+    ) {
+        mAccelF = calcSomeAccel(mAccelF);
     }
 }
 
@@ -606,13 +620,13 @@ void daPlBase_c::slipActionMove(int param) {
             setCcAtPenguinSlip();
         }
     }
-    if (isOldBgCross(BGC_FOOT) && m_d96 > 0 && (m_d98 * m_d9a) <= 0) {
+    if (isOldBgCross(BGC_FOOT) && mPrevMoveSakaAngle > 0 && mStillSakaAngle * mPrevStillSakaAngle <= 0) {
         offNowBgCross(BGC_FOOT);
         float baseSpeed = mSpeedF;
-        float cos = mAng(m_d96).cos();
+        float cos = mAng(mPrevMoveSakaAngle).cos();
         mMaxSpeedF = baseSpeed;
         mSpeedF = baseSpeed * cos;
-        mSpeed.y = std::fabs(baseSpeed) * mAng(m_d96).sin();
+        mSpeed.y = std::fabs(baseSpeed) * mAng(mPrevMoveSakaAngle).sin();
     }
     if (isNowBgCross(BGC_FOOT)) {
         if (mSpeedF <= 0.0f && isNowBgCross(BGC_SIDE_LIMIT_L)) {
@@ -1381,18 +1395,18 @@ void daPlBase_c::DemoAnmBossSetUp() {
 
 void daPlBase_c::DemoAnmBossGlad() {
     addCalcAngleY(0, 10);
-    switch ((AnimePlaySubstate_e) mSubstate) {
-        case ANIME_PLAY_ACTION_0:
+    switch (mSubstate) {
+        case 0:
             mSubstateTimer = 15;
             mSubstate++;
             // fallthrough
-        case ANIME_PLAY_ACTION_1:
+        case 1:
             if (mSubstateTimer == 0) {
                 initDemoKimePose();
                 mSubstate++;
             }
             break;
-        case ANIME_PLAY_ACTION_2: {
+        case 2: {
             ClearType_e clearType = CLEAR_TYPE_BOSS;
             if (mDemoAnime == DEMO_ANIME_BOSS_GLAD_2) {
                 clearType = CLEAR_TYPE_FINAL_BOSS;
@@ -1414,9 +1428,9 @@ void daPlBase_c::DemoAnmBossAttention() {
     daPlBase_c *boss = (daPlBase_c *) dAttention_c::mspInstance->search(mpMdlMng->mpMdl->mHatPosMaybe);
     if (boss != nullptr) {
         if (boss->getLookatPos().x > mPos.x) {
-            mDirection = 0;
+            mDirection = DIR_LR_R;
         } else {
-            mDirection = 1;
+            mDirection = DIR_LR_L;
         }
     }
     switch (mSubstate) {
@@ -1441,11 +1455,12 @@ void daPlBase_c::DemoAnmBossAttention() {
 
 void daPlBase_c::DemoAnmBossKeyGet() {
     addCalcAngleY(0, 10);
-    switch ((AnimePlaySubstate_e) mSubstate) {
-        case ANIME_PLAY_ACTION_0:
+    switch (mSubstate) {
+        case 0:
             mSubstateTimer = 15;
             mSubstate++;
-        case ANIME_PLAY_ACTION_1:
+            // [Fallthrough]
+        case 1:
             if (mSubstateTimer == 0) {
                 mpMdlMng->setAnm(PLAYER_ANIM_BOSS_KEY_GET);
                 startKimePoseVoice(CLEAR_TYPE_BOSS);
@@ -1460,15 +1475,16 @@ void daPlBase_c::DemoAnmBossKeyGet() {
 
 void daPlBase_c::initializeState_WaitJump() {
     startQuakeShock(dQuake_c::TYPE_5);
-    onStatus(STATUS_12);
+    onStatus(STATUS_WAIT_JUMP);
     mKey.onStatus(dAcPyKey_c::STATUS_FORCE_NO_JUMP);
+
     mSpeedF = 0.0f;
     mpMdlMng->setAnm(PLAYER_ANIM_WAIT);
     mAngle.y = getMukiAngle(mDirection);
 }
 
 void daPlBase_c::finalizeState_WaitJump() {
-    offStatus(STATUS_12);
+    offStatus(STATUS_WAIT_JUMP);
     mKey.offStatus(dAcPyKey_c::STATUS_FORCE_NO_JUMP);
 }
 
@@ -1504,12 +1520,15 @@ bool daPlBase_c::isSlipSaka() {
 }
 
 void daPlBase_c::setSlipAction() {
-    m_d94 = mBc.getSakaAngle(mSpeedF);
+    mMoveSakaAngle = mBc.getSakaAngle(mSpeedF);
     changeState(StateID_Slip);
 }
 
 bool daPlBase_c::checkSlip() {
-    if ((mSpeedF > 0.0f || !isNowBgCross(BGC_SIDE_LIMIT_L)) && isNowBgCross(BGC_AUTOSLIP)) {
+    if (
+        (mSpeedF > 0.0f || !isNowBgCross(BGC_SIDE_LIMIT_L)) &&
+        isNowBgCross(BGC_AUTOSLIP)
+    ) {
         setSlipAction();
         return true;
     }
@@ -1520,7 +1539,10 @@ bool daPlBase_c::checkCrouchSlip() {
     if (isNowBgCross(BGC_WATER_SHALLOW)) {
         return false;
     }
-    if ((mSpeedF > 0.0f || !isNowBgCross(BGC_SIDE_LIMIT_L)) && (isNowBgCross(BGC_AUTOSLIP) || isSlipSaka())) {
+    if (
+        (mSpeedF > 0.0f || !isNowBgCross(BGC_SIDE_LIMIT_L)) &&
+        (isNowBgCross(BGC_AUTOSLIP) || isSlipSaka())
+    ) {
         setSlipAction();
         return true;
     }
@@ -1682,12 +1704,12 @@ void daPlBase_c::slipPowerSet(int mode) {
             if (!mKey.buttonWalk(&dir)) {
                 mAccelF = getSakaStopAccele(dir);
                 if (isStatus(STATUS_89)) {
-                    mAccelF = calcStarAccel(mAccelF);
+                    mAccelF = calcSomeAccel(mAccelF);
                 }
             } else if (mSpeedF * sc_DirSpeed[mDirection] < 0.0f) {
                 mAccelF = *(getSpeedData() + 6);
                 if (isStatus(STATUS_89)) {
-                    mAccelF = calcStarAccel(mAccelF);
+                    mAccelF = calcSomeAccel(mAccelF);
                 }
                 return;
             }
@@ -1727,14 +1749,14 @@ void daPlBase_c::normalPowerSet() {
             mAccelF = 0.004f;
         }
         if (isStatus(STATUS_89)) {
-            mAccelF = calcStarAccel(mAccelF);
+            mAccelF = calcSomeAccel(mAccelF);
         }
         return;
     }
     if (mSpeedF * sc_DirSpeed[mDirection] < 0.0f) {
         mAccelF = data.data[3];
         if (isStatus(STATUS_89)) {
-            mAccelF = calcStarAccel(mAccelF);
+            mAccelF = calcSomeAccel(mAccelF);
         }
         return;
     }
@@ -2397,32 +2419,35 @@ STATE_VIRTUAL_DEFINE(daPlBase_c, DemoGoal);
 STATE_VIRTUAL_DEFINE(daPlBase_c, DemoControl);
 
 void daPlBase_c::initialDokanUnder() {
-    changeDemoState(StateID_DemoInDokanD, 0);
+    changeDemoState(StateID_DemoInDokanD, DOKAN_TYPE_NORMAL);
 }
 void daPlBase_c::initialDokanUper() {
-    changeDemoState(StateID_DemoInDokanU, 0);
+    changeDemoState(StateID_DemoInDokanU, DOKAN_TYPE_NORMAL);
 }
 void daPlBase_c::initialDokanRight() {
-    changeDemoState(StateID_DemoInDokanR, 0);
+    changeDemoState(StateID_DemoInDokanR, DOKAN_TYPE_NORMAL);
 }
 void daPlBase_c::initialDokanLeft() {
-    changeDemoState(StateID_DemoInDokanL, 0);
+    changeDemoState(StateID_DemoInDokanL, DOKAN_TYPE_NORMAL);
 }
+
 void daPlBase_c::initialDokanUnderM() {
-    changeDemoState(StateID_DemoInDokanD, 2);
+    changeDemoState(StateID_DemoInDokanD, DOKAN_TYPE_MINI);
 }
 void daPlBase_c::initialDokanUperM() {
-    changeDemoState(StateID_DemoInDokanU, 2);
+    changeDemoState(StateID_DemoInDokanU, DOKAN_TYPE_MINI);
 }
 void daPlBase_c::initialDokanRightM() {
-    changeDemoState(StateID_DemoInDokanR, 2);
+    changeDemoState(StateID_DemoInDokanR, DOKAN_TYPE_MINI);
 }
 void daPlBase_c::initialDokanLeftM() {
-    changeDemoState(StateID_DemoInDokanL, 2);
+    changeDemoState(StateID_DemoInDokanL, DOKAN_TYPE_MINI);
 }
+
 void daPlBase_c::initialDokanDepth() {
-    changeDemoState(StateID_DemoInWaterTank, 0);
+    changeDemoState(StateID_DemoInWaterTank, DOKAN_TYPE_NORMAL);
 }
+
 void daPlBase_c::initialDoor() {}
 void daPlBase_c::initialJumpRight() {}
 void daPlBase_c::initialJumpLeft() {}
@@ -2430,20 +2455,20 @@ void daPlBase_c::initialVine() {}
 
 void daPlBase_c::initialFall() {
     changeState(StateID_Fall, false);
-    changeDemoState(StateID_DemoNone, 0);
+    changeDemoState(StateID_DemoNone, false);
     mSpeed.y = -1.0f;
     bgCheck(0);
 }
 
 void daPlBase_c::initialHipAttack() {
     changeState(StateID_HipAttack, HIP_ATTACK_ARG_PLAYER);
-    changeDemoState(StateID_DemoWait, 0);
+    changeDemoState(StateID_DemoWait, DEMO_WAIT_ARG_TO_NONE);
 }
 
 void daPlBase_c::initialSlip() {
     onStatus(STATUS_INITIAL_SLIDE);
     setSlipAction();
-    changeDemoState(StateID_DemoWait, 1);
+    changeDemoState(StateID_DemoWait, DEMO_WAIT_ARG_TO_CONTROL);
 }
 
 void daPlBase_c::initialSwim() {}
@@ -2458,7 +2483,7 @@ void daPlBase_c::initialBlockJumpBelow() {}
 
 void daPlBase_c::initialNormal() {
     changeState(StateID_Walk, 0);
-    changeDemoState(StateID_DemoStartWait, 0);
+    changeDemoState(StateID_DemoStartWait);
     mSpeed.y = -1.0f;
     bgCheck(0);
 }
@@ -2595,11 +2620,11 @@ void daPlBase_c::changeNextScene(int param1) {
     if (param1 == 1) {
         daPlBase_c *pl = daPyMng_c::getPlayer(mPlayerNo);
         if (pl != nullptr) {
-            pl->onStatus(STATUS_7D);
+            pl->onStatus(STATUS_STOP_EXECUTE);
         }
         daPlBase_c *yoshi = daPyMng_c::getYoshi(mPlayerNo);
         if (yoshi != nullptr) {
-            yoshi->onStatus(STATUS_7D);
+            yoshi->onStatus(STATUS_STOP_EXECUTE);
         }
     }
 }
@@ -2622,7 +2647,7 @@ void daPlBase_c::stopOther() {
         if (yoshi != nullptr) {
             yoshi->mExecStopMask &= ~2;
         }
-    } else if (mKind == 2) {
+    } else if (mKind == STAGE_ACTOR_YOSHI) {
         mExecStopMask &= ~4;
     }
 }
@@ -2638,7 +2663,7 @@ void daPlBase_c::playOther() {
         if (yoshi != nullptr) {
             yoshi->mExecStopMask |= 2;
         }
-    } else if (mKind == 2) {
+    } else if (mKind == STAGE_ACTOR_YOSHI) {
         mExecStopMask |= 4;
     }
 }
@@ -2647,7 +2672,7 @@ void daPlBase_c::changeNormalAction() {
     bgCheck(0);
     offZPosSetNone();
     changeState(StateID_Walk, BLEND_DEFAULT);
-    changeDemoState(StateID_DemoNone, 0);
+    changeDemoState(StateID_DemoNone, false);
 }
 
 bool daPlBase_c::checkTimeOut() {
@@ -2661,7 +2686,7 @@ bool daPlBase_c::checkTimeOut() {
 
 void daPlBase_c::changeDemoState(const sStateIDIf_c &stateID, int arg) {
     if (stateID == StateID_DemoNone && isItemKinopio()) {
-        changeDemoState(StateID_DemoControl, 5);
+        changeDemoState(StateID_DemoControl, CONTROL_DEMO_KINOPIO_WALK);
     } else {
         onDemo();
         mDemoSubstate = 0;
@@ -2678,7 +2703,7 @@ bool daPlBase_c::executeDemoState() {
     mDemoStateMgr.executeState();
     if (isStatus(STATUS_71)) {
         if (isDemoState(StateID_DemoNone)) {
-            changeDemoState(StateID_DemoControl, 0);
+            changeDemoState(StateID_DemoControl, CONTROL_DEMO_WAIT);
         }
     }
     if (!isDemoMode()) {
@@ -2694,12 +2719,14 @@ void daPlBase_c::initializeState_DemoNone() {
     mDemoSubstateTimer = 15;
     daPyDemoMng_c::mspInstance->clearDemoNo(mPlayerNo);
     offDemo();
-    if ((int) mDemoStateArg != 1) {
+    if (mDemoStateArg != 1) {
         playOther();
     }
-    offStatus(STATUS_BB);
+    offStatus(STATUS_INVISIBLE);
 }
+
 void daPlBase_c::finalizeState_DemoNone() {}
+
 void daPlBase_c::executeState_DemoNone() {
     if (mFader_c::mFader->isStatus(mFaderBase_c::HIDDEN)) {
         if (isDemoMode()) {
@@ -2740,12 +2767,12 @@ void daPlBase_c::executeState_DemoNone() {
         if (setDokanIn(DOKAN_U)) {
             return;
         }
-        if (mDokanCounterR >= sc_DokanEnterThreshold && mDirection == 0) {
+        if (mDokanCounterR >= sc_DokanEnterThreshold && mDirection == DIR_LR_R) {
             if (setDokanIn(DOKAN_R)) {
                 return;
             }
         }
-        if (mDokanCounterL >= sc_DokanEnterThreshold && mDirection == 1) {
+        if (mDokanCounterL >= sc_DokanEnterThreshold && mDirection == DIR_LR_L) {
             if (setDokanIn(DOKAN_L)) {
                 return;
             }
@@ -2760,11 +2787,11 @@ void daPlBase_c::initializeState_DemoStartWait() {}
 
 void daPlBase_c::executeState_DemoStartWait() {
     if (dScStage_c::m_gameMode == dScStage_c::GAME_MODE_TITLE_SCREEN) {
-        changeDemoState(StateID_DemoNone, 0);
+        changeDemoState(StateID_DemoNone, false);
     } else {
         if (mFader_c::mFader->isStatus(mFaderBase_c::HIDDEN)) {
             bgCheck(0);
-            changeDemoState(StateID_DemoNone, 0);
+            changeDemoState(StateID_DemoNone, false);
         }
     }
 }
@@ -2773,10 +2800,10 @@ void daPlBase_c::finalizeState_DemoStartWait() {}
 
 void daPlBase_c::initializeState_DemoWait() {
     if (daPyDemoMng_c::mspInstance->checkDemoNo(mPlayerNo)) {
-        mDemoSubstate = DEMO_WAIT_ACTION_1;
+        mDemoSubstate = DEMO_WAIT_TRANSITION;
         mDemoSubstateTimer = 0;
     } else {
-        mDemoSubstate = DEMO_WAIT_ACTION_0;
+        mDemoSubstate = DEMO_WAIT_DELAY;
     }
 }
 
@@ -2785,23 +2812,23 @@ void daPlBase_c::finalizeState_DemoWait() {}
 void daPlBase_c::executeState_DemoWait() {
     if (mFader_c::mFader->isStatus(mFaderBase_c::HIDDEN)) {
         switch ((DemoWaitSubstate_e) mDemoSubstate) {
-            case DEMO_WAIT_ACTION_0:
+            case DEMO_WAIT_DELAY:
                 if (daPyDemoMng_c::mspInstance->checkDemoNo(mPlayerNo)) {
-                    mDemoSubstate = DEMO_WAIT_ACTION_1;
-                    mDemoSubstateTimer = 10;
+                    mDemoSubstate = DEMO_WAIT_TRANSITION;
+                    mDemoSubstateTimer = sc_DemoWaitDuration;
                 }
                 break;
-            case DEMO_WAIT_ACTION_1:
+            case DEMO_WAIT_TRANSITION:
                 if (mDemoSubstateTimer == 0) {
                     daPyDemoMng_c::mspInstance->turnNextDemoNo();
-                    switch ((int) mDemoStateArg) {
-                        case 0:
-                            changeDemoState(StateID_DemoNone, 0);
+                    switch ((DemoWaitArg_e) mDemoStateArg) {
+                        case DEMO_WAIT_ARG_TO_NONE:
+                            changeDemoState(StateID_DemoNone, false);
                             onDemo();
                             bgCheck(0);
                             break;
-                        case 1:
-                            changeDemoState(StateID_DemoControl, 4);
+                        case DEMO_WAIT_ARG_TO_CONTROL:
+                            changeDemoState(StateID_DemoControl, CONTROL_DEMO_4);
                             break;
                     }
                 }
@@ -2838,7 +2865,7 @@ void daPlBase_c::initDemoInDokan() {
     mSpeedF = 0.0f;
     mSpeed.y = 0.0f;
     setZPosition(-1800.0f);
-    if ((int) mDemoStateArg == 1) {
+    if (mDemoStateArg == DOKAN_TYPE_CONNECTED) {
         mDamageInvulnTimer = 0;
     } else {
         mDamageInvulnTimer = 35;
@@ -2846,7 +2873,7 @@ void daPlBase_c::initDemoInDokan() {
             stopOther();
         }
     }
-    mDemoSubstate = DEMO_IN_DOKAN_ACTION_0;
+    mDemoSubstate = 0;
 }
 
 void daPlBase_c::endDemoInDokan() {
@@ -2858,16 +2885,20 @@ void daPlBase_c::endDemoInDokan() {
 }
 
 void daPlBase_c::executeDemoInDokan(u8 dir) {
-    switch ((DemoInDokanSubstate_e) mDemoSubstate) {
-        case DEMO_IN_DOKAN_ACTION_0:
+    // 0: Play the pipe sound effect
+    // 1: Wait for a bit
+    // 2: Move the player out of the pipe
+    // 3: Finalize the transition
+    switch (mDemoSubstate) {
+        case 0:
             if (!mFader_c::mFader->isStatus(mFaderBase_c::HIDDEN)) {
                 break;
             }
             if (!daPyDemoMng_c::mspInstance->checkDemoNo(mPlayerNo)) {
                 break;
             }
-            offStatus(STATUS_BB);
-            mDemoSubstate = DEMO_IN_DOKAN_ACTION_1;
+            offStatus(STATUS_INVISIBLE);
+            mDemoSubstate = 1;
             mDemoSubstateTimer = 40;
             if (mBc.checkWater(mWarpPos.x, mWarpPos.y, mLayer, nullptr)) {
                 onNowBgCross(BGC_WATER_SHALLOW);
@@ -2875,22 +2906,22 @@ void daPlBase_c::executeDemoInDokan(u8 dir) {
             if (isNowBgCross(BGC_WATER_SHALLOW)) {
                 if (isDemoState(StateID_DemoInDokanL) || isDemoState(StateID_DemoInDokanR)) {
                     mpMdlMng->setAnm(PLAYER_ANIM_SWIM_PIPE);
-                    if ((int) mDemoStateArg != 1) {
+                    if (mDemoStateArg != DOKAN_TYPE_CONNECTED) {
                         mPos.y = getWaterDokanCenterOffset(mPos.y);
                         mWarpPos.y = mPos.y;
                     }
                 }
                 startSound(SE_PLY_WATER_DOKAN_IN_OUT, false);
-                break;
+            } else {
+                startSound(SE_PLY_DOKAN_IN_OUT, false);
             }
-            startSound(SE_PLY_DOKAN_IN_OUT, false);
             break;
-        case DEMO_IN_DOKAN_ACTION_1:
+        case 1:
             if (mDemoSubstateTimer == 0) {
                 daPyDemoMng_c::mspInstance->turnNextDemoNo();
-                mDemoSubstate = DEMO_IN_DOKAN_ACTION_2;
+                mDemoSubstate = 2;
             }
-        case DEMO_IN_DOKAN_ACTION_2:
+        case 2:
             onStatus(STATUS_79);
             if (isStatus(STATUS_PROPEL_NO_ROLL) && (dir == 2 || dir == 3) && std::fabs(mPos.x - mWarpPos.x) <= 20.0f) {
                 offStatus(STATUS_PROPEL_NO_ROLL);
@@ -2904,12 +2935,12 @@ void daPlBase_c::executeDemoInDokan(u8 dir) {
             if (!demo_dokan_move_y(0.75f, 0.0f)) {
                 break;
             }
-            if (mDemoSubstate == DEMO_IN_DOKAN_ACTION_1) {
+            if (mDemoSubstate == 1) {
                 daPyDemoMng_c::mspInstance->turnNextDemoNo();
             }
-            mDemoSubstate = DEMO_IN_DOKAN_ACTION_3;
+            mDemoSubstate = 3;
             break;
-        case DEMO_IN_DOKAN_ACTION_3:
+        case 3:
             if (!mKey.buttonWalk(nullptr)) {
                 if (!mAngle.y.chase(getMukiAngle(mDirection), scDokanOutTurnSpeed[0])) {
                     break;
@@ -2919,8 +2950,6 @@ void daPlBase_c::executeDemoInDokan(u8 dir) {
             if (isNowBgCross(BGC_WATER_SHALLOW)) {
                 onOldBgCross(BGC_WATER_SHALLOW);
             }
-            break;
-        default:
             break;
     }
 }
@@ -2933,12 +2962,12 @@ void daPlBase_c::initDemoInDokanUD(u8 dir) {
     mpMdlMng->setAnm(PLAYER_ANIM_WAIT);
     mWarpPos = mPos;
     if (dir == 1) {
-        if ((int) mDemoStateArg == 2) {
+        if (mDemoStateArg == DOKAN_TYPE_MINI) {
             mWarpPos.y = mPos.y + 16.0f;
         } else {
             mWarpPos.y = mPos.y + 32.0f;
         }
-        if (mKind == 2) {
+        if (mKind == STAGE_ACTOR_YOSHI) {
             mPos.y -= 16.0f;
         } else {
             mPos.y -= 8.0f;
@@ -2946,7 +2975,7 @@ void daPlBase_c::initDemoInDokanUD(u8 dir) {
     } else {
         onStatus(STATUS_PROPEL_NO_ROLL);
         float tmp;
-        if (mKind == 2) {
+        if (mKind == STAGE_ACTOR_YOSHI) {
             tmp = 30.0f;
             daPlBase_c *pl = ((daYoshi_c *) this)->getPlayerRideOn();
             if (pl != nullptr) {
@@ -2982,7 +3011,7 @@ void daPlBase_c::initDemoInDokanUD(u8 dir) {
         mWarpPos.y = -tmp + mPos.y;
         mPos.y += 2.0f;
     }
-    if (mKind == 2) {
+    if (mKind == STAGE_ACTOR_YOSHI) {
         mAngle.y = 0;
     }
     initDemoInDokan();
@@ -2992,53 +3021,53 @@ void daPlBase_c::initDemoInDokanLR(u8 dir) {
     static const float l_dokanOffset[] = { 32.0f, 32.0f, 20.0f };
     mpMdlMng->setAnm(PLAYER_ANIM_LOW_WALK);
     onStatus(STATUS_PROPEL_NO_ROLL);
-    if (dir == 3) {
+    if (dir == DOKAN_R) {
         mPos.x += 8.0f;
     } else {
         mPos.x -= 8.0f;
     }
     float tmp;
-    if (mKind == 2) {
+    if (mKind == STAGE_ACTOR_YOSHI) {
         tmp = 32.0f;
     } else {
-        tmp = l_dokanOffset[(int) mDemoStateArg];
+        tmp = l_dokanOffset[mDemoStateArg];
     }
     if (dir == 3) {
         tmp = -tmp;
     }
     mWarpPos.set(mPos.x + tmp, mPos.y, mPos.z);
-    if (dir == 3) {
-        mDirection = 1;
+    if (dir == DOKAN_R) {
+        mDirection = DIR_LR_L;
     } else {
-        mDirection = 0;
+        mDirection = DIR_LR_R;
     }
     mAngle.y = getMukiAngle(mDirection);
     initDemoInDokan();
 }
 
-void daPlBase_c::initializeState_DemoInDokanU() { initDemoInDokanUD(0); }
+void daPlBase_c::initializeState_DemoInDokanU() { initDemoInDokanUD(DOKAN_U); }
 void daPlBase_c::finalizeState_DemoInDokanU() { endDemoInDokan(); }
-void daPlBase_c::executeState_DemoInDokanU() { executeDemoInDokan(0); }
+void daPlBase_c::executeState_DemoInDokanU() { executeDemoInDokan(DOKAN_U); }
 
-void daPlBase_c::initializeState_DemoInDokanD() { initDemoInDokanUD(1); }
+void daPlBase_c::initializeState_DemoInDokanD() { initDemoInDokanUD(DOKAN_D); }
 void daPlBase_c::finalizeState_DemoInDokanD() { endDemoInDokan(); }
-void daPlBase_c::executeState_DemoInDokanD() { executeDemoInDokan(1); }
+void daPlBase_c::executeState_DemoInDokanD() { executeDemoInDokan(DOKAN_D); }
 
-void daPlBase_c::initializeState_DemoInDokanL() { initDemoInDokanLR(2); }
+void daPlBase_c::initializeState_DemoInDokanL() { initDemoInDokanLR(DOKAN_L); }
 void daPlBase_c::finalizeState_DemoInDokanL() { endDemoInDokan(); }
-void daPlBase_c::executeState_DemoInDokanL() { executeDemoInDokan(2); }
+void daPlBase_c::executeState_DemoInDokanL() { executeDemoInDokan(DOKAN_L); }
 
-void daPlBase_c::initializeState_DemoInDokanR() { initDemoInDokanLR(3); }
+void daPlBase_c::initializeState_DemoInDokanR() { initDemoInDokanLR(DOKAN_R); }
 void daPlBase_c::finalizeState_DemoInDokanR() { endDemoInDokan(); }
-void daPlBase_c::executeState_DemoInDokanR() { executeDemoInDokan(3); }
+void daPlBase_c::executeState_DemoInDokanR() { executeDemoInDokan(DOKAN_R); }
 
-bool daPlBase_c::demo_dokan_move_x(float p1, float p2) {
-    sLib::chase(&mPos.x, mWarpPos.x, p1);
-    return std::fabs(mPos.x - mWarpPos.x) <= p2;
+bool daPlBase_c::demo_dokan_move_x(float moveStep, float epsilon) {
+    sLib::chase(&mPos.x, mWarpPos.x, moveStep);
+    return std::fabs(mPos.x - mWarpPos.x) <= epsilon;
 }
 
-bool daPlBase_c::demo_dokan_move_y(float p1, float p2) {
-    return sLib::chase(&mPos.y, mWarpPos.y + p2, p1);
+bool daPlBase_c::demo_dokan_move_y(float moveStep, float offset) {
+    return sLib::chase(&mPos.y, mWarpPos.y + offset, moveStep);
 }
 
 bool daPlBase_c::isEnableDokanInStatus() {
@@ -3129,20 +3158,20 @@ bool daPlBase_c::setDemoOutDokanAction(int entranceNextGotoID, DokanDir_e dir) {
             }
             dNext_c::m_instance->setChangeSceneNextDat(dScStage_c::m_instance->mCurrFile, mDokanEnterNextGotoID, dFader_c::FADER_CIRCLE_TARGET);
             if (nextGoto->mType == 22) {
-                changeDemoState(StateID_DemoOutWaterTank, 0);
+                changeDemoState(StateID_DemoOutWaterTank, DOKAN_U);
             } else {
-                changeDemoState(*l_dokanInAction[dir], 0);
+                changeDemoState(*l_dokanInAction[dir]);
             }
             return true;
         case DEMO_DOKAN_RAIL:
             dRail_c::getRailInfoP(nextGoto->mRailID); // [Unused return value]
-            changeDemoState(*l_dokanInAction[dir], 0);
+            changeDemoState(*l_dokanInAction[dir]);
             return true;
         case DEMO_DOKAN_WATER_TANK:
             if (nextGoto->mType == 22) {
                 changeDemoState(StateID_DemoOutWaterTank, dir);
             } else {
-                changeDemoState(*l_dokanInAction[dir], 0);
+                changeDemoState(*l_dokanInAction[dir]);
             }
             return true;
     }
@@ -3172,19 +3201,19 @@ void daPlBase_c::initDemoOutDokanUD(u8 dir) {
     changeState(StateID_Walk, nullptr);
     mpMdlMng->setAnm(PLAYER_ANIM_WAIT, 0.0f, 5.0f, 85.0f);
     if (mDokanMode == DEMO_DOKAN_RAIL) {
-        if (dir == 0) {
+        if (dir == DOKAN_U) {
             mDokanOffsetY = 0.0f;
         } else {
             mDokanOffsetY = -34.0f;
         }
-    } else if (dir == 0) {
+    } else if (dir == DOKAN_U) {
         mDokanOffsetY = 2.0f;
-    } else if (mKind == 2) {
+    } else if (mKind == STAGE_ACTOR_YOSHI) {
         mDokanOffsetY = -16.0f;
     } else {
         mDokanOffsetY = -10.0f;
     }
-    mDokanOffsetX = 0.0f;
+    mDokanShiftXEpsilon = 0.0f;
     if (mDokanMode == DEMO_DOKAN_NORMAL && daPyMng_c::mNum == 1) {
         stopOther();
     }
@@ -3192,10 +3221,14 @@ void daPlBase_c::initDemoOutDokanUD(u8 dir) {
 }
 
 void daPlBase_c::executeDemoOutDokanUD() {
-    switch ((DemoInDokanSubstate_e) mDemoSubstate) {
-        case DEMO_IN_DOKAN_ACTION_0: {
+    // 0: Move to the center of the pipe
+    // 1: Move into the pipe
+    // 2: Water tank only: move to Y target, then transition to in-tank state
+    // 3: Done
+    switch (mDemoSubstate) {
+        case 0: {
             int cond = 0;
-            if (mKind == 2) {
+            if (mKind == STAGE_ACTOR_YOSHI) {
                 if (mAngle.y.chase(0, scDokanOutTurnSpeed[0])) {
                     cond = 1;
                 }
@@ -3204,43 +3237,41 @@ void daPlBase_c::executeDemoOutDokanUD() {
                     cond = 1;
                 }
             }
-            if (demo_dokan_move_x(1.0f, mDokanOffsetX) && cond == 1) {
-                mDemoSubstate = DEMO_IN_DOKAN_ACTION_1;
+            if (demo_dokan_move_x(1.0f, mDokanShiftXEpsilon) && cond == 1) {
+                mDemoSubstate = 1;
                 mDemoSubstateTimer = 10;
             }
             break;
         }
-        case DEMO_IN_DOKAN_ACTION_1:
+        case 1:
             if (demo_dokan_move_y(0.75f, mDokanOffsetY)) {
                 onStatus(STATUS_5E);
                 switch (mDokanMode) {
                     case DEMO_DOKAN_RAIL:
-                        changeDemoState(StateID_DemoRailDokan, 0);
+                        changeDemoState(StateID_DemoRailDokan);
                         break;
                     case DEMO_DOKAN_WATER_TANK:
-                        onStatus(STATUS_BB);
+                        onStatus(STATUS_INVISIBLE);
                         mLayer = 0;
-                        if (mDokanDir == 0) {
+                        if (mDokanDir == DOKAN_U) {
                             mWarpPos.y = mPos.y + 80.0f;
                         } else {
                             mWarpPos.y = mPos.y - 80.0f;
                         }
-                        mDemoSubstate = DEMO_IN_DOKAN_ACTION_2;
+                        mDemoSubstate = 2;
                         break;
                     default:
                         changeNextScene(1);
-                        mDemoSubstate = DEMO_IN_DOKAN_ACTION_3;
+                        mDemoSubstate = 3;
                         break;
                 }
             }
             break;
-        case DEMO_IN_DOKAN_ACTION_2:
+        case 2:
             if (sLib::chase(&mPos.y, mWarpPos.y, 1.0f)) {
                 changeState(StateID_Walk, nullptr);
-                changeDemoState(StateID_DemoInWaterTank, 1);
+                changeDemoState(StateID_DemoInWaterTank, DOKAN_TYPE_CONNECTED);
             }
-            break;
-        case DEMO_IN_DOKAN_ACTION_3:
             break;
     }
 }
@@ -3256,8 +3287,8 @@ void daPlBase_c::initDemoOutDokanLR(u8 dir) {
     if (mDokanMode == DEMO_DOKAN_NORMAL && daPyMng_c::mNum == 1) {
         stopOther();
     }
-    if (isStatus(STATUS_SWIM) || mKind == 2) {
-        if (dir == 3) {
+    if (isStatus(STATUS_SWIM) || mKind == STAGE_ACTOR_YOSHI) {
+        if (dir == DOKAN_R) {
             mWarpPos.x += 8.0f;
         } else {
             mWarpPos.x -= 8.0f;
@@ -3267,32 +3298,36 @@ void daPlBase_c::initDemoOutDokanLR(u8 dir) {
 }
 
 void daPlBase_c::executeDemoOutDokanLR() {
+    // 0: Move into the pipe, possibly shifting in the Y direction if needed
+    // 1: Water tank only: move to X target
+    // 2: Water tank only: move down slightly
+    // 3: Water tank only: move to final X target, then transition to in-tank state
     if (mpMdlMng->mpMdl->mAnm.isStop()) {
         mpMdlMng->setAnm(PLAYER_ANIM_LOW_WALK);
     }
-    switch ((DemoInDokanSubstate_e) mDemoSubstate) {
-        case DEMO_IN_DOKAN_ACTION_0: {
-            int cond = 0;
+    switch (mDemoSubstate) {
+        case 0: {
+            bool yTargetReached = false;
             if (!addCalcAngleY(getMukiAngle(mDirection), 10)) {
-                float tmp = 0.0f;
+                float offset = 0.0f;
                 if (isStatus(STATUS_SWIM)) {
-                    tmp = getWaterDokanCenterOffset(mWarpPos.y) - mWarpPos.y;
+                    offset = getWaterDokanCenterOffset(mWarpPos.y) - mWarpPos.y;
                 }
-                if (demo_dokan_move_y(0.75f, tmp)) {
-                    cond = 1;
+                if (demo_dokan_move_y(0.75f, offset)) {
+                    yTargetReached = true;
                 }
             }
-            if (cond && demo_dokan_move_x(0.75f, 0.0f)) {
+            if (yTargetReached && demo_dokan_move_x(0.75f, 0.0f)) {
                 onStatus(STATUS_5E);
                 switch (mDokanMode) {
                     case DEMO_DOKAN_RAIL:
-                        changeDemoState(StateID_DemoRailDokan, 0);
+                        changeDemoState(StateID_DemoRailDokan);
                         break;
                     case DEMO_DOKAN_WATER_TANK:
-                        onStatus(STATUS_BB);
-                        mLayer = 0;
+                        onStatus(STATUS_INVISIBLE);
+                        mLayer = LAYER_1;
                         mWarpPos.x = mPos.x + sc_DirSpeed[mDirection] * 48.0f;
-                        mDemoSubstate = DEMO_IN_DOKAN_ACTION_1;
+                        mDemoSubstate = 1;
                         break;
                     default:
                         changeNextScene(1);
@@ -3301,47 +3336,45 @@ void daPlBase_c::executeDemoOutDokanLR() {
             }
             break;
         }
-        case DEMO_IN_DOKAN_ACTION_1:
+        case 1:
             if (sLib::chase(&mPos.x, mWarpPos.x, 1.0f)) {
                 mWarpPos.y -= 16.0f;
-                mDemoSubstate = DEMO_IN_DOKAN_ACTION_2;
+                mDemoSubstate = 2;
             }
             break;
-        case DEMO_IN_DOKAN_ACTION_2:
+        case 2:
             if (sLib::chase(&mPos.y, mWarpPos.y, 1.0f)) {
                 mWarpPos.x = mPos.x + sc_DirSpeed[mDirection] * 32.0f;
-                mDemoSubstate = DEMO_IN_DOKAN_ACTION_3;
+                mDemoSubstate = 3;
             }
             break;
-        case DEMO_IN_DOKAN_ACTION_3:
+        case 3:
             if (sLib::chase(&mPos.x, mWarpPos.x, 1.0f)) {
                 changeState(StateID_Walk, nullptr);
-                changeDemoState(StateID_DemoInWaterTank, 1);
+                changeDemoState(StateID_DemoInWaterTank, DOKAN_TYPE_CONNECTED);
             }
-            break;
-        case DEMO_IN_DOKAN_ACTION_4:
             break;
     }
 }
 
-void daPlBase_c::initializeState_DemoOutDokanU() { initDemoOutDokanUD(0); }
+void daPlBase_c::initializeState_DemoOutDokanU() { initDemoOutDokanUD(DOKAN_U); }
 void daPlBase_c::finalizeState_DemoOutDokanU() { endDemoOutDokan(); }
 void daPlBase_c::executeState_DemoOutDokanU() { executeDemoOutDokanUD(); }
 
-void daPlBase_c::initializeState_DemoOutDokanD() { initDemoOutDokanUD(1); }
+void daPlBase_c::initializeState_DemoOutDokanD() { initDemoOutDokanUD(DOKAN_D); }
 void daPlBase_c::finalizeState_DemoOutDokanD() { endDemoOutDokan(); }
 void daPlBase_c::executeState_DemoOutDokanD() { executeDemoOutDokanUD(); }
 
-void daPlBase_c::initializeState_DemoOutDokanL() { initDemoOutDokanLR(2); }
+void daPlBase_c::initializeState_DemoOutDokanL() { initDemoOutDokanLR(DOKAN_L); }
 void daPlBase_c::finalizeState_DemoOutDokanL() { endDemoOutDokan(); }
 void daPlBase_c::executeState_DemoOutDokanL() { executeDemoOutDokanLR(); }
 
-void daPlBase_c::initializeState_DemoOutDokanR() { initDemoOutDokanLR(3); }
+void daPlBase_c::initializeState_DemoOutDokanR() { initDemoOutDokanLR(DOKAN_R); }
 void daPlBase_c::finalizeState_DemoOutDokanR() { endDemoOutDokan(); }
 void daPlBase_c::executeState_DemoOutDokanR() { executeDemoOutDokanLR(); }
 
 void daPlBase_c::initializeState_DemoOutDokanRoll() {
-    initDemoOutDokanUD(4);
+    initDemoOutDokanUD(DOKAN_ROLL);
     mDokanMode = DEMO_DOKAN_NORMAL;
     mDokanMoveSpeed.x = 0.0f;
     mDokanMoveSpeed.y = 0.0f;
@@ -3355,10 +3388,10 @@ void daPlBase_c::executeState_DemoOutDokanRoll() {
     mBc.setRideOnObjBg(mpDokanBgCtr, mPos);
     mpDokanBgCtr->addDokanMoveDiff(&mWarpPos);
     mVec3_c warpPos(mWarpPos.x, mWarpPos.y, mPos.z);
-    switch ((DemoInDokanSubstate_e) mDemoSubstate) {
-        case DEMO_IN_DOKAN_ACTION_0: {
+    switch (mDemoSubstate) {
+        case 0: {
             int cond = 0;
-            if (mKind == 2) {
+            if (mKind == STAGE_ACTOR_YOSHI) {
                 if (mAngle.y.chase(0, scDokanOutTurnSpeed[0])) {
                     cond = 1;
                 }
@@ -3376,14 +3409,14 @@ void daPlBase_c::executeState_DemoOutDokanRoll() {
             if ((mPos - warpPos).isSmallerThan1()) {
                 if (cond == 1) {
                     mPos = warpPos;
-                    mDemoSubstate = DEMO_IN_DOKAN_ACTION_1;
+                    mDemoSubstate = 1;
                 }
             }
             break;
         }
-        case DEMO_IN_DOKAN_ACTION_1: {
+        case 1: {
             mAng v = *mpDokanBgCtr->mRotation;
-            if (mDirection == 1) {
+            if (mDirection == DIR_LR_L) {
                 v = -v;
             }
             sLib::addCalcAngle(&mAngle.x.mAngle, v.mAngle, 4, 0x1000, 0x100);
@@ -3397,22 +3430,20 @@ void daPlBase_c::executeState_DemoOutDokanRoll() {
             m1.multVecZero(mPos);
             if (mDokanMoveSpeed.y <= tmp) {
                 changeNextScene(1);
-                mDemoSubstate = DEMO_IN_DOKAN_ACTION_3;
-                onStatus(STATUS_BB);
+                mDemoSubstate = 3;
+                onStatus(STATUS_INVISIBLE);
             }
             break;
         }
-        default:
-            break;
     }
 }
 
 void daPlBase_c::initializeState_DemoInWaterTank() {
-    onStatus(STATUS_BB);
-    mDirection = (u8) (int) mDemoStateArg;
+    onStatus(STATUS_INVISIBLE);
+    mDirection = mDemoStateArg;
     mpMdlMng->setAnm(PLAYER_ANIM_LOW_WALK);
     mAngle.y = 0;
-    if ((int) mDemoStateArg == 1) {
+    if (mDemoStateArg == 1) {
         mDamageInvulnTimer = 0;
         mLayer = 0;
         setZPosition(3000.0f);
@@ -3422,22 +3453,24 @@ void daPlBase_c::initializeState_DemoInWaterTank() {
             stopOther();
         }
     }
-    mDemoSubstate = DEMO_IN_DOKAN_ACTION_0;
+    mDemoSubstate = 0;
 }
 
 void daPlBase_c::finalizeState_DemoInWaterTank() {}
 
 void daPlBase_c::executeState_DemoInWaterTank() {
-    switch ((DemoInDokanSubstate_e) mDemoSubstate) {
-        case DEMO_IN_DOKAN_ACTION_0:
+    // 0: Animation in
+    // 1: Wait for animation end, then change to normal action
+    switch (mDemoSubstate) {
+        case 0:
             if (!mFader_c::mFader->isStatus(mFaderBase_c::HIDDEN)) {
                 break;
             }
             if (!daPyDemoMng_c::mspInstance->checkDemoNo(mPlayerNo)) {
                 break;
             }
-            offStatus(STATUS_BB);
-            mDemoSubstate = DEMO_IN_DOKAN_ACTION_1;
+            offStatus(STATUS_INVISIBLE);
+            mDemoSubstate = 1;
             mDemoSubstateTimer = 60;
             clearNowBgCross();
             checkWater();
@@ -3449,12 +3482,10 @@ void daPlBase_c::executeState_DemoInWaterTank() {
                 startSound(SE_PLY_DOKAN_IN_OUT, false);
             }
             break;
-        case DEMO_IN_DOKAN_ACTION_1:
+        case 1:
             if (mDemoSubstateTimer == 0) {
                 changeNormalAction();
             }
-            break;
-        default:
             break;
     }
 }
@@ -3465,35 +3496,40 @@ void daPlBase_c::initializeState_DemoOutWaterTank() {
     mMaxSpeedF = 0.0f;
     mSpeed.set(0.0f, 0.0f, 0.0f);
     mAngle.x = 0.0f;
-    mAngle.y = -0x8000;
+    mAngle.y = 0x8000;
 }
 
 void daPlBase_c::finalizeState_DemoOutWaterTank() {}
 
 void daPlBase_c::executeState_DemoOutWaterTank() {
-    switch ((DemoInDokanSubstate_e) mDemoSubstate) {
-        case DEMO_IN_DOKAN_ACTION_0:
+    // 0: Shift towards the center of the pipe
+    // 1: Wait for animation to finish
+    // 2: Move inside of the pipe horizontally
+    // 3: Move down the pipe vertically
+    // 4: Move to the final target position, then switch to the pipe exit state
+    switch (mDemoSubstate) {
+        case 0:
             if (sLib::chase(&mPos.x, mWarpPos.x, 1.0f)) {
                 mpMdlMng->setAnm(PLAYER_ANIM_LOW_WALK_START);
                 startSound(SE_PLY_DOKAN_IN_OUT, false);
                 mDemoSubstateTimer = 60;
-                mDemoSubstate = DEMO_IN_DOKAN_ACTION_1;
+                mDemoSubstate = 1;
             }
             break;
-        case DEMO_IN_DOKAN_ACTION_1:
+        case 1:
             if (mpMdlMng->mpMdl->mAnm.isStop()) {
                 mpMdlMng->setAnm(PLAYER_ANIM_LOW_WALK);
             }
             if (mDemoSubstateTimer == 0) {
-                onStatus(STATUS_BB);
+                onStatus(STATUS_INVISIBLE);
                 if (mDokanMode == DEMO_DOKAN_WATER_TANK) {
                     setZPosition(-1800.0f);
-                    if ((int) mDemoStateArg <= 1) {
-                        mWarpPos.x = mPos.x + sc_DirSpeed[(int) mDemoStateArg] * 32.0f;
-                        mDemoSubstate = DEMO_IN_DOKAN_ACTION_2;
+                    if (mDemoStateArg <= 1) {
+                        mWarpPos.x = mPos.x + sc_DirSpeed[mDemoStateArg] * 32.0f;
+                        mDemoSubstate = 2;
                     } else {
-                        mWarpPos.y = mPos.y - sc_DirSpeed[(int) mDemoStateArg & 1] * 80.0f;
-                        mDemoSubstate = DEMO_IN_DOKAN_ACTION_4;
+                        mWarpPos.y = mPos.y - sc_DirSpeed[mDemoStateArg & 1] * 80.0f;
+                        mDemoSubstate = 4;
                     }
                 } else {
                     changeNextScene(1);
@@ -3501,34 +3537,37 @@ void daPlBase_c::executeState_DemoOutWaterTank() {
                 break;
             }
             break;
-        case DEMO_IN_DOKAN_ACTION_2:
+        case 2:
             if (sLib::chase(&mPos.x, mWarpPos.x, 1.0f)) {
                 mWarpPos.y = getWaterDokanCenterOffset(mWarpPos.y + 16.0f);
-                mDemoSubstate = DEMO_IN_DOKAN_ACTION_3;
+                mDemoSubstate = 3;
             }
             break;
-        case DEMO_IN_DOKAN_ACTION_3:
+        case 3:
             if (sLib::chase(&mPos.y, mWarpPos.y, 1.0f)) {
-                mWarpPos.x = mPos.x + sc_DirSpeed[(int) mDemoStateArg] * 48.0f;
-                mDemoSubstate = DEMO_IN_DOKAN_ACTION_4;
+                mWarpPos.x = mPos.x + sc_DirSpeed[mDemoStateArg] * 48.0f;
+                mDemoSubstate = 4;
             }
             break;
-        case DEMO_IN_DOKAN_ACTION_4:
-            if (sLib::chase(&mPos.x, mWarpPos.x, 1.0f) && sLib::chase(&mPos.y, mWarpPos.y, 1.0f)) {
-                mLayer = 1;
+        case 4:
+            if (
+                sLib::chase(&mPos.x, mWarpPos.x, 1.0f) &&
+                sLib::chase(&mPos.y, mWarpPos.y, 1.0f)
+            ) {
+                mLayer = LAYER_2;
                 mAngle.y = 0;
-                switch ((int) mDemoStateArg) {
+                switch (mDemoStateArg) {
                     case 0:
-                        changeDemoState(StateID_DemoInDokanL, 1);
+                        changeDemoState(StateID_DemoInDokanL, DOKAN_TYPE_CONNECTED);
                         break;
                     case 1:
-                        changeDemoState(StateID_DemoInDokanR, 1);
+                        changeDemoState(StateID_DemoInDokanR, DOKAN_TYPE_CONNECTED);
                         break;
                     case 2:
-                        changeDemoState(StateID_DemoInDokanU, 1);
+                        changeDemoState(StateID_DemoInDokanU, DOKAN_TYPE_CONNECTED);
                         break;
                     case 3:
-                        changeDemoState(StateID_DemoInDokanD, 1);
+                        changeDemoState(StateID_DemoInDokanD, DOKAN_TYPE_CONNECTED);
                         break;
                 }
                 setZPosition(-1800.0f);
@@ -3538,7 +3577,7 @@ void daPlBase_c::executeState_DemoOutWaterTank() {
 }
 
 void daPlBase_c::initializeState_DemoRailDokan() {
-    onStatus(STATUS_BB);
+    onStatus(STATUS_INVISIBLE);
     sNextGotoData *nextGoto = dCd_c::m_instance->
         getFileP(dScStage_c::m_instance->mCurrFile)->
         getNextGotoP(mDokanEnterNextGotoID);
@@ -3564,7 +3603,7 @@ void daPlBase_c::initializeState_DemoRailDokan() {
 }
 
 void daPlBase_c::finalizeState_DemoRailDokan() {
-    offStatus(STATUS_BB);
+    offStatus(STATUS_INVISIBLE);
 }
 
 void daPlBase_c::setExitRailDokan() {
@@ -3581,16 +3620,17 @@ void daPlBase_c::setExitRailDokan() {
 
     switch (nextGoto->mType) {
         case 3:
-            changeDemoState(StateID_DemoInDokanU, 1);
+            changeDemoState(StateID_DemoInDokanU, DOKAN_TYPE_CONNECTED);
             break;
         case 4:
-            changeDemoState(StateID_DemoInDokanU, 1);
+            // @bug This should be StateID_DemoInDokanD.
+            changeDemoState(StateID_DemoInDokanU, DOKAN_TYPE_CONNECTED);
             break;
         case 5:
-            changeDemoState(StateID_DemoInDokanR, 1);
+            changeDemoState(StateID_DemoInDokanR, DOKAN_TYPE_CONNECTED);
             break;
         case 6:
-            changeDemoState(StateID_DemoInDokanL, 1);
+            changeDemoState(StateID_DemoInDokanL, DOKAN_TYPE_CONNECTED);
             break;
     }
 }
@@ -3609,7 +3649,7 @@ void daPlBase_c::executeState_DemoRailDokan() {
         mPos.y = -currNode->mY;
 
         int done = 0;
-        if ((ngt->mFlags & 1)) {
+        if (ngt->mFlags & 1) {
             mRailDokanRailIndex--;
             if (mRailDokanRailIndex < 0) {
                 done = 1;
@@ -3672,7 +3712,7 @@ int daPlBase_c::setDemoGoal(mVec3_c &landPos, float goalCastleX, u8 goalType) {
 
     mPos.x = landPos.x;
     changeState(StateID_None);
-    changeDemoState(StateID_DemoGoal, 0);
+    changeDemoState(StateID_DemoGoal, false);
 
     mWarpPos.x = goalCastleX;
     mWarpPos.y = landPos.y;
@@ -3765,7 +3805,7 @@ void daPlBase_c::playGoalOther() {
 
 void daPlBase_c::initDemoGoalBase() {
     onStatus(STATUS_GOAL_POLE_TOUCHED);
-    if ((int) mDemoStateArg == 0) {
+    if (!mDemoStateArg) {
         startPlayerVoice(VOICE_GOAL_POLE_CATCH, 0);
         onStatus(STATUS_7E);
     }
@@ -4044,7 +4084,7 @@ bool daPlBase_c::startControlDemo() {
     if (isDemoType(DEMO_PLAYER)) {
         return true;
     } else if (isDemoType(DEMO_ENDING_DANCE)) {
-        changeDemoState(StateID_DemoControl, 0);
+        changeDemoState(StateID_DemoControl, CONTROL_DEMO_WAIT);
         return true;
     } else {
         onStatus(STATUS_71);
@@ -4205,7 +4245,7 @@ void daPlBase_c::initializeState_DemoControl() {
     offStatus(STATUS_71);
     mIsDemoMode = false;
     initializeDemoControl();
-    mDemoState = (u8) (int) mDemoStateArg;
+    mDemoState = mDemoStateArg;
     switch (mDemoState) {
         case CONTROL_DEMO_4:
             mDemoSubstateTimer = 60;
@@ -4253,12 +4293,12 @@ void daPlBase_c::executeState_DemoControl() {
         }
     }
 
-    switch ((ControlDemoState_e) mDemoState) {
+    switch ((ControlDemoSubstate_e) mDemoState) {
         case CONTROL_DEMO_WALK: {
             onStatus(STATUS_74);
             if (isNowBgCross(BGC_FOOT)) {
                 if (!isState(StateID_Walk) && !isState(StateID_Turn)) {
-                    changeState(StateID_Walk, (void*)1);
+                    changeState(StateID_Walk, BLEND_DEFAULT);
                 }
             } else {
                 if (!isState(StateID_Fall)) {
@@ -4282,7 +4322,7 @@ void daPlBase_c::executeState_DemoControl() {
         }
         case CONTROL_DEMO_4: {
             if (mDemoSubstateTimer == 0) {
-                changeDemoState(StateID_DemoNone, 0);
+                changeDemoState(StateID_DemoNone, false);
             }
             break;
         }
@@ -4496,7 +4536,7 @@ bool daPlBase_c::setEnemyStageClearDemo() {
             return false;
         }
         if (!isDemoType(DEMO_PLAYER)) {
-            changeDemoState(StateID_DemoControl, 0);
+            changeDemoState(StateID_DemoControl, CONTROL_DEMO_WAIT);
         }
         mSpeed.y = 0.0f;
         mSpeedF = 0.0f;
@@ -5005,10 +5045,10 @@ void daPlBase_c::checkBgCross() {
     if (isStatus(STATUS_7F)) {
         return;
     }
-    m_d96 = m_d94;
-    m_d9a = m_d98;
-    m_d98 = 0;
-    m_d94 = 0;
+    mPrevMoveSakaAngle = mMoveSakaAngle;
+    mPrevStillSakaAngle = mStillSakaAngle;
+    mStillSakaAngle = 0;
+    mMoveSakaAngle = 0;
     mStandOnUnitType = mBc.mLastUnitType;
 
     if ((bgFlags & 0x3c000000) != 0) {
@@ -5048,8 +5088,8 @@ void daPlBase_c::checkBgCross() {
     }
 
     if (bgFlags & 0x1fe000) {
-        m_d94 = mBc.getSakaAngleBySpeed(mSpeedF);
-        m_d98 = mBc.getSakaAngle(0);
+        mMoveSakaAngle = mBc.getSakaAngleBySpeed(mSpeedF);
+        mStillSakaAngle = mBc.getSakaAngle(0);
         if (bgFlags & 0x4000) {
             onNowBgCross(BGC_SLOPE);
         }
@@ -5062,7 +5102,7 @@ void daPlBase_c::checkBgCross() {
         if (bgFlags & 0x1000000) {
             onNowBgCross(BGC_36);
         }
-        if (m_d94 > 0 && isNowBgCross(BGC_HEAD)) {
+        if (mMoveSakaAngle > 0 && isNowBgCross(BGC_HEAD)) {
             onNowBgCross(BGC_SLOPE_AND_HEAD);
             mSpeedF = 0.0f;
         }
@@ -5160,7 +5200,7 @@ void daPlBase_c::checkBgCross() {
     } else {
         if (isStatus(STATUS_RIDE_NUT_2)) {
             mPos.y = mRideNutHeight;
-            m_d94 = 0;
+            mMoveSakaAngle = 0;
             onNowBgCross(BGC_FOOT);
         }
         float s = getModelHeight() + mPos.y;
@@ -5206,7 +5246,7 @@ void daPlBase_c::checkBgCross() {
 
     if ((isNowBgCross(BGC_WALL_TOUCH_L_2) | isNowBgCross(BGC_WALL_TOUCH_R_2)) != 0) {
         float sx = mSpeed.x;
-        m_d9c = mBc.mAdjacentSlopeAngle;
+        mAdjacentSlopeAngle = mBc.mAdjacentSlopeAngle;
         if (sx < 0.0f) {
             if (isNowBgCross(BGC_WALL_TOUCH_L_2)) {
                 onNowBgCross(BGC_WALL);
@@ -5683,9 +5723,9 @@ void daPlBase_c::underOverCheck() {
 }
 
 void daPlBase_c::checkDispOver() {
-    offStatus(STATUS_B9);
-    offStatus(STATUS_BA);
-    offStatus(STATUS_B6);
+    offStatus(STATUS_DISPLAY_OUT_DEAD);
+    offStatus(STATUS_DISPLAY_OUT_NO_DAMAGE);
+    offStatus(STATUS_ITEM_KINOPIO_DISPLAY_OUT);
     if (isStatus(STATUS_OUT_OF_PLAY) || isStatus(STATUS_53)) {
         return;
     }
@@ -5719,10 +5759,10 @@ void daPlBase_c::checkDisplayOutDead() {
     float bgSide2 = bgBottom - offset;
     float edgePos = mPos.y + getVisOffsetY() + getVisSizeY();
     if (edgePos < bgSide1) {
-        onStatus(STATUS_B9);
-        onStatus(STATUS_BA);
+        onStatus(STATUS_DISPLAY_OUT_DEAD);
+        onStatus(STATUS_DISPLAY_OUT_NO_DAMAGE);
         if (isItemKinopio()) {
-            onStatus(STATUS_B6);
+            onStatus(STATUS_ITEM_KINOPIO_DISPLAY_OUT);
         }
     }
     if (edgePos < bgSide2) {
@@ -5733,11 +5773,11 @@ void daPlBase_c::checkDisplayOutDead() {
     bgSide1 = bgTop + 16.0f;
     edgePos = mPos.y + getVisOffsetY() - getVisSizeY();
     if (edgePos > bgSide1) {
-        onStatus(STATUS_B9);
+        onStatus(STATUS_DISPLAY_OUT_DEAD);
     }
 
     if (isItemKinopio() && edgePos > dBgParameter_c::ms_Instance_p->yStart() + 128.0f) {
-        onStatus(STATUS_B6);
+        onStatus(STATUS_ITEM_KINOPIO_DISPLAY_OUT);
     }
     if (isStatus(STATUS_81)) {
         return;
@@ -5757,10 +5797,10 @@ void daPlBase_c::checkDisplayOutDead() {
     bgSide2 = bgLeft - offset;
     edgePos = mPos.x + getVisOffsetX() + getVisSizeX();
     if (edgePos < bgSide1) {
-        onStatus(STATUS_B9);
-        onStatus(STATUS_BA);
+        onStatus(STATUS_DISPLAY_OUT_DEAD);
+        onStatus(STATUS_DISPLAY_OUT_NO_DAMAGE);
         if (isItemKinopio()) {
-            onStatus(STATUS_B6);
+            onStatus(STATUS_ITEM_KINOPIO_DISPLAY_OUT);
         }
     }
     if (edgePos < bgSide2) {
@@ -5771,10 +5811,10 @@ void daPlBase_c::checkDisplayOutDead() {
     bgSide2 = bgLeft + dBgParameter_c::ms_Instance_p->xSize() + offset;
     edgePos = mPos.x + getVisOffsetX() - getVisSizeX();
     if (edgePos > bgSide1) {
-        onStatus(STATUS_B9);
-        onStatus(STATUS_BA);
+        onStatus(STATUS_DISPLAY_OUT_DEAD);
+        onStatus(STATUS_DISPLAY_OUT_NO_DAMAGE);
         if (isItemKinopio()) {
-            onStatus(STATUS_B6);
+            onStatus(STATUS_ITEM_KINOPIO_DISPLAY_OUT);
         }
     }
     if (edgePos > bgSide2) {
@@ -6214,7 +6254,7 @@ void daPlBase_c::posMoveAnglePlayer(mVec3_c a) {
 
     u16 x2 = 0;
     if (isStatus(STATUS_WALL_SLIDE)) {
-        x2 = m_d9c;
+        x2 = mAdjacentSlopeAngle;
     }
 
     float x_mag = std::fabs(a.x);
