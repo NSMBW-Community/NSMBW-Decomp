@@ -21,8 +21,8 @@ class daPlBase_c : public dActor_c {
 public:
     enum DamageType_e {
         DAMAGE_NONE,
-        DAMAGE_1, DAMAGE_2, DAMAGE_3, DAMAGE_4,
-        DAMAGE_5, DAMAGE_6, DAMAGE_YOGAN, DAMAGE_8,
+        DAMAGE_1, DAMAGE_2, DAMAGE_HIP_ATTACK, DAMAGE_4,
+        DAMAGE_CLIMB, DAMAGE_6, DAMAGE_YOGAN, DAMAGE_8,
         DAMAGE_9, DAMAGE_POISON, DAMAGE_B, DAMAGE_C,
         DAMAGE_D, DAMAGE_E, DAMAGE_F, DAMAGE_10,
         DAMAGE_11, DAMAGE_POISON_FOG
@@ -795,7 +795,7 @@ public:
     bool startJump(AnmBlend_e blendMode, int jumpType); ///< @unofficial
 
     void setStampReduction();
-    void setStampPlayerJump(bool b, float f);
+    void setStampPlayerJump(bool b, float yOffset);
     void calcReductionScale();
     mVec3_c getReductionModelScale();
 
@@ -1038,9 +1038,9 @@ public:
     float calcSomeAccel(float f) { return 3.0f * f; }
     void set_m_d80(int i, float f) { m_d80[i] = f; }
     float getModelHeight() const { return mModelHeight; }
-    float get_1064() const { return m_1064; }
-    float get_1068() const { return m_1068; }
-    float get_106c() const { return m_106c; }
+    float getCcRevOffsX() const { return mCcRevTotalOffsX; }
+    float getCcRevOffsY() const { return mCcRevTotalOffsY; }
+    float getCcRevRate() const { return mCcRevRate; }
 
     u32 isNowBgCross(BgCross1_e m) { return mNowBgCross1 & m; }
     u32 isNowBgCross(BgCross2_e m) { return mNowBgCross2 & m; }
@@ -1242,13 +1242,14 @@ public:
     float mRideNutHeight;
 
     dCc_c mCc1, mAttCc1, mAttCc2, mAttCc3;
-    float m_1060;
-    float m_1064;
-    float m_1068;
-    float m_106c;
-    bool m_1070;
-    bool m_1071;
-    int m_1072;
+    float mCcRevSpeedF;
+    float mCcRevTotalOffsX;
+    float mCcRevTotalOffsY;
+    float mCcRevRate; ///< Multiplier for position revision for colliders. 1.0f moves to the target immediately.
+    bool mCcRevSet;
+    bool mCcHasInitialRevY;
+    int mCcRevDisabledTimer;
+
     u8 mDispLimitRelatedL;
     u8 mDispLimitRelatedR;
     float mDispLimitRelatedL2;

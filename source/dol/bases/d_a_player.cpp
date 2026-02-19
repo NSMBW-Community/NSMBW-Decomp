@@ -4888,7 +4888,7 @@ void dAcPy_c::executeState_Pole() {
                 &dAcPy_c::PoleActionDown,
             };
             (this->*l_PoleActionProc[mSubstate])();
-            float yDelta = m_1068;
+            float yDelta = mCcRevTotalOffsY;
             mPos.y += yDelta;
         }
     }
@@ -5794,7 +5794,7 @@ void dAcPy_c::executeState_TarzanRope() {
         }
         if (!setTarzanRopeJump()) {
             (this->*l_TarzanRopeActionProc[mSubstate])();
-            mPc.move(get_1068() + m_918);
+            mPc.move(getCcRevOffsY() + m_918);
             if (mPc.m_2a & 1) {
                 changeState(StateID_Fall, false);
             }
@@ -6140,7 +6140,7 @@ void dAcPy_c::setBreakBalloonJump(u8 playerNo, short angle) {
     dQuake_c::m_instance->shockMotor(mPlayerNo, dQuake_c::TYPE_4, 0, false);
     mJumpDaiFallTimer = 30;
     mTimer_ce8 = 30;
-    m_1072 = 30;
+    mCcRevDisabledTimer = 30;
     if (isNowBgCross(BGC_WATER_SHALLOW)) {
         changeState(StateID_Swim, SWIM_ARG_INITIAL);
         float cos = mAng(angle).cos();
@@ -9540,9 +9540,9 @@ bool dAcPy_c::ccCheckAttack(dCc_c *self, dCc_c *other) {
     switch (other->mCcData.mAttack) {
         case CC_ATTACK_HIP_ATTACK:
         case CC_ATTACK_SPIN_FALL: {
-            DamageType_e damageType = DAMAGE_3;
+            DamageType_e damageType = DAMAGE_HIP_ATTACK;
             if (selfPlayer->isClimbing()) {
-                damageType = DAMAGE_5;
+                damageType = DAMAGE_CLIMB;
             }
             if (selfPlayer->setDamage(otherActor, damageType)) {
                 if (other->mCcData.mAttack == CC_ATTACK_HIP_ATTACK) {
@@ -9554,7 +9554,7 @@ bool dAcPy_c::ccCheckAttack(dCc_c *self, dCc_c *other) {
             return true;
         }
         case CC_ATTACK_WIRE_NET:
-            selfPlayer->setDamage(other->getOwner(), DAMAGE_5);
+            selfPlayer->setDamage(other->getOwner(), DAMAGE_CLIMB);
             return true;
         case CC_ATTACK_FIREBALL:
         case CC_ATTACK_ICEBALL:
@@ -9605,7 +9605,7 @@ bool dAcPy_c::ccCheckStamp(dCc_c *self, dCc_c *other) {
         }
         if (selfPlayer->isEnableStampPlayerJump(self, other)) {
             if (otherActor->isStatus(STATUS_JUMP) && otherActor->mSpeed.y > 0.0f) {
-                selfPlayer->setStampPlayerJump(true, self->mCollOffsetY[0]);
+                selfPlayer->setStampPlayerJump(true, self->mCollOffsetY[CC_KIND_PLAYER]);
                 otherActor->setStampReduction();
                 return true;
             }
@@ -9622,7 +9622,7 @@ bool dAcPy_c::ccCheckSideHit(dCc_c *self, dCc_c *other) {
     daPlBase_c *otherActor = (daPlBase_c *) other->getOwner();
 
     if (otherActor->isDemo()) {
-        selfPlayer->setCcPlayerRev(self, other, 1.0f, 0);
+        selfPlayer->setCcPlayerRev(self, other, 1.0f, CC_KIND_PLAYER);
         return true;
     }
 
@@ -9633,7 +9633,7 @@ bool dAcPy_c::ccCheckSideHit(dCc_c *self, dCc_c *other) {
     };
     u8 selfTallType = selfPlayer->getTallType(-1);
     u8 otherTallType = otherActor->getTallType(-1);
-    selfPlayer->setCcPlayerRev(self, other, sCcRevRate[selfTallType][otherTallType], 0);
+    selfPlayer->setCcPlayerRev(self, other, sCcRevRate[selfTallType][otherTallType], CC_KIND_PLAYER);
 
     return true;
 }
@@ -9682,7 +9682,7 @@ void dAcPy_c::ccCallBack(dCc_c *self, dCc_c *other) {
         }
 
         static const float sCcRevRate[] = { 1.0f, 0.8f, 0.6f };
-        selfPlayer->setCcPlayerRev(self, other, sCcRevRate[selfPlayer->getTallType(-1)], 2);
+        selfPlayer->setCcPlayerRev(self, other, sCcRevRate[selfPlayer->getTallType(-1)], CC_KIND_YOSHI);
     }
 }
 
@@ -9881,7 +9881,7 @@ void dAcPy_c::atCcCallBack(dCc_c *self, dCc_c *other) {
         return;
     }
 
-    selfPlayer->setDamage(otherActor, DAMAGE_5);
+    selfPlayer->setDamage(otherActor, DAMAGE_CLIMB);
 }
 
 const sBcPlayerPointData scBgPointData_Mame[5] = {
@@ -11423,9 +11423,9 @@ bool dAcPy_c::setDamage2(dActor_c *actor, daPlBase_c::DamageType_e damageType) {
             changeDemoState(StateID_DemoEatDie, damageType);
             mRelatedActorID = actor->mUniqueID;
             break;
-        case DAMAGE_3:
+        case DAMAGE_HIP_ATTACK:
         case DAMAGE_4:
-        case DAMAGE_5:
+        case DAMAGE_CLIMB:
         case DAMAGE_6:
             return setFlyDamageAction(damageType, actor);
         case DAMAGE_11:

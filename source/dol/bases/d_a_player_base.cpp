@@ -4722,82 +4722,86 @@ bool daPlBase_c::isActionRevisionY() {
     return false;
 }
 
-void daPlBase_c::setCcPlayerRev(dCc_c *cc1, dCc_c *cc2, float f, int idx) {
+void daPlBase_c::setCcPlayerRev(dCc_c *cc1, dCc_c *cc2, float revRate, int ccKind) {
     daPlBase_c *other = (daPlBase_c *) cc2->mpOwner;
-    float speedF = other->mSpeedF;
-    float offsX = cc1->mCollOffsetX[idx];
-    float offsY = cc1->mCollOffsetY[idx];
+    float colliderSpeedF = other->mSpeedF;
+    float offsX = cc1->mCollOffsetX[ccKind];
+    float offsY = cc1->mCollOffsetY[ccKind];
     if (isActionRevisionY()) {
         if (other->isActionRevisionY()) {
-            if (m_1071) {
-                m_1068 = offsY + m_1068;
+            if (mCcHasInitialRevY) {
+                mCcRevTotalOffsY = offsY + mCcRevTotalOffsY;
             } else {
-                m_1071 = true;
-                m_1068 = offsY * f;
+                mCcHasInitialRevY = true;
+                mCcRevTotalOffsY = offsY * revRate;
             }
         }
     } else if (!(std::fabs(offsY) < 1.0f || other->isActionRevisionY())) {
-        if (m_1070) {
-            float tmp1 = get_1064() * get_106c();
-            float tmp2 = offsX * f;
-            if (std::fabs(tmp1) < std::fabs(tmp2)) {
-                m_1060 = speedF;
+        if (mCcRevSet) {
+            float prevOffsX = getCcRevOffsX() * getCcRevRate();
+            float currOffsX = offsX * revRate;
+            if (std::fabs(prevOffsX) < std::fabs(currOffsX)) {
+                mCcRevSpeedF = colliderSpeedF;
             }
-            m_106c = 1.0f;
-            m_1064 = tmp1 + tmp2;
+            mCcRevRate = 1.0f;
+            mCcRevTotalOffsX = prevOffsX + currOffsX;
         } else {
-            m_106c = f;
-            m_1060 = speedF;
-            m_1064 = offsX;
-            m_1070 = true;
+            mCcRevRate = revRate;
+            mCcRevSpeedF = colliderSpeedF;
+            mCcRevTotalOffsX = offsX;
+            mCcRevSet = true;
         }
     }
 }
 
 void daPlBase_c::clearCcPlayerRev() {
-    m_106c = 0.0f;
-    m_1060 = 0.0f;
-    m_1064 = 0.0f;
-    m_1068 = 0.0f;
-    m_1070 = false;
-    m_1071 = false;
+    mCcRevRate = 0.0f;
+    mCcRevSpeedF = 0.0f;
+    mCcRevTotalOffsX = 0.0f;
+    mCcRevTotalOffsY = 0.0f;
+    mCcRevSet = false;
+    mCcHasInitialRevY = false;
 }
 
-bool daPlBase_c::calcCcPlayerRev(float *f) {
-    if (m_1070) {
-        float tmp = m_106c;
-        if (isStatus(STATUS_IS_SPIN_HOLD_REQ) || m_1072 != 0) {
-            tmp = 0.0f;
+bool daPlBase_c::calcCcPlayerRev(float *outShiftX) {
+    if (mCcRevSet) {
+        float rate = mCcRevRate;
+        if (isStatus(STATUS_IS_SPIN_HOLD_REQ) || mCcRevDisabledTimer != 0) {
+            rate = 0.0f;
         }
         if (isDemoType(DEMO_PLAYER) && isNowBgCross(BGC_FOOT)) {
-            tmp = 0.0f;
+            rate = 0.0f;
         }
-        float prev_1064 = m_1064;
-        m_1064 = 0.0f;
-        if (prev_1064) {
-            float m = prev_1064 * tmp;
+        float prevOffsX = mCcRevTotalOffsX;
+        mCcRevTotalOffsX = 0.0f;
+        if (prevOffsX) {
+            float shiftX = prevOffsX * rate;
             float tmp2 = 3.0f;
-            if (m > 3.0f) {
-                m = 3.0f;
-            } else if (m < -3.0f) {
-                m = -3.0f;
+            if (shiftX > 3.0f) {
+                shiftX = 3.0f;
+            } else if (shiftX < -3.0f) {
+                shiftX = -3.0f;
             }
-            if (mSpeedF * prev_1064 <= 0.0f) {
-                *f = m;
+            if (mSpeedF * prevOffsX <= 0.0f) {
+                *outShiftX = shiftX;
                 if (isDemoType(DEMO_PLAYER) || isStatus(STATUS_5F)) {
                     return false;
                 }
-                float f1 = m_1060;
-                float f2 = mSpeedF;
-                if (f2 * f1 <= 0.0f && std::fabs(mSpeedF) + std::fabs(m_1060) > 2.5f) {
-                    mSpeedF = m_1060 * 0.4f;
+                float revSpeedF = mCcRevSpeedF;
+                float speedF = mSpeedF;
+                if (
+                    speedF * revSpeedF <= 0.0f &&
+                    std::fabs(mSpeedF) + std::fabs(mCcRevSpeedF) > 2.5f
+                ) {
+                    mSpeedF = mCcRevSpeedF * 0.4f;
                     return true;
                 }
-                if (std::fabs(mSpeedF) > std::fabs(m_1060)) {
-                    if (std::fabs(mSpeedF) > 1.5f) {
+                if (
+                    std::fabs(mSpeedF) > std::fabs(mCcRevSpeedF) &&
+                    std::fabs(mSpeedF) > 1.5f
+                ) {
                     mSpeedF = 0.0f;
                     return true;
-                    }
                 }
             }
         }
@@ -4843,22 +4847,22 @@ void daPlBase_c::setStampReduction() {
     }
 }
 
-void daPlBase_c::setStampPlayerJump(bool b, float f) {
+void daPlBase_c::setStampPlayerJump(bool b, float yOffset) {
     if (!isStatus(STATUS_SWIM)) {
-        float scale = daPlBase_c::sc_JumpSpeed;
+        float jumpSpeed = daPlBase_c::sc_JumpSpeed;
         if (isMameAction()) {
-            scale = daPlBase_c::sc_JumpSpeed - 0.35f;
+            jumpSpeed = daPlBase_c::sc_JumpSpeed - 0.35f;
         }
         if (b) {
             dQuake_c::m_instance->shockMotor(mPlayerNo, dQuake_c::TYPE_7, 0, false);
             if (mKey.buttonJump()) {
-                scale = daPlBase_c::sc_JumpSpeed + 0.5f;
+                jumpSpeed = daPlBase_c::sc_JumpSpeed + 0.5f;
             }
-            setJump(scale, mSpeedF, true, 1, 0);
+            setJump(jumpSpeed, mSpeedF, true, 1, 0);
         } else {
-            setJump(scale, mSpeedF, true, 0, 0);
+            setJump(jumpSpeed, mSpeedF, true, 0, 0);
         }
-        mPos.y += f;
+        mPos.y += yOffset;
     } else {
         mSpeed.y = 1.0f;
     }
@@ -6060,7 +6064,7 @@ void daPlBase_c::calcTimerProc() {
     sLib::calcTimer(&mSquishNoMoveTimer);
     sLib::calcTimer(&mSquishCooldownTimer);
     sLib::calcTimer(&mJumpDaiFallTimer);
-    sLib::calcTimer(&m_1072);
+    sLib::calcTimer(&mCcRevDisabledTimer);
     sLib::calcTimer(&mBossDemoLandTimer);
     sLib::calcTimer(&mTimer_f4);
     sLib::calcTimer(&mSlipEndTimer);
@@ -6076,8 +6080,8 @@ dPyMdlBase_c * daPlBase_c::getModel() {
 void daPlBase_c::calcPlayerSpeedXY() {
     static const float ratios[] = { 0.6f, 0.55f, 0.5f, 0.45f, 0.4f };
     float extraXAccel = 0.0f;
-    float t = 0.0f;
-    bool x = calcCcPlayerRev(&t);
+    float ccRevShiftX = 0.0f;
+    bool x = calcCcPlayerRev(&ccRevShiftX);
 
     float c = 1.0f;
     float b = mMaxSpeedF;
@@ -6128,18 +6132,18 @@ void daPlBase_c::calcPlayerSpeedXY() {
 
     mSpeed.x = f;
 
-    if (f * t >= 0.0f) {
-        mVec3_c wallvec1(mPos.x + f + t, mPos.y + getModelHeight() / 2.0f, mPos.z);
-        mVec3_c wallvec2(wallvec1.x + f + t, wallvec1.y, wallvec1.z);
+    if (f * ccRevShiftX >= 0.0f) {
+        mVec3_c wallvec1(mPos.x + f + ccRevShiftX, mPos.y + getModelHeight() / 2.0f, mPos.z);
+        mVec3_c wallvec2(wallvec1.x + f + ccRevShiftX, wallvec1.y, wallvec1.z);
 
         float g;
 
         if (dBc_c::checkWall(&wallvec1, &wallvec2, &g, mLayer, mAmiLayer, nullptr)) {
-            t = 0.0f;
+            ccRevShiftX = 0.0f;
         }
     }
 
-    extraXAccel += t;
+    extraXAccel += ccRevShiftX;
 
     if (mFinalAirPushForceX != 0.0f) {
         if (!isNowBgCross(BGC_FOOT)) {

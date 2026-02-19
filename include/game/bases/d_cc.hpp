@@ -43,7 +43,8 @@ enum CC_KIND_e {
     CC_KIND_ITEM,
     CC_KIND_TAMA,
     CC_KIND_KILLER,
-    CC_KIND_GOAL_POLE
+    CC_KIND_GOAL_POLE,
+    CC_KIND_COUNT = CC_KIND_GOAL_POLE // Goal pole is special and doesn't count
 };
 
 ///< @unofficial
@@ -282,17 +283,17 @@ public:
     /**
      * @brief The X offset for a collision.
      *
-     * One entry per category. Each entry describes by how much the collider must be
+     * One entry per kind. Each entry describes by how much the collider must be
      * offset in the X direction in order to not collide with the other collider.
      */
-    float mCollOffsetX[8];
+    float mCollOffsetX[CC_KIND_COUNT];
     /**
      * @brief The Y offset for a collision.
      *
-     * One entry per category. Each entry describes by how much the collider must be
+     * One entry per kind. Each entry describes by how much the collider must be
      * offset in the Y direction in order to not collide with the other collider.
      */
-    float mCollOffsetY[8];
+    float mCollOffsetY[CC_KIND_COUNT];
 
     mVec2_c mCollPos; ///< The position where the last collision occurred.
 
