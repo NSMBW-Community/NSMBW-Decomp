@@ -240,18 +240,18 @@ void dEn_c::normal_collcheck(dCc_c *self, dCc_c *other) {
                 actor1->mCcValue = self->mCanBounce;
                 self->mInfo |= CC_NO_HIT;
             } else if (other->mCcData.mKind != CC_KIND_PLAYER_ATTACK) {
-                s8 *plrNo = actor2->getPlrNo();
-                if (*plrNo >= 0 && *plrNo < PLAYER_COUNT) {
-                    if (actor1->mNoHitPlayer.mTimer[*plrNo] == 0) {
-                        actor1->mNoHitPlayer.mTimer[*plrNo] = smc_NO_HIT_PLAYER_TIMER_DEFAULT;
+                s8 &plrNo = actor2->getPlrNo();
+                if (plrNo >= 0 && plrNo < PLAYER_COUNT) {
+                    if (actor1->mNoHitPlayer.mTimer[plrNo] == 0) {
+                        actor1->mNoHitPlayer.mTimer[plrNo] = smc_NO_HIT_PLAYER_TIMER_DEFAULT;
                         actor1->Normal_VsPlHitCheck(self, other);
                     }
                 }
             }
         }
     } else if (kind == STAGE_ACTOR_YOSHI) {
-        s8 *plrNo = actor2->getPlrNo();
-        if (*plrNo >= 0 && *plrNo < PLAYER_COUNT) {
+        s8 &plrNo = actor2->getPlrNo();
+        if (plrNo >= 0 && plrNo < PLAYER_COUNT) {
             if (other->mCcData.mAttack == CC_ATTACK_YOSHI_EAT) {
                 actor1->hitYoshiEat(self, other);
             } else {
@@ -259,8 +259,8 @@ void dEn_c::normal_collcheck(dCc_c *self, dCc_c *other) {
                     if (actor1->YoshiDamageCheck(self, other)) {
                         actor1->mCcValue = self->mCanBounce;
                         self->mInfo |= CC_NO_HIT;
-                    } else if (actor1->mNoHitPlayer.mTimer[*plrNo] == 0) {
-                        actor1->mNoHitPlayer.mTimer[*plrNo] = smc_NO_HIT_PLAYER_TIMER_DEFAULT;
+                    } else if (actor1->mNoHitPlayer.mTimer[plrNo] == 0) {
+                        actor1->mNoHitPlayer.mTimer[plrNo] = smc_NO_HIT_PLAYER_TIMER_DEFAULT;
                         actor1->Normal_VsYoshiHitCheck(self, other);
                     }
                 }
@@ -420,7 +420,7 @@ bool dEn_c::CeilCheck(float y, dCc_c *cc) {
 bool dEn_c::carry_check(dActor_c *actor) {
     dAcPy_c *pl = (dAcPy_c *) actor;
     if (pl->spinLiftUp(this, true)) {
-        mPlayerNo = *actor->getPlrNo();
+        mPlayerNo = actor->getPlrNo();
         return true;
     }
     return false;
@@ -527,12 +527,12 @@ void dEn_c::setFumiComboScore(dActor_c *actor) {
         switch (mCombo.mType) {
             case dEnCombo_c::COMBO_REGULAR: {
                 dScoreMng_c *instance = dScoreMng_c::getInstance();
-                instance->ScoreSet(pos, treadCount, *actor->getPlrNo(), 1);
+                instance->ScoreSet(pos, treadCount, actor->getPlrNo(), 1);
                 break;
             }
             case dEnCombo_c::COMBO_SHORT: {
                 dScoreMng_c *instance = dScoreMng_c::getInstance();
-                instance->ScoreSet2(pos, treadCount, *actor->getPlrNo());
+                instance->ScoreSet2(pos, treadCount, actor->getPlrNo());
                 break;
             }
             default:
@@ -938,7 +938,7 @@ void dEn_c::slipBound(dActor_c *actor) {
     u8 idx = !(pl->mPos.x >= mPos.x);
     pl->setJump(3.0f, cs_jump_xspeed[idx], true, 0, 0);
 
-    int plrNo = *pl->getPlrNo();
+    int plrNo = pl->getPlrNo();
     mNoHitPlayer.mTimer[plrNo] = 3;
 }
 
@@ -956,7 +956,7 @@ void dEn_c::setEatTongueOff(dActor_c *actor) {
 
 bool dEn_c::setEatSpitOut(dActor_c *actor) {
     calcSpitOutPos(actor);
-    int plrNo = *actor->getPlrNo();
+    int plrNo = actor->getPlrNo();
     mNoHitPlayer.mTimer[plrNo] = smc_NO_HIT_PLAYER_TIMER_SPIT_OUT;
     mDirection = actor->mDirection;
     reviveCc();
@@ -991,7 +991,7 @@ void dEn_c::iceballInvalid(dCc_c *self, dCc_c *other) {
 
 void dEn_c::setDamage(dActor_c *actor) {
     daPlBase_c *pl = (daPlBase_c *) actor;
-    pl->setDamage(this, daPlBase_c::DAMAGE_NONE);
+    pl->setDamage(this, daPlBase_c::DAMAGE_DEFAULT);
 }
 
 void dEn_c::boyonInit() {
@@ -1004,7 +1004,7 @@ void dEn_c::boyonBegin() {
 
 void dEn_c::block_hit_init() {
     u8 dir = mDeathFallDirection;
-    s8 plrNo = *getPlrNo();
+    s8 plrNo = getPlrNo();
 
     mVec3_c efPos(mVec2_c(mPos.x, mPos.y), 5500.0f);
 

@@ -28,7 +28,7 @@ public:
     u8 mScrollDirX; ///< See BG_SCROLL_DIR_X_e.
     u8 mScrollDirY; ///< See BG_SCROLL_DIR_Y_e.
 
-    float fn_80082240(float);
+    float getLoopScrollDispPosX(float x);
 
     const mVec2_c &pos() const { return mPos; }
     const mVec2_c &size() const { return mSize; }

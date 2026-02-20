@@ -102,7 +102,7 @@ public:
     virtual void block_hit_init(); ///< Callback for when a block directly beneath the actor is hit.
 
     virtual bool vf68(dBg_ctr_c *collider) { return true; } ///< Unknown, related to collision. @unofficial
-    virtual s8 *getPlrNo() { return &mPlayerNo; } ///< Gets the player number associated with the actor. See #mPlayerNo.
+    virtual s8 &getPlrNo() { return mPlayerNo; } ///< Gets the player number associated with the actor. See #mPlayerNo.
     virtual mVec2_c getLookatPos() const; ///< Gets the position players look to when focused on the actor.
 
     /// @brief Returns whether the actor can be carried.

@@ -375,7 +375,7 @@ float dAcPy_c::getJumpSpeed() {
     } else {
         baseSpeed = daPlayerData_c::smc_POWER_CHANGE_DATA.mJumpSpeedValues2[3];
     }
-    if (std::fabs(mSpeedF) >= getSpeedData()[2]) {
+    if (std::fabs(mSpeedF) >= getSpeedData()->mHighSpeed) {
         baseSpeed = daPlayerData_c::smc_POWER_CHANGE_DATA.mJumpSpeedValues2[3];
     }
     float jumpSpeed;
@@ -903,7 +903,7 @@ bool dAcPy_c::setSpinSpeed(float speedF, float speedY) {
         mSpinTimer = 30;
         m_1048 = 0x2000;
         offNowBgCross(BGC_FOOT);
-        dQuake_c::getInstance()->shockMotor(*getPlrNo(), dQuake_c::TYPE_7, 0, false);
+        dQuake_c::getInstance()->shockMotor(getPlrNo(), dQuake_c::TYPE_7, 0, false);
         return true;
     }
     return false;
@@ -1337,7 +1337,7 @@ void dAcPy_c::initializeState_CannonJump() {
 }
 
 void dAcPy_c::finalizeState_CannonJump() {
-    float data = getSpeedData()[2];
+    float data = getSpeedData()->mHighSpeed;
     if (mSpeedF > data) {
         mSpeedF = data;
     }
@@ -1657,7 +1657,7 @@ void dAcPy_c::initializeState_PenguinSlide() {
     mSubstate = PENGUIN_SLIDE_ACTION_0;
     mMaxSpeedF = getSlipMaxSpeedF();
     if (isNowBgCross(BGC_FOOT) && !isSlipSaka()) {
-        float f = std::fabs(mSpeedF) / getSpeedData()[2] + 0.2f;
+        float f = std::fabs(mSpeedF) / getSpeedData()->mHighSpeed + 0.2f;
         if (f > 1.0f) {
             f = 1.0f;
         }
@@ -1961,7 +1961,7 @@ void dAcPy_c::setWalkActionAnm(AnmBlend_e blendMode) {
     float speed = std::fabs(mSpeedF);
     float f;
     if (mPowerup == POWERUP_MINI_MUSHROOM) {
-        if (speed <= getSpeedData()[0]) {
+        if (speed <= getSpeedData()->mLowSpeed) {
             float tmp = speed * 2.0f * 1.45f;
             f = (tmp < 2.0f) ? 2.0f : tmp;
         } else {
@@ -1969,7 +1969,7 @@ void dAcPy_c::setWalkActionAnm(AnmBlend_e blendMode) {
             f = (tmp < 0.5f) ? 0.5f : tmp;
         }
     } else {
-        if (speed <= getSpeedData()[0]) {
+        if (speed <= getSpeedData()->mLowSpeed) {
             float tmp = speed * 2.0f;
             f = (tmp < 2.0f) ? 2.0f : tmp;
         } else {
@@ -1979,7 +1979,7 @@ void dAcPy_c::setWalkActionAnm(AnmBlend_e blendMode) {
     }
     float g = 4.0f;
     if (mPowerup == POWERUP_MINI_MUSHROOM) {
-        if (speed <= getSpeedData()[0]) {
+        if (speed <= getSpeedData()->mLowSpeed) {
             g = 8.7f;
         } else {
             g = 5.8f;
@@ -1999,7 +1999,7 @@ void dAcPy_c::setWalkActionAnm(AnmBlend_e blendMode) {
             h = g;
         }
     }
-    if (mPowerup != POWERUP_PENGUIN_SUIT && isNowBgCross(BGC_ON_ICE) && speed < getSpeedData()[1]) {
+    if (mPowerup != POWERUP_PENGUIN_SUIT && isNowBgCross(BGC_ON_ICE) && speed < getSpeedData()->mMediumSpeed) {
         float tmp = h * 8.0f;
         h = (tmp > g) ? g : tmp;
     }
@@ -2116,9 +2116,9 @@ void dAcPy_c::setNormalWalkAnm(AnmBlend_e blendMode, float speedRate) {
                 anmID = PLAYER_ANIM_RUN;
             } else {
                 float speed = std::fabs(mSpeedF);
-                if (speed <= getSpeedData()[0]) {
+                if (speed <= getSpeedData()->mLowSpeed) {
                     anmID = PLAYER_ANIM_RUN;
-                } else if (speed < getSpeedData()[2]) {
+                } else if (speed < getSpeedData()->mHighSpeed) {
                     anmID = PLAYER_ANIM_B_DASH;
                 } else {
                     anmID = PLAYER_ANIM_B_DASH2;
@@ -2377,9 +2377,9 @@ void dAcPy_c::executeState_Turn() {
                 int dir;
                 if (mKey.buttonWalk(&dir)) {
                     if (mKey.buttonDush()) {
-                        maxSpeed = sc_DirSpeed[dir] * getSpeedData()[2];
+                        maxSpeed = sc_DirSpeed[dir] * getSpeedData()->mHighSpeed;
                     } else {
-                        maxSpeed = sc_DirSpeed[dir] * getSpeedData()[0];
+                        maxSpeed = sc_DirSpeed[dir] * getSpeedData()->mLowSpeed;
                     }
                 }
                 mMaxSpeedF = maxSpeed;
@@ -2892,7 +2892,7 @@ void dAcPy_c::setThrowActor() {
             }
             player->mPos = pos;
             player->mLastPos = player->mPos;
-            fn_80055d00();
+            calcDispSideLimit();
         } else {
             actor->mCarryingFlags |= CARRY_RELEASE | CARRY_THROW;
             actor->mThrowDirection = mDirection;
@@ -2989,7 +2989,7 @@ void dAcPy_c::executeState_PropelThrow() {
         mAccelY = getGravityData()[0];
         mMaxFallSpeed = sc_MaxFallSpeed;
     }
-    mAccelF = getSpeedData()[8];
+    mAccelF = getSpeedData()->mPowerChangeNormal.mSlowAccel;
     mMaxSpeedF = 0.0f;
     executeThrowCommon();
 }
@@ -3019,7 +3019,7 @@ void dAcPy_c::setSpinLiftUpActor(dActor_c *carryingActor) {
         changeState(StateID_CarryPlayer, 0);
     }
 
-    dQuake_c::getInstance()->shockMotor(*getPlrNo(), dQuake_c::TYPE_7, 0, false);
+    dQuake_c::getInstance()->shockMotor(getPlrNo(), dQuake_c::TYPE_7, 0, false);
 }
 
 void dAcPy_c::initializeState_LiftUp() {
@@ -4848,13 +4848,13 @@ void dAcPy_c::setPoleJump() {
     mPoleGrabCooldown = 5;
     changeState(StateID_Jump, nullptr);
     u8 dir = mDirection;
-    float baseSpeed = getSpeedData()[0];
+    float baseSpeed = getSpeedData()->mLowSpeed;
     mSpeedF = baseSpeed * sc_DirSpeed[dir];
 }
 
 bool dAcPy_c::setPoleShakeJump() {
     u8 dir = mDirection;
-    float baseSpeed = getSpeedData()[0];
+    float baseSpeed = getSpeedData()->mLowSpeed;
     if (setRideOffPlayerJump(sc_JumpSpeed, baseSpeed * sc_DirSpeed[dir])) {
         startPlayerVoice(VOICE_ROPE_RELEASE, 0);
         mPoleGrabCooldown = 5;
@@ -5462,7 +5462,7 @@ bool dAcPy_c::setTarzanRopeJump() {
                 h = 0.5f;
             }
         } else {
-            h = sc_DirSpeed[mDirection] * getSpeedData()[0];
+            h = sc_DirSpeed[mDirection] * getSpeedData()->mLowSpeed;
         }
         jumpSpeed = mPc.getPos().y;
     }
@@ -5893,7 +5893,7 @@ void dAcPy_c::executeState_ElecShock() {
     if (!executeElecShock()) {
         changeState(StateID_Walk, BLEND_DEFAULT);
         mPyMdlMng.setAnm(PLAYER_ANIM_E_SHOCK);
-        setDamage2(nullptr, DAMAGE_1);
+        setDamage2(nullptr, DAMAGE_BG);
     }
 }
 
@@ -6503,7 +6503,7 @@ bool dAcPy_c::setRideOffPlayerJump(float a, float b) {
                 a = 0.0f;
             }
         }
-        fn_80055d00();
+        calcDispSideLimit();
         return fn_80146e40(a, b, false);
     }
     return false;
@@ -6536,7 +6536,7 @@ bool dAcPy_c::setRideOffYoshiJump(daPlBase_c *yoshi) {
             changeState(StateID_RideOffJump, 0);
             mKey.onStatus(dAcPyKey_c::STATUS_FORCE_JUMP);
         }
-        fn_80055d00();
+        calcDispSideLimit();
         return true;
     }
     return false;
@@ -6591,7 +6591,7 @@ void dAcPy_c::finalizeState_RideYoshi() {
     if (!isStatus(STATUS_C5)) {
         daPyMng_c::stopYoshiBGM();
     }
-    fn_80055d00();
+    calcDispSideLimit();
 }
 
 void dAcPy_c::executeState_RideYoshi() {
@@ -6815,7 +6815,7 @@ void dAcPy_c::finalizeState_CarryPlayer() {
     mPyMdlMng.setAnm(PLAYER_ANIM_JUMP2, 0.0f, 0.0f);
     mRideActorID = BASE_ID_NULL;
     mKey.offStatus(dAcPyKey_c::STATUS_DISABLE_LR);
-    fn_80055d00();
+    calcDispSideLimit();
 }
 
 void dAcPy_c::executeState_CarryPlayer() {
@@ -7009,7 +7009,7 @@ bool dAcPy_c::setEatSpitOut(dActor_c *eatingActor) {
             }
         }
         mLastPos = mPos;
-        fn_80055d00();
+        calcDispSideLimit();
     }
     return true;
 }
@@ -7069,7 +7069,7 @@ void dAcPy_c::finalizeState_PlayerEat() {
     offStatus(STATUS_C8);
     offStatus(STATUS_C9);
     offStatus(STATUS_CA);
-    fn_80055d00();
+    calcDispSideLimit();
 }
 
 void dAcPy_c::executeState_PlayerEat() {
@@ -7167,7 +7167,7 @@ void dAcPy_c::executeState_JrCrown() {
             break;
         case 1:
             if (!executeElecShock()) {
-                setDamage2(nullptr, DAMAGE_1);
+                setDamage2(nullptr, DAMAGE_BG);
                 mSubstate = 2;
             }
             break;
@@ -8016,7 +8016,7 @@ void dAcPy_c::initializeState_DemoFallDown() {
     mSpeed.y = 0.0f;
     mAngle.y = 0;
     setZPosition(5000.0f);
-    float f = dBgParameter_c::ms_Instance_p->fn_80082240(mPos.x);
+    float f = dBgParameter_c::ms_Instance_p->getLoopScrollDispPosX(mPos.x);
     float f1 = f - 96.0f;
     float f2 = f + dBgParameter_c::ms_Instance_p->xSize() + 96.0f;
     if (f1 <= mPos.x && mPos.x < f2) {
@@ -9558,14 +9558,14 @@ bool dAcPy_c::ccCheckAttack(dCc_c *self, dCc_c *other) {
             return true;
         case CC_ATTACK_FIREBALL:
         case CC_ATTACK_ICEBALL:
-            if (*selfPlayer->getPlrNo() != *otherActor->getPlrNo() && !selfPlayer->isStatus(STATUS_IS_SPIN_HOLD_REQ)) {
+            if (selfPlayer->getPlrNo() != otherActor->getPlrNo() && !selfPlayer->isStatus(STATUS_IS_SPIN_HOLD_REQ)) {
                 selfPlayer->setFireBallDamage(other->mCcData.mAttack);
             }
             return true;
         case CC_ATTACK_YOSHI_BULLET:
         case CC_ATTACK_YOSHI_FIRE:
         case CC_ATTACK_ICE_2:
-            if (*selfPlayer->getPlrNo() != *otherActor->getPlrNo() && !selfPlayer->isStatus(STATUS_IS_SPIN_HOLD_REQ)) {
+            if (selfPlayer->getPlrNo() != otherActor->getPlrNo() && !selfPlayer->isStatus(STATUS_IS_SPIN_HOLD_REQ)) {
                 if (selfPlayer->isStatus(STATUS_51)) {
                     selfPlayer->mSpeedF = daPlBase_c::sc_DirSpeed[other->getOwner()->mDirection];
                     selfPlayer->mNoInteractTimer = 0;
@@ -10115,7 +10115,7 @@ void dAcPy_c::setBcData(int setInstant) {
     if (mPowerup == POWERUP_PENGUIN_SUIT) {
         footData.mFlags |= 0x10;
     }
-    if (isStatus(STATUS_5D)) {
+    if (isStatus(STATUS_EXTRA_PUSH_FORCE)) {
         footData.mFlags |= 0x20;
     }
     if (isStar()) {
@@ -10274,7 +10274,7 @@ void dAcPy_c::reviseBcDataCarryPlayer(sBcPointData &data1, sBcPointData &data2) 
     offStatus(STATUS_47);
     dAcPy_c *carryPlayer = getCarryPlayer();
     if (carryPlayer != nullptr) {
-        mBc.mRidePlrNo = *carryPlayer->getPlrNo();
+        mBc.mRidePlrNo = carryPlayer->getPlrNo();
         if (isStatus(STATUS_JUMP) && !isStatus(STATUS_48)) {
             fn_80143060(data1, data2, false);
         } else {
@@ -11391,7 +11391,7 @@ bool dAcPy_c::setDamage2(dActor_c *actor, daPlBase_c::DamageType_e damageType) {
         return false;
     }
     releaseCarryActor();
-    if (damageType == DAMAGE_NONE && isStatus(STATUS_PENGUIN_SLIDE) && actor != nullptr && actor->mActorProperties & 0x200) {
+    if (damageType == DAMAGE_DEFAULT && isStatus(STATUS_PENGUIN_SLIDE) && actor != nullptr && actor->mActorProperties & 0x200) {
         if (setFlyDamageAction(3, actor)) {
             onStatus(STATUS_PENGUIN_RECOIL);
             return true;
@@ -11402,7 +11402,7 @@ bool dAcPy_c::setDamage2(dActor_c *actor, daPlBase_c::DamageType_e damageType) {
         case DAMAGE_YOGAN:
             changeDemoState(StateID_DemoFireDown, 0);
             break;
-        case DAMAGE_9:
+        case DAMAGE_ELEC_SHOCK:
             if (isStatus(STATUS_4F)) {
                 setJrCrownElecDamage();
             } else {
@@ -11412,13 +11412,13 @@ bool dAcPy_c::setDamage2(dActor_c *actor, daPlBase_c::DamageType_e damageType) {
         case DAMAGE_POISON:
             changeDemoState(StateID_DemoDown, DEMO_DOWN_ARG_POISON);
             break;
-        case DAMAGE_B:
+        case DAMAGE_SQUISH:
             changeDemoState(StateID_DemoDown, DEMO_DOWN_ARG_HIT);
             break;
         case DAMAGE_POISON_FOG:
             changeDemoState(StateID_DemoDown, DEMO_DOWN_ARG_POISON_FOG);
             break;
-        case DAMAGE_C:
+        case DAMAGE_EAT_DIE:
         case DAMAGE_D:
             changeDemoState(StateID_DemoEatDie, damageType);
             mRelatedActorID = actor->mUniqueID;
@@ -11451,7 +11451,7 @@ bool dAcPy_c::setDamage2(dActor_c *actor, daPlBase_c::DamageType_e damageType) {
                     mDamageInvulnTimer = 127;
                     return setFlyDamageAction(damageType, actor);
                 }
-                if (damageType == DAMAGE_F) {
+                if (damageType == DAMAGE_FREEZE) {
                     changeState(StateID_IceDamage, 0);
                 } else {
                     mDamageInvulnTimer = 127;
@@ -11508,8 +11508,8 @@ void dAcPy_c::setPlayerData() {
 void dAcPy_c::setSpeedData() {
     static const int scSpeedHioData[] = { 1, 1, 1, 0, 1, 1, 1 };
     u8 index = scSpeedHioData[mPowerup];
-    mSpeedDataNormal = m_speed_hio[index].mDataNormal;
-    mSpeedDataStar = m_speed_hio[index].mDataStar;
+    mSpeedDataNormal = &m_speed_hio[index].mDataNormal;
+    mSpeedDataStar = &m_speed_hio[index].mDataStar;
 }
 
 void dAcPy_c::setModeGravity() {
@@ -11535,7 +11535,7 @@ void dAcPy_c::setPowerup(PLAYER_POWERUP_e powerup, int) {
     setPlayerData();
     setCenterOffset();
     setSpeedData();
-    mAccelF = getSpeedData()[8];
+    mAccelF = getSpeedData()->mPowerChangeNormal.mSlowAccel;
     setModeGravity();
     offStatus(STATUS_IS_PENGUIN);
     switch (mPowerup) {
@@ -11688,7 +11688,7 @@ bool dAcPy_c::isEnablePropelJump() {
         return false;
     }
 
-    if (isDemo() || isStatus(STATUS_87)) {
+    if (isDemo() || isStatus(STATUS_AUTO_BOUNCE)) {
         return false;
     }
 
@@ -11741,7 +11741,7 @@ bool dAcPy_c::setSpinAction() {
         isStatus(STATUS_OUT_OF_PLAY) ||
         isStatus(STATUS_STUNNED) ||
         isStatus(STATUS_QUAKE) ||
-        isStatus(STATUS_87) ||
+        isStatus(STATUS_AUTO_BOUNCE) ||
         !isStatus(STATUS_8A)
     ) {
         return false;

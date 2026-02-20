@@ -20,12 +20,25 @@
 class daPlBase_c : public dActor_c {
 public:
     enum DamageType_e {
-        DAMAGE_NONE,
-        DAMAGE_1, DAMAGE_2, DAMAGE_HIP_ATTACK, DAMAGE_4,
-        DAMAGE_CLIMB, DAMAGE_6, DAMAGE_YOGAN, DAMAGE_8,
-        DAMAGE_9, DAMAGE_POISON, DAMAGE_B, DAMAGE_C,
-        DAMAGE_D, DAMAGE_E, DAMAGE_F, DAMAGE_10,
-        DAMAGE_11, DAMAGE_POISON_FOG
+        DAMAGE_DEFAULT,
+        DAMAGE_BG,
+        DAMAGE_2,
+        DAMAGE_HIP_ATTACK,
+        DAMAGE_4,
+        DAMAGE_CLIMB,
+        DAMAGE_6,
+        DAMAGE_YOGAN,
+        DAMAGE_8,
+        DAMAGE_ELEC_SHOCK,
+        DAMAGE_POISON,
+        DAMAGE_SQUISH,
+        DAMAGE_EAT_DIE,
+        DAMAGE_D,
+        DAMAGE_E,
+        DAMAGE_FREEZE,
+        DAMAGE_10,
+        DAMAGE_11,
+        DAMAGE_POISON_FOG
     };
 
     enum DokanDir_e {
@@ -52,6 +65,14 @@ public:
         CLEAR_TYPE_GOAL,
         CLEAR_TYPE_BOSS,
         CLEAR_TYPE_FINAL_BOSS
+    };
+
+    enum BgPress_e {
+        BG_PRESS_FOOT = 9,
+        BG_PRESS_HEAD,
+        BG_PRESS_R,
+        BG_PRESS_L,
+        BG_PRESS_COUNT
     };
 
     /// @unofficial
@@ -248,7 +269,7 @@ public:
     enum PowerChangeType_e {
         POWER_CHANGE_NORMAL,
         POWER_CHANGE_ICE,
-        POWER_CHANGE_ICE_LOW_SLIP
+        POWER_CHANGE_LOW_SLIP
     };
 
     /// @unofficial
@@ -257,15 +278,6 @@ public:
         SQUISH_INIT,
         SQUISH_SET_REDUCTION,
         SQUISH_ANIMATION
-    };
-
-    /// @unofficial
-    enum BgPress_e {
-        BG_PRESS_FOOT = 9,
-        BG_PRESS_HEAD,
-        BG_PRESS_R,
-        BG_PRESS_L,
-        BG_PRESS_COUNT
     };
 
     /// @unofficial
@@ -428,7 +440,7 @@ public:
         STATUS_5A,
         STATUS_5B,
         STATUS_5C,
-        STATUS_5D,
+        STATUS_EXTRA_PUSH_FORCE,
         STATUS_5E,
         STATUS_5F,
         STATUS_ENEMY_STAGE_CLEAR, ///< The player has cleared an enemy ambush.
@@ -468,7 +480,7 @@ public:
         STATUS_84,
         STATUS_85,
         STATUS_86,
-        STATUS_87,
+        STATUS_AUTO_BOUNCE,
         STATUS_88,
         STATUS_89,
         STATUS_8A,
@@ -773,10 +785,10 @@ public:
     void grandPowerSet(); // [misspelling of "ground"]
     void slipPowerSet(int);
     void icePowerChange(int);
-    void getPowerChangeSpeedData(SpeedData_t *data); ///< @unofficial
+    void getPowerChangeSpeedData(sPowerChangeSpeedData &data); ///< @unofficial
     void getTurnPower(sTurnPowerData &); ///< @unofficial
     PowerChangeType_e getPowerChangeType(bool affectPenguin);
-    const float *getSpeedData();
+    const sSpeedData *getSpeedData();
 
     int addCalcAngleY(short, short);
     short getBesideMukiAngle(u8 direction);
@@ -965,7 +977,7 @@ public:
     void checkBgCross();
     bool checkInsideCrossBg(float);
     void clearBgCheckInfo();
-    bool isCarryObjBgCarried(u8);
+    bool isCarryObjBgCarried(u8 side);
     bool checkBGCrossWall(u8 direction);
     void checkDamageBg();
     bool setBgDamage();
@@ -973,6 +985,7 @@ public:
     float getWaterCheckPosY();
     void checkWater();
     bool isHitWallKinopioWalk(int);
+    bool isHitGroundKinopioWalk(int, float, int); ///< @unofficial
     bool checkKinopioWaitBG(int);
     void underOverCheck();
     void checkDispOver();
@@ -981,9 +994,8 @@ public:
     bool isEnablePressUD();
     bool isEnablePressLR();
     void checkDisplayOutDead();
-    bool fn_80052500(int, float, int); ///< @unofficial
-    void fn_80055d00(); ///< @unofficial
-    void fn_80056370(dActor_c *, BgPress_e); ///< @unofficial
+    void calcDispSideLimit(); ///< @unofficial
+    void setBgPressReq(dActor_c *, BgPress_e);
 
     bool isDispOutCheckOn();
     bool calcSideLimitMultL(float);
@@ -996,8 +1008,8 @@ public:
     void changeNormalAction();
     void stopOther();
     void playOther();
-    void setStatus87(); ///< @unofficial
-    void setStatus5D(float f); ///< @unofficial
+    void setAutoBounce(); ///< @unofficial
+    void setExtraPushForce(float f); ///< @unofficial
 
     daPlBase_c *getHipAttackDamagePlayer();
     void setHipAttackDamagePlayer(daPlBase_c *player);
@@ -1036,7 +1048,7 @@ public:
     }
 
     float calcSomeAccel(float f) { return 3.0f * f; }
-    void set_m_d80(int i, float f) { m_d80[i] = f; }
+    void set_m_d80(int side, float f) { m_d80[side] = f; }
     float getModelHeight() const { return mModelHeight; }
     float getCcRevOffsX() const { return mCcRevTotalOffsX; }
     float getCcRevOffsY() const { return mCcRevTotalOffsY; }
@@ -1186,8 +1198,8 @@ public:
     float mPrevSpeedY;
     float mTopHeight; ///< Stores the highest Y position reached, resets when landing on the ground again.
     float mAirTopHeight; ///< The highest Y position since being on the ground last. Not reset when landing on the ground.
-    const float *mSpeedDataNormal;
-    const float *mSpeedDataStar;
+    const sSpeedData *mSpeedDataNormal;
+    const sSpeedData *mSpeedDataStar;
     const float *mGravityData;
 
     int mNoGravityTimer;
@@ -1250,10 +1262,10 @@ public:
     bool mCcHasInitialRevY;
     int mCcRevDisabledTimer;
 
-    u8 mDispLimitRelatedL;
-    u8 mDispLimitRelatedR;
-    float mDispLimitRelatedL2;
-    float mDispLimitRelatedR2;
+    u8 mIsDispLimitR; ///< Whether the player is too far to the right and should be pushed to the left.
+    u8 mIsDispLimitL; ///< Whether the player is too far to the left and should be pushed to the right.
+    float mDispLimitAdjR; ///< The distance by which the player is too far right.
+    float mDispLimitAdjL; ///< The distance by which the player is too far left.
 
     sFStateMgr_c<daPlBase_c, sStateMethodUsr_FI_c> mDemoStateMgr; ///< The state manager for demo (cutscene) states.
     int mDemoStateArg; ///< To be used as an argument to the new demo state.

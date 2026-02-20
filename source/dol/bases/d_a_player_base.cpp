@@ -1625,8 +1625,8 @@ void daPlBase_c::moveSpeedSet() {
         if (mKey.buttonWalk(&dir)) {
             if (!isNowBgCross(BGC_FOOT)) {
                 float absSpeed = std::fabs(mSpeedF);
-                float speed1 = sc_DirSpeed[dir] * *(getSpeedData() + 0);
-                float speed2 = sc_DirSpeed[dir] * *(getSpeedData() + 2);
+                float speed1 = sc_DirSpeed[dir] * getSpeedData()->mLowSpeed;
+                float speed2 = sc_DirSpeed[dir] * getSpeedData()->mHighSpeed;
                 float tmp = sc_DirSpeed[dir] * absSpeed;
                 if (absSpeed >= std::fabs(speed2) || mKey.buttonDush()) {
                     mMaxSpeedF = speed2;
@@ -1638,9 +1638,9 @@ void daPlBase_c::moveSpeedSet() {
             } else {
                 float speed;
                 if (mKey.buttonDush()) {
-                    speed = sc_DirSpeed[dir] * *(getSpeedData() + 2);
+                    speed = sc_DirSpeed[dir] * getSpeedData()->mHighSpeed;
                 } else {
-                    speed = sc_DirSpeed[dir] * *(getSpeedData() + 0);
+                    speed = sc_DirSpeed[dir] * getSpeedData()->mLowSpeed;
                 }
                 mMaxSpeedF = speed  * getSakaMaxSpeedRatio(dir);
             }
@@ -1652,11 +1652,11 @@ void daPlBase_c::moveSpeedSet() {
                 mMaxSpeedF = getIceSakaSlipOffSpeed();
             }
         }
-        if (!isNowBgCross(BGC_FOOT) && !isStatus(STATUS_88) && std::fabs(mSpeedF) > *(getSpeedData() + 2)) {
+        if (!isNowBgCross(BGC_FOOT) && !isStatus(STATUS_88) && std::fabs(mSpeedF) > getSpeedData()->mHighSpeed) {
             if (mSpeedF < 0.0f) {
-                mSpeedF = -*(getSpeedData() + 2);
+                mSpeedF = -getSpeedData()->mHighSpeed;
             } else {
-                mSpeedF = *(getSpeedData() + 2);
+                mSpeedF = getSpeedData()->mHighSpeed;
             }
         }
     }
@@ -1667,9 +1667,9 @@ void daPlBase_c::simpleMoveSpeedSet() {
         int dir;
         if (mKey.buttonWalk(&dir)) {
             if (mKey.buttonDush()) {
-                mMaxSpeedF = sc_DirSpeed[dir] * *(getSpeedData() + 2);
+                mMaxSpeedF = sc_DirSpeed[dir] * getSpeedData()->mHighSpeed;
             } else {
-                mMaxSpeedF = sc_DirSpeed[dir] * *(getSpeedData() + 0);
+                mMaxSpeedF = sc_DirSpeed[dir] * getSpeedData()->mLowSpeed;
             }
         } else {
             mMaxSpeedF = 0.0f;
@@ -1679,7 +1679,7 @@ void daPlBase_c::simpleMoveSpeedSet() {
 
 void daPlBase_c::grandPowerSet() {
     if (isOnSinkSand()) {
-        mAccelF = *(getSpeedData() + 7);
+        mAccelF = getSpeedData()->mPowerChangeNormal.mVerySlowAccel;
     } else if (isStatus(STATUS_30)) {
         slipPowerSet(1);
     } else {
@@ -1707,7 +1707,7 @@ void daPlBase_c::slipPowerSet(int mode) {
                     mAccelF = calcSomeAccel(mAccelF);
                 }
             } else if (mSpeedF * sc_DirSpeed[mDirection] < 0.0f) {
-                mAccelF = *(getSpeedData() + 6);
+                mAccelF = getSpeedData()->mPowerChangeNormal.mTurnAccel;
                 if (isStatus(STATUS_89)) {
                     mAccelF = calcSomeAccel(mAccelF);
                 }
@@ -1730,20 +1730,20 @@ void daPlBase_c::slipPowerSet(int mode) {
 }
 
 void daPlBase_c::normalPowerSet() {
-    if (std::fabs(mSpeedF) > *(getSpeedData() + 2)) {
+    if (std::fabs(mSpeedF) > getSpeedData()->mHighSpeed) {
         mAccelF = 0.75f;
         return;
     }
     PowerChangeType_e powerChangeType = getPowerChangeType(false);
-    SpeedData_t data;
-    getPowerChangeSpeedData(&data);
+    sPowerChangeSpeedData data;
+    getPowerChangeSpeedData(data);
     if (!mKey.buttonWalk(nullptr)) {
         if (mSpeedF * sc_DirSpeed[mDirection] < 0.0f) {
-            mAccelF = data.data[2];
-        } else if (std::fabs(mSpeedF) < *getSpeedData()) {
-            mAccelF = data.data[1];
+            mAccelF = data.mTurnNoInputAccel;
+        } else if (std::fabs(mSpeedF) < getSpeedData()->mLowSpeed) {
+            mAccelF = data.mNoInputAccel;
         } else {
-            mAccelF = data.data[0];
+            mAccelF = data.mDefaultAccel;
         }
         if (powerChangeType == POWER_CHANGE_ICE && std::fabs(mSpeedF) < 0.5f) {
             mAccelF = 0.004f;
@@ -1754,7 +1754,7 @@ void daPlBase_c::normalPowerSet() {
         return;
     }
     if (mSpeedF * sc_DirSpeed[mDirection] < 0.0f) {
-        mAccelF = data.data[3];
+        mAccelF = data.mTurnAccel;
         if (isStatus(STATUS_89)) {
             mAccelF = calcSomeAccel(mAccelF);
         }
@@ -1765,24 +1765,24 @@ void daPlBase_c::normalPowerSet() {
     float absSpeed = std::fabs(mSpeedF);
 
     if (absSpeed < 0.5f) {
-        mAccelF = data.data[4];
-    } else if (absSpeed < *(getSpeedData() + 0)) {
+        mAccelF = data.mVerySlowAccel;
+    } else if (absSpeed < getSpeedData()->mLowSpeed) {
         if (mKey.buttonDush()) {
-            mAccelF = data.data[6];
+            mAccelF = data.mRunSlowAccel;
         } else {
-            mAccelF = data.data[5];
+            mAccelF = data.mSlowAccel;
         }
-    } else if (absSpeed < *(getSpeedData() + 1)) {
-        if (absMaxSpeed < *(getSpeedData() + 1)) {
-            mAccelF = data.data[0];
+    } else if (absSpeed < getSpeedData()->mMediumSpeed) {
+        if (absMaxSpeed < getSpeedData()->mMediumSpeed) {
+            mAccelF = data.mDefaultAccel;
         } else {
-            mAccelF = data.data[7];
+            mAccelF = data.mMediumAccel;
         }
     } else {
-        if (absMaxSpeed < *(getSpeedData() + 1)) {
-            mAccelF = data.data[0];
+        if (absMaxSpeed < getSpeedData()->mMediumSpeed) {
+            mAccelF = data.mDefaultAccel;
         } else {
-            mAccelF = data.data[8];
+            mAccelF = data.mFastAccel;
         }
     }
 }
@@ -1795,47 +1795,47 @@ daPlBase_c::PowerChangeType_e daPlBase_c::getPowerChangeType(bool affectPenguin)
         return POWER_CHANGE_ICE;
     }
     if (isNowBgCross(BGC_ON_ICE_LOW_SLIP)) {
-        return POWER_CHANGE_ICE_LOW_SLIP;
+        return POWER_CHANGE_LOW_SLIP;
     }
     if (isNowBgCross(BGC_ON_SNOW) ? 1 : 0) {
-        return POWER_CHANGE_ICE_LOW_SLIP;
+        return POWER_CHANGE_LOW_SLIP;
     }
     return POWER_CHANGE_NORMAL;
 }
 
-void daPlBase_c::getPowerChangeSpeedData(SpeedData_t *data) {
+void daPlBase_c::getPowerChangeSpeedData(sPowerChangeSpeedData &data) {
     switch (getPowerChangeType(false)) {
         case POWER_CHANGE_NORMAL:
-            *data = *(SpeedData_t *) (getSpeedData() + 3);
+            data = getSpeedData()->mPowerChangeNormal;
             break;
         case POWER_CHANGE_ICE:
-            *data = *(SpeedData_t *) (getSpeedData() + 12);
+            data = getSpeedData()->mPowerChangeIce;
             break;
-        case POWER_CHANGE_ICE_LOW_SLIP:
-            *data = *(SpeedData_t *) (getSpeedData() + 21);
+        case POWER_CHANGE_LOW_SLIP:
+            data = getSpeedData()->mPowerChangeLowSlip;
             break;
     }
 }
 
 void daPlBase_c::getTurnPower(sTurnPowerData &bb) {
-    const sPowerChangeData *data = &daPlayerData_c::smc_POWER_CHANGE_DATA;
+    const sPowerChangeData &data = daPlayerData_c::smc_POWER_CHANGE_DATA;
     int idx = isStar() ? 1 : 0;
     switch (getPowerChangeType(false)) {
         case POWER_CHANGE_NORMAL:
-            bb = data->mRangeType0[idx];
+            bb = data.mTurnPowerNormal[idx];
             break;
         case POWER_CHANGE_ICE:
-            bb = data->mRangeType1[idx];
+            bb = data.mTurnPowerIce[idx];
             break;
-        case POWER_CHANGE_ICE_LOW_SLIP:
-            bb = data->mRangeType2[idx];
+        case POWER_CHANGE_LOW_SLIP:
+            bb = data.mTurnPowerLowSlip[idx];
             break;
     }
 }
 
 void daPlBase_c::icePowerChange(int mode) {
     PowerChangeType_e powerChangeType = getPowerChangeType(false);
-    if (powerChangeType == POWER_CHANGE_ICE || (powerChangeType == POWER_CHANGE_ICE_LOW_SLIP && mode == 1)) {
+    if (powerChangeType == POWER_CHANGE_ICE || (powerChangeType == POWER_CHANGE_LOW_SLIP && mode == 1)) {
         if (mMaxSpeedF) {
             if (mSpeedF * mMaxSpeedF < 0.0f) {
                 mAccelF = mAccelF * 0.375f;
@@ -1870,13 +1870,13 @@ void daPlBase_c::airPowerSet() {
 
         float absSpeed = std::fabs(mSpeedF);
 
-        if (absSpeed < getSpeedData()[0]) {
+        if (absSpeed < getSpeedData()->mLowSpeed) {
             if (mKey.buttonDush()) {
                 mAccelF = airPowerData.mSlowDash;
             } else {
                 mAccelF = airPowerData.mSlowNoDash;
             }
-        } else if (absSpeed < getSpeedData()[1]) {
+        } else if (absSpeed < getSpeedData()->mMediumSpeed) {
             mAccelF = airPowerData.mMedium;
         } else {
             mAccelF = airPowerData.mFast;
@@ -4128,8 +4128,8 @@ void daPlBase_c::setControlDemoWalk(const float &f1, const float &f2) {
         mControlDemoTargetPos.x = f1;
         mDemoState = CONTROL_DEMO_WALK;
         mControlDemoSpeedF = std::fabs(f2);
-        if (mControlDemoSpeedF > getSpeedData()[2]) {
-            mControlDemoSpeedF = getSpeedData()[2];
+        if (mControlDemoSpeedF > getSpeedData()->mHighSpeed) {
+            mControlDemoSpeedF = getSpeedData()->mHighSpeed;
         }
     }
 }
@@ -4192,9 +4192,9 @@ bool daPlBase_c::isBossDemoLand() {
     return true;
 }
 
-bool daPlBase_c::fn_80052500(int p, float f, int i2) {
+bool daPlBase_c::isHitGroundKinopioWalk(int dir, float f, int i2) {
     mVec3_c tmp(
-        mPos.x + f * sc_DirSpeed[p],
+        mPos.x + f * sc_DirSpeed[dir],
         mPos.y,
         mPos.z
     );
@@ -4233,7 +4233,7 @@ bool daPlBase_c::checkKinopioWaitBG(int dir) {
     if (isHitWallKinopioWalk(dir)) {
         return true;
     }
-    return !fn_80052500(dir, 10.0, 0);
+    return !isHitGroundKinopioWalk(dir, 10.0, 0);
 }
 
 void daPlBase_c::initializeState_DemoControl() {
@@ -4256,7 +4256,7 @@ void daPlBase_c::initializeState_DemoControl() {
             mControlDemoSpeedF = 0.9f;
             mItemKinopioDirection = mDirection;
             mItemKinopioTurnTimer = 150;
-            if (!fn_80052500(mDirection, 8.0f, 1)) {
+            if (!isHitGroundKinopioWalk(mDirection, 8.0f, 1)) {
                 mItemKinopioDirection ^= 1;
             }
             break;
@@ -4346,7 +4346,7 @@ void daPlBase_c::executeState_DemoControl() {
             if (isHitWallKinopioWalk(mItemKinopioDirection) || mItemKinopioTurnTimer == 0) {
                 mItemKinopioDirection ^= 1;
                 mControlDemoTargetPos.x = mPos.x + sc_DirSpeed[mItemKinopioDirection] * 24.0f;
-            } else if (!fn_80052500(mItemKinopioDirection, 4.0f, 1) && !fn_80052500(mItemKinopioDirection, 8.0f, 1)) {
+            } else if (!isHitGroundKinopioWalk(mItemKinopioDirection, 4.0f, 1) && !isHitGroundKinopioWalk(mItemKinopioDirection, 8.0f, 1)) {
                 mItemKinopioDirection ^= 1;
                 mControlDemoTargetPos.x = mPos.x + sc_DirSpeed[mItemKinopioDirection] * 24.0f;
             }
@@ -4994,10 +4994,10 @@ void daPlBase_c::clearBgCheckInfo() {
 }
 
 void daPlBase_c::bgCheck(int i) {
-    offStatus(STATUS_87);
+    offStatus(STATUS_AUTO_BOUNCE);
     offStatus(STATUS_86);
     offStatus(STATUS_IS_SPIN_HOLD_REQ);
-    offStatus(STATUS_5D);
+    offStatus(STATUS_EXTRA_PUSH_FORCE);
     if (isNowBgCross(BGC_FOOT)) {
         m_d8c = mPos.y;
     }
@@ -5318,24 +5318,24 @@ void daPlBase_c::checkBgCross() {
     }
 
     if (isNowBgCross(BGC_HEAD) && isNowBgCross(BGC_PRESS_HEAD_HIT) && !isNowBgCross(BGC_63)) {
-        fn_80056370(nullptr, BG_PRESS_HEAD);
+        setBgPressReq(nullptr, BG_PRESS_HEAD);
     }
     if (isNowBgCross(BGC_FOOT) && !isNowBgCross(BGC_LIFT)) {
-        fn_80056370(nullptr, BG_PRESS_FOOT);
+        setBgPressReq(nullptr, BG_PRESS_FOOT);
     }
     if (isNowBgCross(BGC_WALL_TOUCH_L_2) && !isNowBgCross(BGC_OBJBG_TOUCH_L)) {
-        fn_80056370(nullptr, BG_PRESS_L);
+        setBgPressReq(nullptr, BG_PRESS_L);
     }
     if (isNowBgCross(BGC_WALL_TOUCH_R_2) && !isNowBgCross(BGC_OBJBG_TOUCH_R)) {
-        fn_80056370(nullptr, BG_PRESS_R);
+        setBgPressReq(nullptr, BG_PRESS_R);
     }
 }
 
-bool daPlBase_c::isCarryObjBgCarried(u8 i) {
-    dBg_ctr_c *ctrWall = mBc.mpCtrWalls[i];
+bool daPlBase_c::isCarryObjBgCarried(u8 side) {
+    dBg_ctr_c *ctrWall = mBc.mpCtrWalls[side];
     if (ctrWall != nullptr) {
         mVec2_c diff = ctrWall->m_a0 - ctrWall->m_ac;
-        set_m_d80(i, diff.x);
+        set_m_d80(side, diff.x);
         if (ctrWall->m_d0 & 0x800) {
             dActor_c* carriedActor = ctrWall->mpActor;
             if (carriedActor != nullptr && carriedActor->checkCarried(nullptr)) {
@@ -5513,7 +5513,7 @@ void daPlBase_c::checkDamageBg() {
 bool daPlBase_c::setBgDamage() {
     if (mIsBgDamage) {
         mIsBgDamage = false;
-        DamageType_e damageType = DAMAGE_1;
+        DamageType_e damageType = DAMAGE_BG;
         switch (mBgDamageType) {
             case 7:
                 damageType = DAMAGE_YOGAN;
@@ -5522,10 +5522,10 @@ bool daPlBase_c::setBgDamage() {
                 damageType = DAMAGE_POISON;
                 break;
             case 9:
-                damageType = DAMAGE_B;
+                damageType = DAMAGE_SQUISH;
                 break;
         }
-        if (damageType == DAMAGE_1 && isNoDamage()) {
+        if (damageType == DAMAGE_BG && isNoDamage()) {
             return false;
         }
         return setDamage2(nullptr, damageType);
@@ -5577,27 +5577,27 @@ void daPlBase_c::checkSideViewLemit() {
     checkDispSideLemit();
 }
 
-bool daPlBase_c::revSideLimitCommon(float f) {
-    if (mPos.x != f) {
+bool daPlBase_c::revSideLimitCommon(float limitX) {
+    if (mPos.x != limitX) {
         u8 dir = 0;
-        if (mPos.x <= f) {
+        if (mPos.x <= limitX) {
             dir = 1;
         }
         if (!isStatus(STATUS_7E)) {
             u16 ang = mBc.getSakaMoveAngle(dir);
             if (ang != 0) {
-                mPos.y += (f - mPos.x) * (mAng(ang).sin() / mAng(ang).cos());
+                mPos.y += (limitX - mPos.x) * (mAng(ang).sin() / mAng(ang).cos());
             }
         }
-        mPos.x = f;
+        mPos.x = limitX;
         return true;
     }
     return false;
 }
 
-bool daPlBase_c::calcSideLimitMultL(float f) {
+bool daPlBase_c::calcSideLimitMultL(float limitX) {
     onNowBgCross(BGC_SIDE_LIMIT_L);
-    revSideLimitCommon(f);
+    revSideLimitCommon(limitX);
     if (mSpeedF < 0.0f) {
         if (mDirection == 1) {
             mSpeedF = -0.01f;
@@ -5609,9 +5609,9 @@ bool daPlBase_c::calcSideLimitMultL(float f) {
     return false;
 }
 
-bool daPlBase_c::calcSideLimitMultR(float f) {
+bool daPlBase_c::calcSideLimitMultR(float limitX) {
     onNowBgCross(BGC_SIDE_LIMIT_R);
-    revSideLimitCommon(f);
+    revSideLimitCommon(limitX);
     if (mSpeedF > 0.0f) {
         if (mDirection == 0) {
             mSpeedF = 0.01f;
@@ -5630,56 +5630,56 @@ bool daPlBase_c::checkDispSideLemit() {
     if (dScStage_c::m_loopType == 1) {
         return false;
     }
-    float l = dBgParameter_c::ms_Instance_p->fn_80082240(mPos.x);
-    float s = l + mViewLimitPadding;
-    float m = l + dBgParameter_c::ms_Instance_p->xSize() - mViewLimitPadding + 1.0f;
-    switch (mDispLimitRelatedR) {
+    float dispX = dBgParameter_c::ms_Instance_p->getLoopScrollDispPosX(mPos.x);
+    float leftLimit = dispX + mViewLimitPadding;
+    float rightLimit = dispX + dBgParameter_c::ms_Instance_p->xSize() - mViewLimitPadding + 1.0f;
+    switch (mIsDispLimitL) {
         case 0:
-            if (mPos.x < s) {
+            if (mPos.x < leftLimit) {
                 if (isOldBgCross(BGC_OBJBG_TOUCH_CARRIED_R) || !isOldBgCross(BGC_WALL_TOUCH_R_2)) {
-                    calcSideLimitMultL(s);
+                    calcSideLimitMultL(leftLimit);
                     return true;
                 }
-                mDispLimitRelatedR = 1;
-                mDispLimitRelatedR2 = mPos.x - s;
+                mIsDispLimitL = 1;
+                mDispLimitAdjL = mPos.x - leftLimit;
             }
             break;
         case 1: {
-            if (mPos.x > s) {
-                mDispLimitRelatedR = 0;
+            if (mPos.x > leftLimit) {
+                mIsDispLimitL = 0;
             }
-            float diff = mPos.x - s;
-            if (mDispLimitRelatedR2 < diff || isOldBgCross(BGC_WALL_TOUCH_R_2)) {
-                mDispLimitRelatedR2 = diff;
+            float diff = mPos.x - leftLimit;
+            if (mDispLimitAdjL < diff || isOldBgCross(BGC_WALL_TOUCH_R_2)) {
+                mDispLimitAdjL = diff;
             }
-            if (mPos.x < s + mDispLimitRelatedR2) {
-                calcSideLimitMultL(s + mDispLimitRelatedR2);
+            if (mPos.x < leftLimit + mDispLimitAdjL) {
+                calcSideLimitMultL(leftLimit + mDispLimitAdjL);
                 return true;
             }
             break;
         }
     }
-    switch (mDispLimitRelatedL) {
+    switch (mIsDispLimitR) {
         case 0:
-            if (mPos.x > m) {
+            if (mPos.x > rightLimit) {
                 if (isOldBgCross(BGC_OBJBG_TOUCH_CARRIED_L) || !isOldBgCross(BGC_WALL_TOUCH_L_2)) {
-                    calcSideLimitMultR(m);
+                    calcSideLimitMultR(rightLimit);
                     return true;
                 }
-                mDispLimitRelatedL = 1;
-                mDispLimitRelatedL2 = mLastPos.x - m;
+                mIsDispLimitR = 1;
+                mDispLimitAdjR = mLastPos.x - rightLimit;
             }
             break;
         case 1: {
-            if (mPos.x < m) {
-                mDispLimitRelatedL = 0;
+            if (mPos.x < rightLimit) {
+                mIsDispLimitR = 0;
             }
-            float diff = mPos.x - m;
-            if (mDispLimitRelatedL2 > diff || isOldBgCross(BGC_WALL_TOUCH_L_2)) {
-                mDispLimitRelatedL2 = diff;
+            float diff = mPos.x - rightLimit;
+            if (mDispLimitAdjR > diff || isOldBgCross(BGC_WALL_TOUCH_L_2)) {
+                mDispLimitAdjR = diff;
             }
-            if (mPos.x > m + mDispLimitRelatedL2) {
-                calcSideLimitMultR(m + mDispLimitRelatedL2);
+            if (mPos.x > rightLimit + mDispLimitAdjR) {
+                calcSideLimitMultR(rightLimit + mDispLimitAdjR);
                 return true;
             }
         }
@@ -5687,20 +5687,20 @@ bool daPlBase_c::checkDispSideLemit() {
     return false;
 }
 
-void daPlBase_c::fn_80055d00() {
+void daPlBase_c::calcDispSideLimit() {
     if (dBg_c::m_bg_p->mAutoscrolls[0].mActive) {
         return;
     }
-    float l = dBgParameter_c::ms_Instance_p->fn_80082240(mPos.x);
-    float s = l + mViewLimitPadding;
-    float m = l + dBgParameter_c::ms_Instance_p->xSize() - mViewLimitPadding + 1.0f;
-    if (mPos.x < s) {
-        mDispLimitRelatedR = 1;
-        mDispLimitRelatedR2 = mPos.x - s;
+    float dispX = dBgParameter_c::ms_Instance_p->getLoopScrollDispPosX(mPos.x);
+    float leftLimit = dispX + mViewLimitPadding;
+    float rightLimit = dispX + dBgParameter_c::ms_Instance_p->xSize() - mViewLimitPadding + 1.0f;
+    if (mPos.x < leftLimit) {
+        mIsDispLimitL = 1;
+        mDispLimitAdjL = mPos.x - leftLimit;
     }
-    if (mPos.x > m) {
-        mDispLimitRelatedL = 1;
-        mDispLimitRelatedL2 = mLastPos.x - m;
+    if (mPos.x > rightLimit) {
+        mIsDispLimitR = 1;
+        mDispLimitAdjR = mLastPos.x - rightLimit;
     }
 }
 
@@ -5796,7 +5796,7 @@ void daPlBase_c::checkDisplayOutDead() {
         }
     }
 
-    float bgLeft = dBgParameter_c::ms_Instance_p->fn_80082240(mPos.x);
+    float bgLeft = dBgParameter_c::ms_Instance_p->getLoopScrollDispPosX(mPos.x);
     bgSide1 = bgLeft - 16.0f;
     bgSide2 = bgLeft - offset;
     edgePos = mPos.x + getVisOffsetX() + getVisSizeX();
@@ -5826,7 +5826,7 @@ void daPlBase_c::checkDisplayOutDead() {
     }
 }
 
-void daPlBase_c::fn_80056370(dActor_c *actor, BgPress_e i) {
+void daPlBase_c::setBgPressReq(dActor_c *actor, BgPress_e i) {
     mBgPressActive |= (1 << i);
     if (actor != nullptr) {
         mBgPressIDs[i] = actor->mUniqueID;
@@ -5849,13 +5849,13 @@ bool daPlBase_c::isBgPress(dActor_c *actor) {
 }
 
 bool daPlBase_c::setPressBgDamage(int i1, int i2) {
-    if (i1 == DAMAGE_B) {
-        if (setDamage2(nullptr, DAMAGE_B)) {
+    if (i1 == DAMAGE_SQUISH) {
+        if (setDamage2(nullptr, DAMAGE_SQUISH)) {
             mBc.clearBgcSaveAll();
             return true;
         }
     } else {
-        if (setDamage2(nullptr, DAMAGE_NONE)) {
+        if (setDamage2(nullptr, DAMAGE_DEFAULT)) {
             mBc.clearBgcSaveAll();
             dQuake_c::m_instance->shockMotor(mPlayerNo, dQuake_c::TYPE_4, 0, false);
             return true;
@@ -5898,13 +5898,13 @@ bool daPlBase_c::checkPressBg() {
         dScStage_c::m_instance->mCurrFile == 1 &&
         mPos.y >= -1420.0f
     ) {
-        if (setPressBgDamage(DAMAGE_B, 1)) {
+        if (setPressBgDamage(DAMAGE_SQUISH, 1)) {
             mBgPressFlags |= 0x8;
             return true;
         }
     }
     if (mBgPressActive & 0x20a && mBgPressActive & 0x414 && isEnablePressUD()) {
-        if (mBgPressActive & 0x18 && setPressBgDamage(DAMAGE_B, 1)) {
+        if (mBgPressActive & 0x18 && setPressBgDamage(DAMAGE_SQUISH, 1)) {
             if (mBgPressActive & 0x8) {
                 mBgPressFlags |= 0x8;
             }
@@ -5913,7 +5913,7 @@ bool daPlBase_c::checkPressBg() {
             }
             return true;
         }
-        if (mBgPressActive & 6 && setPressBgDamage(DAMAGE_1, 1)) {
+        if (mBgPressActive & 6 && setPressBgDamage(DAMAGE_BG, 1)) {
             if (mBgPressActive & 2) {
                 mBgPressFlags |= 0x2;
             }
@@ -5927,7 +5927,7 @@ bool daPlBase_c::checkPressBg() {
         return false;
     }
     if (mBgPressActive & 0x1140 && mBgPressActive & 0x8a0 && isEnablePressLR()) {
-        if (mBgPressActive & 0x60 && setPressBgDamage(DAMAGE_B, 0)) {
+        if (mBgPressActive & 0x60 && setPressBgDamage(DAMAGE_SQUISH, 0)) {
             if (mBgPressActive & 0x20) {
                 mBgPressFlags |= 0x20;
             }
@@ -5936,7 +5936,7 @@ bool daPlBase_c::checkPressBg() {
             }
             return true;
         }
-        if (mBgPressActive & 0x180 && setPressBgDamage(DAMAGE_1, 0)) {
+        if (mBgPressActive & 0x180 && setPressBgDamage(DAMAGE_BG, 0)) {
             if (mBgPressActive & 0x80) {
                 mBgPressFlags |= 0x80;
             }
@@ -5949,8 +5949,8 @@ bool daPlBase_c::checkPressBg() {
     return false;
 }
 
-void daPlBase_c::setStatus87() {
-    onStatus(STATUS_87);
+void daPlBase_c::setAutoBounce() {
+    onStatus(STATUS_AUTO_BOUNCE);
 }
 
 bool daPlBase_c::isRideCheckEnable() {
@@ -5966,8 +5966,8 @@ bool daPlBase_c::isRideCheckEnable() {
     return true;
 }
 
-void daPlBase_c::setStatus5D(float f) {
-    onStatus(STATUS_5D);
+void daPlBase_c::setExtraPushForce(float f) {
+    onStatus(STATUS_EXTRA_PUSH_FORCE);
     mExtraPushForceX = f;
 }
 
@@ -6273,7 +6273,7 @@ void daPlBase_c::posMoveAnglePlayer(mVec3_c a) {
     posMove(delta);
 }
 
-const float *daPlBase_c::getSpeedData() {
+const sSpeedData *daPlBase_c::getSpeedData() {
     if (isStar()) {
         return mSpeedDataStar;
     } else {
@@ -6327,7 +6327,7 @@ float daPlBase_c::setJumpAddSpeedF(float a) {
 float daPlBase_c::setAddLiftSpeedF() {
     float t = mExtraPushForceX;
 
-    if (isStatus(STATUS_5D)) {
+    if (isStatus(STATUS_EXTRA_PUSH_FORCE)) {
         t = mExtraPushForceX * 0.4f;
     }
 
@@ -6352,7 +6352,7 @@ bool daPlBase_c::setDelayHelpJump() {
 }
 
 bool daPlBase_c::startJump(AnmBlend_e blendMode, int jumpType) {
-    if (isNowBgCross(BGC_WATER_SHALLOW) || isStatus(STATUS_87)) {
+    if (isNowBgCross(BGC_WATER_SHALLOW) || isStatus(STATUS_AUTO_BOUNCE)) {
         return false;
     }
 

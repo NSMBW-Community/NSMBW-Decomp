@@ -528,7 +528,7 @@ bool dActor_c::carryFukidashiCheck(int fukidashiAction, mVec2_c fukidashiTrigger
 
             bool overlap = dGameCom::checkRectangleOverlap(&minTriggerPos, &maxTriggerPos, &minPlayerPos, &maxPlayerPos, 0.0f);
             if (canDrawFukidashi && overlap) {
-                mCarryFukidashiPlayerNo = *player->getPlrNo();
+                mCarryFukidashiPlayerNo = player->getPlrNo();
             }
         }
     }
@@ -631,7 +631,7 @@ bool dActor_c::setEatGlupDown(dActor_c *eatingActor) {
         mVec3_c smallScorePos = eatingActor->mPos;
         smallScorePos.y += 40.0f;
 
-        s8 plrNo = *eatingActor->getPlrNo();
+        s8 plrNo = eatingActor->getPlrNo();
         dGameCom::CreateSmallScore(smallScorePos, yoshiEatPopupTypes[mEatPoints], plrNo, false);
 
         if (plrNo != -1) {
@@ -786,7 +786,7 @@ bool dActor_c::checkCarried(int *playerNum) {
         dAcPy_c *player = daPyMng_c::getPlayer(i);
         if (player != nullptr && fManager_c::searchBaseByID(player->mCarryActorID) == this) {
             if (playerNum != nullptr) {
-                *playerNum = *player->getPlrNo();
+                *playerNum = player->getPlrNo();
             }
             return true;
         }
