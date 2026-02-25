@@ -6339,7 +6339,7 @@ bool dAcPy_c::setBalloonButtonA() {
     if (dNext_c::m_instance->m_18) {
         return false;
     }
-    if (dInfo_c::mGameFlag & dInfo_c::GAME_FLAG_IS_COIN_COURSE) {
+    if (dInfo_c::mGameFlag & dInfo_c::GAME_FLAG_IS_COIN_BATTLE) {
         return false;
     }
     if (daPyMng_c::isEntryNum1()) {
@@ -7087,7 +7087,7 @@ void dAcPy_c::executeState_PlayerEat() {
 }
 
 void dAcPy_c::setPlayerEatReact() {
-    mEatBehaviour = EAT_TYPE_NONE;
+    mEatBehavior = EAT_TYPE_NONE;
     if (
         isDemo() ||
         isChange() ||
@@ -7100,7 +7100,7 @@ void dAcPy_c::setPlayerEatReact() {
     ) {
         return;
     }
-    mEatBehaviour = EAT_TYPE_EAT;
+    mEatBehavior = EAT_TYPE_EAT;
 }
 
 bool dAcPy_c::setRideJrCrown(const dActor_c *actor) {
@@ -11874,7 +11874,7 @@ void dAcPy_c::updateItemGetEffect() {
 }
 
 bool dAcPy_c::fn_801477c0() {
-    if (dInfo_c::mGameFlag & 0x10) {
+    if (dInfo_c::mGameFlag & dInfo_c::GAME_FLAG_MULTIPLAYER_MODE) {
         return false;
     }
     if (

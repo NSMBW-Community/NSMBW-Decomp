@@ -59,8 +59,8 @@ void dMultiMng_c::incEnemyDown(int plrNo) {
 
 void dMultiMng_c::setBattleCoin(int plrNo, int value) {
     if (
-        (dInfo_c::mGameFlag & dInfo_c::GAME_FLAG_4) &&
-        (dInfo_c::mGameFlag & dInfo_c::GAME_FLAG_IS_COIN_COURSE)
+        (dInfo_c::mGameFlag & dInfo_c::GAME_FLAG_MULTIPLAYER_MODE) &&
+        (dInfo_c::mGameFlag & dInfo_c::GAME_FLAG_IS_COIN_BATTLE)
     ) {
         mBattleCoin[plrNo] += value;
 

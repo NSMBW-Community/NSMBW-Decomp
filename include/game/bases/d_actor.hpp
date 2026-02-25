@@ -35,8 +35,8 @@ public:
     enum EAT_BEHAVIOR_e {
         EAT_TYPE_NONE, ///< The actor cannot be eaten.
         EAT_TYPE_EAT, ///< The actor can be eaten and then spat out.
-        EAT_TYPE_EAT_PERMANENT, ///< The actor is consumed permanently after being eaten (default).
-        EAT_TYPE_UNK3, ///< Unknown behaviour. Used on Fruits, Pokeys and Giant Fuzzies.
+        EAT_TYPE_DRINK, ///< The actor is consumed permanently after being eaten (default).
+        EAT_TYPE_DRINK_BIG, ///< Used on Fruits, Pokeys and Giant Fuzzies. Creates an egg if applicable.
         EAT_TYPE_FIREBALL, ///< Yoshi can spit a fireball after eating the actor.
         EAT_TYPE_ICEBALL, ///< Yoshi can spit an iceball after eating the actor.
     };
@@ -363,7 +363,7 @@ public:
 
     fBaseID_e mEatenByID; ///< The @ref fBase_c::mUniqueID "unique identifier" of the eating actor.
     u8 mEatState; ///< The actor's eat state. Value is a EAT_STATE_e.
-    u8 mEatBehaviour; ///< The actor's eat behaviour. Value is a EAT_BEHAVIOR_e.
+    u8 mEatBehavior; ///< The actor's eat behaviour. Value is a EAT_BEHAVIOR_e.
     mVec3_c mPreEatScale; ///< The actor's scale before being eaten.
 
     EAT_POINTS_e mEatPoints; ///< @copydoc EAT_POINTS_e

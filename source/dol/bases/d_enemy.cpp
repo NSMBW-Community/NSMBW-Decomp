@@ -27,7 +27,7 @@ const float dEn_c::smc_WATER_ROLL_DEC_RATE = 0.5f;
 
 dEn_c::dEn_c() :
     m_24(0), mFootPush(mVec3_c(0.0f, 0.0f, 0.0f)),
-    mKilledByLiquid(false), mFootAttr3(false), mFootAttr1(false), mDeathInfo(),
+    mKilled(false), mFootAttr3(false), mFootAttr1(false), mDeathInfo(),
     mBoyoMng(this), mIceMng(this),
     mTimer1(0), mTimer2(0), mCombo(dEnCombo_c::COMBO_REGULAR), mFumiProc(this)
 {
@@ -727,15 +727,15 @@ u32 dEn_c::EnBgCheckWall() {
 }
 
 void dEn_c::WaterCheck(mVec3_c &pos, float h) {
-    if (mKilledByLiquid) {
+    if (mKilled) {
         return;
     }
     int waterLineRes = WaterLineProc(pos, h);
     if (waterLineRes == dBc_c::WATER_CHECK_YOGAN) {
         setDeathInfo_Smoke(nullptr);
-        mKilledByLiquid = true;
+        mKilled = true;
     } else if (waterLineRes != dBc_c::WATER_CHECK_NONE && mNoRespawn) {
-        mKilledByLiquid = true;
+        mKilled = true;
     }
 }
 

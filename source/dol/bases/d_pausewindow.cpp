@@ -266,7 +266,7 @@ void Pausewindow_c::TitleDispChkWrite() {
         pageIndex -= 10;
     }
     if (
-        dInfo_c::mGameFlag & dInfo_c::GAME_FLAG_IS_COIN_COURSE &&
+        dInfo_c::mGameFlag & dInfo_c::GAME_FLAG_IS_COIN_BATTLE &&
         info->mCourseSelectPageNum == 0 &&
         pageIndex < 5
     ) {

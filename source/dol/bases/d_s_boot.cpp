@@ -587,7 +587,7 @@ void dScBoot_c::executeState_WiiStrapDispEndWait() {
         WPAD_BUTTON_PLUS | WPAD_BUTTON_MINUS |
         WPAD_BUTTON_FS_Z | WPAD_BUTTON_FS_C
     );
-    if (mAutoAdvanceTimer <= 0 || mPad::g_currentCore->downTrigger(buttons) || dInfo_c::mGameFlag & 0x80000) {
+    if (mAutoAdvanceTimer <= 0 || mPad::g_currentCore->downTrigger(buttons) || dInfo_c::mGameFlag & dInfo_c::GAME_FLAG_AUTO_SKIP) {
         mStateMgr.changeState(StateID_WiiStrapFadeOut);
     }
 }
@@ -681,7 +681,7 @@ void dScBoot_c::executeState_ControllerInformationDispEndWait() {
         WPAD_BUTTON_PLUS | WPAD_BUTTON_MINUS |
         WPAD_BUTTON_FS_Z | WPAD_BUTTON_FS_C
     );
-    if (mPad::g_currentCore->downTrigger(buttons) || dInfo_c::mGameFlag & 0x80000) {
+    if (mPad::g_currentCore->downTrigger(buttons) || dInfo_c::mGameFlag & dInfo_c::GAME_FLAG_AUTO_SKIP) {
         mpControllerInformation->mState = dControllerInformation_c::END;
         mAutoAdvanceTimer = 0;
     }
@@ -818,7 +818,7 @@ void dScBoot_c::initializeState_ButtonInputWait() {
 }
 
 void dScBoot_c::executeState_ButtonInputWait() {
-    if (mPad::g_currentCore->downTrigger(WPAD_BUTTON_A | WPAD_BUTTON_2) || dInfo_c::mGameFlag & 0x80000) {
+    if (mPad::g_currentCore->downTrigger(WPAD_BUTTON_A | WPAD_BUTTON_2) || dInfo_c::mGameFlag & dInfo_c::GAME_FLAG_AUTO_SKIP) {
         dReset::Manage_c::GetInstance()->ActiveSaveWindow(true);
         mStateMgr.changeState(StateID_WindowExitWait);
     }

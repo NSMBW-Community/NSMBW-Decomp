@@ -22,9 +22,11 @@ public:
     /// @unofficial
     /// @todo Fill out this enum.
     enum GAME_FLAG_e {
-        GAME_FLAG_0 = BIT_FLAG(0),
-        GAME_FLAG_4 = BIT_FLAG(4),
-        GAME_FLAG_IS_COIN_COURSE = BIT_FLAG(6)
+        GAME_FLAG_DISABLE_ACTOR_CREATE = BIT_FLAG(0), ///< Disables map actor creation.
+        GAME_FLAG_MULTIPLAYER_MODE = BIT_FLAG(4), ///< Whether the game is in a multiplayer mode.
+        GAME_FLAG_IS_FREE_MODE = BIT_FLAG(5), ///< Whether the game is in Free Mode.
+        GAME_FLAG_IS_COIN_BATTLE = BIT_FLAG(6), ///< Whether the game is in Coin Battle mode.
+        GAME_FLAG_AUTO_SKIP = BIT_FLAG(19), ///< Whether to automatically skip the Wii strap and controller information screens.
     };
 
     struct enemy_s {

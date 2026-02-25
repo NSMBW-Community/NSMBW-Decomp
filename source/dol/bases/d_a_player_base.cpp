@@ -79,7 +79,7 @@ daPlBase_c::daPlBase_c() :
     changeState(StateID_None);
     mAttentionMode = 3;
     mViewLimitPadding = 16.0f;
-    mEatBehaviour = EAT_TYPE_NONE;
+    mEatBehavior = EAT_TYPE_NONE;
 }
 
 daPlBase_c::~daPlBase_c() {
@@ -3964,7 +3964,7 @@ void daPlBase_c::executeDemoGoal_KimePose() {
                     }
                 }
             } else {
-                if (dInfo_c::mGameFlag & 0x10 && dInfo_c::mGameFlag & 0x40) {
+                if (dInfo_c::mGameFlag & dInfo_c::GAME_FLAG_MULTIPLAYER_MODE && dInfo_c::mGameFlag & dInfo_c::GAME_FLAG_IS_COIN_BATTLE) {
                     if (mGoalDemoIndex == 0) {
                         SndAudioMgr::sInstance->startSystemSe(SE_OBJ_GOAL_GET_COIN_BONUS, 1);
                     }

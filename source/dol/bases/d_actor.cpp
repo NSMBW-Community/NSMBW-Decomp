@@ -48,7 +48,7 @@ dActor_c::dActor_c() :
     mVisibleAreaSize(0.0f, 0.0f), mVisibleAreaOffset(0.0f, 0.0f),
     mMaxBound(0.0f, 0.0f, 0.0f, 0.0f),
     mpSpawnFlags(nullptr), mpDeleteVal(nullptr),
-    mEatenByID(BASE_ID_NULL), mEatBehaviour(EAT_TYPE_EAT_PERMANENT),
+    mEatenByID(BASE_ID_NULL), mEatBehavior(EAT_TYPE_DRINK),
     mAttentionMode(0), mPlayerNo(-1),
     mNoRespawn(false) {
 
