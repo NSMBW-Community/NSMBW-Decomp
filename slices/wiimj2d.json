@@ -428,6 +428,14 @@
             }
         },
         {
+            "source": "dol/bases/d_wii_strap_screen.cpp",
+            "memoryRanges": {
+                ".text": "0x108900-0x108db0",
+                ".data": "0x24a78-0x24ac8",
+                ".sdata": "0x1bc0-0x1bf0"
+            }
+        },
+        {
             "source": "dol/bases/d_a_iceball.cpp",
             "memoryRanges": {
                 ".text": "0x11cc70-0x11e5c0",

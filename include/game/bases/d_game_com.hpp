@@ -1,6 +1,8 @@
 #pragma once
+#include "revolution/SC/scapi.h"
 #include <types.h>
 #include <nw4r/lyt.h>
+#include <revolution/sc.h>
 #include <game/mLib/m_3d.hpp>
 #include <game/mLib/m_vec.hpp>
 #include <game/sLib/s_RangeData.hpp>
@@ -37,6 +39,12 @@ namespace dGameCom {
     bool isGameStop(ulong flag);
     void clearGameStop(); ///< Resets the game stop state.
     void setGameStop();
+
+    //////////////////
+    // Language API //
+    //////////////////
+
+    SCLanguage GetLanguageHBM();
 
     ////////////////////////
     // Model Lighting API //
