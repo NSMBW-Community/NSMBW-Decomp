@@ -375,6 +375,13 @@
             }
         },
         {
+            "source": "dol/bases/d_util_frame_counter.cpp",
+            "memoryRanges": {
+                ".text": "0xe1ac0-0xe1c90",
+                ".sdata2": "0x1cd0-0x1cd8"
+            }
+        },
+        {
             "source": "dol/bases/d_wm_actor.cpp",
             "memoryRanges": {
                 ".text": "0xec0a0-0xec480",
