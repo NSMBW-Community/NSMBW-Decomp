@@ -3,7 +3,7 @@
 #include <game/bases/d_scene.hpp>
 #include <game/bases/d_wii_strap_screen.hpp>
 #include <game/bases/d_controller_information.hpp>
-#include <game/bases/d_cursor_select.hpp>
+#include <game/bases/d_SelectCursor.hpp>
 #include <game/bases/d_yes_no_window.hpp>
 #include <game/sLib/s_State.hpp>
 

@@ -6,7 +6,7 @@ dSelectCursor_c *dSelectCursor_c::m_instance = nullptr;
 
 dSelectCursor_c::dSelectCursor_c() {
     m_instance = this;
-    mIsLoaded = false;
+    mHasLoadedLayout = false;
 }
 
 dSelectCursor_c::~dSelectCursor_c() {
@@ -14,7 +14,6 @@ dSelectCursor_c::~dSelectCursor_c() {
 }
 
 int dSelectCursor_c::create() {
-
     static const char *AnmNameTbl[ANIM_COUNT] = {
         "select_cursor_04_loopCursor.brlan"
     };
@@ -23,7 +22,9 @@ int dSelectCursor_c::create() {
         "A00_cursor"
     };
 
-    static const int ANIME_INDEX_TBL[ANIM_COUNT] = { 0 };
+    static const int ANIME_INDEX_TBL[ANIM_COUNT] = {
+        ANIM_CURSOR
+    };
 
     static const char *PPANE_TABLE[P_COUNT] = {
         "P_cursor_00",
@@ -41,7 +42,7 @@ int dSelectCursor_c::create() {
     };
 
 
-    if (mIsLoaded) {
+    if (mHasLoadedLayout) {
         return SUCCEEDED;
     }
 
@@ -49,11 +50,11 @@ int dSelectCursor_c::create() {
         return NOT_READY;
     }
 
-    for (int i = 0; i < ARRAY_SIZE(mLayouts); i++) {
+    for (int i = 0; i < LAYOUT_COUNT; i++) {
         mLayouts[i].mBase.mpResAccessor = &mResLoader;
     }
 
-    for (int i = 0; i < (int) ARRAY_SIZE(mLayouts); i++) {
+    for (int i = 0; i < LAYOUT_COUNT; i++) {
         mLayouts[i].mBase.build("select_cursor_04.brlyt", nullptr);
         mLayouts[i].mBase.AnimeResRegister(AnmNameTbl, ANIM_COUNT);
         mLayouts[i].mBase.GroupRegister(GROUP_NAME_DT, ANIME_INDEX_TBL, ANIM_COUNT);
@@ -61,26 +62,24 @@ int dSelectCursor_c::create() {
         mLayouts[i].mBase.PPaneRegister(PPANE_TABLE, mLayouts[i].mpPicturePanes, P_COUNT);
         mLayouts[i].mBase.NPaneRegister(NPANE_TABLE, mLayouts[i].mpNullPanes, N_COUNT);
         mLayouts[i].mpRootPane->SetVisible(false);
-
         Cancel(i);
 
-        if (i == 4) {
+        if (i == UNK_4) {
             mLayouts[i].mBase.mDrawOrder = 14;
         } else {
             mLayouts[i].mBase.mDrawOrder = 147;
         }
 
-        mLayouts[i].mBase.LoopAnimeStartSetup(0);
+        mLayouts[i].mBase.LoopAnimeStartSetup(ANIM_CURSOR);
     }
 
-    mIsLoaded = true;
-
+    mHasLoadedLayout = true;
     return SUCCEEDED;
 }
 
 
 int dSelectCursor_c::execute() {
-    for (int i = 0; i < (int) ARRAY_SIZE(mLayouts); i++) {
+    for (int i = 0; i < LAYOUT_COUNT; i++) {
         if (mLayouts[i].mIsActive) {
             PosSet(i);
             mLayouts[i].mBase.AnimePlay();
@@ -92,7 +91,7 @@ int dSelectCursor_c::execute() {
 }
 
 int dSelectCursor_c::draw() {
-    for (int i = 0; i < (int) ARRAY_SIZE(mLayouts); i++) {
+    for (int i = 0; i < LAYOUT_COUNT; i++) {
         if (mLayouts[i].mIsActive) {
             mLayouts[i].mBase.entry();
         }
@@ -106,7 +105,7 @@ int dSelectCursor_c::doDelete() {
         return NOT_READY;
     }
 
-    for (int i = 0; i < (int) ARRAY_SIZE(mLayouts); i++) {
+    for (int i = 0; i < LAYOUT_COUNT; i++) {
         if (!mLayouts[i].mBase.doDelete()) {
             return NOT_READY;
         }
@@ -118,61 +117,60 @@ int dSelectCursor_c::doDelete() {
 void dSelectCursor_c::PosSet(int layoutId) {
     mLayouts[layoutId].mpRootPane->SetVisible(true);
 
-    mVec2_c pos;
-    float paneMidX, paneMidY, paneScaleX, paneScaleY;
+    mVec2_c panePos;
+    float paneHalfWidth, paneHalfHeight, paneScaleX, paneScaleY;
 
     paneScaleX = mLayouts[layoutId].mPaneGlbMtxScale.x;
     paneScaleY = mLayouts[layoutId].mPaneGlbMtxScale.y;
 
-    paneMidX = mLayouts[layoutId].mPaneSize.width / 2.0f;
-    paneMidY = mLayouts[layoutId].mPaneSize.height / 2.0f;
+    paneHalfWidth = mLayouts[layoutId].mPaneSize.width / 2.0f;
+    paneHalfHeight = mLayouts[layoutId].mPaneSize.height / 2.0f;
 
-    pos.x = mLayouts[layoutId].mPaneGlbMtxTrans.x + mLayouts[layoutId].mRootPaneOffset.x;
-
-    if (mLayouts[layoutId].mPaneBasePosH == 0) {
-        pos.x += paneMidX * paneScaleX;
-    } else if (mLayouts[layoutId].mPaneBasePosH == 2) {
-        pos.x -= paneMidX * paneScaleX;
+    panePos.x = mLayouts[layoutId].mPaneGlbMtxTrans.x + mLayouts[layoutId].mRootPaneOffset.x;
+    if (mLayouts[layoutId].mPaneBasePosH == nw4r::lyt::HORIZONTALPOSITION_LEFT) {
+        panePos.x += paneHalfWidth * paneScaleX;
+    } else if (mLayouts[layoutId].mPaneBasePosH == nw4r::lyt::HORIZONTALPOSITION_RIGHT) {
+        panePos.x -= paneHalfWidth * paneScaleX;
     }
 
-    pos.y = mLayouts[layoutId].mPaneGlbMtxTrans.y + mLayouts[layoutId].mRootPaneOffset.y;
-    if (mLayouts[layoutId].mPaneBasePosV == 0) {
-        pos.y -= paneMidY * paneScaleY;
-    } else if (mLayouts[layoutId].mPaneBasePosV == 2) {
-        pos.y += paneMidY * paneScaleY;
+    panePos.y = mLayouts[layoutId].mPaneGlbMtxTrans.y + mLayouts[layoutId].mRootPaneOffset.y;
+    if (mLayouts[layoutId].mPaneBasePosV == nw4r::lyt::VERTICALPOSITION_TOP) {
+        panePos.y -= paneHalfHeight * paneScaleY;
+    } else if (mLayouts[layoutId].mPaneBasePosV == nw4r::lyt::VERTICALPOSITION_BOTTOM) {
+        panePos.y += paneHalfHeight * paneScaleY;
     }
 
-    mLayouts[layoutId].mpRootPane->SetTranslate(mVec3_c(pos, 0.0f));
-
+    mLayouts[layoutId].mpRootPane->SetTranslate(mVec3_c(panePos, 0.0f));
     float hOffset = mLayouts[layoutId].mPaneOffset.width;
     float vOffset = mLayouts[layoutId].mPaneOffset.height;
-    for (int i = 1; i < ARRAY_SIZE(mLayouts); i++) {
-        mVec3_c pos2;
-        if ((i == 1) || (i == 3)) {
-            pos2.x = paneMidX * paneScaleX;
-            pos2.x = -pos2.x;
-            pos2.x -= hOffset;
+
+    for (int cornerPane = N_LU_00; cornerPane < N_COUNT; cornerPane++) {
+        mVec3_c cornerPos;
+        if (cornerPane == N_LU_00 || cornerPane == N_LD_00) {
+            cornerPos.x = paneHalfWidth * paneScaleX;
+            cornerPos.x = -cornerPos.x;
+            cornerPos.x -= hOffset;
         } else {
-            pos2.x = paneMidX * paneScaleX;
-            pos2.x += hOffset;
+            cornerPos.x = paneHalfWidth * paneScaleX;
+            cornerPos.x += hOffset;
         }
 
-        if ((i == 1) || (i == 2)) {
-            pos2.y = paneMidY * paneScaleY;
-            pos2.y += vOffset;
+        if (cornerPane == N_LU_00 || cornerPane == N_RU_00) {
+            cornerPos.y = paneHalfHeight * paneScaleY;
+            cornerPos.y += vOffset;
         } else {
-            pos2.y = paneMidY * paneScaleY;
-            pos2.y = -pos2.y;
-            pos2.y -= vOffset;
+            cornerPos.y = paneHalfHeight * paneScaleY;
+            cornerPos.y = -cornerPos.y;
+            cornerPos.y -= vOffset;
         }
 
-        pos2.z = 0.0f;
-        mLayouts[layoutId].mpNullPanes[i]->SetTranslate(pos2);
+        cornerPos.z = 0.0f;
+        mLayouts[layoutId].mpNullPanes[cornerPane]->SetTranslate(cornerPos);
     }
 
     if (mLayouts[layoutId].mDoFade) {
         mLayouts[layoutId].mPaneAlpha -= (255 / 10) + 1;
-        mLayouts[layoutId].mpNullPanes[0]->SetAlpha(mLayouts[layoutId].mPaneAlpha);
+        mLayouts[layoutId].mpNullPanes[N_cursor_00]->SetAlpha(mLayouts[layoutId].mPaneAlpha);
 
         if (mLayouts[layoutId].mPaneAlpha < 0) {
             mLayouts[layoutId].mPaneAlpha = 0;
@@ -190,16 +188,14 @@ void dSelectCursor_c::Cancel(int layoutId) {
     }
 }
 
-void dSelectCursor_c::SetPane(const nw4r::lyt::Pane *pane, int layoutId, bool dontSetAllDrawOrder) {
+void dSelectCursor_c::SetPane(const nw4r::lyt::Pane *pane, int layoutId, bool forceTopDrawOrder) {
     mLayouts[layoutId].mIsActive = true;
 
     strcpy(mLayouts[layoutId].mPaneName, pane->GetName());
-
     mLayouts[layoutId].mPaneSize.width = pane->GetSize().width;
     mLayouts[layoutId].mPaneSize.height = pane->GetSize().height;
 
     nw4r::math::MTX34 mtx = pane->GetGlobalMtx();
-
     mLayouts[layoutId].mPaneGlbMtxTrans.x = mtx._03;
     mLayouts[layoutId].mPaneGlbMtxTrans.y = mtx._13;
     mLayouts[layoutId].mPaneGlbMtxScale.x = mtx._00;
@@ -216,11 +212,11 @@ void dSelectCursor_c::SetPane(const nw4r::lyt::Pane *pane, int layoutId, bool do
     mLayouts[layoutId].mPaneAlpha = 0xff;
     mLayouts[layoutId].mDoFade = false;
 
-    if (dontSetAllDrawOrder) {
+    if (forceTopDrawOrder) {
         mLayouts[layoutId].mBase.mDrawOrder = 152;
     } else {
-        for (int i = 0; i < ARRAY_SIZE(mLayouts); i++) {
-            if (i == 4) {
+        for (int i = 0; i < LAYOUT_COUNT; i++) {
+            if (i == UNK_4) {
                 mLayouts[i].mBase.mDrawOrder = 14;
             } else {
                 mLayouts[i].mBase.mDrawOrder = 147;
@@ -231,9 +227,9 @@ void dSelectCursor_c::SetPane(const nw4r::lyt::Pane *pane, int layoutId, bool do
 
 void dSelectCursor_c::SetAlpha(const nw4r::lyt::Pane *pane, int layoutId) {
     u8 alpha = pane->GetGlbAlpha();
-    Layout_c & layout = mLayouts[layoutId];
+    Layout_c &layout = mLayouts[layoutId];
 
-    for (int i = 0; i < ARRAY_SIZE(layout.mpPicturePanes); i++) {
+    for (int i = 0; i < P_COUNT; i++) {
         layout.mpPicturePanes[i]->SetAlpha(alpha);
     }
 }

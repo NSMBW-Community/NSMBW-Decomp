@@ -1,7 +1,7 @@
 #include <game/bases/d_pausewindow.hpp>
 #include <game/bases/d_game_com.hpp>
 #include <game/bases/d_scene.hpp>
-#include <game/bases/d_cursor_select.hpp>
+#include <game/bases/d_SelectCursor.hpp>
 #include <game/bases/d_info.hpp>
 #include <game/bases/d_s_world_map_static.hpp>
 #include <game/bases/d_wm_lib.hpp>

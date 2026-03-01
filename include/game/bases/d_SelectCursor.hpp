@@ -4,9 +4,25 @@
 #include <game/bases/d_lytbase.hpp>
 #include <game/bases/d_2d/multi.hpp>
 
-/// @brief A 2D layout element that adds little L-shaped rectangles around the
-/// corners of a parent layout @ref nw4r::lyt::Pane.
+/// @brief Manages the animated L-shaped corner rectangles around selected buttons.
+/// @details Owns and updates multiple @ref dSelectCursor_c::Layout_c "cursor layout instances"
+/// that can be attached to target @ref nw4r::lyt::Pane "panes".
+/// @todo Add the draw order values to the dedicated enum.
+/// @ingroup bases
 class dSelectCursor_c : public dBase_c {
+public:
+
+    /// @brief The possible cursor slots.
+    /// @todo Figure out the behaviour differences between slots and give each one a name.
+    /// @unofficial
+    enum LAYOUT_e {
+        UNK_0,
+        UNK_1,
+        UNK_2,
+        UNK_3,
+        UNK_4,
+        LAYOUT_COUNT
+    };
 
     /// @brief The null panes used in the layout.
     /// @unofficial
@@ -29,51 +45,69 @@ class dSelectCursor_c : public dBase_c {
         P_COUNT
     };
 
-    /// @brief The animations used for the layout.
+    /// @brief The animations used in the layout.
     /// @unofficial
     enum ANIM_e {
         ANIM_CURSOR,
         ANIM_COUNT
     };
 
-public:
+    /// @brief A cursor layout instance.
     class Layout_c {
-        public:
-        LytBase_c mBase;
+    public:
+        LytBase_c mBase; ///< The layout of the instance.
         nw4r::lyt::Pane *mpRootPane; ///< The root pane of the view.
         nw4r::lyt::Picture *mpPicturePanes[P_COUNT]; ///< The picture panes of the view.
         nw4r::lyt::Pane *mpNullPanes[N_COUNT]; ///< The null panes of the view.
         bool mIsActive; ///< Whether the layout is drawn.
+
         char mPaneName[100]; ///< The name of the parent pane.
         nw4r::lyt::Size mPaneSize; ///< The size of the parent pane.
-        nw4r::lyt::Size mPaneOffset; ///< Always (0, 0).
+        nw4r::lyt::Size mPaneOffset; ///< The offset of the parent pane.
         mVec2_c mPaneGlbMtxScale; ///< The scale of the parent pane's global matrix.
-        mVec2_c mPaneGlbMtxTrans; ///< The transform of the parent pane's global matrix.
-        u8 mPad[4];
-        mVec2_c mRootPaneOffset; ///< Always (0, 0).
-        float m_254; ///< Only set to 0, never read.
-        u8 mPaneBasePosH;
-        u8 mPaneBasePosV;
-        int mPaneAlpha; ///< The opacity of the N_cursor_00 pane.
-        bool mDoFade; ///< Always false. If set, it fades out the opacity of the N_cursor_00 pane then deactivates.
+        mVec2_c mPaneGlbMtxTrans; ///< The translation of the parent pane's global matrix.
+
+        u32 m_248; ///< @unused
+        mVec2_c mRootPaneOffset; ///< Additional offset from the layout root pane. @unused
+        float m_254; ///< Only set to 0, never read. @unused
+
+        u8 mPaneBasePosH; ///< The horizontal base position of the parent pane. Value is a nw4r::lyt::HorizontalPosition.
+        u8 mPaneBasePosV; ///< The vertical base position of the parent pane. Value is a nw4r::lyt::VerticalPosition.
+        int mPaneAlpha; ///< The opacity of the layout.
+        bool mDoFade; ///< Whether the layout should be faded out and deactivated.
     };
 
-    dSelectCursor_c();
-    virtual ~dSelectCursor_c();
+    dSelectCursor_c(); ///< @copydoc dBase_c::dBase_c
+    virtual ~dSelectCursor_c(); ///< @copydoc dBase_c::~dBase_c
 
     int create();
     int doDelete();
     int execute();
     int draw();
 
+    /// @brief Updates the position of an attached cursor layout.
+    /// @param layoutId The cursor slot index.
     void PosSet(int layoutId);
+
+    /// @brief Deactivates and hides the specified cursor layout.
+    /// @param layoutId The cursor slot index.
     void Cancel(int layoutId);
-    void SetPane(const nw4r::lyt::Pane *pane, int layoutId, bool dontSetAllDrawOrder);
+
+    /// @brief Attaches a cursor to the given pane.
+    /// @param pane The pane to attach the cursor to.
+    /// @param layoutId The cursor slot index.
+    /// @param forceTopDrawOrder If @p true , sets this cursor's draw order to a higher priority value.
+    /// If @p false , it restores the default draw order for all cursors.
+    void SetPane(const nw4r::lyt::Pane *pane, int layoutId, bool forceTopDrawOrder);
+
+    /// @brief Sets the alpha of a cursor to match the given pane.
+    /// @param pane The source pane whose alpha value will be copied.
+    /// @param layoutId The cursor slot index.
     void SetAlpha(const nw4r::lyt::Pane *pane, int layoutId);
 
-    d2d::ResAccMultLoader_c mResLoader;
-    Layout_c mLayouts[5];
-    bool mIsLoaded;
+    d2d::ResAccMultLoader_c mResLoader; ///< The resource loader for the layout.
+    Layout_c mLayouts[LAYOUT_COUNT]; ///< The cursor layout instances.
+    bool mHasLoadedLayout; ///< Whether the layout has been loaded.
 
-    static dSelectCursor_c *m_instance;
+    static dSelectCursor_c *m_instance; ///< The static instance of the selection cursor manager.
 };

@@ -3,7 +3,7 @@
 #include <game/framework/f_profile_name.hpp>
 #include <game/bases/d_audio.hpp>
 #include <game/bases/d_game_com.hpp>
-#include <game/bases/d_cursor_select.hpp>
+#include <game/bases/d_SelectCursor.hpp>
 #include <game/snd/snd_audio_mgr.hpp>
 #include <game/bases/d_info.hpp>
 #include <game/bases/d_s_world_map_static.hpp>
