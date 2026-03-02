@@ -1,28 +1,47 @@
 #pragma once
 #include <game/bases/d_scene.hpp>
+#include <game/bases/d_fader.hpp>
 #include <game/mLib/m_vec.hpp>
 #include <constants/game_constants.h>
 
 class dScStage_c : public dScene_c {
 public:
 
+    enum Exit_e {
+        EXIT_0,
+        EXIT_1,
+        EXIT_2,
+        EXIT_3
+    };
+
+    /// @unofficial
+    enum GameMode_e {
+        GAME_MODE_NORMAL,
+        GAME_MODE_TITLE_SCREEN = 2,
+        GAME_MODE_REPLAY = 4
+    };
+
     /// @brief The possible stage loop types.
-    enum LOOP_TYPE_e {
+    /// @unofficial
+    enum LoopType_e {
         LOOP_NONE, ///< No stage looping occurs.
         LOOP_EDGES, ///< The stage loops around on the zone edges. Only works for specific zone sizes.
         LOOP_SECTION, ///< The stage loops in specific sections.
-        LOOP_COUNT,
+        LOOP_COUNT
     };
 
     char pad[0x1198];
     u8 mCurrWorld;
     u8 mCurrCourse;
     u8 mCurrFile;
-    u8 mCurrArea;
+    u8 mCurrAreaNo;
+    u8 mCurrLayer;
 
-    u8 getCurrArea() const { return mCurrArea; }
+    u8 getCurrArea() const { return mCurrAreaNo; }
 
     static dScStage_c *getInstance() { return m_instance; }
+    static NOINLINE Exit_e getExitMode() { return m_exitMode; }
+
     static float getLoopPosX(float x);
     static u32 m_exeFrame;
     static int m_loopType;
@@ -38,6 +57,12 @@ public:
 
     static void setTitleReplayRandomTable();
 
+    static void setNextScene(u16, int, Exit_e, dFader_c::fader_type_e);
+
+    static GameMode_e m_gameMode;
+    static int m_miniGame;
+    static Exit_e m_exitMode;
+    static bool m_isStaffCredit;
     static changePosFunc changePos;
     static dScStage_c *m_instance;
 };

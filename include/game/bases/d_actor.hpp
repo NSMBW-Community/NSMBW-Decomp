@@ -35,8 +35,8 @@ public:
     enum EAT_BEHAVIOR_e {
         EAT_TYPE_NONE, ///< The actor cannot be eaten.
         EAT_TYPE_EAT, ///< The actor can be eaten and then spat out.
-        EAT_TYPE_EAT_PERMANENT, ///< The actor is consumed permanently after being eaten (default).
-        EAT_TYPE_UNK3, ///< Unknown behaviour. Used on Fruits, Pokeys and Giant Fuzzies.
+        EAT_TYPE_DRINK, ///< The actor is consumed permanently after being eaten (default).
+        EAT_TYPE_DRINK_BIG, ///< Used on Fruits, Pokeys and Giant Fuzzies. Creates an egg if applicable.
         EAT_TYPE_FIREBALL, ///< Yoshi can spit a fireball after eating the actor.
         EAT_TYPE_ICEBALL, ///< Yoshi can spit an iceball after eating the actor.
     };
@@ -102,7 +102,7 @@ public:
     virtual void block_hit_init(); ///< Callback for when a block directly beneath the actor is hit.
 
     virtual bool vf68(dBg_ctr_c *collider) { return true; } ///< Unknown, related to collision. @unofficial
-    virtual s8 *getPlrNo() { return &mPlayerNo; } ///< Gets the player number associated with the actor. See #mPlayerNo.
+    virtual s8 &getPlrNo() { return mPlayerNo; } ///< Gets the player number associated with the actor. See #mPlayerNo.
     virtual mVec2_c getLookatPos() const; ///< Gets the position players look to when focused on the actor.
 
     /// @brief Returns whether the actor can be carried.
@@ -363,14 +363,14 @@ public:
 
     fBaseID_e mEatenByID; ///< The @ref fBase_c::mUniqueID "unique identifier" of the eating actor.
     u8 mEatState; ///< The actor's eat state. Value is a EAT_STATE_e.
-    u8 mEatBehaviour; ///< The actor's eat behaviour. Value is a EAT_BEHAVIOR_e.
+    u8 mEatBehavior; ///< The actor's eat behaviour. Value is a EAT_BEHAVIOR_e.
     mVec3_c mPreEatScale; ///< The actor's scale before being eaten.
 
     EAT_POINTS_e mEatPoints; ///< @copydoc EAT_POINTS_e
     int mAttentionMode; ///< @todo Document this field and its values.
     u32 mAttentionFlags; ///< @todo Document this field and its values.
 
-    dPropelParts_c *mPropelParts; ///< The actor's propeller effect manager.
+    dPropelParts_c *mpPropelParts; ///< The actor's propeller effect manager.
     u8 mKind; ///< The actor's kind. Value is a STAGE_ACTOR_KIND_e.
     s8 mPlayerNo; ///< The player associated with the actor, @p -1 if not associated to any player.
     u8 mExecStopMask; ///< The mask required to disable the @p execute operation for the actor.
@@ -383,6 +383,18 @@ public:
     void setDefaultMaxBound() {
         mMaxBound.set(smc_CULL_XLIMIT, smc_CULL_YLIMIT, smc_CULL_AREA_XLIMIT, smc_CULL_AREA_YLIMIT);
     }
+
+    void setVisibleArea(const mVec2_POD_c &offset, const mVec2_POD_c &size) {
+        mVisibleAreaOffset.set(offset.x, offset.y);
+        mVisibleAreaSize.set(size.x, size.y);
+    }
+
+    float getVisOffsetX() { return mVisibleAreaOffset.x; }
+    float getVisOffsetY() { return mVisibleAreaOffset.y; }
+    float getVisSizeX() { return mVisibleAreaSize.x; }
+    float getVisSizeY() { return mVisibleAreaSize.y; }
+    float getVisTop() { return mPos.y + getVisOffsetY() + getVisSizeY(); }
+    float getVisBottom() { return mPos.y + getVisOffsetY() - getVisSizeY(); }
 
     u8 getKindMask() { return 1 << mKind; }
 

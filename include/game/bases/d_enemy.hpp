@@ -220,7 +220,7 @@ public:
     virtual void yoshifumiEffect(dActor_c *actor);
     void fumistepSE(dActor_c *actor);
     void yoshifumistepSE(dActor_c *actor);
-    void PlayerFumiJump(dActor_c *actor, float);
+    void PlayerFumiJump(dActor_c *actor, float jumpSpeed);
     void setFumiComboScore(dActor_c *actor);
 
     // Nonvirtuals
@@ -275,7 +275,7 @@ public:
     mVec3_c mFootPush2;
     u8 mDeathFallDirection; ///< The X direction to move towards on death.
     u8 mIceDeathDirection; ///< The X direction to move towards on ice death.
-    bool mKilledByLiquid; ///< Whether the enemy was killed by falling in a liquid.
+    bool mKilled; ///< Whether the enemy was killed.
     u8 mPad2[1];
     bool mFootAttr3;
     bool mInLiquid; ///< Whether the enemy is in a liquid.

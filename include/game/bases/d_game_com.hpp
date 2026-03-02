@@ -18,6 +18,7 @@ namespace dGameCom {
     void initRandomSeed(); ///< Initializes the random seed used for randomness.
     u32 getRandomSeed(); ///< Gets a seed used for randomness.
     int rndInt(size_t max);
+    float rnd();
 
     ////////////////////
     // Game Pause API //
@@ -80,6 +81,8 @@ namespace dGameCom {
     /// @param fukidashiAction The action prompt type to be hidden.
     void hideFukidashiForSession(int playerId, int fukidashiAction);
 
+    void fn_800b37b0(int playerId, int fukidashiAction); ///< @unofficial
+
     ////////////////
     // Other APIs //
     ////////////////
@@ -90,6 +93,7 @@ namespace dGameCom {
     void Player1upColor(LytTextBox_c *, int);
     void getGlbPosToLyt(mVec3_c &);
     bool someCheck(mVec3_c *a, sRangeDataF *b); ///< @unofficial
+    void FUN_800b3780(int, int); ///< @unofficial
 
     bool checkRectangleOverlap(mVec3_c *, mVec3_c *, mVec3_c *, mVec3_c *, float); ///< @unofficial
 

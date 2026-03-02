@@ -369,7 +369,7 @@ void dSmallScore_c::PositionSet() {
 void dSmallScore_c::CreateSmallScore(const mVec3_c &pos, int popupType, int playerType) {
     mpRootPane->SetVisible(false);
 
-    if ((dInfo_c::mGameFlag & dInfo_c::GAME_FLAG_IS_COIN_COURSE) && popupType <= POPUP_TYPE_8000)
+    if ((dInfo_c::mGameFlag & dInfo_c::GAME_FLAG_IS_COIN_BATTLE) && popupType <= POPUP_TYPE_8000)
         return;
 
     mPopupType = popupType;

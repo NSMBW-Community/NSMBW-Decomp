@@ -51,10 +51,24 @@ struct sBgData {
 };
 
 /// @unofficial
+enum NextGotoFlags_e {
+    NEXT_GOTO_RAIL_REVERSE = BIT_FLAG(0),
+    NEXT_GOTO_WATER_TANK = BIT_FLAG(2),
+    NEXT_GOTO_RAIL = BIT_FLAG(3)
+};
+
+/// @unofficial
 struct sNextGotoData {
     u8 mPad1[0x8];
     u8 mID;
-    u8 mPad2[0xb];
+    u8 mDestFile;
+    u8 mDestID;
+    u8 mType;
+    u8 mPad3[2];
+    u8 mLayer;
+    u8 mRailID;
+    u16 mFlags; ///< See NextGotoFlags_e.
+    u8 mPad4[0x2];
 };
 
 /// @unofficial

@@ -23,6 +23,8 @@ public:
         FLAG_2 = BIT_FLAG(2)
     };
 
+    void shockMotor(s8, TYPE_SHOCK_e, int, bool);
+
     float mSpeed;
     float mResult;
     float mMultiplier;
@@ -41,6 +43,8 @@ public:
     u8 mPadding[2];
     int mPOWLength;
     int mMPGPLength;
+
+    static dQuake_c* getInstance() { return m_instance; }
 
     static dQuake_c *m_instance;
 };

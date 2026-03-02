@@ -43,7 +43,8 @@ enum CC_KIND_e {
     CC_KIND_ITEM,
     CC_KIND_TAMA,
     CC_KIND_KILLER,
-    CC_KIND_GOAL_POLE
+    CC_KIND_GOAL_POLE,
+    CC_KIND_COUNT = CC_KIND_GOAL_POLE // Goal pole is special and doesn't count
 };
 
 ///< @unofficial
@@ -70,21 +71,26 @@ enum CC_ATTACK_e {
     CC_ATTACK_YOSHI_BULLET,
     CC_ATTACK_YOSHI_FIRE,
     CC_ATTACK_ICE_2,
-    CC_ATTACK_SAND_PILLAR
+    CC_ATTACK_SAND_PILLAR,
+    CC_FLAG_ATTACK_ALL = 0xFFFFFFFF
 };
 
 class dCc_c;
+
+struct sCcDatNew {
+    mVec2_POD_c mOffset; ///< The offset of the collider.
+
+    ///< @brief The size of the collider.
+    ///< Note: This is the distance from the center to the edge, so half the actual size.
+    mVec2_POD_c mSize;
+};
 
 /**
 * @brief A structure that contains information about a collider.
 * @unofficial
 */
 struct sCcDatNewF {
-    mVec2_POD_c mOffset; ///< The offset of the collider.
-
-    ///< @brief The size of the collider.
-    ///< Note: This is the distance from the center to the edge, so half the actual size.
-    mVec2_POD_c mSize;
+    sCcDatNew mBase; ///< Base collider data.
 
     u8 mKind; ///< The type of this collider. See CC_KIND_e.
     u8 mAttack; ///< The attack type of this collider. See CC_ATTACK_e.
@@ -250,6 +256,9 @@ private:
     static bool _hitCheckDaikeiLR(dCc_c *ccTrp, dCc_c *ccBox);
 
 public:
+    float getXOffset(int idx) { return mCollOffsetX[idx]; }
+    float getYOffset(int idx) { return mCollOffsetY[idx]; }
+
     dActor_c *mpOwner; ///< The actor this collider belongs to.
     dActor_c *mFriendActor; ///< A second actor that this collider will not collide with.
 
@@ -274,17 +283,17 @@ public:
     /**
      * @brief The X offset for a collision.
      *
-     * One entry per category. Each entry describes by how much the collider must be
+     * One entry per kind. Each entry describes by how much the collider must be
      * offset in the X direction in order to not collide with the other collider.
      */
-    float mCollOffsetX[8];
+    float mCollOffsetX[CC_KIND_COUNT];
     /**
      * @brief The Y offset for a collision.
      *
-     * One entry per category. Each entry describes by how much the collider must be
+     * One entry per kind. Each entry describes by how much the collider must be
      * offset in the Y direction in order to not collide with the other collider.
      */
-    float mCollOffsetY[8];
+    float mCollOffsetY[CC_KIND_COUNT];
 
     mVec2_c mCollPos; ///< The position where the last collision occurred.
 
@@ -314,6 +323,7 @@ public:
 private:
     bool mIsLinked; ///< Whether this collider has been placed in the collider list.
 
+private:
     typedef bool (*hitCheck)(dCc_c *, dCc_c *);
 
     /**

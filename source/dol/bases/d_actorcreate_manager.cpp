@@ -44,7 +44,7 @@ void dActorCreateMng_c::setMapActorCreate() {
         mDeleteVals[i] = 0;
     }
 
-    if (dInfo_c::mGameFlag & dInfo_c::GAME_FLAG_0) {
+    if (dInfo_c::mGameFlag & dInfo_c::GAME_FLAG_DISABLE_ACTOR_CREATE) {
         return;
     }
 
@@ -56,7 +56,7 @@ void dActorCreateMng_c::setMapActorCreate() {
 }
 
 void dActorCreateMng_c::setMapActorCreate_next() {
-    if (dInfo_c::mGameFlag & dInfo_c::GAME_FLAG_0) {
+    if (dInfo_c::mGameFlag & dInfo_c::GAME_FLAG_DISABLE_ACTOR_CREATE) {
         return;
     }
 
@@ -232,7 +232,7 @@ void dActorCreateMng_c::MapActorInitialCreate(sMapActorData *levelData, u16 *del
 }
 
 void dActorCreateMng_c::MapActorScroolCreateCheck() {
-    if (dInfo_c::mGameFlag & dInfo_c::GAME_FLAG_0) {
+    if (dInfo_c::mGameFlag & dInfo_c::GAME_FLAG_DISABLE_ACTOR_CREATE) {
         return;
     }
 
@@ -351,7 +351,7 @@ void dActorCreateMng_c::MapActorScroolCreateCheck() {
 
 void dActorCreateMng_c::MapActorScrollCreate(sMapActorCreateBounds *createBounds, int isScreenScroll) {
     dScStage_c *stage = dScStage_c::m_instance;
-    u8 areaNo = stage->mCurrArea;
+    u8 areaNo = stage->mCurrAreaNo;
     dCdFile_c *file = dCd_c::m_instance->getFileP(stage->mCurrFile);
 
     int mapActorCount = file->mMapActorCountByArea[areaNo];

@@ -48,7 +48,7 @@ dActor_c::dActor_c() :
     mVisibleAreaSize(0.0f, 0.0f), mVisibleAreaOffset(0.0f, 0.0f),
     mMaxBound(0.0f, 0.0f, 0.0f, 0.0f),
     mpSpawnFlags(nullptr), mpDeleteVal(nullptr),
-    mEatenByID(BASE_ID_NULL), mEatBehaviour(EAT_TYPE_EAT_PERMANENT),
+    mEatenByID(BASE_ID_NULL), mEatBehavior(EAT_TYPE_DRINK),
     mAttentionMode(0), mPlayerNo(-1),
     mNoRespawn(false) {
 
@@ -489,7 +489,7 @@ bool dActor_c::carryFukidashiCheck(int fukidashiAction, mVec2_c fukidashiTrigger
             bool canDrawFukidashi = player->isDrawingCarryFukidashi();
 
             sRangeDataF playerBoundBox;
-            player->getCcBounds(playerBoundBox);
+            player->getCcBounds(&playerBoundBox);
             mVec3_c playerPos(
                 dScStage_c::getLoopPosX(playerBoundBox.mOffset.x + player->mPos.x),
                 playerBoundBox.mOffset.y + player->mPos.y,
@@ -516,7 +516,7 @@ bool dActor_c::carryFukidashiCheck(int fukidashiAction, mVec2_c fukidashiTrigger
             bool canDrawFukidashi = player->isDrawingCarryFukidashi();
 
             sRangeDataF playerBoundBox;
-            player->getCcBounds(playerBoundBox);
+            player->getCcBounds(&playerBoundBox);
             mVec3_c playerPos(
                 dScStage_c::getLoopPosX(playerBoundBox.mOffset.x + player->mPos.x),
                 playerBoundBox.mOffset.y + player->mPos.y,
@@ -528,7 +528,7 @@ bool dActor_c::carryFukidashiCheck(int fukidashiAction, mVec2_c fukidashiTrigger
 
             bool overlap = dGameCom::checkRectangleOverlap(&minTriggerPos, &maxTriggerPos, &minPlayerPos, &maxPlayerPos, 0.0f);
             if (canDrawFukidashi && overlap) {
-                mCarryFukidashiPlayerNo = *player->getPlrNo();
+                mCarryFukidashiPlayerNo = player->getPlrNo();
             }
         }
     }
@@ -631,7 +631,7 @@ bool dActor_c::setEatGlupDown(dActor_c *eatingActor) {
         mVec3_c smallScorePos = eatingActor->mPos;
         smallScorePos.y += 40.0f;
 
-        s8 plrNo = *eatingActor->getPlrNo();
+        s8 plrNo = eatingActor->getPlrNo();
         dGameCom::CreateSmallScore(smallScorePos, yoshiEatPopupTypes[mEatPoints], plrNo, false);
 
         if (plrNo != -1) {
@@ -786,7 +786,7 @@ bool dActor_c::checkCarried(int *playerNum) {
         dAcPy_c *player = daPyMng_c::getPlayer(i);
         if (player != nullptr && fManager_c::searchBaseByID(player->mCarryActorID) == this) {
             if (playerNum != nullptr) {
-                *playerNum = *player->getPlrNo();
+                *playerNum = player->getPlrNo();
             }
             return true;
         }

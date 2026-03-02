@@ -465,7 +465,7 @@ void dScBoot_c::finalizeState_ResetWait() {}
 void dScBoot_c::initializeState_ResetFadeOut() {
     mIsResetting = true;
     dScene_c::m_isAutoFadeIn = false;
-    dFader_c::setFader(dFader_c::FADE);
+    dFader_c::setFader(dFader_c::FADER_FADE);
     mResetFadeOutStarted = dFader_c::startFadeOut(30);
     mResetFaderDone = false;
 }
@@ -520,7 +520,7 @@ void dScBoot_c::finalizeState_ResetFadeOut() {
 
 void dScBoot_c::initializeState_ResetFadeIn() {
     dReset::Manage_c::GetInstance()->ActiveSaveWindow(true);
-    dFader_c::setFader(dFader_c::FADE);
+    dFader_c::setFader(dFader_c::FADER_FADE);
     dFader_c::startFadeIn(30);
     mpWiiStrapScreen->mLayout.mpAnimGroup->setAndUpdate(0.0f);
 }
@@ -587,7 +587,7 @@ void dScBoot_c::executeState_WiiStrapDispEndWait() {
         WPAD_BUTTON_PLUS | WPAD_BUTTON_MINUS |
         WPAD_BUTTON_FS_Z | WPAD_BUTTON_FS_C
     );
-    if (mAutoAdvanceTimer <= 0 || mPad::g_currentCore->downTrigger(buttons) || dInfo_c::mGameFlag & 0x80000) {
+    if (mAutoAdvanceTimer <= 0 || mPad::g_currentCore->downTrigger(buttons) || dInfo_c::mGameFlag & dInfo_c::GAME_FLAG_AUTO_SKIP) {
         mStateMgr.changeState(StateID_WiiStrapFadeOut);
     }
 }
@@ -596,7 +596,7 @@ void dScBoot_c::finalizeState_WiiStrapDispEndWait() {}
 
 void dScBoot_c::initializeState_WiiStrapFadeOut() {
     dScene_c::m_isAutoFadeIn = false;
-    dFader_c::setFader(dFader_c::FADE);
+    dFader_c::setFader(dFader_c::FADER_FADE);
     dFader_c::startFadeOut(30);
     dHbm::Manage_c::GetInstance()->mFlags |= 0x40;
     dReset::Manage_c::GetInstance()->ActiveSaveWindow(true);
@@ -616,7 +616,7 @@ void dScBoot_c::finalizeState_WiiStrapFadeOut() {
 }
 
 void dScBoot_c::initializeState_ControllerInformationFadeIn() {
-    dFader_c::setFader(dFader_c::FADE);
+    dFader_c::setFader(dFader_c::FADER_FADE);
     dFader_c::startFadeIn(30);
     mpControllerInformation->mVisible = true;
 }
@@ -681,7 +681,7 @@ void dScBoot_c::executeState_ControllerInformationDispEndWait() {
         WPAD_BUTTON_PLUS | WPAD_BUTTON_MINUS |
         WPAD_BUTTON_FS_Z | WPAD_BUTTON_FS_C
     );
-    if (mPad::g_currentCore->downTrigger(buttons) || dInfo_c::mGameFlag & 0x80000) {
+    if (mPad::g_currentCore->downTrigger(buttons) || dInfo_c::mGameFlag & dInfo_c::GAME_FLAG_AUTO_SKIP) {
         mpControllerInformation->mState = dControllerInformation_c::END;
         mAutoAdvanceTimer = 0;
     }
@@ -818,7 +818,7 @@ void dScBoot_c::initializeState_ButtonInputWait() {
 }
 
 void dScBoot_c::executeState_ButtonInputWait() {
-    if (mPad::g_currentCore->downTrigger(WPAD_BUTTON_A | WPAD_BUTTON_2) || dInfo_c::mGameFlag & 0x80000) {
+    if (mPad::g_currentCore->downTrigger(WPAD_BUTTON_A | WPAD_BUTTON_2) || dInfo_c::mGameFlag & dInfo_c::GAME_FLAG_AUTO_SKIP) {
         dReset::Manage_c::GetInstance()->ActiveSaveWindow(true);
         mStateMgr.changeState(StateID_WindowExitWait);
     }
@@ -843,7 +843,7 @@ void dScBoot_c::finalizeState_WindowExitWait() {}
 
 void dScBoot_c::initializeState_GoToErrorFadeOut() {
     dScene_c::m_isAutoFadeIn = false;
-    dFader_c::setFader(dFader_c::FADE);
+    dFader_c::setFader(dFader_c::FADER_FADE);
     dFader_c::startFadeOut(30);
     dReset::Manage_c::GetInstance()->ActiveSaveWindow(true);
 }
@@ -859,7 +859,7 @@ void dScBoot_c::executeState_GoToErrorFadeOut() {
 void dScBoot_c::finalizeState_GoToErrorFadeOut() {}
 
 void dScBoot_c::initializeState_GoToErrorFadeIn() {
-    dFader_c::setFader(dFader_c::FADE);
+    dFader_c::setFader(dFader_c::FADER_FADE);
     dFader_c::startFadeIn(30);
 }
 

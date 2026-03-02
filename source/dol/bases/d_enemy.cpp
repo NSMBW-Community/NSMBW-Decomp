@@ -27,7 +27,7 @@ const float dEn_c::smc_WATER_ROLL_DEC_RATE = 0.5f;
 
 dEn_c::dEn_c() :
     m_24(0), mFootPush(mVec3_c(0.0f, 0.0f, 0.0f)),
-    mKilledByLiquid(false), mFootAttr3(false), mFootAttr1(false), mDeathInfo(),
+    mKilled(false), mFootAttr3(false), mFootAttr1(false), mDeathInfo(),
     mBoyoMng(this), mIceMng(this),
     mTimer1(0), mTimer2(0), mCombo(dEnCombo_c::COMBO_REGULAR), mFumiProc(this)
 {
@@ -240,18 +240,18 @@ void dEn_c::normal_collcheck(dCc_c *self, dCc_c *other) {
                 actor1->mCcValue = self->mCanBounce;
                 self->mInfo |= CC_NO_HIT;
             } else if (other->mCcData.mKind != CC_KIND_PLAYER_ATTACK) {
-                s8 *plrNo = actor2->getPlrNo();
-                if (*plrNo >= 0 && *plrNo < PLAYER_COUNT) {
-                    if (actor1->mNoHitPlayer.mTimer[*plrNo] == 0) {
-                        actor1->mNoHitPlayer.mTimer[*plrNo] = smc_NO_HIT_PLAYER_TIMER_DEFAULT;
+                s8 &plrNo = actor2->getPlrNo();
+                if (plrNo >= 0 && plrNo < PLAYER_COUNT) {
+                    if (actor1->mNoHitPlayer.mTimer[plrNo] == 0) {
+                        actor1->mNoHitPlayer.mTimer[plrNo] = smc_NO_HIT_PLAYER_TIMER_DEFAULT;
                         actor1->Normal_VsPlHitCheck(self, other);
                     }
                 }
             }
         }
     } else if (kind == STAGE_ACTOR_YOSHI) {
-        s8 *plrNo = actor2->getPlrNo();
-        if (*plrNo >= 0 && *plrNo < PLAYER_COUNT) {
+        s8 &plrNo = actor2->getPlrNo();
+        if (plrNo >= 0 && plrNo < PLAYER_COUNT) {
             if (other->mCcData.mAttack == CC_ATTACK_YOSHI_EAT) {
                 actor1->hitYoshiEat(self, other);
             } else {
@@ -259,8 +259,8 @@ void dEn_c::normal_collcheck(dCc_c *self, dCc_c *other) {
                     if (actor1->YoshiDamageCheck(self, other)) {
                         actor1->mCcValue = self->mCanBounce;
                         self->mInfo |= CC_NO_HIT;
-                    } else if (actor1->mNoHitPlayer.mTimer[*plrNo] == 0) {
-                        actor1->mNoHitPlayer.mTimer[*plrNo] = smc_NO_HIT_PLAYER_TIMER_DEFAULT;
+                    } else if (actor1->mNoHitPlayer.mTimer[plrNo] == 0) {
+                        actor1->mNoHitPlayer.mTimer[plrNo] = smc_NO_HIT_PLAYER_TIMER_DEFAULT;
                         actor1->Normal_VsYoshiHitCheck(self, other);
                     }
                 }
@@ -414,13 +414,13 @@ bool dEn_c::getPl_UDflag(const mVec3_c &pos) {
 }
 
 bool dEn_c::CeilCheck(float y, dCc_c *cc) {
-    return dBgParameter_c::getInstance()->check(y + cc->mCcData.mOffset.y, cc->mCcData.mSize.y);
+    return dBgParameter_c::getInstance()->check(y + cc->mCcData.mBase.mOffset.y, cc->mCcData.mBase.mSize.y);
 }
 
 bool dEn_c::carry_check(dActor_c *actor) {
     dAcPy_c *pl = (dAcPy_c *) actor;
-    if (pl->FUN_8012e540(this, true)) {
-        mPlayerNo = *actor->getPlrNo();
+    if (pl->spinLiftUp(this, true)) {
+        mPlayerNo = actor->getPlrNo();
         return true;
     }
     return false;
@@ -513,8 +513,8 @@ void dEn_c::SpinFumiScoreSet(dActor_c *actor) {
     FumiScoreSet(actor);
 }
 
-void dEn_c::PlayerFumiJump(dActor_c *actor, float param_2) {
-    ((daPlBase_c *) actor)->vf3fc(param_2, actor->mSpeedF, 1, 0, 2);
+void dEn_c::PlayerFumiJump(dActor_c *actor, float jumpSpeed) {
+    ((daPlBase_c *) actor)->setJump(jumpSpeed, actor->mSpeedF, true, 0, 2);
     dEnemyMng_c::m_instance->m_138 = 1;
 }
 
@@ -527,12 +527,12 @@ void dEn_c::setFumiComboScore(dActor_c *actor) {
         switch (mCombo.mType) {
             case dEnCombo_c::COMBO_REGULAR: {
                 dScoreMng_c *instance = dScoreMng_c::getInstance();
-                instance->ScoreSet(pos, treadCount, *actor->getPlrNo(), 1);
+                instance->ScoreSet(pos, treadCount, actor->getPlrNo(), 1);
                 break;
             }
             case dEnCombo_c::COMBO_SHORT: {
                 dScoreMng_c *instance = dScoreMng_c::getInstance();
-                instance->ScoreSet2(pos, treadCount, *actor->getPlrNo());
+                instance->ScoreSet2(pos, treadCount, actor->getPlrNo());
                 break;
             }
             default:
@@ -560,7 +560,7 @@ void dEn_c::fumiSE(dActor_c *actor) {
         SE_EMY_FUMU_7
     };
 
-    int count = ((daPlBase_c *) actor)->getTreadCount();
+    int count = ((daPlBase_c *) actor)->mTreadCount;
     if (count >= ARRAY_SIZE(cs_combo_se)) {
         count = ARRAY_SIZE(cs_combo_se) - 1;
     };
@@ -584,7 +584,7 @@ void dEn_c::spinfumiSE(dActor_c *actor) {
         SE_EMY_DOWN_SPIN_7
     };
 
-    int count = ((daPlBase_c *) actor)->getTreadCount();
+    int count = ((daPlBase_c *) actor)->mTreadCount;
     if (count >= ARRAY_SIZE(cs_combo_se)) {
         count = ARRAY_SIZE(cs_combo_se) - 1;
     };
@@ -608,7 +608,7 @@ void dEn_c::yoshifumiSE(dActor_c *actor) {
         SE_EMY_YOSHI_FUMU_7
     };
 
-    int count = ((daPlBase_c *) actor)->getTreadCount();
+    int count = ((daPlBase_c *) actor)->mTreadCount;
     if (count >= ARRAY_SIZE(cs_combo_se)) {
         count = ARRAY_SIZE(cs_combo_se) - 1;
     };
@@ -638,8 +638,8 @@ void dEn_c::fumiEffect(dActor_c *actor) {
 
     daPlBase_c *pl = (daPlBase_c *) actor;
     mVec3_c efPos;
-    efPos.x = pl->getAnkleCenterX();
-    efPos.y = pl->getAnkleCenterY();
+    efPos.x = pl->getAnkleCenterPos().x;
+    efPos.y = pl->getAnkleCenterPos().y;
     efPos.z = 5500.0f;
     mEf::createEffect("Wm_en_hit", 0, &efPos, nullptr, nullptr);
 }
@@ -727,22 +727,22 @@ u32 dEn_c::EnBgCheckWall() {
 }
 
 void dEn_c::WaterCheck(mVec3_c &pos, float h) {
-    if (mKilledByLiquid) {
+    if (mKilled) {
         return;
     }
     int waterLineRes = WaterLineProc(pos, h);
     if (waterLineRes == dBc_c::WATER_CHECK_YOGAN) {
         setDeathInfo_Smoke(nullptr);
-        mKilledByLiquid = true;
+        mKilled = true;
     } else if (waterLineRes != dBc_c::WATER_CHECK_NONE && mNoRespawn) {
-        mKilledByLiquid = true;
+        mKilled = true;
     }
 }
 
 bool dEn_c::LineBoundaryCheck(dActor_c *actor) {
     daPlBase_c *pl = (daPlBase_c *) actor;
     if ((pl->mPos.z > 0.0f && mAmiLayer == 1) || (pl->mPos.z < 0.0f && mAmiLayer == 0)) {
-        if (pl->mFlags & 0x80000 || pl->mFlags & 0x100000) {
+        if (pl->isNowBgCross(daPlBase_c::BGC_VINE_TOUCH_L) || pl->isNowBgCross(daPlBase_c::BGC_VINE_TOUCH_R)) {
             return true;
         }
     }
@@ -912,7 +912,7 @@ bool dEn_c::PlayerCarryCheck(dActor_c *actor) {
 
 mVec3_c dEn_c::calcCarryPos(const mVec3_c &pos) {
     dAcPy_c *player = daPyMng_c::getPlayer(mPlayerNo);
-    if (player->isStatus(4)) {
+    if (player->isStatus(daPlBase_c::STATUS_OUT_OF_PLAY)) {
         return mPos;
     }
     mMtx_c mtx = player->getCarryMtx();
@@ -936,9 +936,9 @@ void dEn_c::slipBound(dActor_c *actor) {
     daPlBase_c *pl = (daPlBase_c *) actor;
 
     u8 idx = !(pl->mPos.x >= mPos.x);
-    pl->vf3fc(3.0f, cs_jump_xspeed[idx], 1, 0, 0);
+    pl->setJump(3.0f, cs_jump_xspeed[idx], true, 0, 0);
 
-    int plrNo = *pl->getPlrNo();
+    int plrNo = pl->getPlrNo();
     mNoHitPlayer.mTimer[plrNo] = 3;
 }
 
@@ -956,7 +956,7 @@ void dEn_c::setEatTongueOff(dActor_c *actor) {
 
 bool dEn_c::setEatSpitOut(dActor_c *actor) {
     calcSpitOutPos(actor);
-    int plrNo = *actor->getPlrNo();
+    int plrNo = actor->getPlrNo();
     mNoHitPlayer.mTimer[plrNo] = smc_NO_HIT_PLAYER_TIMER_SPIT_OUT;
     mDirection = actor->mDirection;
     reviveCc();
@@ -991,7 +991,7 @@ void dEn_c::iceballInvalid(dCc_c *self, dCc_c *other) {
 
 void dEn_c::setDamage(dActor_c *actor) {
     daPlBase_c *pl = (daPlBase_c *) actor;
-    pl->setDamage(this, daPlBase_c::DAMAGE_NONE);
+    pl->setDamage(this, daPlBase_c::DAMAGE_DEFAULT);
 }
 
 void dEn_c::boyonInit() {
@@ -1004,7 +1004,7 @@ void dEn_c::boyonBegin() {
 
 void dEn_c::block_hit_init() {
     u8 dir = mDeathFallDirection;
-    s8 plrNo = *getPlrNo();
+    s8 plrNo = getPlrNo();
 
     mVec3_c efPos(mVec2_c(mPos.x, mPos.y), 5500.0f);
 

@@ -274,7 +274,7 @@ int dAcPyKey_c::buttonYoshiJump() const {
     return buttonTwo();
 }
 
-u8 dAcPyKey_c::triggerShakeJump() const {
+int dAcPyKey_c::triggerShakeJump() const {
     return mTriggerShakeJump;
 }
 
