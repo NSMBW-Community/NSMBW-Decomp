@@ -24,11 +24,13 @@ public:
 class SndObjctCmnEmy : public NMSndObject<4> {
 public:
     virtual void startSound(unsigned long, const nw4r::math::VEC2 &, unsigned long);
+    virtual void holdSound(unsigned long, int, const nw4r::math::VEC2 &, unsigned long);
 };
 
 class SndObjctCmnMap : public NMSndObject<4> {
 public:
     virtual void startSound(unsigned long, const nw4r::math::VEC2 &, unsigned long);
+    virtual void holdSound(unsigned long, int, const nw4r::math::VEC2 &, unsigned long);
 };
 
 namespace dAudio {
@@ -54,6 +56,12 @@ namespace dAudio {
         void startSound(unsigned long soundID, const mVec3_c &pos, int remPlayer) {
             SndObjctCmnEmy::startSound(soundID, dAudio::cvtSndObjctPos(pos), remPlayer);
         }
+        void holdSound(unsigned long soundID, int i, const nw4r::math::VEC2 &pos, int remPlayer) {
+            SndObjctCmnEmy::holdSound(soundID, i, pos, remPlayer);
+        }
+        void holdSound(unsigned long soundID, int i, const mVec3_c &pos, int remPlayer) {
+            SndObjctCmnEmy::holdSound(soundID, i, dAudio::cvtSndObjctPos(pos), remPlayer);
+        }
     };
 
     class SndObjctCmnMap_c : SndObjctCmnMap {
@@ -63,6 +71,12 @@ namespace dAudio {
         }
         void startSound(unsigned long soundID, const mVec3_c &pos, int remPlayer) {
             SndObjctCmnMap::startSound(soundID, dAudio::cvtSndObjctPos(pos), remPlayer);
+        }
+        void holdSound(unsigned long soundID, int i, const nw4r::math::VEC2 &pos, int remPlayer) {
+            SndObjctCmnMap::holdSound(soundID, i, pos, remPlayer);
+        }
+        void holdSound(unsigned long soundID, int i, const mVec3_c &pos, int remPlayer) {
+            SndObjctCmnMap::holdSound(soundID, i, dAudio::cvtSndObjctPos(pos), remPlayer);
         }
     };
 
@@ -88,20 +102,34 @@ namespace dAudio {
             obj->startSound(id, dAudio::cvtSndObjctPos(pos), playerNo);
         }
 
-        void playEmySound(const mVec2_c &pos, int playerNo) const {
+        template<class T>
+        void holdObjSound(T *obj, int i, const mVec2_c &pos, int playerNo) const {
+            obj->holdSound(id, i, dAudio::cvtSndObjctPos(pos), playerNo);
+        }
+
+        template<class T>
+        void holdObjSound(T *obj, int i, const mVec3_c &pos, int playerNo) const {
+            obj->holdSound(id, i, dAudio::cvtSndObjctPos(pos), playerNo);
+        }
+
+        template <class T>
+        void playEmySound(const T &pos, int playerNo) const {
             playObjSound(dAudio::g_pSndObjEmy, pos, playerNo);
         }
 
-        void playEmySound(const mVec3_c &pos, int playerNo) const {
-            playObjSound(dAudio::g_pSndObjEmy, pos, playerNo);
-        }
-
-        void playMapSound(const mVec2_c &pos, int playerNo) const {
+        template <class T>
+        void playMapSound(const T &pos, int playerNo) const {
             playObjSound(dAudio::g_pSndObjMap, pos, playerNo);
         }
 
-        void playMapSound(const mVec3_c &pos, int playerNo) const {
-            playObjSound(dAudio::g_pSndObjMap, pos, playerNo);
+        template <class T>
+        void holdEmySound(int i, const T &pos, int playerNo) const {
+            holdObjSound(dAudio::g_pSndObjEmy, i, pos, playerNo);
+        }
+
+        template <class T>
+        void holdMapSound(int i, const T &pos, int playerNo) const {
+            holdObjSound(dAudio::g_pSndObjMap, i, pos, playerNo);
         }
 
     private:
