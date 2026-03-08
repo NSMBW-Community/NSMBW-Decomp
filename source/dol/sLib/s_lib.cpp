@@ -1,48 +1,48 @@
 #include <game/sLib/s_lib.hpp>
 
-float sLib::addCalc(float *curr, float target, float speed, float maxStep, float minStep) {
-    if (*curr != target) {
-        float step = speed * (target - *curr);
+float sLib::addCalc(float *value, float target, float smoothing, float maxStep, float minStep) {
+    if (*value != target) {
+        float dist = target - *value;
+        float step = smoothing * dist;
 
         if (step >= minStep || step <= -minStep) {
-            step = (step > maxStep) ? maxStep : step;
-
-            if (step < -maxStep) {
+            if (step > maxStep) {
+                step = maxStep;
+            }
+            if (step < -maxStep) { // [Possible optimization: add else to prevent unnecessary extra evaluation]
                 step = -maxStep;
             }
 
-            *curr += step;
+            *value += step;
 
         } else if (step > 0.0f) {
-
-            if (step < minStep) {
-                *curr += minStep;
-                if (*curr > target) {
-                    *curr = target;
+            if (step < minStep) { // [Possible optimization: this check is always true]
+                *value += minStep;
+                if (*value > target) {
+                    *value = target;
                 }
             }
 
         } else {
-
-            if (step > -minStep) {
-                *curr += -minStep;
-                if (*curr < target) {
-                    *curr = target;
+            if (step > -minStep) { // [Possible optimization: this check is always true]
+                *value += -minStep;
+                if (*value < target) {
+                    *value = target;
                 }
             }
         }
     }
 
-    float dist = target - *curr;
+    // [Possible optimization: use fabsf]
+    float dist = target - *value;
     return (dist > 0.0f) ? dist : -dist;
 }
 
 template <typename T>
-T sLib::addCalcAngleT(T *curr, T target, T divisor, T maxStep, T minStep) {
-
-    T dist = (target - *curr);
-    if (*curr != target) {
-        T step = dist / divisor;
+T sLib::addCalcAngleT(T *value, T target, T smoothing, T maxStep, T minStep) {
+    T dist = target - *value; // [Possible optimization: move this declaration inside the if block]
+    if (*value != target) {
+        T step = dist / smoothing;
 
         if (step > minStep || step < -minStep) {
             if (step > maxStep) {
@@ -52,136 +52,140 @@ T sLib::addCalcAngleT(T *curr, T target, T divisor, T maxStep, T minStep) {
                 step = -maxStep;
             }
 
-            *curr += step;
+            *value += step;
 
-        } else if (dist >= (T)0) {
-            *curr += minStep;
-            if ((T)(target - *curr) <= 0) {
-                *curr = target;
+        } else if (dist >= 0) {
+            *value += minStep;
+            dist = target - *value;
+            if (dist <= 0) {
+                *value = target;
             }
 
         } else {
-            *curr -= minStep;
-            if ((T)(target - *curr) >= 0) {
-                *curr = target;
+            *value -= minStep;
+            dist = target - *value;
+            if (dist >= 0) {
+                *value = target;
             }
         }
     }
 
-    return target - *curr;
+    return target - *value;
 }
 
-s16 sLib::addCalcAngle(s16 *curr, s16 target, s16 divisor, s16 maxStep, s16 minStep) {
-    return addCalcAngleT<s16>(curr, target, divisor, maxStep, minStep);
-}
-
-template <typename T>
-void sLib::addCalcAngleT(T *curr, T target, T divisor, T something) {
-  
-    T step = (T)(target - *curr) / divisor;
-    if (step > something) {
-        *curr += something;
-        return;
-    }
-    if (step < -something) {
-        *curr -= something;
-        return;
-    }
-
-    *curr += step;
-}
-
-void sLib::addCalcAngle(s16 *curr, s16 target, s16 divisor, s16 something) {
-    addCalcAngleT<s16>(curr, target, divisor, something);
+s16 sLib::addCalcAngle(s16 *value, s16 target, s16 smoothing, s16 maxStep, s16 minStep) {
+    return addCalcAngleT<s16>(value, target, smoothing, maxStep, minStep);
 }
 
 template <typename T>
-int sLib::chaseT(T *curr, T target, T step) {
+void sLib::addCalcAngleT(T *value, T target, T smoothing, T maxStep) {
+    T dist = target - *value;
+    T step = dist / smoothing;
 
-    if (*curr == target) {
-        return true;
+    if (step > maxStep) {
+        *value += maxStep;
+    } else if (step < -maxStep) {
+        *value -= maxStep;
+    } else {
+        *value += step;
+    }
+}
+
+void sLib::addCalcAngle(s16 *value, s16 target, s16 smoothing, s16 maxStep) {
+    addCalcAngleT<s16>(value, target, smoothing, maxStep);
+}
+
+template <typename T>
+BOOL sLib::chaseT(T *value, T target, T step) {
+    if (*value == target) {
+        return TRUE;
     }
 
     if (step) {
-        if (*curr > target) {
+        if (*value > target) {
             step = -step;
         }
 
-        *curr += step;
-
-        if (step * (*curr - target) >= 0) {
-            *curr = target;
-            return true;
+        *value += step;
+        if (step * (*value - target) >= 0) {
+            *value = target;
+            return TRUE;
         }
     }
 
-    return false;
+    return FALSE;
 }
 
-int sLib::chase(s16 *p1, s16 p2, s16 p3) {
-    return sLib::chaseT<s16>(p1, p2, p3);
+BOOL sLib::chase(s16 *value, s16 target, s16 step) {
+    return sLib::chaseT<s16>(value, target, step);
 }
 
-int sLib::chase(int *p1, int p2, int p3) {
-    return sLib::chaseT<int>(p1, p2, p3);
+BOOL sLib::chase(int *value, int target, int step) {
+    return sLib::chaseT<int>(value, target, step);
 }
 
-int sLib::chase(long *p1, long p2, long p3) {
-    return sLib::chaseT<long>(p1, p2, p3);
+BOOL sLib::chase(long *value, long target, long step) {
+    return sLib::chaseT<long>(value, target, step);
 }
 
-int sLib::chase(float *p1, float p2, float p3) {
-    return sLib::chaseT<float>(p1, p2, p3);
+BOOL sLib::chase(float *value, float target, float step) {
+    return sLib::chaseT<float>(value, target, step);
 }
 
-bool sLib::chaseAngle(s16 *variable, s16 target, s16 increment) {
-
-    if (*variable == target) {
-        return true;
-    }
-    if (increment != 0) {
-        if (targetDelta(variable, target) > 0) {
-            increment = -increment;
-        }
-
-        *variable += increment;
-
-        if (increment * targetDelta(variable, target) >= 0) {
-            *variable = target;
-            return true;
-        }
+BOOL sLib::chaseAngle(s16 *value, s16 target, s16 step) {
+    if (*value == target) {
+        return TRUE;
     }
 
-    return false;
-}
+    if (step != 0) {
+        s16 dist = *value - target;
+        if (dist > 0) {
+            step = -step;
+        }
 
-bool sLib::chaseAngleByRotDir(s16 *variable, s16 target, s16 increment) {
+        *value += step;
+        dist = *value - target;
 
-    if (*variable == target) {
-        return true;
+        if (step * dist >= 0) {
+            *value = target;
+            return TRUE;
+        }
     }
 
-    if (increment != 0) {
-        s16 step = increment;
+    return FALSE;
+}
 
-        if (increment < 0) {
-            increment = (increment == 0x8000) ? 0x7fff : (s16)-increment;
+BOOL sLib::chaseAngleByRotDir(s16 *value, s16 target, s16 step) {
+    if (*value == target) {
+        return TRUE;
+    }
+
+    if (step != 0) {
+        s16 increment = step;
+
+        // Get absolute step value, accounting for overflow
+        if (step < 0) {
+            step = (step == 0x8000) ? 0x7fff : (s16)-step;
         }
 
-        s16 r0 = increment;
-        if (targetDelta(variable, target) > 0) {
-            r0 = -r0;
+        // If the distance to the target is negative, then negate step to move towards it
+        s16 dist = *value - target;
+        if (dist > 0) {
+            step = -step;
         }
 
-        *variable += step;
+        *value += increment;
 
-        if (step * r0 > 0) {
-            if (step * targetDelta(variable, target) >= 0) {
-                *variable = target;
-                return true;
+        // Check if the target's direction matches the intended direction
+        // If so, perform the overshoot check
+        if (increment * step > 0) {
+            s16 dist = *value - target;
+            if (increment * dist >= 0) {
+                *value = target;
+                return TRUE;
             }
         }
     }
 
-    return false;
+    return FALSE;
 }

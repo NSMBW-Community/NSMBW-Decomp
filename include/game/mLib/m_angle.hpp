@@ -1,6 +1,6 @@
 #pragma once
 #include <types.h>
-#include <game/sLib/s_math.hpp>
+#include <game/sLib/s_lib.hpp>
 #include <nw4r/math.h>
 
 extern "C" {
