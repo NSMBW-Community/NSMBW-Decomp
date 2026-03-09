@@ -20,7 +20,7 @@ namespace sLib {
 template <typename T>
 T calcTimer(T *value) {
     if (*value != 0) {
-        *value -= 1;
+        *value--;
     }
     return *value;
 }
@@ -30,7 +30,7 @@ T calcTimer(T *value) {
  * @details If the applied step overshoots the target, the value is snapped exactly to the target.
  * @param value The value to be updated.
  * @param target The target value.
- * @param smoothing The smoothing factor (between @p 0.0 and @p 1.0 ). Higher value means snappier movement.
+ * @param smoothing The smoothing factor (between @p 0.0 and @p 1.0). Higher value means snappier movement.
  * @param maxStep The maximum step for a single update.
  * @param minStep The minimum step to prevent jittering.
  * @return The absolute remaining distance to the target.
