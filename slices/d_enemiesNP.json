@@ -30,14 +30,12 @@
     "slices": [
         {
             "source": "runtime/rel_init.cpp",
-            "compilerFlags": "",
             "memoryRanges": {
                 ".text": "0x0-0x70"
             }
         },
         {
             "source": "d_enemiesNP/bases/d_a_en_snake_block.cpp",
-            "compilerFlags": "",
             "memoryRanges": {
                 ".text": "0x103a50-0x106960",
                 ".data": "0x33680-0x33b90",

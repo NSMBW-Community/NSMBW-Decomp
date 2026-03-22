@@ -106,6 +106,13 @@ SECTION_TYPES = {
     '.sdata2': 'bss',
 }
 
+# Step 0: Verify that the built binaries match by running progress.py silently
+ret_code = subprocess.run(['python', 'progress.py', '--verify-bin'], stdout=subprocess.DEVNULL).returncode
+
+if ret_code != 0:
+    print_err('Verification of binaries failed. Did you forget to add "nonMatching": true to the slice?')
+    sys.exit()
+
 # Step 1: Get DTK, load slices and symbols
 dtk_path = get_dtk('v1.8.0')
 
