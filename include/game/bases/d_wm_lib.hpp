@@ -55,15 +55,31 @@ namespace dWmLib {
     u8 getStartPointKinokoHouseKindNum();
     bool isStartPointKinokoHouseStar();
     bool isStartPointKinokoHouseRed();
-    bool IsCourseClear(int world, int course);
-    int getPointDir(const mVec3_c &v1, const mVec3_c &v2);
+
+    int GetOpenStatus(int world, int course);
+    int GetClearStatus(int world, int course);
     int GetCurrentPlayResultStatus();
+    int GetCurrentPlayResultStatus(int world, int course, int pathNode);
+
+    bool IsCourseOmoteClear(int world, int course);
+    bool IsCourseUraClear(int world, int course);
+    bool IsCourseOtasukeClear(int world, int course);
+    bool IsCourseClear(int world, int course);
+    bool IsCourseFirstOmoteClear(int world, int course, int pathNode);
+    bool IsCourseFirstUraClear(int world, int course, int pathNode);
+    bool IsCourseFailed(int world, int course, int pathNode);
+    bool IsCourseFirstClear(int world, int course);
+    bool IsCourseOtasukeClearSimple(int world, int course);
+    bool IsCourseOmoteClearSimple(int world, int course);
+    bool IsCourseUraClearSimple(int world, int course);
+    bool IsCourseUraOtasukeClearSimple(int world, int course);
+
+    int getPointDir(const mVec3_c &v1, const mVec3_c &v2);
     int getEnemyRevivalCount(int, int);
 
     static ForceInCourseList_t sc_ForceList[] = {
         {WORLD_7, "F7C0", WORLD_7, dCsvData_c::c_CASTLE_ID, 4, "W7C0", mVec3_c(2160, -30, -478)}
     };
 
-    /// @unofficial
-    static int someCourseNo = dCsvData_c::c_START_ID;
+    static int c_StartPointKinokoHouseID = dCsvData_c::c_START_ID;
 };
