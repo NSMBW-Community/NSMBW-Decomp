@@ -22,6 +22,10 @@ public:
     int m_e0;
 
     void release();
+    void entry();
+    void set(dActor_c *, float, float, float, float, void *, void *, void *, int, int, void *);
+    void calc();
+    void setOfs(float, float, float, float, void *);
 };
 
 class daEnSnakeBlock_c : public dEn_c {
@@ -30,7 +34,7 @@ public:
     class dBlock_c {
     public:
         dBlock_c();
-        virtual ~dBlock_c();
+        virtual ~dBlock_c() {}
 
         void createMdl(dHeapAllocator_c *alloc);
         void doDelete();
@@ -38,7 +42,7 @@ public:
         void calcAnm();
         void setAnmClr(const char *name);
 
-        void draw(mVec3_c pos);
+        void draw(mVec3_c *pos);
 
         void initBgCtr(daEnSnakeBlock_c *parent, mVec3_c *blockPos, int unused);
         void calcBgCtr();
@@ -71,7 +75,7 @@ public:
     class dCtrlBlock_c : public dBlock_c {
     public:
         dCtrlBlock_c();
-        virtual ~dCtrlBlock_c();
+        virtual ~dCtrlBlock_c() {}
 
         bool calcPos(u8 *travelInfo);
         bool calcTravelPos(u8 *travelInfo);
@@ -80,14 +84,13 @@ public:
     };
 
     daEnSnakeBlock_c();
-    ~daEnSnakeBlock_c();
+    virtual ~daEnSnakeBlock_c() {}
 
-    int create();
-    int doDelete();
-    int execute();
-    int draw();
-
-    void deleteReady();
+    virtual int create();
+    virtual int doDelete();
+    virtual int execute();
+    virtual int draw();
+    virtual void deleteReady();
 
     void initBlock();
     void initBlockPath();
@@ -126,7 +129,7 @@ public:
     u8 _pad[4];
 
     static float sc_snakeSpeeds[3];
-    static sStateID_c *sc_stopStates;
+    static sStateID_c *sc_stopStates[4];
     static mVec2_c sc_ctrlPosMods[5];
     static int sc_glbSnakeNum;
     static mVec2_c sc_collapseSpeeds[5];

@@ -5,29 +5,199 @@
 #include <game/mLib/m_allocator_dummy_heap.hpp>
 #include <game/bases/d_bg_parameter.hpp>
 #include <constants/sound_list.h>
+#include <game/bases/d_res_mng.hpp>
 #include <game/bases/d_audio.hpp>
 
 ACTOR_PROFILE(EN_SNAKEBLOCK, daEnSnakeBlock_c, 0)
 
 STATE_DEFINE(daEnSnakeBlock_c, Wait);
 STATE_DEFINE(daEnSnakeBlock_c, Move);
+STATE_DEFINE(daEnSnakeBlock_c, Shake);
+STATE_DEFINE(daEnSnakeBlock_c, Stop);
+STATE_DEFINE(daEnSnakeBlock_c, Collapse1);
+STATE_DEFINE(daEnSnakeBlock_c, Collapse2);
+STATE_DEFINE(daEnSnakeBlock_c, Collapse3);
+
+float daEnSnakeBlock_c::sc_snakeSpeeds[3] = {
+    0.5f, 1.0f, 1.4f
+};
+
+sStateID_c * daEnSnakeBlock_c::sc_stopStates[4] = {
+    &StateID_Stop, &StateID_Collapse1, &StateID_Collapse2, &StateID_Collapse3
+};
+
+int daEnSnakeBlock_c::sc_glbSnakeNum = 0;
+
+mVec2_c daEnSnakeBlock_c::sc_ctrlPosMods[5] = {
+    mVec2_c(0.0f, 0.0f),
+    mVec2_c(0.0f, 0.0f),
+    mVec2_c(0.0f, 0.0f),
+    mVec2_c(0.0f, 0.0f),
+    mVec2_c(0.0f, 0.0f)
+};
+mVec2_c daEnSnakeBlock_c::sc_collapseSpeeds[5] = {
+    mVec2_c(0.0f, 0.0f),
+    mVec2_c(0.0f, 0.0f),
+    mVec2_c(0.0f, 0.0f),
+    mVec2_c(0.0f, 0.0f),
+    mVec2_c(0.0f, 0.0f)
+};
+
 
 daEnSnakeBlock_c::daEnSnakeBlock_c() {}
 daEnSnakeBlock_c::dBlock_c::dBlock_c() {}
 daEnSnakeBlock_c::dCtrlBlock_c::dCtrlBlock_c() {}
 
+void daEnSnakeBlock_c::dBlock_c::createMdl(dHeapAllocator_c * alloc) {
+    mResFile = dResMng_c::m_instance->getRes("block_snake_ice", "g3d/block_snake_ice.brres");
 
-static float daEnSnakeBlock_c::sc_snakeSpeeds[3] = {
-    0.5f, 1.0f, 1.4f
-};
+    nw4r::g3d::ResMdl mdl = mResFile.GetResMdl("block_snake_ice");
+    mModel.create(mdl, alloc, 0x32c, 1);
+    dActor_c::setSoftLight_MapObj(mModel);
 
-static sStateID_c * daEnSnakeBlock_c::sc_stopStates[4] = {
-    StateID_Stop, StateID_Collapse1, StateID_Collapse2, StateID_Collapse3
-};
+    mResTexSrt = mResFile.GetResAnmTexSrt("block_snake_ice");
+    mAnmTexSrt.create(mdl, mResTexSrt, alloc, nullptr, 1);
+    mAnmTexSrt.setAnm(mModel, mResTexSrt, 0, m3d::FORWARD_LOOP);
+    mModel.setAnm(mAnmTexSrt, 0.0f);
+    mAnmTexSrt.setRate(1.0f, 0);
 
-static mVec2_c daEnSnakeBlock_c::sc_ctrlPosMods[5];
-static int daEnSnakeBlock_c::sc_glbSnakeNum = 0;
-static mVec2_c daEnSnakeBlock_c::sc_collapseSpeeds[5];
+    nw4r::g3d::ResAnmClr res_anmclr = mResFile.GetResAnmClr("ridden");
+    mAnmClr.setAnm(mModel, res_anmclr, 0, m3d::FORWARD_ONCE);
+    mModel.setAnm(mAnmClr);
+    mAnmClr.setRate(0.0f, 0);
+}
+
+void daEnSnakeBlock_c::dBlock_c::doDelete() {
+    mModel.remove();
+    mAnmClr.remove();
+    mAnmTexSrt.remove();
+}
+
+void daEnSnakeBlock_c::dBlock_c::calcAnm() {
+    mAnmClr.play();
+    mAnmTexSrt.play();
+}
+
+void daEnSnakeBlock_c::dBlock_c::setAnmClr(const char * name) {
+    nw4r::g3d::ResAnmClr res = mResFile.GetResAnmClr(name);
+    mAnmClr.setAnm(mModel, res, 0, m3d::FORWARD_ONCE);
+    mModel.setAnm(mAnmClr);
+    mAnmClr.setRate(1.0f, 0);
+}
+
+void daEnSnakeBlock_c::dBlock_c::draw(mVec3_c * pos) {
+    mVec3_c a = mPos + *pos;
+    dActor_c::changePosAngle(&a, nullptr, 1);
+
+    nw4r::math::MTX34 b;
+    PSMTXTrans(b, a.x, a.y, a.z);
+    mModel.setLocalMtx(&b);
+
+    mVec3_c one = mVec3_c(1.0f, 1.0f, 1.0f);
+    mModel.setScale(one);
+    mModel.calc(false);
+    mModel.entry();
+}
+
+void daEnSnakeBlock_c::dBlock_c::initBgCtr(daEnSnakeBlock_c * owner, mVec3_c * pos, int _unused) {
+    mPos = *pos;
+    if (mpOwner == nullptr) {
+        mpOwner = owner;
+    }
+
+    mVec2_c diff = mVec2_c(mPos) - mVec2_c(mpOwner->mPos);
+
+    mBgCtr.set(mpOwner, diff.x - 8.0f, diff.y + 8.0f, diff.x + 8.0f, diff.y - 8.0f,
+        callBackF, callBackH, callBackW, 1, 0, nullptr
+    );
+    // The unused flag was probably used to set the collision to icy before they
+    // decided to always make it icy.
+    /* if (_unused) { */
+    mBgCtr.mFlags = 4;
+    /* } */
+    mBgCtr.entry();
+}
+
+void daEnSnakeBlock_c::dBlock_c::calcBgCtr() {
+    mVec2_c diff = mVec2_c(mPos) - mVec2_c(mpOwner->mPos);
+    mBgCtr.setOfs(diff.x - 8.0f, diff.y + 8.0f, diff.x + 8.0f, diff.y - 8.0f, nullptr);
+    mBgCtr.mFlags |= 2;
+    mBgCtr.calc();
+}
+
+void daEnSnakeBlock_c::dBlock_c::setFallCollapse() {
+    mSpeed.y -= 0.1875f;
+    if (mSpeed.y < -4.0f) {
+        mSpeed.y = -4.0f;
+    }
+}
+
+void daEnSnakeBlock_c::dBlock_c::calcCollapse1(u8 *travelInfo) {
+    static mVec2_c floats[] = {
+        mVec2_c(0.0f, 0.0f),
+        mVec2_c(0.0f, 2.0f),
+        mVec2_c(0.0f, -2.0f),
+        mVec2_c(-2.0f, 0.0f),
+        mVec2_c(2.0f, 0.0f)
+    };
+
+    if (mBgCtr.m_dc) {
+        mBgCtr.release();
+    }
+
+    u32 info = travelInfo[mTravelInfoIdx];
+    if (info == 0) {
+        setFallCollapse();
+        mPos += mSpeed;
+    } else {
+        mVec2_c x = mVec2_c(mPos) + floats[info];
+        mPos.x = x.x;
+        mPos.y = x.y;
+        if ((mPos - mLastPos).xzLen() >= 16.0f) {
+            mLastPos = mPos;
+            mTravelInfoIdx += 1;
+        }
+    }
+}
+
+void daEnSnakeBlock_c::dBlock_c::callBackF(dActor_c * self, dActor_c * other) {
+    bool x = false;
+    if (other->mKind == dActor_c::STAGE_ACTOR_PLAYER) {
+        x = true;
+    } else if ((other->mKind == dActor_c::STAGE_ACTOR_YOSHI) && (*other->getPlrNo() != -1)) {
+        x = true;
+    }
+    daEnSnakeBlock_c* y = (daEnSnakeBlock_c *)self;
+    if (x && (y->mStateMgr.getStateID() == &StateID_Wait)) {
+        y->changeState(StateID_Move);
+    }
+}
+
+void daEnSnakeBlock_c::dBlock_c::callBackH(dActor_c * self, dActor_c * other) {}
+void daEnSnakeBlock_c::dBlock_c::callBackW(dActor_c * self, dActor_c * other, unsigned char x) {}
+
+bool daEnSnakeBlock_c::dCtrlBlock_c::calcPos(u8 *travelInfo) {
+    mVec2_c pos_mod = sc_ctrlPosMods[travelInfo[mTravelInfoIdx]];
+    mPos.x += sc_snakeSpeeds[mSnakeSpeedIdx] * pos_mod.x;
+    mPos.y += sc_snakeSpeeds[mSnakeSpeedIdx] * pos_mod.y;
+
+    return (std::fabs(mPos.x - mLastPos.x) >= 16.0f) || (std::fabs(mPos.y - mLastPos.y) >= 16.0f);
+}
+
+bool daEnSnakeBlock_c::dCtrlBlock_c::calcTravelPos(u8 *travelInfo) {
+    mVec2_c x = sc_ctrlPosMods[travelInfo[mTravelInfoIdx]];
+    mTravelInfoIdx++;
+    x.x *= 16.0f;
+    x.y *= 16.0f;
+    x += mVec2_c(mLastPos);
+
+    mPos.x = x.x;
+    mPos.y = x.y;
+    mLastPos.x = x.x;
+    mLastPos.y = x.y;
+
+    return travelInfo[mTravelInfoIdx] == 0;
+}
 
 int daEnSnakeBlock_c::create() {
     if (sc_glbSnakeNum >= 1 && (((mParam >> 0xC) & 0xFF) != 0)) {
@@ -63,16 +233,16 @@ int daEnSnakeBlock_c::execute() {
 }
 
 int daEnSnakeBlock_c::draw() {
-    mVec3_c offset = mVec3_c(0.0f, 0.0f, 0.0f);
+    mVec3_c offset = mVec3_c::Zero;
 
     if (mShakeTime > 0) {
         offset.x = 0.0f + sc_snakeSpeeds[(mShakeTime >> 1) & 1];
     }
 
-    mHead.draw(offset);
-    mTail.draw(offset);
+    mHead.draw(&offset);
+    mTail.draw(&offset);
     for (int i = 0; i < mBlockNum; i++) {
-        mBlocks[i].draw(offset);
+        mBlocks[i].draw(&offset);
     }
 
     return SUCCEEDED;
@@ -157,7 +327,7 @@ void daEnSnakeBlock_c::deleteBlock() {
 }
 
 void daEnSnakeBlock_c::setStopState() {
-    mpStopState = &sc_stopStates[mParam >> 0x1c];
+    mpStopState = sc_stopStates[mParam >> 0x1c];
 }
 
 void daEnSnakeBlock_c::calcBgCtr() {
