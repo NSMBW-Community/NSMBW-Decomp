@@ -426,6 +426,18 @@
             }
         },
         {
+            "source": "dol/bases/d_wm_obj_actor.cpp",
+            "memoryRanges": {
+                ".text": "0xf7170-0xf73e0",
+                ".ctors": "0x180-0x184",
+                ".data": "0x1de30-0x1de58",
+                ".bss": "0x22690-0x226a0",
+                ".sdata": "0x1540-0x1550",
+                ".sbss": "0x5a8-0x5b0",
+                ".sdata2": "0x1fb8-0x1fc8"
+            }
+        },
+        {
             "source": "dol/bases/d_wm_path.cpp",
             "memoryRanges": {
                 ".text": "0xf73e0-0xf74c0",
