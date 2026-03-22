@@ -57,6 +57,15 @@
                 ".data": "0x28250-0x289d0",
                 ".bss": "0x7e60-0x80a0"
             }
+        },
+        {
+            "source": "d_enemiesNP/bases/d_a_en_snake_block.cpp",
+            "nonMatching": true,
+            "memoryRanges": {
+                ".text": "0x103a50-0x106960",
+                ".data": "0x33680-0x33b90",
+                ".bss": "0x9f30-0xa178"
+            }
         }
     ]
 }
