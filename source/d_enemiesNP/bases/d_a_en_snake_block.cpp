@@ -8,47 +8,31 @@
 #include <game/bases/d_res_mng.hpp>
 #include <game/bases/d_audio.hpp>
 
-ACTOR_PROFILE(EN_SNAKEBLOCK, daEnSnakeBlock_c, 0)
-
-STATE_DEFINE(daEnSnakeBlock_c, Wait);
-STATE_DEFINE(daEnSnakeBlock_c, Move);
-STATE_DEFINE(daEnSnakeBlock_c, Shake);
-STATE_DEFINE(daEnSnakeBlock_c, Stop);
-STATE_DEFINE(daEnSnakeBlock_c, Collapse1);
-STATE_DEFINE(daEnSnakeBlock_c, Collapse2);
-STATE_DEFINE(daEnSnakeBlock_c, Collapse3);
-
-float daEnSnakeBlock_c::sc_snakeSpeeds[3] = {
-    0.5f, 1.0f, 1.4f
-};
-
-sStateID_c * daEnSnakeBlock_c::sc_stopStates[4] = {
-    &StateID_Stop, &StateID_Collapse1, &StateID_Collapse2, &StateID_Collapse3
-};
+ACTOR_PROFILE(EN_SNAKEBLOCK, daEnSnakeBlock_c, 0);
 
 int daEnSnakeBlock_c::sc_glbSnakeNum = 0;
 
 mVec2_c daEnSnakeBlock_c::sc_ctrlPosMods[5] = {
     mVec2_c(0.0f, 0.0f),
-    mVec2_c(0.0f, 0.0f),
-    mVec2_c(0.0f, 0.0f),
-    mVec2_c(0.0f, 0.0f),
-    mVec2_c(0.0f, 0.0f)
-};
-mVec2_c daEnSnakeBlock_c::sc_collapseSpeeds[5] = {
-    mVec2_c(0.0f, 0.0f),
-    mVec2_c(0.0f, 0.0f),
-    mVec2_c(0.0f, 0.0f),
-    mVec2_c(0.0f, 0.0f),
-    mVec2_c(0.0f, 0.0f)
+    mVec2_c(0.0f, 1.0f),
+    mVec2_c(0.0f, -1.0f),
+    mVec2_c(-1.0f, 0.0f),
+    mVec2_c(1.0f, 0.0f)
 };
 
+float daEnSnakeBlock_c::sc_snakeSpeeds[3] = {
+    0.5f, 1.0f, 1.4f
+};
 
-daEnSnakeBlock_c::daEnSnakeBlock_c() {}
-daEnSnakeBlock_c::dBlock_c::dBlock_c() {}
-daEnSnakeBlock_c::dCtrlBlock_c::dCtrlBlock_c() {}
+STATE_DEFINE(daEnSnakeBlock_c, Wait);
+STATE_DEFINE(daEnSnakeBlock_c, Move);
+STATE_DEFINE(daEnSnakeBlock_c, Shake);
+STATE_DEFINE(daEnSnakeBlock_c, Collapse1);
+STATE_DEFINE(daEnSnakeBlock_c, Collapse2);
+STATE_DEFINE(daEnSnakeBlock_c, Collapse3);
+STATE_DEFINE(daEnSnakeBlock_c, Stop);
 
-void daEnSnakeBlock_c::dBlock_c::createMdl(dHeapAllocator_c * alloc) {
+void daEnSnakeBlock_c::dBlock_c::createMdl(dHeapAllocator_c *alloc) {
     mResFile = dResMng_c::m_instance->getRes("block_snake_ice", "g3d/block_snake_ice.brres");
 
     nw4r::g3d::ResMdl mdl = mResFile.GetResMdl("block_snake_ice");
@@ -62,6 +46,7 @@ void daEnSnakeBlock_c::dBlock_c::createMdl(dHeapAllocator_c * alloc) {
     mAnmTexSrt.setRate(1.0f, 0);
 
     nw4r::g3d::ResAnmClr res_anmclr = mResFile.GetResAnmClr("ridden");
+    mAnmClr.create(mdl, res_anmclr, alloc, nullptr, 1);
     mAnmClr.setAnm(mModel, res_anmclr, 0, m3d::FORWARD_ONCE);
     mModel.setAnm(mAnmClr);
     mAnmClr.setRate(0.0f, 0);
@@ -78,19 +63,18 @@ void daEnSnakeBlock_c::dBlock_c::calcAnm() {
     mAnmTexSrt.play();
 }
 
-void daEnSnakeBlock_c::dBlock_c::setAnmClr(const char * name) {
+void daEnSnakeBlock_c::dBlock_c::setAnmClr(const char *name) {
     nw4r::g3d::ResAnmClr res = mResFile.GetResAnmClr(name);
     mAnmClr.setAnm(mModel, res, 0, m3d::FORWARD_ONCE);
     mModel.setAnm(mAnmClr);
     mAnmClr.setRate(1.0f, 0);
 }
 
-void daEnSnakeBlock_c::dBlock_c::draw(mVec3_c * pos) {
-    mVec3_c a = mPos + *pos;
+void daEnSnakeBlock_c::dBlock_c::draw(const mVec3_c &pos) {
+    mVec3_c a = mPos + pos;
     dActor_c::changePosAngle(&a, nullptr, 1);
 
-    nw4r::math::MTX34 b;
-    PSMTXTrans(b, a.x, a.y, a.z);
+    mMtx_c b = mMtx_c::createTrans(a);
     mModel.setLocalMtx(&b);
 
     mVec3_c one = mVec3_c(1.0f, 1.0f, 1.0f);
@@ -99,40 +83,44 @@ void daEnSnakeBlock_c::dBlock_c::draw(mVec3_c * pos) {
     mModel.entry();
 }
 
-void daEnSnakeBlock_c::dBlock_c::initBgCtr(daEnSnakeBlock_c * owner, mVec3_c * pos, int _unused) {
-    mPos = *pos;
+void daEnSnakeBlock_c::dBlock_c::initBgCtr(daEnSnakeBlock_c *owner, mVec3_c &blockPos, int _unused) {
+    mVec3_c pos = blockPos;
+    mPos = pos;
     if (mpOwner == nullptr) {
         mpOwner = owner;
     }
 
-    mVec2_c diff = mVec2_c(mPos) - mVec2_c(mpOwner->mPos);
+    float dx = mPos.x - mpOwner->mPos.x;
+    float dy = mPos.y - mpOwner->mPos.y;
 
-    mBgCtr.set(mpOwner, diff.x - 8.0f, diff.y + 8.0f, diff.x + 8.0f, diff.y - 8.0f,
+    mBgCtr.set(mpOwner, dx - 8.0f, dy + 8.0f, dx + 8.0f, dy - 8.0f,
         callBackF, callBackH, callBackW, 1, 0, nullptr
     );
+    mBgCtr.mFlags = 0;
     // The unused flag was probably used to set the collision to icy before they
     // decided to always make it icy.
     /* if (_unused) { */
-    mBgCtr.mFlags = 4;
+    mBgCtr.mFlags |= 4;
     /* } */
     mBgCtr.entry();
 }
 
 void daEnSnakeBlock_c::dBlock_c::calcBgCtr() {
-    mVec2_c diff = mVec2_c(mPos) - mVec2_c(mpOwner->mPos);
-    mBgCtr.setOfs(diff.x - 8.0f, diff.y + 8.0f, diff.x + 8.0f, diff.y - 8.0f, nullptr);
+    float dx = mPos.x - mpOwner->mPos.x;
+    float dy = mPos.y - mpOwner->mPos.y;
+    mBgCtr.setOfs(dx - 8.0f, dy + 8.0f, dx + 8.0f, dy - 8.0f, nullptr);
     mBgCtr.mFlags |= 2;
     mBgCtr.calc();
 }
 
 void daEnSnakeBlock_c::dBlock_c::setFallCollapse() {
-    mSpeed.y -= 0.1875f;
+    mSpeed.y += -0.1875f;
     if (mSpeed.y < -4.0f) {
         mSpeed.y = -4.0f;
     }
 }
 
-void daEnSnakeBlock_c::dBlock_c::calcCollapse1(u8 *travelInfo) {
+void daEnSnakeBlock_c::dBlock_c::calcCollapse1(s8 *travelInfo) {
     static mVec2_c floats[] = {
         mVec2_c(0.0f, 0.0f),
         mVec2_c(0.0f, 2.0f),
@@ -141,66 +129,79 @@ void daEnSnakeBlock_c::dBlock_c::calcCollapse1(u8 *travelInfo) {
         mVec2_c(2.0f, 0.0f)
     };
 
-    if (mBgCtr.m_dc) {
+    if (mBgCtr.m_e2) {
         mBgCtr.release();
     }
 
-    u32 info = travelInfo[mTravelInfoIdx];
+    u8 info = travelInfo[mTravelInfoIdx];
     if (info == 0) {
         setFallCollapse();
         mPos += mSpeed;
     } else {
-        mVec2_c x = mVec2_c(mPos) + floats[info];
-        mPos.x = x.x;
-        mPos.y = x.y;
-        if ((mPos - mLastPos).xzLen() >= 16.0f) {
+        mPos.x += floats[info].x;
+        mPos.y += floats[info].y;
+        mVec2_c diff(mPos.x - mLastPos.x, mPos.y - mLastPos.y);
+        if (diff.length() >= 16.0f) {
             mLastPos = mPos;
-            mTravelInfoIdx += 1;
+            mTravelInfoIdx++;
         }
     }
 }
 
-void daEnSnakeBlock_c::dBlock_c::callBackF(dActor_c * self, dActor_c * other) {
+void daEnSnakeBlock_c::dBlock_c::callBackF(dActor_c *self, dActor_c *other) {
+    daEnSnakeBlock_c *y = (daEnSnakeBlock_c *) self;
+
     bool x = false;
     if (other->mKind == dActor_c::STAGE_ACTOR_PLAYER) {
         x = true;
-    } else if ((other->mKind == dActor_c::STAGE_ACTOR_YOSHI) && (*other->getPlrNo() != -1)) {
+    } else if (other->mKind == dActor_c::STAGE_ACTOR_YOSHI && *other->getPlrNo() != -1) {
         x = true;
     }
-    daEnSnakeBlock_c* y = (daEnSnakeBlock_c *)self;
-    if (x && (y->mStateMgr.getStateID() == &StateID_Wait)) {
+
+    if (x && y->isState(StateID_Wait)) {
         y->changeState(StateID_Move);
     }
 }
 
-void daEnSnakeBlock_c::dBlock_c::callBackH(dActor_c * self, dActor_c * other) {}
-void daEnSnakeBlock_c::dBlock_c::callBackW(dActor_c * self, dActor_c * other, unsigned char x) {}
+void daEnSnakeBlock_c::dBlock_c::callBackH(dActor_c *self, dActor_c *other) {}
+void daEnSnakeBlock_c::dBlock_c::callBackW(dActor_c *self, dActor_c *other, u8 x) {}
 
-bool daEnSnakeBlock_c::dCtrlBlock_c::calcPos(u8 *travelInfo) {
-    mVec2_c pos_mod = sc_ctrlPosMods[travelInfo[mTravelInfoIdx]];
-    mPos.x += sc_snakeSpeeds[mSnakeSpeedIdx] * pos_mod.x;
-    mPos.y += sc_snakeSpeeds[mSnakeSpeedIdx] * pos_mod.y;
+bool daEnSnakeBlock_c::dCtrlBlock_c::calcPos(s8 *travelInfo) {
+    // int inf = travelInfo[mTravelInfoIdx];
+    float speed = sc_snakeSpeeds[mSnakeSpeedIdx];
+    mVec2_c v(
+        speed * sc_ctrlPosMods[travelInfo[mTravelInfoIdx]].x,
+        speed * sc_ctrlPosMods[travelInfo[mTravelInfoIdx]].y
+    );
+    mPos.x += v.x;
+    mPos.y += v.y;
 
-    return (std::fabs(mPos.x - mLastPos.x) >= 16.0f) || (std::fabs(mPos.y - mLastPos.y) >= 16.0f);
+    if (std::fabs(mPos.x - mLastPos.x) >= 16.0f || std::fabs(mPos.y - mLastPos.y) >= 16.0f) {
+        return true;
+    }
+    return false;
 }
 
-bool daEnSnakeBlock_c::dCtrlBlock_c::calcTravelPos(u8 *travelInfo) {
-    mVec2_c x = sc_ctrlPosMods[travelInfo[mTravelInfoIdx]];
-    mTravelInfoIdx++;
-    x.x *= 16.0f;
-    x.y *= 16.0f;
-    x += mVec2_c(mLastPos);
+bool daEnSnakeBlock_c::dCtrlBlock_c::calcTravelPos(s8 *travelInfo) {
+    mVec2_c newPos;
+    newPos.x = sc_ctrlPosMods[travelInfo[mTravelInfoIdx]].x;
+    newPos.y = sc_ctrlPosMods[travelInfo[mTravelInfoIdx]].y;
 
-    mPos.x = x.x;
-    mPos.y = x.y;
-    mLastPos.x = x.x;
-    mLastPos.y = x.y;
+    float x = mLastPos.x + newPos.x * 16.0f;
+    float y = mLastPos.y + newPos.y * 16.0f;
 
-    return travelInfo[mTravelInfoIdx] == 0;
+    mLastPos.z = mPos.z;
+
+    mPos.x = x;
+    mPos.y = y;
+    mLastPos.x = x;
+    mLastPos.y = y;
+
+    return travelInfo[++mTravelInfoIdx] == 0;
 }
 
 int daEnSnakeBlock_c::create() {
-    if (sc_glbSnakeNum >= 1 && (((mParam >> 0xC) & 0xFF) != 0)) {
+    if (sc_glbSnakeNum > 0 && (((mParam >> 0xC) & 0xFF) != 0)) {
         deleteRequest();
         return NOT_READY;
     }
@@ -233,16 +234,16 @@ int daEnSnakeBlock_c::execute() {
 }
 
 int daEnSnakeBlock_c::draw() {
-    mVec3_c offset = mVec3_c::Zero;
+    mVec3_c offset(0.0f, 0.0f, 0.0f);
 
     if (mShakeTime > 0) {
-        offset.x = 0.0f + sc_snakeSpeeds[(mShakeTime >> 1) & 1];
+        offset.x += sc_snakeSpeeds[(mShakeTime >> 1) & 1];
     }
 
-    mHead.draw(&offset);
-    mTail.draw(&offset);
+    getHeadBlock()->draw(offset);
+    getTailBlock()->draw(offset);
     for (int i = 0; i < mBlockNum; i++) {
-        mBlocks[i].draw(&offset);
+        mBlocks[i].draw(offset);
     }
 
     return SUCCEEDED;
@@ -279,29 +280,29 @@ void daEnSnakeBlock_c::initBlockPath() {
     float f1 = node->mX + (mBlockNum * 16.0f);
     float f2 = node->mY - 8.0f;
     mVec3_c head_pos = mVec3_c(f1, f2, 1516.0f);
-    mHead.initBgCtr(this, &head_pos, (mParam >> 20) & 1);
+    getHeadBlock()->initBgCtr(this, head_pos, (mParam >> 20) & 1);
 
     mVec3_c mid_pos;
     for (int i = 0; i < mBlockNum; i++) {
         mid_pos.set(f1, f2, 1500.0f);
-        mBlocks[i].initBgCtr(this, &mid_pos, (mParam >> 20) & 1);
+        mBlocks[i].initBgCtr(this, mid_pos, (mParam >> 20) & 1);
         f1 -= 16.0f;
     }
 
     mVec3_c tail_pos = mVec3_c(f1, f2, 1516.0f);
-    mTail.initBgCtr(this, &tail_pos, (mParam >> 20) & 1);
+    getTailBlock()->initBgCtr(this, tail_pos, (mParam >> 20) & 1);
 
-    mHead.mTravelInfoIdx = mBlockNum + 1;
-    mTail.mTravelInfoIdx = 1;
+    getHeadBlock()->mTravelInfoIdx = mBlockNum + 1;
+    getTailBlock()->mTravelInfoIdx = 1;
 
     // Note: Value 3 is out of bounds
-    mHead.mSnakeSpeedIdx = (mParam >> 8) & 3;
-    mTail.mSnakeSpeedIdx = (mParam >> 8) & 3;
+    getHeadBlock()->mSnakeSpeedIdx = (mParam >> 8) & 3;
+    getTailBlock()->mSnakeSpeedIdx = (mParam >> 8) & 3;
 }
 
 void daEnSnakeBlock_c::calcAnm() {
-    mHead.calcAnm();
-    mTail.calcAnm();
+    getHeadBlock()->calcAnm();
+    getTailBlock()->calcAnm();
 
     for (int i = 0; i < mBlockNum; i++) {
         mBlocks[i].calcAnm();
@@ -309,8 +310,8 @@ void daEnSnakeBlock_c::calcAnm() {
 }
 
 void daEnSnakeBlock_c::createMdl() {
-    mHead.createMdl(&mAllocator);
-    mTail.createMdl(&mAllocator);
+    getHeadBlock()->createMdl(&mAllocator);
+    getTailBlock()->createMdl(&mAllocator);
 
     for (int i = 0; i < mBlockNum; i++) {
         mBlocks[i].createMdl(&mAllocator);
@@ -318,23 +319,27 @@ void daEnSnakeBlock_c::createMdl() {
 }
 
 void daEnSnakeBlock_c::deleteBlock() {
-    mHead.doDelete();
-    mTail.doDelete();
+    getHeadBlock()->doDelete();
+    getTailBlock()->doDelete();
 
     for (int i = 0; i < mBlockNum; i++) {
         mBlocks[i].doDelete();
     }
 }
 
+sStateID_c *daEnSnakeBlock_c::sc_stopStates[4] = {
+    &StateID_Stop, &StateID_Collapse1, &StateID_Collapse2, &StateID_Collapse3
+};
+
 void daEnSnakeBlock_c::setStopState() {
     mpStopState = sc_stopStates[mParam >> 0x1c];
 }
 
 void daEnSnakeBlock_c::calcBgCtr() {
-    mHead.calcBgCtr();
-    mTail.calcBgCtr();
+    getHeadBlock()->calcBgCtr();
+    getTailBlock()->calcBgCtr();
 
-    mTail.mBgCtr.mFlags |= 1;
+    getTailBlock()->mBgCtr.mFlags |= 1;
 
     for (int i = 0; i < mBlockNum; i++) {
         mBlocks[i].calcBgCtr();
@@ -358,7 +363,7 @@ void daEnSnakeBlock_c::initTravelInfo() {
     }
 
     mTravelInfoIdx = dist;
-    mpTravelInfo = new u8[dist + 2];
+    mpTravelInfo = new s8[dist + 2];
 
     int i11 = 1;
     for (; start_idx < rail->mCount; start_idx++) {
@@ -582,15 +587,15 @@ void daEnSnakeBlock_c::setBlockPos() {
         b.mPos = a.mPos;
     }
 
-    mBlocks[0].mPos = mVec3_c(mHead.mPos, 1500.0f);
+    mBlocks[0].mPos = mVec3_c(getHeadBlock()->mPos, 1500.0f);
 }
 
 void daEnSnakeBlock_c::setActorPos() {
-    mPos = mVec3_c(mHead.mPos, 1500.0f);
+    mPos = mVec3_c(getHeadBlock()->mPos, 1500.0f);
 }
 
 bool daEnSnakeBlock_c::chkCollapseDelete() {
-    return mTail.mPos.y < (dBgParameter_c::ms_Instance_p->mPos.y - dBgParameter_c::ms_Instance_p->mSize.y) - 16.0f;
+    return getTailBlock()->mPos.y < (dBgParameter_c::ms_Instance_p->mPos.y - dBgParameter_c::ms_Instance_p->mSize.y) - 16.0f;
 }
 
 bool daEnSnakeBlock_c::chkOffScreen() {
@@ -609,33 +614,33 @@ void daEnSnakeBlock_c::finalizeState_Wait() {}
 void daEnSnakeBlock_c::executeState_Wait() {}
 
 void daEnSnakeBlock_c::initializeState_Move() {
-    mHead.setAnmClr("create");
-    mHead.mAnmClr.setRate(0.0f, 0);
-    mHead.mAnmClr.setFrame(25.0f, 0);
-    mTail.setAnmClr("ridden");
+    getHeadBlock()->setAnmClr("create");
+    getHeadBlock()->mAnmClr.setRate(0.0f, 0);
+    getHeadBlock()->mAnmClr.setFrame(25.0f, 0);
+    getTailBlock()->setAnmClr("ridden");
 
     mBlocks[0].setAnmClr("create");
     for (int i = 0; i < mBlockNum; i++) {
         mBlocks[i].setAnmClr("ridden");
     }
 
-    mHead.mLastPos = mHead.mPos;
-    mTail.mLastPos = mTail.mPos;
+    getHeadBlock()->mLastPos = getHeadBlock()->mPos;
+    getTailBlock()->mLastPos = getTailBlock()->mPos;
 
     mCreateAnmBlockIdx = 0;
-    float f = mHead.mAnmClr.getFrameMax(0);
+    float f = getHeadBlock()->mAnmClr.getFrameMax(0);
     mCreateAnmBlockNum = f / (16.0f / sc_snakeSpeeds[mParam >> 8 & 0xF]);
 }
 void daEnSnakeBlock_c::finalizeState_Move() {}
 void daEnSnakeBlock_c::executeState_Move() {
-    bool b3 = mHead.calcPos(mpTravelInfo);
-    bool b4 = mTail.calcPos(mpTravelInfo);
+    bool b3 = getHeadBlock()->calcPos(mpTravelInfo);
+    bool b4 = getTailBlock()->calcPos(mpTravelInfo);
     bool b5 = false;
     bool b6 = false;
 
     if (b3 || b4) {
-        b5 = mHead.calcTravelPos(mpTravelInfo);
-        b6 = mTail.calcTravelPos(mpTravelInfo);
+        b5 = getHeadBlock()->calcTravelPos(mpTravelInfo);
+        b6 = getTailBlock()->calcTravelPos(mpTravelInfo);
 
         dAudio::SoundEffectID_t(SE_OBJ_SNAKE_BLOCK).playMapSound(mPos, 0);
 
@@ -665,10 +670,10 @@ void daEnSnakeBlock_c::executeState_Move() {
 }
 
 void daEnSnakeBlock_c::initializeState_Shake() {
-    mHead.setAnmClr("ridden");
-    mHead.mAnmClr.setRate(0.0f, 0);
-    mTail.setAnmClr("ridden");
-    mTail.mAnmClr.setRate(0.0f, 0);
+    getHeadBlock()->setAnmClr("ridden");
+    getHeadBlock()->mAnmClr.setRate(0.0f, 0);
+    getTailBlock()->setAnmClr("ridden");
+    getTailBlock()->mAnmClr.setRate(0.0f, 0);
 
     for (int i = 0; i < mBlockNum; i++) {
         mBlocks[i].setAnmClr("ridden");
@@ -685,10 +690,10 @@ void daEnSnakeBlock_c::executeState_Shake() {
 }
 
 void daEnSnakeBlock_c::initializeState_Stop() {
-    mHead.setAnmClr("ridden");
-    mHead.mAnmClr.setRate(0.0f, 0);
-    mTail.setAnmClr("ridden");
-    mTail.mAnmClr.setRate(0.0f, 0);
+    getHeadBlock()->setAnmClr("ridden");
+    getHeadBlock()->mAnmClr.setRate(0.0f, 0);
+    getTailBlock()->setAnmClr("ridden");
+    getTailBlock()->mAnmClr.setRate(0.0f, 0);
 
     for (int i = 0; i < mBlockNum; i++) {
         mBlocks[i].setAnmClr("ridden");
@@ -699,33 +704,41 @@ void daEnSnakeBlock_c::finalizeState_Stop() {}
 void daEnSnakeBlock_c::executeState_Stop() {}
 
 void daEnSnakeBlock_c::initializeState_Collapse1() {
+    static mVec2_c sc_collapseSpeeds[5] = {
+        mVec2_c(0.0f, 0.0f),
+        mVec2_c(0.0f, 0.0f),
+        mVec2_c(0.0f, 0.0f),
+        mVec2_c(0.0f, 0.0f),
+        mVec2_c(0.0f, 0.0f)
+    };
+
     static float floats[] = {
         0.0f, 0.0f, 1.0f, 3.0f, 0.0f, -1.0f, 0.0f, 0.0f, 0.0f, 0.0f
     };
 
-    mHead.mLastPos = mHead.mPos;
-    mTail.mLastPos = mTail.mPos;
+    getHeadBlock()->mLastPos = getHeadBlock()->mPos;
+    getTailBlock()->mLastPos = getTailBlock()->mPos;
     for (int i = 0; i < mBlockNum; i++) {
         mBlocks[i].mLastPos = mBlocks[i].mPos;
     }
-    int prev_idx = mHead.mTravelInfoIdx;
+    int prev_idx = getHeadBlock()->mTravelInfoIdx;
     for (int i = 0; i < mBlockNum; i++) {
         mBlocks[i].mTravelInfoIdx = prev_idx;
         prev_idx--;
     }
-    mTail.mTravelInfoIdx = prev_idx;
+    getTailBlock()->mTravelInfoIdx = prev_idx;
 
     mVec3_c collapse_speed = mVec3_c(sc_collapseSpeeds[mpTravelInfo[mTravelInfoIdx]], 0.0f);
-    mHead.mSpeed = collapse_speed;
-    mTail.mSpeed = collapse_speed;
+    getHeadBlock()->mSpeed = collapse_speed;
+    getTailBlock()->mSpeed = collapse_speed;
     for (int i = 0; i < mBlockNum; i++) {
         mBlocks[i].mSpeed = collapse_speed;
     }
 }
 void daEnSnakeBlock_c::finalizeState_Collapse1() {}
 void daEnSnakeBlock_c::executeState_Collapse1() {
-    mHead.calcCollapse1(mpTravelInfo);
-    mTail.calcCollapse1(mpTravelInfo);
+    getHeadBlock()->calcCollapse1(mpTravelInfo);
+    getTailBlock()->calcCollapse1(mpTravelInfo);
     for (int i = 0; i < mBlockNum; i++) {
         mBlocks[i].calcCollapse1(mpTravelInfo);
     }
@@ -737,26 +750,26 @@ void daEnSnakeBlock_c::executeState_Collapse1() {
 
 void daEnSnakeBlock_c::initializeState_Collapse2() {
     mCollapse2Idx = 0;
-    mHead.mSpeed = mVec3_c(0.0f, 0.0f, 0.0f);
-    mTail.mSpeed = mVec3_c(0.0f, 0.0f, 0.0f);
+    getHeadBlock()->mSpeed = mVec3_c(0.0f, 0.0f, 0.0f);
+    getTailBlock()->mSpeed = mVec3_c(0.0f, 0.0f, 0.0f);
     for (int i = 0; i < mBlockNum; i++) {
         mBlocks[i].mSpeed = mVec3_c(0.0f, 0.0f, 0.0f);
     }
 }
 void daEnSnakeBlock_c::finalizeState_Collapse2() {}
 void daEnSnakeBlock_c::executeState_Collapse2() {
-    if (mHead.mBgCtr.m_dc) {
-        mHead.mBgCtr.release();
+    if (getHeadBlock()->mBgCtr.m_e2) {
+        getHeadBlock()->mBgCtr.release();
     }
-    mHead.setFallCollapse();
-    mHead.mPos += mHead.mSpeed;
+    getHeadBlock()->setFallCollapse();
+    getHeadBlock()->mPos += getHeadBlock()->mSpeed;
 
     if (mCollapse2Idx > mBlockNum * 8) {
-        if (mTail.mBgCtr.m_dc) {
-            mTail.mBgCtr.release();
+        if (getTailBlock()->mBgCtr.m_e2) {
+            getTailBlock()->mBgCtr.release();
         }
-        mTail.setFallCollapse();
-        mTail.mPos += mTail.mSpeed;
+        getTailBlock()->setFallCollapse();
+        getTailBlock()->mPos += getTailBlock()->mSpeed;
     }
 
     int i5 = mCollapse2Idx >> 3;
@@ -768,7 +781,7 @@ void daEnSnakeBlock_c::executeState_Collapse2() {
     for (int i = 0; i <= i5; i++) {
         dBlock_c * block = &mBlocks[i];
         block->mBgCtr.release(); //< double release?
-        if (block->mBgCtr.m_dc) {
+        if (block->mBgCtr.m_e2) {
             block->mBgCtr.release();
         }
         block->setFallCollapse();
@@ -782,28 +795,28 @@ void daEnSnakeBlock_c::executeState_Collapse2() {
 }
 
 void daEnSnakeBlock_c::initializeState_Collapse3() {
-    mHead.mSpeed = mVec3_c(0.0f, 0.0f, 0.0f);
-    mTail.mSpeed = mVec3_c(0.0f, 0.0f, 0.0f);
+    getHeadBlock()->mSpeed = mVec3_c(0.0f, 0.0f, 0.0f);
+    getTailBlock()->mSpeed = mVec3_c(0.0f, 0.0f, 0.0f);
     for (int i = 0; i < mBlockNum; i++) {
         mBlocks[i].mSpeed = mVec3_c(0.0f, 0.0f, 0.0f);
     }
 }
 void daEnSnakeBlock_c::finalizeState_Collapse3() {}
 void daEnSnakeBlock_c::executeState_Collapse3() {
-    if (mHead.mBgCtr.m_dc) {
-        mHead.mBgCtr.release();
+    if (getHeadBlock()->mBgCtr.m_e2) {
+        getHeadBlock()->mBgCtr.release();
     }
-    mHead.setFallCollapse();
-    mHead.mPos += mHead.mSpeed;
+    getHeadBlock()->setFallCollapse();
+    getHeadBlock()->mPos += getHeadBlock()->mSpeed;
 
-    if (mTail.mBgCtr.m_dc) {
-        mTail.mBgCtr.release();
+    if (getTailBlock()->mBgCtr.m_e2) {
+        getTailBlock()->mBgCtr.release();
     }
-    mTail.setFallCollapse();
-    mTail.mPos += mTail.mSpeed;
+    getTailBlock()->setFallCollapse();
+    getTailBlock()->mPos += getTailBlock()->mSpeed;
 
     for (int i = 0; i < mBlockNum; i++) {
-        if (mBlocks[i].mBgCtr.m_dc) {
+        if (mBlocks[i].mBgCtr.m_e2) {
             mBlocks[i].mBgCtr.release();
         }
         mBlocks[i].setFallCollapse();

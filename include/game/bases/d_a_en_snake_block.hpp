@@ -14,12 +14,16 @@ public:
     short *m_bc;
     u8 mPad4[0x8];
     int m_c8;
+    int m_cc;
     u32 mFlags;
-    int m_d0;
+    int m_d4;
     u8 mpPad5[0x8];
-    bool m_dc;
-    u8 mpPad6[3];
-    int m_e0;
+    bool m_e0;
+    u8 m_e1;
+    u8 m_e2;
+
+    dBg_ctr_c();
+    ~dBg_ctr_c();
 
     void release();
     void entry();
@@ -33,8 +37,8 @@ public:
     // @unofficial
     class dBlock_c {
     public:
-        dBlock_c();
-        virtual ~dBlock_c() {}
+        dBlock_c() : mpOwner(nullptr), m_1b4(0) {}
+        virtual ~dBlock_c() { mBgCtr.release(); }
 
         void createMdl(dHeapAllocator_c *alloc);
         void doDelete();
@@ -42,17 +46,17 @@ public:
         void calcAnm();
         void setAnmClr(const char *name);
 
-        void draw(mVec3_c *pos);
+        void draw(const mVec3_c &pos);
 
-        void initBgCtr(daEnSnakeBlock_c *parent, mVec3_c *blockPos, int unused);
+        void initBgCtr(daEnSnakeBlock_c *parent, mVec3_c &blockPos, int unused);
         void calcBgCtr();
 
         void setFallCollapse();
-        void calcCollapse1(u8 *travelInfo);
+        void calcCollapse1(s8 *travelInfo);
 
-        static void callBackF(dActor_c *, dActor_c *);
-        static void callBackH(dActor_c *, dActor_c *);
-        static void callBackW(dActor_c *, dActor_c *, u8);
+        static void callBackF(dActor_c *self, dActor_c *other);
+        static void callBackH(dActor_c *self, dActor_c *other);
+        static void callBackW(dActor_c *self, dActor_c *other, u8);
 
         nw4r::g3d::ResFile mResFile;
         m3d::mdl_c mModel;
@@ -68,22 +72,22 @@ public:
         int mTravelInfoIdx;
         daEnSnakeBlock_c *mpOwner;
 
-        short _1B4;
+        short m_1b4;
     };
 
     // @unofficial
     class dCtrlBlock_c : public dBlock_c {
     public:
-        dCtrlBlock_c();
-        virtual ~dCtrlBlock_c() {}
+        dCtrlBlock_c() {}
+        virtual ~dCtrlBlock_c() { mBgCtr.release(); }
 
-        bool calcPos(u8 *travelInfo);
-        bool calcTravelPos(u8 *travelInfo);
+        bool calcPos(s8 *travelInfo);
+        bool calcTravelPos(s8 *travelInfo);
 
         int mSnakeSpeedIdx;
     };
 
-    daEnSnakeBlock_c();
+    daEnSnakeBlock_c() : mpTravelInfo(nullptr), mTravelInfoIdx(0), mShakeTime(0) {}
     virtual ~daEnSnakeBlock_c() {}
 
     virtual int create();
@@ -110,14 +114,16 @@ public:
     bool chkCollapseDelete(); ///< Returns if the Tail is below the screen edge (meaning the collapse has ended, and the actor can be deleted)
     bool chkOffScreen(); ///< Returns if the Snake Block is far past the right edge of the screen (used to delete it)
 
+    dCtrlBlock_c *getHeadBlock() { return &mCtrlBlock[0]; }
+    dCtrlBlock_c *getTailBlock() { return &mCtrlBlock[1]; }
+
     dHeapAllocator_c mAllocator;
 
-    dCtrlBlock_c mHead;
-    dCtrlBlock_c mTail;
+    dCtrlBlock_c mCtrlBlock[2];
     dBlock_c mBlocks[20];
 
     int mBlockNum;
-    u8 *mpTravelInfo;
+    s8 *mpTravelInfo;
     int mTravelInfoIdx;
     short mShakeTime;
 
@@ -132,7 +138,6 @@ public:
     static sStateID_c *sc_stopStates[4];
     static mVec2_c sc_ctrlPosMods[5];
     static int sc_glbSnakeNum;
-    static mVec2_c sc_collapseSpeeds[5];
 
     STATE_FUNC_DECLARE(daEnSnakeBlock_c, Wait);
     STATE_FUNC_DECLARE(daEnSnakeBlock_c, Move);
