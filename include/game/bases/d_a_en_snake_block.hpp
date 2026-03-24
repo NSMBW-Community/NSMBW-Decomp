@@ -17,7 +17,9 @@ public:
     int m_cc;
     u32 mFlags;
     int m_d4;
-    u8 mpPad5[0x8];
+    u8 mpPad5[0x4];
+    bool m_dc;
+    u8 mpPad6[0x3];
     bool m_e0;
     u8 m_e1;
     u8 m_e2;
@@ -53,6 +55,19 @@ public:
 
         void setFallCollapse();
         void calcCollapse1(s8 *travelInfo);
+
+        void setCreate() { setAnmClr("create"); }
+        void setRidden() { setAnmClr("ridden"); }
+        mVec3_c getPos() const { return mPos; }
+        void setSpeed(float x, float y, float z) { mSpeed.set(x, y, z); }
+        void resetSpeed() { mSpeed.set(0.0f, 0.0f, 0.0f); }
+        void process() {
+            if (mBgCtr.m_dc) {
+                mBgCtr.release();
+            }
+            setFallCollapse();
+            mPos += mSpeed;
+        }
 
         static void callBackF(dActor_c *self, dActor_c *other);
         static void callBackH(dActor_c *self, dActor_c *other);
