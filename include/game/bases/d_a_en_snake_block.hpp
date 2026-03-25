@@ -133,6 +133,8 @@ public:
     dCtrlBlock_c *getHeadBlock() { return &mCtrlBlock[0]; }
     dCtrlBlock_c *getTailBlock() { return &mCtrlBlock[1]; }
 
+    int getBlockCount() const { return mBlockNum; }
+
     dHeapAllocator_c mAllocator;
 
     dCtrlBlock_c mCtrlBlock[2];
@@ -152,8 +154,8 @@ public:
 
     ACTOR_PARAM_CONFIG(RailStartIdx, 12, 8);
 
-    static const float sc_unk1;
-    static const float sc_unk2;
+    static const float sc_FallAccel;
+    static const float sc_FallMaxSpeed;
     static const float sc_snakeSpeeds[3];
     static const float sc_snakeSpeeds2[3];
     static const float sc_snakeDir[2];
