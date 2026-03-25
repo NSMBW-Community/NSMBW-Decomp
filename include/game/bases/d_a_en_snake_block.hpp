@@ -56,8 +56,6 @@ public:
         void setFallCollapse();
         void calcCollapse1(s8 *travelInfo);
 
-        void setCreate() { setAnmClr("create"); }
-        void setRidden() { setAnmClr("ridden"); }
         mVec3_c getPos() const { return mPos; }
         void setPos(mVec3_c pos) { mPos = pos; }
         void setSpeed(float x, float y, float z) { mSpeed.set(x, y, z); }
@@ -133,8 +131,6 @@ public:
     dCtrlBlock_c *getHeadBlock() { return &mCtrlBlock[0]; }
     dCtrlBlock_c *getTailBlock() { return &mCtrlBlock[1]; }
 
-    int getBlockCount() const { return mBlockNum; }
-
     dHeapAllocator_c mAllocator;
 
     dCtrlBlock_c mCtrlBlock[2];
@@ -162,7 +158,7 @@ public:
     static sStateID_c *sc_stopStates[4];
     static mVec2_c sc_ctrlPosMods[5];
     static int sc_glbSnakeNum;
-    static int sc_filler[];
+    static const int scSnakeSoundID;
 
     STATE_FUNC_DECLARE(daEnSnakeBlock_c, Wait);
     STATE_FUNC_DECLARE(daEnSnakeBlock_c, Move);
