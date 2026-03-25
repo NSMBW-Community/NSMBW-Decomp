@@ -59,6 +59,7 @@ public:
         void setCreate() { setAnmClr("create"); }
         void setRidden() { setAnmClr("ridden"); }
         mVec3_c getPos() const { return mPos; }
+        void setPos(mVec3_c pos) { mPos = pos; }
         void setSpeed(float x, float y, float z) { mSpeed.set(x, y, z); }
         void resetSpeed() { mSpeed.set(0.0f, 0.0f, 0.0f); }
         void process() {
@@ -149,10 +150,17 @@ public:
     int mCreateAnmBlockNum;
     u8 _pad[4];
 
-    static float sc_snakeSpeeds[3];
+    ACTOR_PARAM_CONFIG(RailStartIdx, 12, 8);
+
+    static const float sc_unk1;
+    static const float sc_unk2;
+    static const float sc_snakeSpeeds[3];
+    static const float sc_snakeSpeeds2[3];
+    static const float sc_snakeDir[2];
     static sStateID_c *sc_stopStates[4];
     static mVec2_c sc_ctrlPosMods[5];
     static int sc_glbSnakeNum;
+    static int sc_filler[];
 
     STATE_FUNC_DECLARE(daEnSnakeBlock_c, Wait);
     STATE_FUNC_DECLARE(daEnSnakeBlock_c, Move);

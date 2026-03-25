@@ -10,7 +10,10 @@
 
 ACTOR_PROFILE(EN_SNAKEBLOCK, daEnSnakeBlock_c, 0);
 
-int daEnSnakeBlock_c::sc_glbSnakeNum = 0;
+const float daEnSnakeBlock_c::sc_unk1 = -0.1875f;
+const float daEnSnakeBlock_c::sc_unk2 = -4.0f;
+
+int daEnSnakeBlock_c::sc_filler[12] = {0};
 
 mVec2_c daEnSnakeBlock_c::sc_ctrlPosMods[5] = {
     mVec2_c(0.0f, 0.0f),
@@ -20,9 +23,7 @@ mVec2_c daEnSnakeBlock_c::sc_ctrlPosMods[5] = {
     mVec2_c(1.0f, 0.0f)
 };
 
-float daEnSnakeBlock_c::sc_snakeSpeeds[3] = {
-    0.5f, 1.0f, 1.4f
-};
+int daEnSnakeBlock_c::sc_glbSnakeNum = 0;
 
 STATE_DEFINE(daEnSnakeBlock_c, Wait);
 STATE_DEFINE(daEnSnakeBlock_c, Move);
@@ -36,7 +37,7 @@ void daEnSnakeBlock_c::dBlock_c::createMdl(dHeapAllocator_c *alloc) {
     mResFile = dResMng_c::m_instance->getRes("block_snake_ice", "g3d/block_snake_ice.brres");
 
     nw4r::g3d::ResMdl mdl = mResFile.GetResMdl("block_snake_ice");
-    mModel.create(mdl, alloc, 0x32c, 1);
+    mModel.create(mdl, alloc, 0x32c, 1, nullptr);
     dActor_c::setSoftLight_MapObj(mModel);
 
     mResTexSrt = mResFile.GetResAnmTexSrt("block_snake_ice");
@@ -129,7 +130,7 @@ void daEnSnakeBlock_c::dBlock_c::calcCollapse1(s8 *travelInfo) {
         mVec2_c(2.0f, 0.0f)
     };
 
-    if (mBgCtr.m_e2) {
+    if (mBgCtr.m_dc) {
         mBgCtr.release();
     }
 
@@ -165,6 +166,18 @@ void daEnSnakeBlock_c::dBlock_c::callBackF(dActor_c *self, dActor_c *other) {
 
 void daEnSnakeBlock_c::dBlock_c::callBackH(dActor_c *self, dActor_c *other) {}
 void daEnSnakeBlock_c::dBlock_c::callBackW(dActor_c *self, dActor_c *other, u8 x) {}
+
+const float daEnSnakeBlock_c::sc_snakeSpeeds2[3] = {
+    0.5f, 1.0f, 1.4f
+};
+
+const float daEnSnakeBlock_c::sc_snakeSpeeds[3] = {
+    0.5f, 1.0f, 1.4f
+};
+
+const float daEnSnakeBlock_c::sc_snakeDir[2] = {
+    1.0f, -1.0f
+};
 
 bool daEnSnakeBlock_c::dCtrlBlock_c::calcPos(s8 *travelInfo) {
     // int inf = travelInfo[mTravelInfoIdx];
@@ -237,7 +250,7 @@ int daEnSnakeBlock_c::draw() {
     mVec3_c offset(0.0f, 0.0f, 0.0f);
 
     if (mShakeTime > 0) {
-        offset.x += sc_snakeSpeeds[(mShakeTime >> 1) & 1];
+        offset.x += sc_snakeDir[(mShakeTime >> 1) & 1];
     }
 
     getHeadBlock()->draw(offset);
@@ -275,22 +288,30 @@ void daEnSnakeBlock_c::initBlockPath() {
     sRailInfoData *rail = dRail_c::getRailInfoP((mParam >> 4) & 0xF);
     dCdFile_c *file = dCd_c::m_instance->getFileP(dScStage_c::m_instance->mCurrFile);
 
-    sRailNodeData *node = &file->mpRailNodes[rail->mNodeIdx + ((mParam >> 12) & 0xFF)];
+    sRailNodeData *node = &file->mpRailNodes[ACTOR_PARAM(RailStartIdx)];
+    node = &node[rail->mNodeIdx];
 
-    float f1 = node->mX + (mBlockNum * 16.0f);
-    float f2 = node->mY - 8.0f;
-    mVec3_c head_pos = mVec3_c(f1, f2, 1516.0f);
-    getHeadBlock()->initBgCtr(this, head_pos, (mParam >> 20) & 1);
+    bool icy = (mParam >> 20) & 1;
 
-    mVec3_c mid_pos;
-    for (int i = 0; i < mBlockNum; i++) {
-        mid_pos.set(f1, f2, 1500.0f);
-        mBlocks[i].initBgCtr(this, mid_pos, (mParam >> 20) & 1);
-        f1 -= 16.0f;
+    float nodeX = node->mX;
+    float nodeY = node->mY;
+    float x = nodeX + mBlockNum * 16.0f + 8.0f;
+    float y = -nodeY - 8.0f;
+
+    mVec3_c headPos(x, y, 1516.0f);
+
+    getHeadBlock()->initBgCtr(this, headPos, icy);
+
+    if (mBlockNum > 0) {
+        for (int i = 0; i < mBlockNum; i++) {
+            mVec3_c midPos(x, y, 1500.0f);
+            mBlocks[i].initBgCtr(this, midPos, icy);
+            x -= 16.0f;
+        }
     }
 
-    mVec3_c tail_pos = mVec3_c(f1, f2, 1516.0f);
-    getTailBlock()->initBgCtr(this, tail_pos, (mParam >> 20) & 1);
+    mVec3_c tailPos = mVec3_c(x, y, 1516.0f);
+    getTailBlock()->initBgCtr(this, tailPos, icy);
 
     getHeadBlock()->mTravelInfoIdx = mBlockNum + 1;
     getTailBlock()->mTravelInfoIdx = 1;
@@ -350,229 +371,68 @@ void daEnSnakeBlock_c::initTravelInfo() {
     sRailInfoData *rail = dRail_c::getRailInfoP((mParam >> 4) & 0xF);
     dCdFile_c *file = dCd_c::m_instance->getFileP(dScStage_c::m_instance->mCurrFile);
 
-    sRailNodeData *node = &file->mpRailNodes[rail->mNodeIdx + ((mParam >> 12) & 0xFF)];
+    sRailNodeData *node = &file->mpRailNodes[rail->mNodeIdx];
 
-    u32 dist = 0;
-    u32 start_idx = (mParam >> 12) & 0xFF;
-    for (int i = start_idx; i < (rail->mCount - 1); i++) {
-        sRailNodeData * next_node = node + 1;
-        s16 dx = abs((next_node->mX >> 4) - (node->mX >> 4));
-        s16 dy = abs((next_node->mY >> 4) - (node->mY >> 4));
+    int dist = 0;
+    int startIdx = ACTOR_PARAM(RailStartIdx);
+    int endIdx = rail->mCount - 1;
+
+    for (int i = startIdx; i < endIdx; i++) {
+        s16 dx = abs((node[i + 1].mX >> 4) - (node[i].mX >> 4));
+        s16 dy = abs((node[i + 1].mY >> 4) - (node[i].mY >> 4));
         dist += dx + dy;
-        node = next_node;
     }
 
     mTravelInfoIdx = dist;
     mpTravelInfo = new s8[dist + 2];
 
-    int i11 = 1;
-    for (; start_idx < rail->mCount; start_idx++) {
-        sRailNodeData * next_node = node + 1;
-        s16 i8 = (next_node->mX >> 4) - (node->mX >> 4);
-        s16 i7 = (next_node->mY >> 4) - (node->mY >> 4);
+    int currIdx = 1;
+    for (int i11 = startIdx; i11 < rail->mCount - 1; i11++) {
+        s16 dx = (node[i11 + 1].mX >> 4) - (node[i11].mX >> 4);
+        s16 dy = (node[i11 + 1].mY >> 4) - (node[i11].mY >> 4);
 
-        s32 i4 = abs(i8);
-        s32 i13 = (s16)i4;
-        i4 = abs(i7);
-        i4 = (s16)i4;
+        int dx_ = (s16) abs(dx);
+        int dy_ = (s16) abs(dy);
 
-        u8 b5 = 0;
-        u8 b6 = 0;
+        u8 ti0 = 0;
+        u8 ti1 = 0;
 
-        if (i8 < 1) {
-            if (i8 < 0) {
-                b5 = 3;
+        if (dx > 0) {
+            ti0 = 4;
+        } else if (dx < 0) {
+            ti0 = 3;
+        }
+
+        if (dy < 0) {
+            ti1 = 1;
+        } else if (dy > 0) {
+            ti1 = 2;
+        }
+
+        int count = 0;
+        if (dx_ <= dy_) {
+            for (int i = 0; i < dx_; i++) {
+                mpTravelInfo[currIdx + i * 2] = ti0;
+                mpTravelInfo[currIdx + i * 2 + 1] = ti1;
+                count += 2;
+            }
+            for (int i = 0; i < dy_ - dx_; i++) {
+                mpTravelInfo[currIdx + i] = ti1;
+                count++;
             }
         } else {
-            b5 = 4;
-        }
-
-        if (i7 < 0) {
-            b6 = 1;
-        } else if (i7 > 0) {
-            b6 = 2;
-        }
-
-        i7 = 0;
-        if (i4 < i13) {
-            i8 = 0;
-            if (i4 > 0) {
-                if (i4 > 8) {
-                    bool b2 = false;
-                    if ((i4 > -1) && (i4 < 0x7FFFFFFF)) {
-                        b2 = true;
-                    }
-
-                    if (b2) {
-                        u32 u15 = ((u32)(i4 - 1)) >> 3;
-
-                        if (u15 > 0) {
-                            do {
-                                u32 idx = i11 + i7;
-                                i7 += 0x10;
-                                i8 += 8;
-
-                                mpTravelInfo[idx    ] = b5;
-                                mpTravelInfo[idx + 1] = b5;
-                                mpTravelInfo[idx + 2] = b5;
-                                mpTravelInfo[idx + 3] = b5;
-                                mpTravelInfo[idx + 4] = b5;
-                                mpTravelInfo[idx + 5] = b5;
-                                mpTravelInfo[idx + 6] = b5;
-                                mpTravelInfo[idx + 7] = b5;
-                                mpTravelInfo[idx + 8] = b5;
-                                mpTravelInfo[idx + 9] = b5;
-                                mpTravelInfo[idx + 10] = b5;
-                                mpTravelInfo[idx + 11] = b5;
-                                mpTravelInfo[idx + 12] = b5;
-                                mpTravelInfo[idx + 13] = b5;
-                                mpTravelInfo[idx + 14] = b5;
-                                mpTravelInfo[idx + 15] = b5;
-
-                                u15--;
-                            } while (u15 != 0);
-                        }
-                    }
-                    int i9 = i4 - i8;
-                    if (i9 > 0) {
-                        while (i9 != 0) {
-                            int i8 = i11 + i7;
-                            i7 += 2;
-                            mpTravelInfo[i8] = b5;
-                            mpTravelInfo[i8 + 1] = b5;
-                        }
-                    }
-                }
-                i13 -= i4;
-                i4 = 0;
-                if (i13 > 0) {
-                    if (i13 > 8) {
-                        bool b2 = false;
-                        if ((i13 > -1) && (i13 < 0x7FFFFFFF)) {
-                            b2 = true;
-                        }
-                        if (b2) {
-                            int u15 = (i13 - 1) >> 3;
-                            if (u15 > 0) {
-                                while (u15 != 0) {
-                                    int i8 = i11 + i7;
-                                    i7 += 8;
-                                    i4 += 8;
-                                    mpTravelInfo[i8] = b5;
-                                    mpTravelInfo[i8 + 1] = b5;
-                                    mpTravelInfo[i8 + 2] = b5;
-                                    mpTravelInfo[i8 + 3] = b5;
-                                    mpTravelInfo[i8 + 4] = b5;
-                                    mpTravelInfo[i8 + 5] = b5;
-                                    mpTravelInfo[i8 + 6] = b5;
-                                    mpTravelInfo[i8 + 7] = b5;
-                                    u15--;
-                                }
-                            }
-                        }
-                    }
-                    i8 = i13 - i4;
-                    if (i4 < i13) {
-                        do {
-                            i4 = i11 + i7;
-                            i7++;
-                            mpTravelInfo[i4] = b5;
-                            i8--;
-                        } while (i8 != 0);
-                    }
-                }
+            for (int i = 0; i < dy_; i++) {
+                mpTravelInfo[currIdx + i * 2] = ti0;
+                mpTravelInfo[currIdx + i * 2 + 1] = ti1;
+                count += 2;
             }
-        } else {
-            i8 = 0;
-            if (i13 > 0) {
-                if (i13 > 8) {
-                    bool b2 = false;
-                    if ((i13 > -1) && (i13 < 0x7FFFFFFF)) {
-                        b2 = true;
-                    }
-                    if (b2) {
-                        u32 u15 = ((u32)(i13 - 1)) >> 3;
-                        if (u15 > 0) {
-                            do {
-                                int i9 = i11 + i7;
-                                i7 += 16;
-                                i8 += 8;
-                                mpTravelInfo[i9   ] = b5;
-                                mpTravelInfo[i9 + 1] = b5;
-                                mpTravelInfo[i9 + 2] = b5;
-                                mpTravelInfo[i9 + 3] = b5;
-                                mpTravelInfo[i9 + 4] = b5;
-                                mpTravelInfo[i9 + 5] = b5;
-                                mpTravelInfo[i9 + 6] = b5;
-                                mpTravelInfo[i9 + 7] = b5;
-                                mpTravelInfo[i9 + 8] = b5;
-                                mpTravelInfo[i9 + 9] = b5;
-                                mpTravelInfo[i9 + 10] = b5;
-                                mpTravelInfo[i9 + 11] = b5;
-                                mpTravelInfo[i9 + 12] = b5;
-                                mpTravelInfo[i9 + 13] = b5;
-                                mpTravelInfo[i9 + 14] = b5;
-                                mpTravelInfo[i9 + 15] = b5;
-                                u15--;
-                            } while (u15 != 0);
-                        }
-                    }
-                    int i9 = i13 - i8;
-                    if (i8 < i13) {
-                        while (i9 != 0) {
-                            i8 = i11 + i7;
-                            i7 += 2;
-                            mpTravelInfo[i8] = b5;
-                            mpTravelInfo[i8 + 1] = b5;
-                            i9--;
-                        }
-                    }
-                }
-            }
-            i4 -= i13;
-            i13 = 0;
-            if (i4 > 0) {
-                if (i4 > 8) {
-                    bool b2 = false;
-                    if ((i4 > -1) && (i4 < 0x7FFFFFFF)) {
-                        b2 = true;
-                    }
-
-                    if (b2) {
-                        u32 u15 = (u32)(i4 - 1) >> 3;
-                        if (u15 > 0) {
-                            while (u15 != 0) {
-                                i8 = i11 + i7;
-                                i7 += 8;
-                                i13 += 8;
-                                mpTravelInfo[i8] = b6;
-                                mpTravelInfo[i8 + 1] = b6;
-                                mpTravelInfo[i8 + 2] = b6;
-                                mpTravelInfo[i8 + 3] = b6;
-                                mpTravelInfo[i8 + 4] = b6;
-                                mpTravelInfo[i8 + 5] = b6;
-                                mpTravelInfo[i8 + 6] = b6;
-                                mpTravelInfo[i8 + 7] = b6;
-                                u15--;
-                            }
-                        }
-                    }
-                }
-
-                i8 = i4 - i13;
-                if (i8 > 0) {
-                    while (i8 != 0) {
-                        i4 = i11 + i7;
-                        i7++;
-                        i8--;
-                        mpTravelInfo[i4] = b6;
-                    }
-                }
+            for (int i = 0; i < dx_ - dy_; i++) {
+                mpTravelInfo[currIdx + i] = ti1;
+                count++;
             }
         }
 
-        node += 1;
-        i11 += i7;
+        currIdx += count;
     }
 
     mpTravelInfo[0] = 0;
@@ -582,16 +442,21 @@ void daEnSnakeBlock_c::initTravelInfo() {
 void daEnSnakeBlock_c::setBlockPos() {
     dBlock_c *prev = &mBlocks[mBlockNum - 2];
     dBlock_c *curr = &mBlocks[mBlockNum - 1];
+    mVec3_c tmp;
     for (int i = 0; i < mBlockNum - 1; i++) {
-        mVec3_c tmp(prev->getPos().x, prev->getPos().y, 1500.0f);
-        curr->mPos = tmp;
+        tmp.x = prev->getPos().x;
+        tmp.y = prev->getPos().y;
+        tmp.z = 1500.0f;
+        curr->setPos(tmp);
 
         curr--;
         prev--;
     }
 
-    mVec3_c tmp(getHeadBlock()->getPos().x, getHeadBlock()->getPos().y, 1500.0f);
-    mBlocks[0].mPos = tmp;
+    tmp.x = getHeadBlock()->getPos().x;
+    tmp.y = getHeadBlock()->getPos().y;
+    tmp.z = 1500.0f;
+    mBlocks[0].setPos(tmp);
 }
 
 void daEnSnakeBlock_c::setActorPos() {
@@ -719,10 +584,6 @@ void daEnSnakeBlock_c::initializeState_Collapse1() {
         mVec2_c(0.0f, -1.0f),
         mVec2_c(0.0f, 0.0f),
         mVec2_c(0.0f, 0.0f)
-    };
-
-    static float floats[] = {
-        0.0f, 0.0f, 1.0f, 3.0f, 0.0f, -1.0f, 0.0f, 0.0f, 0.0f, 0.0f
     };
 
     getHeadBlock()->mLastPos = getHeadBlock()->mPos;
