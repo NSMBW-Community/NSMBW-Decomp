@@ -39,6 +39,7 @@
             "nonMatching": true,
             "memoryRanges": {
                 ".text": "0x103a50-0x106960",
+                ".rodata": "0x72a0-0x7310",
                 ".data": "0x33680-0x33b90",
                 ".bss": "0x9f30-0xa178"
             }
