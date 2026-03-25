@@ -13,26 +13,6 @@ ACTOR_PROFILE(EN_SNAKEBLOCK, daEnSnakeBlock_c, 0);
 const float daEnSnakeBlock_c::sc_FallAccel = -0.1875f;
 const float daEnSnakeBlock_c::sc_FallMaxSpeed = -4.0f;
 
-int daEnSnakeBlock_c::sc_filler[12] = {0};
-
-mVec2_c daEnSnakeBlock_c::sc_ctrlPosMods[5] = {
-    mVec2_c(0.0f, 0.0f),
-    mVec2_c(0.0f, 1.0f),
-    mVec2_c(0.0f, -1.0f),
-    mVec2_c(-1.0f, 0.0f),
-    mVec2_c(1.0f, 0.0f)
-};
-
-int daEnSnakeBlock_c::sc_glbSnakeNum = 0;
-
-STATE_DEFINE(daEnSnakeBlock_c, Wait);
-STATE_DEFINE(daEnSnakeBlock_c, Move);
-STATE_DEFINE(daEnSnakeBlock_c, Shake);
-STATE_DEFINE(daEnSnakeBlock_c, Collapse1);
-STATE_DEFINE(daEnSnakeBlock_c, Collapse2);
-STATE_DEFINE(daEnSnakeBlock_c, Collapse3);
-STATE_DEFINE(daEnSnakeBlock_c, Stop);
-
 void daEnSnakeBlock_c::dBlock_c::createMdl(dHeapAllocator_c *alloc) {
     mResFile = dResMng_c::m_instance->getRes("block_snake_ice", "g3d/block_snake_ice.brres");
 
@@ -167,6 +147,24 @@ void daEnSnakeBlock_c::dBlock_c::callBackF(dActor_c *self, dActor_c *other) {
 void daEnSnakeBlock_c::dBlock_c::callBackH(dActor_c *self, dActor_c *other) {}
 void daEnSnakeBlock_c::dBlock_c::callBackW(dActor_c *self, dActor_c *other, u8 x) {}
 
+mVec2_c daEnSnakeBlock_c::sc_ctrlPosMods[5] = {
+    mVec2_c(0.0f, 0.0f),
+    mVec2_c(0.0f, 1.0f),
+    mVec2_c(0.0f, -1.0f),
+    mVec2_c(-1.0f, 0.0f),
+    mVec2_c(1.0f, 0.0f)
+};
+
+int daEnSnakeBlock_c::sc_glbSnakeNum = 0;
+
+STATE_DEFINE(daEnSnakeBlock_c, Wait);
+STATE_DEFINE(daEnSnakeBlock_c, Move);
+STATE_DEFINE(daEnSnakeBlock_c, Shake);
+STATE_DEFINE(daEnSnakeBlock_c, Collapse1);
+STATE_DEFINE(daEnSnakeBlock_c, Collapse2);
+STATE_DEFINE(daEnSnakeBlock_c, Collapse3);
+STATE_DEFINE(daEnSnakeBlock_c, Stop);
+
 const float daEnSnakeBlock_c::sc_snakeSpeeds2[3] = {
     0.5f, 1.0f, 1.4f
 };
@@ -180,11 +178,14 @@ const float daEnSnakeBlock_c::sc_snakeDir[2] = {
 };
 
 bool daEnSnakeBlock_c::dCtrlBlock_c::calcPos(s8 *travelInfo) {
-    mVec2_c v = sc_ctrlPosMods[travelInfo[mTravelInfoIdx]];
-
     float speed = sc_snakeSpeeds[mSnakeSpeedIdx];
-    mPos.x += speed * v.x;
-    mPos.y += speed * v.y;
+
+    mVec2_c newPos;
+    newPos.x = sc_ctrlPosMods[travelInfo[mTravelInfoIdx]].x;
+    newPos.y = sc_ctrlPosMods[travelInfo[mTravelInfoIdx]].y;
+
+    mPos.x += speed * newPos.x;
+    mPos.y += speed * newPos.y;
 
     if (std::fabs(mPos.x - mLastPos.x) >= 16.0f || std::fabs(mPos.y - mLastPos.y) >= 16.0f) {
         return true;
@@ -197,15 +198,10 @@ bool daEnSnakeBlock_c::dCtrlBlock_c::calcTravelPos(s8 *travelInfo) {
     newPos.x = sc_ctrlPosMods[travelInfo[mTravelInfoIdx]].x;
     newPos.y = sc_ctrlPosMods[travelInfo[mTravelInfoIdx]].y;
 
-    float x = mLastPos.x + newPos.x * 16.0f;
-    float y = mLastPos.y + newPos.y * 16.0f;
+    mPos.x = mLastPos.x + newPos.x * 16.0f;
+    mPos.y = mLastPos.y + newPos.y * 16.0f;
 
-    mPos.x = x;
-    mPos.y = y;
-    mLastPos.x = x;
-    mLastPos.y = y;
-
-    mLastPos.z = mPos.z;
+    mLastPos = mPos;
 
     mTravelInfoIdx++;
     return travelInfo[mTravelInfoIdx] == 0;
@@ -489,15 +485,15 @@ void daEnSnakeBlock_c::finalizeState_Wait() {}
 void daEnSnakeBlock_c::executeState_Wait() {}
 
 void daEnSnakeBlock_c::initializeState_Move() {
-    getHeadBlock()->setCreate();
+    getHeadBlock()->setAnmClr("create");
     getHeadBlock()->mAnmClr.setRate(0.0f, 0);
     getHeadBlock()->mAnmClr.setFrame(25.0f, 0);
-    getTailBlock()->setRidden();
+    getTailBlock()->setAnmClr("ridden");
 
-    mBlocks[0].setCreate();
+    mBlocks[0].setAnmClr("create");
     for (int i = 1; i < mBlockNum; i++) {
         dBlock_c &curr = mBlocks[i];
-        curr.setRidden();
+        curr.setAnmClr("ridden");
     }
 
     getHeadBlock()->mLastPos = getHeadBlock()->mPos;
@@ -510,6 +506,7 @@ void daEnSnakeBlock_c::initializeState_Move() {
 }
 void daEnSnakeBlock_c::finalizeState_Move() {}
 void daEnSnakeBlock_c::executeState_Move() {
+    dBlock_c *curr;
     bool b3 = getHeadBlock()->calcPos(mpTravelInfo);
     bool b4 = getTailBlock()->calcPos(mpTravelInfo);
     bool b5 = false;
@@ -519,7 +516,7 @@ void daEnSnakeBlock_c::executeState_Move() {
         b5 = getHeadBlock()->calcTravelPos(mpTravelInfo);
         b6 = getTailBlock()->calcTravelPos(mpTravelInfo);
 
-        dAudio::SoundEffectID_t(SE_OBJ_SNAKE_BLOCK).playMapSound(mPos, 0);
+        dAudio::SoundEffectID_t(scSnakeSoundID).playMapSound(mPos, 0);
 
         setBlockPos();
         mCreateAnmBlockIdx++;
@@ -527,13 +524,16 @@ void daEnSnakeBlock_c::executeState_Move() {
             mCreateAnmBlockIdx = mCreateAnmBlockNum;
         }
 
+        curr = mBlocks;
+        int frame;
         int snakeSpeed = 16.0f / sc_snakeSpeeds[mParam >> 8 & 0x3];
-        int frame = 0;
+        int i = 0;
+        frame = 0;
 
-        for (int i = 0; i < mCreateAnmBlockIdx; i++) {
-            dBlock_c &curr = mBlocks[i];
-            curr.setAnmClr("create");
-            curr.mAnmClr.setFrame(frame, 0);
+        for (; i < mCreateAnmBlockIdx; i++) {
+            curr->setAnmClr("create");
+            curr->mAnmClr.setFrame(frame, 0);
+            curr++;
             frame += snakeSpeed;
         }
     }
@@ -594,14 +594,14 @@ void daEnSnakeBlock_c::initializeState_Collapse1() {
 
     getHeadBlock()->mLastPos = getHeadBlock()->mPos;
     getTailBlock()->mLastPos = getTailBlock()->mPos;
-    for (int i = 0; i < getBlockCount(); i++) {
+    for (int i = 0; (int) i < mBlockNum; i++) {
         dBlock_c &curr = mBlocks[i];
         curr.mLastPos = curr.mPos;
     }
 
     dBlock_c *curr2 = getHeadBlock();
     int prevIdx = curr2->mTravelInfoIdx;
-    for (u32 i = 0; i < getBlockCount(); i++) {
+    for (u32 i = 0; (int) i < mBlockNum; i++) { // [fake match]
         curr2 = &mBlocks[i];
         curr2->mTravelInfoIdx = prevIdx;
         prevIdx--;
@@ -612,7 +612,7 @@ void daEnSnakeBlock_c::initializeState_Collapse1() {
     mVec2_c collapse_speed = sc_collapseSpeeds[idx];
     getHeadBlock()->setSpeed(collapse_speed.x, collapse_speed.y, 0.0f);
     getTailBlock()->setSpeed(collapse_speed.x, collapse_speed.y, 0.0f);
-    for (u32 i = 0; i < getBlockCount(); i++) {
+    for (u32 i = 0; (int) i < mBlockNum; i++) { // [fake match]
         dBlock_c &curr = mBlocks[i];
         curr.setSpeed(collapse_speed.x, collapse_speed.y, 0.0f);
     }
@@ -691,3 +691,5 @@ void daEnSnakeBlock_c::executeState_Collapse3() {
         deleteActor(1);
     }
 }
+
+const int daEnSnakeBlock_c::scSnakeSoundID = SE_OBJ_SNAKE_BLOCK;
