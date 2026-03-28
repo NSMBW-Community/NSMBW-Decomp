@@ -4,6 +4,10 @@
 
 class dCsSeqMng_c {
 public:
+    enum CUTSCENE_e {
+        CUTSCENE_NONE = -1
+    };
+
     int GetCutName();
     void FUN_801017c0(int, dWmEnemy_c *, int, int); ///< @unofficial
 

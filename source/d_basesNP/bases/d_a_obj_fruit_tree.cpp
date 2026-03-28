@@ -11,7 +11,7 @@ int daObjFruitTree_c::create() {
     nw4r::g3d::ResMdl model;
     nw4r::g3d::ResAnmChr anim;
     nw4r::g3d::ResFile res;
-    mHeapAllocator.createFrmHeap(-1, mHeap::g_gameHeaps[0], nullptr, 0x20);
+    mHeapAllocator.createFrmHeap(-1, mHeap::g_gameHeaps[mHeap::GAME_HEAP_DEFAULT], nullptr, 0x20);
 
     int style = ACTOR_PARAM_LOCAL(param, Style);
     if (style == STYLE_REGULAR) {

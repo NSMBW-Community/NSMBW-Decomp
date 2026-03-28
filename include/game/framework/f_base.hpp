@@ -100,7 +100,7 @@ public:
     fBase_c(); ///< Constructs a new base.
 
     /// @brief @p new operator override for all bases.
-    /// @details Bases are allocated in mHeap::g_gameHeaps[0] in a top-down direction, and are
+    /// @details Bases are allocated in mHeap::g_gameHeaps[mHeap::GAME_HEAP_DEFAULT] in a top-down direction, and are
     /// zero-initialized.
     static void *operator new(size_t);
     static void operator delete(void *); ///< @p delete operator override for all bases.

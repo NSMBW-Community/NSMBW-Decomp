@@ -41,6 +41,6 @@ protected:
     static void setSoftLight_Enemy(m3d::bmdl_c &mdl); ///< @copydoc dGameCom::SetSoftLight_Enemy
     static void setSoftLight_Boss(m3d::bmdl_c &mdl); ///< @copydoc dGameCom::SetSoftLight_Boss
 
-private:
+protected:
     mSphere_c mClipSphere; ///< A sphere representing the actor's visible area.
 };

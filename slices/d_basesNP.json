@@ -70,6 +70,17 @@
             }
         },
         {
+            "source": "d_basesNP/bases/d_a_wm_cannon.cpp",
+            "nonMatching": true,
+            "memoryRanges": {
+                ".text": "0x15e7e0-0x15ecc0",
+                ".ctors": "0x3c4-0x3c8",
+                ".rodata": "0x86d0-0x86e8",
+                ".data": "0x43ef8-0x43fd0",
+                ".bss": "0xfd38-0xfd48"
+            }
+        },
+        {
             "source": "d_basesNP/bases/d_s_autoselect.cpp",
             "memoryRanges": {
                 ".text": "0x1b13f0-0x1b14a0",

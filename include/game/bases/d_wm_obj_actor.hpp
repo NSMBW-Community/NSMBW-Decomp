@@ -37,8 +37,7 @@ public:
     bool IsCourseUraClearSimple(); ///< @copybrief dWmLib::IsCourseUraClearSimple
     bool IsCourseUraOtasukeClearSimple(); ///< @copybrief dWmLib::IsCourseUraOtasukeClearSimple
 
-    u8 mUnk174[0x10]; ///< @unused
-    int mResNodeIdx; ///< The index of the model's root resource node. Always set to @p -1.
+    int mResNodeIdx; ///< The index of the model's root resource node.
 
     ACTOR_PARAM_CONFIG(CourseNo, 0, 8); ///< The level number associated to the object.
     ACTOR_PARAM_CONFIG(PathNode, 8, 8); ///< The path node associated to the object.

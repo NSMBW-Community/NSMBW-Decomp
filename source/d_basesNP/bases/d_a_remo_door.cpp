@@ -12,7 +12,7 @@ STATE_DEFINE(daRemoDoor_c, Open);
 STATE_DEFINE(daRemoDoor_c, Close);
 
 void daRemoDoor_c::init() {
-    mAllocator.createFrmHeap(-1, mHeap::g_gameHeaps[0], nullptr, 0x20);
+    mAllocator.createFrmHeap(-1, mHeap::g_gameHeaps[mHeap::GAME_HEAP_DEFAULT], nullptr, 0x20);
     mRes = dResMng_c::m_instance->getRes("obj_door", "g3d/obj_door.brres");
     nw4r::g3d::ResMdl mdl = mRes.GetResMdl("obj_doorA");
     mDoorModel.create(mdl, &mAllocator, nw4r::g3d::ScnMdl::BUFFER_RESMATMISC, 1, nullptr);
