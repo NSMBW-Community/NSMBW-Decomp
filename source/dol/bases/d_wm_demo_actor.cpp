@@ -10,7 +10,7 @@
 
 dWmDemoActor_c::dWmDemoActor_c() {}
 
-dBaseActor_c *dWmDemoActor_c::GetChildDemoActor(dBaseActor_c *prev, dWmDemoActor_c *&next) {
+dWmDemoActor_c *dWmDemoActor_c::GetChildDemoActor(dBaseActor_c *prev, dWmDemoActor_c *&next) {
     dBaseActor_c *actor = (dBaseActor_c *) fManager_c::searchBaseByGroupType(fBase_c::ACTOR, prev);
     if (actor == nullptr) {
         next = nullptr;
@@ -27,11 +27,11 @@ dBaseActor_c *dWmDemoActor_c::GetChildDemoActor(dBaseActor_c *prev, dWmDemoActor
             next = nullptr;
             break;
     }
-    return actor;
+    return (dWmDemoActor_c *)actor;
 }
 
-void dWmDemoActor_c::setCutEndSpecific(int cutsceneId, bool param2) {
-    if (cutsceneId == -1) {
+void dWmDemoActor_c::setCutEndSpecific(int cutsceneCommandId, bool param2) {
+    if (cutsceneCommandId == dCsSeqMng_c::CUTSCENE_CMD_NONE) {
         return;
     }
     dWmDemoActor_c::setCutEnd();
@@ -162,10 +162,10 @@ bool dWmDemoActor_c::checkArriveTargetXZ(const mVec3_c &startPos, const mVec3_c 
 }
 
 void dWmDemoActor_c::CreateShadowModel(const char *arc, const char *path, const char *mdlName, bool param4) {
-    mHeapAllocator.createFrmHeapToCurrent(-1, mHeap::g_gameHeaps[0], nullptr, 0x20, mHeap::OPT_NONE);
+    mHeapAllocator.createFrmHeapToCurrent(-1, mHeap::g_gameHeaps[mHeap::GAME_HEAP_DEFAULT], nullptr, 0x20, mHeap::OPT_NONE);
 
     nw4r::g3d::ResFile resFile = dResMng_c::m_instance->getRes(arc, path);
-    mModel.create(resFile.GetResMdl(mdlName), &mHeapAllocator, nw4r::g3d::ScnMdl::BUFFER_RESMATMISC, 1, 0);
+    mModel.create(resFile.GetResMdl(mdlName), &mHeapAllocator, nw4r::g3d::ScnMdl::BUFFER_RESMATMISC, 1, nullptr);
 
     mSvMdl = new dWmSVMdl_c();
     mSvMdl->create(&mHeapAllocator, mModel);
@@ -311,11 +311,11 @@ void dWmDemoActor_c::adjustHeightBase(const mVec3_c &startPos, const mVec3_c &ta
     CsSPosSimple(directionType, GetBgPosY(startPos, targetPos, directionType));
 }
 
-bool dWmDemoActor_c::isCutscenePlaying(const int *csList, int csCount) {
-    int cutName = dCsSeqMng_c::ms_instance->GetCutName();
+bool dWmDemoActor_c::isCutsceneCommandPlaying(const int *cmdList, int cmdCount) {
+    int currCmd = dCsSeqMng_c::ms_instance->GetCutName();
     bool found = false;
-    for (int i = 0; i < csCount; i++) {
-        if (csList[i] == cutName) {
+    for (int i = 0; i < cmdCount; i++) {
+        if (cmdList[i] == currCmd) {
             found = true;
             break;
         }

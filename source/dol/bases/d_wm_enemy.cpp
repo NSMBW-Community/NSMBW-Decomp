@@ -107,7 +107,7 @@ int dWmEnemy_c::execute() {
         }
     }
     setCutEndSpecific(dCsSeqMng_c::ms_instance->GetCutName(), dCsSeqMng_c::ms_instance->m_164);
-    if (IsExecEnable() || dCsSeqMng_c::ms_instance->GetCutName() == 0x57) {
+    if (IsExecEnable() || dCsSeqMng_c::ms_instance->GetCutName() == dCsSeqMng_c::CUTSCENE_CMD_87) {
         static const ProcFunc Proc_tbl[PROC_COUNT] = {
             &dWmEnemy_c::mode_exec,
             &dWmEnemy_c::mode_DemoContinue,
@@ -321,33 +321,33 @@ void dWmEnemy_c::initShapeAngle() {
 bool dWmEnemy_c::csCommand(int id, bool b) {
     dWmDemoActor_c *actor = dCsSeqMng_c::ms_instance->m_1ac;
     bool isEnd = false;
-    if (id == -1) {
+    if (id == dCsSeqMng_c::CUTSCENE_CMD_NONE) {
         return false;
     }
     if (b) {
         switch (id) {
-            case 4:
+            case dCsSeqMng_c::CUTSCENE_CMD_4:
                 if (mEnWalk) {
                     initWalk();
                 }
                 break;
-            case 86:
+            case dCsSeqMng_c::CUTSCENE_CMD_86:
                 if (actor == this) {
                     initDemoAnger();
                 }
                 break;
-            case 89:
+            case dCsSeqMng_c::CUTSCENE_CMD_89:
                 if (isMainCast()) {
                     initDemoLose();
                 }
                 break;
-            case 91:
+            case dCsSeqMng_c::CUTSCENE_CMD_91:
                 mRotateTimer = 5;
                 break;
         }
     }
     switch (id) {
-        case 4:
+        case dCsSeqMng_c::CUTSCENE_CMD_4:
             if (mEnWalk) {
                 isEnd = true;
                 if (doWalk()) {
@@ -357,21 +357,21 @@ bool dWmEnemy_c::csCommand(int id, bool b) {
                 mIsCutEnd = true;
             }
             break;
-        case 86:
+        case dCsSeqMng_c::CUTSCENE_CMD_86:
             if (actor == this) {
                 isEnd = !procDemoAnger();
             } else {
                 isEnd = false;
             }
             break;
-        case 89:
+        case dCsSeqMng_c::CUTSCENE_CMD_89:
             if (isMainCast()) {
                 isEnd = !procDemoLose();
             } else {
                 isEnd = false;
             }
             break;
-        case 91:
+        case dCsSeqMng_c::CUTSCENE_CMD_91:
             if (mHitPlayer && dScWMap_c::m_WorldNo != WORLD_4) {
                 isEnd = true;
                 if (mRotateTimer > 0) {
@@ -529,10 +529,14 @@ int dWmEnemy_c::getEnemyWalkSeID() {
 }
 
 bool dWmEnemy_c::IsExecEnable() {
-    static const int cutsceneIDs[] = {
-        -1, 56, 136, 86, 87
+    static const int cutsceneCommands[] = {
+        dCsSeqMng_c::CUTSCENE_CMD_NONE,
+        dCsSeqMng_c::CUTSCENE_CMD_56,
+        dCsSeqMng_c::CUTSCENE_CMD_136,
+        dCsSeqMng_c::CUTSCENE_CMD_86,
+        dCsSeqMng_c::CUTSCENE_CMD_87
     };
-    return isCutscenePlaying(cutsceneIDs, ARRAY_SIZE(cutsceneIDs));
+    return isCutsceneCommandPlaying(cutsceneCommands, ARRAY_SIZE(cutsceneCommands));
 }
 
 bool dWmEnemy_c::IsPlayerComingCore() {
@@ -625,12 +629,12 @@ bool dWmEnemy_c::CheckIsHitToPlayer() {
     }
     if (hitWait) {
         daWmPlayer_c::ms_instance->m_2fc = true;
-        dCsSeqMng_c::ms_instance->FUN_801017c0(0x29, this, 0, 0x80);
+        dCsSeqMng_c::ms_instance->FUN_801017c0(dCsSeqMng_c::SMC_DEMO_START_BATTLE, this, 0, 0x80);
         deleteSound();
         return true;
     } else {
         if (hitMove) {
-            dCsSeqMng_c::ms_instance->FUN_801017c0(0x29, this, 0, 0x80);
+            dCsSeqMng_c::ms_instance->FUN_801017c0(dCsSeqMng_c::SMC_DEMO_START_BATTLE, this, 0, 0x80);
             deleteSound();
             return true;
         } else {

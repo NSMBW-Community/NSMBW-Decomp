@@ -16,7 +16,7 @@ public:
     virtual int execute() = 0;
     virtual int GetActorType() { return ACTOR_MAP_DEMO; }
 
-    virtual void setCutEndSpecific(int cutsceneId, bool param2); ///< @unofficial
+    virtual void setCutEndSpecific(int cutsceneCommandId, bool param2); ///< @unofficial
     virtual bool checkCutEnd() { return mIsCutEnd; }
     virtual void setCutEnd() { mIsCutEnd = true; }
     virtual void clearCutEnd() { mIsCutEnd = false; }
@@ -47,9 +47,9 @@ public:
     void CsSPosSimple(int directionType, float yTarget);
     void clearSpeedAll();
     void adjustHeightBase(const mVec3_c &startPos, const mVec3_c &targetPos, int directionType);
-    bool isCutscenePlaying(const int *csList, int csCount); ///< @unofficial
+    bool isCutsceneCommandPlaying(const int *cmdList, int cmdCount); ///< @unofficial
 
-    static dBaseActor_c *GetChildDemoActor(dBaseActor_c *prev, dWmDemoActor_c *&next); ///< @unofficial
+    static dWmDemoActor_c *GetChildDemoActor(dBaseActor_c *prev, dWmDemoActor_c *&next); ///< @unofficial
 
 protected:
     bool m_00;

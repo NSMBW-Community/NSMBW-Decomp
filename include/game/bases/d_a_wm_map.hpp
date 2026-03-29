@@ -1,5 +1,7 @@
 #pragma once
 
+#include <game/bases/d_wm_connect.hpp>
+#include <game/bases/d_wm_csv_data.hpp>
 #include <game/bases/d_wm_demo_actor.hpp>
 #include <game/bases/d_heap_allocator.hpp>
 #include <game/bases/d_wm_map_model.hpp>
@@ -7,6 +9,7 @@
 class daWmMap_c : public dWmDemoActor_c {
 public:
     int GetNodeCount(int); ///< @unofficial
+    void GetNodePos(long nodeIdx, mVec3_c &pos);
 
     dHeapAllocator_c mAllocator;
     dWmMapModel_c mModels[4];

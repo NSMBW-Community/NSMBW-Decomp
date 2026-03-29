@@ -436,7 +436,7 @@ bool fBase_c::createHeap() {
 }
 
 void *fBase_c::operator new(size_t size) {
-    void *mem = EGG::Heap::alloc(size, -4, mHeap::g_gameHeaps[0]);
+    void *mem = EGG::Heap::alloc(size, -4, mHeap::g_gameHeaps[mHeap::GAME_HEAP_DEFAULT]);
     if (mem != nullptr) {
         memset(mem, 0, size);
     }
@@ -444,7 +444,7 @@ void *fBase_c::operator new(size_t size) {
 }
 
 void fBase_c::operator delete(void *mem) {
-    EGG::Heap::free(mem, mHeap::g_gameHeaps[0]);
+    EGG::Heap::free(mem, mHeap::g_gameHeaps[mHeap::GAME_HEAP_DEFAULT]);
 }
 
 void fBase_c::runCreate() {
