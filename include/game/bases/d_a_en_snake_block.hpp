@@ -101,6 +101,14 @@ public:
         int mSnakeSpeedIdx;
     };
 
+    enum TravelDir_e {
+        TRAVEL_DIR_NONE,
+        TRAVEL_DIR_UP,
+        TRAVEL_DIR_DOWN,
+        TRAVEL_DIR_LEFT,
+        TRAVEL_DIR_RIGHT
+    };
+
     daEnSnakeBlock_c() : mpTravelInfo(nullptr), mTravelInfoIdx(0), mShakeTime(0) {}
     virtual ~daEnSnakeBlock_c() {}
 
@@ -130,6 +138,12 @@ public:
 
     dCtrlBlock_c *getHeadBlock() { return &mCtrlBlock[0]; }
     dCtrlBlock_c *getTailBlock() { return &mCtrlBlock[1]; }
+
+    s8 setInfo(ulong idx, TravelDir_e dir) {
+        s8 prev = mpTravelInfo[idx];
+        mpTravelInfo[idx] = dir;
+        return prev;
+    }
 
     dHeapAllocator_c mAllocator;
 

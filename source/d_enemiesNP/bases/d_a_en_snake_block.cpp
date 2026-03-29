@@ -366,80 +366,93 @@ void daEnSnakeBlock_c::calcBgCtr() {
 }
 
 void daEnSnakeBlock_c::initTravelInfo() {
+    s16 dx_abs;
+    s16 dy_abs;
+    s16 dx;
+    s16 dy;
+    int i1;
+    int i2;
+    ulong dist;
+    int endIdx;
+    int startIdx;
+    ulong currIdx;
+    TravelDir_e xDir;
+    TravelDir_e yDir;
+    ulong count;
     sRailInfoData *rail = dRail_c::getRailInfoP((mParam >> 4) & 0xF);
     dCdFile_c *file = dCd_c::m_instance->getFileP(dScStage_c::m_instance->mCurrFile);
 
-    sRailNodeData *node = &file->mpRailNodes[rail->mNodeIdx];
+    sRailNodeData *node = file->mpRailNodes + rail->mNodeIdx;
 
-    int dist = 0;
-    int startIdx = ACTOR_PARAM(RailStartIdx);
-    int endIdx = rail->mCount - 1;
+    dist = 0;
+    startIdx = ACTOR_PARAM(RailStartIdx);
+    endIdx = rail->mCount - 1;
 
-    for (int i = startIdx; i < endIdx; i++) {
-        s16 dx = abs((node[i + 1].mX >> 4) - (node[i].mX >> 4));
-        s16 dy = abs((node[i + 1].mY >> 4) - (node[i].mY >> 4));
+    for (i1 = startIdx; i1 < endIdx; i1++) {
+        dx = abs((node[i1 + 1].mX >> 4) - (node[i1].mX >> 4));
+        dy = abs((node[i1 + 1].mY >> 4) - (node[i1].mY >> 4));
+
         dist += dx + dy;
     }
 
     mTravelInfoIdx = dist;
     mpTravelInfo = new s8[dist + 2];
 
-    int currIdx = 1;
-    for (int i = startIdx; i < rail->mCount - 1; i++) {
-        s16 dx = (node[i + 1].mX >> 4) - (node[i].mX >> 4);
-        s16 dy = (node[i + 1].mY >> 4) - (node[i].mY >> 4);
+    currIdx = 1;
+    for (i2 = startIdx; i2 < rail->mCount - 1; i2++) {
+        dx = (node[i2 + 1].mX >> 4) - (node[i2].mX >> 4);
+        dy = (node[i2 + 1].mY >> 4) - (node[i2].mY >> 4);
 
-        int dx_ = (s16) abs(dx);
-        int dy_ = (s16) abs(dy);
+        dx_abs = abs(dx);
+        dy_abs = abs(dy);
 
-        s8 initialDir = 0;
-        s8 secondDir = 0;
+        xDir = TRAVEL_DIR_NONE;
+        yDir = TRAVEL_DIR_NONE;
 
         if (dx > 0) {
-            initialDir = 4;
+            xDir = TRAVEL_DIR_RIGHT;
         } else if (dx < 0) {
-            initialDir = 3;
+            xDir = TRAVEL_DIR_LEFT;
         }
 
         if (dy < 0) {
-            secondDir = 1;
+            yDir = TRAVEL_DIR_UP;
         } else if (dy > 0) {
-            secondDir = 2;
+            yDir = TRAVEL_DIR_DOWN;
         }
 
-        int count = 0;
-        if (dx_ <= dy_) {
-            for (int j = 0; j < dx_; j++) {
-                int idx = currIdx + count;
-                mpTravelInfo[idx] = initialDir;
-                mpTravelInfo[idx + 1] = secondDir;
+        count = 0;
+        if (dx_abs <= dy_abs) {
+            for (int j = 0; j < dx_abs; j++) {
+                ulong idx = currIdx + count;
+                setInfo(idx, xDir);
+                setInfo(idx + 1, yDir);
                 count += 2;
             }
-            int rest = dy_ - dx_;
-            for (int j = 0; j < rest; j++) {
-                int idx = currIdx + count;
+            for (int j = 0; j < dy_abs - dx_abs; j++) {
+                ulong idx = currIdx + count;
+                setInfo(idx, yDir);
                 count++;
-                mpTravelInfo[idx] = secondDir;
             }
         } else {
-            for (int j = 0; j < dy_; j++) {
-                int idx = currIdx + count;
-                mpTravelInfo[idx] = initialDir;
-                mpTravelInfo[idx + 1] = secondDir;
+            for (int j = 0; j < dy_abs; j++) {
+                ulong idx = currIdx + count;
+                setInfo(idx, xDir);
+                setInfo(idx + 1, yDir);
                 count += 2;
             }
-            for (int j = 0; j < dx_ - dy_; j++) {
-                int idx = currIdx + count;
+            for (int j = 0; j < dx_abs - dy_abs; j++) {
+                ulong idx = currIdx + count;
+                setInfo(idx, xDir);
                 count++;
-                mpTravelInfo[idx] = secondDir;
             }
         }
 
         currIdx += count;
     }
 
-    mpTravelInfo[0] = 0;
-    mpTravelInfo[dist + 1] = 0;
+    setInfo(0, TRAVEL_DIR_NONE);
+    setInfo(dist + 1, TRAVEL_DIR_NONE);
 }
 
 void daEnSnakeBlock_c::setBlockPos() {
