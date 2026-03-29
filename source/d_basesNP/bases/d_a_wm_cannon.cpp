@@ -10,6 +10,8 @@ daWmCannon_c::daWmCannon_c() {}
 daWmCannon_c::~daWmCannon_c() {}
 
 int daWmCannon_c::create() {
+    float a = 0.0f; // [Needed for .rodata ordering]
+
     setClipSphere();
     loadModel();
     calcModel();
@@ -68,13 +70,18 @@ void daWmCannon_c::setCutEndSpecific(int cutsceneId, bool param2) {
         return;
     }
 
-    if (cutsceneId == 27) {
-        mIsCutEnd = true;
-    } else if (cutsceneId == 28) {
-        mIsCutEnd = true;
-    } else if (cutsceneId == 29) {
-        mIsCutEnd = true;
-    } else {
-        mIsCutEnd = true;
+    switch (cutsceneId) {
+        case 27:
+            mIsCutEnd = true;
+            break;
+        case 28:
+            mIsCutEnd = true;
+            break;
+        case 29:
+            mIsCutEnd = true;
+            break;
+        default:
+            mIsCutEnd = true;
+            break;
     }
 }

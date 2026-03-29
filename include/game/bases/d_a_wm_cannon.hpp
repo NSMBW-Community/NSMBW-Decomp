@@ -7,7 +7,7 @@ class daWmCannon_c : public dWmObjActor_c {
 public:
     daWmCannon_c();
     ~daWmCannon_c();
-    
+
     virtual int create();
     virtual int execute();
     virtual int draw();
@@ -21,5 +21,5 @@ public:
 
     dHeapAllocator_c mAllocator;
     m3d::smdl_c mModel;
-    u32 _200;
+    u32 m_200;
 };

@@ -39,8 +39,6 @@ namespace dWmLib {
     };
 
     struct ForceInCourseList_t {
-        ~ForceInCourseList_t() {}
-
         int nodeWorld;
         const char *nodeName;
         int world;
@@ -78,7 +76,7 @@ namespace dWmLib {
     int getEnemyRevivalCount(int, int);
 
     static ForceInCourseList_t sc_ForceList[] = {
-        {WORLD_7, "F7C0", WORLD_7, dCsvData_c::c_CASTLE_ID, 4, "W7C0", mVec3_c(2160, -30, -478)}
+        {WORLD_7, "F7C0", WORLD_7, dCsvData_c::c_CASTLE_ID, 4, "W7C0", mVec3_c(2160.0f, -30.0f, -478.0f)}
     };
 
     static int c_StartPointKinokoHouseID = dCsvData_c::c_START_ID;
