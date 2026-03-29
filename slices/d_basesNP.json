@@ -71,7 +71,6 @@
         },
         {
             "source": "d_basesNP/bases/d_a_wm_cannon.cpp",
-            "nonMatching": true,
             "memoryRanges": {
                 ".text": "0x15e7e0-0x15ecc0",
                 ".ctors": "0x3c4-0x3c8",

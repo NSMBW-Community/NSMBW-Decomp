@@ -39,13 +39,13 @@ namespace dWmLib {
     };
 
     struct ForceInCourseList_t {
-        int nodeWorld;
-        const char *nodeName;
-        int world;
-        int level;
-        int entrance;
-        const char *levelNode;
-        mVec3_c nodePos;
+        int mNodeWorld;
+        const char *mNodeName;
+        int mWorld;
+        int mLevel;
+        int mEntrance;
+        const char *mLevelNode;
+        mVec3_c mNodePos;
     };
 
     int GetCourseTypeFromCourseNo(int courseNo);
