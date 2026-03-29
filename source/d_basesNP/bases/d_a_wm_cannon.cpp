@@ -13,7 +13,7 @@ int daWmCannon_c::create() {
     float a = 0.0f; // [Needed for .rodata ordering]
 
     setClipSphere();
-    loadModel();
+    createModel();
     calcModel();
 
     return SUCCEEDED;
@@ -43,7 +43,7 @@ void daWmCannon_c::setClipSphere() {
     mClipSphere.mRadius = 120.0f;
 }
 
-void daWmCannon_c::loadModel() {
+void daWmCannon_c::createModel() {
     mAllocator.createFrmHeap(-1, mHeap::g_gameHeaps[mHeap::GAME_HEAP_DEFAULT], nullptr, 0x20);
 
     nw4r::g3d::ResFile resFile = dResMng_c::m_instance->getRes("cobCannon", "g3d/model.brres");
@@ -65,19 +65,19 @@ void daWmCannon_c::calcModel() {
     mModel.calc(false);
 }
 
-void daWmCannon_c::setCutEndSpecific(int cutsceneId, bool param2) {
-    if (cutsceneId == dCsSeqMng_c::CUTSCENE_NONE) {
+void daWmCannon_c::setCutEndSpecific(int cutsceneCommandId, bool param2) {
+    if (cutsceneCommandId == dCsSeqMng_c::CUTSCENE_CMD_NONE) {
         return;
     }
 
-    switch (cutsceneId) {
-        case 27:
+    switch (cutsceneCommandId) {
+        case dCsSeqMng_c::CUTSCENE_CMD_27:
             mIsCutEnd = true;
             break;
-        case 28:
+        case dCsSeqMng_c::CUTSCENE_CMD_28:
             mIsCutEnd = true;
             break;
-        case 29:
+        case dCsSeqMng_c::CUTSCENE_CMD_29:
             mIsCutEnd = true;
             break;
         default:
