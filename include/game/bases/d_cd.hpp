@@ -99,9 +99,8 @@ public:
     static void deleteInstance();
 
     dCdFile_c *getFileP(int idx) {
-        dCdFile_c *course = &mFiles[idx];
-        if (course->mpAreas != nullptr) {
-            return course;
+        if (mFiles[idx].mpAreas != nullptr) {
+            return &mFiles[idx];
         }
         return nullptr;
     }

@@ -139,12 +139,6 @@ public:
     dCtrlBlock_c *getHeadBlock() { return &mCtrlBlock[0]; }
     dCtrlBlock_c *getTailBlock() { return &mCtrlBlock[1]; }
 
-    s8 setInfo(ulong idx, TravelDir_e dir) {
-        s8 prev = mpTravelInfo[idx];
-        mpTravelInfo[idx] = dir;
-        return prev;
-    }
-
     dHeapAllocator_c mAllocator;
 
     dCtrlBlock_c mCtrlBlock[2];
@@ -162,6 +156,7 @@ public:
     int mCreateAnmBlockNum;
     u8 _pad[4];
 
+    ACTOR_PARAM_CONFIG(RailIdx, 4, 4);
     ACTOR_PARAM_CONFIG(RailStartIdx, 12, 8);
 
     static const float sc_FallAccel;
