@@ -36,7 +36,6 @@
         },
         {
             "source": "d_enemiesNP/bases/d_a_en_snake_block.cpp",
-            "nonMatching": true,
             "memoryRanges": {
                 ".text": "0x103a50-0x106960",
                 ".ctors": "0x228-0x22c",
