@@ -10,13 +10,18 @@
 /// @paramtable
 class daWmDokanRoute_c : public dWmObjActor_c {
 public:
-    struct Settings_t {
+    struct AnimEl_t {
         mVec3_c mPosDelta;
         float mAnmRate;
         s16 mTimer;
         s16 mTimer2;
         s16 mTimerThreshold;
         s16 mDirection;
+    };
+
+    struct GlobalData_t {
+        float mInitialScale;
+        AnimEl_t mAnims[6];
     };
 
     enum PROC_STATE_e {
@@ -69,8 +74,7 @@ public:
     STATE_e mState; ///< The current state.
     mVec3_c mPosCopy;
 
-    static Settings_t sSettings[6];
-    static u8 sIsNormalExit[6];
+    static const u8 sIsNormalExit[6];
     static const char *sNodeNames[6];
 
     ACTOR_PARAM_CONFIG(Node, 0, 8);
