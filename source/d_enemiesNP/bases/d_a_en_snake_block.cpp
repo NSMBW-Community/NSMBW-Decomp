@@ -377,11 +377,10 @@ void daEnSnakeBlock_c::initTravelInfo() {
 
     ulong dist = 0;
 
-    int i;
     int startIdx = ACTOR_PARAM(RailStartIdx);
-    int endIdx = rail->mCount - 1;
+    u16 railCount = rail->mCount;
 
-    for (i = startIdx; i < endIdx; i++) {
+    for (int i = startIdx; i < railCount - 1; i++) {
         sRailNodeData *curr = node + i;
         sRailNodeData *next = node + i + 1;
         dx = abs((next->mX >> 4) - (curr->mX >> 4));
@@ -395,8 +394,10 @@ void daEnSnakeBlock_c::initTravelInfo() {
 
     ulong currIdx = 1;
     for (int i = startIdx; i < rail->mCount - 1; i++) {
-        dx = (node[i + 1].mX >> 4) - (node[i].mX >> 4);
-        dy = (node[i + 1].mY >> 4) - (node[i].mY >> 4);
+        sRailNodeData *curr = node + i;
+        sRailNodeData *next = node + i + 1;
+        dx = (next->mX >> 4) - (curr->mX >> 4);
+        dy = (next->mY >> 4) - (curr->mY >> 4);
 
         dx_abs = abs(dx);
         dy_abs = abs(dy);
