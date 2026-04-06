@@ -91,7 +91,6 @@
         },
         {
             "source": "d_basesNP/bases/d_a_wm_dokan_route.cpp",
-            "nonMatching": true,
             "memoryRanges": {
                 ".text": "0x162580-0x163620",
                 ".ctors": "0x3dc-0x3e0",

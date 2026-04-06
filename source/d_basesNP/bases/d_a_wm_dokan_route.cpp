@@ -133,7 +133,7 @@ void daWmDokanRoute_c::calcModel(m3d::mdl_c &model) {
 void daWmDokanRoute_c::FUN_808d0270() {
     FUN_808d0360();
     FUN_808d0520();
-    float s = sGlobalData_c<daWmDokanRoute_c>::mData.mInitialScale;
+    float s = GLOBAL_DATA.mInitialScale;
     mScale.set(s, s, s);
     FUN_808d02c0();
 }
@@ -163,9 +163,9 @@ void daWmDokanRoute_c::setCutEndSpecific(int cutsceneCommandId, bool param2) {
 }
 
 void daWmDokanRoute_c::FUN_808d0360() {
-    u8 nodeType = ACTOR_PARAM(Node);
-    mPos = mPosCopy + sGlobalData_c<daWmDokanRoute_c>::mData.mAnims[nodeType].mPosDelta;
-    s16 pipeDir = sGlobalData_c<daWmDokanRoute_c>::mData.mAnims[nodeType].mDirection;
+    u8 nodeType = getNodeNum();
+    mPos = mPosCopy + GLOBAL_DATA.mAnims[nodeType].mPosDelta;
+    s16 pipeDir = GLOBAL_DATA.mAnims[nodeType].mDirection;
 
     float frame = 0.0f;
     mVec3_c rot = mVec3_c::Ez;
@@ -203,9 +203,9 @@ void daWmDokanRoute_c::FUN_808d0360() {
 }
 
 void daWmDokanRoute_c::FUN_808d0520() {
-    u8 nodeType = ACTOR_PARAM(Node);
+    u8 nodeType = getNodeNum();
     int courseNo = dWmLib::GetCourseNoFromPointName(sNodeNames[nodeType]);
-    dInfo_c *info = dInfo_c::m_instance;
+    dInfo_c *info = dInfo_c::getInstance();
 
     float frame = 0.0f;
     switch (sIsNormalExit[nodeType]) {
@@ -234,21 +234,20 @@ void daWmDokanRoute_c::FUN_808d0520() {
 }
 
 void daWmDokanRoute_c::FUN_808d0660() {
-    u8 nodeType = ACTOR_PARAM(Node);
+    u8 nodeType = getNodeNum();
     int courseNo = dWmLib::GetCourseNoFromPointName(sNodeNames[nodeType]);
-    dInfo_c *info = dInfo_c::m_instance;
-    int exitType = sIsNormalExit[nodeType];
+    dInfo_c *info = dInfo_c::getInstance();
 
     mState = STATE_0;
-    if (exitType != 0 && dWmLib::IsCourseFirstOmoteClear(dScWMap_c::m_WorldNo, courseNo, info->mCurrentCourseNode) ||
-        exitType == 0 && dWmLib::IsCourseFirstUraClear(dScWMap_c::m_WorldNo, courseNo, info->mCurrentCourseNode)) {
+    if (sIsNormalExit[nodeType] != 0 && dWmLib::IsCourseFirstOmoteClear(dScWMap_c::m_WorldNo, courseNo, info->mCurrentCourseNode) ||
+        sIsNormalExit[nodeType] == 0 && dWmLib::IsCourseFirstUraClear(dScWMap_c::m_WorldNo, courseNo, info->mCurrentCourseNode)) {
         mTimer = GLOBAL_DATA.mAnims[nodeType].mTimer;
         mState = STATE_1;
     }
 }
 
 void daWmDokanRoute_c::FUN_808d0740() {
-    u8 nodeType = ACTOR_PARAM(Node);
+    u8 nodeType = getNodeNum();
 
     switch (mState) {
         case STATE_0:
@@ -295,7 +294,7 @@ void daWmDokanRoute_c::FUN_808d0740() {
 }
 
 float daWmDokanRoute_c::GetFrame() {
-    u8 nodeType = ACTOR_PARAM(Node);
+    u8 nodeType = getNodeNum();
     float timerDiff = GLOBAL_DATA.mAnims[nodeType].mTimer2 - GLOBAL_DATA.mAnims[nodeType].mTimer;
     float frame = (timerDiff - GLOBAL_DATA.mAnims[nodeType].mTimerThreshold) * GLOBAL_DATA.mAnims[nodeType].mAnmRate;
 

@@ -62,6 +62,8 @@ public:
     void FUN_808d0740();
     float GetFrame();
 
+    u8 getNodeNum() const { return ACTOR_PARAM(Node); }
+
     u32 mUnk188; ///< @unused
     dHeapAllocator_c mAllocator; ///< The allocator.
     nw4r::g3d::ResFile mResFile; ///< The resource file.
