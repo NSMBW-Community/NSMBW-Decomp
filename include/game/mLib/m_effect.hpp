@@ -13,8 +13,6 @@ public:
         virtual void createEffect(const char *, int);
         virtual void createEffect(const char *, unsigned long, const mVec3_c *, const mAng3_c *, const mVec3_c *);
         virtual void createEffect(const char *, unsigned long, const mMtx_c *);
-
-        u8 mPad[0x92];
     };
 
     class levelEffect_c : public effect_c {

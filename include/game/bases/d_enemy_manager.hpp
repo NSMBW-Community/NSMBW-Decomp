@@ -11,7 +11,7 @@ public:
     u8 mPad1[0x138];
     int m_138;
     u8 mPad2[0x10];
-    int m_14c;
+    int mBomheiCount;
     u8 mPad3[0x4];
     int m_154;
 

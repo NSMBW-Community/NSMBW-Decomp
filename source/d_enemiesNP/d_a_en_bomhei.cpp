@@ -28,11 +28,11 @@ STATE_DEFINE(daEnBomhei_c, AfterIce);
 STATE_DEFINE(daEnBomhei_c, InIceLump);
 STATE_VIRTUAL_DEFINE(daEnBomhei_c, EatOut);
 
-const float daEnBomhei_c::smc_WALK_SPEED = 0.5f;
-const float daEnBomhei_c::smc_SLIDE_SPEED_X = 4.0f;
-const float daEnBomhei_c::smc_KICK_SPEED_X = 2.5f;
-const float daEnBomhei_c::smc_KICK_SPEED_Y = 2.0f;
-const int daEnBomhei_c::smc_5EC_VALUE = 240;
+const float daEnBomhei_c::smc_WalkSpeed = 0.5f;
+const float daEnBomhei_c::smc_SlideSpeedX = 4.0f;
+const float daEnBomhei_c::smc_KickSpeedX = 2.5f;
+const float daEnBomhei_c::smc_KickSpeedY = 2.0f;
+const int daEnBomhei_c::smc_ExplodeWaitFrames = 240;
 
 const sBcSensorPoint l_bomhei_head = { 0, 0x0, 0x10000 };
 const sBcSensorLine l_bomhei_foot = { 1, -0x3000, 0x3000, 0 };
@@ -58,7 +58,7 @@ const sCcDatNewF l_bomhei_cc = {
     CC_ATTACK_NONE,
     BIT_FLAG(CC_KIND_PLAYER) | BIT_FLAG(CC_KIND_PLAYER_ATTACK) | BIT_FLAG(CC_KIND_YOSHI) |
     BIT_FLAG(CC_KIND_ENEMY) | BIT_FLAG(CC_KIND_ITEM) | BIT_FLAG(CC_KIND_TAMA),
-    0xffbefffe,
+    (u32) ~BIT_FLAG(CC_ATTACK_NONE) & ~BIT_FLAG(CC_ATTACK_YOSHI_MOUTH) & ~BIT_FLAG(CC_ATTACK_SAND_PILLAR),
     CC_STATUS_NONE,
     dEn_c::normal_collcheck,
 };
@@ -81,27 +81,29 @@ int daEnBomhei_c::create() {
     mEatBehaviour = EAT_TYPE_EAT_PERMANENT;
     mFlags = EN_IS_HARD;
 
-    if (ACTOR_PARAM(spawnMode) != SPAWN_MODE_ICE_LUMP) {
-        dEnemyMng_c::m_instance->m_14c++;
+    if (ACTOR_PARAM(SpawnMode) != SPAWN_MODE_ICE_LUMP) {
+        dEnemyMng_c::m_instance->mBomheiCount++;
     }
-    vf298();
+    initialStateSet();
 
     return SUCCEEDED;
 }
 
-void daEnBomhei_c::vf298() {
-    if (ACTOR_PARAM(spawnMode) == SPAWN_MODE_WAKIDASHI) {
+void daEnBomhei_c::initialStateSet() {
+    if (ACTOR_PARAM(SpawnMode) == SPAWN_MODE_WAKIDASHI) {
         changeState(StateID_Wakidashi);
-    } else if (ACTOR_PARAM(spawnMode) == SPAWN_MODE_ICE_LUMP) {
+    } else if (ACTOR_PARAM(SpawnMode) == SPAWN_MODE_ICE_LUMP) {
         changeState(StateID_InIceLump);
-    } else if (ACTOR_PARAM(spawnMode) == SPAWN_MODE_CANNON) {
-        int unk2 = ACTOR_PARAM(unk2);
-        m_5f8 = unk2;
-        mDirection = unk2 & 1;
+    } else if (ACTOR_PARAM(SpawnMode) == SPAWN_MODE_CANNON_HOP) {
+        int spawnDir = ACTOR_PARAM(CannonHopSpawnDir);
+        mCannonHopDir = spawnDir;
+        mDirection = spawnDir & 1;
         mAngle.y = l_base_angleY[mDirection];
-        if (unk2 == 0 || unk2 == 1) {
+        if (spawnDir == 0 || spawnDir == 1) {
+            // up-right or up-left
             changeState(StateID_CannonHop_Upper);
         } else {
+            // down-right or down-left
             changeState(StateID_CannonHop_Under);
         }
     } else {
@@ -129,22 +131,22 @@ void daEnBomhei_c::mdlSetup() {
     mAnmMat.setPlayMode(m3d::FORWARD_ONCE, 0);
     mAnmMat.setFrame(0.0f, 0);
 
-    vf294();
+    postMdlSetup();
     mAllocator.adjustFrmHeap();
 }
 
-void daEnBomhei_c::vf294() {}
+void daEnBomhei_c::postMdlSetup() {}
 
 int daEnBomhei_c::execute() {
     mStateMgr.executeState();
     if (!isState(StateID_InIceLump)) {
         if (!isState(StateID_Ice)) {
-            if (mTimer > 0) {
+            if (mExplodeWaitTimer > 0) {
                 mAnmMat.play();
                 dAudio::SoundEffectID_t(SE_EMY_BH_HIBANA).holdEmySound(mUniqueID, mPos, 0);
             }
-            if (m_628 > 0) {
-                m_628--;
+            if (mUnkTimer > 0) {
+                mUnkTimer--;
             }
             if (HasamareBgCheck() || EnLavaCheck(mPos)) {
                 changeState(StateID_Explode);
@@ -159,9 +161,11 @@ int daEnBomhei_c::preDraw() {
     if (dEn_c::preDraw() == NOT_READY) {
         return NOT_READY;
     }
+
     if (isState(StateID_Explode)) {
         return NOT_READY;
     }
+
     return SUCCEEDED;
 }
 
@@ -170,14 +174,15 @@ int daEnBomhei_c::draw() {
     return SUCCEEDED;
 }
 
-void daEnBomhei_c::vf290() {
+void daEnBomhei_c::modelUpdate() {
     mVec3_c pos = mPos;
     mAng3_c angle = mAngle;
     if (isState(StateID_Carry)) {
-        pos = calcCarryPos(m_604);
+        pos = calcCarryPos(mLiftPos);
         mPos.x = pos.x;
         mPos.y = pos.y;
     }
+
     changePosAngle(&pos, &angle, 1);
     mMatrix.trans(pos.x, pos.y, pos.z);
     mMatrix.YrotM(angle.y);
@@ -206,17 +211,19 @@ int daEnBomhei_c::doDelete() {
             player->cancelCarry(this);
         }
     }
-    if (ACTOR_PARAM(spawnMode) != SPAWN_MODE_ICE_LUMP) {
-        dEnemyMng_c::m_instance->m_14c--;
-        if (dEnemyMng_c::m_instance->m_14c < 0) {
-            dEnemyMng_c::m_instance->m_14c = 0;
+
+    if (ACTOR_PARAM(SpawnMode) != SPAWN_MODE_ICE_LUMP) {
+        dEnemyMng_c::m_instance->mBomheiCount--;
+        if (dEnemyMng_c::m_instance->mBomheiCount < 0) {
+            dEnemyMng_c::m_instance->mBomheiCount = 0;
         }
     }
+
     return SUCCEEDED;
 }
 
 void daEnBomhei_c::finalUpdate() {
-    vf290();
+    modelUpdate();
 }
 
 bool daEnBomhei_c::ActorDrawCullCheck() {
@@ -236,26 +243,26 @@ void daEnBomhei_c::calcIgnitionPos() {
 void daEnBomhei_c::updateCarryCc() {
     bool dir = mAngle.y < 0 ? 1 : 0;
 
-    static const float fs[] = { -8.0f, 8.0f };
+    static const float sc_carryOffsetX[] = { -8.0f, 8.0f };
 
-    mVec3_c v1(
-        getCenterPos().x + fs[dir],
+    mVec3_c centerPos(
+        getCenterPos().x + sc_carryOffsetX[dir],
         getCenterPos().y,
         getCenterPos().z
     );
 
     mVec3_c v2(
-        v1.x + l_EnMuki[dir] * 16.0f,
-        v1.y,
-        v1.z
+        centerPos.x + l_EnMuki[dir] * 16.0f,
+        centerPos.y,
+        centerPos.z
     );
 
     mCc.mCcData.mOffset.set(mCcOffsetX, mCcOffsetY);
     mCc.mCcData.mSize.set(mCcWidth, mCcHeight);
     float f = 0.0f;
-    if (dBc_c::checkWall(&v1, &v2, &f, mLayer, 1, nullptr)) {
-        float f1 = (v1.x + f) * 0.5f;
-        float f2 = (v1.x - f) * 0.5f;
+    if (dBc_c::checkWall(&centerPos, &v2, &f, mLayer, 1, nullptr)) {
+        float f1 = (centerPos.x + f) * 0.5f;
+        float f2 = (centerPos.x - f) * 0.5f;
         mCc.mCcData.mOffset.set(f1 - mPos.x, 8.0f);
         mCc.mCcData.mSize.set(std::fabs(f2), 8.0f);
     }
@@ -264,22 +271,23 @@ void daEnBomhei_c::updateCarryCc() {
 void daEnBomhei_c::setSpinLiftUpActor(dActor_c *carryingActor) {
     int plrNo = *carryingActor->getPlrNo();
     mPlayerNo = plrNo;
-    m_624 = plrNo;
-    m_604.set(0.0f, 0.0f, 0.0f);
+    mCarryingPlayer = plrNo;
+    mLiftPos.set(0.0f, 0.0f, 0.0f);
     changeState(StateID_Carry);
 }
 
-void daEnBomhei_c::Normal_VsPlHitCheck(dCc_c *cc1, dCc_c *cc2) {
-    dAcPy_c *other = (dAcPy_c *) cc2->mpOwner;
-    if (fManager_c::searchBaseByID(other->mCarryActorID) == this) {
+void daEnBomhei_c::Normal_VsPlHitCheck(dCc_c *self, dCc_c *other) {
+    dAcPy_c *player = (dAcPy_c *) other->mpOwner;
+    if (fManager_c::searchBaseByID(player->mCarryActorID) == this) {
         return;
     }
-    u8 newDir = cc1->mCollOffsetX[0] >= 0.0f ? 0 : 1;
-    u8 plrNo = *other->getPlrNo();
+
+    u8 newDir = self->mCollOffsetX[CC_KIND_PLAYER] >= 0.0f ? 0 : 1;
+    u8 plrNo = *player->getPlrNo();
     if (isState(StateID_Sleep)) {
-        if (carry_check(other)) {
-            m_624 = plrNo;
-            m_604.set(0.0f, -5.0f, 6.0f);
+        if (carry_check(player)) {
+            mCarryingPlayer = plrNo;
+            mLiftPos.set(0.0f, -5.0f, 6.0f);
             changeState(StateID_Carry);
         } else {
             mDirection = newDir;
@@ -297,10 +305,10 @@ void daEnBomhei_c::Normal_VsPlHitCheck(dCc_c *cc1, dCc_c *cc2) {
         mBc.mOwningPlayerNo = plrNo;
         changeState(StateID_Kick);
     } else {
-        int checkRes = Enfumi_check(cc1, cc2, 0);
+        int checkRes = Enfumi_check(self, other, 0);
         if (checkRes == 0) {
             if (!isState(StateID_Wakidashi) && !isState(StateID_Carry)) {
-                dEn_c::Normal_VsPlHitCheck(cc1, cc2);
+                dEn_c::Normal_VsPlHitCheck(self, other);
             }
         } else if (checkRes == 1) {
             mPlayerNo = plrNo;
@@ -314,8 +322,8 @@ void daEnBomhei_c::Normal_VsPlHitCheck(dCc_c *cc1, dCc_c *cc2) {
             mDirection = newDir;
             mPlayerNo = plrNo;
             mBc.mOwningPlayerNo = plrNo;
-            if (mTimer < 0) {
-                mTimer = smc_5EC_VALUE;
+            if (mExplodeWaitTimer < 0) {
+                mExplodeWaitTimer = smc_ExplodeWaitFrames;
                 mAnmMat.setFrame(0.0f, 0);
             }
             vf29c();
@@ -324,11 +332,12 @@ void daEnBomhei_c::Normal_VsPlHitCheck(dCc_c *cc1, dCc_c *cc2) {
     }
 }
 
-void daEnBomhei_c::Normal_VsYoshiHitCheck(dCc_c *cc1, dCc_c *cc2) {
-    daYoshi_c *other = (daYoshi_c *) cc2->mpOwner;
-    u8 newDir = cc1->mCollOffsetX[2] >= 0.0f ? 0 : 1;
-    u8 plrNo = *other->getPlrNo();
-    if (Enfumi_check(cc1, cc2, 0) == 0) {
+void daEnBomhei_c::Normal_VsYoshiHitCheck(dCc_c *self, dCc_c *other) {
+    daYoshi_c *yoshi = (daYoshi_c *) other->mpOwner;
+    u8 newDir = self->mCollOffsetX[CC_KIND_YOSHI] >= 0.0f ? 0 : 1;
+    u8 plrNo = *yoshi->getPlrNo();
+
+    if (Enfumi_check(self, other, 0) == 0) {
         if (isState(StateID_Sleep) || isState(StateID_Slide) || isState(StateID_Kick)) {
             if (plrNo < PLAYER_COUNT) {
                 mDirection = newDir;
@@ -339,38 +348,38 @@ void daEnBomhei_c::Normal_VsYoshiHitCheck(dCc_c *cc1, dCc_c *cc2) {
                 changeState(StateID_Kick);
             }
         } else {
-            dEn_c::Normal_VsYoshiHitCheck(cc1, cc2);
+            dEn_c::Normal_VsYoshiHitCheck(self, other);
         }
     } else if (!isState(StateID_Explode)) {
-        setDeathInfo_YoshiFumi(other);
+        setDeathInfo_YoshiFumi(yoshi);
     }
 }
 
-void daEnBomhei_c::Normal_VsEnHitCheck(dCc_c *cc1, dCc_c *cc2) {
-    u16 flag = cc2->mCcData.mStatus;
-    dActor_c *other = cc2->getOwner();
+void daEnBomhei_c::Normal_VsEnHitCheck(dCc_c *self, dCc_c *other) {
+    u16 flag = other->mCcData.mStatus;
+    dActor_c *enemy = other->getOwner();
 
-    if (flag & 0x200) {
-        cc1->mInfo |= CC_NO_HIT;
+    if (flag & CC_STATUS_9) {
+        self->mInfo |= CC_NO_HIT;
         if (!isState(StateID_Explode)) {
             changeState(StateID_Explode);
         }
-    } else if (cc1->mCcData.mAttack == CC_ATTACK_SHELL && (flag & 0x100) && hitCallback_Shell(cc1, cc2)) {
-        cc2->mInfo |= CC_NO_HIT;
-        cc1->mInfo |= CC_NO_HIT;
+    } else if (self->mCcData.mAttack == CC_ATTACK_SHELL && (flag & CC_STATUS_8) && hitCallback_Shell(self, other)) {
+        other->mInfo |= CC_NO_HIT;
+        self->mInfo |= CC_NO_HIT;
     } else if (
-        isState(StateID_Carry) && (cc2->mCcData.mVsDamage & BIT_FLAG(CC_ATTACK_SHELL)) &&
-        other->mProfName != fProfile::EN_HATENA_BALLOON && hitCallback_Shell(cc1, cc2)
+        isState(StateID_Carry) && (other->mCcData.mVsDamage & BIT_FLAG(CC_ATTACK_SHELL)) &&
+        enemy->mProfName != fProfile::EN_HATENA_BALLOON && hitCallback_Shell(self, other)
     ) {
-        cc2->mInfo |= CC_NO_HIT;
+        other->mInfo |= CC_NO_HIT;
     } else if (isState(StateID_Walk)) {
-        float offsetX = cc1->mCollOffsetX[3];
+        float offsetX = self->mCollOffsetX[CC_KIND_ENEMY];
 
-        if ((mDirection == 1 && offsetX > 0.0f) || (mDirection == 0 && offsetX < 0.0f)) {
+        if ((mDirection == DIR_LR_L && offsetX > 0.0f) || (mDirection == DIR_LR_R && offsetX < 0.0f)) {
             changeState(StateID_Turn);
         }
     } else {
-        dEn_c::Normal_VsEnHitCheck(cc1, cc2);
+        dEn_c::Normal_VsEnHitCheck(self, other);
     }
 }
 
@@ -379,51 +388,55 @@ void daEnBomhei_c::vf28c() {
         float f = l_EnMuki[mDirection ^ 1];
         mBc.checkWall(&f);
     }
+
     mSpeed.set(0.0f, 0.0f, 0.0f);
     vf29c();
-    if (mTimer < 0) {
-        mTimer = smc_5EC_VALUE;
+
+    if (mExplodeWaitTimer < 0) {
+        mExplodeWaitTimer = smc_ExplodeWaitFrames;
         mAnmMat.setFrame(0.0f, 0);
         changeState(StateID_Sleep);
     }
 }
 
 void daEnBomhei_c::block_hit_init() {
-    mVec3_c shiftedPos(mVec2_c(mPos.x, mPos.y), 5500.0f);
+    mVec3_c efPos(mVec2_c(mPos.x, mPos.y), 5500.0f);
 
-    hitdamageEffect(shiftedPos);
+    hitdamageEffect(efPos);
     dAudio::SoundEffectID_t(SE_EMY_DOWN).playEmySound(mPos, 0);
 
     mDirection = mDeathFallDirection;
     mSpeed.set(l_base_fall_speed_x[mDirection], 3.0f, 0.0f);
     vf29c();
-    if (mTimer < 0) {
-        mTimer = smc_5EC_VALUE;
+
+    if (mExplodeWaitTimer < 0) {
+        mExplodeWaitTimer = smc_ExplodeWaitFrames;
         mAnmMat.setFrame(0.0f, 0);
         changeState(StateID_Sleep);
     }
 }
 
-bool daEnBomhei_c::hitCallback_Shell(dCc_c *cc1, dCc_c *cc2) {
-    dActor_c *other = cc2->getOwner();
+bool daEnBomhei_c::hitCallback_Shell(dCc_c *self, dCc_c *other) {
+    dActor_c *shell = other->getOwner();
     u8 dir = getTrgToSrcDir_Main(
         getCenterX(),
-        other->getCenterX()
+        shell->getCenterX()
     );
-    int plrNo = acmShellPlayerNo(other);
-    shellDamageEffect(cc1, other);
+    int plrNo = acmShellPlayerNo(shell);
+    shellDamageEffect(self, shell);
     int comboScore = -1;
+
     if ((u32) plrNo < PLAYER_COUNT) {
         int shortCombo = 0;
         if (mCombo.mType == 2) {
             shortCombo = 1;
         }
-        other->slideComboSE(other->mComboMultiplier, shortCombo);
-        other->mComboMultiplier++;
-        if (other->mComboMultiplier >= 8) {
-            other->mComboMultiplier = 8;
+        shell->slideComboSE(shell->mComboMultiplier, shortCombo);
+        shell->mComboMultiplier++;
+        if (shell->mComboMultiplier >= 8) {
+            shell->mComboMultiplier = 8;
         }
-        comboScore = mCombo.getComboScore(other->mComboMultiplier);
+        comboScore = mCombo.getComboScore(shell->mComboMultiplier);
     } else {
         dAudio::SoundEffectID_t(SE_EMY_DOWN).playEmySound(mPos, 0);
     }
@@ -443,21 +456,23 @@ bool daEnBomhei_c::hitCallback_Shell(dCc_c *cc1, dCc_c *cc2) {
     return true;
 }
 
-bool daEnBomhei_c::hitCallback_Fire(dCc_c *cc1, dCc_c *cc2) {
-    dActor_c *other = cc2->getOwner();
-    u8 dir = !(other->mSpeed.x >= 0.0f);
+bool daEnBomhei_c::hitCallback_Fire(dCc_c *self, dCc_c *other) {
+    dActor_c *fire = other->getOwner();
+    u8 dir = !(fire->mSpeed.x >= 0.0f);
     mDirection = dir;
     mAngle.y = l_base_angleY[dir];
-    mSpeed.x = l_EnMuki[dir] * smc_WALK_SPEED;
+    mSpeed.x = l_EnMuki[dir] * smc_WalkSpeed;
     mSpeed.y = 1.5f;
     mSpeedMax.x = 0.0f;
     dAudio::SoundEffectID_t(SE_EMY_DOWN).playEmySound(mPos, 0);
-    if (--m_620 >= 0) {
+
+    if (--mFireCoinCount >= 0) {
         dActorMng_c::m_instance->createUpCoin(getCenterPos(), dir, 1, 0);
     }
     vf29c();
-    if (mTimer < 0) {
-        mTimer = smc_5EC_VALUE;
+
+    if (mExplodeWaitTimer < 0) {
+        mExplodeWaitTimer = smc_ExplodeWaitFrames;
         mAnmMat.setFrame(0.0f, 0);
         changeState(StateID_Sleep);
     }
@@ -465,16 +480,16 @@ bool daEnBomhei_c::hitCallback_Fire(dCc_c *cc1, dCc_c *cc2) {
     return true;
 }
 
-bool daEnBomhei_c::hitCallback_Ice(dCc_c *cc1, dCc_c *cc2) {
+bool daEnBomhei_c::hitCallback_Ice(dCc_c *self, dCc_c *other) {
     if (mIceMng.mActive) {
         return true;
     }
 
-    dActor_c *player = (dActor_c *) cc2->getOwner();
+    dActor_c *player = (dActor_c *) other->getOwner();
     if (player->mSpeed.x >= 0.0f) {
-        mIceDirection = 0;
+        mIceDirection = DIR_LR_R;
     } else {
-        mIceDirection = 1;
+        mIceDirection = DIR_LR_L;
     }
 
     mAnmMat.setFrame(0.0f, 0);
@@ -488,7 +503,7 @@ bool daEnBomhei_c::hitCallback_Ice(dCc_c *cc1, dCc_c *cc2) {
     mIceMng.mPlrNo = *player->getPlrNo();
     changeState(StateID_Ice);
 
-    mTimer = -1;
+    mExplodeWaitTimer = -1;
     mPlayerNo = -1;
 
     return true;
@@ -499,9 +514,9 @@ void daEnBomhei_c::returnState_Ice() {
     changeState(StateID_AfterIce);
 }
 
-bool daEnBomhei_c::hitCallback_HipAttk(dCc_c *cc1, dCc_c *cc2) {
-    dActor_c *other = cc2->getOwner();
-    u8 plrNo = *other->getPlrNo();
+bool daEnBomhei_c::hitCallback_HipAttk(dCc_c *self, dCc_c *other) {
+    dActor_c *otherActor = other->getOwner();
+    u8 plrNo = *otherActor->getPlrNo();
 
     if (plrNo >= PLAYER_COUNT) {
         return true;
@@ -510,17 +525,18 @@ bool daEnBomhei_c::hitCallback_HipAttk(dCc_c *cc1, dCc_c *cc2) {
         return true;
     }
 
-    if (mPos.x >= other->mPos.x) {
-        mDirection = 0;
+    if (mPos.x >= otherActor->mPos.x) {
+        mDirection = DIR_LR_R;
     } else {
-        mDirection = 1;
+        mDirection = DIR_LR_L;
     }
+
     mPlayerNo = plrNo;
     dAudio::SoundEffectID_t(SE_EMY_DOWN).playEmySound(mPos, 0);
-    hipatkEffect(other->mPos);
+    hipatkEffect(otherActor->mPos);
     mNoHitPlayer.mTimer[mPlayerNo] = 16;
-    if (mTimer < 0) {
-        mTimer = smc_5EC_VALUE;
+    if (mExplodeWaitTimer < 0) {
+        mExplodeWaitTimer = smc_ExplodeWaitFrames;
         mAnmMat.setFrame(0.0f, 0);
     }
     vf29c();
@@ -529,11 +545,10 @@ bool daEnBomhei_c::hitCallback_HipAttk(dCc_c *cc1, dCc_c *cc2) {
     return true;
 }
 
-bool daEnBomhei_c::hitCallback_YoshiHipAttk(dCc_c *cc1, dCc_c *cc2) {
+bool daEnBomhei_c::hitCallback_YoshiHipAttk(dCc_c *self, dCc_c *other) {
     if (!isState(StateID_Explode)) {
         dAudio::SoundEffectID_t(SE_EMY_YOSHI_HPDP).playEmySound(mPos, 0);
-        setDeathInfo_YoshiFumi(cc2->getOwner());
-
+        setDeathInfo_YoshiFumi(other->getOwner());
         return true;
     }
 
@@ -560,26 +575,26 @@ bool daEnBomhei_c::createIceActor() {
     return mIceMng.createIce(iceInfo, ARRAY_SIZE(iceInfo));
 }
 
-bool daEnBomhei_c::EtcDamageCheck(dCc_c *cc1, dCc_c *cc2) {
-    if (dEn_c::EtcDamageCheck(cc1, cc2)) {
+bool daEnBomhei_c::EtcDamageCheck(dCc_c *self, dCc_c *other) {
+    if (dEn_c::EtcDamageCheck(self, other)) {
         return true;
     }
 
-    dActor_c *other = cc2->getOwner();
-    daEnBomhei_c *self = (daEnBomhei_c *) cc1->getOwner();
-    if (cc2->mCcData.mStatus & 0x200) {
-        cc1->mInfo |= CC_NO_HIT;
-        if (!self->isState(StateID_Explode)) {
-            self->changeState(StateID_Explode);
+    dActor_c *otherActor = other->getOwner();
+    daEnBomhei_c *selfActor = (daEnBomhei_c *) self->getOwner();
+    if (other->mCcData.mStatus & CC_STATUS_9) {
+        self->mInfo |= CC_NO_HIT;
+        if (!selfActor->isState(StateID_Explode)) {
+            selfActor->changeState(StateID_Explode);
         }
         return true;
-    } else if (other->mProfName == fProfile::PAKKUN_FIREBALL || other->mProfName == fProfile::BROS_FIREBALL) {
-        if (self->mTimer < 0) {
-            self->mTimer = smc_5EC_VALUE;
-            self->mAnmMat.setFrame(0.0f, 0);
-            self->changeState(StateID_Sleep);
+    } else if (otherActor->mProfName == fProfile::PAKKUN_FIREBALL || otherActor->mProfName == fProfile::BROS_FIREBALL) {
+        if (selfActor->mExplodeWaitTimer < 0) {
+            selfActor->mExplodeWaitTimer = smc_ExplodeWaitFrames;
+            selfActor->mAnmMat.setFrame(0.0f, 0);
+            selfActor->changeState(StateID_Sleep);
         }
-        daFireBall_Base_c *fireball = (daFireBall_Base_c *) other;
+        daFireBall_Base_c *fireball = (daFireBall_Base_c *) otherActor;
         fireball->kill();
         return true;
     }
@@ -631,8 +646,8 @@ void daEnBomhei_c::checkBombBreak() {
     mBc.checkBombBreak(v1, v2);
 }
 
-void daEnBomhei_c::someBgCheck() {
-    mVec2_c pos = getSomePos();
+void daEnBomhei_c::explodeBgUnit() {
+    mVec2_c pos = getExplodeTilePos();
     for (int i = 0; i < 2; i++) {
         int unitType = dBc_c::getUnitType(pos.x, pos.y, mLayer);
         if (unitType & 0x1c) {
@@ -645,10 +660,11 @@ void daEnBomhei_c::someBgCheck() {
     }
 }
 
-mVec2_c daEnBomhei_c::getSomePos() {
-    if (m_5f0 >= 9) {
+mVec2_c daEnBomhei_c::getExplodeTilePos() {
+    if (mExplodeTimer >= 9) {
         return mVec2_c(0.0f, 0.0f);
     }
+
     static const float xOffsets[] = {
         -16.0f, 0.0f, 16.0f,
         -16.0f, 0.0f, 16.0f,
@@ -659,21 +675,22 @@ mVec2_c daEnBomhei_c::getSomePos() {
         0.0f, 0.0f, 0.0f,
         -16.0f, -16.0f, -16.0f
     };
-    int roundedX = mPos.x / 16;
-    int roundedY = mPos.y / 16;
-    float x = roundedX * 16.0f;
-    float y = roundedY * 16.0f;
-    x += xOffsets[m_5f0];
-    y += yOffsets[m_5f0];
+
+    int tileX = mPos.x / 16;
+    int tileY = mPos.y / 16;
+    float x = tileX * 16.0f;
+    float y = tileY * 16.0f;
+    x += xOffsets[mExplodeTimer];
+    y += yOffsets[mExplodeTimer];
     return mVec2_c(x, y);
 }
 
-void explosionCallback(dCc_c *cc1, dCc_c *cc2) {
-    dActor_c *self = cc1->getOwner();
-    dActor_c *other = cc2->getOwner();
-    if (other->mKind == dActor_c::STAGE_ACTOR_PLAYER || other->mKind == dActor_c::STAGE_ACTOR_YOSHI) {
-        daPlBase_c *player = (daPlBase_c *) other;
-        player->setDamage(self, daPlBase_c::DAMAGE_NONE);
+void explosionCallback(dCc_c *self, dCc_c *other) {
+    dActor_c *selfActor = self->getOwner();
+    dActor_c *otherActor = other->getOwner();
+    if (otherActor->mKind == dActor_c::STAGE_ACTOR_PLAYER || otherActor->mKind == dActor_c::STAGE_ACTOR_YOSHI) {
+        daPlBase_c *player = (daPlBase_c *) otherActor;
+        player->setDamage(selfActor, daPlBase_c::DAMAGE_NONE);
     }
 }
 
@@ -689,11 +706,11 @@ void daEnBomhei_c::initializeState_Walk() {
         mAnm.setRate(1.0f);
     }
 
-    static const float dirSpeed[] = { smc_WALK_SPEED, -smc_WALK_SPEED };
+    static const float dirSpeed[] = { smc_WalkSpeed, -smc_WalkSpeed };
 
     mFlags &= ~0x10000;
     mSpeed.x = dirSpeed[mDirection];
-    mPos.z = 1500.0f + ACTOR_PARAM(zLayer) * 16.0f;
+    mPos.z = 1500.0f + ACTOR_PARAM(ZLayer) * 16.0f;
     mPlayerNo = -1;
     mBc.mOwningPlayerNo = -1;
 }
@@ -704,12 +721,16 @@ void daEnBomhei_c::executeState_Walk() {
     mModel.play();
     calcSpeedY();
     posMove();
+
     EnBgCheckFoot();
     if (mBc.isFoot()) {
         mSpeed.y = 0.0f;
     }
+
     mBc.checkHead(mBc.mFlags);
+
     EnBgCheckWall();
+
     WaterCheck(mPos, 1.0f);
     if (mBc.mFlags & 0x15 << mDirection) {
         changeState(StateID_Turn);
@@ -727,13 +748,17 @@ void daEnBomhei_c::executeState_Turn() {
     mModel.play();
     calcSpeedY();
     posMove();
+
     EnBgCheckFoot();
     if (mBc.isFoot()) {
         mAnm.setRate(1.0f);
         mSpeed.y = 0.0f;
     }
+
     mBc.checkHead(mBc.mFlags);
+
     EnBgCheckWall();
+
     WaterCheck(mPos, 1.0f);
 
     mAngle.y += l_turn_angleY_add[mDirection];
@@ -762,11 +787,14 @@ void daEnBomhei_c::executeState_Sleep() {
     mModel.play();
     calcSpeedY();
     posMove();
+
     EnBgCheckFoot();
     if (mBc.isFoot()) {
         Bound(0.1875f, 0.5f, 0.5f);
     }
+
     mBc.checkHead(0);
+
     EnBgCheckWall();
     if (mBc.mFlags & 0x3c000000) {
         if (mSpeed.y > 0.0f) {
@@ -776,9 +804,10 @@ void daEnBomhei_c::executeState_Sleep() {
     if (mBc.mFlags & 0x3f) {
         mSpeed.x = 0.0f;
     }
+
     mEffect.createEffect("Wm_en_bombignition", 0, &mIgnitionPos, nullptr, nullptr);
-    mTimer--;
-    if (mTimer <= 0) {
+    mExplodeWaitTimer--;
+    if (mExplodeWaitTimer <= 0) {
         changeState(StateID_Explode);
     }
 }
@@ -788,19 +817,19 @@ void daEnBomhei_c::initializeState_Carry() {
     mAnm.setAnm(mModel, anm, m3d::FORWARD_LOOP);
     mModel.setAnm(mAnm, 2.0f);
     mAnm.setRate(1.0f);
-    mPlayerNo = m_624;
-    dAcPy_c *player = daPyMng_c::getPlayer(m_624);
+
+    mPlayerNo = mCarryingPlayer;
+    dAcPy_c *player = daPyMng_c::getPlayer(mCarryingPlayer);
     if (player->mAmiLayer == 1) {
         mAmiLayer = 0;
     } else {
         mAmiLayer = 1;
     }
 
-    float x, y, width, height;
-    x = mCc.mCcData.mOffset.x;
-    y = mCc.mCcData.mOffset.y;
-    width = mCc.mCcData.mSize.x;
-    height = mCc.mCcData.mSize.y;
+    float x = mCc.mCcData.mOffset.x;
+    float y = mCc.mCcData.mOffset.y;
+    float width = mCc.mCcData.mSize.x;
+    float height = mCc.mCcData.mSize.y;
     mCcOffsetX = x;
     mCcOffsetY = y;
     mCcWidth = width;
@@ -814,7 +843,7 @@ void daEnBomhei_c::initializeState_Carry() {
 }
 
 void daEnBomhei_c::finalizeState_Carry() {
-    dAcPy_c *player = daPyMng_c::getPlayer(m_624);
+    dAcPy_c *player = daPyMng_c::getPlayer(mCarryingPlayer);
     player->cancelCarry(this);
     mCc.mCcData.mVsKind &= ~BIT_FLAG(CC_KIND_KILLER);
     mCc.mCcData.mAttack = CC_ATTACK_NONE;
@@ -828,11 +857,12 @@ void daEnBomhei_c::finalizeState_Carry() {
 }
 
 void daEnBomhei_c::executeState_Carry() {
-    dAcPy_c *player = daPyMng_c::getPlayer(m_624);
+    dAcPy_c *player = daPyMng_c::getPlayer(mCarryingPlayer);
     mModel.play();
     mEffect.createEffect("Wm_en_bombignition", 0, &mIgnitionPos, nullptr, nullptr);
-    mTimer--;
-    if (mTimer <= 0) {
+
+    mExplodeWaitTimer--;
+    if (mExplodeWaitTimer <= 0) {
         mDirection = player->mDirection;
         if (checkWallAndBg()) {
             setDeathInfo_Carry(player);
@@ -867,7 +897,7 @@ void daEnBomhei_c::initializeState_Slide() {
     mModel.setAnm(mAnm, 2.0f);
     mAnm.setRate(1.0f);
 
-    static const float dirSpeed[] = { smc_SLIDE_SPEED_X, -smc_SLIDE_SPEED_X };
+    static const float dirSpeed[] = { smc_SlideSpeedX, -smc_SlideSpeedX };
     clrComboCnt();
     mAccelF = 0.0625f;
     mSpeed.x = dirSpeed[mDirection];
@@ -891,6 +921,7 @@ void daEnBomhei_c::executeState_Slide() {
     calcSpeedX();
     calcSpeedY();
     posMove();
+
     u32 bcFlags = EnBgCheckFoot();
     if (mBc.isFoot()) {
         Bound(0.1875f, 1.0f, 0.5f);
@@ -899,17 +930,22 @@ void daEnBomhei_c::executeState_Slide() {
             mEf::createEffect("Wm_en_landsmoke_s", 0, &efPos, nullptr, nullptr);
         }
     }
+
     mBc.checkHead(bcFlags);
+
     EnBgCheckWall();
     if (mBc.mFlags & 0x15 << mDirection) {
         mDirection ^= 1;
         mAngle.y = l_base_angleY[mDirection];
-        mSpeed.x = -mSpeed.x * smc_WALK_SPEED;
+        mSpeed.x = -mSpeed.x * smc_WalkSpeed;
     }
+
     mEffect.createEffect("Wm_en_bombignition", 0, &mIgnitionPos, nullptr, nullptr);
+
     WaterCheck(mPos, 1.0f);
-    mTimer--;
-    if (mTimer <= 0) {
+
+    mExplodeWaitTimer--;
+    if (mExplodeWaitTimer <= 0) {
         changeState(StateID_Explode);
     } else if (mSpeed.x == 0.0f) {
         changeState(StateID_Sleep);
@@ -917,9 +953,9 @@ void daEnBomhei_c::executeState_Slide() {
 }
 
 void daEnBomhei_c::initializeState_Kick() {
-    static const float dirSpeed[] = { smc_KICK_SPEED_X, -smc_KICK_SPEED_X };
+    static const float dirSpeed[] = { smc_KickSpeedX, -smc_KickSpeedX };
 
-    mSpeed.set(dirSpeed[mDirection], smc_KICK_SPEED_Y, 0.0f);
+    mSpeed.set(dirSpeed[mDirection], smc_KickSpeedY, 0.0f);
     mAngle.y = l_base_angleY[mDirection];
     clrComboCnt();
     mAccelY = -0.1875f;
@@ -934,11 +970,14 @@ void daEnBomhei_c::finalizeState_Kick() {
 void daEnBomhei_c::executeState_Kick() {
     calcSpeedY();
     posMove();
+
     u32 bcFlags = EnBgCheckFoot();
     if (mBc.isFoot()) {
         Bound(0.1875f, 0.5f, 0.5f);
     }
+
     mBc.checkHead(bcFlags);
+
     EnBgCheckWall();
     if (bcFlags != 0) {
         if (std::fabs(mSpeed.x) > 0.2f) {
@@ -956,10 +995,13 @@ void daEnBomhei_c::executeState_Kick() {
         mAngle.y = l_base_angleY[mDirection];
         mSpeed.x = -mSpeed.x;
     }
+
     mEffect.createEffect("Wm_en_bombignition", 0, &mIgnitionPos, nullptr, nullptr);
+
     WaterCheck(mPos, 1.0f);
-    mTimer--;
-    if (mTimer <= 0) {
+
+    mExplodeWaitTimer--;
+    if (mExplodeWaitTimer <= 0) {
         changeState(StateID_Explode);
     } else if (mSpeed.x == 0.0f) {
         changeState(StateID_Sleep);
@@ -967,7 +1009,7 @@ void daEnBomhei_c::executeState_Kick() {
 }
 
 void daEnBomhei_c::initializeState_KickBom() {
-    static const float dirSpeed[] = { smc_KICK_SPEED_X, -smc_KICK_SPEED_X };
+    static const float dirSpeed[] = { smc_KickSpeedX, -smc_KickSpeedX };
 
     mSpeed.set(dirSpeed[mDirection], 2.0f, 0.0f);
     mAngle.y = l_base_angleY[mDirection];
@@ -985,6 +1027,7 @@ void daEnBomhei_c::finalizeState_KickBom() {
 void daEnBomhei_c::executeState_KickBom() {
     calcSpeedY();
     posMove();
+
     u32 bcFlags = EnBgCheckFoot();
     mBc.checkHead(bcFlags);
     EnBgCheckWall();
@@ -993,7 +1036,9 @@ void daEnBomhei_c::executeState_KickBom() {
         mAngle.y = l_base_angleY[mDirection];
         mSpeed.x = -mSpeed.x;
     }
+
     WaterCheck(mPos, 1.0f);
+
     switch (m_23b) {
         case 1:
             if (bcFlags != 0) {
@@ -1015,20 +1060,20 @@ void daEnBomhei_c::initializeState_Wakidashi() {
     mModel.setAnm(mAnm, 2.0f);
     mAnm.setRate(2.0f);
 
-    u8 wakidashiSetting = ACTOR_PARAM(wakidashiConfig);
-    if (wakidashiSetting & 2) {
-        mDirection = (wakidashiSetting & 1) ^ 1;
+    u8 wakidashiDir = ACTOR_PARAM(WakidashiSpawnDir);
+    if (wakidashiDir & 2) {
+        mDirection = (wakidashiDir & 1) ^ 1;
     } else {
         mDirection = getPl_LRflag(mPos);
     }
 
-    static const float speedX[] = { 0.0f, 0.0f, -smc_WALK_SPEED, smc_WALK_SPEED };
-    static const float speedY[] = { smc_WALK_SPEED, -smc_WALK_SPEED, 0.0f, 0.0f };
+    static const float speedX[] = { 0.0f, 0.0f, -smc_WalkSpeed, smc_WalkSpeed };
+    static const float speedY[] = { smc_WalkSpeed, -smc_WalkSpeed, 0.0f, 0.0f };
 
     mAngle.y = l_base_angleY[mDirection];
-    mSpeed.set(speedX[wakidashiSetting], speedY[wakidashiSetting], 0.0f);
+    mSpeed.set(speedX[wakidashiDir], speedY[wakidashiDir], 0.0f);
     mFlags |= 0x10000;
-    m_5f4 = 0x20;
+    mWakidashiTimer = 32;
     mCc.mCcData.mVsKind &= ~BIT_FLAG(CC_KIND_ENEMY);
     mCc.mCcData.mVsDamage &= ~BIT_FLAG(CC_ATTACK_FIREBALL);
 }
@@ -1042,8 +1087,8 @@ void daEnBomhei_c::finalizeState_Wakidashi() {
 void daEnBomhei_c::executeState_Wakidashi() {
     mModel.play();
     dBaseActor_c::posMove();
-    m_5f4--;
-    if (m_5f4 == 0) {
+    mWakidashiTimer--;
+    if (mWakidashiTimer == 0) {
         changeState(StateID_Walk);
     }
 }
@@ -1062,12 +1107,12 @@ void daEnBomhei_c::initializeState_CannonHop_Upper() {
 
     mAccelY = -0.1875f;
     mSpeed.set(
-        speedX[ACTOR_PARAM(CannonHopDir)][mDirection],
-        speedY[ACTOR_PARAM(CannonHopDir)],
+        speedX[ACTOR_PARAM(CannonHopType)][mDirection],
+        speedY[ACTOR_PARAM(CannonHopType)],
         0.0f
     );
     mBc.set(this, l_bomhei_8, l_bomhei_7, l_bomhei_9);
-    m_5fc = 8;
+    mCannonHopTimer = 8;
     m_23b = 1;
 }
 
@@ -1079,12 +1124,13 @@ void daEnBomhei_c::executeState_CannonHop_Upper() {
     mModel.play();
     calcSpeedY();
     posMove();
+
     switch (m_23b) {
         case 1:
             mBc.checkWall(nullptr);
             mBc.checkHead(0);
-            m_5fc--;
-            if (m_5fc <= 0) {
+            mCannonHopTimer--;
+            if (mCannonHopTimer <= 0) {
                 mBc.set(this, l_bomhei_foot, l_bomhei_head, l_bomhei_wall);
                 m_23b = 2;
             }
@@ -1112,7 +1158,7 @@ void daEnBomhei_c::initializeState_CannonHop_Under() {
 
     mAccelY = -0.1875f;
     mSpeed.set(speedX[mDirection], -0.75f, 0.0f);
-    m_5fc = 8;
+    mCannonHopTimer = 8;
     mBc.set(this, l_bomhei_8, l_bomhei_7, l_bomhei_9);
     m_23b = 1;
 }
@@ -1125,12 +1171,13 @@ void daEnBomhei_c::executeState_CannonHop_Under() {
     mModel.play();
     calcSpeedY();
     posMove();
+
     switch (m_23b) {
         case 1:
             mBc.checkWall(nullptr);
             mBc.checkHead(0);
-            m_5fc--;
-            if (m_5fc <= 0) {
+            mCannonHopTimer--;
+            if (mCannonHopTimer <= 0) {
                 mBc.set(this, l_bomhei_foot, l_bomhei_head, l_bomhei_wall);
                 m_23b = 2;
             }
@@ -1160,6 +1207,7 @@ void daEnBomhei_c::executeState_AfterIce() {
     if (mBc.checkWall(nullptr)) {
         mSpeed.x = -mSpeed.x;
     }
+
     switch (m_23b) {
         case 1:
             if (mBc.checkFootEnm()) {
@@ -1198,8 +1246,8 @@ void daEnBomhei_c::finalizeState_EatOut() {
 
 void daEnBomhei_c::executeState_EatOut() {
     mEffect.createEffect("Wm_en_bombignition", 0, &mIgnitionPos, nullptr, nullptr);
-    mTimer--;
-    if (mTimer <= 0) {
+    mExplodeWaitTimer--;
+    if (mExplodeWaitTimer <= 0) {
         changeState(StateID_Explode);
     } else {
         dEn_c::executeState_EatOut();
@@ -1210,6 +1258,7 @@ void daEnBomhei_c::initializeState_Explode() {
     explosionEffect();
     breakEffect();
     dAudio::SoundEffectID_t(SE_EMY_BH_BOMB).playEmySound(mPos, 0);
+
     mCc.mCcData.mOffset.x = 0.0f;
     mCc.mCcData.mOffset.y = 0.0f;
     mCc.mCcData.mSize.x = 18.0f;
@@ -1220,7 +1269,8 @@ void daEnBomhei_c::initializeState_Explode() {
     mCc.mCcData.mVsDamage = 0;
     mCc.mCcData.mStatus |= CC_STATUS_NO_REVISION;
     mCc.mCcData.mCallback = explosionCallback;
-    mTimer = 0;
+
+    mExplodeWaitTimer = 0;
     mAngle.y = l_base_angleY[mDirection];
     mPos.y += 8.0f;
     checkBombBreak();
@@ -1229,10 +1279,10 @@ void daEnBomhei_c::initializeState_Explode() {
 void daEnBomhei_c::finalizeState_Explode() {}
 
 void daEnBomhei_c::executeState_Explode() {
-    m_5f0++;
-    if (m_5f0 < 9) {
-        someBgCheck();
-    } else if (m_5f0 == 16) {
+    mExplodeTimer++;
+    if (mExplodeTimer < 9) {
+        explodeBgUnit();
+    } else if (mExplodeTimer == 16) {
         deleteActor(true);
     }
 }
@@ -1248,7 +1298,7 @@ void daEnBomhei_c::finalizeState_InIceLump() {}
 
 void daEnBomhei_c::executeState_InIceLump() {}
 
-const int daEnBomhei_c::smc_SOUND_EFFECTS[] = {
+const int daEnBomhei_c::smc_SoundEffectIDs[] = {
     SE_EMY_YOSHI_HPDP,
     SE_EMY_DOWN,
     SE_EMY_KAME_KERU,
