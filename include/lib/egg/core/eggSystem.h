@@ -125,18 +125,19 @@ public:
             CoreControllerMgr::sWPADWorkSize = WPADGetWorkMemorySize() + 0xe8;
             CoreControllerMgr::createInstance();
 
+            // Button combo to trigger the exception handler
             static const u16 s_PadInfoBp[] = {
-                0x8000,
-                0x1000,
-                0x10,
-                0x1000,
-                0x10,
-                0x200,
-                0x100,
-                0x200,
-                0x100,
-                0x800,
-                0x0
+                WPAD_BUTTON_HOME,
+                WPAD_BUTTON_MINUS,
+                WPAD_BUTTON_PLUS,
+                WPAD_BUTTON_MINUS,
+                WPAD_BUTTON_PLUS,
+                WPAD_BUTTON_1,
+                WPAD_BUTTON_2,
+                WPAD_BUTTON_1,
+                WPAD_BUTTON_2,
+                WPAD_BUTTON_A,
+                0
             };
             Exception::create(0x40, 100, 1, currHeap, 1);
             Exception::setPadInfo(s_PadInfoBp);
