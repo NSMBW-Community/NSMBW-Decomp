@@ -58,7 +58,8 @@
         "__dt__7mVec2_cFv",
         "__dt__7mVec3_cFv",
         "__dt__Q34nw4r3lyt19ArcResourceAccessorFv",
-        "GetRuntimeTypeInfo__Q34nw4r3lyt4PaneCFv"
+        "GetRuntimeTypeInfo__Q34nw4r3lyt4PaneCFv",
+        "setPosParam__Q23EGG14CoreControllerFff"
     ],
     "slices": [
         {
@@ -381,6 +382,18 @@
                 ".data": "0x1cc38-0x1cc88",
                 ".sdata": "0x10c0-0x10d0",
                 ".sbss": "0x488-0x490"
+            }
+        },
+        {
+            "source": "dol/bases/d_system.cpp",
+            "memoryRanges": {
+                ".text": "0xddf60-0xded90",
+                ".ctors": "0x150-0x154",
+                ".data": "0x1ccc8-0x1cd80",
+                ".rodata": "0x52f8-0x5358",
+                ".bss": "0x20420-0x20478",
+                ".sbss": "0x4c0-0x508",
+                ".sdata2": "0x1c58-0x1c60"
             }
         },
         {

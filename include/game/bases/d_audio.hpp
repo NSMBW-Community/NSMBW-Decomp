@@ -1,6 +1,7 @@
 #pragma once
 #include <game/framework/f_profile.hpp>
 #include <game/mLib/m_vec.hpp>
+#include <lib/egg/core/eggHeap.h>
 #include <nw4r/snd.h>
 #include <nw4r/math.h>
 
@@ -32,6 +33,8 @@ public:
 };
 
 namespace dAudio {
+    void init(EGG::Heap *heap);
+    void execute();
     void requestStartScene(ProfileName sceneProf); ///< Sets up game audio for the given scene.
     void createSndObjctCmn();
     void deleteSndObjctCmn();
@@ -43,6 +46,7 @@ namespace dAudio {
     void FUN_8006a6a0(bool); ///< @unofficial
     void setMainBgmNo(int);
     void setBgmMode(int);
+    void updateBgmInfo();
 
     int getRemotePlayer(int);
     mVec2_c cvtSndObjctPos(const mVec2_c &);

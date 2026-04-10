@@ -1,7 +1,7 @@
 #pragma once
 
-#include <types.h>
 #include <game/mLib/m_fader.hpp>
+#include <lib/egg/core/eggHeap.h>
 
 class dFader_c : public mFader_c {
 public:
@@ -10,6 +10,10 @@ public:
         CIRCLE_MIDDLE
     };
 
+    static void draw();
+    static void calc();
+
+    static void createFader(EGG::Heap *heap);
     static void setFader(fader_type_e type);
 
     /// @brief Starts a fade in with the @ref mFader_c::mFader "current fader".

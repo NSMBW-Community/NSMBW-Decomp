@@ -1,5 +1,7 @@
 #pragma once
+
 #include <types.h>
+#include <lib/egg/core/eggHeap.h>
 
 class Remocon {
 public:
@@ -31,11 +33,15 @@ class dGameKey_c {
 public:
     virtual ~dGameKey_c();
 
-    dGameKeyCore_c *mRemocon[4];
+    void read();
 
     short getAccVerticalAngleX(int plNo) {
         return mRemocon[plNo]->getAccVerticalAngleX() / 65536;
     }
+
+    static void createInstance(EGG::Heap *heap);
+
+    dGameKeyCore_c *mRemocon[4];
 
     static dGameKey_c *m_instance;
 };

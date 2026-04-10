@@ -2,12 +2,13 @@
 
 #include <types.h>
 #include <revolution/PAD.h>
+#include <revolution/KPAD.h>
 
 namespace EGG {
 
 class CoreController {
 public:
-    virtual void setPosParam(float, float);
+    virtual void setPosParam(float a, float b) { KPADSetPosParam(mNum, a, b); }
     virtual void setHoriParam(float, float);
     virtual void setDistParam(float, float);
     virtual void setAccParam(float, float);
@@ -19,6 +20,15 @@ public:
     virtual bool upAll(ulong) const;
     virtual void beginFrame(PADStatus *);
     virtual void endFrame();
+
+    int mNum;
+};
+
+class CoreControllerMgr {
+public:
+    static void createInstance();
+
+    static u32 sWPADWorkSize;
 };
 
 } // namespace EGG

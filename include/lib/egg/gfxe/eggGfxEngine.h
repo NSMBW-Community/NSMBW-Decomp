@@ -1,19 +1,24 @@
 #pragma once
 
 #include <types.h>
+#include <revolution/GX.h>
 
 namespace EGG {
 
 namespace GfxEngine {
     class Configuration {
     public:
-        u16 x0;
-        u16 x2;
-        char pad2[0x10];
-        u16 x14;
-        u16 x16;
         Configuration();
+
+        u16 m_00;
+        u16 m_02;
+        GXColor mColor;
+        GXPixelFmt mPixelFmt;
+        u8 mPad1[0x8];
+        u16 m_14;
+        u16 m_16;
+        u8 mPad2[0x8];
     };
-} 
+}
 
 } // namespace EGG

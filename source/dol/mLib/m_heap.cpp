@@ -10,11 +10,11 @@ const char * const mHeap::s_GameHeapNames[GAME_HEAP_COUNT] = {
 
 EGG::Heap *mHeap::s_SavedCurrentHeap;
 
-EGG::Heap *mHeap::g_gameHeaps[GAME_HEAP_COUNT];
-EGG::Heap *mHeap::g_archiveHeap;
-EGG::Heap *mHeap::g_commandHeap;
-EGG::Heap *mHeap::g_dylinkHeap;
-EGG::Heap *mHeap::g_assertHeap;
+EGG::ExpHeap *mHeap::g_gameHeaps[GAME_HEAP_COUNT];
+EGG::ExpHeap *mHeap::g_archiveHeap;
+EGG::ExpHeap *mHeap::g_commandHeap;
+EGG::ExpHeap *mHeap::g_dylinkHeap;
+EGG::AssertHeap *mHeap::g_assertHeap;
 
 u16 mHeap::GetOptFlag(AllocOptBit_t opt) {
     u16 ret = OPT_NONE;
@@ -155,7 +155,7 @@ size_t mHeap::untHeapCost(size_t size, ulong count, ulong align) {
     return EGG::UnitHeap::calcHeapSize(size, count, align);
 }
 
-EGG::Heap *mHeap::createHeap(size_t size, EGG::Heap *parent, const char *name) {
+EGG::ExpHeap *mHeap::createHeap(size_t size, EGG::Heap *parent, const char *name) {
     EGG::ExpHeap *heap = EGG::ExpHeap::create(size, parent, MEM_HEAP_OPT_CAN_LOCK);
     if (heap != nullptr) {
         heap->setAllocMode(MEM_EXP_HEAP_ALLOC_FAST);

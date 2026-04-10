@@ -21,6 +21,15 @@ public:
         LOOP_COUNT,
     };
 
+    static void play();
+
+    typedef void (*changePosFunc)(mVec3_c *);
+    static void setChangePosFunc(int);
+
+    static void setTitleReplayRandomTable();
+
+    static void createReplayDataHeap(EGG::Heap *heap, ulong size, int options);
+
     char pad[0x1198];
     u8 mCurrWorld;
     u8 mCurrCourse;
@@ -42,11 +51,6 @@ public:
     static bool m_KoopaJrEscape;
     static dInfo_c::GameMode_e m_gameMode;
     static Exit_e m_exitMode;
-
-    typedef void (*changePosFunc)(mVec3_c *);
-    static void setChangePosFunc(int);
-
-    static void setTitleReplayRandomTable();
 
     static changePosFunc changePos;
     static dScStage_c *m_instance;

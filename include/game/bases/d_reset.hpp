@@ -38,8 +38,12 @@ namespace dReset {
         void PermitSoftReset(bool);
         bool IsFaderBlank() const;
         void ActiveSaveWindow(bool);
+        void Draw();
+        void Calculate();
 
         bool isSafetyWait() const { return mModeInit == SAFETY_WAIT || mModeProc == SAFETY_WAIT; }
+
+        static void CreateInstance(EGG::Heap *heap);
 
         EGG::Heap *mpHeap;
         EGG::ColorFader *mpColorFader;

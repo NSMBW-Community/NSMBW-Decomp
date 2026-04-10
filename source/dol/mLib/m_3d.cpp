@@ -52,9 +52,9 @@ bool m3d::create(EGG::Heap *heap, GXPixelFmt fmt, GXColor col, ulong maxChildren
     }
 
     EGG::GfxEngine::Configuration cfg;
-    u16 arg1[] = { cfg.x14, cfg.x16 };
-    u16 arg2[] = { cfg.x2, cfg.x2 };
-    EGG::StateGX::initialize(cfg.x0, cfg.x2, col, fmt);
+    u16 arg1[] = { cfg.m_14, cfg.m_16 };
+    u16 arg2[] = { cfg.m_02, cfg.m_02 };
+    EGG::StateGX::initialize(cfg.m_00, cfg.m_02, col, fmt);
     EGG::Screen::Initialize(arg1, arg2, nullptr);
     EGG::Screen::SetTVModeDefault();
     EGG::DrawGX::Initialize(heap);

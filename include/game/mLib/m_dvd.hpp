@@ -11,6 +11,8 @@ public:
 
     void destroy();
 
+    bool isDone() const { return mDone; }
+
     int mReadLength;
     bool mDone;
 };
@@ -32,4 +34,12 @@ public:
     EGG::Archive *mpArchive;
     EGG::Heap *mpHeap;
     unsigned long mArchiveSize;
+};
+
+class mDvd_toMainRam_c : public mDvd_command_c {
+public:
+    static mDvd_toMainRam_c *create(const char *path, u8 allocDirection, EGG::Heap *heap);
+
+    u8 mPad[0x4];
+    void *mpData;
 };
