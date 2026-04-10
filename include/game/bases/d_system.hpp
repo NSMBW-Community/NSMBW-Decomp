@@ -6,31 +6,37 @@
 #include <lib/egg/core/eggExpHeap.h>
 #include <nw4r/ut.h>
 
-namespace dSys_c {
-    void beginRender();
-    void endRender();
-    void beginFrame();
-    void endFrame();
-    bool setBlack(bool makeBlack);
-    void calcAudio();
-    void setFrameRate(u8 rate);
-    void setClearColor(nw4r::ut::Color color);
-    nw4r::ut::Color getClearColor();
-    void create();
-    void execute();
+/// @brief Main game handler class. Handles initialization and the main game loop.
+/// @ingroup bases
+class dSys_c {
+public:
+    static void beginFrame(); ///< Marks the beginning of a frame.
+    static void endFrame(); ///< Marks the end of a frame.
+    static void beginRender();
+    static void endRender();
+    static bool setBlack(bool makeBlack);
+    static void calcAudio();
+    static void setFrameRate(u8 rate);
+    static void setClearColor(nw4r::ut::Color color);
+    static nw4r::ut::Color getClearColor();
+    static void create(); ///< Initializes the game.
+    static void execute(); ///< Executes one frame of the game loop.
 
-    extern EGG::Heap *ms_RootHeapMem1;
-    extern EGG::Heap *ms_RootHeapMem2;
-}
+    static EGG::Heap *ms_RootHeapMem1;
+    static EGG::Heap *ms_RootHeapMem2;
+};
 
+/// @brief System initialization and management functions.
+/// @ingroup bases
 namespace dSystem {
     sPhase_c::METHOD_RESULT_e createFontManagerPhase(void *);
     sPhase_c::METHOD_RESULT_e createMessageManagerPhase(void *);
     sPhase_c::METHOD_RESULT_e createEffectManagerPhase1(void *);
     sPhase_c::METHOD_RESULT_e createEffectManagerPhase2(void *);
     void createEffectManagerHeap(EGG::Heap *heap1, EGG::Heap *heap2);
+
     void fixArena();
-    void fixHeapsSub(EGG::ExpHeap *heap, int a);
+    void fixHeapsSub(EGG::ExpHeap *heap, int size);
     void fixHeaps();
 
     extern const char sc_EffectManagerHeap1Name[];

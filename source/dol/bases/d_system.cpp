@@ -364,11 +364,11 @@ void dSystem::fixHeapsSub(EGG::ExpHeap *heap, int size) {
     }
 
     while (true) {
-        size_t adjust = heap->getAllocatableSize(4);
-        if (adjust == 0) {
+        size_t allocatableSize = heap->getAllocatableSize(4);
+        if (allocatableSize == 0) {
             break;
         }
-        heap->alloc(adjust, 4);
+        heap->alloc(allocatableSize, 4);
     }
 
     heap->free(block);
