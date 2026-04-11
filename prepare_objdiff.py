@@ -43,7 +43,8 @@ def text_to_syms(syms_text: str) -> dict[tuple[str, int], tuple[str, dict[str, s
         if re.match(r'^\@\d+$', sym):
             # All @<number> symbols are local
             comment_dict['scope'] = 'local'
-        orig_syms[(sec, addr)] = (sym, comment_dict)
+        if not re.match(r'\.\.\..+', sym):
+            orig_syms[(sec, addr)] = (sym, comment_dict)
 
     # Symbols that appear multiple times must also be local
     for _, (sym, comment_dict) in orig_syms.items():
@@ -226,7 +227,7 @@ for sec, addr in dol_syms:
     o_sym, o_attrs = dol_syms[(sec, addr)]
     n_sym, n_attrs = new_syms[(sec, addr)]
     if 'size' in o_attrs and o_attrs['size'] != 0:
-        if 'size' not in n_attrs or n_attrs['size'] != o_attrs['size']:
+        if 'size' not in n_attrs or n_attrs['size'] < o_attrs['size']:
             n_attrs['size'] = o_attrs['size']
     if re.match(r'\.\.\..+', n_sym) and n_sym != o_sym:
         new_syms[(sec, addr)] = (o_sym, o_attrs)
