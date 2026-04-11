@@ -17,7 +17,7 @@ public:
     bool ReadResourceEx(const char *, int, bool);
     bool ReadResource(const char *, bool);
     bool ReadResource2(const char *, int);
-    bool ReadResource3(const char *, int); ///< @unofficial Not in Shield version.
+    bool ReadResource3(const char *, int); ///< @unofficial [Not in Shield version.]
 
     void NPaneRegister(const char **, nw4r::lyt::Pane **, int);
     void WPaneRegister(const char **, nw4r::lyt::Window **, int);

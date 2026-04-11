@@ -44,7 +44,7 @@ namespace dGameCom {
     // Language API //
     //////////////////
 
-    SCLanguage GetLanguageHBM();
+    u8 GetLanguageHBM();
 
     ////////////////////////
     // Model Lighting API //
