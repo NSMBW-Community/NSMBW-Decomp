@@ -1,4 +1,0 @@
--I
-include
--I
-include/lib

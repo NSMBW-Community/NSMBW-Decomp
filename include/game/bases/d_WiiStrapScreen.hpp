@@ -3,6 +3,10 @@
 #include <game/bases/d_base.hpp>
 #include <game/bases/d_lytbase.hpp>
 
+/// @brief Displays the Wii Strap safety warning screen.
+/// @details Loops between the two images that show the safety warning and how to put on the strap.
+/// Note that pressing a button to advance from the screen is handled by dScBoot_c.
+/// @ingroup bases
 class dWiiStrapScreen_c : public dBase_c {
 public:
     /// @brief The animation names used in the layout.
@@ -22,15 +26,16 @@ public:
     dWiiStrapScreen_c();
     virtual ~dWiiStrapScreen_c();
 
-    bool createLayout();
-
     virtual int create();
     virtual int preExecute();
     virtual int execute();
     virtual int draw();
     virtual int doDelete();
 
-    LytBase_c mLayout;
-    bool mHasLoadedLayout;
-    bool mVisible;
+    bool createLayout();
+
+    LytBase_c mLayout; ///< The layout for the screen.
+
+    bool mHasLoadedLayout; ///< Whether the layout has been loaded.
+    bool mVisible; ///< Whether the screen is currently visible.
 };

@@ -1,8 +1,6 @@
 #pragma once
-#include "revolution/SC/scapi.h"
 #include <types.h>
 #include <nw4r/lyt.h>
-#include <revolution/sc.h>
 #include <game/mLib/m_3d.hpp>
 #include <game/mLib/m_vec.hpp>
 #include <game/sLib/s_RangeData.hpp>

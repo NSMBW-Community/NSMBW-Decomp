@@ -1,7 +1,8 @@
-#include <game/bases/d_wii_strap_screen.hpp>
+#include <game/bases/d_WiiStrapScreen.hpp>
 #include <game/bases/d_game_com.hpp>
 #include <game/bases/d_lytbase.hpp>
 #include <game/mLib/m_fader.hpp>
+#include <lib/revolution/SC.h>
 #include <MSL/string.h>
 
 BASE_PROFILE(WII_STRAP, dWiiStrapScreen_c);
