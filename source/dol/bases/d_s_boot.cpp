@@ -18,7 +18,7 @@
 #include <game/bases/d_nand_thread.hpp>
 #include <game/bases/d_s_restart_crsin.hpp>
 #include <game/bases/d_save_mng.hpp>
-#include <game/bases/d_warning_manager.hpp>
+#include <game/bases/d_WarningManager.hpp>
 #include <game/mLib/m_pad.hpp>
 #include <revolution/VI.h>
 

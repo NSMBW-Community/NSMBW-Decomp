@@ -38,6 +38,12 @@ namespace dGameCom {
     void clearGameStop(); ///< Resets the game stop state.
     void setGameStop();
 
+    //////////////////
+    // Language API //
+    //////////////////
+
+    u8 GetLanguageHBM();
+
     ////////////////////////
     // Model Lighting API //
     ////////////////////////
