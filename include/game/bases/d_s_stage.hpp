@@ -20,6 +20,7 @@ public:
     u8 mCurrFile;
     u8 mCurrArea;
 
+    u8 getCurrWorld() const { return mCurrWorld; }
     u8 getCurrArea() const { return mCurrArea; }
 
     static dScStage_c *getInstance() { return m_instance; }
@@ -32,6 +33,8 @@ public:
 
     static bool m_isCourseOut; ///< Whether the game is transitioning from a stage scene to a non-stage scene.
     static bool m_KoopaJrEscape;
+    static int m_gameMode;
+    static int m_exitMode;
 
     typedef void (*changePosFunc)(mVec3_c *);
     static void setChangePosFunc(int);

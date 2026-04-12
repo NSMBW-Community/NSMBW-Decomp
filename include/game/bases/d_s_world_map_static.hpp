@@ -13,6 +13,7 @@ public:
     static u8 getWorldNo() NOINLINE { return m_WorldNo; }
 
     static bool IsCourseType(int, int, CourseType_e);
+    static void setNextWorldScene(u8 world, u8 sceneNo, u8);
 
     static u8 m_WorldNo;
     static u8 m_PrevWorldNo;

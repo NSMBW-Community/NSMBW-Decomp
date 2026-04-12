@@ -87,13 +87,13 @@
         {
             "source": "dol/bases/d_SmallScore.cpp",
             "memoryRanges": {
+                ".text": "0xe790-0xf5e0",
                 ".bss": "0x828-0x868",
                 ".data": "0x1310-0x13a8",
                 ".rodata": "0xc0-0x160",
                 ".sbss": "0x48-0x68",
                 ".sdata": "0xd8-0xe0",
-                ".sdata2": "0x128-0x150",
-                ".text": "0xe790-0xf5e0"
+                ".sdata2": "0x128-0x150"
             }
         },
         {
@@ -332,6 +332,15 @@
                 ".data": "0x19628-0x19638",
                 ".sbss": "0x3f0-0x3f8",
                 ".sdata2": "0x1930-0x1938"
+            }
+        },
+        {
+
+            "source": "dol/bases/d_next.cpp",
+            "memoryRanges": {
+                ".text": "0xc9560-0xc9c40",
+                ".sbss": "0x400-0x408",
+                ".sdata2": "0x1938-0x1950"
             }
         },
         {

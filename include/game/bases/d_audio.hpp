@@ -41,6 +41,8 @@ namespace dAudio {
     void loadSceneSnd();
     bool isLoadedSceneSnd();
     void FUN_8006a6a0(bool); ///< @unofficial
+    void setMainBgmNo(int);
+    void setBgmMode(int);
 
     int getRemotePlayer(int);
     mVec2_c cvtSndObjctPos(const mVec2_c &);
