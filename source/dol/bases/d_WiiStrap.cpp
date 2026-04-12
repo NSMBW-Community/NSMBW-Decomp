@@ -1,17 +1,17 @@
-#include <game/bases/d_WiiStrapScreen.hpp>
+#include <game/bases/d_WiiStrap.hpp>
 #include <game/bases/d_game_com.hpp>
 #include <game/bases/d_lytbase.hpp>
 #include <game/mLib/m_fader.hpp>
 #include <lib/revolution/SC.h>
 #include <MSL/string.h>
 
-BASE_PROFILE(WII_STRAP, dWiiStrapScreen_c);
+BASE_PROFILE(WII_STRAP, dWiiStrap_c);
 
-dWiiStrapScreen_c::dWiiStrapScreen_c() : mHasLoadedLayout(false) {}
+dWiiStrap_c::dWiiStrap_c() : mHasLoadedLayout(false) {}
 
-dWiiStrapScreen_c::~dWiiStrapScreen_c() {}
+dWiiStrap_c::~dWiiStrap_c() {}
 
-int dWiiStrapScreen_c::create() {
+int dWiiStrap_c::create() {
     if (mHasLoadedLayout) {
         return SUCCEEDED;
     }
@@ -23,7 +23,7 @@ int dWiiStrapScreen_c::create() {
     return SUCCEEDED;
 }
 
-bool dWiiStrapScreen_c::createLayout() {
+bool dWiiStrap_c::createLayout() {
     static const char *AnmNameTblEng[ANIM_NAME_COUNT] = { "wiiStrap_EngEU_00_roop.brlan" };
     static const char *AnmNameTblFra[ANIM_NAME_COUNT] = { "wiiStrap_FraEU_00_roop.brlan" };
     static const char *AnmNameTblGer[ANIM_NAME_COUNT] = { "wiiStrap_GerEU_00_roop.brlan" };
@@ -94,14 +94,14 @@ bool dWiiStrapScreen_c::createLayout() {
     return true;
 }
 
-int dWiiStrapScreen_c::preExecute() {
+int dWiiStrap_c::preExecute() {
     if (dBase_c::preExecute() == NOT_READY) {
         return NOT_READY;
     }
     return mFader_c::mFader->getStatus() == mFaderBase_c::HIDDEN;
 }
 
-int dWiiStrapScreen_c::execute() {
+int dWiiStrap_c::execute() {
     if (mHasLoadedLayout && mVisible) {
         mLayout.AnimePlay();
         mLayout.calc();
@@ -109,13 +109,13 @@ int dWiiStrapScreen_c::execute() {
     return SUCCEEDED;
 }
 
-int dWiiStrapScreen_c::draw() {
+int dWiiStrap_c::draw() {
     if (mHasLoadedLayout && mVisible) {
         mLayout.entry();
     }
     return SUCCEEDED;
 }
 
-int dWiiStrapScreen_c::doDelete() {
+int dWiiStrap_c::doDelete() {
     return mLayout.doDelete();
 }

@@ -29,7 +29,9 @@ public:
 
     char mPad1[0x8];
     u16 mFlags;
-    char mPad2[0xa];
+    char mPad2[0x6];
+    u8 mInitialNextGotoID;
+    char mPad3[0x2];
 };
 
 /// @unofficial
@@ -51,10 +53,64 @@ struct sBgData {
 };
 
 /// @unofficial
-struct sNextGotoData {
-    u8 mPad1[0x8];
-    u8 mID;
-    u8 mPad2[0xb];
+enum NextGotoType_e {
+    NEXT_GOTO_TYPE_LEVEL_ENTRANCE,
+    NEXT_GOTO_TYPE_1,
+    NEXT_GOTO_TYPE_DOOR_EXIT,
+    NEXT_GOTO_TYPE_PIPE_U,
+    NEXT_GOTO_TYPE_PIPE_D,
+    NEXT_GOTO_TYPE_PIPE_L,
+    NEXT_GOTO_TYPE_PIPE_R,
+    NEXT_GOTO_TYPE_FALL,
+    NEXT_GOTO_TYPE_GROUND_POUND,
+    NEXT_GOTO_TYPE_SLIDE,
+    NEXT_GOTO_TYPE_SWIM,
+    NEXT_GOTO_TYPE_11,
+    NEXT_GOTO_TYPE_12,
+    NEXT_GOTO_TYPE_13,
+    NEXT_GOTO_TYPE_14,
+    NEXT_GOTO_TYPE_15,
+    NEXT_GOTO_TYPE_MINI_PIPE_U,
+    NEXT_GOTO_TYPE_MINI_PIPE_D,
+    NEXT_GOTO_TYPE_MINI_PIPE_L,
+    NEXT_GOTO_TYPE_MINI_PIPE_R,
+    NEXT_GOTO_TYPE_JUMP_R,
+    NEXT_GOTO_TYPE_CLIMB,
+    NEXT_GOTO_TYPE_WATER_TANK,
+    NEXT_GOTO_TYPE_BOSS,
+    NEXT_GOTO_TYPE_JUMP_L,
+    NEXT_GOTO_TYPE_BOSS_JUMP_R,
+    NEXT_GOTO_TYPE_BOSS_FALL,
+    NEXT_GOTO_TYPE_DOOR_ENTER
+};
+
+/// @unofficial
+enum NextGotoFlags_e {
+    NEXT_GOTO_FLAG_RAIL_REVERSE = BIT_FLAG(0),
+    NEXT_GOTO_FLAG_WATER_TANK = BIT_FLAG(2),
+    NEXT_GOTO_FLAG_RAIL = BIT_FLAG(3),
+    NEXT_GOTO_FLAG_ONLY_EXIT = BIT_FLAG(7)
+};
+
+/// @unofficial
+// [Needs it like this (the inner struct) so that struct copies are done correctly]
+union sNextGotoData {
+    struct {
+        u16 mX, mY;
+        u8 mPad1[0x4];
+        u8 mID;
+        u8 mDestFile; ///< 0 = same file, others are 1-indexed.
+        u8 mDestID;
+        u8 mType; ///< See NextGotoType_e.
+        u8 m_0c;
+        u8 mArea;
+        u8 mLayer;
+        u8 mRailID;
+        u16 mFlags; ///< See NextGotoFlags_e.
+        bool mIsLevelExit;
+        u8 m_13;
+    };
+    u8 mData[20];
 };
 
 /// @unofficial

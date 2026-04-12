@@ -6,13 +6,22 @@
 
 class dInfo_c {
 public:
+    /// @unofficial
+    enum GameMode_e {
+        GAME_MODE_NORMAL,
+        GAME_MODE_SUPER_GUIDE,
+        GAME_MODE_TITLE,
+        GAME_MODE_TITLE_REPLAY,
+        GAME_MODE_HINT_MOVIE
+    };
+
     struct StartGameInfo_s {
         u32 mReplayDuration;
         u8 mMovieType;
         u8 mEntrance;
         u8 mArea;
         bool mIsReplay;
-        u32 mScreenType;
+        GameMode_e mGameMode;
         u8 mWorld1;
         u8 mLevel1;
         u8 mWorld2;

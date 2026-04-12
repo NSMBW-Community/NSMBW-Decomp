@@ -87,13 +87,13 @@
         {
             "source": "dol/bases/d_SmallScore.cpp",
             "memoryRanges": {
+                ".text": "0xe790-0xf5e0",
                 ".bss": "0x828-0x868",
                 ".data": "0x1310-0x13a8",
                 ".rodata": "0xc0-0x160",
                 ".sbss": "0x48-0x68",
                 ".sdata": "0xd8-0xe0",
-                ".sdata2": "0x128-0x150",
-                ".text": "0xe790-0xf5e0"
+                ".sdata2": "0x128-0x150"
             }
         },
         {
@@ -335,6 +335,15 @@
             }
         },
         {
+
+            "source": "dol/bases/d_next.cpp",
+            "memoryRanges": {
+                ".text": "0xc9560-0xc9c40",
+                ".sbss": "0x400-0x408",
+                ".sdata2": "0x1938-0x1950"
+            }
+        },
+        {
             "source": "dol/bases/d_rail.cpp",
             "memoryRanges": {
                 ".text": "0xd2a30-0xd30d0",
@@ -467,7 +476,7 @@
             }
         },
         {
-            "source": "dol/bases/d_WiiStrapScreen.cpp",
+            "source": "dol/bases/d_WiiStrap.cpp",
             "memoryRanges": {
                 ".text": "0x108900-0x108db0",
                 ".data": "0x24940-0x24ac8",

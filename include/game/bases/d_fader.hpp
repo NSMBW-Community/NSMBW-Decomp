@@ -6,7 +6,8 @@
 class dFader_c : public mFader_c {
 public:
     enum fader_type_e {
-        FADE
+        FADE,
+        CIRCLE_MIDDLE
     };
 
     static void setFader(fader_type_e type);

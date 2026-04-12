@@ -53,7 +53,7 @@ dActor_c::dActor_c() :
     mNoRespawn(false) {
 
     setKind(STAGE_ACTOR_GENERIC);
-    mExecStopMask = BIT_FLAG(ACTOR_MAP_GENERIC);
+    mExecStopMask = BIT_FLAG(STAGE_ACTOR_GENERIC);
 
     setDefaultMaxBound();
     mDestroyBound = sRangeDataF(256.0f, 256.0f, 80.0f, 80.0f);

@@ -1,6 +1,5 @@
 #pragma once
 
-#include <game/bases/d_s_stage.hpp>
 #include <game/mLib/m_vec.hpp>
 #include <constants/game_constants.h>
 

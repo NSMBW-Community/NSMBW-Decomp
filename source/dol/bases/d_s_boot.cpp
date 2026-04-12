@@ -128,14 +128,14 @@ sPhase_c::METHOD_RESULT_e myCreate_linkWaitProc(void *) {
 /// @unofficial
 sPhase_c::METHOD_RESULT_e myCreate_WiiStrap(void *thisPtr) {
     dScBoot_c *self = (dScBoot_c *) thisPtr;
-    dWiiStrapScreen_c *strapScreen = (dWiiStrapScreen_c *) fBase_c::createChild(fProfile::WII_STRAP, self, 0, 0);
-    self->mpWiiStrapScreen = strapScreen;
+    dWiiStrap_c *strapScreen = (dWiiStrap_c *) fBase_c::createChild(fProfile::WII_STRAP, self, 0, 0);
+    self->mpWiiStrap = strapScreen;
     return sPhase_c::OK;
 }
 
 sPhase_c::METHOD_RESULT_e myCreate_LogoScreen(void *thisPtr) {
     dScBoot_c *self = (dScBoot_c *) thisPtr;
-    if (!self->mpWiiStrapScreen->mHasLoadedLayout) {
+    if (!self->mpWiiStrap->mHasLoadedLayout) {
         return sPhase_c::WAIT;
     }
     return sPhase_c::OK;
@@ -449,7 +449,7 @@ int dScBoot_c::draw() {
 
 void dScBoot_c::initializeState_ResetWait() {
     mIsResetting = false;
-    mpWiiStrapScreen->mLayout.mpAnimGroup->setAndUpdate(0.0f);
+    mpWiiStrap->mLayout.mpAnimGroup->setAndUpdate(0.0f);
 }
 
 void dScBoot_c::executeState_ResetWait() {
@@ -506,7 +506,7 @@ void dScBoot_c::finalizeState_ResetFadeOut() {
         if (isState(StateID_WiiStrapDispEndWait)) {
             dWarningManager_c::m_instance->AllWarningEnd(false);
             mpControllerInformation->mVisible = true;
-            mpWiiStrapScreen->mVisible = false;
+            mpWiiStrap->mVisible = false;
             mStateMgr.changeState(StateID_ControllerInformationSoundWait);
         } else {
             mpControllerInformation->mVisible = false;
@@ -522,7 +522,7 @@ void dScBoot_c::initializeState_ResetFadeIn() {
     dReset::Manage_c::GetInstance()->ActiveSaveWindow(true);
     dFader_c::setFader(dFader_c::FADE);
     dFader_c::startFadeIn(30);
-    mpWiiStrapScreen->mLayout.mpAnimGroup->setAndUpdate(0.0f);
+    mpWiiStrap->mLayout.mpAnimGroup->setAndUpdate(0.0f);
 }
 
 void dScBoot_c::executeState_ResetFadeIn() {
@@ -564,7 +564,7 @@ void dScBoot_c::finalizeState_FadeOutWait() {}
 void dScBoot_c::initializeState_WiiStrapKeyWait() {
     mAutoAdvanceTimer = 1200;
     mMinWaitTimer = 60;
-    mpWiiStrapScreen->mLayout.mpAnimGroup->setAndUpdate(0.0f);
+    mpWiiStrap->mLayout.mpAnimGroup->setAndUpdate(0.0f);
 }
 
 void dScBoot_c::executeState_WiiStrapKeyWait() {
@@ -605,7 +605,7 @@ void dScBoot_c::initializeState_WiiStrapFadeOut() {
 void dScBoot_c::executeState_WiiStrapFadeOut() {
     if (mFader_c::isStatus(mFaderBase_c::OPAQUE)) {
         if (mpControllerInformation != nullptr && mpControllerInformation->mIsCreated) {
-            mpWiiStrapScreen->mVisible = false;
+            mpWiiStrap->mVisible = false;
             mStateMgr.changeState(StateID_ControllerInformationFadeIn);
         }
     }
@@ -850,7 +850,7 @@ void dScBoot_c::initializeState_GoToErrorFadeOut() {
 
 void dScBoot_c::executeState_GoToErrorFadeOut() {
     if (mFader_c::isStatus(mFaderBase_c::OPAQUE)) {
-        mpWiiStrapScreen->mVisible = false;
+        mpWiiStrap->mVisible = false;
         mpControllerInformation->mVisible = false;
         mStateMgr.changeState(StateID_GoToErrorFadeIn);
     }
