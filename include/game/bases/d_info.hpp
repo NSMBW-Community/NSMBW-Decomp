@@ -21,7 +21,7 @@ public:
         u8 mEntrance;
         u8 mArea;
         bool mIsReplay;
-        GameMode_e mScreenType;
+        GameMode_e mGameMode;
         u8 mWorld1;
         u8 mLevel1;
         u8 mWorld2;

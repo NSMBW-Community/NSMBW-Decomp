@@ -43,7 +43,7 @@ void dCyuukan_c::courseIN() {
 
     if (
         info->mClearCyuukan ||
-        dInfo_c::m_startGameInfo.mScreenType != 0 ||
+        dInfo_c::m_startGameInfo.mGameMode != dInfo_c::GAME_MODE_NORMAL ||
         course != mCourseNo ||
         world != mWorldNo
     ) {
