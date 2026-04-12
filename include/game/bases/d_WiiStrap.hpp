@@ -7,7 +7,7 @@
 /// @details Loops between the two images that show the safety warning and how to put on the strap.
 /// @note The button press to advance from this screen is handled by dScBoot_c.
 /// @ingroup bases
-class dWiiStrapScreen_c : public dBase_c {
+class dWiiStrap_c : public dBase_c {
 public:
     /// @brief The animation names used in the layout.
     /// @unofficial
@@ -23,8 +23,8 @@ public:
         ANIM_COUNT
     };
 
-    dWiiStrapScreen_c();
-    virtual ~dWiiStrapScreen_c();
+    dWiiStrap_c();
+    virtual ~dWiiStrap_c();
 
     virtual int create();
     virtual int preExecute();

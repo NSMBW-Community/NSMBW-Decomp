@@ -476,7 +476,7 @@
             }
         },
         {
-            "source": "dol/bases/d_WiiStrapScreen.cpp",
+            "source": "dol/bases/d_WiiStrap.cpp",
             "memoryRanges": {
                 ".text": "0x108900-0x108db0",
                 ".data": "0x24940-0x24ac8",

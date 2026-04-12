@@ -1,7 +1,7 @@
 #pragma once
 
 #include <game/bases/d_scene.hpp>
-#include <game/bases/d_WiiStrapScreen.hpp>
+#include <game/bases/d_WiiStrap.hpp>
 #include <game/bases/d_controller_information.hpp>
 #include <game/bases/d_SelectCursor.hpp>
 #include <game/bases/d_yes_no_window.hpp>
@@ -70,7 +70,7 @@ private:
 
     u8 mPad; ///< @unused
 public:
-    dWiiStrapScreen_c *mpWiiStrapScreen; ///< The Wii strap screen instance.
+    dWiiStrap_c *mpWiiStrap; ///< The Wii strap screen instance.
     dYesNoWindow_c *mpYesNoWindow; ///< The yes/no window instance.
     dSelectCursor_c *mpSelectCursor; ///< The select cursor instance.
     dControllerInformation_c *mpControllerInformation; ///< The controller information instance.
