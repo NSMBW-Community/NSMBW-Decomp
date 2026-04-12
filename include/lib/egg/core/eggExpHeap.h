@@ -6,6 +6,7 @@ namespace EGG {
 // [TODO: extend this]
 class ExpHeap : public Heap {
 public:
+    void setGroupID(u16 groupID);
     void setAllocMode(u16 mode);
 
     static EGG::ExpHeap *create(void *buffer, size_t size, u16 flags);

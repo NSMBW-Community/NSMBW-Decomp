@@ -1,5 +1,7 @@
 #pragma once
+
 #include <game/bases/d_mj2d_data.hpp>
+#include <lib/egg/core/eggHeap.h>
 
 class dSaveMng_c {
 public:
@@ -9,6 +11,8 @@ public:
     void calcCRC();
     void startNandSave();
     void startNandLoad();
+
+    static void create(EGG::Heap *heap);
 
     u8 mPad[0x20];
     dMj2dHeader_c mHeader;

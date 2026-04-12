@@ -14,8 +14,8 @@ mAllocatorDummyHeap_c::mAllocatorDummyHeap_c() {
 
 mAllocatorDummyHeap_c::~mAllocatorDummyHeap_c() {}
 
-int mAllocatorDummyHeap_c::getHeapKind() const {
-    return 0;
+EGG::Heap::EHeapKind mAllocatorDummyHeap_c::getHeapKind() const {
+    return HEAP_KIND_NONE;
 }
 
 void mAllocatorDummyHeap_c::initAllocator(EGG::Allocator *allocator, long alignment) {
@@ -64,7 +64,7 @@ mAllocator_c::~mAllocator_c() {}
 
 bool mAllocator_c::attach(EGG::Heap *heap, int alignment) {
     if (heap == nullptr) {
-        heap = EGG::Heap::sCurrentHeap;
+        heap = EGG::Heap::getCurrentHeap();
     }
     mAlign = alignment;
     mpHeap = heap;

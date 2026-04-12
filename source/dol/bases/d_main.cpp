@@ -26,8 +26,6 @@ void *dMain::main01(void *arg) {
     return nullptr;
 }
 
-extern "C" {
-
 #define STACK_SIZE 0xf000
 
 void main(int argc, char *argv[]) {
@@ -42,5 +40,3 @@ void main(int argc, char *argv[]) {
     OSSetThreadPriority(thread, 0x1f);
     OSSuspendThread(thread);
 }
-
-} // extern "C"

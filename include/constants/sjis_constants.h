@@ -37,3 +37,15 @@
 
 // [Translation: Assert Heap (mHeap::assertHeap)]
 #define ASSERT_HEAP_NAME "アサートヒープ(mHeap::assertHeap)"
+
+// [Translation: Effect manager]
+#define EFFECT_HEAP_1_NAME "エフェクト管理"
+
+// [Translation: Effect resources]
+#define EFFECT_HEAP_2_NAME "エフェクトリソース"
+
+// [Translation: Font manager]
+#define FONT_MANAGER_HEAP_NAME "フォント管理"
+
+// [Translation: Message manager]
+#define MESSAGE_MANAGER_HEAP_NAME "メッセージ管理"

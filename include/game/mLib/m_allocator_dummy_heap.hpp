@@ -11,7 +11,7 @@ public:
     mAllocatorDummyHeap_c();
     virtual ~mAllocatorDummyHeap_c();
 
-    virtual int getHeapKind() const;
+    virtual EHeapKind getHeapKind() const;
 
     virtual void initAllocator(EGG::Allocator *allocator, long alignment);
 

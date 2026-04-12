@@ -113,7 +113,7 @@ dRes_c::info_c::LOAD_STATUS_e dRes_c::info_c::setRes(callback_c *callback) {
         }
 
         // Ensure data is written to main memory
-        DCStoreRangeNoSync(mDataHeap, (size_t) mDataHeap->mHeapHandle->end - (size_t) mDataHeap);
+        DCStoreRangeNoSync(mDataHeap, (size_t) mDataHeap->getEndAddress() - (size_t) mDataHeap);
     }
 
     return LOAD_SUCCESS;

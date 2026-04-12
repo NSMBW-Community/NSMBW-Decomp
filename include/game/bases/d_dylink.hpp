@@ -20,6 +20,8 @@ public:
 };
 
 namespace dDyl {
+    void InitAsync();
+    bool InitAsyncIsDone();
     int LinkASync(ProfileName);
     bool Unlink(ProfileName);
 };

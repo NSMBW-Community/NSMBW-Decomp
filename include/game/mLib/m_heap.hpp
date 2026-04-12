@@ -22,7 +22,7 @@
  * - The @ref g_assertHeap "assert heap".
  */
 namespace mHeap {
-    
+
     /// @brief Bit flags controlling heap allocation behavior.
     /// These flags are translated into internal MEM heap flags via GetOptFlag().
     enum AllocOptBit_t {
@@ -84,7 +84,7 @@ namespace mHeap {
     /// @brief Adjusts a frame heap to release unused memory.
     /// @param heap The frame heap to adjust, or @p nullptr .
     /// @return The total available space in the heap, or @p 0 if the adjust operation failed.
-    size_t adjustFrmHeap(EGG::FrmHeap *heap); 
+    size_t adjustFrmHeap(EGG::FrmHeap *heap);
 
     /**
      * @brief Creates an expandable heap.
@@ -142,7 +142,7 @@ namespace mHeap {
      * @param name The heap name, or @p nullptr .
      * @return A pointer to the created heap, or @p nullptr on failure.
      */
-    EGG::Heap *createHeap(size_t size, EGG::Heap *parent, const char *name);
+    EGG::ExpHeap *createHeap(size_t size, EGG::Heap *parent, const char *name);
 
     /**
     * @brief Creates a game heap.
@@ -160,16 +160,16 @@ namespace mHeap {
 
     /// @brief Creates the assert heap.
     /// @details The size is determined automatically using EGG::AssertHeap::getMinSizeForCreate().
-    EGG::Heap *createAssertHeap(EGG::Heap *parent); 
+    EGG::Heap *createAssertHeap(EGG::Heap *parent);
 
     extern u8 g_DefaultGameHeapId; ///< The default game heap to be used if one isn't specified.
     extern const char * const s_GameHeapNames[GAME_HEAP_COUNT]; ///< The game heap names.
 
     extern EGG::Heap *s_SavedCurrentHeap; ///< The saved current heap.
-    extern EGG::Heap *g_gameHeaps[GAME_HEAP_COUNT]; ///< The game heaps.
-    extern EGG::Heap *g_archiveHeap; ///< The archive resource heap.
-    extern EGG::Heap *g_commandHeap; ///< The DVD command heap.
-    extern EGG::Heap *g_dylinkHeap; ///< The REL linking heap.
-    extern EGG::Heap *g_assertHeap; ///< The assert heap.
+    extern EGG::ExpHeap *g_gameHeaps[GAME_HEAP_COUNT]; ///< The game heaps.
+    extern EGG::ExpHeap *g_archiveHeap; ///< The archive resource heap.
+    extern EGG::ExpHeap *g_commandHeap; ///< The DVD command heap.
+    extern EGG::ExpHeap *g_dylinkHeap; ///< The REL linking heap.
+    extern EGG::AssertHeap *g_assertHeap; ///< The assert heap.
 
 }; // namespace mHeap
