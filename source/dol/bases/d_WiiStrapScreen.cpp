@@ -7,9 +7,7 @@
 
 BASE_PROFILE(WII_STRAP, dWiiStrapScreen_c);
 
-dWiiStrapScreen_c::dWiiStrapScreen_c() {
-    mHasLoadedLayout = false;
-}
+dWiiStrapScreen_c::dWiiStrapScreen_c() : mHasLoadedLayout(false) {}
 
 dWiiStrapScreen_c::~dWiiStrapScreen_c() {}
 
@@ -56,23 +54,23 @@ bool dWiiStrapScreen_c::createLayout() {
 
 
     char filename[100];
-    memset(filename, 0, 100);
-    strncat(filename, "wiiStrap_", 99);
+    memset(filename, 0, ARRAY_SIZE(filename));
+    strncat(filename, "wiiStrap_", ARRAY_MAX_STRLEN(filename));
     switch (dGameCom::GetLanguageHBM()) {
         default:
-            strncat(filename, "EngEU_00", 99); break;
+            strncat(filename, "EngEU_00", ARRAY_MAX_STRLEN(filename)); break;
         case SC_LANG_FR:
-            strncat(filename, "FraEU_00", 99); break;
+            strncat(filename, "FraEU_00", ARRAY_MAX_STRLEN(filename)); break;
         case SC_LANG_DE:
-            strncat(filename, "GerEU_00", 99); break;
+            strncat(filename, "GerEU_00", ARRAY_MAX_STRLEN(filename)); break;
         case SC_LANG_IT:
-            strncat(filename, "ItaEU_00", 99); break;
+            strncat(filename, "ItaEU_00", ARRAY_MAX_STRLEN(filename)); break;
         case SC_LANG_SP:
-            strncat(filename, "SpaEU_00", 99); break;
+            strncat(filename, "SpaEU_00", ARRAY_MAX_STRLEN(filename)); break;
         case SC_LANG_NL:
-            strncat(filename, "NedEU_00", 99); break;
+            strncat(filename, "NedEU_00", ARRAY_MAX_STRLEN(filename)); break;
     }
-    strncat(filename, ".brlyt", 99);
+    strncat(filename, ".brlyt", ARRAY_MAX_STRLEN(filename));
 
     mLayout.build(filename, nullptr);
 

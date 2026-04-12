@@ -5,7 +5,7 @@
 
 /// @brief Displays the Wii Strap safety warning screen.
 /// @details Loops between the two images that show the safety warning and how to put on the strap.
-/// Note that pressing a button to advance from the screen is handled by dScBoot_c.
+/// @note The button press to advance from this screen is handled by dScBoot_c.
 /// @ingroup bases
 class dWiiStrapScreen_c : public dBase_c {
 public:
