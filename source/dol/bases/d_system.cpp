@@ -51,8 +51,8 @@ const char dSystem::sc_FontManagerHeapName[] = FONT_MANAGER_HEAP_NAME;
 EGG::Heap *dSystem::s_FontManagerHeap;
 
 void dSystem::createEffectManagerHeap(EGG::Heap *heap1, EGG::Heap *heap2) {
-    s_EffectManagerHeap1 = mHeap::createFrmHeap(0x100000, heap1, sc_EffectManagerHeap1Name, 0x20, mHeap::OPT_NONE);
-    s_EffectManagerHeap2 = mHeap::createFrmHeap(0x280000, heap2, sc_EffectManagerHeap2Name, 0x20, mHeap::OPT_THREAD_SAFE);
+    s_EffectManagerHeap1 = mHeap::createFrmHeap(HEAP_SIZE_EFFECT_MANAGER1, heap1, sc_EffectManagerHeap1Name, 0x20, mHeap::OPT_NONE);
+    s_EffectManagerHeap2 = mHeap::createFrmHeap(HEAP_SIZE_EFFECT_MANAGER2, heap2, sc_EffectManagerHeap2Name, 0x20, mHeap::OPT_THREAD_SAFE);
 }
 
 void dSys_c::beginRender() {
@@ -132,16 +132,16 @@ void dSys_c::create() {
 
     mVideo::create();
 
-    mHeap::createDylinkHeap(0x500000, ms_RootHeapMem1);
-    mHeap::createGameHeap1(0x980000, ms_RootHeapMem1);
-    mHeap::createGameHeap2(0x700000, ms_RootHeapMem2);
-    mHeap::createArchiveHeap(0x1200000, ms_RootHeapMem2);
-    mHeap::createCommandHeap(0x1000, ms_RootHeapMem2);
+    mHeap::createDylinkHeap(HEAP_SIZE_DYLINK, ms_RootHeapMem1);
+    mHeap::createGameHeap1(HEAP_SIZE_GAME1, ms_RootHeapMem1);
+    mHeap::createGameHeap2(HEAP_SIZE_GAME2, ms_RootHeapMem2);
+    mHeap::createArchiveHeap(HEAP_SIZE_ARCHIVE, ms_RootHeapMem2);
+    mHeap::createCommandHeap(HEAP_SIZE_COMMAND, ms_RootHeapMem2);
     mHeap::setCurrentHeap(mHeap::g_gameHeaps[mHeap::GAME_HEAP_DEFAULT]);
     mAllocator_c::init(mHeap::g_gameHeaps[mHeap::GAME_HEAP_DEFAULT]);
 
     EGG::Heap *prevHeap = mHeap::setCurrentHeap(mHeap::g_gameHeaps[mHeap::GAME_HEAP_DEFAULT]);
-    EGG::TextureBuffer::initialize(0x2a0000, ms_RootHeapMem2);
+    EGG::TextureBuffer::initialize(HEAP_SIZE_TEXTURE_BUFFER, ms_RootHeapMem2);
     mHeap::setCurrentHeap(prevHeap);
 
     mPad::create();
@@ -160,7 +160,7 @@ void dSys_c::create() {
     dFader_c::setFader(dFader_c::FADE);
 
     if (dSystem::s_FontManagerHeap == nullptr) {
-        dSystem::s_FontManagerHeap = mHeap::createFrmHeap(0x400000, ms_RootHeapMem2, dSystem::sc_FontManagerHeapName, 0x20, mHeap::OPT_THREAD_SAFE);
+        dSystem::s_FontManagerHeap = mHeap::createFrmHeap(HEAP_SIZE_FONT_MANAGER, ms_RootHeapMem2, dSystem::sc_FontManagerHeapName, 0x20, mHeap::OPT_THREAD_SAFE);
     }
 
     dRomFontMgr_c::createInstance(dSystem::s_FontManagerHeap);
@@ -178,10 +178,10 @@ void dSys_c::create() {
     dHbm::Manage_c::CreateInstance(mHeap::g_gameHeaps[mHeap::GAME_HEAP_MEM1]);
     dAudio::init(ms_RootHeapMem2);
     dSystem::createEffectManagerHeap(ms_RootHeapMem1, ms_RootHeapMem2);
-    dScStage_c::createReplayDataHeap(ms_RootHeapMem2, 0x1c2000, mHeap::OPT_THREAD_SAFE);
+    dScStage_c::createReplayDataHeap(ms_RootHeapMem2, HEAP_SIZE_REPLAY_DATA, mHeap::OPT_THREAD_SAFE);
 
-    rootHeap1->mFlag |= 1;
-    rootHeap2->mFlag |= 1;
+    rootHeap1->disableAllocation();
+    rootHeap2->disableAllocation();
 
     dScene_c::setStartScene();
     setFrameRate(1);
@@ -217,7 +217,7 @@ sPhase_c::phaseMethod myDylinkInitPhaseMethod[] = {
 
 sPhase_c myDylinkInitPhase(myDylinkInitPhaseMethod, ARRAY_SIZE(myDylinkInitPhaseMethod));
 
-}
+} // anonymous namespace
 
 void dSys_c::execute() {
     bool dvdErr = dDvdErr_c::m_pInstance->isErrorOccured();
@@ -324,7 +324,7 @@ EGG::Heap *dSystem::s_MessageManagerHeap;
 
 sPhase_c::METHOD_RESULT_e dSystem::createMessageManagerPhase(void *) {
     if (s_MessageManagerHeap == nullptr) {
-        s_MessageManagerHeap = mHeap::createFrmHeap(0xc800, mHeap::g_gameHeaps[mHeap::GAME_HEAP_MEM2], dSystem::sc_MessageManagerHeapName, 0x20, mHeap::OPT_THREAD_SAFE);
+        s_MessageManagerHeap = mHeap::createFrmHeap(HEAP_SIZE_MESSAGE_MANAGER, mHeap::g_gameHeaps[mHeap::GAME_HEAP_MEM2], dSystem::sc_MessageManagerHeapName, 0x20, mHeap::OPT_THREAD_SAFE);
     }
 
     if (!dMessage_c::create(s_MessageManagerHeap)) {
@@ -343,13 +343,13 @@ void *dSystem::s_NewMEM1ArenaHi;
 
 void dSystem::fixArena() {
     s_OrgMEM1ArenaLo = OSGetMEM1ArenaLo();
-    s_NewMEM1ArenaLo = (void *) 0x806e0000;
+    s_NewMEM1ArenaLo = (void *) ARENA_LO;
     if (s_OrgMEM1ArenaLo < s_NewMEM1ArenaLo) {
         OSSetMEM1ArenaLo(s_NewMEM1ArenaLo);
     }
 
     s_OrgMEM1ArenaHi = OSGetMEM1ArenaHi();
-    s_NewMEM1ArenaHi = (void *) 0x817f0000;
+    s_NewMEM1ArenaHi = (void *) ARENA_HI;
     if (s_OrgMEM1ArenaHi > s_NewMEM1ArenaHi) {
         OSSetMEM1ArenaHi(s_NewMEM1ArenaHi);
     }
@@ -379,7 +379,7 @@ void dSystem::fixHeaps() {
     EGG::ExpHeap *gameHeap1 = mHeap::g_gameHeaps[mHeap::GAME_HEAP_MEM1];
     EGG::ExpHeap *gameHeap2 = mHeap::g_gameHeaps[mHeap::GAME_HEAP_MEM2];
     EGG::ExpHeap *archiveHeap = mHeap::g_archiveHeap;
-    fixHeapsSub(gameHeap1, 0x680000);
-    fixHeapsSub(gameHeap2, 0x500000);
-    fixHeapsSub(archiveHeap, 0xa00000);
+    fixHeapsSub(gameHeap1, HEAP_SIZE_GAME1 - 0x300000);
+    fixHeapsSub(gameHeap2, HEAP_SIZE_GAME2 - 0x200000);
+    fixHeapsSub(archiveHeap, HEAP_SIZE_ARCHIVE - 0x800000);
 }

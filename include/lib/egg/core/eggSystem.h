@@ -90,7 +90,7 @@ public:
 
             initMemory();
 
-            Heap *currHeap = Heap::sCurrentHeap;
+            Heap *currHeap = Heap::getCurrentHeap();
 
             GraphicsFifo::create(mGraphicsFifoSize, currHeap);
             mHeap::createAssertHeap(mRootHeapMem1);

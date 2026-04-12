@@ -40,7 +40,7 @@ EGG::Heap *mHeap::setCurrentHeap(EGG::Heap *heap) {
 
 EGG::ExpHeap *mHeap::createExpHeap(size_t size, EGG::Heap *parent, const char *name, ulong align, AllocOptBit_t opt) {
     if (parent == nullptr) {
-        parent = EGG::Heap::sCurrentHeap;
+        parent = EGG::Heap::getCurrentHeap();
     }
 
     if (align < 0x20) {
@@ -61,7 +61,7 @@ EGG::ExpHeap *mHeap::createExpHeap(size_t size, EGG::Heap *parent, const char *n
         if (heap == nullptr) {
             parent->free(buffer);
         } else if (name != nullptr) {
-            heap->mpName = name;
+            heap->setName(name);
         }
     }
 
@@ -74,7 +74,7 @@ size_t mHeap::expHeapCost(size_t size, ulong align) {
 
 EGG::FrmHeap *mHeap::createFrmHeap(size_t size, EGG::Heap *parent, const char *name, ulong align, AllocOptBit_t opt) {
     if (parent == nullptr) {
-        parent = EGG::Heap::sCurrentHeap;
+        parent = EGG::Heap::getCurrentHeap();
     }
 
     if (align < 0x20) {
@@ -95,7 +95,7 @@ EGG::FrmHeap *mHeap::createFrmHeap(size_t size, EGG::Heap *parent, const char *n
         if (heap == nullptr) {
             parent->free(buffer);
         } else if (name != nullptr) {
-            heap->mpName = name;
+            heap->setName(name);
         }
     }
 
@@ -128,7 +128,7 @@ size_t mHeap::frmHeapCost(size_t size, ulong align) {
 
 EGG::UnitHeap *mHeap::createUntHeap(size_t size, ulong count, EGG::Heap *parent, const char *name, ulong align, AllocOptBit_t opt) {
     if (parent == nullptr) {
-        parent = EGG::Heap::sCurrentHeap;
+        parent = EGG::Heap::getCurrentHeap();
     }
 
     if (align < 0x20) {
@@ -144,7 +144,7 @@ EGG::UnitHeap *mHeap::createUntHeap(size_t size, ulong count, EGG::Heap *parent,
         if (heap == nullptr) {
             parent->free(buffer);
         } else if (name != nullptr) {
-            heap->mpName = name;
+            heap->setName(name);
         }
     }
 
@@ -160,7 +160,7 @@ EGG::ExpHeap *mHeap::createHeap(size_t size, EGG::Heap *parent, const char *name
     if (heap != nullptr) {
         heap->setAllocMode(MEM_EXP_HEAP_ALLOC_FAST);
         if (name != nullptr) {
-            heap->mpName = name;
+            heap->setName(name);
         }
     } else {
         parent->dump();
@@ -170,7 +170,7 @@ EGG::ExpHeap *mHeap::createHeap(size_t size, EGG::Heap *parent, const char *name
 }
 
 void mHeap::saveCurrentHeap() {
-    s_SavedCurrentHeap = EGG::Heap::sCurrentHeap;
+    s_SavedCurrentHeap = EGG::Heap::getCurrentHeap();
 }
 
 void mHeap::restoreCurrentHeap() {
@@ -227,6 +227,6 @@ EGG::Heap *mHeap::createAssertHeap(EGG::Heap *parent) {
     const char *heapName = ASSERT_HEAP_NAME;
     size_t size = EGG::AssertHeap::getMinSizeForCreate();
     g_assertHeap = EGG::AssertHeap::create(size, parent);
-    g_assertHeap->mpName = heapName;
+    g_assertHeap->setName(heapName);
     return g_assertHeap;
 }
