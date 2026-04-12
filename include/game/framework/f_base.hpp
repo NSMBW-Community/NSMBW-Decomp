@@ -10,6 +10,7 @@
 #define ACTOR_PARAM_CONFIG(name, offset, size) static const u16 PARAM_##name = ((offset << 8) | size)
 #define ACTOR_PARAM_LOCAL(param, name) ((param >> (PARAM_##name >> 8)) & ((1 << (PARAM_##name & 0xff)) - 1))
 #define ACTOR_PARAM(name) ACTOR_PARAM_LOCAL(mParam, name)
+#define ACTOR_PARAM_GEN(cls, name, value) ((value & ((1 << (cls::PARAM_##name & 0xff)) - 1)) << (cls::PARAM_##name >> 8))
 
 /// @brief The base class for all scenes, actors and various other processes.
 /// @ingroup framework

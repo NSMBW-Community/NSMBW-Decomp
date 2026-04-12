@@ -56,7 +56,7 @@ void dNext_c::setOwnNextData(u8 fileIdx, u8 nextGoto) {
     mNextGotoData.mDestFile = destFile;
 
     if (mNextGotoData.mDestID == 255) {
-        mNextGotoData.mDestID = dCd_c::m_instance->getFileP(fileIdx)->mpOptions->m_10;
+        mNextGotoData.mDestID = dCd_c::m_instance->getFileP(fileIdx)->mpOptions->mInitialNextGotoID;
     }
 }
 
@@ -155,14 +155,14 @@ void dNext_c::changeScene() {
     dScStage_c *stage = dScStage_c::m_instance;
     u8 world = stage->getCurrWorld();
 
-    if (dScStage_c::m_gameMode == 4) {
+    if (dScStage_c::m_gameMode == dInfo_c::GAME_MODE_HINT_MOVIE) {
         dFader_c::setFader(dFader_c::CIRCLE_MIDDLE);
     } else {
         dFader_c::setFader(mFaderType);
     }
 
     if (mNextGotoData.mIsLevelExit) {
-        dScStage_c::m_exitMode = 0;
+        dScStage_c::m_exitMode = dScStage_c::EXIT_0;
         dScWMap_c::setNextWorldScene(world, dScWMap_c::m_SceneNo, 0);
         return;
     }
@@ -183,9 +183,11 @@ void dNext_c::changeScene() {
     dAudio::setBgmMode(mode & 0x0F);
     SndSceneMgr::sInstance->FUN_8019d5b0(mode >> 4);
 
-    u32 param = ((mNextGotoData.mDestFile & 0x0F) << 8) | mNextGotoData.mDestID;
+    u32 param = ACTOR_PARAM_GEN(dScStage_c, File, mNextGotoData.mDestFile);
+    param |= ACTOR_PARAM_GEN(dScStage_c, NextGotoID, mNextGotoData.mDestID);
+
     mSceneChangeDone = true;
-    dScStage_c::m_exitMode = 3;
+    dScStage_c::m_exitMode = dScStage_c::EXIT_3;
     dScene_c::setNextScene(fProfile::STAGE, param, false);
 }
 

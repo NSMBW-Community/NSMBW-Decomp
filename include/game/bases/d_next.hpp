@@ -15,25 +15,25 @@ public:
         NEXT_SAME_AREA ///< The next entrance is in the same area.
     };
 
-    dNext_c(); ///< Constructs a new class instance and sets #m_instance to it.
+    dNext_c(); ///< Constructs a new dNext_c.
 
     void initialize(); ///< Resets the class to its initial state.
     void execute(); ///< Checks for scene changes and executes them when necessary.
 
     /// @brief Updates the saved entrance data for the next scene change if not already set.
     /// @param fileIdx The file index of the entrance to set.
-    /// @param nextGoto The entrance index of the entrance to set.
+    /// @param nextGoto The ID of the entrance to set.
     /// @param faderType The type of fader to use for the scene change.
     void setChangeSceneNextDat(u8 fileIdx, u8 nextGoto, dFader_c::fader_type_e faderType);
 
     /// @brief Sets the entrance data for the next scene change.
     /// @param fileIdx The file index of the entrance to set.
-    /// @param nextGoto The entrance index of the entrance to set.
+    /// @param nextGoto The ID of the entrance to set.
     void setOwnNextData(u8 fileIdx, u8 nextGoto);
 
     /// @brief Returns whether the currently saved entrance is different from the given one.
     /// @param fileIdx The file index of the entrance to compare to.
-    /// @param nextGoto The entrance index of the entrance to compare to.
+    /// @param nextGoto The ID of the entrance to compare to.
     /// @return Whether the currently saved entrance is different from the given one.
     /// @unofficial
     bool isNextDifferent(u8 fileIdx, u8 nextGoto);

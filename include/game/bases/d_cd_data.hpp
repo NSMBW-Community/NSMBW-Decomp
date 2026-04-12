@@ -30,7 +30,7 @@ public:
     char mPad1[0x8];
     u16 mFlags;
     char mPad2[0x6];
-    u8 m_10;
+    u8 mInitialNextGotoID;
     char mPad3[0x2];
 };
 
@@ -93,7 +93,7 @@ enum NextGotoFlags_e {
 };
 
 /// @unofficial
-// [Needs it like this (the relevant part is an inner struct) so that struct copies are done correctly]
+// [Needs it like this (the inner struct) so that struct copies are done correctly]
 union sNextGotoData {
     struct {
         u16 mX, mY;
