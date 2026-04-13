@@ -28,9 +28,9 @@ public:
     void GroupRegister(const char **groupNames, const int *animeIdxs, int count);
 
     void AnimeStartBaseSetup(int animeIdx);
-    void AnimeStartSetup(int animeIdx, bool b);
+    void AnimeStartSetup(int animeIdx, bool startAtEnd);
     void LoopAnimeStartSetup(int animeIdx);
-    void ReverseAnimeStartSetup(int animeIdx, bool b);
+    void ReverseAnimeStartSetup(int animeIdx, bool startAtEnd);
     void AnimeEndSetup(int animeIdx);
     void AllAnimeEndSetup();
 
@@ -38,7 +38,7 @@ public:
     bool isAnime(int);
     bool isAllAnime();
 
-    void FUN_800c9770(const nw4r::lyt::Pane *, d2d::ClipSettings &); ///< @unofficial
+    void SetScissorMask(const nw4r::lyt::Pane *pane, d2d::ScissorMask &scissorMask); ///< @unofficial
 
     bool doDelete();
 

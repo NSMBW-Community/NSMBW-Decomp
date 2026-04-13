@@ -449,7 +449,7 @@ int dScBoot_c::draw() {
 
 void dScBoot_c::initializeState_ResetWait() {
     mIsResetting = false;
-    mpWiiStrap->mLayout.mpAnimGroup->setAndUpdate(0.0f);
+    mpWiiStrap->mLayout.getAnmGroup(0).setAndUpdate(0.0f);
 }
 
 void dScBoot_c::executeState_ResetWait() {
@@ -522,7 +522,7 @@ void dScBoot_c::initializeState_ResetFadeIn() {
     dReset::Manage_c::GetInstance()->ActiveSaveWindow(true);
     dFader_c::setFader(dFader_c::FADE);
     dFader_c::startFadeIn(30);
-    mpWiiStrap->mLayout.mpAnimGroup->setAndUpdate(0.0f);
+    mpWiiStrap->mLayout.getAnmGroup(0).setAndUpdate(0.0f);
 }
 
 void dScBoot_c::executeState_ResetFadeIn() {
@@ -564,7 +564,7 @@ void dScBoot_c::finalizeState_FadeOutWait() {}
 void dScBoot_c::initializeState_WiiStrapKeyWait() {
     mAutoAdvanceTimer = 1200;
     mMinWaitTimer = 60;
-    mpWiiStrap->mLayout.mpAnimGroup->setAndUpdate(0.0f);
+    mpWiiStrap->mLayout.getAnmGroup(0).setAndUpdate(0.0f);
 }
 
 void dScBoot_c::executeState_WiiStrapKeyWait() {

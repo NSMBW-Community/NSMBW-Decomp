@@ -113,7 +113,7 @@ d2d::Multi_c::Multi_c() {
         mDrawInfo.SetLocationAdjustScale(mVec2_c(19.0f / 26.0f, 1.0f));
         mDrawInfo.SetLocationAdjust(true);
     }
-    mClipSettings.mEnabled = false;
+    mScissorMask.mEnabled = false;
 }
 
 d2d::Multi_c::~Multi_c() {}
@@ -161,12 +161,12 @@ void d2d::Multi_c::draw() {
         screen.mScale = nw4r::math::VEC3(w_4_3 / w_16_9, 1.0f, 1.0f);
     }
     screen.SetProjectionGX();
-    if (mClipSettings.mEnabled) {
+    if (mScissorMask.mEnabled) {
         u32 x, y, w, h;
         GXGetScissor(&x, &y, &w, &h);
         GXSetScissor(
-            mClipSettings.mPos.x, mClipSettings.mPos.y,
-            mClipSettings.mSize.x, mClipSettings.mSize.y
+            mScissorMask.mPos.x, mScissorMask.mPos.y,
+            mScissorMask.mSize.x, mScissorMask.mSize.y
         );
         mLayout.Draw(mDrawInfo);
         GXSetScissor(x, y, w, h);

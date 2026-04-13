@@ -1,6 +1,7 @@
 #include <game/bases/d_lytbase.hpp>
 #include <game/bases/d_game_com.hpp>
 #include <game/bases/d_lyttextBox.hpp>
+#include <game/mLib/m_mtx.hpp>
 #include <game/mLib/m_video.hpp>
 
 TagProcessor_c LytBase_c::s_TagPrc;
@@ -37,7 +38,7 @@ void LytBase_c::allocStringBuffer(nw4r::lyt::Pane *pane) {
     for (
         nw4r::lyt::PaneList::Iterator it = pane->GetChildList().GetBeginIter();
         it != pane->GetChildList().GetEndIter();
-        ++it
+        it++
     ) {
         allocStringBuffer(&*it);
     }
@@ -47,16 +48,17 @@ bool LytBase_c::ReadResourceEx(const char *name, int i, bool isLocalized) {
     char resourcePath[100];
     if (isLocalized) {
         char nonLocalizedPath[100] = "Layout/";
-        strncat(nonLocalizedPath, name, sizeof(nonLocalizedPath) - 1);
+        strncat(nonLocalizedPath, name, ARRAY_MAX_STRLEN(nonLocalizedPath));
         dGameCom::AreaLanguageFolder(nonLocalizedPath, resourcePath);
     } else {
         memset(resourcePath, 0, sizeof(resourcePath));
-        strncat(resourcePath, "Layout/", sizeof(resourcePath) - 1);
-        strncat(resourcePath, name, sizeof(resourcePath) - 1);
+        strncat(resourcePath, "Layout/", ARRAY_MAX_STRLEN(resourcePath));
+        strncat(resourcePath, name, ARRAY_MAX_STRLEN(resourcePath));
     }
     if (!mResAccessorLoader.requestEx(resourcePath, i)) {
         return false;
     }
+
     mpResAccessor = &mResAccessorLoader;
     return true;
 }
@@ -68,9 +70,9 @@ bool LytBase_c::ReadResource(const char *name, bool isLocalized) {
 bool LytBase_c::ReadResource2(const char *name, int i) {
     char resourcePath[100];
     memset(resourcePath, 0, sizeof(resourcePath));
-    strncat(resourcePath, "EU/", sizeof(resourcePath) - 1);
-    strncat(resourcePath, "Layout/", sizeof(resourcePath) - 1);
-    strncat(resourcePath, name, sizeof(resourcePath) - 1);
+    strncat(resourcePath, "EU/", ARRAY_MAX_STRLEN(resourcePath));
+    strncat(resourcePath, "Layout/", ARRAY_MAX_STRLEN(resourcePath));
+    strncat(resourcePath, name, ARRAY_MAX_STRLEN(resourcePath));
     if (!mResAccessorLoader.requestEx(resourcePath, 0)) {
         return false;
     }
@@ -81,8 +83,8 @@ bool LytBase_c::ReadResource2(const char *name, int i) {
 bool LytBase_c::ReadResource3(const char *name, int i) {
     char resourcePath[100];
     memset(resourcePath, 0, sizeof(resourcePath));
-    strncat(resourcePath, "EU/NedEU/Layout/", sizeof(resourcePath) - 1);
-    strncat(resourcePath, name, sizeof(resourcePath) - 1);
+    strncat(resourcePath, "EU/NedEU/Layout/", ARRAY_MAX_STRLEN(resourcePath));
+    strncat(resourcePath, name, ARRAY_MAX_STRLEN(resourcePath));
     if (!mResAccessorLoader.requestEx(resourcePath, i)) {
         return false;
     }
@@ -141,6 +143,7 @@ void LytBase_c::GroupRegister(const char **groupNames, const int *animeIdxs, int
 }
 
 void LytBase_c::AnimeStartBaseSetup(int animeIdx) {
+    float dummy_float = 0.5f; // [For .sdata2 ordering]
     mpAnimGroup[animeIdx].setAnmEnable(true);
     m2d::AnmGroup_c &animeGroup = mpAnimGroup[animeIdx];
     animeGroup.mpFrameCtrl->setFrame(0.0f);
@@ -149,28 +152,28 @@ void LytBase_c::AnimeStartBaseSetup(int animeIdx) {
     mLastStartedAnimNum = animeIdx;
 }
 
-void LytBase_c::AnimeStartSetup(int animeIdx, bool b) {
+void LytBase_c::AnimeStartSetup(int animeIdx, bool startAtEnd) {
     AnimeStartBaseSetup(animeIdx);
-    if (b) {
-        mpAnimGroup[animeIdx].setEnd();
+    if (startAtEnd) {
+        mpAnimGroup[animeIdx].setLast();
     }
-    mpAnimGroup[animeIdx].mpFrameCtrl->mFlags = 1;
+    mpAnimGroup[animeIdx].mpFrameCtrl->setFlags(false, false);
 }
 
 void LytBase_c::LoopAnimeStartSetup(int animeIdx) {
     AnimeStartBaseSetup(animeIdx);
-    mpAnimGroup[animeIdx].mpFrameCtrl->mFlags = 0;
+    mpAnimGroup[animeIdx].mpFrameCtrl->setFlags(true, false);
 }
 
-void LytBase_c::ReverseAnimeStartSetup(int animeIdx, bool b) {
+void LytBase_c::ReverseAnimeStartSetup(int animeIdx, bool startAtEnd) {
     AnimeStartBaseSetup(animeIdx);
-    if (b) {
-        mpAnimGroup[animeIdx].mpFrameCtrl->mFlags = 1;
+    if (startAtEnd) {
+        mpAnimGroup[animeIdx].mpFrameCtrl->setFlags(false, false);
         mpAnimGroup[animeIdx].setEnd();
     } else {
         mpAnimGroup[animeIdx].setStart();
     }
-    mpAnimGroup[animeIdx].mpFrameCtrl->mFlags = 3;
+    mpAnimGroup[animeIdx].mpFrameCtrl->setFlags(false, true);
 }
 
 void LytBase_c::AnimeEndSetup(int animeIdx) {
@@ -215,11 +218,11 @@ bool LytBase_c::isAllAnime() {
     return false;
 }
 
-void LytBase_c::FUN_800c9770(const nw4r::lyt::Pane *pane, d2d::ClipSettings &clipData) {
+void LytBase_c::SetScissorMask(const nw4r::lyt::Pane *pane, d2d::ScissorMask &scissorMask) {
     nw4r::ut::Rect view = mDrawInfo.GetViewRect();
-    mVec2_c paneScale;
+    mVec2_c paneSize;
     mVec2_c pos;
-    mVec2_c clipSize;
+    mVec2_c scissorSize;
     mVec2_c scale = mDrawInfo.GetLocationAdjustScale();
 
     float actualScaleY = scale.y;
@@ -241,32 +244,32 @@ void LytBase_c::FUN_800c9770(const nw4r::lyt::Pane *pane, d2d::ClipSettings &cli
         height *= -1.0f;
     }
 
-    nw4r::math::MTX34 mtx = pane->GetGlobalMtx();
+    mMtx_c mtx = pane->GetGlobalMtx();
 
-    paneScale.x = pane->GetSize().width;
-    paneScale.y = pane->GetSize().height;
+    paneSize.x = pane->GetSize().width;
+    paneSize.y = pane->GetSize().height;
 
-    float sx = mVideo::m_video->getWidth() / width;
-    float sy = mVideo::m_video->getHeight() / height;
+    float ratioX = mVideo::m_video->getWidth() / width;
+    float ratioY = mVideo::m_video->getHeight() / height;
 
-    float scX2 = mtx._11 * (paneScale.x * sx);
-    float scY2 = mtx._11 * (paneScale.y * sy);
+    float trueSizeX = mtx.m[1][1] * (paneSize.x * ratioX);
+    float trueSizeY = mtx.m[1][1] * (paneSize.y * ratioY);
 
-    float tmpx = mtx._03 / actualScaleX;
-    float tmpy = mtx._13 * -1.0f;
+    float translateX = mtx.m[0][3] / actualScaleX;
+    float translateY = mtx.m[1][3] * -1.0f;
 
-    tmpx *= sx;
-    tmpy *= sy;
+    translateX *= ratioX;
+    translateY *= ratioY;
 
-    u32 x, y, w, h;
-    GXGetScissor(&x, &y, &w, &h);
-    pos.x = x + w * 0.5f + (tmpx - scX2 * 0.5f);
-    pos.y = y + h * 0.5f + (tmpy - scY2 * 0.5f);
-    clipSize.x = scX2 + 0.5f;
-    clipSize.y = scY2 + 0.5f;
-    clipData.setSize(clipSize);
-    clipData.setPos(pos);
-    clipData.mEnabled = true;
+    u32 scX, scY, scW, scH;
+    GXGetScissor(&scX, &scY, &scW, &scH);
+    pos.x = scX + scW * 0.5f + (translateX - trueSizeX * 0.5f);
+    pos.y = scY + scH * 0.5f + (translateY - trueSizeY * 0.5f);
+    scissorSize.x = trueSizeX + 0.5f;
+    scissorSize.y = trueSizeY + 0.5f;
+    scissorMask.setSize(scissorSize);
+    scissorMask.setPos(pos);
+    scissorMask.mEnabled = true;
 }
 
 bool LytBase_c::doDelete() {
@@ -279,13 +282,16 @@ bool LytBase_c::doDelete() {
         delete[] mpAnimRes;
         mAnimCount = 0;
     }
+
     if (mGroupCount != 0) {
         delete[] mpAnimGroup;
         delete[] mpEnabledAnims;
         mGroupCount = 0;
     }
+
     if (!mResAccessorLoader.remove()) {
         return false;
     }
+
     return true;
 }

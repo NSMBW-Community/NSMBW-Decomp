@@ -54,15 +54,16 @@ public:
 class AnmGroup_c : public AnmGroupBase_c {
 public:
     AnmGroup_c() : AnmGroupBase_c(&mFrameCtrl) {
-        mFrameCtrl.mEndFrame = 1.0f;
-        mFrameCtrl.mCurrFrame = 1.0f;
-        mFrameCtrl.mPrevFrame = 1.0f;
-        mFrameCtrl.mRate = 0.0f;
+        mFrameCtrl.mEndFrame = 0.0f;
+        mFrameCtrl.mCurrFrame = 0.0f;
+        mFrameCtrl.mPrevFrame = 0.0f;
+        mFrameCtrl.mRate = 1.0f;
     }
 
     void play() { mpFrameCtrl->play(); updateFrame(); }
     void setStart() { mpFrameCtrl->setFrame(1.0f); updateFrame(); }
-    void setEnd() { mpFrameCtrl->setFrame(mpFrameCtrl->getLastActiveFrame()); updateFrame(); }
+    void setLast() { mpFrameCtrl->setFrame(mpFrameCtrl->getLastActiveFrame()); updateFrame(); }
+    void setEnd() { mpFrameCtrl->setFrame(mpFrameCtrl->getLastFrame()); updateFrame(); }
     void setAndUpdate(float frame) { mpFrameCtrl->setFrame(frame); updateFrame(); }
 
     FrameCtrl_c mFrameCtrl;

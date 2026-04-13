@@ -8,9 +8,9 @@ namespace d2d {
 
 /// @brief Stores clipping settings for a layout.
 /// @unofficial
-struct ClipSettings {
-    ClipSettings() {}
-    ClipSettings(const mVec2_c &pos, const mVec2_c &size) : mPos(pos), mSize(size) {
+struct ScissorMask {
+    ScissorMask() {}
+    ScissorMask(const mVec2_c &pos, const mVec2_c &size) : mPos(pos), mSize(size) {
         mEnabled = true;
     }
     void setPos(const mVec2_c &pos) { mPos = pos; }
@@ -21,7 +21,7 @@ struct ClipSettings {
     }
     void enable() { mEnabled = true; }
 
-    ClipSettings &operator=(const ClipSettings &other) {
+    ScissorMask &operator=(const ScissorMask &other) {
         mPos = other.mPos;
         mSize = other.mSize;
         mEnabled = other.mEnabled;
@@ -64,7 +64,7 @@ public:
     ResAccMult_c *mpResAccessor; ///< The resource accessor for the layout.
     mVec2_c mPos; ///< The position of the layout.
 
-    ClipSettings mClipSettings; ///< The clip settings for the layout.
+    ScissorMask mScissorMask; ///< The scissor mask for the layout.
 
 private:
     u32 mFlags; ///< The flags for the layout.

@@ -7,6 +7,7 @@
 class TagProcessor_c : public nw4r::ut::WideTagProcessor {
 public:
     TagProcessor_c();
+    ~TagProcessor_c();
 
     u8 mPad[0xc0];
     u8 mFontIndex;
