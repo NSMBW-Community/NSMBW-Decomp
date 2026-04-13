@@ -246,17 +246,14 @@ void LytBase_c::FUN_800c9770(const nw4r::lyt::Pane *pane, d2d::ClipSettings &cli
     paneScale.x = pane->GetSize().width;
     paneScale.y = pane->GetSize().height;
 
+    float sx = mVideo::m_video->getWidth() / width;
+    float sy = mVideo::m_video->getHeight() / height;
+
+    float scX2 = mtx._11 * (paneScale.x * sx);
+    float scY2 = mtx._11 * (paneScale.y * sy);
+
     float tmpx = mtx._03 / actualScaleX;
     float tmpy = mtx._13 * -1.0f;
-
-    float sx = mVideo::m_video->getScaledWidth(width);
-    float sy = mVideo::m_video->getScaledHeight(height);
-
-    float scX = paneScale.x * sx;
-    float scY = paneScale.y * sy;
-
-    float scX2 = mtx._11 * scX;
-    float scY2 = mtx._11 * scY;
 
     tmpx *= sx;
     tmpy *= sy;
