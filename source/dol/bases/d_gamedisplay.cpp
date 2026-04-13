@@ -877,8 +877,8 @@ void dGameDisplay_c::setCollect() {
     }
 
     dMj2dGame_c *save = dSaveMng_c::m_instance->getSaveGame(-1);
-    u8 l = dScStage_c::m_instance->getCurrCourse();
     u8 w = dScStage_c::m_instance->getCurrWorld();
+    u8 l = dScStage_c::m_instance->getCurrCourse();
     if (w >= WORLD_COUNT || l >= STAGE_COUNT) {
         return;
     }
