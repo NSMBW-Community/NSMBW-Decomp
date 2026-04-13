@@ -19,8 +19,12 @@ public:
     void setRate(float rate);
     bool isStop() const;
 
+    void setFlags(bool loop, bool reverse) {
+        mFlags = (!loop ? FrameCtrl_c::NO_LOOP : 0) | (reverse ? FrameCtrl_c::REVERSE : 0);
+    }
     float getFrame() const { return mCurrFrame; }
-    float getLastActiveFrame() const { return mEndFrame - 1.0f; }
+    float getLastFrame() const { return mEndFrame - 1.0f; }
+    float getLastActiveFrame() const { return mEndFrame - 2.0f; }
 
     float mEndFrame;
     float mCurrFrame;

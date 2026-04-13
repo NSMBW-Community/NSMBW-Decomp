@@ -19,6 +19,8 @@ public:
     static int mNum;
     static u8 mActPlayerInfo;
 
+    static int mScore;
+    static int mPlayerEntry[4];
     static PLAYER_TYPE_e mPlayerType[4];
     static int mPlayerMode[4];
     static int mRest[4];

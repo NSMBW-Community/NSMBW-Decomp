@@ -29,6 +29,7 @@ public:
 
     /// @brief Copy constructor.
     mVec2_c(const mVec2_c &v) { set(v.x, v.y); }
+    mVec2_c(const nw4r::math::VEC2 &v) { set(v.x, v.y); }
 
     void set(float x, float y) {
         this->x = x;
@@ -100,6 +101,10 @@ public:
     /// @brief Inequality operator.
     bool operator!=(const mVec2_c &v) const { return x != v.x || y != v.y; }
 };
+
+inline mVec2_c operator*(float f, const mVec2_c &v) {
+    return mVec2_c(f * v.x, f * v.y);
+}
 
 /// @brief A three-dimensional floating point vector.
 /// @ingroup mlib
@@ -188,6 +193,13 @@ public:
 
     /// @brief Inequality operator.
     bool operator!=(const mVec3_c &v) const { return x != v.x || y != v.y || z != v.z; }
+
+    mVec3_c &setToShifted(const mVec3_c &v, float sx, float sy, float sz) {
+        x = sx + v.x;
+        y = sy + v.y;
+        z = sz + v.z;
+        return *this;
+    }
 
     float xzLen() const {
         return EGG::Mathf::sqrt(x * x + z * z);

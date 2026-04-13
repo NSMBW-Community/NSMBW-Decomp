@@ -716,7 +716,7 @@ namespace fProfile {
         COURSE_SELECT_MANAGER,
         FUKIDASHI_MANAGER,
         SMALL_SCORE_MANAGER,
-        GAMEDISPLAY,
+        GAMEDISPLAY, ///< The profile for dGameDisplay_c.
         OTASUKE_INFO,
         PAUSEWINDOW,
         RESULT,
