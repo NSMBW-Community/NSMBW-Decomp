@@ -41,7 +41,7 @@ public:
     AnmGroupBase_c() {}
     AnmGroupBase_c(FrameCtrl_c *fc) : mpFrameCtrl(fc), mpAnmRes(nullptr), mpGroupAnim(nullptr), mFlags(0) {}
 
-    bool create(AnmResV2_c *anmRes, const char *name);
+    bool create(AnmResV2_c *anmRes, const char *groupName);
     void setAnmEnable(bool enable);
     void updateFrame();
 

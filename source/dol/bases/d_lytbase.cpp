@@ -8,7 +8,7 @@ TagProcessor_c LytBase_c::s_TagPrc;
 
 LytBase_c::LytBase_c() {
     mAnimCount = 0;
-    mGroupCount = 0;
+    mAnimGroupCount = 0;
 }
 
 LytBase_c::~LytBase_c() {}
@@ -51,7 +51,7 @@ bool LytBase_c::ReadResourceEx(const char *name, int i, bool isLocalized) {
         strncat(nonLocalizedPath, name, ARRAY_MAX_STRLEN(nonLocalizedPath));
         dGameCom::AreaLanguageFolder(nonLocalizedPath, resourcePath);
     } else {
-        memset(resourcePath, 0, sizeof(resourcePath));
+        memset(resourcePath, 0, ARRAY_SIZE(resourcePath));
         strncat(resourcePath, "Layout/", ARRAY_MAX_STRLEN(resourcePath));
         strncat(resourcePath, name, ARRAY_MAX_STRLEN(resourcePath));
     }
@@ -69,25 +69,27 @@ bool LytBase_c::ReadResource(const char *name, bool isLocalized) {
 
 bool LytBase_c::ReadResource2(const char *name, int i) {
     char resourcePath[100];
-    memset(resourcePath, 0, sizeof(resourcePath));
+    memset(resourcePath, 0, ARRAY_SIZE(resourcePath));
     strncat(resourcePath, "EU/", ARRAY_MAX_STRLEN(resourcePath));
     strncat(resourcePath, "Layout/", ARRAY_MAX_STRLEN(resourcePath));
     strncat(resourcePath, name, ARRAY_MAX_STRLEN(resourcePath));
     if (!mResAccessorLoader.requestEx(resourcePath, 0)) {
         return false;
     }
+
     mpResAccessor = &mResAccessorLoader;
     return true;
 }
 
 bool LytBase_c::ReadResource3(const char *name, int i) {
     char resourcePath[100];
-    memset(resourcePath, 0, sizeof(resourcePath));
+    memset(resourcePath, 0, ARRAY_SIZE(resourcePath));
     strncat(resourcePath, "EU/NedEU/Layout/", ARRAY_MAX_STRLEN(resourcePath));
     strncat(resourcePath, name, ARRAY_MAX_STRLEN(resourcePath));
     if (!mResAccessorLoader.requestEx(resourcePath, i)) {
         return false;
     }
+
     mpResAccessor = &mResAccessorLoader;
     return true;
 }
@@ -136,7 +138,7 @@ void LytBase_c::AnimeResRegister(const char **animeNames, int count) {
 void LytBase_c::GroupRegister(const char **groupNames, const int *animeIdxs, int count) {
     mpAnimGroup = new m2d::AnmGroup_c[count];
     mpEnabledAnims = new bool[count];
-    mGroupCount = count;
+    mAnimGroupCount = count;
     for (int i = 0; i < count; i++) {
         mpAnimGroup[i].create(&mpAnimRes[animeIdxs[i]], groupNames[i]);
     }
@@ -184,14 +186,14 @@ void LytBase_c::AnimeEndSetup(int animeIdx) {
 }
 
 void LytBase_c::AllAnimeEndSetup() {
-    for (int i = 0; i < mGroupCount; i++) {
+    for (int i = 0; i < mAnimGroupCount; i++) {
         AnimeEndSetup(i);
     }
-    mLastStartedAnimNum = mGroupCount;
+    mLastStartedAnimNum = mAnimGroupCount;
 }
 
 void LytBase_c::AnimePlay() {
-    for (int i = 0; i < mGroupCount; i++) {
+    for (int i = 0; i < mAnimGroupCount; i++) {
         if (mpEnabledAnims[i]) {
             if (mpAnimGroup[i].mpFrameCtrl->isStop()) {
                 AnimeEndSetup(i);
@@ -210,7 +212,7 @@ bool LytBase_c::isAnime(int animeIdx) {
 }
 
 bool LytBase_c::isAllAnime() {
-    for (int i = 0; i < mGroupCount; i++) {
+    for (int i = 0; i < mAnimGroupCount; i++) {
         if (mpEnabledAnims[i]) {
             return true;
         }
@@ -283,10 +285,10 @@ bool LytBase_c::doDelete() {
         mAnimCount = 0;
     }
 
-    if (mGroupCount != 0) {
+    if (mAnimGroupCount != 0) {
         delete[] mpAnimGroup;
         delete[] mpEnabledAnims;
-        mGroupCount = 0;
+        mAnimGroupCount = 0;
     }
 
     if (!mResAccessorLoader.remove()) {

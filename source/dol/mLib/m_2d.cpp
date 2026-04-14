@@ -428,9 +428,9 @@ void m2d::AnmResV2_c::setAnmFrame(nw4r::lyt::Pane *pane, float frame) {
     }
 }
 
-bool m2d::AnmGroupBase_c::create(AnmResV2_c *anmRes, const char *name) {
+bool m2d::AnmGroupBase_c::create(AnmResV2_c *anmRes, const char *groupName) {
     mpAnmRes = anmRes;
-    mpGroupAnim = mpAnmRes->getGroupAnimTransform(name);
+    mpGroupAnim = mpAnmRes->getGroupAnimTransform(groupName);
     if (mpGroupAnim != nullptr) {
         u8 flags = FrameCtrl_c::NO_LOOP;
         if (mpGroupAnim->mpAnimTransform->IsLoopData()) {
