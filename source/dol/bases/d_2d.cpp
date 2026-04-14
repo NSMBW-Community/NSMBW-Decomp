@@ -71,11 +71,11 @@ nw4r::ut::Font *d2d::ResAccMult_c::InternalAccessor::GetFont(const char *name) {
 d2d::ResAccMultLoader_c::ResAccMultLoader_c() : mpResource(nullptr) {}
 d2d::ResAccMultLoader_c::~ResAccMultLoader_c() {}
 
-bool d2d::ResAccMultLoader_c::requestEx(const char *name, int i) {
+bool d2d::ResAccMultLoader_c::requestEx(const char *name, int allocDirection) {
     if (mpResource != nullptr) {
         return true;
     }
-    mpResource = mLoader.request(name, i, ms_res_allocator->mpHeap);
+    mpResource = mLoader.request(name, allocDirection, ms_res_allocator->mpHeap);
     if (mpResource != nullptr) {
         attach(mpResource, "arc");
         return true;

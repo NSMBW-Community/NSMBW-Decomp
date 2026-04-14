@@ -19,19 +19,29 @@ public:
     void allocStringBuffer(nw4r::lyt::Pane *pane);
 
     /// @brief Reads an .arc file which contains the layout.
-    bool ReadResourceEx(const char *name, int i, bool isLocalized);
+    /// @param name The name of the archive.
+    /// @param allocDirection The allocation direction.
+    /// @param isLocalized Whether the layout is in a localized folder (`/<Region>/<Language>/`).
+    bool ReadResourceEx(const char *name, int allocDirection, bool isLocalized);
 
     /// @brief Reads an .arc file which contains the layout.
+    /// @param name The name of the archive.
+    /// @param isLocalized Whether the layout is in a localized folder (`/<Region>/<Language>/`).
     bool ReadResource(const char *name, bool isLocalized);
 
-    /// @brief Reads a localized .arc file which contains the layout.
-    /// @note Use this function for layouts for European languages.
-    bool ReadResource2(const char *name, int i);
+    /// @brief Reads an .arc file which contains the layout.
+    /// @note Use this function for layouts placed in `/<Region>/Layout/`.
+    /// @param name The name of the archive.
+    /// @param allocDirection The allocation direction.
+    bool ReadResource2(const char *name, int allocDirection);
 
-    /// @brief Reads a localized .arc file which contains the layout.
-    /// @note Use this function for layouts localized in Dutch.
-    /// @unofficial [Not in Shield version].
-    bool ReadResource3(const char *name, int i);
+    /// @brief Reads an .arc file which contains the layout.
+    /// @note Use this function for layouts localized in Dutch (`/EU/NedEU/Layout/`).
+    /// @decompnote{Not in Shield version.}
+    /// @unofficial
+    /// @param name The name of the archive.
+    /// @param allocDirection The allocation direction.
+    bool ReadResource3(const char *name, int allocDirection);
 
     /// @brief Finds null panes by name and registers them to the list.
     /// @param paneNames The names of the panes to find.
@@ -94,6 +104,7 @@ public:
     void ReverseAnimeStartSetup(int animeIdx, bool startAtEnd);
 
     /// @brief Prepares an animation to be stopped.
+    /// @param animeIdx The index of the animation to be stopped.
     void AnimeEndSetup(int animeIdx);
 
     /// @brief Prepares all animations to be stopped.

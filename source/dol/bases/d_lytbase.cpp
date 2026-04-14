@@ -4,12 +4,11 @@
 #include <game/mLib/m_mtx.hpp>
 #include <game/mLib/m_video.hpp>
 
+#define TEXTBOX_STRING_BUFFER_SIZE 0x1FF
+
 TagProcessor_c LytBase_c::s_TagPrc;
 
-LytBase_c::LytBase_c() {
-    mAnimCount = 0;
-    mAnimGroupCount = 0;
-}
+LytBase_c::LytBase_c() : mAnimCount(0), mAnimGroupCount(0) {}
 
 LytBase_c::~LytBase_c() {}
 
@@ -30,7 +29,7 @@ void LytBase_c::allocStringBuffer(nw4r::lyt::Pane *pane) {
     nw4r::lyt::TextBox *box = nw4r::ut::DynamicCast<nw4r::lyt::TextBox *>(pane);
     if (box != nullptr) {
         const wchar_t *buf = box->GetStringBuffer();
-        box->AllocStringBuffer(0x1ff);
+        box->AllocStringBuffer(TEXTBOX_STRING_BUFFER_SIZE);
         if (buf != nullptr) {
             box->SetString(buf, 0);
         }
@@ -44,7 +43,7 @@ void LytBase_c::allocStringBuffer(nw4r::lyt::Pane *pane) {
     }
 }
 
-bool LytBase_c::ReadResourceEx(const char *name, int i, bool isLocalized) {
+bool LytBase_c::ReadResourceEx(const char *name, int allocDirection, bool isLocalized) {
     char resourcePath[100];
     if (isLocalized) {
         char nonLocalizedPath[100] = "Layout/";
@@ -55,7 +54,7 @@ bool LytBase_c::ReadResourceEx(const char *name, int i, bool isLocalized) {
         strncat(resourcePath, "Layout/", ARRAY_MAX_STRLEN(resourcePath));
         strncat(resourcePath, name, ARRAY_MAX_STRLEN(resourcePath));
     }
-    if (!mResAccessorLoader.requestEx(resourcePath, i)) {
+    if (!mResAccessorLoader.requestEx(resourcePath, allocDirection)) {
         return false;
     }
 
@@ -67,7 +66,7 @@ bool LytBase_c::ReadResource(const char *name, bool isLocalized) {
     return ReadResourceEx(name, 0, isLocalized);
 }
 
-bool LytBase_c::ReadResource2(const char *name, int i) {
+bool LytBase_c::ReadResource2(const char *name, int allocDirection) {
     char resourcePath[100];
     memset(resourcePath, 0, ARRAY_SIZE(resourcePath));
     strncat(resourcePath, "EU/", ARRAY_MAX_STRLEN(resourcePath));
@@ -223,7 +222,7 @@ bool LytBase_c::isAllAnime() {
 void LytBase_c::SetScissorMask(const nw4r::lyt::Pane *pane, d2d::ScissorMask &scissorMask) {
     nw4r::ut::Rect view = mDrawInfo.GetViewRect();
     mVec2_c paneSize;
-    mVec2_c pos;
+    mVec2_c scissorPos;
     mVec2_c scissorSize;
     mVec2_c scale = mDrawInfo.GetLocationAdjustScale();
 
@@ -246,7 +245,7 @@ void LytBase_c::SetScissorMask(const nw4r::lyt::Pane *pane, d2d::ScissorMask &sc
         height *= -1.0f;
     }
 
-    mMtx_c mtx = pane->GetGlobalMtx();
+    mMtx_c paneMtx = pane->GetGlobalMtx();
 
     paneSize.x = pane->GetSize().width;
     paneSize.y = pane->GetSize().height;
@@ -254,23 +253,23 @@ void LytBase_c::SetScissorMask(const nw4r::lyt::Pane *pane, d2d::ScissorMask &sc
     float ratioX = mVideo::m_video->getWidth() / width;
     float ratioY = mVideo::m_video->getHeight() / height;
 
-    float trueSizeX = mtx.m[1][1] * (paneSize.x * ratioX);
-    float trueSizeY = mtx.m[1][1] * (paneSize.y * ratioY);
+    float trueSizeX = paneMtx.m[1][1] * (paneSize.x * ratioX);
+    float trueSizeY = paneMtx.m[1][1] * (paneSize.y * ratioY);
 
-    float translateX = mtx.m[0][3] / actualScaleX;
-    float translateY = mtx.m[1][3] * -1.0f;
+    float translateX = paneMtx.m[0][3] / actualScaleX;
+    float translateY = paneMtx.m[1][3] * -1.0f;
 
     translateX *= ratioX;
     translateY *= ratioY;
 
     u32 scX, scY, scW, scH;
     GXGetScissor(&scX, &scY, &scW, &scH);
-    pos.x = scX + scW * 0.5f + (translateX - trueSizeX * 0.5f);
-    pos.y = scY + scH * 0.5f + (translateY - trueSizeY * 0.5f);
+    scissorPos.x = scX + scW * 0.5f + (translateX - trueSizeX * 0.5f);
+    scissorPos.y = scY + scH * 0.5f + (translateY - trueSizeY * 0.5f);
     scissorSize.x = trueSizeX + 0.5f;
     scissorSize.y = trueSizeY + 0.5f;
     scissorMask.setSize(scissorSize);
-    scissorMask.setPos(pos);
+    scissorMask.setPos(scissorPos);
     scissorMask.mEnabled = true;
 }
 
