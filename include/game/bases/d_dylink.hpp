@@ -18,13 +18,14 @@ namespace DynamicModuleCallback {
 }
 
 /// @brief An entry in the @ref dDyl::pDMC "dynamic module name table".
+/// @unoffical
 struct sDynNameTableEntry {
     ProfileName mProf; ///< The profile name of this entry.
     const char *mModuleName; ///< The name of the module to load for the profile.
 };
 
 namespace dDyl {
-    bool Init(int profileCount, const sDynNameTableEntry *pNameTable, int nNameTable, EGG::Heap *heap);
+    bool Init(int profileCount, const sDynNameTableEntry *pNameTable, int nNameTable, EGG::Heap *heap); ///< @unofficial
     void InitAsync();
     bool InitAsyncIsDone();
     int LinkASync(ProfileName);
