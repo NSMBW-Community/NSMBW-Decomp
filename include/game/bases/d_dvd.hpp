@@ -10,7 +10,7 @@ public:
     virtual ~loader_c();
     virtual void freeHeap();
 
-    void *request(const char *, u8, EGG::Heap *);
+    void *request(const char *name, u8 allocDirection, EGG::Heap *heap);
     bool remove();
 
 private:

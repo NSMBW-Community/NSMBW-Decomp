@@ -158,8 +158,8 @@ void m2d::FrameCtrl_c::play() {
     } else {
         frame += mRate;
         if (mFlags & NO_LOOP) {
-            if (frame > getLastActiveFrame()) {
-                frame = getLastActiveFrame();
+            if (frame > getLastFrame()) {
+                frame = getLastFrame();
             }
         } else if (frame >= mEndFrame) {
             frame -= mEndFrame;
@@ -191,7 +191,7 @@ void m2d::FrameCtrl_c::setRate(float rate) {
 bool m2d::FrameCtrl_c::isStop() const {
     switch (mFlags) {
         case NO_LOOP:
-            return mCurrFrame >= getLastActiveFrame();
+            return mCurrFrame >= getLastFrame();
         case NO_LOOP | REVERSE:
             return mCurrFrame <= 0.0f;
         default:
@@ -428,9 +428,9 @@ void m2d::AnmResV2_c::setAnmFrame(nw4r::lyt::Pane *pane, float frame) {
     }
 }
 
-bool m2d::AnmGroupBase_c::create(AnmResV2_c *anmRes, const char *name) {
+bool m2d::AnmGroupBase_c::create(AnmResV2_c *anmRes, const char *groupName) {
     mpAnmRes = anmRes;
-    mpGroupAnim = mpAnmRes->getGroupAnimTransform(name);
+    mpGroupAnim = mpAnmRes->getGroupAnimTransform(groupName);
     if (mpGroupAnim != nullptr) {
         u8 flags = FrameCtrl_c::NO_LOOP;
         if (mpGroupAnim->mpAnimTransform->IsLoopData()) {

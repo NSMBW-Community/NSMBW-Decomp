@@ -99,7 +99,10 @@ namespace dGameCom {
 
     bool checkRectangleOverlap(mVec3_c *, mVec3_c *, mVec3_c *, mVec3_c *, float); ///< @unofficial
 
+    void SelectCursorSetup();
     void SelectCursorSetup(nw4r::lyt::Pane *pane, int index, bool useSpecialDraw);
+
+    void WindowPaneColorSet(nw4r::lyt::Window *, int);
     float getDispCenterY();
 
     void DispSizeScale(nw4r::math::VEC2 &scale);
@@ -107,9 +110,7 @@ namespace dGameCom {
     void LayoutDispNumber(const int &value, const int &fillLeft, LytTextBox_c *textBox, bool fillWidth);
 
     bool isNowCourseClear();
-    void SelectCursorSetup();
-    void SelectCursorSetup(nw4r::lyt::Pane *, int, bool);
-    void WindowPaneColorSet(nw4r::lyt::Window *, int);
 
     void initGame();
+    void AreaLanguageFolder(const char *, char *);
 }

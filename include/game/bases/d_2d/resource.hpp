@@ -29,7 +29,7 @@ public:
     ResAccMultLoader_c();
     virtual ~ResAccMultLoader_c();
 
-    bool requestEx(const char *name, int i);
+    bool requestEx(const char *name, int allocDirection);
     bool request(const char *name);
     bool remove();
 
