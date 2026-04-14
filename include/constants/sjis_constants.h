@@ -49,3 +49,6 @@
 
 // [Translation: Message manager]
 #define MESSAGE_MANAGER_HEAP_NAME "メッセージ管理"
+
+// [Translation: Heap for dynamic link control (dDyl::cCc_frmHeap)]
+#define DYL_FRM_HEAP_NAME "ダイナミックリンク制御用ヒープ(dDyl::cCc_frmHeap)"

@@ -10,6 +10,7 @@ public:
     virtual void init();
 
     void destroy();
+    void waitDone() const;
 
     bool isDone() const { return mDone; }
 
@@ -19,6 +20,7 @@ public:
 
 class mDvd_callback_c : public mDvd_command_c {
 public:
+    static mDvd_callback_c *create(void *(*callback)(void *), void *param);
     static mDvd_callback_c *createOrDie(void *(*callback)(void *), void *param);
 };
 

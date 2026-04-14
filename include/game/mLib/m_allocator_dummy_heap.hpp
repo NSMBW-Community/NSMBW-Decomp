@@ -19,7 +19,7 @@ public:
     virtual void free(void *ptr);
 
     virtual void destroy();
-    virtual size_t resizeForMBlock(void *ptr, size_t newSize);
+    virtual int resizeForMBlock(void *ptr, size_t newSize);
 
     virtual u32 getTotalFreeSize();
     virtual size_t getAllocatableSize(long alignment);

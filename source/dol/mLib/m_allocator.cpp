@@ -37,7 +37,7 @@ void mAllocatorDummyHeap_c::free(void *ptr) {}
 
 void mAllocatorDummyHeap_c::destroy() {}
 
-size_t mAllocatorDummyHeap_c::resizeForMBlock(void *ptr, size_t newSize) {
+int mAllocatorDummyHeap_c::resizeForMBlock(void *ptr, size_t newSize) {
     return 0;
 }
 
