@@ -45,7 +45,8 @@
         "getType__Q23m3d8anmChr_cCFv",
         "getType__Q23m3d8anmVis_cCFv",
         "__dt__13dEnFumiNest_cFv",
-        "__vt__18sStateStateMgrIf_c"
+        "__vt__18sStateStateMgrIf_c",
+        "unlink__24DynamicModuleControlBaseFv"
     ],
     "keepWeak": [
         "changeState__99sStateStateMgr_c<18dActorMultiState_c,12sFStateMgr_c,20sStateMethodUsr_FI_c,20sStateMethodUsr_FI_c>FRC12sStateIDIf_c",
@@ -59,7 +60,8 @@
         "__dt__7mVec3_cFv",
         "__dt__Q34nw4r3lyt19ArcResourceAccessorFv",
         "GetRuntimeTypeInfo__Q34nw4r3lyt4PaneCFv",
-        "setPosParam__Q23EGG14CoreControllerFff"
+        "setPosParam__Q23EGG14CoreControllerFff",
+        "getFileSize__Q23EGG7DvdFileCFv"
     ],
     "slices": [
         {
@@ -241,6 +243,18 @@
                 ".text": "0x885f0-0x88990",
                 ".data": "0x12a90-0x12aa0",
                 ".sdata2": "0xfc0-0xfc8"
+            }
+        },
+        {
+            "source": "dol/bases/d_dylink.cpp",
+            "memoryRanges": {
+                ".text": "0x88ce0-0x891a0",
+                ".ctors": "0xcc-0xd0",
+                ".data": "0x12ab0-0x12b38",
+                ".sdata": "0x388-0x390",
+                ".bss": "0x4928-0x4980",
+                ".sbss": "0x2f0-0x310",
+                ".sdata2": "0xfc8-0xfd0"
             }
         },
         {
@@ -589,6 +603,15 @@
             "memoryRanges": {
                 ".text": "0x159650-0x159800",
                 ".data": "0x2a728-0x2a768"
+            }
+        },
+        {
+            "source": "dol/cLib/c_dylink.cpp",
+            "memoryRanges": {
+                ".text": "0x159810-0x15a490",
+                ".data": "0x2a768-0x2a7f0",
+                ".sdata": "0x1d88-0x1dc0",
+                ".sbss": "0x7b0-0x7d0"
             }
         },
         {
