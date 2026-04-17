@@ -59,3 +59,24 @@
         &class::executeState_##name, \
         &class::finalizeState_##name \
     );
+
+/// @brief Defines a virtual state.
+/// @param class The class name.
+/// @param name The state name.
+/// @hideinitializer
+#define STATE_VIRTUAL_DEFINE_INH(class, name, inherit) \
+    template <typename T> \
+    static const sStateIDIf_c &baseID_##name() { \
+        return T::StateID_##name; \
+    } \
+    template <> \
+    const sStateIDIf_c &baseID_##name<sStateID_c>() { \
+        return sStateID::null; \
+    } \
+    sFStateVirtualID_c<class> class::StateID_##name( \
+        baseID_##name<inherit>(), \
+        #class "::StateID_" #name, \
+        &class::initializeState_##name, \
+        &class::executeState_##name, \
+        &class::finalizeState_##name \
+    );

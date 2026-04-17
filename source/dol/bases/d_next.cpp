@@ -5,7 +5,7 @@
 #include <game/bases/d_cd.hpp>
 #include <game/bases/d_s_stage.hpp>
 #include <game/bases/d_s_world_map_static.hpp>
-#include <game/bases/d_snd_scene_mgr.hpp>
+#include <game/snd/snd_scene_manager.hpp>
 #include <game/mLib/m_heap.hpp>
 
 dNext_c *dNext_c::m_instance;
@@ -181,7 +181,7 @@ void dNext_c::changeScene() {
     dAudio::setMainBgmNo(bgm);
     u8 mode = file->getAreaBgmMode(data->mArea);
     dAudio::setBgmMode(mode & 0x0F);
-    SndSceneMgr::sInstance->FUN_8019d5b0(mode >> 4);
+    SndSceneMgr::sInstance->fn_8019d5b0(mode >> 4);
 
     u32 param = ACTOR_PARAM_GEN(dScStage_c, File, mNextGotoData.mDestFile);
     param |= ACTOR_PARAM_GEN(dScStage_c, NextGotoID, mNextGotoData.mDestID);

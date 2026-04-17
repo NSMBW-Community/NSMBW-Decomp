@@ -59,7 +59,8 @@
         "__dt__7mVec3_cFv",
         "__dt__Q34nw4r3lyt19ArcResourceAccessorFv",
         "GetRuntimeTypeInfo__Q34nw4r3lyt4PaneCFv",
-        "setPosParam__Q23EGG14CoreControllerFff"
+        "setPosParam__Q23EGG14CoreControllerFff",
+        "__dt__11SndObjctEmyFv"
     ],
     "slices": [
         {
@@ -252,6 +253,17 @@
                 ".bss": "0x5fb8-0x6028",
                 ".sbss": "0x340-0x348",
                 ".sdata2": "0x1120-0x11a8"
+            }
+        },
+        {
+            "source": "dol/bases/d_enemy_boss.cpp",
+            "memoryRanges": {
+                ".text": "0x91bd0-0x94520",
+                ".ctors": "0xd8-0xdc",
+                ".data": "0x13be8-0x142a0",
+                ".bss": "0x6028-0x61e8",
+                ".sdata2": "0x11a8-0x11b0",
+                ".sbss2": "0x8-0x10"
             }
         },
         {
