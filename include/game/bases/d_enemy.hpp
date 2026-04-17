@@ -91,6 +91,7 @@ public:
     enum FLAGS_e {
         EN_IS_SHELL = BIT_FLAG(0),
         EN_IS_HARD = BIT_FLAG(1),
+        EN_FLAG_4 = BIT_FLAG(4),
         EN_FLAG_16 = BIT_FLAG(16),
         EN_FLAG_24 = BIT_FLAG(24)
     };
