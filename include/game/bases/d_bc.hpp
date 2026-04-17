@@ -149,7 +149,7 @@ public:
     u32 isWallL()  { return mFlags & FLAG_WALL_L; }
     u32 isWall() { return mFlags & (FLAG_WALL_R | FLAG_WALL_L); }
     u32 isWall(u8 dir) { return mFlags & (FLAG_WALL_R << dir); }
-    u32 isFoot(); // { return mFlags & FLAG_FOOT; }
+    bool isFoot(); // { return mFlags & FLAG_FOOT; }
     u32 isHead() { return mFlags & FLAG_HEAD; }
     u32 isCollision() { return mFlags & (FLAG_WALL_L | FLAG_WALL_R | FLAG_FOOT | FLAG_HEAD); }
 
