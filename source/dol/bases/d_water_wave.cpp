@@ -68,7 +68,6 @@ static const char *l_bgpoly_decotexdt[] = {
     "wmy_magmadeco.0",
     "wmy_magmadeco.1",
     "wmy_magmadeco.2",
-    "wmy_magmadeco.2",
     "wmy_magmadeco.3",
     "wmy_magmadeco.4",
     "wmy_magmadeco.5",
@@ -85,38 +84,70 @@ const dWaterWave_c::GlobalData_t sGlobalData_c<dWaterWave_c>::m_member = {
     {
         {255, 255, 255, 255},
         {255, 255, 0, 255},
-        {255, 255, 135, 255},
+        {255, 135, 0, 255},
         {255, 255, 255, 255},
         {255, 0, 0, 255},
         {200, 0, 0, 255},
         {255, 255, 255, 255},
         {255, 0, 255, 255},
         {100, 0, 100, 255},
+        {255, 0, 255, 255},
+        {100, 0, 100, 255},
         {50, 0, 50, 255},
     },
     {
-        0.25f, 0.04f, 0.001f, 0.1f,
-        0.002f, 0.001f, 0.1f, 0.002f,
-        0.001f, 0.25f, 0.08f, 0.001f
+        0.25f, 0.04f, 0.01f,
+        0.1f, 0.002f, 0.001f,
+        0.1f, 0.002f, 0.001f,
+        0.25f, 0.08f, 0.01f
     },
     {
         {1.0f, -2000, 14000 , 1.0f, 1900, 9000 },
-        {1.0f, -900, 18000, 1.0f, -800, 10000 },
-        {1.0f, -1500, 1300, 1.0f, 1400, 9000 },
+        {1.0f, -900, 18000, 1.0f, 800, 10000 },
+        {1.0f, -1500, 13000, 1.0f, 1400, 9000 },
     },
     {
-        0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
-        0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
-        0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
-        0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
-        0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
-        0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
-        0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
-        0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
-        0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
-        0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
-        0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
-        0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f
+        13.0f, 14.5f, 5000.0f, 0.02f,
+        28.0f,
+        5800.0f, 0.03f, // 1
+        12.5f,
+        4000.0f, 0.02f, // 2
+        15.0f,
+        5000.0f, 0.02f, // 3
+        150.0f, 100.0f, 400.0f, 0.01f, // 10
+        150.0f, 150.0f, 250.0f, 0.001f, // 11
+        8.0f, 20.0f, 6000.0f, 0.03f, // 4
+        8.0f, 12.0f, 5500.0f, 0.02f, // 5
+        5.0f, 20.0f, 5000.0f, 0.03f, // 6
+        5.0f, 12.0f, 4000.0f, 0.02f, // 7
+        3.0f, 12.0f, 3500.0f, 0.03f, // 8
+        3.0f, 10.0f, 2500.0f, 0.03f, // 9
+        9.0f, 30.0f, 1500.0f, 0.02f, // 13
+        0.08f, 0.03f, 0.01f, // 13
+        8.0f, 15.0f, 2500.0f, 0.02f, // 14
+        8.0f, 10.0f, 2000.0f, 0.02f, // 15
+        0.25f, 0.03f, 0.01f, // 14 & 15
+        5.0f, 18.0f, 1500.0f, 0.02f, // 16
+        5.0f, 13.0f, 1200.0f, 0.02f, // 17
+        0.25f, 0.03f, 0.01f, // 16 & 17
+        3.0f, 10.0f, 2500.0f, 0.02f, // 18
+        3.0f, 10.0f, 2000.0f, 0.02f, // 19
+        0.25f, 0.06f, 0.01f, // 18 & 19
+        9.0f, 30.0f, 1500.0f, 0.02f, // 20
+        0.08f, 0.03f, 0.01f, // 20
+        8.0f, 15.0f, 2500.0f, 0.02f, // 21
+        8.0f, 10.0f, 2000.0f, 0.02f, // 22
+        0.25f, 0.03f, 0.01f, // 21 & 22
+        5.0f, 18.0f, 1500.0f, 0.02f, // 23
+        5.0f, 13.0f, 1200.0f, 0.02f, // 24
+        0.25f, 0.03f, 0.01f, // 23 & 24
+        3.0f, 10.0f, 2500.0f, 0.02f, // 25
+        3.0f, 10.0f, 2000.0f, 0.02f, // 26
+        0.25f, 0.06f, 0.01f, // 25 & 26
+        18.0f, 10.0f, 1800.0f, 0.05f, // 27
+        0.1f, 0.02f, 0.01f, // 27
+        36.0f, 24.0f, 1200.0f, 0.025f, // 28
+        0.1f, 0.3f, 0.01f // 28
     },
     { 255, 255, 255, 255 },
     { 0, 255, 255, 255 }
@@ -377,27 +408,30 @@ void dWaterWave_c::waveDecoExecute() {
 }
 
 void dWaterWave_c::waveExecute() {
-    float scale1 = sGlobalData_c<dWaterWave_c>::m_member.mStructs[0].f1;
-    float scale2 = sGlobalData_c<dWaterWave_c>::m_member.mStructs[0].f2;
-
-    dBgParameter_c *bgParam = dBgParameter_c::getInstance();
-    dScStage_c *stage = dScStage_c::getInstance();
-
-    int aInc = 0;
-    int bInc = 0;
     int waveCounter = 0;
     int waveCounter2 = 0;
-    int waveIndex = 0;
-    int quadI;
+    int quadI = 0;
+
     int i;
 
     mVec3_c waveQuadPos[4];
     mVec3_c t;
 
-    short ang2 = sGlobalData_c<dWaterWave_c>::m_member.mStructs[0].s2;
+    float scale1 = sGlobalData_c<dWaterWave_c>::m_member.mStructs[0].f1;
+    float scale2 = sGlobalData_c<dWaterWave_c>::m_member.mStructs[0].f2;
+
     short ang1 = sGlobalData_c<dWaterWave_c>::m_member.mStructs[0].s1;
-    short ang4 = sGlobalData_c<dWaterWave_c>::m_member.mStructs[0].s4;
+    short ang2 = sGlobalData_c<dWaterWave_c>::m_member.mStructs[0].s2;
     short ang3 = sGlobalData_c<dWaterWave_c>::m_member.mStructs[0].s3;
+    short ang4 = sGlobalData_c<dWaterWave_c>::m_member.mStructs[0].s4;
+
+    int waveIndex = 0;
+
+    int aInc = 0;
+    int bInc = 0;
+
+    dBgParameter_c *bgParam = dBgParameter_c::getInstance();
+    dScStage_c *stage = dScStage_c::getInstance();
 
     if (m_d30a == 0 && mPos.y < bgParam->yStart() - bgParam->ySize() - 16.0f) {
         return;
@@ -412,9 +446,11 @@ void dWaterWave_c::waveExecute() {
         ang4 = sGlobalData_c<dWaterWave_c>::m_member.mStructs[1].s4;
         if (m_d30a == 2) {
             scale1 = 2.0f;
-            ang1 = 10000;
-            ang2 = 5000;
-            ang4 = 1000;
+            scale2 = 2.0f;
+            ang1 = sGlobalData_c<dWaterWave_c>::m_member.mStructs[1].s1;
+            ang2 = sGlobalData_c<dWaterWave_c>::m_member.mStructs[1].s4;
+            ang3 = 1000;
+            ang4 = sGlobalData_c<dWaterWave_c>::m_member.mStructs[1].s4;
         }
         if ((dActor_c::mExecStop & 1) == 0) {
             short delta = mWaveQuad.mAngle1;
@@ -508,7 +544,7 @@ void dWaterWave_c::waveExecute() {
         ang2 = 7000;
         ang3 = 120;
         ang4 = 900;
-    } else if (m_d30a == 0 && (m_d308 == 1 || m_d308 == 2) && (dActor_c::mExecStop & 1) == 0) {
+    } else if (m_d30a == 0 && (m_d308 == 1 || m_d308 == 2) && dActor_c::mExecStop == 0) {
         waveDecoExecute();
     }
     m_d2ec++;
@@ -527,7 +563,7 @@ void dWaterWave_c::waveExecute() {
         mMtxWave.concat(sc);
     }
     mWaveQuad.setLocalMtx(&mMtxWave);
-    m_d2f0 = (dBgParameter_c::getInstance()->xStart() - dBg_c::m_bg_p->getLeft()) / 8.0f;
+    m_d2f0 = (dBgParameter_c::getInstance()->pos().x - dBg_c::m_bg_p->getLeft()) / 8.0f;
     if ((dActor_c::mExecStop & 1) == 0) {
         m_d300 += ang3;
         m_d304 += ang4;
@@ -535,22 +571,23 @@ void dWaterWave_c::waveExecute() {
 
     float someval = 0.001f;
     i = 0;
-    float f9;
+    int startI = i;
+    float unkX;
     float f11;
     float tmp;
-    float f31;
-    float f10;
+    float unkY;
+    float unkZ;
     float z;
     float f8;
     for (; i < 20; i++) {
         z = 1850.0f;
         f8 = sGlobalData_c<dWaterWave_c>::m_member.mFloats2[3];
-        if (dBg_c::m_bg_p->mWaveActive[i] == 0) {
+        if (!dBg_c::m_bg_p->mWaveActive[i]) {
             continue;
         }
-        f9 = sGlobalData_c<dWaterWave_c>::m_member.mFloats[0];
-        f31 = sGlobalData_c<dWaterWave_c>::m_member.mFloats[1];
-        f10 = sGlobalData_c<dWaterWave_c>::m_member.mFloats[2];
+        unkX = sGlobalData_c<dWaterWave_c>::m_member.mFloats[0];
+        unkY = sGlobalData_c<dWaterWave_c>::m_member.mFloats[1];
+        unkZ = sGlobalData_c<dWaterWave_c>::m_member.mFloats[2];
         f11 = sGlobalData_c<dWaterWave_c>::m_member.mFloats2[0];
         switch (mSub[i].m_a34) {
             case 0:
@@ -571,17 +608,17 @@ void dWaterWave_c::waveExecute() {
             case 10:
                 z = sGlobalData_c<dWaterWave_c>::m_member.mFloats2[15];
                 f8 = sGlobalData_c<dWaterWave_c>::m_member.mFloats2[16];
-                f9 = sGlobalData_c<dWaterWave_c>::m_member.mFloats[3];
-                f31 = sGlobalData_c<dWaterWave_c>::m_member.mFloats[4];
-                f10 = sGlobalData_c<dWaterWave_c>::m_member.mFloats[5];
+                unkX = sGlobalData_c<dWaterWave_c>::m_member.mFloats[3];
+                unkY = sGlobalData_c<dWaterWave_c>::m_member.mFloats[4];
+                unkZ = sGlobalData_c<dWaterWave_c>::m_member.mFloats[5];
                 f11 = sGlobalData_c<dWaterWave_c>::m_member.mFloats2[13];
                 break;
             case 11:
                 z = sGlobalData_c<dWaterWave_c>::m_member.mFloats2[19];
                 f8 = sGlobalData_c<dWaterWave_c>::m_member.mFloats2[20];
-                f9 = sGlobalData_c<dWaterWave_c>::m_member.mFloats[6];
-                f31 = sGlobalData_c<dWaterWave_c>::m_member.mFloats[7];
-                f10 = sGlobalData_c<dWaterWave_c>::m_member.mFloats[8];
+                unkX = sGlobalData_c<dWaterWave_c>::m_member.mFloats[6];
+                unkY = sGlobalData_c<dWaterWave_c>::m_member.mFloats[7];
+                unkZ = sGlobalData_c<dWaterWave_c>::m_member.mFloats[8];
                 f11 = sGlobalData_c<dWaterWave_c>::m_member.mFloats2[17];
                 break;
             case 4:
@@ -618,141 +655,143 @@ void dWaterWave_c::waveExecute() {
                 z = sGlobalData_c<dWaterWave_c>::m_member.mFloats2[47];
                 f8 = sGlobalData_c<dWaterWave_c>::m_member.mFloats2[48];
                 f11 = sGlobalData_c<dWaterWave_c>::m_member.mFloats2[45];
-                f9 = sGlobalData_c<dWaterWave_c>::m_member.mFloats2[49];
-                f31 = sGlobalData_c<dWaterWave_c>::m_member.mFloats2[50];
-                f10 = sGlobalData_c<dWaterWave_c>::m_member.mFloats2[51];
+                unkX = sGlobalData_c<dWaterWave_c>::m_member.mFloats2[49];
+                unkY = sGlobalData_c<dWaterWave_c>::m_member.mFloats2[50];
+                unkZ = sGlobalData_c<dWaterWave_c>::m_member.mFloats2[51];
                 break;
             case 14:
                 z = sGlobalData_c<dWaterWave_c>::m_member.mFloats2[54];
                 f8 = sGlobalData_c<dWaterWave_c>::m_member.mFloats2[55];
                 f11 = sGlobalData_c<dWaterWave_c>::m_member.mFloats2[52];
-                f9 = sGlobalData_c<dWaterWave_c>::m_member.mFloats2[60];
-                f31 = sGlobalData_c<dWaterWave_c>::m_member.mFloats2[61];
-                f10 = sGlobalData_c<dWaterWave_c>::m_member.mFloats2[62];
+                unkX = sGlobalData_c<dWaterWave_c>::m_member.mFloats2[60];
+                unkY = sGlobalData_c<dWaterWave_c>::m_member.mFloats2[61];
+                unkZ = sGlobalData_c<dWaterWave_c>::m_member.mFloats2[62];
                 break;
             case 15:
                 z = sGlobalData_c<dWaterWave_c>::m_member.mFloats2[58];
                 f8 = sGlobalData_c<dWaterWave_c>::m_member.mFloats2[59];
                 f11 = sGlobalData_c<dWaterWave_c>::m_member.mFloats2[56];
-                f9 = sGlobalData_c<dWaterWave_c>::m_member.mFloats2[60];
-                f31 = sGlobalData_c<dWaterWave_c>::m_member.mFloats2[61];
-                f10 = sGlobalData_c<dWaterWave_c>::m_member.mFloats2[62];
+                unkX = sGlobalData_c<dWaterWave_c>::m_member.mFloats2[60];
+                unkY = sGlobalData_c<dWaterWave_c>::m_member.mFloats2[61];
+                unkZ = sGlobalData_c<dWaterWave_c>::m_member.mFloats2[62];
                 break;
             case 16:
                 z = sGlobalData_c<dWaterWave_c>::m_member.mFloats2[65];
                 f8 = sGlobalData_c<dWaterWave_c>::m_member.mFloats2[66];
                 f11 = sGlobalData_c<dWaterWave_c>::m_member.mFloats2[63];
-                f9 = sGlobalData_c<dWaterWave_c>::m_member.mFloats2[71];
-                f31 = sGlobalData_c<dWaterWave_c>::m_member.mFloats2[72];
-                f10 = sGlobalData_c<dWaterWave_c>::m_member.mFloats2[73];
+                unkX = sGlobalData_c<dWaterWave_c>::m_member.mFloats2[71];
+                unkY = sGlobalData_c<dWaterWave_c>::m_member.mFloats2[72];
+                unkZ = sGlobalData_c<dWaterWave_c>::m_member.mFloats2[73];
                 break;
             case 17:
                 z = sGlobalData_c<dWaterWave_c>::m_member.mFloats2[69];
                 f8 = sGlobalData_c<dWaterWave_c>::m_member.mFloats2[70];
                 f11 = sGlobalData_c<dWaterWave_c>::m_member.mFloats2[67];
-                f9 = sGlobalData_c<dWaterWave_c>::m_member.mFloats2[71];
-                f31 = sGlobalData_c<dWaterWave_c>::m_member.mFloats2[72];
-                f10 = sGlobalData_c<dWaterWave_c>::m_member.mFloats2[73];
+                unkX = sGlobalData_c<dWaterWave_c>::m_member.mFloats2[71];
+                unkY = sGlobalData_c<dWaterWave_c>::m_member.mFloats2[72];
+                unkZ = sGlobalData_c<dWaterWave_c>::m_member.mFloats2[73];
                 break;
             case 18:
                 z = sGlobalData_c<dWaterWave_c>::m_member.mFloats2[76];
                 f8 = sGlobalData_c<dWaterWave_c>::m_member.mFloats2[77];
                 f11 = sGlobalData_c<dWaterWave_c>::m_member.mFloats2[74];
-                f9 = sGlobalData_c<dWaterWave_c>::m_member.mFloats2[82];
-                f31 = sGlobalData_c<dWaterWave_c>::m_member.mFloats2[83];
-                f10 = sGlobalData_c<dWaterWave_c>::m_member.mFloats2[84];
+                unkX = sGlobalData_c<dWaterWave_c>::m_member.mFloats2[82];
+                unkY = sGlobalData_c<dWaterWave_c>::m_member.mFloats2[83];
+                unkZ = sGlobalData_c<dWaterWave_c>::m_member.mFloats2[84];
                 break;
             case 19:
                 z = sGlobalData_c<dWaterWave_c>::m_member.mFloats2[80];
                 f8 = sGlobalData_c<dWaterWave_c>::m_member.mFloats2[81];
                 f11 = sGlobalData_c<dWaterWave_c>::m_member.mFloats2[78];
-                f9 = sGlobalData_c<dWaterWave_c>::m_member.mFloats2[82];
-                f31 = sGlobalData_c<dWaterWave_c>::m_member.mFloats2[83];
-                f10 = sGlobalData_c<dWaterWave_c>::m_member.mFloats2[84];
+                unkX = sGlobalData_c<dWaterWave_c>::m_member.mFloats2[82];
+                unkY = sGlobalData_c<dWaterWave_c>::m_member.mFloats2[83];
+                unkZ = sGlobalData_c<dWaterWave_c>::m_member.mFloats2[84];
                 break;
             case 20:
                 z = sGlobalData_c<dWaterWave_c>::m_member.mFloats2[87];
                 f8 = sGlobalData_c<dWaterWave_c>::m_member.mFloats2[88];
                 f11 = sGlobalData_c<dWaterWave_c>::m_member.mFloats2[85];
-                f9 = sGlobalData_c<dWaterWave_c>::m_member.mFloats2[89];
-                f31 = sGlobalData_c<dWaterWave_c>::m_member.mFloats2[90];
-                f10 = sGlobalData_c<dWaterWave_c>::m_member.mFloats2[91];
+                unkX = sGlobalData_c<dWaterWave_c>::m_member.mFloats2[89];
+                unkY = sGlobalData_c<dWaterWave_c>::m_member.mFloats2[90];
+                unkZ = sGlobalData_c<dWaterWave_c>::m_member.mFloats2[91];
                 break;
             case 21:
                 z = sGlobalData_c<dWaterWave_c>::m_member.mFloats2[94];
                 f8 = sGlobalData_c<dWaterWave_c>::m_member.mFloats2[95];
                 f11 = sGlobalData_c<dWaterWave_c>::m_member.mFloats2[92];
-                f9 = sGlobalData_c<dWaterWave_c>::m_member.mFloats2[100];
-                f31 = sGlobalData_c<dWaterWave_c>::m_member.mFloats2[101];
-                f10 = sGlobalData_c<dWaterWave_c>::m_member.mFloats2[102];
+                unkX = sGlobalData_c<dWaterWave_c>::m_member.mFloats2[100];
+                unkY = sGlobalData_c<dWaterWave_c>::m_member.mFloats2[101];
+                unkZ = sGlobalData_c<dWaterWave_c>::m_member.mFloats2[102];
                 break;
             case 22:
                 z = sGlobalData_c<dWaterWave_c>::m_member.mFloats2[98];
                 f8 = sGlobalData_c<dWaterWave_c>::m_member.mFloats2[99];
                 f11 = sGlobalData_c<dWaterWave_c>::m_member.mFloats2[96];
-                f9 = sGlobalData_c<dWaterWave_c>::m_member.mFloats2[100];
-                f31 = sGlobalData_c<dWaterWave_c>::m_member.mFloats2[101];
-                f10 = sGlobalData_c<dWaterWave_c>::m_member.mFloats2[102];
+                unkX = sGlobalData_c<dWaterWave_c>::m_member.mFloats2[100];
+                unkY = sGlobalData_c<dWaterWave_c>::m_member.mFloats2[101];
+                unkZ = sGlobalData_c<dWaterWave_c>::m_member.mFloats2[102];
                 break;
             case 23:
                 z = sGlobalData_c<dWaterWave_c>::m_member.mFloats2[105];
                 f8 = sGlobalData_c<dWaterWave_c>::m_member.mFloats2[106];
                 f11 = sGlobalData_c<dWaterWave_c>::m_member.mFloats2[103];
-                f9 = sGlobalData_c<dWaterWave_c>::m_member.mFloats2[111];
-                f31 = sGlobalData_c<dWaterWave_c>::m_member.mFloats2[112];
-                f10 = sGlobalData_c<dWaterWave_c>::m_member.mFloats2[113];
+                unkX = sGlobalData_c<dWaterWave_c>::m_member.mFloats2[111];
+                unkY = sGlobalData_c<dWaterWave_c>::m_member.mFloats2[112];
+                unkZ = sGlobalData_c<dWaterWave_c>::m_member.mFloats2[113];
                 break;
             case 24:
                 z = sGlobalData_c<dWaterWave_c>::m_member.mFloats2[109];
                 f8 = sGlobalData_c<dWaterWave_c>::m_member.mFloats2[110];
                 f11 = sGlobalData_c<dWaterWave_c>::m_member.mFloats2[107];
-                f9 = sGlobalData_c<dWaterWave_c>::m_member.mFloats2[111];
-                f31 = sGlobalData_c<dWaterWave_c>::m_member.mFloats2[112];
-                f10 = sGlobalData_c<dWaterWave_c>::m_member.mFloats2[113];
+                unkX = sGlobalData_c<dWaterWave_c>::m_member.mFloats2[111];
+                unkY = sGlobalData_c<dWaterWave_c>::m_member.mFloats2[112];
+                unkZ = sGlobalData_c<dWaterWave_c>::m_member.mFloats2[113];
                 break;
             case 25:
                 z = sGlobalData_c<dWaterWave_c>::m_member.mFloats2[116];
                 f8 = sGlobalData_c<dWaterWave_c>::m_member.mFloats2[117];
                 f11 = sGlobalData_c<dWaterWave_c>::m_member.mFloats2[114];
-                f9 = sGlobalData_c<dWaterWave_c>::m_member.mFloats2[122];
-                f31 = sGlobalData_c<dWaterWave_c>::m_member.mFloats2[123];
-                f10 = sGlobalData_c<dWaterWave_c>::m_member.mFloats2[124];
+                unkX = sGlobalData_c<dWaterWave_c>::m_member.mFloats2[122];
+                unkY = sGlobalData_c<dWaterWave_c>::m_member.mFloats2[123];
+                unkZ = sGlobalData_c<dWaterWave_c>::m_member.mFloats2[124];
                 break;
             case 26:
                 z = sGlobalData_c<dWaterWave_c>::m_member.mFloats2[120];
                 f8 = sGlobalData_c<dWaterWave_c>::m_member.mFloats2[121];
                 f11 = sGlobalData_c<dWaterWave_c>::m_member.mFloats2[118];
-                f9 = sGlobalData_c<dWaterWave_c>::m_member.mFloats2[122];
-                f31 = sGlobalData_c<dWaterWave_c>::m_member.mFloats2[123];
-                f10 = sGlobalData_c<dWaterWave_c>::m_member.mFloats2[124];
+                unkX = sGlobalData_c<dWaterWave_c>::m_member.mFloats2[122];
+                unkY = sGlobalData_c<dWaterWave_c>::m_member.mFloats2[123];
+                unkZ = sGlobalData_c<dWaterWave_c>::m_member.mFloats2[124];
                 break;
             case 27:
                 z = sGlobalData_c<dWaterWave_c>::m_member.mFloats2[127];
                 f8 = sGlobalData_c<dWaterWave_c>::m_member.mFloats2[128];
                 f11 = sGlobalData_c<dWaterWave_c>::m_member.mFloats2[125];
-                f9 = sGlobalData_c<dWaterWave_c>::m_member.mFloats2[129];
-                f31 = sGlobalData_c<dWaterWave_c>::m_member.mFloats2[130];
-                f10 = sGlobalData_c<dWaterWave_c>::m_member.mFloats2[131];
+                unkX = sGlobalData_c<dWaterWave_c>::m_member.mFloats2[129];
+                unkY = sGlobalData_c<dWaterWave_c>::m_member.mFloats2[130];
+                unkZ = sGlobalData_c<dWaterWave_c>::m_member.mFloats2[131];
                 break;
             case 28:
                 z = sGlobalData_c<dWaterWave_c>::m_member.mFloats2[134];
                 f8 = sGlobalData_c<dWaterWave_c>::m_member.mFloats2[135];
                 f11 = sGlobalData_c<dWaterWave_c>::m_member.mFloats2[132];
-                f9 = sGlobalData_c<dWaterWave_c>::m_member.mFloats2[136];
-                f31 = sGlobalData_c<dWaterWave_c>::m_member.mFloats2[137];
-                f10 = sGlobalData_c<dWaterWave_c>::m_member.mFloats2[138];
+                unkX = sGlobalData_c<dWaterWave_c>::m_member.mFloats2[136];
+                unkY = sGlobalData_c<dWaterWave_c>::m_member.mFloats2[137];
+                unkZ = sGlobalData_c<dWaterWave_c>::m_member.mFloats2[138];
                 break;
         }
 
         if (mSub[i].m_a34 >= 4 && mSub[i].m_a34 < 10) {
-            f9 = sGlobalData_c<dWaterWave_c>::m_member.mFloats[9];
-            f31 = sGlobalData_c<dWaterWave_c>::m_member.mFloats[10];
-            f10 = sGlobalData_c<dWaterWave_c>::m_member.mFloats[11];
+            unkX = sGlobalData_c<dWaterWave_c>::m_member.mFloats[9];
+            unkY = sGlobalData_c<dWaterWave_c>::m_member.mFloats[10];
+            unkZ = sGlobalData_c<dWaterWave_c>::m_member.mFloats[11];
         }
+
         if (m_d30a == 0 || (dActor_c::mExecStop & 1) == 0 || (dBg_c::m_bg_p->mWaveType[i] < 10 || dBg_c::m_bg_p->mWaveType[i] > 12)) {
             switch (mSub[i].m_968) {
-                case 0:
-                    if (dBg_c::m_bg_p->mWaveActive[i] != 0 && dBg_c::m_bg_p->mWaveActive[i] < 99) {
+                case 0: {
+                    dBg_c *bg = dBg_c::m_bg_p;
+                    if (dBg_c::m_bg_p->mWaveActive[i] > 0 && dBg_c::m_bg_p->mWaveActive[i] < 99) {
                         if (
                             (dBg_c::m_bg_p->mWaveType[i] >= 10 && dBg_c::m_bg_p->mWaveType[i] < 13) ||
                             (
@@ -764,7 +803,7 @@ void dWaterWave_c::waveExecute() {
                         ) {
                             mSub[i].m_964 = (dBg_c::m_bg_p->mWaveX[i] - t.x) / 8.0f;
                             mSub[i].m_a34 = dBg_c::m_bg_p->mWaveType[i];
-                            for (int j = 0; j < 200; j++) {
+                            for (u32 j = 0; j < 200; j++) {
                                 mSub[i].m_96c[j] = 0;
                                 mSub[i].m_00[j] = 0.0f;
                             }
@@ -773,28 +812,31 @@ void dWaterWave_c::waveExecute() {
                         }
                     }
                     break;
+                }
                 case 1: {
                     float *ptr = &mSub[i].m_640;
-                    sLib::addCalc(ptr, 0.0f, f9, f31, f10);
+                    // dWaterWave_sub *sub = &mSub[i];
+                    sLib::addCalc(ptr, 0.0f, unkX, unkY, unkZ);
                     if (*ptr < 0.001f) {
                         *ptr = 1.0f;
                         mSub[i].m_968++;
                     }
                     break;
                 }
-                case 2:
+                case 2: {
                     int count = 0;
                     for (int j = 0; j < ARRAY_SIZE(mSub[i].m_96c); j++) {
-                        if (mSub[i].m_96c[j] == 2) {
+                        if (mSub[i].m_96c[j] > 1 && mSub[i].m_96c[j] < 3) {
                             count++;
                         }
                     }
 
                     if (count >= f11) {
-                        mSub[i].m_968 = 0;
-                        dBg_c::m_bg_p->mWaveActive[i] = 0;
+                        mSub[i].m_968 = startI;
+                        dBg_c::m_bg_p->mWaveActive[i] = startI;
                     }
                     break;
+                }
             }
             for (int j = 0; j < f11; j++) {
                 float t = j / f11;
@@ -803,7 +845,7 @@ void dWaterWave_c::waveExecute() {
 
                 switch (mSub[i].m_96c[j]) {
                     case 0:
-                        if (j / f11 > 1.0f - mSub[i].m_00[j]) {
+                        if (j / f11 > 1.0f - mSub[i].m_640) {
                             mSub[i].m_644[j] = 0;
                             mSub[i].m_320[j] = 1.0f;
                             mSub[i].m_96c[j]++;
@@ -826,8 +868,8 @@ void dWaterWave_c::waveExecute() {
                             mSub[i].m_00[j] *= 0.5f;
                         }
 
-                        sLib::addCalc(&mSub[i].m_00[j], 0.0f, 0.1f, f8, 0.0001f);
-                        if (mSub[i].m_00[j] < someval) {
+                        sLib::addCalc(&mSub[i].m_320[j], 0.0f, 0.1f, f8, 0.0001f);
+                        if (mSub[i].m_320[j] < 0.0001f) {
                             mSub[i].m_00[j] = 0.0f;
                             mSub[i].m_644[j] = 0;
                             mSub[i].m_96c[j]++;
@@ -837,7 +879,7 @@ void dWaterWave_c::waveExecute() {
             }
         }
     }
-    for (quadI = 0; quadI <= m_d2fc; quadI++) {
+    for (; quadI <= (u32) m_d2fc; quadI++) {
         waveQuadPos[0].set(quadI * 8.0f, 0.0f, 0.0f);
         waveQuadPos[1].set((quadI + 1) * 8.0f, 0.0f, 0.0f);
         waveQuadPos[2].set((quadI + 1) * 8.0f, -8.0f, 0.0f);
@@ -852,17 +894,18 @@ void dWaterWave_c::waveExecute() {
         aInc += ang1;
         bInc += ang2;
 
-        for (waveIndex = 0; waveIndex < 20; waveIndex++) {
-            if (dBg_c::m_bg_p->mWaveActive[waveIndex] == 0) {
+        dBg_c *bg;
+        bg = dBg_c::m_bg_p;
+
+        for (int waveIndex = 0; waveIndex < 20; waveIndex++) {
+            if (bg->mWaveActive[waveIndex] == 0) {
                 continue;
             }
-
-            int a34 = mSub[waveIndex].m_a34;
 
             float something1, something2;
             something2 = 20.0f;
             something1 = sGlobalData_c<dWaterWave_c>::m_member.mFloats2[0];
-            switch (a34) {
+            switch (mSub[waveIndex].m_a34) {
                 case 0:  something2 = sGlobalData_c<dWaterWave_c>::m_member.mFloats2[1]; break;
                 case 1:  something2 = sGlobalData_c<dWaterWave_c>::m_member.mFloats2[4]; break;
                 case 2:  something2 = sGlobalData_c<dWaterWave_c>::m_member.mFloats2[7]; break;
@@ -918,18 +961,16 @@ void dWaterWave_c::waveExecute() {
                 default: break;
             }
 
-            int idk = mSub[waveIndex].m_968;
-
-            if (idk == 0) {
+            if (mSub[waveIndex].m_968 == 0) {
                 continue;
             }
 
-            if (quadI >= mSub[waveIndex].m_964 && quadI < mSub[waveIndex].m_964 + something1) {
-                waveQuadPos[0].y += something2 * mSub[waveIndex].m_00[quadI - idk];
+            if (quadI >= mSub[waveIndex].m_964 && quadI < something1 + mSub[waveIndex].m_964) {
+                waveQuadPos[0].y += something2 * mSub[waveIndex].m_00[quadI - mSub[waveIndex].m_964];
             }
 
             if (quadI > mSub[waveIndex].m_964 - something1 && quadI < mSub[waveIndex].m_964) {
-                waveQuadPos[0].y += something2 * mSub[waveIndex].m_00[quadI - idk];
+                waveQuadPos[0].y += something2 * mSub[waveIndex].m_00[mSub[waveIndex].m_964 - quadI];
             }
         }
 
@@ -959,7 +1000,7 @@ void dWaterWave_c::waveExecute() {
 
             if (t.x + waveQuadPos[0].x > bgParam->xStart() && t.x + waveQuadPos[0].x < bgParam->xStart() + bgParam->xSize()) {
                 if (waveCounter < 80) {
-                    dBg_c::m_bg_p->mWaveRelated[waveCounter2] = t.y + waveQuadPos[0].y - 10.0f;
+                    dBg_c::m_bg_p->mWaveUnk[waveCounter2] = t.y + waveQuadPos[0].y - 10.0f;
                 }
                 waveCounter2++;
                 waveCounter++;

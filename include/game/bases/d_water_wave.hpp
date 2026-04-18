@@ -53,8 +53,6 @@ struct dWaterWave_sub {
     int m_968;
     u8 m_96c[200];
     u8 m_a34;
-
-    u8 get_a34() const { return m_a34; }
 };
 
 class dWaterWave_c {
