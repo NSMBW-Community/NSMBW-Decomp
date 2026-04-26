@@ -1,15 +1,19 @@
 #include <game/bases/d_dylink.hpp>
 #include <game/mLib/m_heap.hpp>
 #include <constants/sjis_constants.h>
+/// @file
 
+/// @brief The module handler for the d_profile module.
 DynamicModuleControl s_ProfileDMC("d_profile", nullptr);
 
+/// @brief The profile to module name table.
+/// @hideinitializer
 const sDynNameTableEntry DynamicNameTable[] = {
     { fProfile::INVALID, nullptr }
 };
 
-const sDynNameTableEntry *pDynamicNameTable;
-int nDynamicNameTable;
+const sDynNameTableEntry *pDynamicNameTable; ///< A pointer to @ref sDynNameTableEntry "the profile to module name table".
+int nDynamicNameTable; ///< The amount of entries in #pDynamicNameTable .
 
 DynamicModuleControlBase **dDyl::pDMC;
 int dDyl::nDMC;
@@ -18,7 +22,9 @@ BOOL dDyl::Initialized;
 mDvd_callback_c *dDyl::DVD;
 
 bool dDyl::Init(int profileCount, const sDynNameTableEntry *pNameTable, int nNameTable, EGG::Heap *heap) {
-    cCc_frmHeap = mHeap::createFrmHeap(profileCount * 16 + nNameTable * sizeof(DynamicModuleControl), heap, DYL_FRM_HEAP_NAME, 0x20, mHeap::OPT_NONE);
+    // [Memory waste: profileCount * 4 would have been enough space to allocate pDMC]
+    cCc_frmHeap = mHeap::createFrmHeap(profileCount * 16 + nNameTable * sizeof(DynamicModuleControl),
+                               heap, DYL_FRM_HEAP_NAME, 0x20, mHeap::OPT_NONE);
     EGG::Heap *prevHeap = mHeap::setCurrentHeap(cCc_frmHeap);
 
     nDMC = profileCount;
@@ -36,6 +42,8 @@ bool dDyl::Init(int profileCount, const sDynNameTableEntry *pNameTable, int nNam
             if (pDMC[j] == nullptr) {
                 continue;
             }
+
+            // If the module has already been linked for another profile, use it
             if (strcmp(curr->mModuleName, pDMC[j]->getModuleName()) == 0) {
                 pDMC[curr->mProf] = pDMC[j];
                 break;
@@ -52,12 +60,24 @@ bool dDyl::Init(int profileCount, const sDynNameTableEntry *pNameTable, int nNam
 }
 
 bool dDyl::Unlink(ProfileName profile) {
-    // [This used to actually deal with unlinking before this functionality was scrapped].
+    if (false) {
+        if (pDMC[profile] == nullptr) {
+            return true;
+        }
+        return pDMC[profile]->unlink();
+    }
+
     return true;
 }
 
 int dDyl::LinkASync(ProfileName profile) {
-    // [This used to actually deal with linking before this functionality was scrapped].
+    if (false) {
+        if (pDMC[profile] == nullptr) {
+            return true;
+        }
+        return pDMC[profile]->link();
+    }
+
     return Initialized ? 1 : 0;
 }
 
@@ -77,7 +97,7 @@ void *DynamicModuleCallback::InitCallback(void *heap) {
     }
 
     bool res = s_ProfileDMC.link();
-    while (!res); // Infinite loop if linking fails
+    while (!res); // Infinite loop if the profile module fails to link
 
     dDyl::Initialized = true;
     return (void *) true;

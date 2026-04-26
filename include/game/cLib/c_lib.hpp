@@ -3,7 +3,7 @@
 #include <game/mLib/m_vec.hpp>
 /// @file
 
-/// @brief C Math library.
+/// @brief Provides common utilities.
 /// @ingroup clib
 namespace cLib {
 

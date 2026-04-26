@@ -22,10 +22,7 @@ DynamicModuleControlBase::~DynamicModuleControlBase() {
     mpPrev = nullptr;
 }
 
-DynamicModuleControlBase::DynamicModuleControlBase() {
-    mUsageCount = 0;
-    mLinkCount = 0;
-    mpNext = nullptr;
+DynamicModuleControlBase::DynamicModuleControlBase() : mUsageCount(0), mLinkCount(0), mpNext(nullptr) {
     if (mFirst == nullptr) {
         mFirst = this;
     }
@@ -53,9 +50,8 @@ bool DynamicModuleControlBase::link() {
     return true;
 }
 
+// [Deadstripped, but was presumably here because of the weak virtuals]
 bool DynamicModuleControlBase::unlink() {
-    // [Deadstripped, but was presumably here because of the weak virtuals]
-    // [Probably looked something like this:]
     mUsageCount--;
     if (mUsageCount == 0) {
         do_unlink();
@@ -87,18 +83,18 @@ EGG::ExpHeap *DynamicModuleControl::sDylinkHeap;
 size_t DynamicModuleControl::sHeapMinAllocatableSize;
 size_t DynamicModuleControl::sHeapMinTotalFreeSize;
 
-DynamicModuleControl::DynamicModuleControl(const char *name, EGG::ExpHeap *heap) : DynamicModuleControlBase() {
-    mpModule = nullptr;
-    mpBss = nullptr;
-    mpPrologReturn = nullptr;
-    mModuleName = name;
-    mType = MODULE_TYPE_UNKNOWN;
-    mLoadCount = 0;
-    mChecksum = 0;
-    mModuleBytes = 0;
-    mpDvdCallback = nullptr;
-    mpHeap = heap;
-    mDebugMapFile.mpMapFile = nullptr;
+DynamicModuleControl::DynamicModuleControl(const char *name, EGG::ExpHeap *heap) : DynamicModuleControlBase(),
+    mpModule(nullptr),
+    mpBss(nullptr),
+    mPrologReturn(0),
+    mModuleName(name),
+    mType(MODULE_TYPE_UNKNOWN),
+    mLoadCount(0),
+    mChecksum(0),
+    mModuleSize(0),
+    mpDvdCallback(nullptr),
+    mpHeap(heap),
+    mDebugMapFile() {
 }
 
 DynamicModuleControl::~DynamicModuleControl() {}
@@ -148,8 +144,8 @@ u16 calcSum2(const u16 *data, size_t count) {
 }
 
 bool DynamicModuleControl::do_load() {
+    // Check if already loaded
     if (mpModule != nullptr) {
-        // Already loaded
         return true;
     }
 
@@ -158,6 +154,7 @@ bool DynamicModuleControl::do_load() {
         mpHeap = sDylinkHeap;
     }
 
+    // On retry, free memory from the previous attempt
 retry_load:
     if (mpModule != nullptr) {
         mpHeap->free(mpModule);
@@ -178,7 +175,7 @@ retry_load:
             sDvdCommand = nullptr;
 
             if (mpModule != nullptr) {
-                mModuleBytes = 0;
+                mModuleSize = 0;
                 mType = MODULE_TYPE_DVD;
             }
         }
@@ -186,14 +183,19 @@ retry_load:
     if (mpModule == nullptr) {
         return false;
     }
-    if (mModuleBytes > 0) {
-        u16 actualChecksum = calcSum2((u16 *) mpModule, mModuleBytes);
+
+    // [The following seems to be a leftover debug check to ensure the data was correctly read]
+    if (mModuleSize > 0) {
+        u16 actualChecksum = calcSum2((u16 *) mpModule, mModuleSize);
+
+        // On first load, load the file again to verify
         if (mLoadCount == 0) {
-            // [Load again to ensure we really have the correct data]
             mChecksum = actualChecksum;
             mLoadCount++;
             goto retry_load;
         }
+
+        // If the checksum fails, try to read the data 2 more times before quitting
         if (actualChecksum != mChecksum) {
             mLoadCount = 0;
             if (attempts < 2) {
@@ -290,7 +292,7 @@ bool DynamicModuleControl::do_link() {
     mDebugMapFile.RegisterOnDvd(mapFileBuf, &mpModule->info);
 
     // Run prolog
-    mpPrologReturn = ((u32 (*)()) mpModule->prolog)();
+    mPrologReturn = ((u32FctPtr) mpModule->prolog)();
 
     checkHeapStatus();
     return true;
@@ -309,7 +311,7 @@ fail:
 }
 
 bool DynamicModuleControl::do_unlink() {
-    ((void (*)()) mpModule->epilog)();
+    ((voidFctPtr) mpModule->epilog)();
 
     mDebugMapFile.Unregister();
     if (!OSUnlink(&mpModule->info)) {
@@ -346,8 +348,8 @@ DbMapFile::~DbMapFile() {
     }
 }
 
-void DbMapFile::RegisterOnDvd(const char *name, const OSModuleInfo *moduleInfo) {
-    mpMapFile = nw4r::db::MapFile_RegistOnDvd(&mBuf, name, moduleInfo);
+void DbMapFile::RegisterOnDvd(const char *path, const OSModuleInfo *moduleInfo) {
+    mpMapFile = nw4r::db::MapFile_RegistOnDvd(&mBuf, path, moduleInfo);
 }
 
 void DbMapFile::Unregister() {
@@ -358,12 +360,14 @@ void DbMapFile::Unregister() {
 extern "C" {
 
 void ModuleUnresolved() {}
+
 void ModuleConstructorsX(voidFctPtr *ctors) {
     while (*ctors != nullptr) {
         (*ctors)();
         ctors++;
     }
 }
+
 void ModuleDestructorsX(voidFctPtr *dtors) {
     while (*dtors != nullptr) {
         (*dtors)();
