@@ -11,6 +11,7 @@ public:
 
     static EGG::ExpHeap *create(void *buffer, size_t size, u16 flags);
     static EGG::ExpHeap *create(size_t, EGG::Heap *, u16);
+    static size_t getSizeForMBlock(const void *block);
 };
 
 } // namespace EGG

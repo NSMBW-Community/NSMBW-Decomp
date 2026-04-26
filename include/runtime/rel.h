@@ -5,6 +5,7 @@ extern "C" {
 #endif
 
 typedef void (*voidFctPtr) (void);
+typedef unsigned int (*u32FctPtr) (void);
 
 void ModuleConstructorsX(voidFctPtr *);
 void ModuleDestructorsX(voidFctPtr *);
