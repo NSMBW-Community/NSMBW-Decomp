@@ -6,6 +6,7 @@
 namespace m3d {
     class anmTexPat_c : public banm_c {
     public:
+        anmTexPat_c() : mpChildren(nullptr) {}
         virtual ~anmTexPat_c();
         virtual void remove();
         virtual void play();
@@ -38,6 +39,6 @@ namespace m3d {
             void setFrmCtrlDefault(nw4r::g3d::ResAnmTexPat &anmTexPat, m3d::playMode_e playMode);
         };
 
-        child_c *children;
+        child_c *mpChildren;
     };
 }

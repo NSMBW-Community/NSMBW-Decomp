@@ -6,6 +6,7 @@
 namespace m3d {
     class anmMatClr_c : public banm_c {
     public:
+        anmMatClr_c() : mpChildren(nullptr) {}
         virtual ~anmMatClr_c();
         virtual void remove();
         virtual void play();
@@ -38,6 +39,6 @@ namespace m3d {
             void setFrmCtrlDefault(nw4r::g3d::ResAnmClr &anmClr, m3d::playMode_e playMode);
         };
 
-        child_c *children;
+        child_c *mpChildren;
     };
 }
