@@ -16,7 +16,7 @@ public:
     virtual int draw();
     virtual int doDelete();
 
-    virtual void setCutEndSpecific(int cutsceneCommandId, bool param2);
+    virtual void processCutsceneCommand(int cutsceneCommandId, bool isFirstFrame);
 
     void setClipSphere(); ///< Sets the @ref mClipSphere "clip sphere" for the actor.
     void createModel(); ///< Initializes the resources for the actor.

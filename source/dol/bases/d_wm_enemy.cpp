@@ -106,7 +106,7 @@ int dWmEnemy_c::execute() {
             updateBgmAnimRate();
         }
     }
-    setCutEndSpecific(dCsSeqMng_c::ms_instance->GetCutName(), dCsSeqMng_c::ms_instance->m_164);
+    processCutsceneCommand(dCsSeqMng_c::ms_instance->GetCutName(), dCsSeqMng_c::ms_instance->m_164);
     if (IsExecEnable() || dCsSeqMng_c::ms_instance->GetCutName() == dCsSeqMng_c::CUTSCENE_CMD_87) {
         static const ProcFunc Proc_tbl[PROC_COUNT] = {
             &dWmEnemy_c::mode_exec,

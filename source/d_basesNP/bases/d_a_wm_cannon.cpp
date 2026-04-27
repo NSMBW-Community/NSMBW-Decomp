@@ -20,7 +20,7 @@ int daWmCannon_c::create() {
 }
 
 int daWmCannon_c::execute() {
-    setCutEndSpecific(dCsSeqMng_c::ms_instance->GetCutName(), dCsSeqMng_c::ms_instance->m_164);
+    processCutsceneCommand(dCsSeqMng_c::ms_instance->GetCutName(), dCsSeqMng_c::ms_instance->m_164);
 
     mModel.play();
     daWmMap_c::m_instance->GetNodePos(mResNodeIdx, mPos);
@@ -65,7 +65,7 @@ void daWmCannon_c::calcModel() {
     mModel.calc(false);
 }
 
-void daWmCannon_c::setCutEndSpecific(int cutsceneCommandId, bool param2) {
+void daWmCannon_c::processCutsceneCommand(int cutsceneCommandId, bool isFirstFrame) {
     if (cutsceneCommandId == dCsSeqMng_c::CUTSCENE_CMD_NONE) {
         return;
     }

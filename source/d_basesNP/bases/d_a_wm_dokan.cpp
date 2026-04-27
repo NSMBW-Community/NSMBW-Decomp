@@ -15,7 +15,7 @@ int daWmDokan_c::create() {
 }
 
 int daWmDokan_c::execute() {
-    setCutEndSpecific(dCsSeqMng_c::ms_instance->GetCutName(), dCsSeqMng_c::ms_instance->m_164);
+    processCutsceneCommand(dCsSeqMng_c::ms_instance->GetCutName(), dCsSeqMng_c::ms_instance->m_164);
     daWmMap_c::m_instance->GetNodePos(mResNodeIdx, mPos);
     return SUCCEEDED;
 }
@@ -28,7 +28,7 @@ int daWmDokan_c::doDelete() {
     return SUCCEEDED;
 }
 
-void daWmDokan_c::setCutEndSpecific(int cutsceneCommandId, bool param2) {
+void daWmDokan_c::processCutsceneCommand(int cutsceneCommandId, bool isFirstFrame) {
     if (cutsceneCommandId == dCsSeqMng_c::CUTSCENE_CMD_NONE) {
         return;
     }

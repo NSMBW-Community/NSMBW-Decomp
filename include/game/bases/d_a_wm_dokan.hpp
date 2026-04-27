@@ -17,7 +17,7 @@ public:
     virtual int draw();
     virtual int doDelete();
 
-    virtual void setCutEndSpecific(int cutsceneCommandId, bool param2);
+    virtual void processCutsceneCommand(int cutsceneCommandId, bool isFirstFrame);
 
     dHeapAllocator_c mAllocator; ///< The allocator. @unused
     m3d::smdl_c mModel; ///< The model. @unused

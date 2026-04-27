@@ -66,7 +66,7 @@ public:
     /// @unofficial
     enum CUTSCENE_CMD_e {
         CUTSCENE_CMD_NONE = -1,
-        CUTSCENE_CMD_2 = 2,
+        CUTSCENE_CMD_COURSE_UNLOCK = 2,
         CUTSCENE_CMD_4 = 4,
         CUTSCENE_CMD_27 = 27,
         CUTSCENE_CMD_28 = 28,
