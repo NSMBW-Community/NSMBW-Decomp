@@ -7,12 +7,12 @@
 #include <game/bases/d_wm_se_manager.hpp>
 #include <game/sLib/s_GlobalData.hpp>
 
-const char *daWmDokanRoute_c::sPointNames[6] = {
+const char *daWmDokanRoute_c::sPointNames[] = {
     "W601",
     "W603",
     "W603",
     "W605",
-    "W605",
+    "W605", // [unused]
     "W605"
 };
 
@@ -22,36 +22,35 @@ template <>
 const daWmDokanRoute_c::GlobalData_t sGlobalData_c<daWmDokanRoute_c>::mData = {
     1.0f,
     {
-        {mVec3_c(0.0f, 0.0f, 0.0f), 1.0f, 60, 98, 30, 0},
-        {mVec3_c(0.0f, 0.0f, 0.0f), 1.0f, 30, 75, 15, 3},
-        {mVec3_c(0.0f, 0.0f, 0.0f), 1.0f, 90, 160, 15, 1},
-        {mVec3_c(0.0f, 0.0f, 0.0f), 1.0f, 120, 155, 15, 3},
-        {mVec3_c(0.0f, 0.0f, 0.0f), 1.0f, 110, 150, 15, 3},
-        {mVec3_c(0.0f, 0.0f, 0.0f), 1.0f, 155, 175, 15, 3}
+        {mVec3_c(0.0f, 0.0f, 0.0f), 1.0f, 60, 98, 30, daWmDokanRoute_c::EAST},
+        {mVec3_c(0.0f, 0.0f, 0.0f), 1.0f, 30, 75, 15, daWmDokanRoute_c::SOUTH},
+        {mVec3_c(0.0f, 0.0f, 0.0f), 1.0f, 90, 160, 15, daWmDokanRoute_c::WEST},
+        {mVec3_c(0.0f, 0.0f, 0.0f), 1.0f, 120, 155, 15, daWmDokanRoute_c::SOUTH},
+        {mVec3_c(0.0f, 0.0f, 0.0f), 1.0f, 110, 150, 15, daWmDokanRoute_c::SOUTH}, // [unused]
+        {mVec3_c(0.0f, 0.0f, 0.0f), 1.0f, 155, 175, 15, daWmDokanRoute_c::SOUTH}
     }
 };
 
-// I thought it was a bool, apparently not
-const u8 daWmDokanRoute_c::sIsNormalExit[6] = {
-    true,
-    true,
-    true,
-    true,
-    false,
-    true,
+const u8 daWmDokanRoute_c::sExitTypes[] = {
+    EXIT_TYPE_NORMAL,
+    EXIT_TYPE_NORMAL,
+    EXIT_TYPE_NORMAL,
+    EXIT_TYPE_NORMAL,
+    EXIT_TYPE_SECRET, // [unused]
+    EXIT_TYPE_NORMAL,
 };
 
 daWmDokanRoute_c::daWmDokanRoute_c() {}
 daWmDokanRoute_c::~daWmDokanRoute_c() {}
 
 int daWmDokanRoute_c::create() {
-    mPosCopy = mPos;
+    mInitialPos = mPos;
     createModel();
 
     mClipSphere.mCenter = mPos;
     mClipSphere.mRadius = 250.0f;
 
-    FUN_808d0270();
+    initState();
     calcModel(mModel);
     return SUCCEEDED;
 }
@@ -64,7 +63,7 @@ int daWmDokanRoute_c::execute() {
     };
 
     (this->*Proc_tbl[mCurrProc])();
-    FUN_808d0360();
+    initPosRot(); // [unnecessary call]
     calcAnim();
     calcModel(mModel);
     return SUCCEEDED;
@@ -129,10 +128,10 @@ void daWmDokanRoute_c::calcModel(m3d::mdl_c &model) {
     model.calc(false);
 }
 
-void daWmDokanRoute_c::FUN_808d0270() {
-    FUN_808d0360();
-    FUN_808d0520();
-    float scale = GLOBAL_DATA.mInitialScale;
+void daWmDokanRoute_c::initState() {
+    initPosRot();
+    initAnim();
+    float scale = GLOBAL_DATA.mScaleMultiplier;
     mScale.set(scale, scale, scale);
     init_exec();
 }
@@ -152,8 +151,8 @@ void daWmDokanRoute_c::processCutsceneCommand(int cutsceneCommandId, bool isFirs
         if (cutsceneCommandId == dCsSeqMng_c::CUTSCENE_CMD_COURSE_UNLOCK) {
             onCourseUnlockInit();
         }
-
     }
+
     if (cutsceneCommandId == dCsSeqMng_c::CUTSCENE_CMD_COURSE_UNLOCK) {
         onCourseUnlock();
     } else {
@@ -161,31 +160,31 @@ void daWmDokanRoute_c::processCutsceneCommand(int cutsceneCommandId, bool isFirs
     }
 }
 
-void daWmDokanRoute_c::FUN_808d0360() {
+void daWmDokanRoute_c::initPosRot() {
     u8 nodeNum = GetNodeNum();
-    mPos = mPosCopy + GLOBAL_DATA.mAnims[nodeNum].mPosDelta;
-    s16 pipeDir = GLOBAL_DATA.mAnims[nodeNum].mDirection;
+    mPos = mInitialPos + GLOBAL_DATA.mNodeConfigs[nodeNum].mPosOffset;
+    s16 pipeDir = GLOBAL_DATA.mNodeConfigs[nodeNum].mDirection;
 
     float frame = 0.0f;
     mVec3_c rot = mVec3_c::Ez;
 
     switch (pipeDir) {
-        case 0:
+        case EAST:
             frame = 2.0f;
             rot = mVec3_c::Ez;
             break;
 
-        case 1:
+        case WEST:
             rot = -mVec3_c::Ez;
             frame = 1.0f;
             break;
 
-        case 2:
+        case NORTH:
             rot = mVec3_c::Ex;
             frame = 0.0f;
             break;
 
-        case 3:
+        case SOUTH:
             rot = -mVec3_c::Ex;
             frame = 0.0f;
             break;
@@ -201,26 +200,26 @@ void daWmDokanRoute_c::FUN_808d0360() {
     mSrtAnim[cobDokanRoute].setFrame(frame, 0);
 }
 
-void daWmDokanRoute_c::FUN_808d0520() {
+void daWmDokanRoute_c::initAnim() {
     u8 nodeNum = GetNodeNum();
     int courseNo = dWmLib::GetCourseNoFromPointName(sPointNames[nodeNum]);
     dInfo_c *info = dInfo_c::getInstance();
 
     float frame = 0.0f;
-    switch (sIsNormalExit[nodeNum]) {
-        case 1:
+    switch (sExitTypes[nodeNum]) {
+        case EXIT_TYPE_NORMAL:
             if (dWmLib::IsCourseOmoteClear(dScWMap_c::m_WorldNo, courseNo) &&
                 !dWmLib::IsCourseFirstOmoteClear(dScWMap_c::m_WorldNo, courseNo, info->mCurrentCourseNode)
             ) {
-                frame = getFrame();
+                frame = getEndFrame();
             }
         break;
 
-        case 0:
+        case EXIT_TYPE_SECRET:
             if (dWmLib::IsCourseUraClear(dScWMap_c::m_WorldNo, courseNo) &&
                 !dWmLib::IsCourseFirstUraClear(dScWMap_c::m_WorldNo, courseNo, info->mCurrentCourseNode)
             ) {
-                frame = getFrame();
+                frame = getEndFrame();
             }
             break;
 
@@ -238,9 +237,9 @@ void daWmDokanRoute_c::onCourseUnlockInit() {
     dInfo_c *info = dInfo_c::getInstance();
 
     mState = STATE_IDLE;
-    if (sIsNormalExit[nodeNum] != 0 && dWmLib::IsCourseFirstOmoteClear(dScWMap_c::m_WorldNo, courseNo, info->mCurrentCourseNode) ||
-        sIsNormalExit[nodeNum] == 0 && dWmLib::IsCourseFirstUraClear(dScWMap_c::m_WorldNo, courseNo, info->mCurrentCourseNode)) {
-        mStateTimer = GLOBAL_DATA.mAnims[nodeNum].mTimer;
+    if (sExitTypes[nodeNum] != EXIT_TYPE_SECRET && dWmLib::IsCourseFirstOmoteClear(dScWMap_c::m_WorldNo, courseNo, info->mCurrentCourseNode) ||
+        sExitTypes[nodeNum] == EXIT_TYPE_SECRET && dWmLib::IsCourseFirstUraClear(dScWMap_c::m_WorldNo, courseNo, info->mCurrentCourseNode)) {
+        mStateTimer = GLOBAL_DATA.mNodeConfigs[nodeNum].mInitialDelay;
         mState = STATE_WAIT_DELAY;
     }
 }
@@ -262,19 +261,21 @@ void daWmDokanRoute_c::onCourseUnlock() {
             break;
 
         case STATE_ANIM_START:
-            dWmSeManager_c::m_pInstance->playSound(0x2D, mPos, 1);
-            mChrAnim[cobDokanRoute].setRate(GLOBAL_DATA.mAnims[nodeNum].mAnmRate);
-            mStateTimer = GLOBAL_DATA.mAnims[nodeNum].mTimer2 - GLOBAL_DATA.mAnims[nodeNum].mTimer;
+            dWmSeManager_c::m_pInstance->playSound(dWmSeManager_c::WM_SE_OBJ_CS_DOKAN, mPos, 1);
+            mChrAnim[cobDokanRoute].setRate(GLOBAL_DATA.mNodeConfigs[nodeNum].mAnmRate);
+            mStateTimer = GLOBAL_DATA.mNodeConfigs[nodeNum].mAnimDuration - GLOBAL_DATA.mNodeConfigs[nodeNum].mInitialDelay;
             mState = STATE_ANIM_PLAY;
             break;
 
         case STATE_ANIM_PLAY:
             if (mStateTimer > 0) {
                 mStateTimer--;
-                if (mStateTimer <= GLOBAL_DATA.mAnims[nodeNum].mTimerThreshold) {
-                    float diff = (float) GLOBAL_DATA.mAnims[nodeNum].mTimerThreshold - mStateTimer;
-                    float v = diff / GLOBAL_DATA.mAnims[nodeNum].mTimerThreshold;
-                    float rate = (1.0f - v) * GLOBAL_DATA.mAnims[nodeNum].mAnmRate;
+
+                // Begin linearly decelerating if less than mDecelDuration frames are left
+                if (mStateTimer <= GLOBAL_DATA.mNodeConfigs[nodeNum].mDecelDuration) {
+                    float decelFrames = (float) GLOBAL_DATA.mNodeConfigs[nodeNum].mDecelDuration - mStateTimer;
+                    float decelPercent = decelFrames / GLOBAL_DATA.mNodeConfigs[nodeNum].mDecelDuration;
+                    float rate = (1.0f - decelPercent) * GLOBAL_DATA.mNodeConfigs[nodeNum].mAnmRate;
                     mChrAnim[cobDokanRoute].setRate(rate);
                 }
             } else {
@@ -292,14 +293,15 @@ void daWmDokanRoute_c::onCourseUnlock() {
     }
 }
 
-float daWmDokanRoute_c::getFrame() {
+float daWmDokanRoute_c::getEndFrame() {
     u8 nodeNum = GetNodeNum();
-    float timerDiff = GLOBAL_DATA.mAnims[nodeNum].mTimer2 - GLOBAL_DATA.mAnims[nodeNum].mTimer;
-    float frame = (timerDiff - GLOBAL_DATA.mAnims[nodeNum].mTimerThreshold) * GLOBAL_DATA.mAnims[nodeNum].mAnmRate;
+    float movementDuration = GLOBAL_DATA.mNodeConfigs[nodeNum].mAnimDuration - GLOBAL_DATA.mNodeConfigs[nodeNum].mInitialDelay;
+    float frame = (movementDuration - GLOBAL_DATA.mNodeConfigs[nodeNum].mDecelDuration) * GLOBAL_DATA.mNodeConfigs[nodeNum].mAnmRate;
 
-    for (int i = 0; i < GLOBAL_DATA.mAnims[nodeNum].mTimerThreshold; i++) {
-        float v = i / (float) GLOBAL_DATA.mAnims[nodeNum].mTimerThreshold;
-        frame += (1.0f - v) * GLOBAL_DATA.mAnims[nodeNum].mAnmRate;
+    // Compute linear deceleration to get final frame
+    for (int i = 0; i < GLOBAL_DATA.mNodeConfigs[nodeNum].mDecelDuration; i++) {
+        float decelPercent = i / (float) GLOBAL_DATA.mNodeConfigs[nodeNum].mDecelDuration;
+        frame += (1.0f - decelPercent) * GLOBAL_DATA.mNodeConfigs[nodeNum].mAnmRate;
     }
 
     return frame;
