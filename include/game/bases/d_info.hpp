@@ -57,7 +57,10 @@ public:
 
     char pad1[0x8];
     dCyuukan_c mCyuukan;
-    char pad2[0x18];
+    int mCurrentCourseWorld;
+    int mCurrentCourseNo;
+    int mCurrentCourseNode;
+    char pad2[0xc];
     int m_54;
     u8 pad3[0x44];
     int m_9c;

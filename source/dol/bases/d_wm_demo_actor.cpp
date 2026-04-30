@@ -30,7 +30,7 @@ dWmDemoActor_c *dWmDemoActor_c::GetChildDemoActor(dBaseActor_c *prev, dWmDemoAct
     return (dWmDemoActor_c *)actor;
 }
 
-void dWmDemoActor_c::setCutEndSpecific(int cutsceneCommandId, bool param2) {
+void dWmDemoActor_c::processCutsceneCommand(int cutsceneCommandId, bool isFirstFrame) {
     if (cutsceneCommandId == dCsSeqMng_c::CUTSCENE_CMD_NONE) {
         return;
     }

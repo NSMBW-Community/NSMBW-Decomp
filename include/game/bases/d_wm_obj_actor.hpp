@@ -12,6 +12,11 @@
 */
 class dWmObjActor_c : public dWmDemoActor_c {
 public:
+    enum PROC_TYPE_e {
+        PROC_TYPE_EXEC,
+        PROC_COUNT
+    };
+
     dWmObjActor_c() : mResNodeIdx(-1) {} ///< Constructs a new object.
     ~dWmObjActor_c() {} ///< Destroys the object.
 

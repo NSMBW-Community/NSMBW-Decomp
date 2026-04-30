@@ -80,6 +80,26 @@
             }
         },
         {
+            "source": "d_basesNP/bases/d_a_wm_dokan.cpp",
+            "memoryRanges": {
+                ".text": "0x1622b0-0x162580",
+                ".ctors": "0x3d8-0x3dc",
+                ".rodata": "0x8830-0x8840",
+                ".data": "0x44768-0x44820",
+                ".bss": "0xfd98-0xfda8"
+            }
+        },
+        {
+            "source": "d_basesNP/bases/d_a_wm_dokan_route.cpp",
+            "memoryRanges": {
+                ".text": "0x162580-0x163620",
+                ".ctors": "0x3dc-0x3e0",
+                ".rodata": "0x8840-0x8880",
+                ".data": "0x44820-0x44a68",
+                ".bss": "0xfda8-0xfdc0"
+            }
+        },
+        {
             "source": "d_basesNP/bases/d_s_autoselect.cpp",
             "memoryRanges": {
                 ".text": "0x1b13f0-0x1b14a0",

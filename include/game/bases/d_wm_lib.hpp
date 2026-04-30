@@ -49,6 +49,7 @@ namespace dWmLib {
     };
 
     int GetCourseTypeFromCourseNo(int courseNo);
+    int GetCourseNoFromPointName(const char *pointName);
     bool isKoopaShipAnchor();
     u8 getStartPointKinokoHouseKindNum();
     bool isStartPointKinokoHouseStar();

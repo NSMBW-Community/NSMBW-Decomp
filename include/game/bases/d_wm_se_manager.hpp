@@ -6,6 +6,7 @@ class dWmSeManager_c {
 public:
     /// @unofficial
     enum EffectID_e {
+        WM_SE_OBJ_CS_DOKAN = 45,
         WM_SE_EMY_CS_ENEMY_BYE = 86,
         WM_SE_EMY_CS_MOVE_W1_KURIBO,
         WM_SE_EMY_CS_MOVE_W2_SANDHALL,

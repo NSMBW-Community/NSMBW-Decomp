@@ -16,7 +16,11 @@ public:
     virtual int execute() = 0;
     virtual int GetActorType() { return ACTOR_MAP_DEMO; }
 
-    virtual void setCutEndSpecific(int cutsceneCommandId, bool param2); ///< @unofficial
+    /// @brief Contains the actor-specific logic for processing the current world map cutscene.
+    /// @param cutsceneCommandId The cutscene type.
+    /// @param isFirstFrame @p true on the first frame the cutscene is executing, @p false on subsequent frames.
+    /// @unofficial
+    virtual void processCutsceneCommand(int cutsceneCommandId, bool isFirstFrame);
     virtual bool checkCutEnd() { return mIsCutEnd; }
     virtual void setCutEnd() { mIsCutEnd = true; }
     virtual void clearCutEnd() { mIsCutEnd = false; }
