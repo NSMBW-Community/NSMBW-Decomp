@@ -175,18 +175,18 @@ void daWmDokanRoute_c::initPosRot() {
             break;
 
         case WEST:
-            rot = -mVec3_c::Ez;
             frame = 1.0f;
+            rot = -mVec3_c::Ez;
             break;
 
         case NORTH:
-            rot = mVec3_c::Ex;
             frame = 0.0f;
+            rot = mVec3_c::Ex;
             break;
 
         case SOUTH:
-            rot = -mVec3_c::Ex;
             frame = 0.0f;
+            rot = -mVec3_c::Ex;
             break;
 
         default:

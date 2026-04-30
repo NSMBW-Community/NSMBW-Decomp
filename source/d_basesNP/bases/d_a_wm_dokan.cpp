@@ -29,9 +29,7 @@ int daWmDokan_c::doDelete() {
 }
 
 void daWmDokan_c::processCutsceneCommand(int cutsceneCommandId, bool isFirstFrame) {
-    if (cutsceneCommandId == dCsSeqMng_c::CUTSCENE_CMD_NONE) {
-        return;
+    if (cutsceneCommandId != dCsSeqMng_c::CUTSCENE_CMD_NONE) {
+        mIsCutEnd = true;
     }
-
-    mIsCutEnd = true;
 }
