@@ -5,7 +5,8 @@
 
 class mSphere_c : public EGG::Sphere3f {
 public:
-    mSphere_c() : EGG::Sphere3f(mVec3_c::Zero, 0.0f) {}
+    mSphere_c() {}
+    mSphere_c(const mVec3_c &center, float radius) : EGG::Sphere3f(center, radius) {}
 
     bool isZero() { return std::fabs(mRadius) <= FLT_EPSILON; }
 };

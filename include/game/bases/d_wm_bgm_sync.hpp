@@ -1,6 +1,7 @@
 #pragma once
 
 #include <types.h>
+#include <game/mLib/m_angle.hpp>
 
 class dWmBgmSync_c {
 public:
@@ -11,6 +12,8 @@ public:
 
     virtual ~dWmBgmSync_c();
     virtual void execute();
+
+    float getAnmRate(float frameCount);
 
     int m_04;
     int m_08;
