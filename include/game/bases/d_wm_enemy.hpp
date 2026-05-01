@@ -102,7 +102,7 @@ private:
         float m_00, m_04, m_08, m_0c;
         u8 mPad[0x42];
         mAng3_c mAngle1;
-        mAng3_c mAngle2;
+        s16 mBgmSyncValue[2];
     };
 
     enum PROC_TYPE_e {

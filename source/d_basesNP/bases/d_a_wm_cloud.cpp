@@ -1,9 +1,10 @@
-#include "game/mLib/m_angle.hpp"
 #include <game/bases/d_cs_seq_manager.hpp>
 #include <game/bases/d_res_mng.hpp>
 #include <game/bases/d_w_camera.hpp>
 #include <game/bases/d_wm_lib.hpp>
 #include <game/bases/d_a_wm_cloud.hpp>
+#include <game/mLib/m_angle.hpp>
+#include <game/sLib/s_GlobalData.hpp>
 
 const char *daWmCloud_c::sGroupNodeNames[] = {
     "group01",
@@ -14,7 +15,7 @@ const char *daWmCloud_c::sGroupNodeNames[] = {
     "group06",
     "group07",
     "group08",
-    "group09",
+    // [group09 is missing]
     "group10",
     "group11",
     "group12",
@@ -25,30 +26,40 @@ const char *daWmCloud_c::sGroupNodeNames[] = {
     nullptr,
     nullptr,
     nullptr,
+    nullptr,
     nullptr
 };
 
-const float daWmCloud_c::sGroupNodeRadii[] = {
-    300.0f,
-    300.0f,
-    500.0f,
-    300.0f,
-    350.0f,
-    420.0f,
-    500.0f,
-    800.0f,
-    600.0f,
-    300.0f,
-    350.0f,
-    550.0f,
-    600.0f,
-    600.0f,
-    200.0f,
-    100.0f,
-    100.0f,
-    100.0f,
-    100.0f,
-    100.0f
+void DUMMY_UNUSED() {
+    static const float idk[] = { 200.0f, 0.0f };
+}
+
+template <>
+const daWmCloud_c::GlobalData_t sGlobalData_c<daWmCloud_c>::mData = {
+    0.0f,
+    {
+        300.0f,
+        300.0f,
+        500.0f,
+        300.0f,
+        350.0f,
+        420.0f,
+        500.0f,
+        800.0f,
+        600.0f,
+        300.0f,
+        350.0f,
+        550.0f,
+        600.0f,
+        600.0f,
+        200.0f,
+        100.0f,
+        100.0f,
+        100.0f,
+        100.0f,
+        100.0f
+    },
+    { 8, 0 }
 };
 
 ACTOR_PROFILE(WM_CLOUD, daWmCloud_c, 0);
@@ -63,10 +74,11 @@ daWmCloud_c::~daWmCloud_c() {
 
 // not matching
 int daWmCloud_c::create() {
-    mpBgmSync = new dWmBgmSync_c();
-    // TODO set mpBgmSync->mAngle, which is not mAng3_c* but more likely just mAng*
-    mpBgmSync->m_04 = 7;
-    mpBgmSync->m_08 = 0;
+    dWmBgmSync_c *bgmSync = new dWmBgmSync_c();
+    mpBgmSync = bgmSync;
+    bgmSync->m_18 = GLOBAL_DATA.mBgmValue;
+    bgmSync->m_04 = 7;
+    bgmSync->m_08 = 0;
 
     createModel();
     mClipSphere.mCenter = mPos;
@@ -119,7 +131,7 @@ void daWmCloud_c::createModel() {
     mResFile = dResMng_c::m_instance->getRes("CS_W7", "g3d/model.brres");
 
     nw4r::g3d::ResMdl resMdl = mResFile.GetResMdl("CS_W7_Cloud");
-    mModel.create(resMdl, &mAllocator, nw4r::g3d::ScnMdl::BUFFER_RESMATMISC, 1, nullptr);
+    mModel.create(resMdl, &mAllocator, nw4r::g3d::ScnMdl::BUFFER_RESMATMISC, 1);
 
     static const char *resAnmNames[ANIM_COUNT] = {
         "CS_W7_Cloud"
@@ -190,12 +202,13 @@ void daWmCloud_c::calcCulling() {
 
     for (int i = 0; i < NODE_COUNT; i++) {
         if (mGroupNodeIds[i] < 0) {
-            continue;
+            return;
         }
 
         mVec3_c nodePos = dWmLib::GetModelNodePos(&mModel, mGroupNodeIds[i]);
-        mCurrNodeClipSphere.mCenter = nodePos;
-        mCurrNodeClipSphere.mRadius = sGroupNodeRadii[i];
+        mVec3_c nodePosCopy = nodePos;
+        mCurrNodeClipSphere.mCenter = nodePosCopy;
+        mCurrNodeClipSphere.mRadius = GLOBAL_DATA.mGroupNodeRadii[i];
 
         nw4r::g3d::ResMdl resMdl = mModel.getResMdl();
         nw4r::g3d::ResNode resNode = resMdl.GetResNode(mGroupNodeIds[i]);

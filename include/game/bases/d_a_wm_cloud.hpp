@@ -3,12 +3,20 @@
 #include <game/bases/d_heap_allocator.hpp>
 #include <game/mLib/m_3d/anm_chr.hpp>
 #include <game/mLib/m_3d/smdl.hpp>
+#include <game/bases/d_wm_lib.hpp>
 #include <game/bases/d_wm_obj_actor.hpp>
 #include <game/bases/d_wm_bgm_sync.hpp>
 
 class daWmCloud_c : public dWmObjActor_c {
 public:
     static const int NODE_COUNT = 20;
+
+    /// @brief The global configuration for the actor.
+    struct GlobalData_t {
+        float mUnk;
+        float mGroupNodeRadii[NODE_COUNT];
+        s16 mBgmValue[2];
+    };
 
     /// @brief The available animations for this actor.
     enum ANIM_e {
@@ -62,5 +70,4 @@ public:
     dWmBgmSync_c *mpBgmSync;
 
     static const char *sGroupNodeNames[NODE_COUNT];
-    static const float sGroupNodeRadii[NODE_COUNT];
 };
