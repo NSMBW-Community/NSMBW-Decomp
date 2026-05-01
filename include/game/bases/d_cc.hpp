@@ -22,6 +22,7 @@ enum CC_STATUS_FLAG_e {
     * on the other collider.
     */
     CC_STATUS_NO_PASS_INFO = BIT_FLAG(2),
+    CC_STATUS_8 = BIT_FLAG(8),
 };
 
 ///< @unofficial

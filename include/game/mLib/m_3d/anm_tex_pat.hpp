@@ -6,10 +6,11 @@
 namespace m3d {
     class anmTexPat_c : public banm_c {
     public:
+        anmTexPat_c() : children(nullptr) {}
         virtual ~anmTexPat_c();
         virtual void remove();
         virtual void play();
-        virtual banm_c::anmType_e getType( void ) const { return banm_c::TYPE_ANM_TEX_PAT; };
+        virtual banm_c::anmType_e getType() const { return banm_c::TYPE_ANM_TEX_PAT; };
 
         static size_t heapCost(nw4r::g3d::ResMdl mdl, nw4r::g3d::ResAnmTexPat anmTexPat, long count, bool calcAligned);
         bool create(nw4r::g3d::ResMdl mdl, nw4r::g3d::ResAnmTexPat anmTexPat, mAllocator_c *allocator, size_t *objSize, long count);
@@ -25,6 +26,14 @@ namespace m3d {
         void setPlayMode(m3d::playMode_e playMode, long idx);
         float getFrameMax(long idx) const;
         float getFrameStart(long idx) const;
+
+        bool create(nw4r::g3d::ResMdl mdl, nw4r::g3d::ResAnmTexPat anmTexPat, mAllocator_c *allocator, int count) {
+            return create(mdl, anmTexPat, allocator, nullptr, count);
+        }
+
+        bool create(nw4r::g3d::ResMdl mdl, nw4r::g3d::ResAnmTexPat anmTexPat, mAllocator_c *allocator) {
+            return create(mdl, anmTexPat, allocator, 1);
+        }
 
         class child_c : public fanm_c {
         public:
