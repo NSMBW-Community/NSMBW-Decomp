@@ -27,6 +27,9 @@
             ".PPC.EMB.apuinfo":     { "index": 18, "align": 16, "size": "0x0" }
         }
     },
+    "deadstrip": [
+        "DUMMY_UNUSED__Fv"
+    ],
     "slices": [
         {
             "source": "runtime/rel_init.cpp",
@@ -81,10 +84,9 @@
         },
         {
             "source": "d_basesNP/bases/d_a_wm_cloud.cpp",
-            "nonMatching": true,
             "memoryRanges": {
                 ".text": "0x15fbe0-0x1604a0",
-                ".ctors": "0x3d0-0x3d4",
+                ".ctors": "0x3cc-0x3d0",
                 ".rodata": "0x8728-0x87b0",
                 ".data": "0x441b0-0x44400",
                 ".bss": "0xfd60-0xfd70"

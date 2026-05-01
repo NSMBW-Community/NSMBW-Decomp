@@ -205,10 +205,9 @@ void daWmCloud_c::calcCulling() {
             return;
         }
 
-        mVec3_c nodePos = dWmLib::GetModelNodePos(&mModel, mGroupNodeIds[i]);
-        mVec3_c nodePosCopy = nodePos;
-        mCurrNodeClipSphere.mCenter = nodePosCopy;
-        mCurrNodeClipSphere.mRadius = GLOBAL_DATA.mGroupNodeRadii[i];
+        mVec3_c nodePos;
+        nodePos = dWmLib::GetModelNodePos(&mModel, mGroupNodeIds[i]);
+        mCurrNodeClipSphere.set(nodePos, GLOBAL_DATA.mGroupNodeRadii[i]);
 
         nw4r::g3d::ResMdl resMdl = mModel.getResMdl();
         nw4r::g3d::ResNode resNode = resMdl.GetResNode(mGroupNodeIds[i]);
