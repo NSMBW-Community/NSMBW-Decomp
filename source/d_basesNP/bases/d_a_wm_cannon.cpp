@@ -39,8 +39,7 @@ int daWmCannon_c::doDelete() {
 }
 
 void daWmCannon_c::setClipSphere() {
-    mClipSphere.mCenter = mPos;
-    mClipSphere.mRadius = 120.0f;
+    mClipSphere.set(mPos, 120.0f);
 }
 
 void daWmCannon_c::createModel() {

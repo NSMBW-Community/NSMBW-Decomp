@@ -9,8 +9,7 @@ daWmDokan_c::daWmDokan_c() {}
 daWmDokan_c::~daWmDokan_c() {}
 
 int daWmDokan_c::create() {
-    mClipSphere.mCenter = mPos;
-    mClipSphere.mRadius = 80.0f;
+    mClipSphere.set(mPos, 80.0f);
     return SUCCEEDED;
 }
 

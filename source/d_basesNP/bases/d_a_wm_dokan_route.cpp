@@ -46,9 +46,7 @@ daWmDokanRoute_c::~daWmDokanRoute_c() {}
 int daWmDokanRoute_c::create() {
     mInitialPos = mPos;
     createModel();
-
-    mClipSphere.mCenter = mPos;
-    mClipSphere.mRadius = 250.0f;
+    mClipSphere.set(mPos, 250.0f);
 
     initState();
     calcModel(mModel);

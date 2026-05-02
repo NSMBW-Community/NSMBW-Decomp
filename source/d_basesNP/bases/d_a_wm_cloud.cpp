@@ -3,7 +3,6 @@
 #include <game/bases/d_w_camera.hpp>
 #include <game/bases/d_wm_lib.hpp>
 #include <game/bases/d_a_wm_cloud.hpp>
-#include <game/mLib/m_angle.hpp>
 #include <game/sLib/s_GlobalData.hpp>
 
 const char *daWmCloud_c::sGroupNodeNames[] = {
@@ -31,7 +30,7 @@ const char *daWmCloud_c::sGroupNodeNames[] = {
 };
 
 void DUMMY_UNUSED() {
-    static const float idk[] = { 200.0f, 0.0f };
+    static const float UNUSED[] = { 200.0f, 0.0f };
 }
 
 template <>
@@ -72,7 +71,6 @@ daWmCloud_c::~daWmCloud_c() {
     }
 }
 
-// not matching
 int daWmCloud_c::create() {
     dWmBgmSync_c *bgmSync = new dWmBgmSync_c();
     mpBgmSync = bgmSync;
@@ -81,13 +79,11 @@ int daWmCloud_c::create() {
     bgmSync->m_08 = 0;
 
     createModel();
-    mClipSphere.mCenter = mPos;
-    mClipSphere.mRadius = 2500.0f;
+    mClipSphere.set(mPos, 2500.0f);
 
     calcModel();
-    initNodeGroupIds();
+    initGroupNodeIds();
     initState();
-
     return SUCCEEDED;
 }
 
@@ -125,7 +121,6 @@ int daWmCloud_c::doDelete() {
     return SUCCEEDED;
 }
 
-// not matching, stack issues
 void daWmCloud_c::createModel() {
     mAllocator.createFrmHeap(-1, mHeap::g_gameHeaps[mHeap::GAME_HEAP_DEFAULT], nullptr, 0x20);
     mResFile = dResMng_c::m_instance->getRes("CS_W7", "g3d/model.brres");
@@ -186,7 +181,7 @@ void daWmCloud_c::processCutsceneCommand(int cutsceneCommandId, bool isFirstFram
     }
 }
 
-void daWmCloud_c::initNodeGroupIds() {
+void daWmCloud_c::initGroupNodeIds() {
     for (int i = 0; i < NODE_COUNT; i++) {
         if (sGroupNodeNames[i] == nullptr) {
             mGroupNodeIds[i] = -1;
@@ -196,10 +191,8 @@ void daWmCloud_c::initNodeGroupIds() {
     }
 }
 
-// not matching, stack issues
 void daWmCloud_c::calcCulling() {
     dWCamera_c *worldCamera = dWCamera_c::m_instance;
-
     for (int i = 0; i < NODE_COUNT; i++) {
         if (mGroupNodeIds[i] < 0) {
             return;
@@ -212,6 +205,7 @@ void daWmCloud_c::calcCulling() {
         nw4r::g3d::ResMdl resMdl = mModel.getResMdl();
         nw4r::g3d::ResNode resNode = resMdl.GetResNode(mGroupNodeIds[i]);
         bool onScreen = worldCamera->mViewClip.CheckClipSphere(&mCurrNodeClipSphere);
+
         if (!onScreen) {
             hideNode(resNode);
         } else {

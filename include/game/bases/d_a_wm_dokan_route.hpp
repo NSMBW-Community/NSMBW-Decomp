@@ -96,8 +96,8 @@ public:
     dHeapAllocator_c mAllocator; ///< The allocator.
     nw4r::g3d::ResFile mResFile; ///< The resource file.
     m3d::mdl_c mModel; ///< The model.
-    m3d::anmChr_c mChrAnim[ANIM_COUNT]; ///< The model animation.
-    m3d::anmTexSrt_c mSrtAnim[ANIM_COUNT]; ///< The texture animation.
+    m3d::anmChr_c mChrAnim[ANIM_COUNT]; ///< The model animations.
+    m3d::anmTexSrt_c mSrtAnim[ANIM_COUNT]; ///< The texture animations.
     u32 mUnk250; ///< @unused
     PROC_TYPE_e mCurrProc; ///< The current process type. See dWmObjActor_c::PROC_TYPE_e.
     int mStateTimer; ///< The timer for the current state.
