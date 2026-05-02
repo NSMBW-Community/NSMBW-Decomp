@@ -65,7 +65,13 @@ public:
     virtual void slideEffect() {}
     virtual bool isBlockHitDeath() const { return false; }
 
-    void createShell(const char *s1, const char *s2, const char *s3, const char *s4, float f);
+    /// @brief Loads the resources for the shell model and animation.
+    /// @param arcName The name of the resource archive to load from.
+    /// @param resPath The path within the archive to the model resource.
+    /// @param modelName The name of the model resource.
+    /// @param anmTexName The name of the texture animation resource (optional).
+    /// @param animFrame The frame of the texture animation to start at.
+    void createShell(const char *arcName, const char *resPath, const char *modelName, const char *anmTexName, float animFrame);
     void calcShellMdl();
     bool drawShell();
     void setKickSlide(dCc_c *self, dActor_c *other);
@@ -96,24 +102,27 @@ public:
     int m_254;
     int m_258;
     u8 mPad2[0xc];
-    mVec3_c m_268;
+    mVec3_c mCarryPos;
     int m_274;
     int m_278;
     mVec2_c mCcOffset;
     mVec2_c mCcSize;
     fBaseID_e m_28c;
     int m_290;
-    mAng m_294;
-    mAng3_c m_296;
-    u16 m_29c;
-    u16 m_29e;
-    bool m_2a0;
+    mAng mWakeupShakeAngle;
+    mAng3_c mWakeupShakeAngle3D;
+    u16 mSleepTimer; ///< How many frames longer the shell will remain asleep.
+    u16 mCarryTimer; ///< How many more frames the sleep timer will remain paused while being carried.
+    bool mIsFlipped; ///< Whether the shell is flipped upside down from a block hit.
     int mCarriedBy;
-    int m_2a8;
-    float m_2ac;
-    float m_2b0;
+    int mIsMugenCombo;
+    float mMugenComboSpeed;
+    float mMugenComboPosX;
 
     ACTOR_PARAM_CONFIG(MugenRelated, 20, 1);
 
-    static const s16 msc_SPIN_SPEED; ///< @unofficial
+    // Unofficial constants
+
+    static const u16 smc_SLEEP_TIMER = 511;
+    static const u16 smc_SLEEP_TIMER_SHAKE = 96;
 };

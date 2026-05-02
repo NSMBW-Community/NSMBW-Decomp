@@ -27,10 +27,10 @@ const daEnShell_c::GlobalData_t sGlobalData_c<daEnShell_c>::mData = {
     1.5f,1.0f
 };
 
-daEnShell_c::daEnShell_c() : m_254(0), m_28c(BASE_ID_NULL), m_2a8(0), m_2ac(0.0f) {
+daEnShell_c::daEnShell_c() : m_254(0), m_28c(BASE_ID_NULL), mIsMugenCombo(0), mMugenComboSpeed(0.0f) {
     mFumiProc.refresh(new NonUniqueFumiCheck_c());
     mEatBehaviour = EAT_TYPE_EAT;
-    mFlags = 3;
+    mFlags = EN_IS_SHELL | EN_IS_HARD;
 }
 
 void DUMMY_UNUSED() {
@@ -46,28 +46,26 @@ daEnShell_c::~daEnShell_c() {
     }
 }
 
-void daEnShell_c::createShell(const char *s1, const char *s2, const char *s3, const char *s4, float f) {
+void daEnShell_c::createShell(const char *arcName, const char *resPath, const char *modelName, const char *anmTexName, float animFrame) {
     mAllocator.createFrmHeap(-1, mHeap::g_gameHeaps[mHeap::GAME_HEAP_DEFAULT], nullptr, 0x20);
 
-    mResFile = dResMng_c::m_instance->getRes(s1, s2);
-    nw4r::g3d::ResMdl mdl = mResFile.GetResMdl(s3);
+    mResFile = dResMng_c::m_instance->getRes(arcName, resPath);
+    nw4r::g3d::ResMdl mdl = mResFile.GetResMdl(modelName);
     mModel.create(mdl, &mAllocator, nw4r::g3d::ScnMdl::BUFFER_RESMATMISC | nw4r::g3d::ScnMdl::ANM_TEXPAT);
 
     dActor_c::setSoftLight_Enemy(mModel);
 
-    nw4r::g3d::ResAnmChr anim;
-    nw4r::g3d::ResAnmTexPat animTexPat;
     if (mProfName == fProfile::EN_NOKONOKO || mProfName == fProfile::EN_PATAPATA) {
-        anim = mResFile.GetResAnmChr("revival_shell");
+        nw4r::g3d::ResAnmChr anim = mResFile.GetResAnmChr("revival_shell");
         mAnim.create(mdl, anim, &mAllocator);
     }
 
-    if (s4 != nullptr) {
-        mResAnmTexPat = mResFile.GetResAnmTexPat(s4);
+    if (anmTexName != nullptr) {
+        mResAnmTexPat = mResFile.GetResAnmTexPat(anmTexName);
         mAnimTex.create(mdl, mResAnmTexPat, &mAllocator);
         mAnimTex.setAnm(mModel, mResAnmTexPat, 0, m3d::FORWARD_ONCE);
         mModel.setAnm(mAnimTex);
-        mAnimTex.setFrame(f, 0);
+        mAnimTex.setFrame(animFrame, 0);
         mAnimTex.setRate(0.0f, 0);
     }
 
@@ -77,25 +75,30 @@ void daEnShell_c::createShell(const char *s1, const char *s2, const char *s3, co
 void daEnShell_c::calcShellMdl() {
     mVec3_c pos = mPos;
     mAng3_c angle = mAngle;
+
     if (isState(daEnCarry_c::StateID_Carry)) {
-        pos = calcCarryPos(m_268);
+        pos = calcCarryPos(mCarryPos);
         mPos.x = pos.x;
         mPos.y = pos.y;
     } else if (m_274) {
         pos.z = 3248.0f;
     }
+
     changePosAngle(&pos, &angle, 1);
-    float shiftY = 0.0f;
-    if (m_29c < 96 && m_29c != 0 && mSpeed.y == 0.0f && m_2a0 != 0) {
-        shiftY = 16.0f;
+
+    float wakeupShakeYOffset = 0.0f;
+    if (mSleepTimer < smc_SLEEP_TIMER_SHAKE && mSleepTimer != 0 && mSpeed.y == 0.0f && mIsFlipped != 0) {
+        wakeupShakeYOffset = 16.0f;
     }
-    if (m_2a0) {
+
+    if (mIsFlipped) {
         if (angle.y >= 0) {
             angle.y = -angle.y.mAngle + 0x8000;
         } else {
             angle.y = -angle.y.mAngle - 0x8000;
         }
     }
+
     mMatrix.trans(pos.x, pos.y, pos.z);
     mMatrix.YrotM(l_EnMuki[mDirection] * 16384);
 
@@ -103,10 +106,10 @@ void daEnShell_c::calcShellMdl() {
     mMatrix.XrotM(angle.x);
     mMatrix.concat(mMtx_c::createTrans(0.0f, -7.0f, 0.0f));
 
-    mMatrix.concat(mMtx_c::createTrans(0.0f, shiftY, 0.0f));
-    mMatrix.XrotM(m_296.x);
-    mMatrix.ZrotM(m_296.z);
-    mMatrix.concat(mMtx_c::createTrans(0.0f, -shiftY, 0.0f));
+    mMatrix.concat(mMtx_c::createTrans(0.0f, wakeupShakeYOffset, 0.0f));
+    mMatrix.XrotM(mWakeupShakeAngle3D.x);
+    mMatrix.ZrotM(mWakeupShakeAngle3D.z);
+    mMatrix.concat(mMtx_c::createTrans(0.0f, -wakeupShakeYOffset, 0.0f));
 
     mMatrix.YrotM(l_EnMuki[mDirection ^ 1] * 16384);
     mMatrix.YrotM(angle.y);
@@ -198,7 +201,7 @@ void daEnShell_c::Normal_VsPlHitCheck(dCc_c *self, dCc_c *other) {
     if (!player->isStatus(0x2b) && isState(StateID_Sleep)) {
         if (carry_check(player)) {
             mCarriedBy = mPlayerNo;
-            m_268.set(0.0f, -5.0f, 6.0f);
+            mCarryPos.set(0.0f, -5.0f, 6.0f);
             changeState(StateID_Carry);
             return;
         }
@@ -244,8 +247,8 @@ void daEnShell_c::Normal_VsPlHitCheck(dCc_c *self, dCc_c *other) {
             } else if (!specialFumiProc(player)) {
                 mSpeed.set(0.0f, 0.0f, 0.0f);
                 mFootPush.set(0.0f, 0.0f, 0.0f);
-                if (m_2a8) {
-                    mPos.x = m_2b0;
+                if (mIsMugenCombo) {
+                    mPos.x = mMugenComboPosX;
                 }
                 changeState(StateID_Sleep);
             }
@@ -282,7 +285,7 @@ void daEnShell_c::Normal_VsPlHitCheck(dCc_c *self, dCc_c *other) {
         changeState(StateID_Slide);
     } else if (!isState(daEnCarry_c::StateID_Carry) && !player->isNoDamage()) {
         if (isState(StateID_Slide) && fn_800397b0(player)) {
-            if (m_2a8 == 0) {
+            if (!mIsMugenCombo) {
                 setKickSlide(self, player);
                 if (mInLiquid) {
                     mNoHitPlayer.mTimer[mPlayerNo] = 24;
@@ -326,7 +329,7 @@ void daEnShell_c::Normal_VsYoshiHitCheck(dCc_c *self, dCc_c *other) {
         changeState(StateID_Slide);
     } else if (!isState(daEnCarry_c::StateID_Carry) && !yoshi->isNoDamage()) {
         if (isState(StateID_Slide) && fn_800397b0(yoshi)) {
-            if (m_2a8 == 0) {
+            if (!mIsMugenCombo) {
                 setKickSlide(self, yoshi);
             }
         } else {
@@ -336,7 +339,7 @@ void daEnShell_c::Normal_VsYoshiHitCheck(dCc_c *self, dCc_c *other) {
 }
 
 bool daEnShell_c::checkComboClap(int max) {
-    if (m_2a8) {
+    if (mIsMugenCombo) {
         return max >= 8;
     }
     return dEn_c::checkComboClap(max);
@@ -348,7 +351,7 @@ void daEnShell_c::FumiJumpSet(dActor_c *actor) {
     }
     float jumpSpeed = dAcPy_c::msc_JUMP_SPEED + 0.2815f;
     float speedF = actor->mSpeedF;
-    if (m_2a8 && std::fabs(speedF) < 1.0f) {
+    if (mIsMugenCombo && std::fabs(speedF) < 1.0f) {
         speedF = 0.0f;
     }
     ((daPlBase_c *) actor)->vf3fc(jumpSpeed, speedF, 1, 0, 2);
@@ -398,7 +401,7 @@ void daEnShell_c::FumiScoreSet(dActor_c *actor) {
     if (isFumiInvalid()) {
         return;
     }
-    if (m_2a8 && actor->mSpeed.y > 0.0f) {
+    if (mIsMugenCombo && actor->mSpeed.y > 0.0f) {
         return;
     }
     dEn_c::FumiScoreSet(actor);
@@ -490,10 +493,10 @@ bool daEnShell_c::checkMugenCombo(dActor_c *actor) {
     }
 
     if (mDirection == DIR_LR_R) {
-        m_2b0 = wallX - 14.0f;
+        mMugenComboPosX = wallX - 14.0f;
         mPos.x = wallX - 15.0f;
     } else {
-        m_2b0 = wallX + 14.0f;
+        mMugenComboPosX = wallX + 14.0f;
         mPos.x = wallX + 15.0f;
     }
 
@@ -621,7 +624,7 @@ void daEnShell_c::block_hit_init() {
     mVec3_c efPos(mVec2_c(mPos.x, mPos.y), 5500.0f);
     hitdamageEffect(efPos);
     dAudio::g_pSndObjEmy->startSound(SE_EMY_DOWN, mPos, 0);
-    m_2a0 = 1;
+    mIsFlipped = true;
     mSpeed.set(l_base_fall_speed_x[mDirection] * 0.5f, 3.5f, 0.0f);
     if (isState(StateID_Sleep)) {
         mStateMgr.initializeState();
@@ -804,8 +807,8 @@ void daEnShell_c::adjustCarryCc() {
 }
 
 bool daEnShell_c::checkSleep() {
-    if (m_29e > 0) {
-        m_29e--;
+    if (mCarryTimer > 0) {
+        mCarryTimer--;
         return false;
     }
 
@@ -813,16 +816,16 @@ bool daEnShell_c::checkSleep() {
         return false;
     }
 
-    m_29c--;
-    if (m_29c < 96) {
-        m_294 += GLOBAL_DATA.mUnkSpeed;
-        float sin = m_294.sin();
-        float cos = m_294.cos();
-        m_296.x.mAngle = sin * 2560.0f;
-        m_296.z.mAngle = cos * 2560.0f;
-        if (m_29c == 0) {
-            m_296.x = 0;
-            m_296.z = 0;
+    mSleepTimer--;
+    if (mSleepTimer < smc_SLEEP_TIMER_SHAKE) {
+        mWakeupShakeAngle += GLOBAL_DATA.mUnkSpeed;
+        float sin = mWakeupShakeAngle.sin();
+        float cos = mWakeupShakeAngle.cos();
+        mWakeupShakeAngle3D.x.mAngle = sin * (0x10000 / 128.0f * 5.0f);
+        mWakeupShakeAngle3D.z.mAngle = cos * (0x10000 / 128.0f * 5.0f);
+        if (mSleepTimer == 0) {
+            mWakeupShakeAngle3D.x = 0;
+            mWakeupShakeAngle3D.z = 0;
             return true;
         }
     }
@@ -833,7 +836,7 @@ void daEnShell_c::setSpinLiftUpActor(dActor_c *carryingActor) {
     s16 plrNo = *carryingActor->getPlrNo();
     mCarriedBy = plrNo;
     mPlayerNo = plrNo;
-    m_268.set(0.0f, 0.0f, 0.0f);
+    mCarryPos.set(0.0f, 0.0f, 0.0f);
     changeState(StateID_Carry);
 }
 
@@ -879,16 +882,16 @@ void daEnShell_c::setDeathInfo_Hasami() {
 }
 
 void daEnShell_c::initializeState_Sleep() {
-    m_29c = 511;
+    mSleepTimer = smc_SLEEP_TIMER;
     mSpeedMax.y = -4.0f;
     mAccelY = -0.1875f;
     clrComboCnt();
     m_258 = 0;
     mCc.mCcData.mVsDamage |= (1 << CC_ATTACK_SPIN_LIFT_UP);
-    m_294 = 0;
-    m_296.x = 0;
-    m_296.y = 0;
-    m_296.z = 0;
+    mWakeupShakeAngle = 0;
+    mWakeupShakeAngle3D.x = 0;
+    mWakeupShakeAngle3D.y = 0;
+    mWakeupShakeAngle3D.z = 0;
 }
 
 void daEnShell_c::finalizeState_Sleep() {
@@ -898,7 +901,7 @@ void daEnShell_c::finalizeState_Sleep() {
 }
 
 void daEnShell_c::executeState_Sleep() {
-    if (m_2a0) {
+    if (mIsFlipped) {
         u16 ang = mAngle.x;
         if (mDirection) {
             ang -= 0x800;
@@ -926,7 +929,7 @@ void daEnShell_c::executeState_Sleep() {
         mSpeed.x = 0.0f;
     }
     if (checkSleep()) {
-        if (m_2a0) {
+        if (mIsFlipped) {
             changeState(StateID_WakeupReverse);
         } else {
             changeState(StateID_Wakeup);
@@ -957,14 +960,14 @@ void daEnShell_c::initializeState_Carry() {
     mCc.mCcData.mVsKind |= (1 << CC_KIND_KILLER);
     mCc.mCcData.mAttack = CC_ATTACK_SHELL;
     mRc.setRide(nullptr);
-    if (m_29c > 96) {
-        m_29e = m_29c;
+    if (mSleepTimer > smc_SLEEP_TIMER_SHAKE) {
+        mCarryTimer = mSleepTimer;
     }
     m_258 = 0;
-    m_294 = 0;
-    m_296.x = 0;
-    m_296.y = 0;
-    m_296.z = 0;
+    mWakeupShakeAngle = 0;
+    mWakeupShakeAngle3D.x = 0;
+    mWakeupShakeAngle3D.y = 0;
+    mWakeupShakeAngle3D.z = 0;
     mFootAttr3 = false;
 }
 
@@ -978,7 +981,7 @@ void daEnShell_c::finalizeState_Carry() {
     mRc.setRide(nullptr);
     mBc.mFlags = 0;
     mCarryingFlags &= ~(CARRY_RELEASE | CARRY_THROW);
-    m_29e = 0;
+    mCarryTimer = 0;
     if (mPos.z >= 0.0f) {
         mAmiLayer = 0;
     } else {
@@ -1008,7 +1011,7 @@ void daEnShell_c::executeState_Carry() {
         mDirection = player->mDirection;
         if (checkWallAndBg()) {
             setDeathInfo_CarryBgIn(player);
-        } else if (m_2a0) {
+        } else if (mIsFlipped) {
             changeState(StateID_WakeupReverse);
         } else {
             changeState(StateID_Wakeup);
@@ -1028,9 +1031,9 @@ void daEnShell_c::initializeState_Slide() {
         dAcPy_c *player = daPyMng_c::getPlayer(mPlayerNo);
         mCc.mAmiLine = player->mCc.mAmiLine;
         mBc.mAmiLine = player->mCc.mAmiLine;
-        m_2a8 = checkMugenCombo(player);
-        if (m_2a8) {
-            m_2ac = 0.0f;
+        mIsMugenCombo = checkMugenCombo(player);
+        if (mIsMugenCombo) {
+            mMugenComboSpeed = 0.0f;
             if (player->mPowerup == POWERUP_NONE) {
                 mSpeed.x = l_EnMuki[mDirection] * GLOBAL_DATA.mSlideSpeedNoPowerup;
             } else {
@@ -1066,11 +1069,11 @@ void daEnShell_c::initializeState_Slide() {
     }
     mBc.set(this, mSensor3, mSensor0, mSensor2);
     mBc.mOwningPlrNo = mPlayerNo;
-    m_294 = 0;
-    m_296.x = 0;
-    m_296.y = 0;
-    m_296.z = 0;
-    if (m_2a0) {
+    mWakeupShakeAngle = 0;
+    mWakeupShakeAngle3D.x = 0;
+    mWakeupShakeAngle3D.y = 0;
+    mWakeupShakeAngle3D.z = 0;
+    if (mIsFlipped) {
         mAngle.x = -0x8000;
     } else {
         mAngle.x = 0;
@@ -1078,14 +1081,14 @@ void daEnShell_c::initializeState_Slide() {
 }
 
 void daEnShell_c::finalizeState_Slide() {
-    if (m_2a8) {
+    if (mIsMugenCombo) {
         static const float speeds[] = { 0.375f, -0.375f };
         mSpeed.x = speeds[mDirection];
         mFumiProc.refresh(new NonUniqueFumiCheck_c());
     } else {
         clrComboCnt();
     }
-    m_2a8 = 0;
+    mIsMugenCombo = 0;
     mCc.mCcData.mVsKind &= ~((1 << CC_KIND_BALLOON) | (1 << CC_KIND_ITEM) | (1 << CC_KIND_KILLER));
     mCc.mCcData.mAttack = CC_ATTACK_NONE;
     mAccelF = 0.0f;
@@ -1113,20 +1116,20 @@ void daEnShell_c::executeState_Slide() {
     EnBgCheckWall();
     EnBgCheckFoot();
     mBc.checkHead(mBc.mFlags);
-    if (m_2a8) {
+    if (mIsMugenCombo) {
         float max = 14.0f;
-        m_2ac += std::fabs(mSpeed.x);
-        if (std::fabs(m_2ac) > max) {
+        mMugenComboSpeed += std::fabs(mSpeed.x);
+        if (std::fabs(mMugenComboSpeed) > max) {
             mAccelF = 0.15f;
             mNoHitPlayer.mTimer[mPlayerNo] = 16;
             mSpeedMax.x = l_slide_max_speed[mDirection];
-            m_2a8 = 0;
+            mIsMugenCombo = 0;
         } else {
             dAcPy_c *player = daPyMng_c::getPlayer(mPlayerNo);
             if (player->mNowBgCross1 & 1) {
                 mAccelF = 0.15f;
                 mSpeedMax.x = l_slide_max_speed[mDirection];
-                m_2a8 = 0;
+                mIsMugenCombo = 0;
                 mNoHitPlayer.mTimer[mPlayerNo] = 16;
             }
         }
@@ -1169,7 +1172,7 @@ void daEnShell_c::executeState_Slide() {
 
 void daEnShell_c::initializeState_Wakeup() {
     mDirection = getPl_LRflag(mPos);
-    m_2a0 = 0;
+    mIsFlipped = 0;
     mAngle.x = 0;
     mSpeed.set(0.0f, 0.0f, 0.0f);
     mSpeedMax.set(0.0f, -4.0f, 0.0f);
