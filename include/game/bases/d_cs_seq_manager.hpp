@@ -81,6 +81,7 @@ public:
 
     int GetCutName();
     void FUN_801017c0(int, dWmEnemy_c *, int, int); ///< @unofficial
+    bool FUN_80915600(); ///< @unofficial
 
     u8 mPad1[0x164];
     bool m_164;

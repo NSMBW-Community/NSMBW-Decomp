@@ -3,7 +3,7 @@
 #include <game/bases/d_w_camera.hpp>
 #include <game/bases/d_info.hpp>
 
-dMdActor_c::dMdActor_c() {}
+dMdActor_c::dMdActor_c() : mClipSphere(mVec3_c::Zero, 0.0f) {}
 
 dMdActor_c::~dMdActor_c() {}
 

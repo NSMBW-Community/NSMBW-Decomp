@@ -77,9 +77,9 @@ void dWmEnemy_c::initializeBase(const char **names, int count, bool cyclic) {
     initShapeAngle();
     dWmBgmSync_c *bgmSync = new dWmBgmSync_c();
     mpBgmSync = bgmSync;
-    bgmSync->mAngle = &mpUnkData->mAngle2;
-    bgmSync->m_04 = bgmSync->mAngle->x.mAngle - 1;
-    bgmSync->m_08 = bgmSync->mAngle->y.mAngle;
+    bgmSync->m_18 = mpUnkData->mBgmSyncValue;
+    bgmSync->m_04 = bgmSync->m_18[0] - 1;
+    bgmSync->m_08 = bgmSync->m_18[1];
     mSeID = -1;
     mEfID = -1;
     mNotAnger = true;

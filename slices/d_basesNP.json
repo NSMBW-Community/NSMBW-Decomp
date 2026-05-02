@@ -80,6 +80,16 @@
             }
         },
         {
+            "source": "d_basesNP/bases/d_a_wm_cloud.cpp",
+            "memoryRanges": {
+                ".text": "0x15fbe0-0x1604a0",
+                ".ctors": "0x3cc-0x3d0",
+                ".rodata": "0x8728-0x87b0",
+                ".data": "0x441b0-0x44400",
+                ".bss": "0xfd60-0xfd70"
+            }
+        },
+        {
             "source": "d_basesNP/bases/d_a_wm_dokan.cpp",
             "memoryRanges": {
                 ".text": "0x1622b0-0x162580",

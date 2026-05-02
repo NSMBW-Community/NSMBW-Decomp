@@ -8,5 +8,9 @@ namespace m3d {
         virtual ~smdl_c();
 
         bool create(nw4r::g3d::ResMdl resMdl, mAllocator_c *allocator, ulong bufferOption, int viewCount, size_t *objSize);
+
+        bool create(nw4r::g3d::ResMdl resMdl, mAllocator_c *allocator, ulong bufferOption, int viewCount) {
+            return create(resMdl, allocator, bufferOption, viewCount, nullptr);
+        }
     };
 }
