@@ -63,6 +63,7 @@ public:
         FLAG_27 = BIT_FLAG(27),
         FLAG_28 = BIT_FLAG(28),
         FLAG_29 = BIT_FLAG(29),
+        FLAG_30 = BIT_FLAG(30),
 
         FLAG_WALL_R =
             FLAG_0 | FLAG_2 | FLAG_4,
@@ -131,9 +132,11 @@ public:
     dBg_ctr_c *mLinkW[2];
     u32 mFlags;
     u32 mPrevFlags;
-    char pad3[0x55];
+    char pad3[0x8];
+    s8 mOwningPlrNo;
+    char pad4[0x4c];
     u8 mAmiLine;
-    char pad4[0x2];
+    char pad5[0x2];
     u8 *mpLayer;
     u8 mLayer;
 
@@ -146,6 +149,9 @@ public:
     static u32 checkTenjou(const mVec3_c *, float *, u8, u8);
     static u32 checkWall(const mVec3_c *, const mVec3_c *, float *, u8, u8, dActor_c **);
     static u32 getUnitType(float x, float y, u8 layer);
+    static u32 getUnitKind(float x, float y, u8 layer);
+
+    u32 getFlags() const { return mFlags; }
 
     u32 isWallR() { return mFlags & FLAG_WALL_R; }
     u32 isWallL()  { return mFlags & FLAG_WALL_L; }

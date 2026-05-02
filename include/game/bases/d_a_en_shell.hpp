@@ -7,14 +7,24 @@
 
 class daEnShell_c : public daEnCarry_c {
 public:
+    struct GlobalData_t {
+        s16 mSpinSpeed;
+        s16 mUnkSpeed;
+        float mSlideSpeedPowerup;
+        float mSlideSpeedNoPowerup;
+    };
+
     daEnShell_c();
     virtual ~daEnShell_c();
 
     virtual void postExecute(fBase_c::MAIN_STATE_e status);
     virtual bool ActorDrawCullCheck();
     virtual void block_hit_init();
+    virtual void boyonBegin() {}
+    virtual bool isSpinLiftUpEnable() { return isState(StateID_Sleep) != 0; }
     virtual void setEatTongue(dActor_c *actor);
     virtual bool setEatSpitOut(dActor_c *actor);
+    virtual void setSpinLiftUpActor(dActor_c *carryingActor);
     virtual void setCarryFall(dActor_c *carryingActor, int collisionDelay);
     virtual bool EtcDamageCheck(dCc_c *self, dCc_c *other);
     virtual void Normal_VsEnHitCheck(dCc_c *self, dCc_c *other);
@@ -30,6 +40,7 @@ public:
     virtual bool checkComboClap(int max);
     virtual void FumiJumpSet(dActor_c *actor);
     virtual void FumiScoreSet(dActor_c *actor);
+    virtual void YoshiFumiScoreSet(dActor_c *actor) { daEnShell_c::FumiScoreSet(actor); }
 
     STATE_VIRTUAL_FUNC_DECLARE(daEnShell_c, DieFall);
     STATE_VIRTUAL_FUNC_DECLARE(daEnShell_c, Carry);
@@ -45,13 +56,13 @@ public:
     virtual bool specialFumiProc(dActor_c *actor) { return false; }
     virtual bool specialFumiProc_Yoshi(dActor_c *actor) { return specialFumiProc(actor); }
     virtual bool isFumiInvalid() const { return false; }
-    virtual void setAfterSleepState();
-    virtual void turnProc();
+    virtual void setAfterSleepState() {}
+    virtual bool turnProc() { return false; }
     virtual void kickSE(int plrNo);
     virtual void kickEffect(mVec3_c pos) { dEf::createEffect_change("Wm_mr_kickhit", 0, &pos, nullptr, nullptr); }
-    virtual void isDieShell();
+    virtual bool isDieShell() { return true; }
     virtual void calcShellEffectPos() {}
-    virtual void slideEffect();
+    virtual void slideEffect() {}
     virtual bool isBlockHitDeath() const { return false; }
 
     void createShell(const char *s1, const char *s2, const char *s3, const char *s4, float f);
@@ -67,11 +78,8 @@ public:
     void slideSpin();
     void setDeathInfo_CarryBgIn(dActor_c *);
     void adjustCarryCc();
-
     bool hasamiCheck();
     void setDeathInfo_Hasami();
-
-    s16 getSpinSpeed() const { return msc_SPIN_SPEED; }
 
     dHeapAllocator_c mAllocator;
     nw4r::g3d::ResFile mResFile;
@@ -79,14 +87,18 @@ public:
     m3d::anmChr_c mAnim;
     nw4r::g3d::ResAnmTexPat mResAnmTexPat;
     m3d::anmTexPat_c mAnimTex;
-    u8 mPad1[0x60];
+    u8 mPad1[0x24];
+    sBcSensorPoint mSensor0;
+    sBcSensorLine mSensor1;
+    sBcSensorLine mSensor2;
+    sBcSensorLine mSensor3;
     mEf::levelEffect_c mEffect;
     int m_254;
     int m_258;
     u8 mPad2[0xc];
     mVec3_c m_268;
     int m_274;
-    u8 mPad3[0x4];
+    int m_278;
     mVec2_c mCcOffset;
     mVec2_c mCcSize;
     fBaseID_e m_28c;

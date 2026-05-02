@@ -12,19 +12,32 @@ public:
     dCc_c *mCc2;
 };
 
+class UniqueFumiCheckInf_c {
+public:
+    UniqueFumiCheckInf_c() {}
+    virtual ~UniqueFumiCheckInf_c() {}
+};
+
 /// @unofficial
 class FumiCheckBase_c {
 public:
     FumiCheckBase_c() {}
     virtual ~FumiCheckBase_c() {}
-    virtual void operate(int &, dEn_c *, FumiCcInfo_c &);
+    virtual bool operate(int &, dEn_c *, FumiCcInfo_c &);
 };
 
 class NonUniqueFumiCheck_c : public FumiCheckBase_c {
 public:
     NonUniqueFumiCheck_c() {}
     virtual ~NonUniqueFumiCheck_c() {}
-    virtual void operate(int &, dEn_c *, FumiCcInfo_c &);
+    virtual bool operate(int &i, dEn_c *, FumiCcInfo_c &) { i = 0; return false; }
+};
+
+class MugenComboFumiCheck_c : public FumiCheckBase_c {
+public:
+    MugenComboFumiCheck_c() {}
+    virtual ~MugenComboFumiCheck_c() {}
+    virtual bool operate(int &, dEn_c *, FumiCcInfo_c &);
 };
 
 class dEnFumiCheck_c {

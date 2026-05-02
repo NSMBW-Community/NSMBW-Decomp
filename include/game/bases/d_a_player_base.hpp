@@ -242,8 +242,10 @@ public:
     s8 mTreadCount;
     s8 m_ced;
     s8 m_cee;
-    char mPad4[0x50];
+    char mPad4[0xc];
+    int mPowerup;
+    char mPad5[0x40];
     u32 mNowBgCross1, mNowBgCross2;
     u32 mOldBgCross1, mOldBgCross2;
-    u8 mPad5[0x3f4];
+    u8 mPad6[0x3f4];
 };

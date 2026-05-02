@@ -38,6 +38,7 @@
         "List_Prepend__Q24nw4r2utFPQ34nw4r2ut4ListPv",
         "__vt__Q23EGG5Fader",
         "DUMMY_ORDERING__Fv",
+        "DUMMY_UNUSED__Fv",
         "__destroy_global_chain_reference",
         "play__Q23m3d6banm_cFv",
         "getType__Q23m3d6bmdl_cCFv",
@@ -61,7 +62,8 @@
         "__dt__Q34nw4r3lyt19ArcResourceAccessorFv",
         "GetRuntimeTypeInfo__Q34nw4r3lyt4PaneCFv",
         "setPosParam__Q23EGG14CoreControllerFff",
-        "getFileSize__Q23EGG7DvdFileCFv"
+        "getFileSize__Q23EGG7DvdFileCFv",
+        "isItemKinopio__7dAcPy_cFv"
     ],
     "slices": [
         {
@@ -155,11 +157,11 @@
         },
         {
             "source": "dol/bases/d_a_en_shell.cpp",
-            "nonMatching": true,
             "memoryRanges": {
                 ".text": "0x31720-0x36270",
                 ".ctors": "0x60-0x64",
                 ".data": "0x75a0-0x7b30",
+                ".rodata": "0xa20-0xab0",
                 ".bss": "0x2358-0x2518",
                 ".sdata2": "0x520-0x618"
             }
