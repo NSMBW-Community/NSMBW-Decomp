@@ -742,7 +742,7 @@ void dEn_c::WaterCheck(mVec3_c &pos, float h) {
 bool dEn_c::LineBoundaryCheck(dActor_c *actor) {
     daPlBase_c *pl = (daPlBase_c *) actor;
     if ((pl->mPos.z > 0.0f && mAmiLayer == 1) || (pl->mPos.z < 0.0f && mAmiLayer == 0)) {
-        if (pl->mFlags & 0x80000 || pl->mFlags & 0x100000) {
+        if (pl->mNowBgCross2 & 0x80000 || pl->mNowBgCross2 & 0x100000) {
             return true;
         }
     }
@@ -989,9 +989,9 @@ void dEn_c::iceballInvalid(dCc_c *self, dCc_c *other) {
     EffectManager_c::SetIceBallMissshitEffect(&efPos);
 }
 
-void dEn_c::setDamage(dActor_c *actor) {
+bool dEn_c::setDamage(dActor_c *actor) {
     daPlBase_c *pl = (daPlBase_c *) actor;
-    pl->setDamage(this, daPlBase_c::DAMAGE_NONE);
+    return pl->setDamage(this, daPlBase_c::DAMAGE_NONE);
 }
 
 void dEn_c::boyonInit() {

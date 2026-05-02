@@ -602,9 +602,9 @@ void dActor_c::killActor(s8 playerId, int noScore) {
 
     if (!noScore) {
         if (playerId < 0) {
-            dScoreMng_c::m_instance->UnKnownScoreSet(this, 1, dScoreMng_c::smc_SCORE_X, dScoreMng_c::smc_SCORE_Y);
+            dScoreMng_c::m_instance->UnKnownScoreSet(this, 1);
         } else {
-            dScoreMng_c::m_instance->ScoreSet(this, 1, playerId, dScoreMng_c::smc_SCORE_X, dScoreMng_c::smc_SCORE_Y);
+            dScoreMng_c::m_instance->ScoreSet(this, 1, playerId);
         }
     }
 }

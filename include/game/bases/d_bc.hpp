@@ -145,6 +145,7 @@ public:
     static u32 checkGround(const mVec3_c *, float *, u8, u8, signed char);
     static u32 checkTenjou(const mVec3_c *, float *, u8, u8);
     static u32 checkWall(const mVec3_c *, const mVec3_c *, float *, u8, u8, dActor_c **);
+    static u32 getUnitType(float x, float y, u8 layer);
 
     u32 isWallR() { return mFlags & FLAG_WALL_R; }
     u32 isWallL()  { return mFlags & FLAG_WALL_L; }

@@ -241,7 +241,7 @@ bool dEn_c::hitCallback_YoshiHipAttk(dCc_c *self, dCc_c *other) {
 
     int comboScore = mCombo.getComboScore(dEnCombo_c::calcPlFumiCnt(player));
     if (comboScore >= 0 && plrNo < PLAYER_COUNT) {
-        dScoreMng_c::m_instance->ScoreSet(this, comboScore, plrNo, dScoreMng_c::smc_SCORE_X, dScoreMng_c::smc_SCORE_Y);
+        dScoreMng_c::m_instance->ScoreSet(this, comboScore, plrNo);
     }
 
     dAudio::g_pSndObjEmy->startSound(SE_EMY_YOSHI_HPDP, mPos, 0);
@@ -617,7 +617,7 @@ void dEn_c::initializeState_DieFumi() {
     int plrNo = mDeathInfo.mKilledBy;
     if (score >= 0) {
         if (plrNo >= 0 && plrNo < PLAYER_COUNT) {
-            dScoreMng_c::m_instance->ScoreSet(this, score, plrNo, dScoreMng_c::smc_SCORE_X, dScoreMng_c::smc_SCORE_Y);
+            dScoreMng_c::m_instance->ScoreSet(this, score, plrNo);
         } else if (plrNo == dDeathInfo_c::smc_UNKNOWN_HIT) {
             dScoreMng_c::m_instance->UnKnownScoreSet(this, score, 0.0f, 24.0f);
         }
@@ -672,7 +672,7 @@ void dEn_c::initializeState_DieFall() {
     int plrNo = mDeathInfo.mKilledBy;
     if (score >= 0) {
         if (plrNo >= 0 && plrNo < PLAYER_COUNT) {
-            dScoreMng_c::m_instance->ScoreSet(this, score, plrNo, dScoreMng_c::smc_SCORE_X, dScoreMng_c::smc_SCORE_Y);
+            dScoreMng_c::m_instance->ScoreSet(this, score, plrNo);
         } else if (plrNo == dDeathInfo_c::smc_UNKNOWN_HIT) {
             dScoreMng_c::m_instance->UnKnownScoreSet(this, score, 0.0f, 24.0f);
         }
@@ -744,7 +744,7 @@ void dEn_c::initializeState_DieIceVanish() {
     int plrNo = mDeathInfo.mKilledBy;
     if (score >= 0) {
         if (plrNo >= 0 && plrNo < PLAYER_COUNT) {
-            dScoreMng_c::m_instance->ScoreSet(this, score, plrNo, dScoreMng_c::smc_SCORE_X, dScoreMng_c::smc_SCORE_Y);
+            dScoreMng_c::m_instance->ScoreSet(this, score, plrNo);
         } else if (plrNo == dDeathInfo_c::smc_UNKNOWN_HIT) {
             dScoreMng_c::m_instance->UnKnownScoreSet(this, score, 0.0f, 24.0f);
         }

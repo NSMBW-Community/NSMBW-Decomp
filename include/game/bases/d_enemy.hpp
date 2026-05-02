@@ -186,7 +186,7 @@ public:
 
     virtual bool checkDispIn();
     virtual void setWaterSpeed();
-    virtual void setDamage(dActor_c *actor);
+    virtual bool setDamage(dActor_c *actor);
 
     void boyonInit();
     virtual void boyonBegin();
@@ -199,7 +199,7 @@ public:
 
     virtual void beginFunsui();
     virtual void endFunsui();
-    virtual void isFunsui() const;
+    virtual bool isFunsui() const;
 
     virtual bool checkComboClap(int max);
 

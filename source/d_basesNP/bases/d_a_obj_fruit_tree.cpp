@@ -101,7 +101,7 @@ int daObjFruitTree_c::create() {
         }
     }
 
-    createBushAnim(model, anim);
+    mBushAnim.create(model, anim, &mHeapAllocator);
     mBushAnim.setAnm(mBushModel, anim, m3d::FORWARD_LOOP);
     mBushModel.setAnm(mBushAnim, 1.0f);
     mBushAnim.setFrame(dScStage_c::m_exeFrame % (u32)mBushAnim.mFrameMax);

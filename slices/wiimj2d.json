@@ -157,9 +157,10 @@
             "source": "dol/bases/d_a_en_shell.cpp",
             "nonMatching": true,
             "memoryRanges": {
-                ".text": "0x31770-0x36270",
+                ".text": "0x31720-0x36270",
                 ".ctors": "0x60-0x64",
                 ".data": "0x75a0-0x7b30",
+                ".bss": "0x2358-0x2518",
                 ".sdata2": "0x520-0x618"
             }
         },
