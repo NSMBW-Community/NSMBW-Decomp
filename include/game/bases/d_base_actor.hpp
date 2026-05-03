@@ -114,6 +114,10 @@ public:
     float getCenterY() const { return mPos.y + mCenterOffs.y; }
     float getCenterZ() const { return mPos.z + mCenterOffs.z; }
 
+    float getSpeedF() const { return mSpeedF; }
+    float getAccelF() const { return mAccelF; }
+    float absSpeedF() { return std::fabs(mSpeedF); }
+
 private:
     /**
      * @brief Sets temporary data to be used for the next actor's construction.

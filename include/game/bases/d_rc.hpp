@@ -63,6 +63,6 @@ public:
     u8 mLineKind;
     u8 mRideType;
     u8 mFlags;
-    u8 pad2[1];
+    u8 m_31;
     u8 mLayer;
 };
