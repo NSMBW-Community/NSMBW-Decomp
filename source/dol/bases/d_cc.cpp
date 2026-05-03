@@ -28,7 +28,7 @@ dCc_c::dCc_c() {
     mpNext = nullptr;
     mpPrev = nullptr;
     mIsLinked = false;
-    mFriendActor = nullptr;
+    mpFriendActor = nullptr;
     mAmiLine = true;
     mLayer = LAYER_1;
     clear();
@@ -181,7 +181,7 @@ bool dCc_c::checkCollision(dCc_c *c1, dCc_c *c2, int active) {
         // No collisions between two colliders that belong to the same actor
         return false;
     }
-    if (c2->mpOwner == c1->mFriendActor || c1->mpOwner == c2->mFriendActor) {
+    if (c2->mpOwner == c1->mpFriendActor || c1->mpOwner == c2->mpFriendActor) {
         // No collisions between friend actors
         return false;
     }

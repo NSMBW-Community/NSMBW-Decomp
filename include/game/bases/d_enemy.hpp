@@ -164,8 +164,8 @@ public:
     virtual void setDeathSound_Spin();
     virtual void setDeathSound_Rolling();
 
-    STATE_VIRTUAL_FUNC_DECLARE(dEn_c, DieFumi);
-    STATE_VIRTUAL_FUNC_DECLARE(dEn_c, DieFall);
+    STATE_VIRTUAL_FUNC_DECLARE(dEn_c, DieFumi); ///< Being squished by a jump.
+    STATE_VIRTUAL_FUNC_DECLARE(dEn_c, DieFall); ///< Falling out of the screen.
     STATE_VIRTUAL_FUNC_DECLARE(dEn_c, DieBigFall);
     STATE_VIRTUAL_FUNC_DECLARE(dEn_c, DieSmoke);
     STATE_VIRTUAL_FUNC_DECLARE(dEn_c, DieYoshiFumi);

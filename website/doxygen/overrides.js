@@ -212,10 +212,13 @@ document.querySelectorAll('dl.tparams').forEach(dl => {
 // Create State ID table //
 ///////////////////////////
 
-const stateIDList = [...document.querySelectorAll('.memberdecls .memItemRight a')].filter(row => {
-    return row.innerText.startsWith('StateID_');
-}).map(r => {
-    const isInherited = r.closest('.inherit') != null;
+const stateIDList = [];
+
+for (const r of document.querySelectorAll('.memberdecls .memItemRight a')) {
+    if (!r.innerText.startsWith('StateID_')) {
+        continue;
+    }
+    const inheritMode = r.closest('.inherit') != null ? ' (inherited)' : '';
     const name = r.innerText.replace('StateID_', '');
     const href = r.getAttribute('href');
     const id = href.split("#")[1];
@@ -224,8 +227,16 @@ const stateIDList = [...document.querySelectorAll('.memberdecls .memItemRight a'
     if (descriptionElement.length == 1) {
         description = descriptionElement[0].querySelector('.mdescRight').innerText.trim();
     }
-    return { name, description, href, isInherited };
-});
+    const existingEntry = stateIDList.find(s => s.name == name);
+    if (existingEntry) {
+        if (existingEntry.description == '') {
+            existingEntry.description = description;
+        }
+        existingEntry.inheritMode = ' (overridden)';
+        continue;
+    }
+    stateIDList.push({ name, description, href, inheritMode });
+}
 
 const tablePlaceholder = document.getElementById('state-table-placeholder');
 if (tablePlaceholder) {
@@ -241,8 +252,7 @@ if (tablePlaceholder) {
 
     stateIDList.forEach(state => {
         let row = document.createElement('tr');
-        const inhText = state.isInherited ? ' (inherited)' : '';
-        row.innerHTML = `<td><a href=${state.href}>${state.name}</a>${inhText}</td><td>${state.description}</td>`;
+        row.innerHTML = `<td><a href=${state.href}>${state.name}</a>${state.inheritMode}</td><td>${state.description}</td>`;
         stateIDTBody.appendChild(row);
     });
 

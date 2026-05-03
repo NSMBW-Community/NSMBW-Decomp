@@ -152,7 +152,7 @@ public:
     void set(dActor_c *actor, sCcDatNewF *collInfo, u8 amiLine);
 
     /// Sets a friend actor for this collider.
-    void setFriendActor(dActor_c *actor) { mFriendActor = actor; }
+    void setFriendActor(dActor_c *actor) { mpFriendActor = actor; }
 
     dActor_c *getOwner() const { return mpOwner; } ///< Gets the owner actor of this collider.
 
@@ -252,7 +252,7 @@ private:
 
 public:
     dActor_c *mpOwner; ///< The actor this collider belongs to.
-    dActor_c *mFriendActor; ///< A second actor that this collider will not collide with.
+    dActor_c *mpFriendActor; ///< A second actor that this collider will not collide with.
 
     u32 unk2; ///< [Unused (?)].
 

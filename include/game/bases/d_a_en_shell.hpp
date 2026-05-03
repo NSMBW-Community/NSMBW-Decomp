@@ -5,6 +5,11 @@
 #include <game/bases/d_heap_allocator.hpp>
 #include <game/mLib/m_effect.hpp>
 
+/**
+ * @brief Base implementation of a shell enemy.
+ * @statetable
+ * @paramtable
+ */
 class daEnShell_c : public daEnCarry_c {
 public:
     struct GlobalData_t {
@@ -44,11 +49,11 @@ public:
 
     STATE_VIRTUAL_FUNC_DECLARE(daEnShell_c, DieFall);
     STATE_VIRTUAL_FUNC_DECLARE(daEnShell_c, Carry);
-    STATE_VIRTUAL_FUNC_DECLARE(daEnShell_c, Sleep);
-    STATE_VIRTUAL_FUNC_DECLARE(daEnShell_c, Slide);
-    STATE_VIRTUAL_FUNC_DECLARE(daEnShell_c, Wakeup);
-    STATE_VIRTUAL_FUNC_DECLARE(daEnShell_c, WakeupReverse);
-    STATE_VIRTUAL_FUNC_DECLARE(daEnShell_c, WakeupTurn);
+    STATE_VIRTUAL_FUNC_DECLARE(daEnShell_c, Sleep); ///< Remaining stationary after being jumped on.
+    STATE_VIRTUAL_FUNC_DECLARE(daEnShell_c, Slide); ///< Sliding across the ground after being kicked.
+    STATE_VIRTUAL_FUNC_DECLARE(daEnShell_c, Wakeup); ///< Waking up from the sleep state.
+    STATE_VIRTUAL_FUNC_DECLARE(daEnShell_c, WakeupReverse); ///< Waking up after being flipped upside down.
+    STATE_VIRTUAL_FUNC_DECLARE(daEnShell_c, WakeupTurn); ///< Turning around after waking up.
 
     virtual bool setPlayerDamage(dActor_c *actor) { return true; }
     virtual bool checkSleep();
@@ -75,8 +80,8 @@ public:
     void calcShellMdl();
     bool drawShell();
     void setKickSlide(dCc_c *self, dActor_c *other);
-    bool fn_800397b0(dActor_c *actor); ///< @unofficial
-    bool checkMugenCombo(dActor_c *actor);
+    bool isSlideTowards(dActor_c *actor); ///< @unofficial
+    bool checkMugenCombo(dActor_c *player); ///< Checks if the player is performing the staircase infinite jump trick.
     bool cullCheck();
     bool cullCheck_Shell();
     void setSlideThrowSpeed(dActor_c *actor);
@@ -94,21 +99,25 @@ public:
     nw4r::g3d::ResAnmTexPat mResAnmTexPat;
     m3d::anmTexPat_c mAnimTex;
     u8 mPad1[0x24];
-    sBcSensorPoint mSensor0;
-    sBcSensorLine mSensor1;
-    sBcSensorLine mSensor2;
-    sBcSensorLine mSensor3;
+    sBcSensorPoint mSensorHead;
+    sBcSensorLine mSensorFootNormal;
+    sBcSensorLine mSensorWall;
+    sBcSensorLine mSensorFootSlide;
     mEf::levelEffect_c mEffect;
-    int m_254;
-    int m_258;
+    int mYoshiKickable; ///< Whether the shell can be kicked in any state by Yoshi.
+    int mUseBaseIceBehaviour;
     u8 mPad2[0xc];
     mVec3_c mCarryPos;
-    int m_274;
-    int m_278;
+    int mIsCarryFall;
+    int mSlideAirAfterThrow;
     mVec2_c mCcOffset;
     mVec2_c mCcSize;
-    fBaseID_e m_28c;
-    int m_290;
+
+    /// @brief The actor which the player who jumped on the shell is currently carrying.
+    /// @details This is used to prevent the carried actor from killing the shell.
+    fBaseID_e mJumpPlayerCarryActorID;
+    int mJumpPlayerNoCarryHitTimer; ///< For how long the shell will ignore collisions with @ref mJumpPlayerCarryActorID "the carried item".
+
     mAng mWakeupShakeAngle;
     mAng3_c mWakeupShakeAngle3D;
     u16 mSleepTimer; ///< How many frames longer the shell will remain asleep.
@@ -119,7 +128,7 @@ public:
     float mMugenComboSpeed;
     float mMugenComboPosX;
 
-    ACTOR_PARAM_CONFIG(MugenRelated, 20, 1);
+    ACTOR_PARAM_CONFIG(MugenComboAllowed, 20, 1);
 
     // Unofficial constants
 
