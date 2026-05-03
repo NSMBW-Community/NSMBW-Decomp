@@ -225,7 +225,7 @@ for (const r of document.querySelectorAll('.memberdecls .memItemRight a')) {
     const descriptionElement = document.getElementsByClassName(`memdesc:${id}`);
     let description = '';
     if (descriptionElement.length == 1) {
-        description = descriptionElement[0].querySelector('.mdescRight').innerText.trim();
+        description = descriptionElement[0].querySelector('.mdescRight').innerHTML.trim();
     }
     const existingEntry = stateIDList.find(s => s.name == name);
     if (existingEntry) {
