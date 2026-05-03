@@ -100,7 +100,7 @@ void daEnShell_c::calcShellMdl() {
     }
 
     mMatrix.trans(pos.x, pos.y, pos.z);
-    mMatrix.YrotM(l_EnMuki[mDirection] * 16384);
+    mMatrix.YrotM(l_EnMuki[mDirection] * 0x4000);
 
     mMatrix.concat(mMtx_c::createTrans(0.0f, 7.0f, 0.0f));
     mMatrix.XrotM(angle.x);
@@ -111,7 +111,7 @@ void daEnShell_c::calcShellMdl() {
     mMatrix.ZrotM(mWakeupShakeAngle3D.z);
     mMatrix.concat(mMtx_c::createTrans(0.0f, -wakeupShakeYOffset, 0.0f));
 
-    mMatrix.YrotM(l_EnMuki[mDirection ^ 1] * 16384);
+    mMatrix.YrotM(l_EnMuki[mDirection ^ 1] * 0x4000);
     mMatrix.YrotM(angle.y);
 
     mModel.setLocalMtx(&mMatrix);
@@ -185,8 +185,8 @@ void daEnShell_c::Normal_VsEnHitCheck(dCc_c *self, dCc_c *other) {
     }
     float collOffsetX = mCc.mCollOffsetX[CC_KIND_ENEMY];
     if (
-        mDirection == 1 && collOffsetX > 0.0f ||
-        mDirection == 0 && collOffsetX < 0.0f
+        mDirection == DIR_LR_L && collOffsetX > 0.0f ||
+        mDirection == DIR_LR_R && collOffsetX < 0.0f
     ) {
         setEnemyTurn();
     }
@@ -842,20 +842,20 @@ void daEnShell_c::setSpinLiftUpActor(dActor_c *carryingActor) {
 }
 
 bool daEnShell_c::hasamiCheck() {
-    if (mBgCollFlags != 0) {
-        if ((mBgCollFlags & 1) && mBc.isWallR() && !(mBc.mFlags & dBc_c::FLAG_8)) {
+    if (mBgCollFlags != COLL_NONE) {
+        if ((mBgCollFlags & COLL_WALL_R) && mBc.isWallR() && !(mBc.mFlags & dBc_c::FLAG_8)) {
             return true;
         }
 
-        if ((mBgCollFlags & 2) && mBc.isWallL() && !(mBc.mFlags & dBc_c::FLAG_8)) {
+        if ((mBgCollFlags & COLL_WALL_L) && mBc.isWallL() && !(mBc.mFlags & dBc_c::FLAG_8)) {
             return true;
         }
 
-        if ((mBgCollFlags & 8) && mBc.isFoot()) {
+        if ((mBgCollFlags & COLL_FOOT) && mBc.isFoot()) {
             return true;
         }
 
-        if ((mBgCollFlags & 4) && mBc.isHead() && !(mBc.getFlags() & dBc_c::FLAG_30)) {
+        if ((mBgCollFlags & COLL_HEAD) && mBc.isHead() && !(mBc.getFlags() & dBc_c::FLAG_30)) {
             return true;
         }
     }

@@ -27,10 +27,10 @@ public:
     virtual void block_hit_init();
     virtual void boyonBegin() {}
     virtual bool isSpinLiftUpEnable() { return isState(StateID_Sleep) != 0; }
-    virtual void setEatTongue(dActor_c *actor);
-    virtual bool setEatSpitOut(dActor_c *actor);
     virtual void setSpinLiftUpActor(dActor_c *carryingActor);
     virtual void setCarryFall(dActor_c *carryingActor, int collisionDelay);
+    virtual void setEatTongue(dActor_c *actor);
+    virtual bool setEatSpitOut(dActor_c *actor);
     virtual bool EtcDamageCheck(dCc_c *self, dCc_c *other);
     virtual void Normal_VsEnHitCheck(dCc_c *self, dCc_c *other);
     virtual void Normal_VsPlHitCheck(dCc_c *self, dCc_c *other);
