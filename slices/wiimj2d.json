@@ -63,7 +63,8 @@
         "GetRuntimeTypeInfo__Q34nw4r3lyt4PaneCFv",
         "setPosParam__Q23EGG14CoreControllerFff",
         "getFileSize__Q23EGG7DvdFileCFv",
-        "isItemKinopio__7dAcPy_cFv"
+        "isItemKinopio__7dAcPy_cFv",
+        "dummy__10daPlBase_cFv"
     ],
     "slices": [
         {
@@ -164,6 +165,18 @@
                 ".rodata": "0xa20-0xab0",
                 ".bss": "0x2358-0x2518",
                 ".sdata2": "0x520-0x618"
+            }
+        },
+        {
+            "source": "dol/bases/d_a_player_base.cpp",
+            "memoryRanges": {
+                ".text": "0x3f950-0x54c20",
+                ".ctors": "0x7c-0x80",
+                ".bss": "0x2b90-0x35a0",
+                ".data": "0x9898-0xb268",
+                ".rodata": "0xc98-0xec0",
+                ".sbss": "0xc8-0xd0",
+                ".sdata2": "0x7c0-0x998"
             }
         },
         {

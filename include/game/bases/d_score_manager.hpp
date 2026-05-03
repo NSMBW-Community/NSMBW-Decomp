@@ -7,6 +7,7 @@ public:
     void ScoreSet(dActor_c *, ulong, int, float x = smc_SCORE_X, float y = smc_SCORE_Y);
     void ScoreSet2(mVec3_c &, ulong, int);
     void UnKnownScoreSet(dActor_c *, ulong, float x = smc_SCORE_X, float y = smc_SCORE_Y);
+    void fn_800e25a0(ulong, int, int); ///< @unofficial
 
     static dScoreMng_c *getInstance() { return m_instance; }
 

@@ -21,6 +21,8 @@ public:
     virtual void beginFrame(PADStatus *);
     virtual void endFrame();
 
+    void startPatternRumble(const char *, int, bool);
+
     int mNum;
 };
 
