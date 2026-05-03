@@ -4,9 +4,9 @@
 class dScoreMng_c {
 public:
     void ScoreSet(mVec3_c &, ulong, int, int);
-    void ScoreSet(dActor_c *, ulong, int, float, float);
+    void ScoreSet(dActor_c *, ulong, int, float x = smc_SCORE_X, float y = smc_SCORE_Y);
     void ScoreSet2(mVec3_c &, ulong, int);
-    void UnKnownScoreSet(dActor_c *, ulong, float, float);
+    void UnKnownScoreSet(dActor_c *, ulong, float x = smc_SCORE_X, float y = smc_SCORE_Y);
 
     static dScoreMng_c *getInstance() { return m_instance; }
 

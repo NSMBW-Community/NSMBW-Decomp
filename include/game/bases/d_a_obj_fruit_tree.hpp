@@ -35,10 +35,6 @@ public:
     virtual int draw();
     virtual ~daObjFruitTree_c() {} ///< Deletes the daObjFruitTree_c.
 
-    void createBushAnim(nw4r::g3d::ResMdl resMdl, nw4r::g3d::ResAnmChr animChr) {
-        mBushAnim.create(resMdl, animChr, &mHeapAllocator);
-    }
-
     dHeapAllocator_c mHeapAllocator; ///< The allocator.
     nw4r::g3d::ResFile mResFile; ///< The resource file.
     m3d::mdl_c mBushModel; ///< The bush model.

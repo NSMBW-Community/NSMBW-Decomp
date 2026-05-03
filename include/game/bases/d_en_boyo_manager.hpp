@@ -14,6 +14,8 @@ public:
     void begin(int time, float scale);
     void execute();
 
+    mVec3_c getScale() const { return mScale; }
+
     mVec3_c mScale;
     float mFactor;
     float mFactorDelta;

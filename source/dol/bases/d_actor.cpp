@@ -455,17 +455,17 @@ bool dActor_c::ActorDrawCullCheck() {
 }
 
 bool dActor_c::HasamareBgCheck() {
-    if (mBgCollFlags != 0) {
-        if ((mBgCollFlags & COLL_WALL_R) && mBc.isWallR()) {
+    if (mBgCollFlags != COLL_NONE) {
+        if ((mBgCollFlags & COLL_WALL_L) && mBc.isWallR()) {
             return true;
         }
-        if ((mBgCollFlags & COLL_WALL_L) && mBc.isWallL()) {
+        if ((mBgCollFlags & COLL_WALL_R) && mBc.isWallL()) {
             return true;
         }
-        if ((mBgCollFlags & COLL_FOOT) && mBc.isFoot()) {
+        if ((mBgCollFlags & COLL_HEAD) && mBc.isFoot()) {
             return true;
         }
-        if ((mBgCollFlags & COLL_HEAD) && mBc.isHead()) {
+        if ((mBgCollFlags & COLL_FOOT) && mBc.isHead()) {
             return true;
         }
     }
@@ -602,9 +602,9 @@ void dActor_c::killActor(s8 playerId, int noScore) {
 
     if (!noScore) {
         if (playerId < 0) {
-            dScoreMng_c::m_instance->UnKnownScoreSet(this, 1, dScoreMng_c::smc_SCORE_X, dScoreMng_c::smc_SCORE_Y);
+            dScoreMng_c::m_instance->UnKnownScoreSet(this, 1);
         } else {
-            dScoreMng_c::m_instance->ScoreSet(this, 1, playerId, dScoreMng_c::smc_SCORE_X, dScoreMng_c::smc_SCORE_Y);
+            dScoreMng_c::m_instance->ScoreSet(this, 1, playerId);
         }
     }
 }

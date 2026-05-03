@@ -3,6 +3,8 @@
 
 class dAcPy_c : public daPlBase_c {
 public:
+    virtual bool isItemKinopio() { return mIsRescueKinopio; }
+
     bool isDrawingCarryFukidashi();
     void getCcBounds(sRangeDataF &bounds); ///< @unofficial
     void cancelCarry(dActor_c *carriedActor);
@@ -17,7 +19,10 @@ public:
 
     bool FUN_8012e540(dActor_c *, bool); ///< @unofficial
 
-    char mPad[0x15e8];
+    int mIsRescueKinopio;
+    char mPad1[0x1304];
+    u32 m_1308;
+    char mPad2[0x294];
     fBaseID_e mCarryActorID;
 
     static const float msc_JUMP_SPEED;
