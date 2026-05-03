@@ -17,7 +17,7 @@ int daEnCarry_c::acmShellPlayerNo(dActor_c *actor) const {
     if (isState(StateID_Carry)) {
         return mPlayerNo;
     }
-    return *actor->getPlrNo();
+    return actor->getPlrNo();
 }
 
 void daEnCarry_c::shellDamageEffect(dCc_c *cc, dActor_c *actor) {

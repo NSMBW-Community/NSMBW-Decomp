@@ -29,7 +29,7 @@ const daEnShell_c::GlobalData_t sGlobalData_c<daEnShell_c>::mData = {
 
 daEnShell_c::daEnShell_c() : mYoshiKickable(false), mJumpPlayerCarryActorID(BASE_ID_NULL), mIsMugenCombo(false), mMugenComboSpeed(0.0f) {
     mFumiProc.refresh(new NonUniqueFumiCheck_c());
-    mEatBehaviour = EAT_TYPE_EAT;
+    mEatBehavior = EAT_TYPE_EAT;
     mFlags = EN_IS_SHELL | EN_IS_HARD;
 }
 
@@ -212,12 +212,12 @@ void daEnShell_c::Normal_VsPlHitCheck(dCc_c *self, dCc_c *other) {
                 fumiCount = 1;
             }
             scoreMng = dScoreMng_c::m_instance;
-            scoreMng->ScoreSet(this, fumiCount, *player->getPlrNo());
+            scoreMng->ScoreSet(this, fumiCount, player->getPlrNo());
         }
         dActor_c *actor = (dActor_c *) fManager_c::searchBaseByID(player->mCarryActorID);
         if (actor != nullptr) {
             if (actor->mKind == STAGE_ACTOR_PLAYER) {
-                mNoHitPlayer.mTimer[*actor->getPlrNo()] = 10;
+                mNoHitPlayer.mTimer[actor->getPlrNo()] = 10;
             } else {
                 actor->mCc.mpFriendActor = this;
                 mJumpPlayerCarryActorID = actor->mUniqueID;
@@ -225,7 +225,7 @@ void daEnShell_c::Normal_VsPlHitCheck(dCc_c *self, dCc_c *other) {
             }
         }
         if (mInLiquid) {
-            mNoHitPlayer.mTimer[*player->getPlrNo()] = 16;
+            mNoHitPlayer.mTimer[player->getPlrNo()] = 16;
         }
         setKickSlide(self, player);
         changeState(StateID_Slide);
@@ -269,12 +269,12 @@ void daEnShell_c::Normal_VsPlHitCheck(dCc_c *self, dCc_c *other) {
                 fumiCount = 1;
             }
             scoreMng = dScoreMng_c::m_instance;
-            scoreMng->ScoreSet(this, fumiCount, *player->getPlrNo());
+            scoreMng->ScoreSet(this, fumiCount, player->getPlrNo());
         }
         dActor_c *actor = (dActor_c *) fManager_c::searchBaseByID(player->mCarryActorID);
         if (actor != nullptr) {
             if (actor->mKind == STAGE_ACTOR_PLAYER) {
-                mNoHitPlayer.mTimer[*actor->getPlrNo()] = 10;
+                mNoHitPlayer.mTimer[actor->getPlrNo()] = 10;
             } else {
                 actor->mCc.mpFriendActor = this;
                 mJumpPlayerCarryActorID = actor->mUniqueID;
@@ -324,7 +324,7 @@ void daEnShell_c::Normal_VsYoshiHitCheck(dCc_c *self, dCc_c *other) {
             fumiCount = 1;
         }
         scoreMng = dScoreMng_c::m_instance;
-        scoreMng->ScoreSet(this, fumiCount, *yoshi->getPlrNo());
+        scoreMng->ScoreSet(this, fumiCount, yoshi->getPlrNo());
         setKickSlide(self, yoshi);
         changeState(StateID_Slide);
     } else if (!isState(daEnCarry_c::StateID_Carry) && !yoshi->isNoDamage()) {
@@ -354,7 +354,7 @@ void daEnShell_c::FumiJumpSet(dActor_c *actor) {
     if (mIsMugenCombo && std::fabs(speedF) < 1.0f) {
         speedF = 0.0f;
     }
-    ((daPlBase_c *) actor)->vf3fc(jumpSpeed, speedF, 1, 0, 2);
+    ((daPlBase_c *) actor)->setJump(jumpSpeed, speedF, 1, 0, 2);
     dEnemyMng_c::m_instance->m_138 = 1;
 }
 
@@ -408,7 +408,7 @@ void daEnShell_c::FumiScoreSet(dActor_c *actor) {
 }
 
 void daEnShell_c::setCarryFall(dActor_c *carryingActor, int collisionDelay) {
-    int plrNo = *carryingActor->getPlrNo();
+    int plrNo = carryingActor->getPlrNo();
     if (plrNo >= 0 && plrNo < PLAYER_COUNT) {
         mNoHitPlayer.mTimer[plrNo] = collisionDelay;
         mIsCarryFall = 1;
@@ -420,7 +420,7 @@ bool daEnShell_c::setDamage(dActor_c *actor) {
 }
 
 void daEnShell_c::setKickSlide(dCc_c *self, dActor_c *other) {
-    mPlayerNo = *other->getPlrNo();
+    mPlayerNo = other->getPlrNo();
     mDirection = getTrgToSrcDir_Main(getCenterX(), other->getCenterX());
     mNoHitPlayer.mTimer[mPlayerNo] = 4;
     setSlideKickSpeed(other);
@@ -455,7 +455,7 @@ bool daEnShell_c::checkMugenCombo(dActor_c *actor) {
     if (!ACTOR_PARAM(MugenComboAllowed)) {
         return false;
     }
-    if (player->mNowBgCross1 & 1) {
+    if (player->isNowBgCross(daPlBase_c::BGC_FOOT)) {
         return false;
     }
     if (player->mSpeed.y > 0.0f) {
@@ -528,7 +528,7 @@ bool daEnShell_c::hitCallback_HipAttk(dCc_c *self, dCc_c *other) {
     SpinFumiScoreSet(actor);
 
     u8 dir = getTrgToSrcDir_Main(getCenterX(), actor->getCenterX());
-    u8 plrNo = *actor->getPlrNo();
+    u8 plrNo = actor->getPlrNo();
 
     mDeathInfo = (sDeathInfoData) {
         l_base_fall_speed_x[dir],
@@ -551,9 +551,9 @@ bool daEnShell_c::hitCallback_YoshiHipAttk(dCc_c *self, dCc_c *other) {
     if (isFumiInvalid()) {
         float speedF = 0.0f;
         float jumpSpeed = 4.5f;
-        yoshi->vf3fc(jumpSpeed, speedF, 1, 0, 2);
+        yoshi->setJump(jumpSpeed, speedF, 1, 0, 2);
         yoshifumistepSE(yoshi);
-        mNoHitPlayer.mTimer[*yoshi->getPlrNo()] = 5;
+        mNoHitPlayer.mTimer[yoshi->getPlrNo()] = 5;
     } else {
         dEn_c::hitCallback_YoshiHipAttk(self, other);
     }
@@ -707,13 +707,13 @@ void daEnShell_c::setDeathInfo_CarryBgIn(dActor_c *actor) {
         -1,
         -1,
         mDirection,
-        (u8) *actor->getPlrNo()
+        (u8) actor->getPlrNo()
     };
 }
 
 void daEnShell_c::setEatTongue(dActor_c *actor) {
     dEn_c::setEatTongue(actor);
-    mPlayerNo = *actor->getPlrNo();
+    mPlayerNo = actor->getPlrNo();
 }
 
 bool daEnShell_c::setEatSpitOut(dActor_c *actor) {
@@ -722,7 +722,7 @@ bool daEnShell_c::setEatSpitOut(dActor_c *actor) {
     setAfterEatScale();
     mEatState = EAT_STATE_NONE;
     mDirection = actor->mDirection;
-    mPlayerNo = *actor->getPlrNo();
+    mPlayerNo = actor->getPlrNo();
 
     u32 unit1 = dBc_c::getUnitType(mPos.x, mPos.y, mLayer);
     u32 unit2 = dBc_c::getUnitType(mPos.x, mPos.y + 16.0f, mLayer);
@@ -794,16 +794,16 @@ void daEnShell_c::adjustCarryCc() {
     mVec3_c pos(getCenterPos().x + cs_check_ofs[dir], getCenterPos().y, getCenterPos().z);
     mVec3_c pos2(pos.x + l_EnMuki[dir] * 16.0f, pos.y, pos.z);
 
-    mCc.mCcData.mOffset.set(mCcOffset.x, mCcOffset.y);
-    mCc.mCcData.mSize.set(mCcSize.x, mCcSize.y);
+    mCc.mCcData.mBase.mOffset.set(mCcOffset.x, mCcOffset.y);
+    mCc.mCcData.mBase.mSize.set(mCcSize.x, mCcSize.y);
 
     float wallX = 0.0f;
     if (dBc_c::checkWall(&pos, &pos2, &wallX, mLayer, 1, nullptr)) {
         float offsX = (pos.x + wallX) * 0.5f;
         float sizeX = std::fabs((pos.x - wallX) * 0.5f);
 
-        mCc.mCcData.mOffset.set(offsX - mPos.x, 8.0f);
-        mCc.mCcData.mSize.set(sizeX, 8.0f);
+        mCc.mCcData.mBase.mOffset.set(offsX - mPos.x, 8.0f);
+        mCc.mCcData.mBase.mSize.set(sizeX, 8.0f);
     }
 }
 
@@ -834,7 +834,7 @@ bool daEnShell_c::checkSleep() {
 }
 
 void daEnShell_c::setSpinLiftUpActor(dActor_c *carryingActor) {
-    s16 plrNo = *carryingActor->getPlrNo();
+    s16 plrNo = carryingActor->getPlrNo();
     mCarriedBy = plrNo;
     mPlayerNo = plrNo;
     mCarryPos.set(0.0f, 0.0f, 0.0f);
@@ -950,15 +950,15 @@ void daEnShell_c::initializeState_Carry() {
     }
     mCc.mAmiLine = l_Ami_Line[mAmiLayer];
     mBc.mAmiLine = l_Ami_Line[mAmiLayer];
-    float x = mCc.mCcData.mOffset.x;
-    float y = mCc.mCcData.mOffset.y;
+    float x = mCc.mCcData.mBase.mOffset.x;
+    float y = mCc.mCcData.mBase.mOffset.y;
     mCcOffset.set(x, y);
-    float w = mCc.mCcData.mSize.x;
-    float h = mCc.mCcData.mSize.y;
+    float w = mCc.mCcData.mBase.mSize.x;
+    float h = mCc.mCcData.mBase.mSize.y;
     mCcSize.set(w, h);
     if (player->mPowerup != POWERUP_MINI_MUSHROOM && player->mPowerup != POWERUP_NONE) {
-        mCc.mCcData.mOffset.set(0.0f, 5.0f);
-        mCc.mCcData.mSize.set(7.0f, 9.0f);
+        mCc.mCcData.mBase.mOffset.set(0.0f, 5.0f);
+        mCc.mCcData.mBase.mSize.set(7.0f, 9.0f);
     }
     mCc.mCcData.mVsKind |= (1 << CC_KIND_KILLER);
     mCc.mCcData.mAttack = CC_ATTACK_SHELL;
@@ -977,8 +977,8 @@ void daEnShell_c::initializeState_Carry() {
 void daEnShell_c::finalizeState_Carry() {
     dAcPy_c *player = daPyMng_c::getPlayer(mCarriedBy);
     player->cancelCarry(this);
-    mCc.mCcData.mOffset.set(mCcOffset.x, mCcOffset.y);
-    mCc.mCcData.mSize.set(mCcSize.x, mCcSize.y);
+    mCc.mCcData.mBase.mOffset.set(mCcOffset.x, mCcOffset.y);
+    mCc.mCcData.mBase.mSize.set(mCcSize.x, mCcSize.y);
     mCc.mCcData.mVsKind &= ~(1 << CC_KIND_KILLER);
     mCc.mCcData.mAttack = CC_ATTACK_NONE;
     mRc.setRide(nullptr);
@@ -1138,7 +1138,7 @@ void daEnShell_c::executeState_Slide() {
             mIsMugenCombo = 0;
         } else {
             dAcPy_c *player = daPyMng_c::getPlayer(mPlayerNo);
-            if (player->mNowBgCross1 & 1) {
+            if (player->isNowBgCross(daPlBase_c::BGC_FOOT)) {
                 mAccelF = 0.15f;
                 mSpeedMax.x = l_slide_max_speed[mDirection];
                 mIsMugenCombo = 0;

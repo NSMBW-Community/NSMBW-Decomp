@@ -90,7 +90,7 @@ int daIceBall_c::create() {
     }
 
     mCenterOffs.set(0.0f, 0.0f, 0.0f);
-    mEatBehaviour = EAT_TYPE_ICEBALL;
+    mEatBehavior = EAT_TYPE_ICEBALL;
     mActorProperties |= 0x80;
     mAreaNo = dCd_c::m_instance->getFileP(dScStage_c::m_instance->mCurrFile)->getAreaNo(&mPos);
 

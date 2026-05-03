@@ -109,7 +109,7 @@ void dWipeCircle_c::CenterPosSet() {
         centerPos.x = mCenterPos.x;
         centerPos.y = mCenterPos.y;
     } else {
-        int targetPlayerNo = daPyDemoMng_c::mspInstance->mPlNo;
+        int targetPlayerNo = daPyDemoMng_c::mspInstance->mPlayerNo;
         if (dScStage_c::m_KoopaJrEscape) {
             targetPlayerNo = 0;
         }

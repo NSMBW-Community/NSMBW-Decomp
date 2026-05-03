@@ -1,6 +1,7 @@
 #pragma once
 #include <game/bases/d_scene.hpp>
 #include <game/bases/d_info.hpp>
+#include <game/bases/d_fader.hpp>
 #include <game/mLib/m_vec.hpp>
 #include <constants/game_constants.h>
 
@@ -28,18 +29,23 @@ public:
 
     static void setTitleReplayRandomTable();
 
+    static void setNextScene(u16, int, Exit_e, dFader_c::fader_type_e);
+
     static void createReplayDataHeap(EGG::Heap *heap, ulong size, int options);
 
     char pad[0x1198];
     u8 mCurrWorld;
     u8 mCurrCourse;
     u8 mCurrFile;
-    u8 mCurrArea;
+    u8 mCurrAreaNo;
+    u8 mCurrLayer;
 
     u8 getCurrWorld() const { return mCurrWorld; }
-    u8 getCurrArea() const { return mCurrArea; }
+    u8 getCurrArea() const { return mCurrAreaNo; }
 
     static dScStage_c *getInstance() { return m_instance; }
+    static NOINLINE Exit_e getExitMode() { return m_exitMode; }
+
     static float getLoopPosX(float x);
     static u32 m_exeFrame;
     static int m_loopType;
@@ -52,6 +58,8 @@ public:
     static dInfo_c::GameMode_e m_gameMode;
     static Exit_e m_exitMode;
 
+    static int m_miniGame;
+    static bool m_isStaffCredit;
     static changePosFunc changePos;
     static dScStage_c *m_instance;
 

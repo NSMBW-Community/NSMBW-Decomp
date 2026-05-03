@@ -20,7 +20,7 @@ namespace sLib {
 template <typename T>
 T calcTimer(T *value) {
     if (*value != 0) {
-        *value--;
+        (*value)--;
     }
     return *value;
 }

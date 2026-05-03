@@ -157,7 +157,7 @@ void dSys_c::create() {
     dGraph_c::create(mHeap::g_gameHeaps[mHeap::GAME_HEAP_DEFAULT], ms_RootHeapMem1, ms_RootHeapMem2);
 
     dFader_c::createFader(mHeap::g_gameHeaps[mHeap::GAME_HEAP_DEFAULT]);
-    dFader_c::setFader(dFader_c::FADE);
+    dFader_c::setFader(dFader_c::FADER_FADE);
 
     if (dSystem::s_FontManagerHeap == nullptr) {
         dSystem::s_FontManagerHeap = mHeap::createFrmHeap(HEAP_SIZE_FONT_MANAGER, ms_RootHeapMem2, dSystem::sc_FontManagerHeapName, 0x20, mHeap::OPT_THREAD_SAFE);

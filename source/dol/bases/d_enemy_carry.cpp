@@ -49,7 +49,7 @@ void dEnemyCarry_c::setDeathInfo_CarryBgIn(dActor_c *actor) {
         -1,
         -1,
         mDirection,
-        (u8) *actor->getPlrNo()
+        (u8) actor->getPlrNo()
     };
 }
 
@@ -92,7 +92,7 @@ void dEnemyCarry_c::executeState_Carry() {
             if (!(mBc.mFlags & 0x15 << mDirection)) {
                 mPos.x += l_EnMuki[mDirection] * 6.0f;
             }
-            mPlayerNo = *player->getPlrNo();
+            mPlayerNo = player->getPlrNo();
             if (mCarryingFlags & CARRY_THROW) {
                 setThrowSpeed(player);
                 setThrowChangeState();

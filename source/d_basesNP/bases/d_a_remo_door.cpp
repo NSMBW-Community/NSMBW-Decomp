@@ -73,12 +73,12 @@ void daRemoDoor_c::executeState_Open() {
     short newAngle = mAngle.y;
     newAngle += 0x400;
     if (newAngle < 0) {
-        newAngle = -0x8000;
+        newAngle = 0x8000;
     }
     mAngle.y = newAngle;
 
     // [Oversight: the player number check never fails]
-    if (mAngle.y == mAng(-0x8000) && daPyMng_c::mCtrlPlrNo < 4 &&
+    if (mAngle.y == mAng(0x8000) && daPyMng_c::mCtrlPlrNo < 4 &&
         dGameKey_c::m_instance->getAccVerticalAngleX(daPyMng_c::mCtrlPlrNo) <= 0x1000) {
             mStateMgr.changeState(StateID_Close);
     }

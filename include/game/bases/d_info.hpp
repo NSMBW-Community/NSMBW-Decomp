@@ -31,9 +31,11 @@ public:
     /// @unofficial
     /// @todo Fill out this enum.
     enum GAME_FLAG_e {
-        GAME_FLAG_0 = BIT_FLAG(0),
-        GAME_FLAG_4 = BIT_FLAG(4),
-        GAME_FLAG_IS_COIN_COURSE = BIT_FLAG(6)
+        GAME_FLAG_DISABLE_ACTOR_CREATE = BIT_FLAG(0), ///< Disables map actor creation.
+        GAME_FLAG_MULTIPLAYER_MODE = BIT_FLAG(4), ///< Whether the game is in a multiplayer mode.
+        GAME_FLAG_IS_FREE_MODE = BIT_FLAG(5), ///< Whether the game is in Free Mode.
+        GAME_FLAG_IS_COIN_BATTLE = BIT_FLAG(6), ///< Whether the game is in Coin Battle mode.
+        GAME_FLAG_AUTO_SKIP = BIT_FLAG(19), ///< Whether to automatically skip the Wii strap and controller information screens.
     };
 
     struct enemy_s {
@@ -62,27 +64,29 @@ public:
     int mCurrentCourseNode;
     char pad2[0xc];
     int m_54;
-    u8 pad3[0x44];
+    u8 pad3[0x14];
+    bool m_6c;
+    u8 pad4[0x2c];
     int m_9c;
-    u8 pad4[0x2e4];
+    u8 pad5[0x2e4];
     int mCharIDs[4];
     bool mIsWorldSelect; ///< Whether the World Select Menu is being displayed.
-    u8 pad5[30];
+    u8 pad6[0x1e];
     bool mClearCyuukan; ///< Clear the checkpoint data if this is @p true. [Used for the backdoor entrance of 7-C]
     int mDisplayCourseWorld;
     int mDisplayCourseNum;
-    u8 pad6[0x14];
+    u8 pad7[0x14];
     int mTextBoxMessageGroup;
     int mTextBoxMessageID;
-    u8 pad7[0x1];
+    u8 pad8[0x1];
     bool mExtensionAttached;
     u8 m_3da;
-    u8 pad8[0x7];
+    u8 pad9[0x7];
     int mCourseSelectPageNum;
     int mCourseSelectIndexInPage;
-    u8 pad9[0x712];
+    u8 pad10[0x712];
     bool mFukidashiActionPerformed[4][0x16];
-    u32 pad10;
+    u32 pad11;
 
     static dInfo_c *m_instance;
     static unsigned int mGameFlag; ///< See GAME_FLAG_e

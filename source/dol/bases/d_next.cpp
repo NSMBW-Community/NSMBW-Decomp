@@ -5,7 +5,7 @@
 #include <game/bases/d_cd.hpp>
 #include <game/bases/d_s_stage.hpp>
 #include <game/bases/d_s_world_map_static.hpp>
-#include <game/bases/d_snd_scene_mgr.hpp>
+#include <game/snd/snd_scene_manager.hpp>
 #include <game/mLib/m_heap.hpp>
 
 dNext_c *dNext_c::m_instance;
@@ -156,7 +156,7 @@ void dNext_c::changeScene() {
     u8 world = stage->getCurrWorld();
 
     if (dScStage_c::m_gameMode == dInfo_c::GAME_MODE_HINT_MOVIE) {
-        dFader_c::setFader(dFader_c::CIRCLE_MIDDLE);
+        dFader_c::setFader(dFader_c::FADER_CIRCLE_MIDDLE);
     } else {
         dFader_c::setFader(mFaderType);
     }
@@ -171,7 +171,7 @@ void dNext_c::changeScene() {
     sNextGotoData *data = file->getNextGotoP(mNextGotoData.mDestID);
     if (stage->mCurrFile != mNextGotoData.mDestFile) {
         mSceneChangeType = NEXT_DIFFERENT_FILE;
-    } else if (data->mArea != stage->mCurrArea) {
+    } else if (data->mArea != stage->mCurrAreaNo) {
         mSceneChangeType = NEXT_DIFFERENT_AREA;
     } else {
         mSceneChangeType = NEXT_SAME_AREA;
