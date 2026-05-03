@@ -57,11 +57,11 @@ public:
 
     /// @brief The collision directions that an actor can respond to.
     enum BG_COLL_FLAG_e {
-        COLL_NONE = BIT_FLAG(-1), ///< The actor does not collide with any surface.
-        COLL_WALL_R = BIT_FLAG(0), ///< The actor can collide with walls on its right.
-        COLL_WALL_L = BIT_FLAG(1), ///< The actor can collide with walls on its left.
-        COLL_HEAD = BIT_FLAG(2), ///< The actor can collide with ceilings.
-        COLL_FOOT = BIT_FLAG(3), ///< The actor can collide with the ground.
+        COLL_NONE = BIT_FLAG(-1), ///< The actor did not collide with any surface.
+        COLL_WALL_L = BIT_FLAG(0), ///< The actor collided with a wall on its left.
+        COLL_WALL_R = BIT_FLAG(1), ///< The actor collided with a wall on its right.
+        COLL_FOOT = BIT_FLAG(2), ///< The actor collided with the ground.
+        COLL_HEAD = BIT_FLAG(3), ///< The actor collided with a ceiling.
     };
 
     /// @brief Information related to actor spawning.
@@ -350,7 +350,7 @@ public:
     sRangeDataF mDestroyBound; ///< @todo Figure out the exact purpose of this field.
     u8 mDirection; ///< The actor's facing direction.
     u8 mAreaNo; ///< The actor's zone ID.
-    u8 mBgCollFlags; ///< The collision directions that the actor can respond to.
+    u8 mBgCollFlags; ///< The collision directions that the actor collided with in the previous frame. Value is a BG_COLL_FLAG_e.
 
     u8 *mpSpawnFlags; ///< The spawn flags for the actor. See ACTOR_SPAWN_FLAG_e.
     u16 *mpDeleteVal; ///< @unused

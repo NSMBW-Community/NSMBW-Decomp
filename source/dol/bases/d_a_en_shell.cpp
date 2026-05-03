@@ -843,19 +843,19 @@ void daEnShell_c::setSpinLiftUpActor(dActor_c *carryingActor) {
 
 bool daEnShell_c::hasamiCheck() {
     if (mBgCollFlags != COLL_NONE) {
-        if ((mBgCollFlags & COLL_WALL_R) && mBc.isWallR() && !(mBc.mFlags & dBc_c::FLAG_8)) {
+        if ((mBgCollFlags & COLL_WALL_L) && mBc.isWallR() && !(mBc.mFlags & dBc_c::FLAG_8)) {
             return true;
         }
 
-        if ((mBgCollFlags & COLL_WALL_L) && mBc.isWallL() && !(mBc.mFlags & dBc_c::FLAG_8)) {
+        if ((mBgCollFlags & COLL_WALL_R) && mBc.isWallL() && !(mBc.mFlags & dBc_c::FLAG_8)) {
             return true;
         }
 
-        if ((mBgCollFlags & COLL_FOOT) && mBc.isFoot()) {
+        if ((mBgCollFlags & COLL_HEAD) && mBc.isFoot()) {
             return true;
         }
 
-        if ((mBgCollFlags & COLL_HEAD) && mBc.isHead() && !(mBc.getFlags() & dBc_c::FLAG_30)) {
+        if ((mBgCollFlags & COLL_FOOT) && mBc.isHead() && !(mBc.getFlags() & dBc_c::FLAG_30)) {
             return true;
         }
     }
