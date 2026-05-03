@@ -74,10 +74,10 @@ namespace nw4r { namespace snd
 		template <typename TForEachFunc>
 		TForEachFunc ForEachSound(TForEachFunc pFunc, bool reverse) {
 			if (reverse) {
-				detail::BasicSound::SoundPlayerPlayLinkList::ReverseIterator it = mSoundList.GetBeginReverseIter();
+				detail::BasicSound::SoundPlayerPlayLinkList::RevIterator it = mSoundList.GetBeginReverseIter();
 
 				while (it != mSoundList.GetEndReverseIter()) {
-					detail::BasicSound::SoundPlayerPlayLinkList::ReverseIterator curr = it;
+					detail::BasicSound::SoundPlayerPlayLinkList::RevIterator curr = it;
 
 					SoundHandle handle;
 					handle.detail_AttachSoundAsTempHandle(&*curr);
