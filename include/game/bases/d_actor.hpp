@@ -55,7 +55,7 @@ public:
         CARRY_THROW = BIT_FLAG(1), ///< The actor is being actively thrown by the player.
     };
 
-    /// @brief The collision directions that an actor can respond to.
+    /// @brief The directions the actor can collide with.
     enum BG_COLL_FLAG_e {
         COLL_NONE = BIT_FLAG(-1), ///< The actor did not collide with any surface.
         COLL_WALL_L = BIT_FLAG(0), ///< The actor collided with a wall on its left.
