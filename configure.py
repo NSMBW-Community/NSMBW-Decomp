@@ -55,6 +55,8 @@ def gen_compile_build_statements(writer: NinjaWriter, slices: list[SliceFile]):
             compiled_o_file = (BUILDDIR_COMPILED / slice_file.unit_name() / slice.source).with_suffix('.o')
             compiled_files.append(compiled_o_file)
             ccflags = slice_file.meta.defaultCompilerFlags if slice.ccFlags == '' else slice.ccFlags
+            # Add debug symbols for debug build
+            ccflags = f'{ccflags} -sym dwarf-2,full'
             writer.build('cw',
                          compiled_o_file,
                          (SRCDIR / slice.source).as_posix(),
@@ -88,7 +90,7 @@ def gen_dol_build_statements(writer: NinjaWriter, slices: list[SliceFile]):
                      get_build_path(slice_file, '.elf'),
                      ld_o_files(slice_file),
                      lcf=get_build_path(slice_file, '.lcf'),
-                     ldflags='-proc gekko -fp hard',
+                     ldflags='-proc gekko -fp hard -sym dwarf-2,full',
                      implicit_inputs=get_build_path(slice_file, '.lcf'))
 
         # Build final DOL
@@ -135,7 +137,7 @@ def gen_rel_build_statements(writer: NinjaWriter, slices: list[SliceFile]):
                      get_build_path(slice_file, '.preplf'),
                      ld_o_files(slice_file),
                      lcf=get_build_path(slice_file, '.lcf'),
-                     ldflags='-proc gekko -fp hard -sdata 0 -sdata2 0 -m _prolog -r',
+                     ldflags='-proc gekko -fp hard -sdata 0 -sdata2 0 -m _prolog -r -sym dwarf-2,full',
                      implicit_inputs=get_build_path(slice_file, '.lcf'))
 
         # Stripped partially-linked file

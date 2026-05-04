@@ -77,6 +77,8 @@ def gen_lcf(slice_file_path: Path, preplfs: list[Path], out_path: Path) -> None:
             align = 0x20
         lcf_file.write(f'\t\t{name} ALIGN(0x{align:0x}) : {{}}\n')
     lcf_file.write('\t} > text\n')
+    for s in ['.debug_info', '.debug_loc', '.debug_line', '.debug_pubnames', '.debug_pubtypes']:
+        lcf_file.write(f'\t{s} 0 : {{ KEEP(*({s})) }}\n')
     lcf_file.write('}\n\n')
 
     # FORCEACTIVE section
@@ -87,6 +89,8 @@ def gen_lcf(slice_file_path: Path, preplfs: list[Path], out_path: Path) -> None:
 
     lcf_file.write('FORCEACTIVE {\n')
     for force_sym in sorted(force_active):
+        if force_sym.startswith('.'):
+            continue
         lcf_file.write(f'\t{force_sym}\n')
     lcf_file.write('}\n')
 
