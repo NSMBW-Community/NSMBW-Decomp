@@ -234,15 +234,19 @@ def progress_csv(slice_files: list[SliceFile]) -> bool:
     global args
     if vars(args)['progress_csv'] != True:
         # File was supplied, write back to it if progress changed
-        last_line_data = None
+        data = []
         with open(vars(args)['progress_csv'], 'r') as f:
-            last_line_data = read_progress_csv_line(f.readlines()[-1].strip())
+            data = [read_progress_csv_line(l) for l in f.readlines()]
 
-        if progress_list != last_line_data['progress_vals']:
+        # Remove the last lines which contain hashes that no longer apply (force push or rebase)
+        while len(data) > 0 and data[-1]['hash'] not in [i['hash'] for i in commits]:
+            data.pop()
+
+        if progress_list != data[-1]['progress_vals']:
             print_success('Progress detected! Going through previous commits and writing to file.')
 
             # Trim the list of commits to those which came after the last line in the progress csv
-            idx_last = next((i for i, x in enumerate(commits) if x['hash'] == last_line_data['hash']), 1e99)
+            idx_last = next((i for i, x in enumerate(commits) if x['hash'] == data[-1]['hash']), 1e99)
 
             # Unfortunate hardcode; first revision where progress script implements correct functionality in all following revisions
             first_good_revision = '29b1a9bf5a11217cb2f60b74c3b4358290470209'
@@ -252,9 +256,9 @@ def progress_csv(slice_files: list[SliceFile]) -> bool:
 
             # In case of a rebase, we might have "new" commits that were made before the last tracked commit,
             # so we need to ignore those.
-            commits_to_track = [x for x in commits_to_track if x['timestamp'] > last_line_data['timestamp']]
+            commits_to_track = [x for x in commits_to_track if x['timestamp'] > data[-1]['timestamp']]
 
-            data = get_historical_progress_data(commits_to_track, last_line_data)
+            data.extend(get_historical_progress_data(commits_to_track, data[-1]))
             if len(data) == 0 or latest_csv[2:] != data[-1]['progress_vals']:
                 data.append({
                     'timestamp': int(latest_csv[0]),
@@ -262,7 +266,7 @@ def progress_csv(slice_files: list[SliceFile]) -> bool:
                     'progress_vals': [int(x) for x in latest_csv[2:]]
                 })
 
-            with open(vars(args)['progress_csv'], 'a') as f:
+            with open(vars(args)['progress_csv'], 'w') as f:
                 for line in data:
                     csv = [line['timestamp'], line['hash'], *line['progress_vals']]
                     csv_str = ','.join([str(i) for i in csv])
