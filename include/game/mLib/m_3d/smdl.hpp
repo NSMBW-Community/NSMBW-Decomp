@@ -12,5 +12,9 @@ namespace m3d {
         bool create(nw4r::g3d::ResMdl resMdl, mAllocator_c *allocator, ulong bufferOption, int viewCount) {
             return create(resMdl, allocator, bufferOption, viewCount, nullptr);
         }
+
+        bool create(nw4r::g3d::ResMdl resMdl, mAllocator_c *allocator, ulong bufferOption) {
+            return create(resMdl, allocator, bufferOption, 1);
+        }
     };
 }
