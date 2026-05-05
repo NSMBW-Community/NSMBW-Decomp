@@ -42,7 +42,7 @@ public:
 
 class dEnFumiCheck_c {
 public:
-    dEnFumiCheck_c(dEn_c *owner) : mUnused(0), mpFumiCheck(nullptr), mpOwner(owner) {}
+    dEnFumiCheck_c(dEn_c *owner) : m_00(0), mpFumiCheck(nullptr), mpOwner(owner) {}
 
     virtual ~dEnFumiCheck_c() {
         delete mpFumiCheck;
@@ -54,7 +54,7 @@ public:
         mpFumiCheck = newPtr;
     }
 
-    int mUnused;
+    int m_00;
     FumiCheckBase_c *mpFumiCheck;
     dEn_c *mpOwner;
 };

@@ -55,7 +55,7 @@ int daEnTogezoBase_c::create() {
     mScale.set(1.0f, 1.0f, 1.0f);
 
     mAngle.y = smc_ANGLE_Y[mDirection];
-    mFumiProc.mFumiCheck.mUnused = 8;
+    mFumiProc.mFumiCheck.m_00 = 8;
     m_894 = 2;
 
     initialize();
@@ -287,20 +287,21 @@ bool daEnTogezoBase_c::createIceActor() {
 }
 
 void daEnTogezoBase_c::pipoRolling() {
-    int ang = std::fabs(mSpeed.x * 0.5f) * 4096.0f;
-    if (ang > 0x400) {
-        ang = 0x400;
+    int rollSpeed = std::fabs(mSpeed.x * 0.5f) * 0x1000;
+    if (rollSpeed > 0x400) {
+        rollSpeed = 0x400;
     }
 
-    s16 prevAng = m_88c;
-    if (abs(m_88c) > ang) {
-        m_88c += 0x20;
-        ang = prevAng;
+    s16 prevSpeed = mPipoRollSpeed;
+    // [This seems wrong, should probably be abs(mPipoRollSpeed) < rollSpeed]
+    if (abs(mPipoRollSpeed) > rollSpeed) {
+        mPipoRollSpeed += 0x20;
+        rollSpeed = prevSpeed;
     } else {
-        m_88c = 0;
+        mPipoRollSpeed = 0;
     }
 
-    mAngle.x += ang;
+    mAngle.x += rollSpeed;
 }
 
 void daEnTogezoBase_c::pipoWallBound() {
@@ -393,7 +394,7 @@ void daEnTogezoBase_c::initializeState_Pipo() {
     mCc.mCcData.mBase.mOffset.y = 0.0f;
     mSpeedMax.y = -4.0f;
     mMaxFallSpeed = -4.0f;
-    m_898 = nullptr;
+    mPipoTouchedGround = 0;
 }
 
 void daEnTogezoBase_c::finalizeState_Pipo() {
@@ -438,16 +439,17 @@ void daEnTogezoBase_c::executeState_Pipo() {
                 mSpeed.y = 0.0f;
             }
         }
-        if (m_898 == 0) {
-            m_898 = 1;
+        if (!mPipoTouchedGround) {
+            mPipoTouchedGround = 1;
             dAudio::g_pSndObjEmy->startSound(SE_OBJ_PAIPO_LAND, mPos, 0);
             mAngle.y = smc_ANGLE_Y[mDirection];
-            m_88a = getPl_LRflag(mPos);
+            mPipoDir = getPl_LRflag(mPos);
         } else if (mSpeed.y == 0.0f && mTimer1 == 0) {
             mAngle.y = smc_ANGLE_Y[mDirection];
             changeState(StateID_Change_Togezo);
         }
     } else {
+        // Wait a bit after landing before unrolling.
         mTimer1 = 12;
     }
 }
@@ -469,7 +471,7 @@ void daEnTogezoBase_c::initializeState_Walk() {
     mSpeed.x = smc_WALK_SPEED_DAT[mDirection];
     mSpeed.z = 0.0f;
     mSpeedMax.y = -4.0f;
-    m_898 = 0;
+    mPipoTouchedGround = 0;
     m_894 = 2;
 }
 
@@ -491,10 +493,10 @@ void daEnTogezoBase_c::executeState_Walk() {
     if (mBc.isFoot()) {
         mSpeed.y = 0.0f;
         if (*mStateMgr.getOldStateID() == StateID_Change_Togezo) {
-            if (!m_898) {
+            if (!mPipoTouchedGround) {
                 landonEffect(0.0f);
             }
-            if (mDirection == m_88a) {
+            if (mDirection == mPipoDir) {
                 mSpeed.x = smc_WALK_SPEED_DAT[mDirection];
             } else {
                 changeState(StateID_Turn);
@@ -504,7 +506,7 @@ void daEnTogezoBase_c::executeState_Walk() {
         if (dAudio::isBgmAccentSign(1)) {
             mSpeed.y = 1.85f;
         }
-        m_898 = 1;
+        mPipoTouchedGround = 1;
     } else if (prevFoot && !mInLiquid && mSpeed.y <= 0.0f) {
         mFootPush2.x += m_1eb.x;
     }
@@ -552,7 +554,7 @@ void daEnTogezoBase_c::executeState_Turn() {
 }
 
 void daEnTogezoBase_c::initializeState_Change_Pipo() {
-    m_884 = 0x8000;
+    mChangeTimer = 0x8000;
     mSpeedMax.x = 0.0f;
 }
 
@@ -585,8 +587,8 @@ void daEnTogezoBase_c::executeState_Change_Pipo() {
         pipoWallBound();
     }
     mAngle.x = (u16) mAngle.x.mAngle - 0x800; // [fake match]
-    m_884 -= 0x800;
-    if (m_884 == 0) {
+    mChangeTimer -= 0x800;
+    if (mChangeTimer == 0) {
         changeState(StateID_Pipo);
     }
 }
@@ -595,7 +597,7 @@ void daEnTogezoBase_c::initializeState_Change_Togezo() {
     mIsFlipped = false;
     mSpeed.y = 2.0f;
     mAngle.x = -0x8000;
-    m_884 = 0x8000;
+    mChangeTimer = 0x8000;
     mSpeedMax.x = 0.0f;
     mMaxFallSpeed = -4.0f;
     mShellMode = SHELL_MODE_TOGEZO;
@@ -635,8 +637,8 @@ void daEnTogezoBase_c::executeState_Change_Togezo() {
     }
 
     mAngle.x = (u16) mAngle.x.mAngle + 0xc00; // [fake match]
-    m_884 -= 0xc00;
-    if (m_884 > 0x8000) {
+    mChangeTimer -= 0xc00;
+    if (mChangeTimer > 0x8000) {
         changeState(StateID_Walk);
     }
 }
