@@ -98,7 +98,7 @@ public:
     m3d::anmChr_c mAnim;
     nw4r::g3d::ResAnmTexPat mResAnmTexPat;
     m3d::anmTexPat_c mAnimTex;
-    u8 mPad1[0x24];
+    sCcDatNewF mCcData;
     sBcSensorPoint mSensorHead;
     sBcSensorLine mSensorFootNormal;
     sBcSensorLine mSensorWall;
@@ -106,7 +106,7 @@ public:
     mEf::levelEffect_c mEffect;
     int mYoshiKickable; ///< Whether the shell can be kicked in any state by Yoshi.
     int mUseBaseIceBehaviour;
-    u8 mPad2[0xc];
+    mVec3_c m_71c;
     mVec3_c mCarryPos;
     int mIsCarryFall;
     int mSlideAirAfterThrow;

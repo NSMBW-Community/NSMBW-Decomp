@@ -2,7 +2,7 @@
     "meta": {
         "fileName": "d_enemiesNP.rel",
         "type": "REL",
-        "defaultCompilerFlags": "-sdata 0 -sdata2 0 -proc gekko -fp hard -O4,p -char signed -rtti off -enum int -Cpp_exceptions off -ipa file -enc SJIS",
+        "defaultCompilerFlags": "-sdata 0 -sdata2 0 -proc gekko -fp hard -O4,p -inline noauto -char signed -rtti off -enum int -Cpp_exceptions off -ipa file -enc SJIS",
         "moduleNum": 3,
         "baseAddr": "809A2D90",
         "sections": {
@@ -33,6 +33,14 @@
             "compilerFlags": "",
             "memoryRanges": {
                 ".text": "0x0-0x70"
+            }
+        },
+        {
+            "source": "d_enemiesNP/bases/d_a_en_noko.cpp",
+            "memoryRanges": {
+                ".text": "0xc6230-0xd2570",
+                ".data": "0x28250-0x289d0",
+                ".bss": "0x7e60-0x80a0"
             }
         }
     ]
