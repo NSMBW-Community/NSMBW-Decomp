@@ -4,6 +4,6 @@
 
 class daTagWind_c : public dActor_c {
 public:
-    float m_394;
+    float mStrength;
     u8 mPad[32];
 };

@@ -21,9 +21,9 @@ const sCcDatNewF l_noko_cc = {
     dEn_c::normal_collcheck
 };
 
-const float l_walk_speed[2] = {0.5f, -0.5f};
-const s16 l_turn_speed[2] = {ANGLE_360_DIV(32), -ANGLE_360_DIV(32)};
-const s16 l_turn_target_angle[2] = {DEG_TO_ANGLE(90), -DEG_TO_ANGLE(90)};
+const float l_walk_speed[2] = { 0.5f, -0.5f };
+const s16 l_turn_speed[2] = { ANGLE_360_DIV(32), -ANGLE_360_DIV(32) };
+const s16 l_turn_target_angle[2] = { DEG_TO_ANGLE(90), -DEG_TO_ANGLE(90) };
 
 STATE_DEFINE(daEnNoko_c, BlockAppear);
 STATE_DEFINE(daEnNoko_c, Walk);
@@ -40,7 +40,7 @@ ACTOR_PROFILE(EN_NOKONOKO, daEnNoko_c, 0x12);
 int daEnNoko_c::create() {
     mNokoType = ACTOR_PARAM(NokoType);
 
-    loadRes();
+    createModel();
     createShell("nokonokoA", "g3d/nokonokoA.brres", "nokonoko_shell", "Tnokonoko_shell", mNokoType);
     mScale.set(1.0f, 1.0f, 1.0f);
     mCenterOffs.set(0.0f, 8.0f, 0.0);
@@ -85,10 +85,10 @@ int daEnNoko_c::create() {
     mBc.set(this, mSensorFootNormal, mSensorHead, mSensorWall);
     mBc.m_4c = mPos.x;
 
-    return 1;
+    return SUCCEEDED;
 }
 
-void daEnNoko_c::loadRes() {
+void daEnNoko_c::createModel() {
     mNokoAllocator.createFrmHeap(-1, mHeap::g_gameHeaps[mHeap::GAME_HEAP_DEFAULT], nullptr, 0x20);
 
     mNokoResFile = dResMng_c::m_instance->getRes("nokonokoA", "g3d/nokonokoA.brres");
@@ -98,14 +98,15 @@ void daEnNoko_c::loadRes() {
     dActor_c::setSoftLight_Enemy(mNokoModel);
 
     nw4r::g3d::ResAnmChr anm = mNokoResFile.GetResAnmChr("walkA");
-    mMoveAnim.create(mdl, anm, &mNokoAllocator, nullptr);
-    mNokoResAnmTexPat = mNokoResFile.GetResAnmTexPat("nokonokoA");
-    mNokoAnimTex.create(mdl, mNokoResAnmTexPat, &mNokoAllocator, nullptr, 1);
+    mWalkAnim.create(mdl, anm, &mNokoAllocator, nullptr);
+    mNokoResAnmTex = mNokoResFile.GetResAnmTexPat("nokonokoA");
+    mNokoAnimTex.create(mdl, mNokoResAnmTex, &mNokoAllocator, nullptr, 1);
 
-    vf324();
+    createModelExtra();
+
     mNokoAllocator.adjustFrmHeap();
 
-    mNokoAnimTex.setAnm(mNokoModel, mNokoResAnmTexPat, 0, m3d::FORWARD_ONCE);
+    mNokoAnimTex.setAnm(mNokoModel, mNokoResAnmTex, 0, m3d::FORWARD_ONCE);
 }
 
 void daEnNoko_c::setInitialState() {
@@ -128,11 +129,11 @@ int daEnNoko_c::preExecute() {
     }
 
     if (canDance()) {
-        if (dAudio::isBgmAccentSign(2)) {
+        if (dAudio::isBgmAccentSign(BIT_FLAG(1))) {
             danceWithMove(0);
-        } else if (dAudio::isBgmAccentSign(4)) {
+        } else if (dAudio::isBgmAccentSign(BIT_FLAG(2))) {
             danceWithMove(1);
-        } else if (dAudio::isBgmAccentSign(8)) {
+        } else if (dAudio::isBgmAccentSign(BIT_FLAG(3))) {
             danceWithMove(2);
         }
     }
@@ -148,16 +149,16 @@ int daEnNoko_c::execute() {
     }
 
     if (isState(StateID_BgmDance)) {
-        mBgmDanceAngle = 0;
+        mHeadAngle = 0;
     } else {
-        dance();
+        walkTurn();
     }
 
     if (!mNoRespawn && !isState(StateID_Ice)) {
         updateAmiLine();
         setZPos();
-        if (isInQuicksand()) {
-            spawnQuicksandEffects();
+        if (checkRyusa()) {
+            ryusaEffect();
         }
     }
 
@@ -179,7 +180,7 @@ int daEnNoko_c::draw() {
 
 int daEnNoko_c::doDelete() {
     if (mNokoAllocator.mpHeap != mAllocatorDummyHeap_c::getInstance()) {
-        mMoveAnim.remove();
+        mWalkAnim.remove();
         mNokoModel.remove();
         mNokoAnimTex.remove();
         deleteResExtra();
@@ -188,13 +189,13 @@ int daEnNoko_c::doDelete() {
     return SUCCEEDED;
 }
 
-bool daEnNoko_c::isInQuicksand() {
+bool daEnNoko_c::checkRyusa() {
     if (mBc.isFoot()) {
         mVec3_c pos = getCenterPos();
         u32 type = dBc_c::getUnitType(pos.x, pos.y, mLayer);
-        u8 subkind = dBc_c::getUnitKind(pos.x, pos.y, mLayer) >> 16;
+        u8 kind = dBc_c::getUnitKind(pos.x, pos.y, mLayer) >> 16;
 
-        if (type & BIT_FLAG(15) && subkind == 3) {
+        if (type & BIT_FLAG(15) && kind == 3) {
             return true;
         }
     }
@@ -202,10 +203,10 @@ bool daEnNoko_c::isInQuicksand() {
     return false;
 }
 
-void daEnNoko_c::spawnQuicksandEffects() {
+void daEnNoko_c::ryusaEffect() {
     mVec3_c center = getCenterPos();
     mVec3_c efPos(center.x, center.y, 5500.0f);
-    mQuickSandEffect.createEffect("Wm_en_quicksand", 0, &efPos, nullptr, nullptr);
+    mQuicksandEffect.createEffect("Wm_en_quicksand", 0, &efPos, nullptr, nullptr);
 }
 
 bool daEnNoko_c::canDance() {
@@ -250,14 +251,14 @@ void daEnNoko_c::calcShellEffectPos() {
     mMtx_c matrix;
 
     model.getNodeWorldMtx(resNode.GetID(), &matrix);
-    matrix.multVecZero(m_71c);
+    matrix.multVecZero(mSlideEffectPos);
     if (mIsFlipped) {
-        m_71c.y -= 16.0f;
+        mSlideEffectPos.y -= 16.0f;
     }
 }
 
 bool daEnNoko_c::setPlayerDamage(dActor_c *actor) {
-    daPlBase_c *player = (daPlBase_c *)actor;
+    daPlBase_c *player = (daPlBase_c *) actor;
 
     if (player->setDamage(this, daPlBase_c::DAMAGE_DEFAULT) && isWalking()) {
         playerDamageTurn(actor);
@@ -277,7 +278,7 @@ bool daEnNoko_c::playerDamageTurn(dActor_c *actor) {
 
     mDirection = dir;
     mAngle.y = l_turn_target_angle[dir];
-    mBgmDanceAngle *= -1;
+    mHeadAngle *= -1;
     turnAround();
 
     return true;
@@ -343,7 +344,7 @@ void daEnNoko_c::updateAmiLine() {
         typeRight & BIT_FLAG(10) && kindRight >= 2 ||
         typeLeft & BIT_FLAG(10) && kindLeft >= 2
     ) {
-        if (!mAmiLayer) {
+        if (mAmiLayer == 0) {
             mCc.mAmiLine = 1;
         } else {
             mCc.mAmiLine = 2;
@@ -353,14 +354,14 @@ void daEnNoko_c::updateAmiLine() {
     }
 }
 
-void daEnNoko_c::dance() {
-    static const s16 sc_danceAngle[2] = {-DEG_TO_ANGLE(30), DEG_TO_ANGLE(30)};
-    sLib::chaseAngle(&mBgmDanceAngle, sc_danceAngle[mDirection], 0x400);
+void daEnNoko_c::walkTurn() {
+    static const s16 sc_walkAngle[2] = { -DEG_TO_ANGLE(30), DEG_TO_ANGLE(30) };
+    sLib::chaseAngle(&mHeadAngle, sc_walkAngle[mDirection], ANGLE_360_DIV(64));
 }
 
 bool daEnNoko_c::createIceActor() {
-    static const int sc_iceMode[2] = {0, 1};
-    static const float cs_iceOffsetY[2] = {-2.0f, -4.0f};
+    static const int sc_iceMode[2] = { 0, 1 };
+    static const float cs_iceOffsetY[2] = { -2.0f, -4.0f };
 
     int iceMode;
     mVec3_c icePos;
@@ -399,39 +400,39 @@ void daEnNoko_c::beginFunsui() {
         return;
     }
 
-    mIsFrozen = 1;
-    mXSpeedBeforeFrozen = mSpeed.x;
+    mIsFunsui = true;
+    mXSpeedBeforeFunsui = mSpeed.x;
     mSpeed.set(0.0f, 0.0f, 0.0f);
 
     if (mShellMode == SHELL_MODE_BASE) {
         changeState(StateID_Sleep);
     } else {
-        mMoveAnim.setRate(2.0f);
+        mWalkAnim.setRate(2.0f);
     }
 }
 
 void daEnNoko_c::endFunsui() {
-    mIsFrozen = 0;
+    mIsFunsui = false;
 
     if (mShellMode != SHELL_MODE_BASE) {
-        mMoveAnim.setRate(1.0f);
-        mSpeed.x = mXSpeedBeforeFrozen;
+        mWalkAnim.setRate(1.0f);
+        mSpeed.x = mXSpeedBeforeFunsui;
     }
 }
 
-float daEnNoko_c::getWindMultiplier() {
+float daEnNoko_c::getWindStrength() {
     daTagWind_c *tagWind = (daTagWind_c *) fManager_c::searchBaseByProfName(fProfile::TAG_WIND, nullptr);
 
     if (tagWind == nullptr) {
         return 0.0f;
     }
 
-    return tagWind->m_394;
+    return tagWind->mStrength;
 }
 
 void daEnNoko_c::setMoveAnimation(const char *name, m3d::playMode_e mode, float frame) {
-    mMoveAnim.setAnm(mNokoModel, mNokoResFile.GetResAnmChr(name), mode);
-    mNokoModel.setAnm(mMoveAnim, frame);
+    mWalkAnim.setAnm(mNokoModel, mNokoResFile.GetResAnmChr(name), mode);
+    mNokoModel.setAnm(mWalkAnim, frame);
 }
 
 void daEnNoko_c::setBaseAnimation(const char *name, m3d::playMode_e mode, float frame) {
@@ -440,7 +441,7 @@ void daEnNoko_c::setBaseAnimation(const char *name, m3d::playMode_e mode, float 
 }
 
 bool daEnNoko_c::checkLedge() {
-    static const float sc_offsetX[2] = {2.5f, -2.5f};
+    static const float sc_offsetX[2] = { 2.5f, -2.5f };
 
     mVec3_c pos(mPos.x + sc_offsetX[mDirection], mPos.y + 4.0f, mPos.z);
     u8 kind = dBc_c::getUnitKind(pos.x, mPos.y - 2.0f, mLayer) >> 16;
@@ -491,7 +492,7 @@ void daEnNoko_c::finalizeState_Walk() {}
 void daEnNoko_c::executeState_Walk() {
     mNokoModel.play();
 
-    float wind = getWindMultiplier();
+    float wind = getWindStrength();
     if (std::fabs(wind) > 0.475f) {
         if (l_EnMuki[mDirection] * wind >= 0.0f) {
             changeState(StateID_WindTurn);
@@ -552,7 +553,7 @@ void daEnNoko_c::executeState_Wakeup() {
         mSpeed.x = 0.0f;
     }
 
-    if (mMoveAnim.isStop()) {
+    if (mWalkAnim.isStop()) {
         changeState(daEnShell_c::StateID_WakeupTurn);
     }
 }
@@ -614,7 +615,7 @@ void daEnNoko_c::executeState_WindTurn() {
 
     turnProc();
 
-    if (std::fabs(getWindMultiplier()) < 0.25f) {
+    if (std::fabs(getWindStrength()) < 0.25f) {
         changeState(StateID_Turn);
     }
 }
@@ -646,12 +647,12 @@ void daEnNoko_c::executeState_SpitOut_Ready() {
         return;
     }
 
-    dActor_c *player = (dActor_c *) fManager_c::searchBaseByID(mEatenByID);
-    if (player == nullptr) {
+    dActor_c *eatActor = (dActor_c *) fManager_c::searchBaseByID(mEatenByID);
+    if (eatActor == nullptr) {
         deleteRequest();
     } else {
-        setSlideThrowSpeed(player);
-        mPlayerNo = player->getPlrNo();
+        setSlideThrowSpeed(eatActor);
+        mPlayerNo = eatActor->getPlrNo();
         changeState(StateID_Slide);
     }
 }
@@ -665,8 +666,8 @@ void daEnNoko_c::initializeState_BgmDance() {
 
     setMoveAnimation(sc_bgmDanceAnim[mDanceMove], m3d::FORWARD_ONCE, 3.0f);
     mSpeed.x = 0.0;
-    mDancesRemaining = 3;
-    mBgmDanceRotSpeed = mAngle.y.abs() / mDancesRemaining;
+    mDanceTimer = 3;
+    mBgmDanceRotSpeed = mAngle.y.abs() / mDanceTimer;
 }
 
 void daEnNoko_c::finalizeState_BgmDance() {}
@@ -680,14 +681,14 @@ void daEnNoko_c::executeState_BgmDance() {
         mSpeed.y = 0.0f;
     }
 
-    if (mDancesRemaining > 0) {
-        mDancesRemaining--;
+    if (mDanceTimer > 0) {
+        mDanceTimer--;
         sLib::chaseAngle(&mAngle.y.mAngle, 0, mBgmDanceRotSpeed);
     } else {
         mAngle.y = 0;
     }
 
-    if (mMoveAnim.isStop()) {
+    if (mWalkAnim.isStop()) {
         changeState(StateID_BgmDanceEd);
     }
 }
@@ -695,8 +696,8 @@ void daEnNoko_c::executeState_BgmDance() {
 void daEnNoko_c::initializeState_BgmDanceEd() {
     setMoveAnimation("walkA", m3d::FORWARD_ONCE, 4.0f);
     mSpeed.x = 0.0f;
-    mDancesRemaining = 4;
-    mBgmDanceRotSpeed = abs(l_turn_target_angle[mDirection]) / mDancesRemaining;
+    mDanceTimer = 4;
+    mBgmDanceRotSpeed = abs(l_turn_target_angle[mDirection]) / mDanceTimer;
 }
 
 void daEnNoko_c::finalizeState_BgmDanceEd() {}
@@ -710,16 +711,14 @@ void daEnNoko_c::executeState_BgmDanceEd() {
         mSpeed.y = 0.0;
     }
 
-    if (mDancesRemaining > 0) {
-        mDancesRemaining--;
+    if (mDanceTimer > 0) {
+        mDanceTimer--;
         sLib::chaseAngle(&mAngle.y.mAngle, l_turn_target_angle[mDirection], mBgmDanceRotSpeed);
 
-        if (mDancesRemaining > 0) {
-            return;
+        if (mDanceTimer <= 0) {
+            mAngle.y = l_turn_target_angle[mDirection];
+            changeState(StateID_Walk);
         }
-
-        mAngle.y = l_turn_target_angle[mDirection];
-        changeState(StateID_Walk);
     }
 }
 
@@ -727,7 +726,7 @@ void daEnNoko_c::nodeCallback_c::timingB(ulong nodeId, nw4r::g3d::WorldMtxManip 
     mMtx_c mtx;
     if (strcmp(resMdl.GetResNode(nodeId).GetName(), "head") == 0) {
         manip->GetMatrix(&mtx);
-        mtx.XrotM(mpOwner->mBgmDanceAngle);
+        mtx.XrotM(mpOwner->mHeadAngle);
         manip->SetMatrix(mtx);
     }
 }

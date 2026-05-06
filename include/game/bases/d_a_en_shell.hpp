@@ -113,7 +113,7 @@ public:
     mEf::levelEffect_c mEffect;
     int mYoshiKickable; ///< Whether the shell can be kicked in any state by Yoshi.
     ShellMode_e mShellMode;
-    mVec3_c m_71c;
+    mVec3_c mSlideEffectPos;
     mVec3_c mCarryPos;
     int mIsCarryFall;
     int mSlideAirAfterThrow;
