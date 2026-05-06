@@ -166,11 +166,11 @@ def gen_rel_build_statements(writer: NinjaWriter, slices: list[SliceFile]):
 
     # RELs need to come together to create the common linker script for the final stripped modules
     # Pick the slice with the largest number of sections as the base
-    rel_slices = [x for x in slices if x.meta.type == SliceType.REL]
-    best_slice = max(rel_slices, key=lambda x: len(x.meta.sections))
+    rel_slices = [x.path for x in slices if x.meta.type == SliceType.REL]
     writer.build('gen_linkerscript',
                  common_lcf,
-                 [best_slice.path, *files_with_suffix(rel_files, '.preplf')])
+                 rel_slices,
+                 implicit_inputs=files_with_suffix(rel_files, '.preplf'))
 
 ######################
 # Build Script Setup #
