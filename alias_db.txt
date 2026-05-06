@@ -658,7 +658,6 @@ R_3_5_26eb0  = g_profile_EN_MISTMAN
 R_3_5_27528  = g_profile_EN_MOUSE
 R_3_5_27a30  = g_profile_EN_NET_NOKONOKO_LR
 R_3_5_27dd0  = g_profile_EN_NET_NOKONOKO_UD
-R_3_5_28250  = g_profile_EN_NOKONOKO
 R_3_5_289d0  = g_profile_EN_OBAKEDOOR
 R_3_5_28ce8  = g_profile_EN_OBJ_HATENA_BLOCK
 R_3_5_28cf4  = g_profile_EN_OBJ_HATENAB_BLOCK

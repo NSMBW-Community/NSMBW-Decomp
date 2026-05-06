@@ -54,6 +54,8 @@ typedef int BOOL;
 #define BIT_FLAG(bit) ((bit) < 0 ? 0 : 1 << (bit))
 #define ROUND_UP(x, align) (((x) + (align) - 1) & (-(align)))
 #define ROUND_UP_PTR(x, align)  ((void*)((((u32)(x)) + (align) - 1) & (~((align) - 1))))
+#define MAX(a, b) ((a) > (b) ? (a) : (b))
+#define MIN(a, b) ((a) < (b) ? (a) : (b))
 
 // No-op on release
 #define EGG_ASSERT(...)

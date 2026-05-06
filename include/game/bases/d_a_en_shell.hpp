@@ -12,6 +12,13 @@
  */
 class daEnShell_c : public daEnCarry_c {
 public:
+    /// Other actors can extend this enum to add new modes.
+    /// @unofficial
+    enum ShellMode_e {
+        SHELL_MODE_BASE,
+        SHELL_MODE_NOKO_WALK
+    };
+
     struct GlobalData_t {
         s16 mSpinSpeed;
         s16 mUnkSpeed;
@@ -105,7 +112,7 @@ public:
     sBcSensorLine mSensorFootSlide;
     mEf::levelEffect_c mEffect;
     int mYoshiKickable; ///< Whether the shell can be kicked in any state by Yoshi.
-    int mUseBaseIceBehaviour;
+    ShellMode_e mShellMode;
     mVec3_c m_71c;
     mVec3_c mCarryPos;
     int mIsCarryFall;

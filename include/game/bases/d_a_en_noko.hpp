@@ -1,44 +1,6 @@
 #include <game/bases/d_a_en_shell.hpp>
+#include <game/mLib/m_effect.hpp>
 #include <lib/MSL/string.h>
-
-namespace nw4r {
-    namespace ef {
-        struct EmitterInheritSetting {
-            u16 mSpeed;
-            u8 mScale;
-            u8 mAlpha;
-            u8 mColor;
-            u8 mWeight;
-            u8 mType;
-            u8 mFlag;
-            u8 mAlphaFuncPri;
-            u8 mAlphaFuncSec;
-            u8 mPad[2];
-        };
-    };
-};
-
-namespace mEf {
-    class levelOneEffect_c : public levelEffect_c {
-    public:
-        levelOneEffect_c() { reset(); }
-        ~levelOneEffect_c() {}
-
-        virtual void reset();
-        virtual void createEffect(const char *, int);
-        virtual void createEffect(const char *, ulong, const mVec3_c *, const mAng3_c *, const mVec3_c *);
-        virtual void createEffect(const char *, ulong, const mMtx_c *);
-
-        float mEmissionRateMaybe;
-        nw4r::ef::EmitterInheritSetting setting;
-    };
-};
-
-class daTagWind_c : public dActor_c {
-public:
-    float m_394;
-    u8 mPad[32];
-};
 
 /**
  * @brief Koopa Troopa
@@ -54,6 +16,11 @@ public:
         daEnNoko_c *mpOwner;
     };
 
+    enum NokoType_e {
+        NOKO_GREEN, ///< Green Koopas don't turn around on ledges.
+        NOKO_RED ///< Red Koopas turn around on ledges.
+    };
+
     daEnNoko_c() { mMdlCallback.mpOwner = this; }
     ~daEnNoko_c() {}
 
@@ -62,7 +29,7 @@ public:
     virtual int execute() override;
     virtual int preExecute() override;
     virtual int draw() override;
-    virtual void finalUpdate() override { vf310(); }
+    virtual void finalUpdate() override { calcMdl(); }
     virtual bool createIceActor() override;
     virtual void beginFunsui() override;
     virtual void endFunsui() override;
@@ -79,31 +46,32 @@ public:
 
     virtual bool setPlayerDamage(dActor_c *actor) override;
     virtual bool checkSleep() override;
+    virtual bool turnProc() override;
     virtual void calcShellEffectPos() override;
     virtual void setEnemyTurn() override { if (isState(StateID_Walk)) { changeState(StateID_Turn); } }
 
-    virtual void vf300() { WaterCheck(mPos, 1.0f); }
+    virtual void checkWaterEntry() { WaterCheck(mPos, 1.0f); }
 
     virtual void setAfterSleepState() override { changeState(StateID_Walk); }
     virtual void slideEffect() override {
-        if (!mWalksOffLedges) {
+        if (!mNokoType) {
             mEffect.createEffect("Wm_en_shellgreentail", 0, &m_71c, nullptr, nullptr);
         } else {
             mEffect.createEffect("Wm_en_shellredtail", 0, &m_71c, nullptr, nullptr);
         }
     }
 
-    virtual void vf304(u32 * pDir, mAng * pAng);
-    virtual bool isWalking();
-    virtual void vf30C();
-    virtual void vf310();
+    virtual void doTurn(int *dir, s16 *turnSpeed);
+    virtual bool isWalking() { return true; }
+    virtual void turnAround();
+    virtual void calcMdl();
     virtual bool canDance();
     virtual void danceWithMove(int move);
     virtual void dance();
-    virtual void changeStateAccordingToSettings();
-    virtual void vf324();
+    virtual void setInitialState();
+    virtual void vf324() {}
     virtual void vf328() {}
-    virtual void deleteRest();
+    virtual void deleteResExtra() {}
     virtual mVec3_c getPos() { return mVec3_c(mPos.x, mPos.y, mPos.z); }
 
     virtual BOOL isFunsui() const override { return mIsFrozen; }
@@ -113,34 +81,41 @@ public:
     void setZPos();
     bool isInQuicksand();
     void spawnQuicksandEffects();
-    bool sub_80A73330(dActor_c *);
+    bool playerDamageTurn(dActor_c *);
     void setNokoBc();
-    bool turnProc();
     float getWindMultiplier();
     void setMoveAnimation(const char *name, m3d::playMode_e mode, float frame);
     void setBaseAnimation(const char *name, m3d::playMode_e mode, float frame);
-    bool sub_80A73BC0();
-    void sub_80A73CB0();
+    bool checkLedge();
+    void landEffect();
 
     u8 mPad0[4];
+
     dHeapAllocator_c mNokoAllocator;
     nw4r::g3d::ResFile mNokoResFile;
     m3d::mdl_c mNokoModel;
     m3d::anmChr_c mMoveAnim;
     nw4r::g3d::ResAnmTexPat mNokoResAnmTexPat;
     m3d::anmTexPat_c mNokoAnimTex;
+
     u32 mIsFrozen;
-    s16 m_8a8;
-    bool mWalksOffLedges;
-    mVec3_c m_8ac;
+    s16 mBgmDanceAngle;
+    u8 mNokoType; ///< Is a NokoType_e.
+    mVec3_c mCreatePos;
     float mXSpeedBeforeFrozen;
-    u8 mPad3[8];
-    float m_8c4;
+    u8 mPad1[8];
+    float mBaseZPos;
     u32 m_8c8;
     int mDancesRemaining;
-    mAng mYRotIncrease;
-    u8 mPad4[2];
+    mAng mBgmDanceRotSpeed;
     u32 mDanceMove;
     mEf::levelOneEffect_c mQuickSandEffect;
     nodeCallback_c mMdlCallback;
+
+    ACTOR_PARAM_CONFIG(NokoType, 0, 1);
+    ACTOR_PARAM_CONFIG(SpawnMode, 4, 1); ///< 1 = Spawn as sleeping shell
+    ACTOR_PARAM_CONFIG(Layer, 16, 1);
+    ACTOR_PARAM_CONFIG(BlockHitPlayer, 24, 2);
+    ACTOR_PARAM_CONFIG(BlockAppear, 28, 1);
+    ACTOR_PARAM_CONFIG(SpitOut, 29, 1);
 };

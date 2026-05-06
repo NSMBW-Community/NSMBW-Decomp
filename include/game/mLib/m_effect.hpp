@@ -1,4 +1,5 @@
 #pragma once
+#include <lib/nw4r/ef.h>
 #include <lib/egg/util/eggEffect.hpp>
 #include <game/mLib/m_vec.hpp>
 #include <game/mLib/m_mtx.hpp>
@@ -43,6 +44,20 @@ public:
     u32 m_114, m_118;
     u8 m_11c, m_11d;
     u32 m_120, m_124;
+};
+
+class levelOneEffect_c : public levelEffect_c {
+public:
+    levelOneEffect_c() { reset(); }
+    ~levelOneEffect_c() {}
+
+    virtual void reset();
+    virtual void createEffect(const char *, int);
+    virtual void createEffect(const char *, ulong, const mVec3_c *, const mAng3_c *, const mVec3_c *);
+    virtual void createEffect(const char *, ulong, const mMtx_c *);
+
+    float mEmissionRateMaybe;
+    nw4r::ef::EmitterInheritSetting mSetting;
 };
 
 void createEffect(const char *, unsigned long, const mVec3_c *, const mAng3_c *, const mVec3_c *);

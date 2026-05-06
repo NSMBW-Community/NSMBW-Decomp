@@ -36,6 +36,8 @@ struct EmitterInheritSetting {
     u8 weight; // at 0x5
     u8 type;   // at 0x6
     u8 flag;   // at 0x7
+    u8 alphaFuncPri;
+    u8 alphaFuncSec;
 };
 
 class EmitterParameter {
