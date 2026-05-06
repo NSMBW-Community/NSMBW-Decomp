@@ -22,6 +22,12 @@ namespace mEf {
     class levelOneEffect_c : public levelEffect_c {
     public:
         levelOneEffect_c() { reset(); }
+        ~levelOneEffect_c() {}
+
+        virtual void reset();
+        virtual void createEffect(const char *, int);
+        virtual void createEffect(const char *, ulong, const mVec3_c *, const mAng3_c *, const mVec3_c *);
+        virtual void createEffect(const char *, ulong, const mMtx_c *);
 
         float mEmissionRateMaybe;
         nw4r::ef::EmitterInheritSetting setting;
@@ -43,14 +49,7 @@ class daEnNoko_c : public daEnShell_c {
 public:
     class nodeCallback_c : public m3d::mdl_c::callback_c {
     public:
-        virtual void timingB(ulong nodeId, nw4r::g3d::WorldMtxManip *manip, nw4r::g3d::ResMdl resMdl) {
-            mMtx_c mtx;
-            if (strcmp(resMdl.GetResNode(nodeId).GetName(), "head") == 0) {
-                manip->GetMatrix(&mtx);
-                mtx.XrotM(mpOwner->m_8a8);
-                manip->SetMatrix(mtx);
-            }
-        }
+        virtual void timingB(ulong nodeId, nw4r::g3d::WorldMtxManip *manip, nw4r::g3d::ResMdl resMdl);
 
         daEnNoko_c *mpOwner;
     };
@@ -67,8 +66,6 @@ public:
     virtual bool createIceActor() override;
     virtual void beginFunsui() override;
     virtual void endFunsui() override;
-    virtual BOOL isFunsui() const override { return mIsFrozen; }
-    virtual void YoshiFumiScoreSet(dActor_c *) override;
 
     STATE_FUNC_DECLARE(daEnNoko_c, BlockAppear);
     STATE_FUNC_DECLARE(daEnNoko_c, Walk);
@@ -84,6 +81,9 @@ public:
     virtual bool checkSleep() override;
     virtual void calcShellEffectPos() override;
     virtual void setEnemyTurn() override { if (isState(StateID_Walk)) { changeState(StateID_Turn); } }
+
+    virtual void vf300() { WaterCheck(mPos, 1.0f); }
+
     virtual void setAfterSleepState() override { changeState(StateID_Walk); }
     virtual void slideEffect() override {
         if (!mWalksOffLedges) {
@@ -93,7 +93,6 @@ public:
         }
     }
 
-    virtual void vf300() { WaterCheck(mPos, 1.0f); }
     virtual void vf304(u32 * pDir, mAng * pAng);
     virtual bool isWalking();
     virtual void vf30C();
@@ -105,7 +104,9 @@ public:
     virtual void vf324();
     virtual void vf328() {}
     virtual void deleteRest();
-    virtual mVec3_c getPos();
+    virtual mVec3_c getPos() { return mVec3_c(mPos.x, mPos.y, mPos.z); }
+
+    virtual BOOL isFunsui() const override { return mIsFrozen; }
 
     void loadRes();
     void updateAmiLine();
@@ -113,11 +114,11 @@ public:
     bool isInQuicksand();
     void spawnQuicksandEffects();
     bool sub_80A73330(dActor_c *);
-    void setBc();
+    void setNokoBc();
     bool turnProc();
     float getWindMultiplier();
-    void setMoveAnimation(char * name, m3d::playMode_e mode, float frame);
-    void setBaseAnimation(char * name, m3d::playMode_e mode, float frame);
+    void setMoveAnimation(const char *name, m3d::playMode_e mode, float frame);
+    void setBaseAnimation(const char *name, m3d::playMode_e mode, float frame);
     bool sub_80A73BC0();
     void sub_80A73CB0();
 

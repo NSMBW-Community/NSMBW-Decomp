@@ -27,6 +27,10 @@
             ".PPC.EMB.apuinfo":     { "index": 18, "align": 16, "size": "0x0" }
         }
     },
+    "keepWeak": [
+        "setNokoBc__10daEnNoko_cFv",
+        "sub_80A73CB0__10daEnNoko_cFv"
+    ],
     "slices": [
         {
             "source": "runtime/rel_init.cpp",
@@ -36,10 +40,20 @@
             }
         },
         {
+            "source": "runtime/global_destructor_chain.c",
+            "compilerFlags": "-c -Cpp_exceptions off -O4 -fp hard -sdata 0 -sdata2 0",
+            "memoryRanges": {
+                ".text": "0x70-0xf0",
+                ".dtors": "0x0-0x4",
+                ".bss": "0x0-0x8"
+            }
+        },
+        {
             "source": "d_enemiesNP/bases/d_a_en_noko.cpp",
-            "nonMatching": true,
             "memoryRanges": {
                 ".text": "0xcf710-0xd2930",
+                ".ctors": "0x1b4-0x1b8",
+                ".rodata": "0x6008-0x60f0",
                 ".data": "0x28250-0x289d0",
                 ".bss": "0x7e60-0x80a0"
             }

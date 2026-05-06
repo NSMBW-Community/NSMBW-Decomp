@@ -5,14 +5,6 @@
 #include <game/bases/d_a_player_base.hpp>
 #include <game/bases/d_audio.hpp>
 
-const float buf_80ad34b0[2] = {0.5f, -0.5f};
-const s16 buf_80ad34b8[2] = {0x800, -0x800};
-const s16 buf_80ad34bc[2] = {0x4000, -0x4000};
-const s16 buf_80ad34f0[2] = {-0x1555, 0x1555};
-const int buf_80ad34f8[2] = {0, 1};
-const float buf_80ad3500[2] = {-2.0f, -4.0f};
-const float buf_80ad3518[2] = {2.5f, -2.5f};
-
 const sBcSensorPoint smc_noko_head = { SENSOR_IS_POINT, 0, 0xc000 };
 const sBcSensorLine smc_noko_foot = { SENSOR_IS_LINE, -0x4000, 0x4000, 0x0 };
 const sBcSensorLine smc_noko_wall = { SENSOR_IS_LINE, 0x6000, 0x9000, 0x6000 };
@@ -28,6 +20,10 @@ const sCcDatNewF ccData = {
     dEn_c::normal_collcheck
 };
 
+const float buf_80ad34b0[2] = {0.5f, -0.5f};
+const s16 buf_80ad34b8[2] = {0x800, -0x800};
+const s16 buf_80ad34bc[2] = {0x4000, -0x4000};
+
 STATE_DEFINE(daEnNoko_c, BlockAppear);
 STATE_DEFINE(daEnNoko_c, Walk);
 STATE_DEFINE(daEnNoko_c, Turn);
@@ -38,7 +34,7 @@ STATE_DEFINE(daEnNoko_c, BgmDanceEd);
 STATE_VIRTUAL_DEFINE(daEnNoko_c, Wakeup);
 STATE_VIRTUAL_DEFINE(daEnNoko_c, WakeupTurn);
 
-ACTOR_PROFILE(EN_NOKONOKO, daEnNoko_c, 0x0);
+ACTOR_PROFILE(EN_NOKONOKO, daEnNoko_c, 0x12);
 
 int daEnNoko_c::create() {
     mWalksOffLedges = mParam & 1;
@@ -174,7 +170,7 @@ int daEnNoko_c::draw() {
         return daEnShell_c::drawShell();
     }
 
-    if (isState(StateID_Wakeup)) {
+    if (isState(daEnShell_c::StateID_Wakeup)) {
         daEnShell_c::drawShell();
     }
 
@@ -233,16 +229,14 @@ void daEnNoko_c::vf310() {
     mVec3_c pos = getPos();
     mAng3_c angle = mAngle;
     dActor_c::changePosAngle(&pos, &angle, 1);
-    PSMTXTrans(mMatrix, pos.x, pos.y, pos.z);
-    mMatrix.ZXYrotM(angle.x, angle.y, angle.z);
-    mNokoModel.setLocalMtx(&mMatrix);
-    mVec3_c boyo_scale = mBoyoMng.mScale;
-    mNokoModel.setScale(boyo_scale);
-    mNokoModel.calc(false);
-}
 
-mVec3_c daEnNoko_c::getPos() {
-    return mPos;
+    mMatrix.trans(pos);
+    mMatrix.ZXYrotM(angle);
+
+    mNokoModel.setLocalMtx(&mMatrix);
+
+    mNokoModel.setScale(mBoyoMng.getScale());
+    mNokoModel.calc(false);
 }
 
 void daEnNoko_c::calcShellEffectPos() {
@@ -292,7 +286,7 @@ bool daEnNoko_c::sub_80A73330(dActor_c *actor) {
     return true;
 }
 
-void daEnNoko_c::setBc() {
+void daEnNoko_c::setNokoBc() {
     mSensorHead = smc_noko_head;
     mSensorWall = smc_noko_wall;
     mSensorFootNormal = smc_noko_foot;
@@ -341,42 +335,41 @@ void daEnNoko_c::setZPos() {
 }
 
 void daEnNoko_c::updateAmiLine() {
-    float f1 = mCc.mCcData.mBase.mSize.x;
-    float f2 = mCc.mCcData.mBase.mOffset.x;
-    float f3 = mPos.x;
-    float f4 = f3 + f2;
+    float width = mCc.mCcData.mBase.mSize.x;
+    float offX = mCc.mCcData.mBase.mOffset.x;
+    float offY = mCc.mCcData.mBase.mOffset.y;
 
-    float f5 = mCc.mCcData.mBase.mOffset.y;
-    float f6 = mPos.y;
-    float f7 = f6 + f5;
+    float x = mPos.x + offX;
+    float y = mPos.y + offY;
 
-    u32 u1 = dBc_c::getUnitType(f4 + f1, f7, mLayer);
-    u32 u2 = dBc_c::getUnitKind(f4 + f1, f7, mLayer) & 0xFF;
-    u32 u3 = dBc_c::getUnitType(f4 - f1, f7, mLayer);
-    u32 u4 = dBc_c::getUnitKind(f4 - f1, f7, mLayer) & 0xFF;
+    u32 u1 = dBc_c::getUnitType(x + width, y, mLayer);
+    u8 u2 = dBc_c::getUnitKind(x + width, y, mLayer) & 0xFF;
+    u32 u3 = dBc_c::getUnitType(x - width, y, mLayer);
+    u8 u4 = dBc_c::getUnitKind(x - width, y, mLayer) & 0xFF;
 
-    if ((((u1 & 1024) == 0) || (u2 < 2)) && (((u3 & 1024) == 0) || (u4 < 2))) {
-        goto e8;
-    } else if (!mAmiLayer) {
-        mCc.mAmiLine = 1;
-        goto ret;
+    if (
+        u1 & BIT_FLAG(10) && u2 >= 2 ||
+        u3 & BIT_FLAG(10) && u4 >= 2
+    ) {
+        if (!mAmiLayer) {
+            mCc.mAmiLine = 1;
+        } else {
+            mCc.mAmiLine = 2;
+        }
     } else {
-        mCc.mAmiLine = 2;
-        goto ret;
-    }
-    {
-        e8:
         mCc.mAmiLine = 3;
     }
-ret:
-    return;
 }
 
 void daEnNoko_c::dance() {
+    static const s16 buf_80ad34f0[2] = {-0x1555, 0x1555};
     sLib::chaseAngle(&m_8a8, buf_80ad34f0[mDirection], 0x400);
 }
 
 bool daEnNoko_c::createIceActor() {
+    static const int buf_80ad34f8[2] = {0, 1};
+    static const float buf_80ad3500[2] = {-2.0f, -4.0f};
+
     float f_60;
     mVec3_c f_5c;
     int ice_mode;
@@ -386,12 +379,11 @@ bool daEnNoko_c::createIceActor() {
     if (*mStateMgr.getMainStateID() == StateID_BgmDance) {
         f_5c.set(mPos.x, mPos.y - 4.0f, mPos.z + 2.0f);
         ice_mode = 1;
-        scale.set(1.0f, 1.05f, 1.75f);
+        scale.set(1.05f, 1.0f, 1.75f);
     } else {
-        int x = mUseBaseIceBehaviour;
-        f_5c.set(mPos.x, mPos.y + buf_80ad3500[x], mPos.z);
-        ice_mode = buf_80ad34f8[x];
-        scale.set(1.0f, 1.05f, 1.05f);
+        ice_mode = buf_80ad34f8[mUseBaseIceBehaviour];
+        f_5c.set(mPos.x, mPos.y + buf_80ad3500[mUseBaseIceBehaviour], mPos.z);
+        scale.set(1.05f, 1.0f, 1.05f);
     }
 
     dIceInfo iceInfo[] = {
@@ -449,28 +441,28 @@ float daEnNoko_c::getWindMultiplier() {
     return ac_wind->m_394;
 }
 
-void daEnNoko_c::setMoveAnimation(char * name, m3d::playMode_e mode, float frame) {
+void daEnNoko_c::setMoveAnimation(const char *name, m3d::playMode_e mode, float frame) {
     mMoveAnim.setAnm(mNokoModel, mNokoResFile.GetResAnmChr(name), mode);
     mNokoModel.setAnm(mMoveAnim, frame);
 }
 
-void daEnNoko_c::setBaseAnimation(char * name, m3d::playMode_e mode, float frame) {
+void daEnNoko_c::setBaseAnimation(const char *name, m3d::playMode_e mode, float frame) {
     mAnim.setAnm(mModel, mResFile.GetResAnmChr(name), mode);
     mModel.setAnm(mAnim, frame);
 }
 
 bool daEnNoko_c::sub_80A73BC0() {
-    float fVar1 = mPos.y;
-    mVec3_c local_14 = mVec3_c(mPos.x + buf_80ad3518[mDirection], fVar1 + 4.0f, mPos.z);
-    u32 uVar2 = dBc_c::getUnitKind(local_14.x, fVar1 - 2.0f, mLayer);
+    static const float buf_80ad3518[2] = {2.5f, -2.5f};
 
-    if (((uVar2 >> 0x10) & 0xff) == 8) {
+    mVec3_c pos(mPos.x + buf_80ad3518[mDirection], mPos.y + 4.0f, mPos.z);
+    u8 kind = dBc_c::getUnitKind(pos.x, mPos.y - 2.0f, mLayer) >> 16;
+
+    if (kind == 8) {
         return false;
     }
 
-    float local_18 = 0.0f;
-    u32 temp = dBc_c::checkGround(&local_14, &local_18, mLayer, 1, -1);
-    if ((temp == 0) || !(local_14.y < local_18) || (local_18 > mPos.y - 5.0f)) {
+    float height = 0.0f;
+    if (dBc_c::checkGround(&pos, &height, mLayer, 1, -1) && height < pos.y && height > mPos.y - 5.0f) {
         return true;
     }
 
@@ -535,6 +527,7 @@ void daEnNoko_c::executeState_Walk() {
         mSpeed.y = 0.0f;
         if ((mWalksOffLedges == true) && (!sub_80A73BC0())) {
             changeState(StateID_Turn);
+            return;
         }
     } else if (foot && !mInLiquid && (mSpeed.y <= 0.0f)) {
         mFootPush2.x += m_1eb.x;
@@ -553,11 +546,11 @@ void daEnNoko_c::initializeState_Wakeup() {
     daEnShell_c::initializeState_Wakeup();
 }
 
-// void daEnNoko_c::finalizeState_Wakeup() {
-//     mAnim.setFrame(0.0f);
-//     mCc.mCcData.mBase.mOffset.x = 0.0f;
-//     mCc.mCcData.mBase.mSize.x = 8.0f;
-// }
+void daEnNoko_c::finalizeState_Wakeup() {
+    mAnim.setFrame(0.0f);
+    mCc.mCcData.mBase.mOffset.x = 0.0f;
+    mCc.mCcData.mBase.mSize.x = 8.0f;
+}
 
 void daEnNoko_c::executeState_Wakeup() {
     mNokoModel.play();
@@ -574,7 +567,7 @@ void daEnNoko_c::executeState_Wakeup() {
     }
 
     if (mMoveAnim.isStop()) {
-        changeState(StateID_WakeupTurn);
+        changeState(daEnShell_c::StateID_WakeupTurn);
     }
 }
 
@@ -684,7 +677,7 @@ void daEnNoko_c::initializeState_BgmDance() {
         "BGM_anim_walkA_3",
     };
 
-    setMoveAnimation((char *)buf_80afdd98[mDanceMove], m3d::FORWARD_ONCE, 3.0f);
+    setMoveAnimation(buf_80afdd98[mDanceMove], m3d::FORWARD_ONCE, 3.0f);
     mSpeed.x = 0.0;
     mDancesRemaining = 3;
     mYRotIncrease = (u16)(abs((int)mAngle.y) / (int)mDancesRemaining);
@@ -710,16 +703,15 @@ void daEnNoko_c::executeState_BgmDance() {
     }
 
     if (mMoveAnim.isStop()) {
-        changeState(StateID_BgmDance);
+        changeState(StateID_BgmDanceEd);
     }
 }
 
 void daEnNoko_c::initializeState_BgmDanceEd() {
     setMoveAnimation("walkA", m3d::FORWARD_ONCE, 4.0f);
-    mAng x = buf_80ad34bc[mDirection];
     mSpeed.x = 0.0f;
     mDancesRemaining = 4;
-    mYRotIncrease = abs(x) / mDancesRemaining;
+    mYRotIncrease = abs(buf_80ad34bc[mDirection]) / mDancesRemaining;
 }
 
 void daEnNoko_c::finalizeState_BgmDanceEd() {}
@@ -734,9 +726,8 @@ void daEnNoko_c::executeState_BgmDanceEd() {
     }
 
     if (mDancesRemaining > 0) {
-        mAng y = buf_80ad34bc[mDirection];
         mDancesRemaining--;
-        sLib::chaseAngle((s16*)&mAngle.y, y, mYRotIncrease);
+        sLib::chaseAngle((s16*)&mAngle.y, buf_80ad34bc[mDirection], mYRotIncrease);
 
         if (mDancesRemaining > 0) {
             return;
@@ -744,5 +735,14 @@ void daEnNoko_c::executeState_BgmDanceEd() {
 
         mAngle.y = buf_80ad34bc[mDirection];
         changeState(StateID_Walk);
+    }
+}
+
+void daEnNoko_c::nodeCallback_c::timingB(ulong nodeId, nw4r::g3d::WorldMtxManip *manip, nw4r::g3d::ResMdl resMdl) {
+    mMtx_c mtx;
+    if (strcmp(resMdl.GetResNode(nodeId).GetName(), "head") == 0) {
+        manip->GetMatrix(&mtx);
+        mtx.XrotM(mpOwner->m_8a8);
+        manip->SetMatrix(mtx);
     }
 }
