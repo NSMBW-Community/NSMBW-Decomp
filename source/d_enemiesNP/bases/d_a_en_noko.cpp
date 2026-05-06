@@ -6,16 +6,26 @@
 #include <game/bases/d_audio.hpp>
 
 const float buf_80ad34b0[2] = {0.5f, -0.5f};
-const mAng buf_80ad34b8[2] = {0x800, 0xF800};
-const mAng buf_80ad34bc[2] = {0x4000, 0xC000};
-const s16 buf_80ad34f0[2] = {0xEAAB, 0x1555};
+const s16 buf_80ad34b8[2] = {0x800, -0x800};
+const s16 buf_80ad34bc[2] = {0x4000, -0x4000};
+const s16 buf_80ad34f0[2] = {-0x1555, 0x1555};
 const int buf_80ad34f8[2] = {0, 1};
 const float buf_80ad3500[2] = {-2.0f, -4.0f};
 const float buf_80ad3518[2] = {2.5f, -2.5f};
-const char *buf_80afdd98[3] = {
-    "BGM_anim_walkA_1",
-    "BGM_anim_walkA_1",
-    "BGM_anim_walkA_3",
+
+const sBcSensorPoint smc_noko_head = { SENSOR_IS_POINT, 0, 0xc000 };
+const sBcSensorLine smc_noko_foot = { SENSOR_IS_LINE, -0x4000, 0x4000, 0x0 };
+const sBcSensorLine smc_noko_wall = { SENSOR_IS_LINE, 0x6000, 0x9000, 0x6000 };
+const sCcDatNewF ccData = {
+    0.0f, 8.0f,
+    9.0f, 8.0f,
+    CC_KIND_ENEMY,
+    CC_ATTACK_NONE,
+    BIT_FLAG(CC_KIND_PLAYER) | BIT_FLAG(CC_KIND_PLAYER_ATTACK) | BIT_FLAG(CC_KIND_YOSHI) |
+        BIT_FLAG(CC_KIND_ENEMY) | BIT_FLAG(CC_KIND_TAMA),
+    (u32) ~BIT_FLAG(CC_ATTACK_NONE) & ~BIT_FLAG(CC_ATTACK_YOSHI_MOUTH) & ~BIT_FLAG(CC_ATTACK_SPIN_LIFT_UP) & ~BIT_FLAG(CC_ATTACK_SAND_PILLAR),
+    CC_STATUS_NONE,
+    dEn_c::normal_collcheck
 };
 
 STATE_DEFINE(daEnNoko_c, BlockAppear);
@@ -25,6 +35,10 @@ STATE_DEFINE(daEnNoko_c, WindTurn);
 STATE_DEFINE(daEnNoko_c, SpitOut_Ready);
 STATE_DEFINE(daEnNoko_c, BgmDance);
 STATE_DEFINE(daEnNoko_c, BgmDanceEd);
+STATE_VIRTUAL_DEFINE(daEnNoko_c, Wakeup);
+STATE_VIRTUAL_DEFINE(daEnNoko_c, WakeupTurn);
+
+ACTOR_PROFILE(EN_NOKONOKO, daEnNoko_c, 0x0);
 
 int daEnNoko_c::create() {
     mWalksOffLedges = mParam & 1;
@@ -39,8 +53,8 @@ int daEnNoko_c::create() {
 
     u8 dir = getPl_LRflag(mPos);
     mDirection = dir;
-    mAngle.y = buf_80ad34bc[dir];
     mAmiLayer = (mParam >> 16) & 1;
+    mAngle.y = buf_80ad34bc[dir];
     m_8ac = mPos;
     mFlags |= dEn_c::EN_FLAG_16;
     mPos.z = l_Ami_Zpos[(mParam >> 16) & 1];
@@ -50,23 +64,18 @@ int daEnNoko_c::create() {
     mNokoAnimTex.setFrame(mWalksOffLedges, 0);
     mNokoAnimTex.setRate(0.0f, 0);
 
-    mSensorHead.mX = 0;
-    mSensorHead.mY = 0xC000;
-    mSensorWall.mLineA = 0x6000;
-    mSensorWall.mLineA = 0x9000;
-    mSensorWall.mDistanceFromCenter = 0x6000;
-    mSensorFootNormal.mLineA = -0x4000;
-    mSensorFootNormal.mLineB = 0x4000;
-    mSensorFootNormal.mDistanceFromCenter = 0;
+    mSensorHead = smc_noko_head;
+    mSensorWall = smc_noko_wall;
+    mSensorFootNormal = smc_noko_foot;
 
-    mCcData.mBase.mOffset.set(0.0f, 8.0f);
-    mCcData.mBase.mSize.set(9.0f, 8.0f);
-    mCcData.mKind = CC_KIND_ENEMY;
-    mCcData.mAttack = CC_ATTACK_NONE;
-    mCcData.mVsKind = ((1 << CC_KIND_YOSHI) | (1 << CC_KIND_ENEMY) | (1 << CC_KIND_TAMA));
-    mCcData.mVsDamage = ~((1 << CC_ATTACK_NONE) | (1 << CC_ATTACK_YOSHI_MOUTH) | (1 << CC_ATTACK_SPIN_LIFT_UP) | (1 << CC_ATTACK_SAND_PILLAR));
-    mCcData.mStatus = CC_STATUS_NONE;
-    mCcData.mCallback = dEn_c::normal_collcheck;
+    mCcData.mBase.mOffset = ccData.mBase.mOffset;
+    mCcData.mBase.mSize = ccData.mBase.mSize;
+    mCcData.mKind = ccData.mKind;
+    mCcData.mAttack = ccData.mAttack;
+    mCcData.mVsKind = ccData.mVsKind;
+    mCcData.mVsDamage = ccData.mVsDamage;
+    mCcData.mStatus = ccData.mStatus;
+    mCcData.mCallback = ccData.mCallback;
     mCc.set(this, &mCcData, l_Ami_Line[mAmiLayer]);
     mCc.entry();
 
@@ -75,7 +84,7 @@ int daEnNoko_c::create() {
 
     changeStateAccordingToSettings();
 
-    mBc.set(this, (const sBcSensorBase *) &mSensorFootNormal, (const sBcSensorBase *) &mSensorHead, (const sBcSensorBase *) &mSensorWall);
+    mBc.set(this, mSensorFootNormal, mSensorHead, mSensorWall);
     mBc.m_4c = mPos.x;
 
     return 1;
@@ -85,9 +94,11 @@ void daEnNoko_c::loadRes() {
     mNokoAllocator.createFrmHeap(-1, mHeap::g_gameHeaps[mHeap::GAME_HEAP_DEFAULT], nullptr, 0x20);
 
     mNokoResFile = dResMng_c::m_instance->getRes("nokonokoA", "g3d/nokonokoA.brres");
+
     nw4r::g3d::ResMdl mdl = mNokoResFile.GetResMdl("nokonokoA");
     mNokoModel.create(mdl, &mNokoAllocator, nw4r::g3d::ScnMdl::BUFFER_RESMATMISC | nw4r::g3d::ScnMdl::BUFFER_RESTEXOBJ | nw4r::g3d::ScnMdl::BUFFER_RESTLUTOBJ, 1, nullptr);
     dActor_c::setSoftLight_Enemy(mNokoModel);
+
     nw4r::g3d::ResAnmChr anm = mNokoResFile.GetResAnmChr("walkA");
     mMoveAnim.create(mdl, anm, &mNokoAllocator, nullptr);
     mNokoResAnmTexPat = mNokoResFile.GetResAnmTexPat("nokonokoA");
@@ -124,7 +135,7 @@ int daEnNoko_c::preExecute() {
     if (canDance()) {
         if (dAudio::isBgmAccentSign(2)) {
             danceWithMove(0);
-        } else if (dAudio::isBgmAccentSign(2)) {
+        } else if (dAudio::isBgmAccentSign(4)) {
             danceWithMove(1);
         } else if (dAudio::isBgmAccentSign(8)) {
             danceWithMove(2);
@@ -199,8 +210,9 @@ bool daEnNoko_c::isInQuicksand() {
 }
 
 void daEnNoko_c::spawnQuicksandEffects() {
-    mVec3_c pos = getCenterPos();
-    mQuickSandEffect.createEffect("Wm_en_quicksand", 0, &pos, nullptr, nullptr);
+    mVec3_c center = getCenterPos();
+    mVec3_c efPos(center.x, center.y, 5500.0f);
+    mQuickSandEffect.createEffect("Wm_en_quicksand", 0, &efPos, nullptr, nullptr);
 }
 
 bool daEnNoko_c::canDance() {
@@ -238,10 +250,7 @@ void daEnNoko_c::calcShellEffectPos() {
     nw4r::g3d::ResMdl resMdl = model->getResMdl();
     nw4r::g3d::ResNode resNode = resMdl.GetResNode("nokonoko_shell_model");
 
-    ulong idx = 0;
-    if (resNode.IsValid()) {
-        idx = resNode.GetID();
-    }
+    ulong idx = resNode.GetID();
     mMtx_c matrix;
 
     model->getNodeWorldMtx(idx, &matrix);
@@ -268,33 +277,26 @@ bool daEnNoko_c::isWalking() {
 }
 
 bool daEnNoko_c::sub_80A73330(dActor_c *actor) {
-    bool x = dActor_c::getTrgToSrcDir_Main(actor->mPos.x + actor->mCenterOffs.x, mPos.x + mCenterOffs.x);
+    u8 x = dActor_c::getTrgToSrcDir_Main(actor->getCenterX(), getCenterX());
 
-    if ((mDirection == x) || ((mUseBaseIceBehaviour & 0xFF) == 0)) {
+    u8 mShellKind = mUseBaseIceBehaviour;
+    if (mDirection == x || mShellKind == 0) {
         return false;
     }
 
     mDirection = x;
     mAngle.y = buf_80ad34bc[x];
-    m_8a8 = -m_8a8;
+    m_8a8 *= -1;
     vf30C();
 
     return true;
 }
 
 void daEnNoko_c::setBc() {
-    mSensorHead.mBase.mFlags = SENSOR_IS_POINT;
-    mSensorHead.mX = 0;
-    mSensorHead.mY = 0xc000;
-    mSensorWall.mBase.mFlags = SENSOR_IS_LINE;
-    mSensorWall.mLineA = 0x6000;
-    mSensorWall.mLineB = 0x9000;
-    mSensorWall.mDistanceFromCenter = 0x6000;
-    mSensorFootNormal.mBase.mFlags = SENSOR_IS_LINE;
-    mSensorFootNormal.mLineA = -0x4000;
-    mSensorFootNormal.mLineB = 0x4000;
-    mSensorFootNormal.mDistanceFromCenter = 0;
-    mBc.set(this, (const sBcSensorBase *) &mSensorFootNormal, (const sBcSensorBase *) &mSensorHead, (const sBcSensorBase *) &mSensorWall);
+    mSensorHead = smc_noko_head;
+    mSensorWall = smc_noko_wall;
+    mSensorFootNormal = smc_noko_foot;
+    mBc.set(this, mSensorFootNormal, mSensorHead, mSensorWall);
 }
 
 void daEnNoko_c::vf30C() {
@@ -379,22 +381,24 @@ bool daEnNoko_c::createIceActor() {
     mVec3_c f_5c;
     int ice_mode;
 
+    mVec3_c scale;
+
     if (*mStateMgr.getMainStateID() == StateID_BgmDance) {
         f_5c.set(mPos.x, mPos.y - 4.0f, mPos.z + 2.0f);
-        f_60 = 1.75f;
         ice_mode = 1;
+        scale.set(1.0f, 1.05f, 1.75f);
     } else {
         int x = mUseBaseIceBehaviour;
         f_5c.set(mPos.x, mPos.y + buf_80ad3500[x], mPos.z);
-        f_60 = 1.05f;
         ice_mode = buf_80ad34f8[x];
+        scale.set(1.0f, 1.05f, 1.05f);
     }
 
     dIceInfo iceInfo[] = {
         {
             ice_mode,
             f_5c,
-            mVec3_c(1.0f, 1.0f, f_60)
+            scale
         }
     };
 
@@ -484,7 +488,12 @@ void daEnNoko_c::sub_80A73CB0() {
 }
 
 void daEnNoko_c::initializeState_Walk() {
-    if ((*mStateMgr.getOldStateID() != StateID_Turn) && (*mStateMgr.getOldStateID() != StateID_Walk) && (*mStateMgr.getOldStateID() != StateID_WindTurn) && (*mStateMgr.getOldStateID() != StateID_WakeupTurn)) {
+    if (
+        *mStateMgr.getOldStateID() != StateID_Turn &&
+        *mStateMgr.getOldStateID() != StateID_Walk &&
+        *mStateMgr.getOldStateID() != StateID_WindTurn &&
+        *mStateMgr.getOldStateID() != daEnShell_c::StateID_WakeupTurn
+    ) {
         setMoveAnimation("walkA", m3d::FORWARD_LOOP, 1.0f);
     }
 
@@ -495,10 +504,7 @@ void daEnNoko_c::initializeState_Walk() {
     mSpeedMax.x = f;
     mSpeedMax.y = -4.0f;
     mSpeedMax.z = 0.0f;
-    mSensorFootNormal.mBase.mFlags = SENSOR_IS_LINE;
-    mSensorFootNormal.mLineA = -0x4000;
-    mSensorFootNormal.mLineB = 0x4000;
-    mSensorFootNormal.mDistanceFromCenter = 0;
+    mSensorFootNormal = smc_noko_foot;
     mSpeed.x = f;
     m_8c8 = 0;
 }
@@ -510,7 +516,7 @@ void daEnNoko_c::executeState_Walk() {
     float wind = getWindMultiplier();
 
     if (std::fabs(wind) > 0.475f) {
-        if (((float)(int)buf_80ad34b0[mDirection]) * wind >= 0.0f) {
+        if (l_EnMuki[mDirection] * wind >= 0.0f) {
             changeState(StateID_WindTurn);
             return;
         } else {
@@ -547,11 +553,11 @@ void daEnNoko_c::initializeState_Wakeup() {
     daEnShell_c::initializeState_Wakeup();
 }
 
-void daEnNoko_c::finalizeState_Wakeup() {
-    mAnim.setFrame(0.0f);
-    mCc.mCcData.mBase.mOffset.x = 0.0f;
-    mCc.mCcData.mBase.mSize.x = 8.0f;
-}
+// void daEnNoko_c::finalizeState_Wakeup() {
+//     mAnim.setFrame(0.0f);
+//     mCc.mCcData.mBase.mOffset.x = 0.0f;
+//     mCc.mCcData.mBase.mSize.x = 8.0f;
+// }
 
 void daEnNoko_c::executeState_Wakeup() {
     mNokoModel.play();
@@ -666,12 +672,18 @@ void daEnNoko_c::executeState_SpitOut_Ready() {
         deleteRequest();
     } else {
         setSlideThrowSpeed(player);
-        mPlayerNo = getPlrNo();
+        mPlayerNo = player->getPlrNo();
         changeState(StateID_Slide);
     }
 }
 
 void daEnNoko_c::initializeState_BgmDance() {
+    static const char *buf_80afdd98[3] = {
+        "BGM_anim_walkA_1",
+        "BGM_anim_walkA_1",
+        "BGM_anim_walkA_3",
+    };
+
     setMoveAnimation((char *)buf_80afdd98[mDanceMove], m3d::FORWARD_ONCE, 3.0f);
     mSpeed.x = 0.0;
     mDancesRemaining = 3;

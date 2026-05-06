@@ -7,23 +7,21 @@ enum SensorFlags {
     SENSOR_IS_LINE = 1
 };
 
-struct sBcSensorBase {
-    u32 mFlags;
-};
+class sBcSensorIf_c {};
 
 /// @unofficial
 struct sBcSensorPoint {
-    operator const sBcSensorBase *() const { return &mBase; }
+    operator const sBcSensorIf_c *() const { return (const sBcSensorIf_c *) this; }
 
-    sBcSensorBase mBase;
+    u32 mFlags;
     int mX, mY;
 };
 
 /// @unofficial
 struct sBcSensorLine {
-    operator const sBcSensorBase *() const { return &mBase; }
+    operator const sBcSensorIf_c *() const { return (const sBcSensorIf_c *) this; }
 
-    sBcSensorBase mBase;
+    u32 mFlags;
     int mLineA, mLineB;
     int mDistanceFromCenter;
 };
@@ -31,7 +29,7 @@ struct sBcSensorLine {
 /// @unofficial
 class sBcPointData {
 public:
-    operator const sBcSensorBase *() const { return (sBcSensorBase *) &mFlags; }
+    operator const sBcSensorIf_c *() const { return (sBcSensorIf_c *) &mFlags; }
 
     u32 mFlags;
     long mInfMargin;
@@ -127,7 +125,7 @@ public:
     virtual ~dBc_c();
 
     void init();
-    void set(dActor_c *, const sBcSensorBase *, const sBcSensorBase *, const sBcSensorBase *); ///< @unofficial
+    void set(dActor_c *, const sBcSensorIf_c *, const sBcSensorIf_c *, const sBcSensorIf_c *); ///< @unofficial
 
     void checkLink();
     bool checkRide();
@@ -168,14 +166,16 @@ public:
 
     u32 isWallR() { return mFlags & FLAG_WALL_R; }
     u32 isWallL()  { return mFlags & FLAG_WALL_L; }
+    u32 isWall() { return mFlags & (FLAG_WALL_R | FLAG_WALL_L); }
+    u32 isWall(u8 dir) { return mFlags & (FLAG_WALL_R << dir); }
     u32 isFoot(); // { return mFlags & FLAG_FOOT; }
     u32 isHead() { return mFlags & FLAG_HEAD; }
     u32 isCollision() { return mFlags & (FLAG_WALL_L | FLAG_WALL_R | FLAG_FOOT | FLAG_HEAD); }
 
     dActor_c *mpOwner;
-    sBcSensorBase *mpSensorFoot;
-    sBcSensorBase *mpSensorHead;
-    sBcSensorBase *mpSensorWall;
+    sBcSensorIf_c *mpSensorFoot;
+    sBcSensorIf_c *mpSensorHead;
+    sBcSensorIf_c *mpSensorWall;
     mVec3_c *mpOwnerPos;
     mVec3_c *mpOwnerLastPos;
     mVec3_c *mpOwnerSpeed;

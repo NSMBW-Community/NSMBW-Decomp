@@ -95,6 +95,16 @@ public:
         return ResName(NULL);
     }
 
+    const char *GetName() const {
+        const ResNodeData& r = ref();
+
+        if (r.name != 0) {
+            return NW4R_G3D_OFS_TO_RESNAME(&r, r.name).GetName();
+        }
+
+        return nullptr;
+    }
+
     ulong GetID() const {
         if (IsValid()) {
             return ptr()->id;

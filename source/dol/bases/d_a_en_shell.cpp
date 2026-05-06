@@ -1026,7 +1026,7 @@ void daEnShell_c::executeState_Carry() {
 }
 
 void daEnShell_c::initializeState_Slide() {
-    mSensorFootSlide.mBase.mFlags = 1;
+    mSensorFootSlide.mFlags = 1;
     mSensorFootSlide.mLineA = -0x3000;
     mSensorFootSlide.mLineB = 0x2000;
     mSensorFootSlide.mDistanceFromCenter = 0;
@@ -1053,10 +1053,10 @@ void daEnShell_c::initializeState_Slide() {
             mNoHitPlayer.mTimer[mPlayerNo] = 10;
         }
 
-        mSensorHead.mBase.mFlags |= 0xc0000;
-        mSensorFootNormal.mBase.mFlags |= 0xc0000;
-        mSensorWall.mBase.mFlags |= 0xc0000;
-        mSensorFootSlide.mBase.mFlags |= 0xc0000;
+        mSensorHead.mFlags |= 0xc0000;
+        mSensorFootNormal.mFlags |= 0xc0000;
+        mSensorWall.mFlags |= 0xc0000;
+        mSensorFootSlide.mFlags |= 0xc0000;
     }
 
     mSlideAirAfterThrow = 0;
@@ -1072,11 +1072,11 @@ void daEnShell_c::initializeState_Slide() {
     mAccelY = -0.1875f;
     mSpeedMax.set(mSpeed.x, -4.0f, 0.0f);
 
-    mSensorHead.mBase.mFlags |= 0x900000;
-    mSensorWall.mBase.mFlags |= 0x900000;
+    mSensorHead.mFlags |= 0x900000;
+    mSensorWall.mFlags |= 0x900000;
     if (mJumpPlayerCarryActorID) {
-        mSensorHead.mBase.mFlags |= 0x400;
-        mSensorWall.mBase.mFlags |= 0x400;
+        mSensorHead.mFlags |= 0x400;
+        mSensorWall.mFlags |= 0x400;
     }
     mBc.set(this, mSensorFootSlide, mSensorHead, mSensorWall);
 
@@ -1105,10 +1105,10 @@ void daEnShell_c::finalizeState_Slide() {
     mCc.mCcData.mAttack = CC_ATTACK_NONE;
     mAccelF = 0.0f;
     mSpeedMax.set(0.0f, -4.0f, 0.0f);
-    mSensorHead.mBase.mFlags &= ~0x49c0400;
-    mSensorFootNormal.mBase.mFlags &= ~0xc0000;
-    mSensorWall.mBase.mFlags &= ~0x9c0400;
-    mSensorFootSlide.mBase.mFlags &= ~0xc0000;
+    mSensorHead.mFlags &= ~0x49c0400;
+    mSensorFootNormal.mFlags &= ~0xc0000;
+    mSensorWall.mFlags &= ~0x9c0400;
+    mSensorFootSlide.mFlags &= ~0xc0000;
     mBc.set(this, mSensorFootNormal, mSensorHead, mSensorWall);
     mBc.mOwningPlrNo = -1;
     mPlayerNo = -1;
@@ -1122,8 +1122,8 @@ void daEnShell_c::executeState_Slide() {
     slideSpin();
     slideEffect();
     if (mJumpPlayerNoCarryHitTimer == 0) {
-        mSensorHead.mBase.mFlags &= ~0x400;
-        mSensorWall.mBase.mFlags &= ~0x400;
+        mSensorHead.mFlags &= ~0x400;
+        mSensorWall.mFlags &= ~0x400;
     }
     EnBgCheckWall();
     EnBgCheckFoot();

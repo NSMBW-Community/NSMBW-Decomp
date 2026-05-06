@@ -1,5 +1,5 @@
-
 #include <game/bases/d_a_en_shell.hpp>
+#include <lib/MSL/string.h>
 
 namespace nw4r {
     namespace ef {
@@ -21,6 +21,8 @@ namespace nw4r {
 namespace mEf {
     class levelOneEffect_c : public levelEffect_c {
     public:
+        levelOneEffect_c() { reset(); }
+
         float mEmissionRateMaybe;
         nw4r::ef::EmitterInheritSetting setting;
     };
@@ -39,37 +41,59 @@ public:
  */
 class daEnNoko_c : public daEnShell_c {
 public:
-    daEnNoko_c();
-    ~daEnNoko_c();
+    class nodeCallback_c : public m3d::mdl_c::callback_c {
+    public:
+        virtual void timingB(ulong nodeId, nw4r::g3d::WorldMtxManip *manip, nw4r::g3d::ResMdl resMdl) {
+            mMtx_c mtx;
+            if (strcmp(resMdl.GetResNode(nodeId).GetName(), "head") == 0) {
+                manip->GetMatrix(&mtx);
+                mtx.XrotM(mpOwner->m_8a8);
+                manip->SetMatrix(mtx);
+            }
+        }
+
+        daEnNoko_c *mpOwner;
+    };
+
+    daEnNoko_c() { mMdlCallback.mpOwner = this; }
+    ~daEnNoko_c() {}
 
     virtual int create() override;
     virtual int doDelete() override;
     virtual int execute() override;
     virtual int preExecute() override;
     virtual int draw() override;
-    virtual void finalUpdate() override;
-    // virtual bool isSpinLiftUpEnable() override;
-    // virtual void boyonBegin() override;
+    virtual void finalUpdate() override { vf310(); }
     virtual bool createIceActor() override;
     virtual void beginFunsui() override;
     virtual void endFunsui() override;
-    virtual bool isFunsui() const override;
+    virtual BOOL isFunsui() const override { return mIsFrozen; }
     virtual void YoshiFumiScoreSet(dActor_c *) override;
-    virtual void initializeState_Wakeup() override;
-    virtual void executeState_Wakeup() override;
-    virtual void finalizeState_Wakeup() override;
-    virtual void initializeState_WakeupTurn() override;
-    virtual void executeState_WakeupTurn() override;
-    virtual void finalizeState_WakeupTurn() override;
+
+    STATE_FUNC_DECLARE(daEnNoko_c, BlockAppear);
+    STATE_FUNC_DECLARE(daEnNoko_c, Walk);
+    STATE_FUNC_DECLARE(daEnNoko_c, Turn);
+    STATE_FUNC_DECLARE(daEnNoko_c, WindTurn);
+    STATE_FUNC_DECLARE(daEnNoko_c, SpitOut_Ready);
+    STATE_FUNC_DECLARE(daEnNoko_c, BgmDance);
+    STATE_FUNC_DECLARE(daEnNoko_c, BgmDanceEd);
+    STATE_VIRTUAL_FUNC_DECLARE(daEnNoko_c, Wakeup);
+    STATE_VIRTUAL_FUNC_DECLARE(daEnNoko_c, WakeupTurn);
+
     virtual bool setPlayerDamage(dActor_c *actor) override;
     virtual bool checkSleep() override;
     virtual void calcShellEffectPos() override;
-    // virtual bool isFumiInvalid() override;
-    // virtual void kickEffect() override;
-    // virtual bool isDieShell() override;
-    // virtual bool isBlockHitDeath() override;
+    virtual void setEnemyTurn() override { if (isState(StateID_Walk)) { changeState(StateID_Turn); } }
+    virtual void setAfterSleepState() override { changeState(StateID_Walk); }
+    virtual void slideEffect() override {
+        if (!mWalksOffLedges) {
+            mEffect.createEffect("Wm_en_shellgreentail", 0, &m_71c, nullptr, nullptr);
+        } else {
+            mEffect.createEffect("Wm_en_shellredtail", 0, &m_71c, nullptr, nullptr);
+        }
+    }
 
-    virtual void vf300();
+    virtual void vf300() { WaterCheck(mPos, 1.0f); }
     virtual void vf304(u32 * pDir, mAng * pAng);
     virtual bool isWalking();
     virtual void vf30C();
@@ -79,17 +103,9 @@ public:
     virtual void dance();
     virtual void changeStateAccordingToSettings();
     virtual void vf324();
-    virtual void vf328();
+    virtual void vf328() {}
     virtual void deleteRest();
     virtual mVec3_c getPos();
-
-    STATE_FUNC_DECLARE(daEnNoko_c, BlockAppear);
-    STATE_FUNC_DECLARE(daEnNoko_c, Walk);
-    STATE_FUNC_DECLARE(daEnNoko_c, Turn);
-    STATE_FUNC_DECLARE(daEnNoko_c, WindTurn);
-    STATE_FUNC_DECLARE(daEnNoko_c, SpitOut_Ready);
-    STATE_FUNC_DECLARE(daEnNoko_c, BgmDance);
-    STATE_FUNC_DECLARE(daEnNoko_c, BgmDanceEd);
 
     void loadRes();
     void updateAmiLine();
@@ -115,7 +131,6 @@ public:
     u32 mIsFrozen;
     s16 m_8a8;
     bool mWalksOffLedges;
-    u8 mPad2[1];
     mVec3_c m_8ac;
     float mXSpeedBeforeFrozen;
     u8 mPad3[8];
@@ -126,5 +141,5 @@ public:
     u8 mPad4[2];
     u32 mDanceMove;
     mEf::levelOneEffect_c mQuickSandEffect;
-    m3d::mdl_c::callback_c mMdlCallback;
+    nodeCallback_c mMdlCallback;
 };

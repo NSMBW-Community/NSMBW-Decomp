@@ -37,8 +37,9 @@
         },
         {
             "source": "d_enemiesNP/bases/d_a_en_noko.cpp",
+            "nonMatching": true,
             "memoryRanges": {
-                ".text": "0xc6230-0xd2570",
+                ".text": "0xcf710-0xd2930",
                 ".data": "0x28250-0x289d0",
                 ".bss": "0x7e60-0x80a0"
             }
