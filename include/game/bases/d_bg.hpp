@@ -216,17 +216,6 @@ public:
     u16 cvtW() { return getR() - getL(); }
     u16 cvtH() { return getU() - getD(); }
 
-    float getL() { return mL; }
-    float getU() { return mU; }
-    float getD() { return mD; }
-    float getR() { return mR; }
-    u16 cvtL() { return getL(); }
-    u16 cvtR() { return getR(); }
-    u16 cvtU() { return getU(); }
-    u16 cvtD() { return getD(); }
-    u16 cvtW() { return getR() - getL(); }
-    u16 cvtH() { return getU() - getD(); }
-
     float getLimitD() { return mDLimit; }
 
     dBgScrollLimit_c *getScrLim(int area, int group, int idx) { return &mScrLimit[area][group][idx]; }
