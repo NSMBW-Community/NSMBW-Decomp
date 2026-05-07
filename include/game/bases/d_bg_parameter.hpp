@@ -25,8 +25,9 @@ public:
     mVec2_c mPos;
     mVec2_c mSize;
     mVec2_c mCenter;
-    u8 mPad2[0x2c];
+    u8 mPad2[0x28];
     float m_78;
+    u8 mPad3[0x4];
     u8 mScrollDirX; ///< See BG_SCROLL_DIR_X_e.
     u8 mScrollDirY; ///< See BG_SCROLL_DIR_Y_e.
 

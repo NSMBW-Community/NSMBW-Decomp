@@ -110,7 +110,7 @@ public:
 
     unsigned long long CvtBgCheckFromUnitNo(u16);
     static unsigned long long fn_80081960(unsigned long long, int);
-    dBgUnit_c *fn_80077520(u16 param_2, u16 param_3, u8 param_4, int *param_5, bool b);
+    dBgUnit_c *__GetUnitPointer(u16 param_2, u16 param_3, u8 param_4, int *param_5, bool b);
 
     unsigned long long getBgCheckBuff(u16);
     unsigned long long *getpBgCheckBuff(u16);
@@ -212,7 +212,7 @@ public:
     static void bg_destroyHeap();
 
     float getDispScale() { return mDispScale; }
-    float getPrevDispScale() { return mMoreFloats3[1]; }
+    float getPrevDispScale() { return mMoreFloats3[0]; }
     float getScaleFactor() { return 1.0f / mDispScale; }
     float getLiquidHeight() const { return mMoreFloats7[5]; }
 
@@ -236,9 +236,6 @@ public:
     float getSomeSizeY() { return mSomeSize.y; }
 
     float getLoopOffsetX() { return mLoopOffsetX; }
-
-    float get_900ac() { return m_900ac; }
-    float get_900b0() { return m_900b0; }
 
     dBgScrollLimit_c *getScrLim(int area, int group, int idx) { return &mScrLimit[area][group][idx]; }
     dBgSubstruct2_c * getData2(int idx, int i) { return &mData2[idx][i]; }
@@ -305,7 +302,7 @@ public:
     float mZoomWeight;
     u8 mZoomRelated;
     u8 m_900a5, m_900a6, m_900a7, m_900a8;
-    float m_900ac, m_900b0;
+    mVec2_c m_900ac;
     u8 m_900b4;
     short m_900b6;
     float m_900b8, m_900bc;

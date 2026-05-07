@@ -164,7 +164,7 @@ u64 dBg_c::CvtBgCheckFromUnitNo(u16 num) {
     return maskedData;
 }
 
-dBgUnit_c *dBg_c::fn_80077520(u16 x, u16 y, u8 layer, int *param_5, bool b) {
+dBgUnit_c *dBg_c::__GetUnitPointer(u16 x, u16 y, u8 layer, int *param_5, bool b) {
     int file = dScStage_c::m_instance->mCurrFile;
     dBgUnit_c *bgUnit = dBgGlobal_c::ms_pInstance->GetBgUnitP(file, layer);
     return bgUnit->GetBuffPos(x, y, param_5, b);
@@ -173,7 +173,7 @@ dBgUnit_c *dBg_c::fn_80077520(u16 x, u16 y, u8 layer, int *param_5, bool b) {
 u16 fn_80081ab0(u16);
 
 u16 dBg_c::GetUnitNumber(u16 x, u16 y, u8 layer, bool p4) {
-    dBgUnit_c *unit = fn_80077520(x, y, layer, 0, false);
+    dBgUnit_c *unit = __GetUnitPointer(x, y, layer, 0, false);
     u16 res = -1;
     if (unit != nullptr) {
         if (p4) {
@@ -195,7 +195,7 @@ u16 dBg_c::GetMaskedUnitNumber(u16 p1, u16 p2, u8 p3) {
 
 u64 dBg_c::GetBgCheckData(u16 p1, u16 p2, u8 p3) {
     int loopPos = dScStage_c::getLoopPosX(p1);
-    dBgUnit_c *data = fn_80077520(loopPos, p2, p3, 0, false);
+    dBgUnit_c *data = __GetUnitPointer(loopPos, p2, p3, 0, false);
     return CvtBgCheckFromUnitNo(data->mUnitNumber);
 }
 
@@ -243,7 +243,7 @@ void dBg_c::BgUnitChange(u16 p1, u16 p2, int p3, u16 p4) {
         p4 = 4;
     }
     int idk;
-    dBgUnit_c *unit = fn_80077520(p1, p2, p3, &idk, true);
+    dBgUnit_c *unit = __GetUnitPointer(p1, p2, p3, &idk, true);
     if (idk != 0) {
         u16 smth = 0;
         if (dBgUnit_c::fn_80081900(unit->mUnitNumber, &smth)) {
@@ -317,32 +317,32 @@ void dBg_c::DispScaleCalc() {
 }
 
 void dBg_c::CreateBgTex() {
-    mTexMng.create(mHeap::g_gameHeaps[2]);
+    mTexMng.create(mHeap::g_gameHeaps[mHeap::GAME_HEAP_MEM2]);
 
     u16 texL = getL() / 16.0f;
     u16 texU = -getU() / 16.0f;
 
     u16 iMu = getU();
     u16 iMd = getD();
-    u16 iw = cvtW();
-    u16 ih = cvtH();
+    u16 iw = getR() - getL();
+    u16 ih = getU() - getD();
 
-    if (iw % 16U > 0) {
-        iw = iw >> 4;
+    if ((iw & 0xF) != 0) {
+        iw >>= 4;
         iw++;
     } else {
-        iw = iw >> 4;
+        iw >>= 4;
     }
 
-    if (ih % 16U > 0) {
-        ih = ih >> 4;
+    if ((ih & 0xF) != 0) {
+        ih >>= 4;
         ih++;
     } else {
-        ih = ih >> 4;
-        if (iMu % 16U > 0) {
+        ih >>= 4;
+        if ((iMu & 0xF) != 0) {
             ih++;
         }
-        if (iMd % 16U > 0) {
+        if ((iMd & 0xF) != 0) {
             ih++;
         }
     }
@@ -1065,28 +1065,30 @@ void dBg_c::calcLoopAutoScroll() {
 }
 
 void dBg_c::calcAutoScroll() {
-    dBgParameter_c *bgParam = dBgParameter_c::ms_Instance_p;
+    dBgParameter_c *bgParam = dBgParameter_c::getInstance();
     float bgW = bgParam->xSize();
     float bgH = bgParam->ySize();
 
     sRailInfoData *ri = dRail_c::getRailInfoP(mAutoscrolls[0].m_14);
-    dScStage_c *stage = dScStage_c::getInstance();
+    dScStage_c *stage = dScStage_c::m_instance;
     dCdFile_c *file = dCd_c::m_instance->getFileP(stage->mCurrFile);
 
     float calcArg, calcArg2;
-    float leftLim, rightLim, upLim, downLim;
-    leftLim = getLeftLimit();
-    rightLim = getRightLimit() - bgW;
-    downLim = getLimitD() + bgH;
-    upLim = getLimitU();
+    float leftLim = getLeftLimit();
+    float rightLim = getRightLimit() - bgW;
+    float downLim = getLimitD() + bgH;
+    float upLim = getLimitU();
 
-    bool updateX;
-    bool updateY;
+    bool cond3, cond4, updateX, updateY;
     updateX = true;
     updateY = true;
+
     if (stage->mCurrWorld == WORLD_2 && stage->mCurrCourse == STAGE_CASTLE && stage->mCurrFile == 0) {
         calcLoopAutoScroll();
-    } else if ((dActor_c::mExecStop & 8) == 0 && m_9008c == 0) {
+        return;
+    }
+
+    if ((dActor_c::mExecStop & 8) == 0 && m_9008c == 0) {
         sRailNodeData *base = &file->mpRailNodes[ri->mNodeIdx];
         if (m_9008d != 0) {
             int idx;
@@ -1108,132 +1110,133 @@ void dBg_c::calcAutoScroll() {
         asPos.z = 0.0f;
         int tmp = m_9007c;
         int offset = m_90080;
-        if (offset < 999) {
-            mVec3_c bgThingVec;
-            mVec3_c asCopy;
-            mVec3_c someVec2;
-            mVec3_c idk;
-            mVec3_c someVec;
-            bgThingVec.x = base[tmp].mX;
-            bgThingVec.y = -(float) base[tmp].mY;
-            bgThingVec.z = 0.0f;
-            if (tmp > 0) {
-                asCopy.x = (&base[tmp] - 1)->mX;
-                asCopy.y = -(float) (&base[tmp] - 1)->mY;
-                asCopy.z = 0.0f;
-            } else {
-                asCopy = asPos;
-            }
-            someVec = bgThingVec - asCopy;
-            someVec.normalize();
-            calcArg = base[tmp].mSpeed;
-            calcArg2 = base[tmp].mAccel;
-            someVec2 = bgThingVec - asPos;
-            someVec2.normalize();
-            float len = someVec2.xzLen();
-            short ang1 = cM::atan2s(someVec2.y, len);
-            short ang2 = cM::atan2s(someVec2.x, someVec2.z);
-            if (m_90080 == 0 && m_9007c <= 1 || mAutoscrolls[0].m_15 != 0) {
-                m_90088 = ang1;
-                m_9008a = ang2;
-            } else {
-                sLib::addCalcAngle(&m_90088, ang1, 60, 250, 1);
-                sLib::addCalcAngle(&m_9008a, ang2, 60, 250, 1);
-            }
-            idk.x = mAng(m_90088).cos() * mAng(m_9008a).sin();
-            idk.y = mAng(m_90088).sin();
-            idk.z = mAng(m_90088).cos() * mAng(m_9008a).cos();
-            sLib::addCalc(&mAutoscrolls[0].m_0c, calcArg, 1.0f, calcArg2, 0.0001f);
-            mAutoscrolls[0].mPos.x += idk.x * mAutoscrolls[0].m_0c;
-            mAutoscrolls[0].mPos.y += idk.y * mAutoscrolls[0].m_0c;
-            mAutoscrolls[0].mPos.z = 0.0f;
-            float dist = mAutoscrolls[0].mPos.distTo(bgThingVec);
-            bool cond3 = false;
-            bool cond4 = false;
-            if (mAutoscrolls[0].m_18 == 1) {
-                cond3 = true;
-            } else if (mAutoscrolls[0].m_18 == 2) {
-                cond4 = true;
-            }
-            if ((
-                cond4 || someVec.x == 0.0f ||
-                (someVec.x > 0.0f && mAutoscrolls[0].mPos.x >= bgThingVec.x) ||
-                (someVec.x <= 0.0f && (mAutoscrolls[0].mPos.x <= bgThingVec.x))
-            ) && (
-                cond3 || someVec.y == 0.0f ||
-                (someVec.y > 0.0f && mAutoscrolls[0].mPos.y >= bgThingVec.y) ||
-                (someVec.y <= 0.0f && (mAutoscrolls[0].mPos.y <= bgThingVec.y))
-            )) {
-                m_9007c++;
-                if (m_9007c >= ri->mCount) {
-                    switch (mAutoscrolls[0].m_17) {
-                        case 0:
-                            AutoScroll_stop();
-                            break;
-                        case 1:
-                            m_9007c = mAutoscrolls[0].m_16;
-                            m_90080++;
-                            break;
-                        default:
-                            m_9007c = ri->mCount - 1;
-                            m_90080 = 999;
-                            break;
-                    }
-                    return;
-                }
-            }
-            mSomeParameterPos = bgParam->mPos;
-            mVec3_c asPosCopy;
-            asPosCopy.x = mAutoscrolls[0].mPos.x;
-            asPosCopy.y = mAutoscrolls[0].mPos.y;
-            asPosCopy.z = mAutoscrolls[0].mPos.z;
-            if (asPosCopy.x < leftLim) {
-                asPosCopy.x = leftLim;
-            } else if (asPosCopy.x > rightLim) {
-                asPosCopy.x = rightLim;
-            }
-            if (asPosCopy.y < downLim) {
-                asPosCopy.y = downLim;
-            } else if (asPosCopy.y > upLim) {
-                asPosCopy.y = upLim;
-            }
-            switch (mAutoscrolls[0].m_18) {
-                case 0:
-                    updateX = true;
-                    updateY = true;
-                    break;
-                case 1:
-                    updateX = true;
-                    updateY = false;
-                    break;
-                case 2:
-                    updateX = false;
-                    updateY = true;
-                    break;
-            }
-            if (updateX) {
-                rightLim = -999999.0f;
-                for (int i = 0; i < 4; i++) {
-                    dAcPy_c *pl = daPyMng_c::getPlayer(i);
-                    if (pl != nullptr) {
-                        upLim = pl->mPc.m_30.x;
-                        if (upLim > rightLim) {
-                            rightLim = upLim;
-                        }
-                    }
-                }
-                mSomePos.x = asPosCopy.x;
-            }
-            if (updateY) {
-                mSomePos.y = asPosCopy.y;
-            }
-
-            float lWidth = mVideo::l_rayoutWidthF;
-            float lHeight = mVideo::l_rayoutHeightF;
-            mDispScale = 1.0f / m_bg_p->getZoomTargetMin();
-            mSomeSize.x = lWidth * (1.0f / mDispScale);
-            mSomeSize.y = lHeight * (1.0f / mDispScale);
+        if (offset >= 999) {
+            return;
         }
+        mVec3_c bgThingVec;
+        mVec3_c asCopy;
+        mVec3_c someVec2;
+        mVec3_c idk;
+        mVec3_c someVec;
+        bgThingVec.x = base[tmp].mX;
+        bgThingVec.y = -(float) base[tmp].mY;
+        bgThingVec.z = 0.0f;
+        if (tmp > 0) {
+            asCopy.x = (&base[tmp] - 1)->mX;
+            asCopy.y = -(float) (&base[tmp] - 1)->mY;
+            asCopy.z = 0.0f;
+        } else {
+            asCopy = asPos;
+        }
+        someVec = bgThingVec - asCopy;
+        someVec.normalize();
+        calcArg = base[tmp].mSpeed;
+        calcArg2 = base[tmp].mAccel;
+        someVec2 = bgThingVec - asPos;
+        someVec2.normalize();
+        float len = someVec2.xzLen();
+        short ang1 = cM::atan2s(someVec2.y, len);
+        short ang2 = cM::atan2s(someVec2.x, someVec2.z);
+        if (m_90080 == 0 && m_9007c <= 1 || mAutoscrolls[0].m_15 != 0) {
+            m_90088 = ang1;
+            m_9008a = ang2;
+        } else {
+            sLib::addCalcAngle(&m_90088, ang1, 60, 250, 1);
+            sLib::addCalcAngle(&m_9008a, ang2, 60, 250, 1);
+        }
+        idk.x = mAng(m_90088).cos() * mAng(m_9008a).sin();
+        idk.y = mAng(m_90088).sin();
+        idk.z = mAng(m_90088).cos() * mAng(m_9008a).cos();
+        sLib::addCalc(&mAutoscrolls[0].m_0c, calcArg, 1.0f, calcArg2, 0.0001f);
+        mAutoscrolls[0].mPos.x += idk.x * mAutoscrolls[0].m_0c;
+        mAutoscrolls[0].mPos.y += idk.y * mAutoscrolls[0].m_0c;
+        mAutoscrolls[0].mPos.z = 0.0f;
+        float dist = mAutoscrolls[0].mPos.distTo(bgThingVec);
+        cond3 = false;
+        cond4 = false;
+        if (mAutoscrolls[0].m_18 == 1) {
+            cond3 = true;
+        } else if (mAutoscrolls[0].m_18 == 2) {
+            cond4 = true;
+        }
+        if ((
+            cond4 || someVec.x == 0.0f ||
+            (someVec.x > 0.0f && mAutoscrolls[0].mPos.x >= bgThingVec.x) ||
+            (someVec.x <= 0.0f && (mAutoscrolls[0].mPos.x <= bgThingVec.x))
+        ) && (
+            cond3 || someVec.y == 0.0f ||
+            (someVec.y > 0.0f && mAutoscrolls[0].mPos.y >= bgThingVec.y) ||
+            (someVec.y <= 0.0f && (mAutoscrolls[0].mPos.y <= bgThingVec.y))
+        )) {
+            m_9007c++;
+            if (m_9007c >= ri->mCount) {
+                switch (mAutoscrolls[0].m_17) {
+                    case 0:
+                        AutoScroll_stop();
+                        break;
+                    case 1:
+                        m_9007c = mAutoscrolls[0].m_16;
+                        m_90080++;
+                        break;
+                    default:
+                        m_9007c = ri->mCount - 1;
+                        m_90080 = 999;
+                        break;
+                }
+                return;
+            }
+        }
+        mSomeParameterPos = bgParam->mPos;
+        mVec3_c asPosCopy;
+        asPosCopy.x = mAutoscrolls[0].mPos.x;
+        asPosCopy.y = mAutoscrolls[0].mPos.y;
+        asPosCopy.z = mAutoscrolls[0].mPos.z;
+        if (asPosCopy.x < leftLim) {
+            asPosCopy.x = leftLim;
+        } else if (asPosCopy.x > rightLim) {
+            asPosCopy.x = rightLim;
+        }
+        if (asPosCopy.y < downLim) {
+            asPosCopy.y = downLim;
+        } else if (asPosCopy.y > upLim) {
+            asPosCopy.y = upLim;
+        }
+        switch (mAutoscrolls[0].m_18) {
+            case 0:
+                updateX = true;
+                updateY = true;
+                break;
+            case 1:
+                updateX = true;
+                updateY = false;
+                break;
+            case 2:
+                updateX = false;
+                updateY = true;
+                break;
+        }
+        if (updateX) {
+            rightLim = -999999.0f;
+            for (int i = 0; i < 4; i++) {
+                dAcPy_c *pl = daPyMng_c::getPlayer(i);
+                if (pl != nullptr) {
+                    upLim = pl->mPc.m_30.x;
+                    if (upLim > rightLim) {
+                        rightLim = upLim;
+                    }
+                }
+            }
+            mSomePos.x = asPosCopy.x;
+        }
+        if (updateY) {
+            mSomePos.y = asPosCopy.y;
+        }
+
+        float lWidth = mVideo::l_rayoutWidthF;
+        float lHeight = mVideo::l_rayoutHeightF;
+        mDispScale = 1.0f / m_bg_p->getZoomTargetMin();
+        mSomeSize.x = lWidth * (1.0f / mDispScale);
+        mSomeSize.y = lHeight * (1.0f / mDispScale);
     }
 }
 
@@ -1248,6 +1251,8 @@ void dBg_c::AutoScroll_stop() {
 void dBg_c::calcScroll(const mVec3_c &pos, int param_2) {
     dBgParameter_c *bgParam = dBgParameter_c::getInstance();
 
+    float bounds40;
+    float bounds41;
     float bgVal;
     float lWidth = mVideo::l_rayoutWidthF;
     float zoomFactor;
@@ -1265,28 +1270,30 @@ void dBg_c::calcScroll(const mVec3_c &pos, int param_2) {
         m_90018 = mDispScale;
         mMoreFloats5[1] = mDispScale;
 
-        mSomeSize.x = lWidth * (1.0f / mDispScale);
-        mSomeSize.y = lHeight * (1.0f / mDispScale);
+        float width = lWidth * (1.0f / mDispScale);
+        float height = lHeight * (1.0f / mDispScale);
+        mSomeSize.set(width, height);
 
-        float width = mSomeSize.x;
         float halfWidth = width * 0.5f;
+
         float leftLimit = getLeftLimit();
         float rightLimit = getRightLimit() - width;
+        float upLimit = getLimitU();
+        float downLimit = getLimitD() + height;
 
         bool cond1 = true;
         bool cond2 = true;
 
-        float upLimit = getLimitU();
-        float downLimit = getLimitD() + lHeight;
         float maxLeft = getMaxLeftPos();
 
         mSomeParameterPos = bgParam->pos();
-        mPlayerPosY = pos.y;
+        bounds40 = mBounds4[0];
+        bounds41 = mBounds4[1];
 
-        float bounds40 = mBounds4[0];
-        float bounds41 = mBounds4[1];
-        float x = pos.x + bounds40 - halfWidth;
-        float y = pos.y + (mSomeSize.y / 2) - bounds41;
+        float x = pos.x + mBounds4[0] - halfWidth;
+        float y = pos.y + mSomeSize.y / 2.0f - mBounds4[1];
+
+        mPlayerPosY = pos.y;
         if (dScStage_c::m_loopType != 2) {
             if (x < leftLimit) {
                 x = leftLimit;
@@ -1358,8 +1365,9 @@ void dBg_c::calcScroll(const mVec3_c &pos, int param_2) {
             mAutoscrolls[0].mPos.y = getSomePosY();
         }
         if (m_900a7 != 0) {
-            mSomePos.x = m_900ac - getSomeSizeX() * 0.5f;
-            mSomePos.y = m_900b0 + getSomeSizeY();
+            float x = m_900ac.x - mSomeSize.x / 2.0f;
+            float y = m_900ac.y + mSomeSize.y;
+            mSomePos.set(x, y);
         }
     }
     fn_8007ca90(&mSomeInfo1, m_90009, 1);
@@ -1699,8 +1707,8 @@ void dBg_c::fn_8007ac40(const dBgSomeInfo_c *info, int arg1) {
     }
 
     if (m_900a7 != 0) {
-        mPrevSomePos.x = m_900ac - 0.5f * mPrevSomeSize.x;
-        mPrevSomePos.y = m_900b0 + mPrevSomeSize.y;
+        mPrevSomePos.x = m_900ac.x - 0.5f * mPrevSomeSize.x;
+        mPrevSomePos.y = m_900ac.y + mPrevSomeSize.y;
     }
 
     // Auto-scroll backup
@@ -2014,8 +2022,8 @@ void dBg_c::initScroll() {
     m_900a6 = 0;
     m_900a7 = 0;
     m_900a8 = 0;
-    m_900ac = 0.0f;
-    m_900b0 = 0.0f;
+    m_900ac.x = 0.0f;
+    m_900ac.y = 0.0f;
     m_900b8 = 0.0f;
     m_900bc = 0.0f;
 
