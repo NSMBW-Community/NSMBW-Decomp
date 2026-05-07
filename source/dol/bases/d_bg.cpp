@@ -1739,8 +1739,8 @@ void dBg_c::fn_8007ba70(const dBgSomeInfo_c *info) {
     } else {
         fVar4 = w - (112.0f - dBgParameter_c::ms_Instance_p->getM78());
     }
+    float diff = (smth - fVar4) - mPrevSomePos.x;
     float tmp = smth - fVar4;
-    float diff = tmp - mPrevSomePos.x;
     if (diff > 6.0f) {
         tmp = mPrevSomePos.x + 6.0f;
     } else if (diff < -6.0f) {
@@ -1759,12 +1759,11 @@ void dBg_c::fn_8007ba70(const dBgSomeInfo_c *info) {
 }
 
 float dBg_c::fn_8007bba0(const dBgSomeInfo_c *info) {
-    float tmp = 64.0f;
-    float u = info->mBounds.getU();
+    float offset = 64.0f;
+    float res = info->mBounds.mUp + offset;
 
-    float res = u + tmp;
-
-    if (res - mPrevSomePos.y < -6.0f) {
+    float diff = res - mPrevSomePos.y;
+    if (diff < -6.0f) {
         res = mPrevSomePos.y - 6.0f;
     }
 
@@ -1776,14 +1775,15 @@ float dBg_c::fn_8007bba0(const dBgSomeInfo_c *info) {
 }
 
 float dBg_c::fn_8007bbf0(const dBgSomeInfo_c *info) {
-    dBgParameter_c *bgParam = dBgParameter_c::getInstance();
+    float sizeY = dBgParameter_c::getInstance()->ySize();
 
-    float sizeY = bgParam->ySize();
-    float offsY = sizeY - 32.0f;
-    float res = info->mBounds.getD() + offsY;
+    float prevPos = mPrevSomePos.y;
+    float actualSize = sizeY - 32.0f;
 
-    if (res - mPrevSomePos.y > 6.0f) {
-        res = mPrevSomePos.y + 6.0f;
+    float res = info->mBounds.mDown + actualSize;
+    float diff = res - prevPos;
+    if (diff > 6.0f) {
+        res = prevPos + 6.0f;
     }
 
     if (res < sizeY + mDLimit) {
