@@ -1252,8 +1252,6 @@ void dBg_c::AutoScroll_stop() {
 void dBg_c::calcScroll(const mVec3_c &pos, int param_2) {
     dBgParameter_c *bgParam = dBgParameter_c::getInstance();
 
-    float bounds40;
-    float bounds41;
     float bgVal;
     float lWidth = mVideo::l_rayoutWidthF;
     float zoomFactor;
@@ -1279,22 +1277,26 @@ void dBg_c::calcScroll(const mVec3_c &pos, int param_2) {
 
         float leftLimit = getLeftLimit();
         float rightLimit = getRightLimit() - width;
-        float upLimit = getLimitU();
         float downLimit = getLimitD() + height;
+        float upLimit = getLimitU();
 
-        bool cond1 = true;
-        bool cond2 = true;
+        bool updateX = true;
+        bool updateY = true;
 
         float maxLeft = getMaxLeftPos();
 
+        float posX = pos.x;
+        float posY = pos.y;
         mSomeParameterPos = bgParam->pos();
-        bounds40 = mBounds4[0];
-        bounds41 = mBounds4[1];
-
-        float x = pos.x + mBounds4[0] - halfWidth;
-        float y = pos.y + mSomeSize.y / 2.0f - mBounds4[1];
-
         mPlayerPosY = pos.y;
+
+        float bounds40 = mBounds4[0];
+        float bounds41 = mBounds4[1];
+
+        float halfHeight = getSomeSizeY() * 0.5f;
+        float x = posX + mBounds4[0] - halfWidth;
+        float y = posY + halfHeight - mBounds4[1];
+
         if (dScStage_c::m_loopType != 2) {
             if (x < leftLimit) {
                 x = leftLimit;
@@ -1322,23 +1324,23 @@ void dBg_c::calcScroll(const mVec3_c &pos, int param_2) {
         if (mAutoscrolls[0].mActive) {
             switch (mAutoscrolls[0].m_18) {
                 case 0:
-                    cond1 = false;
-                    cond2 = false;
+                    updateX = false;
+                    updateY = false;
                     break;
                 case 1:
-                    cond1 = false;
-                    cond2 = true;
+                    updateX = false;
+                    updateY = true;
                     break;
                 case 2:
-                    cond1 = true;
-                    cond2 = false;
+                    updateX = true;
+                    updateY = false;
                     break;
             }
         }
-        if (cond1) {
+        if (updateX) {
             mSomePos.x = x;
         }
-        if (cond2) {
+        if (updateY) {
             if (
                 getAreaUpLimitScroll() > -999999.0f &&
                 dBgParameter_c::getInstance()->posY() <= getAreaUpLimitScroll() &&
@@ -1366,9 +1368,9 @@ void dBg_c::calcScroll(const mVec3_c &pos, int param_2) {
             mAutoscrolls[0].mPos.y = getSomePosY();
         }
         if (m_900a7 != 0) {
-            float x = m_900ac.x - mSomeSize.x / 2.0f;
-            float y = m_900ac.y + mSomeSize.y;
-            mSomePos.set(x, y);
+            mSomePos = m_900ac;
+            mSomePos.x = getSomePosX() - getSomeSizeX() * 0.5f;
+            mSomePos.y = getSomePosY() + getSomeSizeY();
         }
     }
     fn_8007ca90(&mSomeInfo1, m_90009, 1);
@@ -1801,18 +1803,16 @@ bool dBg_c::fn_8007bc40(const dBgSomeInfo_c *info, float f) {
 
     dBgParameter_c *bgParam = dBgParameter_c::getInstance();
 
-    float tmp = 112.0f;
-    float fVar3 = tmp - bgParam->m_78;
-    float fVar4 = tmp - bgParam->m_78;
+    float fVar3 = 112.0f - bgParam->getM78();
+    float fVar4 = fVar3;
     if (fVar1 < ll + fVar4) {
         fVar3 = fVar1 - ll;
     }
-    float tmp2 = 112.0f;
-    float fVar5 = tmp2 - bgParam->m_78;
+    float fVar5 = 112.0f - bgParam->getM78();
     if (fVar2 > rl - fVar5) {
         fVar4 = rl - fVar2;
     }
-    if (f * mVideo::getLayoutWidth() - (fVar3 + fVar4) > info->mBounds.getR() - info->mBounds.getL()) {
+    if (info->mBounds.getW() > f * mVideo::getLayoutWidth() - (fVar3 + fVar4)) {
         return true;
     } else {
         return false;
@@ -1842,12 +1842,10 @@ mVec2_c dBg_c::fn_8007bd40(const dBgSomeInfo_c *info, float f1, float f2) {
     }
 
     float baseX = info->mBounds.getW();
-    float tmpX = (offsX1 + baseX + offsX2) / layoutWidth;
-
-    float resX = info->mBounds.getR();
-    if (tmpX < 1.0f) {
+    float resX = (offsX1 + baseX + offsX2) / layoutWidth;
+    if (resX < 1.0f) {
         resX = 1.0f;
-    } else if (tmpX > f1) {
+    } else if (resX > f1) {
         resX = f1;
     }
 
@@ -1863,12 +1861,11 @@ mVec2_c dBg_c::fn_8007bd40(const dBgSomeInfo_c *info, float f1, float f2) {
     }
 
     float baseY = info->mBounds.getH();
-    float tmpY = (offsY1 + baseY + offsY2) * f2 / layoutHeight;
-
-    float resY = info->mBounds.getD();
-    if (tmpY < 1.0f) {
+    float tmp = offsY1 + baseY + offsY2;
+    float resY = tmp * f2 / layoutHeight;
+    if (resY < 1.0f) {
         resY = 1.0f;
-    } else if (tmpY > f1) {
+    } else if (resY > f1) {
         resY = f1;
     }
     result.x = resX;
