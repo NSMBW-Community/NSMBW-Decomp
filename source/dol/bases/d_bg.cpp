@@ -1079,9 +1079,10 @@ void dBg_c::calcAutoScroll() {
     float downLim = getLimitD() + bgH;
     float upLim = getLimitU();
 
-    bool cond3, cond4, updateX, updateY;
-    updateX = true;
-    updateY = true;
+    sRailNodeData *base;
+
+    bool updateX = true;
+    bool updateY = true;
 
     if (stage->mCurrWorld == WORLD_2 && stage->mCurrCourse == STAGE_CASTLE && stage->mCurrFile == 0) {
         calcLoopAutoScroll();
@@ -1089,7 +1090,7 @@ void dBg_c::calcAutoScroll() {
     }
 
     if ((dActor_c::mExecStop & 8) == 0 && m_9008c == 0) {
-        sRailNodeData *base = &file->mpRailNodes[ri->mNodeIdx];
+        base = &file->mpRailNodes[ri->mNodeIdx];
         if (m_9008d != 0) {
             int idx;
             for (int i = 0; i < 999; i++) {
@@ -1152,8 +1153,8 @@ void dBg_c::calcAutoScroll() {
         mAutoscrolls[0].mPos.y += idk.y * mAutoscrolls[0].m_0c;
         mAutoscrolls[0].mPos.z = 0.0f;
         float dist = mAutoscrolls[0].mPos.distTo(bgThingVec);
-        cond3 = false;
-        cond4 = false;
+        bool cond3 = false;
+        bool cond4 = false;
         if (mAutoscrolls[0].m_18 == 1) {
             cond3 = true;
         } else if (mAutoscrolls[0].m_18 == 2) {
@@ -2072,14 +2073,14 @@ float dBg_c::fn_8007c7d0(float x) {
 }
 
 bool isRightPlayer(dAcPy_c *pl1, dAcPy_c *pl2) {
-    float p1 = dBg_c::m_bg_p->fn_8007c7d0(pl1->m_129c.x);
-    float p2 = dBg_c::m_bg_p->fn_8007c7d0(pl2->m_129c.x);
+    float p1 = dBg_c::m_bg_p->fn_8007c7d0(pl1->mPc.m_30.x);
+    float p2 = dBg_c::m_bg_p->fn_8007c7d0(pl2->mPc.m_30.x);
     return p1 > p2;
 }
 
 bool isLeftPlayer(dAcPy_c *pl1, dAcPy_c *pl2) {
-    float p1 = dBg_c::m_bg_p->fn_8007c7d0(pl1->m_129c.x);
-    float p2 = dBg_c::m_bg_p->fn_8007c7d0(pl2->m_129c.x);
+    float p1 = dBg_c::m_bg_p->fn_8007c7d0(pl1->mPc.m_30.x);
+    float p2 = dBg_c::m_bg_p->fn_8007c7d0(pl2->mPc.m_30.x);
     return p1 < p2;
 }
 
