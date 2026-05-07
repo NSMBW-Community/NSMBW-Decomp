@@ -7,6 +7,8 @@
 namespace m3d {
     class proc_c : public scnLeaf_c {
     public:
+        virtual ~proc_c() {}
+
         virtual scnLeaf_c::leafType_e getType() const { return scnLeaf_c::TYPE_PROC; };
 
         virtual void drawOpa();

@@ -4500,7 +4500,7 @@ void daPlBase_c::updateEndingDance() {
         } else if (dAudio::isBgmAccentSign(64)) {
             mKey.onDemoShake();
         } else if (dAudio::isBgmAccentSign(128)) {
-            if (dBgParameter_c::ms_Instance_p->m_48 > mPos.x) {
+            if (dBgParameter_c::ms_Instance_p->mCenter.x > mPos.x) {
                 mDirection = 0;
             } else {
                 mDirection = 1;
@@ -5435,7 +5435,7 @@ float daPlBase_c::getWaterCheckPosY() {
 void daPlBase_c::checkWater() {
     mWaterType = dBc_c::WATER_CHECK_NONE;
     mPrevWaterHeight = mWaterHeight;
-    mWaterHeight = dBg_c::m_bg_p->m_8fe00;
+    mWaterHeight = dBg_c::m_bg_p->mD;
     u8 waterCheck = dBc_c::checkWater(mPos.x, mPos.y, mLayer, &mWaterHeight);
     if (waterCheck != dBc_c::WATER_CHECK_NONE && mPos.y <= mWaterHeight) {
         onNowBgCross(BGC_WATER_TOUCH);
@@ -5715,7 +5715,7 @@ void daPlBase_c::underOverCheck() {
         }
     }
     if (cond == 1) {
-        if (selfTop < bgTop && selfTop < dBg_c::m_bg_p->m_8fe00) {
+        if (selfTop < bgTop && selfTop < dBg_c::m_bg_p->mD) {
             setFallDownDemo();
         }
     } else if (selfTop < bgTop) {
@@ -5786,7 +5786,7 @@ void daPlBase_c::checkDisplayOutDead() {
 
     offset = 0.0f;
     if (!isStatus(STATUS_B8)) {
-        if (dBg_c::m_bg_p->mAutoscrolls[0].mActive && dBg_c::m_bg_p->m_9008e != 4) {
+        if (dBg_c::m_bg_p->mAutoscrolls[0].mActive && dBg_c::m_bg_p->mLimitRelated != 4) {
             offset = -(mWallBcData.mOffset / 4096.0f - 1.0f + getVisSizeX());
         } else if (daPyMng_c::mNum > 1) {
             offset = 16.0f;

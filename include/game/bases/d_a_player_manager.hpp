@@ -43,6 +43,9 @@ public:
         }
         return res;
     }
+    static u8 getActScrollInfo(); /// @unofficial
+    static int getScrollNum();
+    static bool isScrollMode1() { return getScrollNum() == 1; }
 
     static bool checkPlayer(u8 plrNo) { return mActPlayerInfo & (1 << plrNo); }
     static int getRest(PLAYER_TYPE_e plrNo) { return mRest[plrNo]; }

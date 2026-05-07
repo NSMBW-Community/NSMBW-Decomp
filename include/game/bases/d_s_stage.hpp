@@ -39,6 +39,7 @@ public:
     u8 mCurrFile;
     u8 mCurrAreaNo;
     u8 mCurrLayer;
+    u8 m_1211;
 
     u8 getCurrWorld() const { return mCurrWorld; }
     u8 getCurrArea() const { return mCurrAreaNo; }
