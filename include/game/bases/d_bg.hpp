@@ -227,8 +227,8 @@ public:
     u16 cvtW() { return getR() - getL(); }
     u16 cvtH() { return getU() - getD(); }
 
-    float getLimitD() { return mDLimit; }
-    float getLimitU() { return mULimit; }
+    float getDownLimit() { return mDLimit; }
+    float getUpLimit() { return mULimit; }
 
     float getSomePosX() { return mSomePos.x; }
     float getSomePosY() { return mSomePos.y; }
