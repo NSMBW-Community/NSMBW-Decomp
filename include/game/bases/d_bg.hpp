@@ -214,6 +214,7 @@ public:
     float getDispScale() { return mDispScale; }
     float getPrevDispScale() { return mMoreFloats3[0]; }
     float getScaleFactor() { return 1.0f / mDispScale; }
+    float getZoom() { return 1.0f / mZoomDenom; }
     float getLiquidHeight() const { return mMoreFloats7[5]; }
 
     float getL() { return mL; }
@@ -239,7 +240,12 @@ public:
     float getPrevSomeSizeX() { return mPrevSomeSize.x; }
     float getPrevSomeSizeY() { return mPrevSomeSize.y; }
 
+    float get_900acX() { return m_900ac.x; }
+    float get_900acY() { return m_900ac.y; }
+
     float getSomeScale() { return mSomeScale; }
+
+    float getZoomDenom() { return mZoomDenom; }
 
     float getLoopOffsetX() { return mLoopOffsetX; }
 

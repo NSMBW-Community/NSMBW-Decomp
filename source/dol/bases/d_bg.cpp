@@ -1252,27 +1252,26 @@ void dBg_c::AutoScroll_stop() {
 void dBg_c::calcScroll(const mVec3_c &pos, int param_2) {
     dBgParameter_c *bgParam = dBgParameter_c::getInstance();
 
-    float maxLeft;
-    float lWidth = mVideo::getLayoutWidth();
-    float lHeight = mVideo::getLayoutHeight();
+    float lHeight;
+    float lWidth;
+
+    lWidth = mVideo::getLayoutWidth();
+    lHeight = mVideo::getLayoutHeight();
+
     if (m_bg_p->m_9095a == 0) {
         m_bg_p->getZoomTargetMax(); // unused return value
 
         if (mSomeScale > 0.0f) {
             dBg_c *bg = m_bg_p;
-            float bgVal = dBgParameter_c::ms_Instance_p->getM34();
-            float scale = getSomeScale();
-            float b = bgVal * (1.0f / scale - 1.0f / bg->getZoomTargetMin());
-            float a = 1.0f / bg->getZoomTargetMin();
-            mDispScale = a + b;
+            mDispScale = 1.0f / bg->getZoomTargetMin() + dBgParameter_c::ms_Instance_p->getM34() * (1.0f / getSomeScale() - 1.0f / bg->getZoomTargetMin());
         }
         m_90018 = mDispScale;
         mMoreFloats5[1] = mDispScale;
 
-        mSomeSize.x = lWidth * (1.0f / mDispScale);
-        mSomeSize.y = lHeight * (1.0f / mDispScale);
-        float width = getSomeSizeX();
-        float height = getSomeSizeY();
+        float width = lWidth * (1.0f / mDispScale);
+        float height = lHeight * (1.0f / mDispScale);
+        mSomeSize.x = width;
+        mSomeSize.y = height;
 
         float halfWidth = getSomeSizeX() * 0.5f;
 
@@ -1284,18 +1283,16 @@ void dBg_c::calcScroll(const mVec3_c &pos, int param_2) {
         bool updateX = true;
         bool updateY = true;
 
-        maxLeft = getMaxLeftPos();
+        float maxLeft = getMaxLeftPos();
 
-        mSomeParameterPos.x = bgParam->pos().x;
+        mSomeParameterPos = bgParam->pos();
+
         float x = pos.x + mBounds4[0] - halfWidth;
-
-        mSomeParameterPos.y = bgParam->pos().y;
+        mPlayerPosY = pos.y;
         float y = pos.y + getSomeSizeY() * 0.5f - mBounds4[1];
 
         float bounds40 = mBounds4[0];
         float bounds41 = mBounds4[1];
-
-        mPlayerPosY = pos.y;
 
         if (dScStage_c::m_loopType != 2) {
             if (x < leftLimit) {
@@ -1356,8 +1353,7 @@ void dBg_c::calcScroll(const mVec3_c &pos, int param_2) {
             }
         }
         if (mLimitRelated == 1 || mLimitRelated == 4) {
-            maxLeft += getLoopOffsetX() * 0.5f;
-            mSomePos.x = maxLeft - getSomeSizeX() * 0.5f;
+            mSomePos.x = (maxLeft + getLoopOffsetX() * 0.5f) - getSomeSizeX() * 0.5f;
         }
         if (mLimitRelated == 6) {
             mSomePos.y = getD() + getSomeSizeY();
@@ -1369,9 +1365,12 @@ void dBg_c::calcScroll(const mVec3_c &pos, int param_2) {
             mAutoscrolls[0].mPos.y = getSomePosY();
         }
         if (m_900a7 != 0) {
-            mSomePos = m_900ac;
-            mSomePos.x = getSomePosX() - getSomeSizeX() * 0.5f;
-            mSomePos.y = getSomePosY() + getSomeSizeY();
+            float px = get_900acX();
+            float py = get_900acY();
+            float x = px - getSomeSizeX() * 0.5f;
+            float y = py + getSomeSizeY();
+            mSomePos.x = x;
+            mSomePos.y = y;
         }
     }
     fn_8007ca90(&mSomeInfo1, m_90009, 1);
@@ -1392,33 +1391,34 @@ void dBg_c::calcMultiScroll(int arg1) {
 }
 
 void dBg_c::fn_8007ac40(const dBgSomeInfo_c *info, int arg1) {
-    float br = info->mBounds.getR();
-    float bl = info->mBounds.getL();
-    float bu = info->mBounds.getU();
-    float bd = info->mBounds.getD();
-    float val;
-    float fVar28;
-    float fVar25;
+    float lWidth = mVideo::getLayoutWidth();
+    float lHeight = mVideo::getLayoutHeight();
+
     float copy_90018;
-    float f26;
-    float f27;
-    float lowerBound;
-    float upperBound;
-    float finalY;
+    float dVar12;
+    float fVar25;
+    float fVar28;
 
-    float lWidth = mVideo::l_rayoutWidthF;
-    float lHeight = mVideo::l_rayoutHeightF;
-
-    float invScale = 1.0f / mDispScale;
+    float invScale = 1.0f / getDispScale();
     float zoom = 1.0f / mZoomDenom;
 
     float boundScale = 0.5f;
-    float tmpRight = std::fabs(bl - br) / lWidth;
-    float tmpUp = std::fabs(bd - bu) / lHeight;
+    float fVar14;
 
-    float scale;
-    float someTmp2;
-    float someTmp;
+    // float bdr = info->mBounds.getW();
+    // float bdu = info->mBounds.getH();
+    // float bdw;
+    // float bdh;
+    // info->mBounds.getSize(bdw, bdh);
+    // someTmp2 = bdw / lWidth;
+    // someTmp = bdh / lHeight;
+    float someTmp, someTmp2;
+    float bdr = info->mBounds.getR();
+    float bdl = info->mBounds.getL();
+    float bdu = info->mBounds.getU();
+    float bdd = info->mBounds.getD();
+    someTmp2 = std::fabs(bdl - bdr) / lWidth;
+    someTmp = std::fabs(bdd - bdu) / lHeight;
 
     float spL = m_bg_p->getZoomSpreadLine();
     float spL2 = m_bg_p->getZoomSpreadLine2();
@@ -1431,55 +1431,55 @@ void dBg_c::fn_8007ac40(const dBgSomeInfo_c *info, int arg1) {
     dScStage_c *stage = dScStage_c::m_instance;
 
     bool bVar7 = false;
+    float scale;
     if (mLimitRelated == 1) {
         scale = 1.2f;
     } else {
         scale = 0.9f;
     }
-    someTmp2 = tmpUp * scale;
+    someTmp *= scale;
     mVec2_c r = fn_8007bd40(info, zoom, scale);
-    someTmp = tmpRight;
     if (mLimitRelated == 1) {
         r.x = r.y;
-        someTmp = someTmp2;
+        someTmp2 = someTmp;
     }
     if (mLimitRelated >= 6 && mLimitRelated <= 7) {
         r.y = r.x - 1.0f;
-        someTmp2 = someTmp;
+        someTmp = someTmp2;
     }
     if (mLimitRelated == 2) {
         if (mLimitRelated2 >= 5 && mLimitRelated2 <= 7 || mLimitRelated2 >= 1 && mLimitRelated2 <= 2) {
-            if (invScale < m_bg_p->getZoomTargetMax() && someTmp > spL2) {
-                someTmp = spL2;
-            }
-            if (!dBg_isFlyPlayer() && mU8s[2] == 0 && someTmp2 > spL2) {
+            if (invScale < m_bg_p->getZoomTargetMax() && someTmp2 > spL2) {
                 someTmp2 = spL2;
             }
-        } else {
-            if (invScale <= m_bg_p->getZoomTargetMid() && someTmp > spL) {
-                someTmp = spL;
+            if (!dBg_isFlyPlayer() && mU8s[2] == 0 && someTmp > spL2) {
+                someTmp = spL2;
             }
-            if (!dBg_isFlyPlayer() && mU8s[2] == 0 && someTmp2 > spL) {
+        } else {
+            if (invScale <= m_bg_p->getZoomTargetMid() && someTmp2 > spL) {
                 someTmp2 = spL;
+            }
+            if (!dBg_isFlyPlayer() && mU8s[2] == 0 && someTmp > spL) {
+                someTmp = spL;
             }
         }
     }
     if (mLimitRelated == 0 && mLimitRelated2 == 10) {
         if (dBg_isCloudFlyPlayerMulti() != 1) {
             float tmp = shL2 - 0.01f;
-            if (someTmp > tmp || m_9095b != 0) {
-                someTmp = tmp;
+            if (someTmp2 > tmp || m_9095b != 0) {
+                someTmp2 = tmp;
             }
         } else {
-            someTmp = spL2 + 0.01f;
+            someTmp2 = spL2 + 0.01f;
         }
-        someTmp2 = someTmp - 1.0f;
+        someTmp = someTmp2 - 1.0f;
     }
-    someTmp = MAX(someTmp, someTmp2);
+    someTmp2 = MAX(someTmp, someTmp2);
     if ((daPyDemoMng_c::mspInstance->mFlags & 1) == 0) {
         switch (m_90024) {
             case 0:
-                if (someTmp > spL) {
+                if (someTmp2 > spL) {
                     mMoreFloats5[0] = tgMid;
                     m_90024 = 1;
                 } else {
@@ -1487,27 +1487,27 @@ void dBg_c::fn_8007ac40(const dBgSomeInfo_c *info, int arg1) {
                 }
                 break;
             case 1:
-                if (someTmp > spL2) {
+                if (someTmp2 > spL2) {
                     mMoreFloats5[0] = tgMax;
                     m_90024 = 2;
-                } else if (someTmp < shL) {
+                } else if (someTmp2 < shL) {
                     bVar7 = true;
                     if (m_900b6 > 120) {
                         mMoreFloats5[0] = tgMin;
                         m_90024 = 0;
                     }
-                } else if (!(someTmp < spL)) {
+                } else if (!(someTmp2 < spL)) {
                     mMoreFloats5[0] = tgMid;
                 }
                 break;
             case 2:
-                if (someTmp < shL2) {
+                if (someTmp2 < shL2) {
                     bVar7 = true;
                     if (m_900b6 > 120) {
                         mMoreFloats5[0] = tgMid;
                         m_90024 = 1;
                     }
-                } else if (!(someTmp < spL2)) {
+                } else if (!(someTmp2 < spL2)) {
                     mMoreFloats5[0] = tgMax;
                 }
                 break;
@@ -1528,6 +1528,7 @@ void dBg_c::fn_8007ac40(const dBgSomeInfo_c *info, int arg1) {
     } else {
         mMoreFloats5[0] = m_90018;
     }
+
     fVar28 = mMoreFloats5[0];
     fVar25 = m_90018;
     if (m_90018 < mMoreFloats5[0]) {
@@ -1536,11 +1537,10 @@ void dBg_c::fn_8007ac40(const dBgSomeInfo_c *info, int arg1) {
         float calcArg = 0.0015f;
         if (mZoomRelated != 0 && mZoomRelated != 8) {
             fVar25 = 1.0f;
-            calcArg = 0.1;
+            calcArg = 0.1f;
             scale = 1.0f;
         }
-        float cubed = someTmp * someTmp * someTmp;
-        float maxStep = cubed * 6.0f + 1.0f;
+        float maxStep = (someTmp2 * someTmp2 * someTmp2) * 6.0f + 1.0f;
         sLib::addCalc(&mMoreFloats5[1], fVar28, fVar25, scale * maxStep, calcArg);
         if (mMoreFloats5[1] > m_90018) {
             if (std::fabs(fVar28 - m_90018) > 0.1f) {
@@ -1554,10 +1554,9 @@ void dBg_c::fn_8007ac40(const dBgSomeInfo_c *info, int arg1) {
         float calcArg = 0.0015f;
         if (mZoomRelated != 0 && mZoomRelated != 8) {
             fVar25 = 1.0f;
-            calcArg = 0.1;
+            calcArg = 0.1f;
             scale = 1.0f;
         }
-        // TODO: someTmp
         float maxStep = someTmp2 * someTmp2 * someTmp2 * 6.0f + 1.0f;
         if (m_9001c == 0) {
             sLib::addCalc(&m_90018, fVar28, fVar25, scale * maxStep, calcArg);
@@ -1578,45 +1577,49 @@ void dBg_c::fn_8007ac40(const dBgSomeInfo_c *info, int arg1) {
         m_90018 = tgMax;
     }
     copy_90018 = m_90018;
-    val = -(getDownLimit() - getUpLimit());
+    float val = -(getDownLimit() - getUpLimit());
     if (val < m_90018 * mVideo::getLayoutHeight()) {
         copy_90018 = val / mVideo::getLayoutHeight();
         m_90018 = copy_90018;
     }
     if (getAreaUpLimitScroll() > -999999.0f) {
-        float divres = -(getD() - getAreaUpLimitScroll()) / mVideo::getLayoutHeight();
+        float d = getD();
+        d = -(d - getAreaUpLimitScroll()) / mVideo::getLayoutHeight();
         if (mU8s[2] == 0) {
             m_90964 = 1.0f;
         } else {
             sLib::addCalc(&m_90964, 0.0f, 0.5f, 0.01f, 0.01f);
         }
-        copy_90018 += m_90964 * (divres - copy_90018);
+        copy_90018 += m_90964 * (d - copy_90018);
     }
-    mPrevSomeSize.x = lWidth * copy_90018;
-    mPrevSomeSize.y = lHeight * copy_90018;
+    float psx = lWidth * copy_90018;
+    float psy = lHeight * copy_90018;
+    mPrevSomeSize.set(psx, psy);
     mDispScale = 1.0f / copy_90018;
-    float f18 = mPrevSomeSize.x * boundScale;
-    float f19 = mPrevSomeSize.y * boundScale;
+    float f18 = psx * boundScale;
+    float f19 = psy * boundScale;
+    float tmpcalc = 0.0f;
+    float ow = 0.0f;
     float mLP = getMaxLeftPos();
     float mRP = getMaxRightPos();
-    float u = mU;
-    float d = mD;
-    float tmpcalc = info->mBounds.getU() + info->mBounds.getD();
-    float wo = info->mBounds.getR() + info->mBounds.getL();
-    float w = wo * 0.5f;
-    float asdf = tmpcalc * 0.5f;
-    float x123 = w - f18;
-    float x234 = tmpcalc + f18;
+    float u = getU();
+    float d = getD();
+    tmpcalc = (info->mBounds.getU() + info->mBounds.getD()) * 0.5f;
+    ow = (info->mBounds.getR() + info->mBounds.getL()) * 0.5f;
+    float x123 = ow - f18;
+    float x234 = ow + f18;
+    float cpy = ow;
     if (dScStage_c::m_loopType != 2) {
         if (x123 < mLP) {
-            w += mLP - x123;
+            cpy = ow + (mLP - x123);
         } else if (x234 > mRP) {
-            w -= x234 - mRP;
+            cpy = ow - (x234 - mRP);
         }
     }
-    w -= f18;
+    float w = cpy - f18;
     if (mLimitRelated == 1 || mLimitRelated == 4) {
-        w = mLP + getLoopOffsetX() * 0.5f - getPrevSomeSizeX() * 0.5f;
+        w = mLP + getLoopOffsetX() * 0.5f;
+        w -= getPrevSomeSizeX() * 0.5f;
         if (
             dScStage_c::m_instance->mCurrWorld == 11 &&
             dScStage_c::m_instance->mCurrCourse == 65 &&
@@ -1631,20 +1634,20 @@ void dBg_c::fn_8007ac40(const dBgSomeInfo_c *info, int arg1) {
         check = true;
     }
     if (dScStage_c::m_loopType != 2) {
-        float leftLimit = getLeftLimit();
-        float rightLimit = getRightLimit() - getPrevSomeSizeX();
-        if (w < leftLimit) {
-            w = leftLimit;
-        } else if (w > rightLimit) {
-            w = rightLimit;
+        mLP = getLeftLimit();
+        mRP = getRightLimit() - getPrevSomeSizeX();
+        if (w < mLP) {
+            w = mLP;
+        } else if (w > mRP) {
+            w = mRP;
         }
     }
     if (!check && dScStage_c::m_loopType != 1) {
         mPrevSomePos.x = w;
     }
     float unused;
-    float a = asdf + f19;
-    float b = asdf - f19;
+    float a = tmpcalc + f19;
+    float b = tmpcalc - f19;
     if (a > u) {
         unused = 0.0f;
     } else if (b > d) {
@@ -1705,13 +1708,16 @@ void dBg_c::fn_8007ac40(const dBgSomeInfo_c *info, int arg1) {
     if (down < getPrevSomePosY() - getPrevSomeSizeY() - 32.0f) {
         down = getPrevSomePosY() - getPrevSomeSizeY() - 32.0f;
     }
-    float fVar17 = up + down;
-    float dVar12 = mMoreFloats5[4] + (up + down) * 0.5f + (copy_90018 - 1.0f);
+    float fVar17;
+    float tmp123123 = (up + down) * 0.5f;
+    dVar12 = mMoreFloats5[3] + lHeight * 0.5f * (copy_90018 - 1.0f);
+    fVar17 = dVar12;
     calcLookatOffsLimit();
 
-    float fVar27 = (1.0f / mDispScale - m_bg_p->getZoomTargetMin()) * 0.5f + 1.0f;
-    float fVar26 = getPrevSomePosY() - mBounds3[0] * fVar27;
-    fVar27 = mBounds3[1] * fVar27 + (getPrevSomePosY() - getPrevSomeSizeY());
+    float x = (1.0f / getDispScale() - m_bg_p->getZoomTargetMin()) * 0.5f;
+    x += 1.0f;
+    float fVar26 = getPrevSomePosY() - mBounds3[0] * x;
+    float fVar27 = getPrevSomePosY() - getPrevSomeSizeY() + mBounds3[1] * x;
 
     float fVar5 = getPrevSomePosY() - getPrevSomeSizeY() * 0.5f;
     if (fVar26 < fVar5 + 16.0f) {
@@ -1721,31 +1727,32 @@ void dBg_c::fn_8007ac40(const dBgSomeInfo_c *info, int arg1) {
     if (fVar27 > fVar3 - 16.0f) {
       fVar27 = fVar3 - 16.0f;
     }
-    if (fVar17 > fVar26) {
-        mMoreFloats5[4] = mMoreFloats5[4] + (fVar17 - fVar26);
-    } else if (fVar17 < fVar27) {
-        mMoreFloats5[4] = mMoreFloats5[4] - (fVar27 - fVar17);
+    if (tmp123123 > fVar26) {
+        mMoreFloats5[4] = mMoreFloats5[4] + (tmp123123 - fVar26);
+    } else if (tmp123123 < fVar27) {
+        mMoreFloats5[4] = mMoreFloats5[4] - (fVar27 - tmp123123);
     }
 
-    mMoreFloats6[0] = dVar12 + mMoreFloats5[4];
+    dVar12 += mMoreFloats5[4];
+    mMoreFloats6[0] = dVar12;
 
-    float tmp27 = mMoreFloats6[0] - fVar17 * copy_90018;
+    float tmp27 = mMoreFloats6[0] - lHeight * copy_90018;
     if (mMoreFloats6[0] > u) {
-        mMoreFloats6[0] = (dVar12 - (dVar12 - u));
+        mMoreFloats6[0] -= dVar12 - u;
         mMoreFloats5[4] -= dVar12 - u;
     } else if (tmp27 < d) {
-        mMoreFloats6[0] = (dVar12 + (d - tmp27));
+        mMoreFloats6[0] += d - tmp27;
         mMoreFloats5[4] += d - tmp27;
     }
 
     mU8s[2] = 0;
 
-    float fVar14 = mMoreFloats6[0];
+    fVar14 = mMoreFloats6[0];
     if (getAreaUpLimitScroll() > -999999.0f) {
         if (dBgParameter_c::ms_Instance_p->yStart() <= getAreaUpLimitScroll()) {
             if (fVar14 > getAreaUpLimitScroll()) {
-                float h = -(mD - getAreaUpLimitScroll()) / mVideo::getLayoutHeight();
-                if (!dBg_isFlyPlayer() && copy_90018 <= h) {
+                dVar12 = -(getD() - getAreaUpLimitScroll()) / mVideo::getLayoutHeight();
+                if (!dBg_isFlyPlayer() && dVar12 >= copy_90018) {
                     fVar14 = getAreaUpLimitScroll();
                 }
             }
@@ -1754,40 +1761,42 @@ void dBg_c::fn_8007ac40(const dBgSomeInfo_c *info, int arg1) {
         }
     }
 
-    lowerBound = getDownLimit() + getPrevSomeSizeY();
-    upperBound = getUpLimit();
-    finalY = fVar14;
-    if (finalY < upperBound) {
-        mMoreFloats5[4] += lowerBound - finalY;
-        finalY = lowerBound;
-    } else if (finalY > lowerBound) {
-        mMoreFloats5[4] -= finalY - upperBound;
-        finalY = upperBound;
+    float lowerBound = getDownLimit() + getPrevSomeSizeY();
+    float upperBound = getUpLimit();
+    if (fVar14 < lowerBound) {
+        mMoreFloats5[4] += lowerBound - fVar14;
+        fVar14 = lowerBound;
+    } else if (fVar14 > upperBound) {
+        mMoreFloats5[4] -= fVar14 - upperBound;
+        fVar14 = upperBound;
     }
 
     if (mLimitRelated == 6) {
         mMoreFloats5[4] = 0.0f;
-        finalY = lowerBound;
+        fVar14 = lowerBound;
     }
 
     if (m_9095c == 0) {
         if ((stage->mCurrCourse != STAGE_DOOMSHIP || stage->m_1211 != 2) && stage->mCurrCourse != STAGE_CASTLE) {
-            finalY = m_90960;
-            mMoreFloats5[4] = m_90960 - dVar12;
+            fVar14 = m_90960;
+            mMoreFloats5[4] = m_90960 - fVar17;
         }
         m_9095c = 1;
     }
 
     if (arg1 != 0 || getAreaUpLimitScroll() <= -999999.0f) {
-        mPrevSomePos.y = finalY;
+        mPrevSomePos.y = fVar14;
     } else {
-        sLib::chase(&mPrevSomePos.y, finalY, 16.0f);
+        sLib::chase(&mPrevSomePos.y, fVar14, 16.0f);
     }
 
     if (m_900a7 != 0) {
-        mPrevSomePos = m_900ac;
-        mPrevSomePos.x -= getPrevSomeSizeX() * 0.5f;
-        mPrevSomePos.y += getPrevSomeSizeY();
+        float px = get_900acX();
+        float py = get_900acY();
+        float x = px - getPrevSomeSizeX() * 0.5f;
+        float y = py + getPrevSomeSizeY();
+        mPrevSomePos.x = x;
+        mPrevSomePos.y = y;
     }
 
     if (!mAutoscrolls[0].mActive) {
