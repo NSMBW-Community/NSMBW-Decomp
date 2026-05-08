@@ -36,6 +36,7 @@ public:
     const mVec2_c &pos() const { return mPos; }
     const mVec2_c &size() const { return mSize; }
     float getM78() const { return m_78; }
+    float getM34() const { return m_30.y; }
 
     float posX() const { return mPos.x; }
     float posY() const { return mPos.y; }

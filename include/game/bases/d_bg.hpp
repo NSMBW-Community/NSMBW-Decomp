@@ -232,8 +232,14 @@ public:
 
     float getSomePosX() { return mSomePos.x; }
     float getSomePosY() { return mSomePos.y; }
+    float getPrevSomePosX() { return mPrevSomePos.x; }
+    float getPrevSomePosY() { return mPrevSomePos.y; }
     float getSomeSizeX() { return mSomeSize.x; }
     float getSomeSizeY() { return mSomeSize.y; }
+    float getPrevSomeSizeX() { return mPrevSomeSize.x; }
+    float getPrevSomeSizeY() { return mPrevSomeSize.y; }
+
+    float getSomeScale() { return mSomeScale; }
 
     float getLoopOffsetX() { return mLoopOffsetX; }
 
