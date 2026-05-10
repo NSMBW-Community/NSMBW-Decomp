@@ -61,6 +61,13 @@ public:
     WorldMtxManip(math::MTX34* pM, math::VEC3* pS, ulong* pWMAttr)
         : mpM(pM), mpS(pS), mpWMAttr(pWMAttr) {}
 
+    void GetMatrix(math::MTX34 *dst) const {
+        if (dst) {
+            PSMTXCopy(*mpM, *dst);
+        }
+    }
+    void SetMatrix(const math::MTX34 &mtx) { PSMTXCopy(mtx, *mpM); }
+
 private:
     math::MTX34* mpM; // at 0x0
     math::VEC3* mpS;  // at 0x4

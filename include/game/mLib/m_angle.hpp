@@ -2,10 +2,10 @@
 #include <types.h>
 #include <game/sLib/s_lib.hpp>
 #include <nw4r/math.h>
+#include <lib/MSL/arith.h>
 
-extern "C" {
-    int abs(int);
-}
+#define DEG_TO_ANGLE(x) (0x10000 * x / 360)
+#define ANGLE_360_DIV(x) (0x10000 / x)
 
 /// @brief A one-dimensional short angle vector.
 /// @ingroup mlib
@@ -29,8 +29,8 @@ struct mAng {
         return sLib::chase(&mAngle, target, step);
     }
 
-    mAng abs() const {
-        return mAng(::abs(mAngle));
+    int abs() const {
+        return ::abs(mAngle);
     }
 
     /// @brief Augmented addition operator.

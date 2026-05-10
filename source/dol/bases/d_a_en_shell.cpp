@@ -128,7 +128,7 @@ void daEnShell_c::postExecute(fBase_c::MAIN_STATE_e status) {
                 setDeathInfo_Hasami();
             }
             mVec3_c pos = mPos;
-            if (!mUseBaseIceBehaviour) {
+            if (mShellMode == SHELL_MODE_BASE) {
                 pos = getCenterPos();
             }
             WaterCheck(pos, 1.0f);
@@ -168,7 +168,7 @@ void daEnShell_c::Normal_VsEnHitCheck(dCc_c *self, dCc_c *other) {
     dActor_c *otherActor = other->getOwner();
     if (
         isState(daEnCarry_c::StateID_Carry) &&
-        other->mCcData.mVsDamage & (1 << CC_ATTACK_SHELL) &&
+        other->mCcData.mVsDamage & BIT_FLAG(CC_ATTACK_SHELL) &&
         otherActor->mProfName != fProfile::EN_HATENA_BALLOON &&
         hitCallback_Shell(self, other)
     ) {
@@ -177,8 +177,8 @@ void daEnShell_c::Normal_VsEnHitCheck(dCc_c *self, dCc_c *other) {
     }
     if (
         isState(StateID_Slide) &&
-        (other->mCcData.mStatus & CC_STATUS_8 &&
-        hitCallback_Shell(self, other))
+        other->mCcData.mStatus & CC_STATUS_8 &&
+        hitCallback_Shell(self, other)
     ) {
         self->mInfo |= CC_NO_HIT;
         return;
@@ -768,7 +768,7 @@ bool daEnShell_c::hitCallback_Ice(dCc_c *self, dCc_c *other) {
             break;
         }
     }
-    if (!mUseBaseIceBehaviour) {
+    if (mShellMode == SHELL_MODE_BASE) {
         changeState(StateID_Ice);
         mPlayerNo = -1;
     } else {
@@ -778,7 +778,7 @@ bool daEnShell_c::hitCallback_Ice(dCc_c *self, dCc_c *other) {
 }
 
 void daEnShell_c::returnState_Ice() {
-    if (!mUseBaseIceBehaviour) {
+    if (mShellMode == SHELL_MODE_BASE) {
         mPlayerNo = -1;
         mSpeed.set(0.0f, 0.0f, 0.0f);
         changeState(StateID_Sleep);
@@ -887,7 +887,7 @@ void daEnShell_c::initializeState_Sleep() {
     mSpeedMax.y = -4.0f;
     mAccelY = -0.1875f;
     clrComboCnt();
-    mUseBaseIceBehaviour = 0;
+    mShellMode = SHELL_MODE_BASE;
     mCc.mCcData.mVsDamage |= (1 << CC_ATTACK_SPIN_LIFT_UP);
     mWakeupShakeAngle = 0;
     mWakeupShakeAngle3D.x = 0;
@@ -966,7 +966,7 @@ void daEnShell_c::initializeState_Carry() {
     if (mSleepTimer > smc_SLEEP_TIMER_SHAKE) {
         mCarryTimer = mSleepTimer;
     }
-    mUseBaseIceBehaviour = 0;
+    mShellMode = SHELL_MODE_BASE;
     mWakeupShakeAngle = 0;
     mWakeupShakeAngle3D.x = 0;
     mWakeupShakeAngle3D.y = 0;
@@ -1026,7 +1026,7 @@ void daEnShell_c::executeState_Carry() {
 }
 
 void daEnShell_c::initializeState_Slide() {
-    mSensorFootSlide.mBase.mFlags = 1;
+    mSensorFootSlide.mFlags = 1;
     mSensorFootSlide.mLineA = -0x3000;
     mSensorFootSlide.mLineB = 0x2000;
     mSensorFootSlide.mDistanceFromCenter = 0;
@@ -1053,10 +1053,10 @@ void daEnShell_c::initializeState_Slide() {
             mNoHitPlayer.mTimer[mPlayerNo] = 10;
         }
 
-        mSensorHead.mBase.mFlags |= 0xc0000;
-        mSensorFootNormal.mBase.mFlags |= 0xc0000;
-        mSensorWall.mBase.mFlags |= 0xc0000;
-        mSensorFootSlide.mBase.mFlags |= 0xc0000;
+        mSensorHead.mFlags |= 0xc0000;
+        mSensorFootNormal.mFlags |= 0xc0000;
+        mSensorWall.mFlags |= 0xc0000;
+        mSensorFootSlide.mFlags |= 0xc0000;
     }
 
     mSlideAirAfterThrow = 0;
@@ -1067,16 +1067,16 @@ void daEnShell_c::initializeState_Slide() {
     mCc.mCcData.mVsKind |= (1 << CC_KIND_BALLOON) | (1 << CC_KIND_ITEM) | (1 << CC_KIND_KILLER);
     mCc.mCcData.mAttack = CC_ATTACK_SHELL;
 
-    mUseBaseIceBehaviour = 0;
+    mShellMode = SHELL_MODE_BASE;
     mAccelF = 1 / 1024.0f;
     mAccelY = -0.1875f;
     mSpeedMax.set(mSpeed.x, -4.0f, 0.0f);
 
-    mSensorHead.mBase.mFlags |= 0x900000;
-    mSensorWall.mBase.mFlags |= 0x900000;
+    mSensorHead.mFlags |= 0x900000;
+    mSensorWall.mFlags |= 0x900000;
     if (mJumpPlayerCarryActorID) {
-        mSensorHead.mBase.mFlags |= 0x400;
-        mSensorWall.mBase.mFlags |= 0x400;
+        mSensorHead.mFlags |= 0x400;
+        mSensorWall.mFlags |= 0x400;
     }
     mBc.set(this, mSensorFootSlide, mSensorHead, mSensorWall);
 
@@ -1105,10 +1105,10 @@ void daEnShell_c::finalizeState_Slide() {
     mCc.mCcData.mAttack = CC_ATTACK_NONE;
     mAccelF = 0.0f;
     mSpeedMax.set(0.0f, -4.0f, 0.0f);
-    mSensorHead.mBase.mFlags &= ~0x49c0400;
-    mSensorFootNormal.mBase.mFlags &= ~0xc0000;
-    mSensorWall.mBase.mFlags &= ~0x9c0400;
-    mSensorFootSlide.mBase.mFlags &= ~0xc0000;
+    mSensorHead.mFlags &= ~0x49c0400;
+    mSensorFootNormal.mFlags &= ~0xc0000;
+    mSensorWall.mFlags &= ~0x9c0400;
+    mSensorFootSlide.mFlags &= ~0xc0000;
     mBc.set(this, mSensorFootNormal, mSensorHead, mSensorWall);
     mBc.mOwningPlrNo = -1;
     mPlayerNo = -1;
@@ -1122,8 +1122,8 @@ void daEnShell_c::executeState_Slide() {
     slideSpin();
     slideEffect();
     if (mJumpPlayerNoCarryHitTimer == 0) {
-        mSensorHead.mBase.mFlags &= ~0x400;
-        mSensorWall.mBase.mFlags &= ~0x400;
+        mSensorHead.mFlags &= ~0x400;
+        mSensorWall.mFlags &= ~0x400;
     }
     EnBgCheckWall();
     EnBgCheckFoot();
@@ -1250,7 +1250,7 @@ void daEnShell_c::executeState_WakeupReverse() {
 
 void daEnShell_c::initializeState_DieFall() {
     if (isDieShell()) {
-        mUseBaseIceBehaviour = 0;
+        mShellMode = SHELL_MODE_BASE;
     }
     mFootAttr3 = false;
     dEn_c::initializeState_DieFall();

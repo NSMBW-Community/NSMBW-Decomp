@@ -199,7 +199,7 @@ public:
 
     virtual void beginFunsui();
     virtual void endFunsui();
-    virtual bool isFunsui() const;
+    virtual BOOL isFunsui() const;
 
     virtual bool checkComboClap(int max);
 

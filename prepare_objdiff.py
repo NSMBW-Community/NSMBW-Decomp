@@ -272,7 +272,8 @@ for i, m in enumerate(config_yaml['modules']):
                         del sym_dict[(sec, addr + sym.st_size - 4)]
                 attributes['size'] = str(sym.st_size)
 
-            sym_dict[(sec, addr)] = (name, attributes)
+            if len(attributes) > 0:
+                sym_dict[(sec, addr)] = (name, attributes)
 
 # Write back updated symbols
 symbols_path.write_text(syms_to_text(new_syms))

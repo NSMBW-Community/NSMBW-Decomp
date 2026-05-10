@@ -84,6 +84,11 @@ struct sCcDatNew {
     ///< @brief The size of the collider.
     ///< Note: This is the distance from the center to the edge, so half the actual size.
     mVec2_POD_c mSize;
+
+    void set(const sCcDatNew &other) {
+        mOffset = other.mOffset;
+        mSize = other.mSize;
+    }
 };
 
 /**
@@ -107,6 +112,16 @@ struct sCcDatNewF {
     u16 mStatus; ///< Status flags for this collider. See CC_STATUS_FLAG_e.
 
     void (*mCallback)(dCc_c *self, dCc_c *target); ///< The callback to execute when a collision occurs.
+
+    void set(const sCcDatNewF &other) {
+        mBase.set(other.mBase);
+        mKind = other.mKind;
+        mAttack = other.mAttack;
+        mVsKind = other.mVsKind;
+        mVsDamage = other.mVsDamage;
+        mStatus = other.mStatus;
+        mCallback = other.mCallback;
+    }
 };
 
 /**

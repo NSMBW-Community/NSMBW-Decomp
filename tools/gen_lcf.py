@@ -37,17 +37,24 @@ def make_elf_force_directives(slice_file: SliceFile) -> set[str]:
     return force_actives
 
 
-def make_plf_force_directives(preplfs: list[Path]) -> set[str]:
+def make_plf_force_directives(slice_file: SliceFile) -> set[str]:
     force_actives = set()
+
+    rel_file_name = (BUILDDIR / slice_file.meta.fileName).with_suffix('.preplf')
+
+    if not rel_file_name.exists():
+        return force_actives
 
     # We need the unresolved symbols from all RELs so that the linker does not deadstrip them.
     # We do this by checking the symbols in the .preplf with an undefined section index.
-    for preplf in preplfs:
-        preplf_file: ElfFile = ElfFile.read(preplf.read_bytes())
-        symtab = cast(ElfSymtab, preplf_file.get_section('.symtab'))
-        for sym in symtab.syms:
-            if sym.st_shndx == 0 and not REL_SYM.match(sym.name):
-                force_actives.add(sym.name)
+    preplf_file: ElfFile = ElfFile.read(rel_file_name.read_bytes())
+    symtab = cast(ElfSymtab, preplf_file.get_section('.symtab'))
+    for sym in symtab.syms:
+        if sym.st_shndx == 0 and not REL_SYM.match(sym.name):
+            force_actives.add(sym.name)
+        elif sym.name in slice_file.keepWeak:
+            # Some symbols might not be referenced yet, but we still want to keep them
+            force_actives.add(sym.name)
 
     force_actives.add('_prolog')
     force_actives.add('_epilog')
@@ -55,10 +62,9 @@ def make_plf_force_directives(preplfs: list[Path]) -> set[str]:
     return force_actives
 
 
-def gen_lcf(slice_file_path: Path, preplfs: list[Path], out_path: Path) -> None:
-    assert slice_file_path.is_file()
-
-    slice_file: SliceFile = load_slice_file(slice_file_path)
+def gen_lcf(slice_file_paths: list[Path], out_path: Path) -> None:
+    slice_files = [load_slice_file(path) for path in slice_file_paths]
+    most_sections_slice = max(slice_files, key=lambda x: len(x.meta.sections))
     lcf_file = StringIO()
 
     # MEMORY section: include base address (hardcoded for now)
@@ -69,21 +75,25 @@ def gen_lcf(slice_file_path: Path, preplfs: list[Path], out_path: Path) -> None:
     # SECTIONS section
     lcf_file.write('SECTIONS {\n')
     lcf_file.write('\tGROUP: {\n')
-    for name, section in slice_file.meta.sections.items():
+
+    for name, section in most_sections_slice.meta.sections.items():
         if '$' in name or section.size == 0:
             continue
         align = section.align if section.secAlign == -1 else section.secAlign
-        if slice_file.meta.type == SliceType.DOL:
+        if most_sections_slice.meta.type == SliceType.DOL:
             align = 0x20
         lcf_file.write(f'\t\t{name} ALIGN(0x{align:0x}) : {{}}\n')
+
     lcf_file.write('\t} > text\n')
     lcf_file.write('}\n\n')
 
     # FORCEACTIVE section
-    if slice_file.meta.type == SliceType.DOL:
-        force_active = make_elf_force_directives(slice_file)
-    else:
-        force_active = make_plf_force_directives(preplfs)
+    force_active = set()
+    for slice_file in slice_files:
+        if slice_file.meta.type == SliceType.DOL:
+            force_active |= make_elf_force_directives(slice_file)
+        else:
+            force_active |= make_plf_force_directives(slice_file)
 
     lcf_file.write('FORCEACTIVE {\n')
     for force_sym in sorted(force_active):
@@ -96,8 +106,7 @@ def gen_lcf(slice_file_path: Path, preplfs: list[Path], out_path: Path) -> None:
 if __name__ == '__main__':
     import argparse
     parser = argparse.ArgumentParser(description='Generates a linker script from a slice file.')
-    parser.add_argument('slice_file', type=Path, help='Slice file to generate the linker script from.')
-    parser.add_argument('preplf', nargs='*', type=Path, help='PREPLF files to generate the FORCEACTIVE section from.')
+    parser.add_argument('slice_files', nargs='*', type=Path, help='Slice files to generate the linker script from.')
     parser.add_argument('-o', '--output', type=Path, required=True, help='Path the linker script will be stored to.')
     args = parser.parse_args()
-    gen_lcf(args.slice_file, args.preplf, args.output)
+    gen_lcf(args.slice_files, args.output)
