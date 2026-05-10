@@ -90,14 +90,7 @@ void dCc_c::release() {
 
 void dCc_c::set(dActor_c *actor, sCcDatNewF *collInfo) {
     mpOwner = actor;
-    mCcData.mBase.mOffset = collInfo->mBase.mOffset;
-    mCcData.mBase.mSize = collInfo->mBase.mSize;
-    mCcData.mKind = collInfo->mKind;
-    mCcData.mAttack = collInfo->mAttack;
-    mCcData.mVsKind = collInfo->mVsKind;
-    mCcData.mVsDamage = collInfo->mVsDamage;
-    mCcData.mStatus = collInfo->mStatus;
-    mCcData.mCallback = collInfo->mCallback;
+    mCcData.set(*collInfo);
     mInfo = 0;
 }
 

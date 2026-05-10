@@ -11,6 +11,7 @@ class daEnNoko_c : public daEnShell_c {
 public:
     class nodeCallback_c : public m3d::mdl_c::callback_c {
     public:
+        nodeCallback_c(daEnNoko_c *owner) : mpOwner(owner) {}
         virtual void timingB(ulong nodeId, nw4r::g3d::WorldMtxManip *manip, nw4r::g3d::ResMdl resMdl);
 
         daEnNoko_c *mpOwner;
@@ -21,7 +22,19 @@ public:
         NOKO_RED ///< Red Koopas turn around on ledges.
     };
 
-    daEnNoko_c() { mMdlCallback.mpOwner = this; }
+    enum SPAWN_MODE_e {
+        SPAWN_MODE_WALK,
+        SPAWN_MODE_SLEEP,
+    };
+
+    enum DANCE_MOVE_e {
+        BGM_anim_walkA_1,
+        BGM_anim_walkA_2, ///< Actually uses the same animation as BGM_anim_walkA_1.
+        BGM_anim_walkA_3,
+        DANCE_MOVE_COUNT,
+    };
+
+    daEnNoko_c() : mMdlCallback(this) {}
 
     int create() override;
     int doDelete() override;
@@ -47,11 +60,17 @@ public:
     bool checkSleep() override;
     bool turnProc() override;
     void calcShellEffectPos() override;
-    void setEnemyTurn() override { if (isState(StateID_Walk)) { changeState(StateID_Turn); } }
+
+    void setEnemyTurn() override {
+        if (isState(StateID_Walk)) {
+            changeState(StateID_Turn);
+        }
+    }
 
     virtual void checkWaterEntry() { WaterCheck(mPos, 1.0f); }
 
     void setAfterSleepState() override { changeState(StateID_Walk); }
+
     void slideEffect() override {
         if (!mNokoType) {
             mEffect.createEffect("Wm_en_shellgreentail", 0, &mSlideEffectPos, nullptr, nullptr);
@@ -106,7 +125,7 @@ public:
 
     BOOL mIsFunsui; ///< Whether the Koopa is being blown upwards by a fountain.
     s16 mHeadAngle;
-    u8 mNokoType; ///< Is a NokoType_e.
+    u8 mNokoType; ///< Is a NOKO_TYPE_e.
     mVec3_c mCreatePos; ///< The position where the Koopa was spawned.
     float mXSpeedBeforeFunsui; ///< The horizontal speed of the Koopa before being blown by a fountain.
     u8 mPad1[8];
@@ -114,13 +133,13 @@ public:
     u32 m_8c8;
     int mDanceTimer; ///< Timer for starting and ending the dance.
     mAng mBgmDanceRotSpeed; ///< The rotation speed for turning toward the target rotation for a dance.
-    u32 mDanceMove; ///< Which dance move to perform.
+    u32 mDanceMove; ///< The dance move to perform.
     mEf::levelOneEffect_c mQuicksandEffect;
     nodeCallback_c mMdlCallback;
 
-    ACTOR_PARAM_CONFIG(NokoType, 0, 1); ///< See NokoType_e.
-    ACTOR_PARAM_CONFIG(SpawnMode, 4, 1); ///< Set to 1 to spawn as a sleeping shell.
-    ACTOR_PARAM_CONFIG(Layer, 16, 1); ///< The layer to spawn on.
+    ACTOR_PARAM_CONFIG(NokoType, 0, 1); ///< See NOKO_TYPE_e.
+    ACTOR_PARAM_CONFIG(SpawnMode, 4, 1); ///< See SPAWN_MODE_e.
+    ACTOR_PARAM_CONFIG(SubLayer, 16, 1); ///< The sublayer to spawn on.
     ACTOR_PARAM_CONFIG(BlockHitPlayer, 24, 2); ///< The player number that hit the block from which this Koopa spawned.
     ACTOR_PARAM_CONFIG(BlockAppear, 28, 1); ///< Whether the Koopa should spawn from a block.
     ACTOR_PARAM_CONFIG(SpitOut, 29, 1); ///< Whether this Koopa was spat out by Yoshi.

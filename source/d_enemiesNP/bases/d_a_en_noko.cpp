@@ -51,11 +51,11 @@ int daEnNoko_c::create() {
 
     u8 dir = getPl_LRflag(mPos);
     mDirection = dir;
-    mAmiLayer = ACTOR_PARAM(Layer);
+    mAmiLayer = ACTOR_PARAM(SubLayer);
     mAngle.y = l_turn_target_angle[dir];
     mCreatePos = mPos;
     mFlags |= dEn_c::EN_FLAG_16;
-    mPos.z = l_Ami_Zpos[ACTOR_PARAM(Layer)];
+    mPos.z = l_Ami_Zpos[ACTOR_PARAM(SubLayer)];
 
     mNokoAnimTex.setPlayMode(m3d::FORWARD_ONCE, 0);
     mNokoModel.setAnm(mNokoAnimTex, 0.0f);
@@ -66,14 +66,7 @@ int daEnNoko_c::create() {
     mSensorWall = l_noko_wall;
     mSensorFootNormal = l_noko_foot;
 
-    mCcData.mBase.mOffset = l_noko_cc.mBase.mOffset;
-    mCcData.mBase.mSize = l_noko_cc.mBase.mSize;
-    mCcData.mKind = l_noko_cc.mKind;
-    mCcData.mAttack = l_noko_cc.mAttack;
-    mCcData.mVsKind = l_noko_cc.mVsKind;
-    mCcData.mVsDamage = l_noko_cc.mVsDamage;
-    mCcData.mStatus = l_noko_cc.mStatus;
-    mCcData.mCallback = l_noko_cc.mCallback;
+    mCcData.set(l_noko_cc);
     mCc.set(this, &mCcData, l_Ami_Line[mAmiLayer]);
     mCc.entry();
 
@@ -111,7 +104,7 @@ void daEnNoko_c::createModel() {
 
 void daEnNoko_c::setInitialState() {
     mDirection = getPl_LRflag(mPos);
-    if (ACTOR_PARAM(SpawnMode) == 1) {
+    if (ACTOR_PARAM(SpawnMode) == SPAWN_MODE_SLEEP) {
         mSpeed.y = 0.0f;
         changeState(daEnShell_c::StateID_Sleep);
     } else if (ACTOR_PARAM(BlockAppear)) {
@@ -130,11 +123,11 @@ int daEnNoko_c::preExecute() {
 
     if (canDance()) {
         if (dAudio::isBgmAccentSign(BIT_FLAG(1))) {
-            danceWithMove(0);
+            danceWithMove(BGM_anim_walkA_1);
         } else if (dAudio::isBgmAccentSign(BIT_FLAG(2))) {
-            danceWithMove(1);
+            danceWithMove(BGM_anim_walkA_2);
         } else if (dAudio::isBgmAccentSign(BIT_FLAG(3))) {
-            danceWithMove(2);
+            danceWithMove(BGM_anim_walkA_3);
         }
     }
 
@@ -232,7 +225,7 @@ void daEnNoko_c::calcMdl() {
     calcShellMdl();
     mVec3_c pos = getPos();
     mAng3_c angle = mAngle;
-    dActor_c::changePosAngle(&pos, &angle, 1);
+    changePosAngle(&pos, &angle, 1);
 
     mMatrix.trans(pos);
     mMatrix.ZXYrotM(angle);
@@ -249,7 +242,6 @@ void daEnNoko_c::calcShellEffectPos() {
     nw4r::g3d::ResNode resNode = resMdl.GetResNode("nokonoko_shell_model");
 
     mMtx_c matrix;
-
     model.getNodeWorldMtx(resNode.GetID(), &matrix);
     matrix.multVecZero(mSlideEffectPos);
     if (mIsFlipped) {
@@ -270,8 +262,8 @@ bool daEnNoko_c::setPlayerDamage(dActor_c *actor) {
 
 bool daEnNoko_c::playerDamageTurn(dActor_c *actor) {
     u8 dir = dActor_c::getTrgToSrcDir_Main(actor->getCenterX(), getCenterX());
-
     u8 mode = mShellMode;
+
     if (mDirection == dir || mode == SHELL_MODE_BASE) {
         return false;
     }
@@ -320,7 +312,7 @@ void daEnNoko_c::doTurn(int *dir, s16 *turnSpeed) {
 }
 
 void daEnNoko_c::setZPos() {
-    if (mLayer == 0) {
+    if (mLayer == LAYER_1) {
         mPos.z = mBaseZPos + l_Ami_Zpos[mAmiLayer];
     } else {
         mPos.z = -2500.0f;
@@ -388,7 +380,7 @@ bool daEnNoko_c::createIceActor() {
 }
 
 bool daEnNoko_c::checkSleep() {
-    if (ACTOR_PARAM(SpawnMode) == 1) {
+    if (ACTOR_PARAM(SpawnMode) == SPAWN_MODE_SLEEP) {
         return false;
     }
 
@@ -590,7 +582,6 @@ void daEnNoko_c::executeState_Turn() {
     }
 
     WaterCheck(mPos, 1.0f);
-
     if (turnProc()) {
         changeState(StateID_Walk);
     }
@@ -658,7 +649,7 @@ void daEnNoko_c::executeState_SpitOut_Ready() {
 }
 
 void daEnNoko_c::initializeState_BgmDance() {
-    static const char *sc_bgmDanceAnim[3] = {
+    static const char *sc_bgmDanceAnim[DANCE_MOVE_COUNT] = {
         "BGM_anim_walkA_1",
         "BGM_anim_walkA_1",
         "BGM_anim_walkA_3",
