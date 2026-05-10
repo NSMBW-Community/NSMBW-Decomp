@@ -39,7 +39,11 @@ public:
     virtual bool turnProc();
     virtual bool isDieShell();
 
-    virtual void setEnemyTurn() { if (isState(StateID_Walk)) { changeState(StateID_Turn); } }
+    virtual void setEnemyTurn() {
+        if (isState(StateID_Walk)) {
+            changeState(StateID_Turn);
+        }
+    }
 
     virtual void initialize() {}
     virtual bool isCullCheckOk() { return true; }
