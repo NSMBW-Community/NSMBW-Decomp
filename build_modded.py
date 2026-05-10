@@ -27,6 +27,18 @@ def exec_cmd(*nargs, **kwargs):
     if out.returncode != 0:
         sys.exit(out.returncode)
 
+
+def build_link_cmd(ldflags, file_names, ldscript, out_path):
+    if sys.platform == 'win32':
+        # Avoid Windows command length limits by passing object files via response file.
+        rsp_path = BUILDDIR / 'mod' / out_path.with_suffix('.rsp').name
+        rsp_path.write_text('\n'.join(f'"{Path(p)}"' for p in file_names), encoding='utf-8')
+        cmd = [LD, *ldflags.split(' '), f'@{rsp_path}']
+    else:
+        cmd = ['wine', LD, *ldflags.split(' '), *file_names]
+    cmd += ['-lcf', ldscript, '-o', out_path]
+    return cmd
+
 Path(f'{BUILDDIR}/mod').mkdir(parents=True, exist_ok=True)
 
 config_json = json.loads(open(BUILDDIR / 'dtkspl/config.json').read())
@@ -44,8 +56,7 @@ def build_main(module_name, ldscript, units):
             o_file = Path(f'{BUILDDIR}/compiled/{module_name}/{unit['name']}').with_suffix('.o')
             file_names.append(o_file)
 
-    cmd = [] if sys.platform == 'win32' else ['wine']
-    cmd.extend([LD, *ldflags.split(' '), *file_names, '-lcf', ldscript, '-o', BUILDDIR / (out_file + '.elf')])
+    cmd = build_link_cmd(ldflags, file_names, ldscript, BUILDDIR / (out_file + '.elf'))
     exec_cmd(cmd)
     print_success(f'Linked {module_name}.elf.')
 
@@ -63,8 +74,7 @@ def build_module_plf(module_name, ldscript, units):
             o_file = Path(f'{BUILDDIR}/compiled/{module_name}/{unit['name']}').with_suffix('.o')
             file_names.append(o_file)
 
-    cmd = [] if sys.platform == 'win32' else ['wine']
-    cmd.extend([LD, *ldflags.split(' '), *file_names, '-lcf', ldscript, '-o', out_plf])
+    cmd = build_link_cmd(ldflags, file_names, ldscript, out_plf)
     exec_cmd(cmd)
     print_success(f'Linked {module_name}.plf.')
 

@@ -15,8 +15,10 @@ public:
     /// Other actors can extend this enum to add new modes.
     /// @unofficial
     enum ShellMode_e {
-        SHELL_MODE_BASE,
-        SHELL_MODE_NOKO_WALK
+        SHELL_MODE_BASE = 0,
+        SHELL_MODE_NOKO_WALK = 1,
+        SHELL_MODE_TOGEZO = 1,
+        SHELL_MODE_PAIPO
     };
 
     struct GlobalData_t {

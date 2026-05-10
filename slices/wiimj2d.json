@@ -167,6 +167,19 @@
             }
         },
         {
+            "source": "dol/bases/d_a_en_togezo_base.cpp",
+            "memoryRanges": {
+                ".text": "0x37450-0x3a1a0",
+                ".ctors": "0x68-0x6c",
+                ".data": "0x7fe8-0x8668",
+                ".rodata": "0xac0-0xb60",
+                ".bss": "0x2618-0x2880",
+                ".sbss": "0xb0-0xb8",
+                ".sdata": "0x250-0x268",
+                ".sdata2": "0x630-0x6a8"
+            }
+        },
+        {
             "source": "dol/bases/d_a_player_base.cpp",
             "memoryRanges": {
                 ".text": "0x3f950-0x54c20",
