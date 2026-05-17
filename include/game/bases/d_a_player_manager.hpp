@@ -19,6 +19,7 @@ public:
     static void setPlayer(int, dAcPy_c *);
     static bool fn_8005f570(PLAYER_POWERUP_e, int); ///< @unofficial
     static void setCarryOverYoshiInfo(u8 plrNo, u8 yoshiColor, int fruitCount);
+    static void incCoin(int);
     static bool addNum(int);
     static bool decNum(int);
     static bool addRest(int);

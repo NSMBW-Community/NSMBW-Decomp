@@ -4,14 +4,23 @@
 
 enum SensorFlags {
     SENSOR_IS_POINT = 0,
-    SENSOR_IS_LINE = 1
+    SENSOR_IS_LINE = 1,
+    SENSOR_TYPE_MASK = BIT_FLAG(0),
 };
 
-class sBcSensorIf_c {};
+class sBcSensorPoint;
+class sBcSensorLine;
+class sBcSensorIf_c {
+public:
+    sBcSensorPoint *asPointSensor() { return (sBcSensorPoint *) this; }
+    sBcSensorLine *asLineSensor() { return (sBcSensorLine *) this; }
+
+    long mFlags;
+};
 
 /// @unofficial
 struct sBcSensorPoint {
-    operator const sBcSensorIf_c *() const { return (const sBcSensorIf_c *) this; }
+    operator sBcSensorIf_c *() const { return (sBcSensorIf_c *) this; }
 
     u32 mFlags;
     int mX, mY;
@@ -19,31 +28,20 @@ struct sBcSensorPoint {
 
 /// @unofficial
 struct sBcSensorLine {
-    operator const sBcSensorIf_c *() const { return (const sBcSensorIf_c *) this; }
+    operator sBcSensorIf_c *() const { return (sBcSensorIf_c *) this; }
 
     u32 mFlags;
-    int mLineA, mLineB;
-    int mDistanceFromCenter;
-};
-
-/// @unofficial
-class sBcPointData {
-public:
-    operator const sBcSensorIf_c *() const { return (sBcSensorIf_c *) &mFlags; }
-
-    u32 mFlags;
-    long mInfMargin;
-    long mSupMargin;
+    long mLineA, mLineB;
     long mOffset;
 };
 
 /// @unofficial
 class sBcPlayerPointData {
 public:
-    sBcPointData mFoot;
-    sBcPointData mHead;
-    sBcPointData mWall;
-    sBcPointData mVine;
+    sBcSensorLine mFoot;
+    sBcSensorLine mHead;
+    sBcSensorLine mWall;
+    sBcSensorLine mVine;
 };
 
 class dBg_ctr_c {
@@ -68,7 +66,9 @@ public:
 
 class dBc_c {
 public:
+    /// @unofficial
     enum Flag_e {
+        FLAG_NONE = 0,
         FLAG_0 = BIT_FLAG(0),
         FLAG_1 = BIT_FLAG(1),
         FLAG_2 = BIT_FLAG(2),
@@ -100,6 +100,7 @@ public:
         FLAG_28 = BIT_FLAG(28),
         FLAG_29 = BIT_FLAG(29),
         FLAG_30 = BIT_FLAG(30),
+        FLAG_31 = BIT_FLAG(31),
 
         FLAG_WALL_R =
             FLAG_0 | FLAG_2 | FLAG_4,
@@ -113,6 +114,7 @@ public:
             FLAG_26 | FLAG_27 | FLAG_28 | FLAG_29
     };
 
+    /// @unofficial
     enum WATER_TYPE_e {
         WATER_CHECK_NONE,
         WATER_CHECK_WATER,
@@ -121,26 +123,69 @@ public:
         WATER_CHECK_POISON
     };
 
+    /// @unofficial
+    enum SakaType_e {
+        SAKA_NONE = 10
+    };
+
+    typedef void (dBc_c::*AttrFunc)();
+
     dBc_c();
     virtual ~dBc_c();
 
     void init();
-    void set(dActor_c *, const sBcSensorIf_c *, const sBcSensorIf_c *, const sBcSensorIf_c *); ///< @unofficial
+    void set(dActor_c *, sBcSensorIf_c *, sBcSensorIf_c *, sBcSensorIf_c *); ///< @unofficial
+    void clear();
+    void clearDamage();
 
+    static bool isBGCoin(ulong);
+    bool getBGCoin(ulong flags, ulong p2, ulong p3, mVec3_c *pos, int p5);
+
+    bool _checkBreakUnit(ulong p1, u8 p2, float x, float y);
+    static bool checkBreakUnit(ulong p1, u8 p2, float x, float y, u8 layer, s8 plrNo, u8 actorKind);
+    bool setHatenaBlockHit(ulong p1, u8 p2, float x, float y);
+    u32 setBreakBlockHit(ulong p1, u8 p2, float x, float y);
+
+    u8 getActorKind();
+
+    bool setBgDamageFlag(int, float, float);
     void checkLink();
     bool checkRide();
-    bool checkHead(unsigned long);
     s16 getSakaAngle(u8);
     s16 getSakaMoveAngle(u8);
-    Flag_e checkWall(float *);
-    Flag_e checkWallEnm(float *);
-    Flag_e checkFoot();
-    Flag_e checkFootEnm();
+
+    u32 checkFoot();
+    u32 checkFootEnm();
+    u32 checkFootPoint(sBcSensorPoint *, ulong); ///< @unofficial
+    u32 checkFootLine(sBcSensorLine *, ulong); ///< @unofficial
+    u32 _checkFoot(float x, float y, ulong sensorFlags);
+    u32 _checkFootBlock(float x, float y, ulong sensorFlags);
+    int _checkFootSakaType(float x, float y, ulong *type, ulong *kind);
+    u32 _checkFootSaka(ulong sensorFlags);
+    u32 _checkSakaFly(ulong subkind, ulong sensorFlags);
+
+    u32 checkHead(unsigned long);
+    u32 checkHeadPoint(sBcSensorPoint *, ulong); ///< @unofficial
+    u32 checkHeadLine(sBcSensorLine *, ulong); ///< @unofficial
+    u32 _checkHead(float x, float y, ulong sensorFlags);
+    u32 _checkHeadBlock(float x, float y, ulong sensorFlags);
+    void _checkHeadRev(ulong, float y, ulong sensorFlags);
+    u32 _checkHeadSaka(ulong sensorFlags);
+    u32 _checkHeadAttr(ulong);
+
+    u32 checkWall(float *);
+    u32 checkWallEnm(float *);
+    u32 checkWallCommon(int, int);
+    u32 checkWallPoint(sBcSensorPoint *, int dir, ulong); ///< @unofficial
+    u32 checkWallLine(sBcSensorLine *, int dir, ulong); ///< @unofficial
+    u32 _checkCancelWall(float x, float y);
+    u32 _checkWall(float x, float y, ulong sensorFlags, int dir);
+
     u16 getWallAttr(int);
     u16 getFootAttr();
 
-    u32 checkPoleCollision(sBcPointData *); ///< @unofficial
-    u32 checkVineCollision(sBcPointData *); ///< @unofficial
+    u32 checkPoleCollision(sBcSensorLine *); ///< @unofficial
+    u32 checkVineCollision(sBcSensorLine *); ///< @unofficial
 
     bool hasSensorFoot() { return mpSensorFoot != nullptr; }
     bool hasSensorHead() { return mpSensorHead != nullptr; }
@@ -153,14 +198,44 @@ public:
     int checkDokanUp(mVec3_c *, int *);
     void setRideOnObjBg(dBg_ctr_c *, const mVec3_c &);
     bool checkWallPlayer(const mVec3_c *, const mVec3_c *, float *);
+    s8 getPlrNo(float y);
     u32 checkBgPlr(dActor_c *);
     u16 getHeadAttr();
     short getHeadSakaMoveAngle(u8 direction);
     void clearBgcSaveAll();
+    bool setWakuCoinAppear(ulong p1, ulong p2, ulong p3, mVec3_c *pos);
+    bool _checkFootAttr(ulong);
+    bool _checkFootAttr2(ulong);
 
     bool getSakaUpDown(u8 direction);
+    bool getSakaUpDown(u8 direction, ulong subkind);
     short getSakaAngleBySpeed(float);
     int getSakaType();
+
+    void _attrNormal();
+    void _attrNuma();
+    void _attrLeft();
+    void _attrRight();
+
+    static bool _isDifferentPos(float x, float y);
+    static int checkWaterDepth(float, float, u8, u8, float *);
+    static WATER_TYPE_e checkWater(float, float, u8, float *);
+    static bool checkManyPoint(float *, float);
+    static u32 checkBg(float, float, u8, u8, unsigned long);
+    static u32 checkWireNet(float x, float y, unsigned char layer);
+    static u32 checkGround(const mVec3_c *, float *, u8, u8, s8);
+    static u32 checkGround(const mVec3_c *, float *, int *, u8, u8, s8);
+    static bool checkGroundAngle(const mVec3_c *, float *, s16 *, u8, u8, s8, int *, int);
+    static u32 checkGroundHalf(const mVec3_c *, float *, u8, u8);
+    static u32 checkTenjou(const mVec3_c *, float *, u8, u8);
+    static u32 checkWall(const mVec3_c *, const mVec3_c *, float *, u8, u8, dActor_c **);
+    static int checkHitMameBlock(float x, float y, u8 layer);
+    static u32 getUnitType(float x, float y, u8 layer);
+    static u32 getUnitKind(float x, float y, u8 layer);
+    static u32 _getUnitType(u16 x, u16 y, u8 layer);
+    static u32 _getUnitKind(u16 x, u16 y, u8 layer);
+    static void getAirWaterHitPos(mVec2_c *);
+    static void getAirWaterHitAngle(short *);
 
     u32 getFlags() const { return mFlags; }
 
@@ -171,6 +246,13 @@ public:
     u32 isFoot(); // { return mFlags & FLAG_FOOT; }
     u32 isHead() { return mFlags & FLAG_HEAD; }
     u32 isCollision() { return mFlags & (FLAG_WALL_L | FLAG_WALL_R | FLAG_FOOT | FLAG_HEAD); }
+
+    static s16 toTile(float v) { return (s16) v & 0xfff0; }
+    static u16 toTileU(float v) { return (u16) v & 0xfff0; }
+    static int toTileInt(float v) { return (int) v & 0xfff0; }
+    static int toTileInt2(float v) { return (int) v & ~0xf; }
+    static int roundTile(int v) { return v & 0xfff0; }
+    static mVec3_c toTile(const mVec3_c &p) { return mVec3_c(toTile(p.x), toTile(p.y), 0.0f); }
 
     dActor_c *mpOwner;
     sBcSensorIf_c *mpSensorFoot;
@@ -203,38 +285,48 @@ public:
     u32 mLastUnitKind;
     s8 mOwningPlrNo;
     s8 mRidePlrNo;
-    char mPad5[0x22];
+    u16 mLastX;
+    u16 mLastY;
+
+    u32 mFootAttr;
+    u8 mFootUnitType;
+    u8 mFootPrevUnitType;
+
+    u32 mHeadAttr;
+    u8 mHeadUnitType;
+    u8 mHeadPrevUnitType;
+
+    u32 mWallAttr[2];
+    u8 mWallUnitType[2];
+    u8 mWallPrevUnitType[2];
+
     u8 mPlayerFlags;
-    char mPad6[0x4];
+
+    u8 mSlopeType;
+    s16 mSlopeAngle;
+    u8 mFlippedSlopeType;
+    s16 mFlippedSlopeAngle;
+
     int m_c4;
     mAng mAdjacentSlopeAngle;
     int mFenceType;
     dBg_ctr_c *mpFenceCollision;
-    char mPad7[0x8];
+    float mFenceY;
+    float mIceSpeedParam;
     float mIceSpeed;
-    bool m_e0;
-    u8 m_e1;
+    u8 m_e0;
+    s8 m_e1;
     u8 m_e2;
-    bool mMovingLeft;
+    u8 mDirection;
     bool mGrounded;
     u8 mAmiLine;
     char mPad9[0x2];
     u8 *mpLayer;
     u8 mLayer;
 
-    static int checkWaterDepth(float, float, u8, u8, float *);
-    static WATER_TYPE_e checkWater(float, float, u8, float *);
-
-    static u32 checkBg(float, float, u8, u8, unsigned long);
-    static u32 checkWireNet(float x, float y, unsigned char layer);
-    static u32 checkGround(const mVec3_c *, float *, u8, u8, s8);
-    static u32 checkGround(const mVec3_c *, float *, int *, u8, u8, s8);
-    static bool checkGroundAngle(const mVec3_c *, float *, s16 *, u8, u8, s8, int *, int);
-    static u32 checkGroundHalf(const mVec3_c *, float *, u8, u8);
-    static u32 checkTenjou(const mVec3_c *, float *, u8, u8);
-    static u32 checkWall(const mVec3_c *, const mVec3_c *, float *, u8, u8, dActor_c **);
-    static u32 getUnitType(float x, float y, u8 layer);
-    static u32 getUnitKind(float x, float y, u8 layer);
-    static void getAirWaterHitPos(mVec2_c *);
-    static void getAirWaterHitAngle(short *);
+    static u16 gUnitX;
+    static u16 gUnitY;
+    static Flag_e (dBc_c::*checkObjFoot)(ulong flags, float);
+    static Flag_e (dBc_c::*checkObjHead)(ulong flags, float);
+    static Flag_e (dBc_c::*checkObjWall)(ulong flags, int dir, float);
 };

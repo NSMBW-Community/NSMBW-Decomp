@@ -247,6 +247,16 @@
             }
         },
         {
+            "source": "dol/bases/d_bc.cpp",
+            "nonMatching": true,
+            "memoryRanges": {
+                ".text": "0x667c0-0x70440",
+                ".rodata": "0x1710-0x1978",
+                ".data": "0x10ee8-0x11040",
+                ".sdata2": "0xbc0-0xc90"
+            }
+        },
+        {
             "source": "dol/bases/d_bg.cpp",
             "nonMatching": true,
             "memoryRanges": {

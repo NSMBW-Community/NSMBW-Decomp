@@ -570,9 +570,9 @@ public:
     virtual bool isItemKinopio() { return false; }
     virtual void setPowerup(PLAYER_POWERUP_e, int); ///< @unofficial
     virtual u8 getTallType(s8);
-    virtual const sBcPointData *getHeadBgPointData() { return nullptr; };
-    virtual const sBcPointData *getWallBgPointData() { return nullptr; };
-    virtual const sBcPointData *getFootBgPointData() { return nullptr; };
+    virtual const sBcSensorLine *getHeadBgPointData() { return nullptr; };
+    virtual const sBcSensorLine *getWallBgPointData() { return nullptr; };
+    virtual const sBcSensorLine *getFootBgPointData() { return nullptr; };
     virtual float getStandHeadBgPointY() { return 0.0f; }
     virtual void checkBgCrossSub() {}
     virtual void postBgCross();
@@ -1217,9 +1217,9 @@ public:
     u32 mFollowMameKuribo;
     fBaseID_e mIceActorID;
     PLAYER_POWERUP_e mPowerup;
-    sBcPointData mHeadBcData;
-    sBcPointData mFootBcData;
-    sBcPointData mWallBcData;
+    sBcSensorLine mHeadBcData;
+    sBcSensorLine mFootBcData;
+    sBcSensorLine mWallBcData;
     mVec3_c mBgPushForce; ///< Belts, quicksand etc.
     float mExtraPushForceX;
 
@@ -1247,7 +1247,7 @@ public:
     float mPrevWaterHeight;
     int mWaterDepth;
     float mSinkSandHeight;
-    bool mIsBgDamage;
+    u8 mIsBgDamage;
     s8 mBgDamageType;
     u8 mWaterType; ///< Value is a dBc_c::WATER_TYPE_e.
     mVec3_c mAirWaterHitPos;

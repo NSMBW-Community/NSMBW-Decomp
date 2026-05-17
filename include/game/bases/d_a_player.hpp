@@ -187,9 +187,9 @@ public:
     virtual bool isItemKinopio() { return mIsRescueKinopio; }
     virtual void setPowerup(PLAYER_POWERUP_e, int);
     virtual u8 getTallType(s8);
-    virtual const sBcPointData *getHeadBgPointData() { return &getBgPointData()->mHead; }
-    virtual const sBcPointData *getWallBgPointData() { return &getBgPointData()->mWall; }
-    virtual const sBcPointData *getFootBgPointData() { return &getBgPointData()->mFoot; }
+    virtual const sBcSensorLine *getHeadBgPointData() { return &getBgPointData()->mHead; }
+    virtual const sBcSensorLine *getWallBgPointData() { return &getBgPointData()->mWall; }
+    virtual const sBcSensorLine *getFootBgPointData() { return &getBgPointData()->mFoot; }
     virtual float getStandHeadBgPointY();
     virtual void checkBgCrossSub();
     virtual void postBgCross();
@@ -685,10 +685,10 @@ public:
     void setCcData();
     void setCcDataDirect();
 
-    void fn_80143060(sBcPointData &data1, sBcPointData &data2, bool); ///< @unofficial
-    bool fn_80143220(sBcPointData &data1, sBcPointData &data2); ///< @unofficial
-    void reviseBcDataCarryPlayer(sBcPointData &data1, sBcPointData &data2); ///< @unofficial
-    void reviseBcDataCarryHardBlock(sBcPointData &data1, sBcPointData &data2); ///< @unofficial
+    void fn_80143060(sBcSensorLine &data1, sBcSensorLine &data2, bool); ///< @unofficial
+    bool fn_80143220(sBcSensorLine &data1, sBcSensorLine &data2); ///< @unofficial
+    void reviseBcDataCarryPlayer(sBcSensorLine &data1, sBcSensorLine &data2); ///< @unofficial
+    void reviseBcDataCarryHardBlock(sBcSensorLine &data1, sBcSensorLine &data2); ///< @unofficial
 
     void setStarBase(StarSet_e, int);
 
@@ -729,7 +729,7 @@ public:
     PLAYER_POWERUP_e mPowerupCopy;
     PLAYER_POWERUP_e mPowerupCopy2;
     mVec2_c m_0c;
-    sBcPointData mVineBcData;
+    sBcSensorLine mVineBcData;
     dPc_c mPc;
     int m_60;
     s8 mScrollMode;

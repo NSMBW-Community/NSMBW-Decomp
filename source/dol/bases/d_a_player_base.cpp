@@ -484,14 +484,14 @@ bool daPlBase_c::checkStandUpRoofOnLift() {
 }
 
 bool daPlBase_c::checkStandUpRoof() {
-    const sBcPointData *headBgP = getHeadBgPointData();
+    const sBcSensorLine *headBgP = getHeadBgPointData();
     if (headBgP == nullptr) {
         return false;
     }
     float standHeadBgY = getStandHeadBgPointY();
     float tmpCalc = mPos.y + standHeadBgY - 1.0f;
     mVec3_c p = mVec3_c(
-        mPos.x + headBgP->mInfMargin / 4096.0f,
+        mPos.x + headBgP->mLineA / 4096.0f,
         mPos.y + 4.0f,
         mPos.z
     );
@@ -499,7 +499,7 @@ bool daPlBase_c::checkStandUpRoof() {
     if (dBc_c::checkTenjou(&p, &res, mLayer, mAmiLayer) && res < tmpCalc) {
         return true;
     }
-    p.x = mPos.x + headBgP->mSupMargin / 4096.0f;
+    p.x = mPos.x + headBgP->mLineB / 4096.0f;
     if (dBc_c::checkTenjou(&p, &res, mLayer, mAmiLayer) && res < tmpCalc) {
         return true;
     }
@@ -5020,8 +5020,8 @@ void daPlBase_c::checkBgCross() {
         if (mLastPos.x > mPos.x) {
             dir = -1.0f;
         }
-        const sBcPointData *wallData = getWallBgPointData();
-        int wallSize = wallData->mInfMargin + wallData->mSupMargin;
+        const sBcSensorLine *wallData = getWallBgPointData();
+        int wallSize = wallData->mLineA + wallData->mLineB;
         float offset = ((float) wallSize / 4096.0f) / 2.0f;
         mVec3_c p1(
             mLastPos.x - dir * 3.0f,
@@ -5466,7 +5466,7 @@ void daPlBase_c::checkWater() {
             if (getWaterCheckPosY() <= mWaterHeight) {
                 onNowBgCross(BGC_WATER_SHALLOW);
             }
-            const sBcPointData *p = getHeadBgPointData();
+            const sBcSensorLine *p = getHeadBgPointData();
             float f = p->mOffset;
             if (mPos.y + f / 4096.0f <= mWaterHeight) {
                 onNowBgCross(BGC_WATER_SUBMERGED);
@@ -5969,21 +5969,21 @@ void daPlBase_c::setExtraPushForce(float f) {
 }
 
 bool daPlBase_c::checkInsideCrossBg(float f) {
-    const sBcPointData *wallBg = getWallBgPointData();
+    const sBcSensorLine *wallBg = getWallBgPointData();
     if (wallBg == nullptr) {
         return false;
     }
-    const sBcPointData *footBg = getFootBgPointData();
+    const sBcSensorLine *footBg = getFootBgPointData();
     if (footBg == nullptr) {
         return false;
     }
     float offs2[] = {
-        footBg->mInfMargin / 4096.0f + f,
-        footBg->mSupMargin / 4096.0f - f
+        footBg->mLineA / 4096.0f + f,
+        footBg->mLineB / 4096.0f - f
     };
     float offs[] = {
-        wallBg->mInfMargin / 4096.0f,
-        wallBg->mSupMargin / 4096.0f
+        wallBg->mLineA / 4096.0f,
+        wallBg->mLineB / 4096.0f
     };
     for (int i = 0; i < 2; i++) {
         mVec3_c modPos = mVec3_c(

@@ -4,8 +4,8 @@
 #include <nw4r/math.h>
 #include <lib/MSL/arith.h>
 
-#define DEG_TO_ANGLE(x) (0x10000 * x / 360)
-#define ANGLE_360_DIV(x) (0x10000 / x)
+#define DEG_TO_ANGLE(x) ((s16) (0x10000 * (x) / 360))
+#define ANGLE_360_DIV(x) ((s16) (0x10000 / (x)))
 
 /// @brief A one-dimensional short angle vector.
 /// @ingroup mlib

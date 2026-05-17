@@ -12,6 +12,8 @@ public:
     static void calcGroupForWm();
     static void calcGroup();
     static void SetVsHitEffect(mVec3_c *); ///< @unofficial
+    static void SetCoinEffect(mVec3_c *);
+    static void SetBlueCoinEffect(mVec3_c *);
 
     static bool m_firstCalc;
 };

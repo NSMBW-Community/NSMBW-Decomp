@@ -3079,8 +3079,8 @@ void dAcPy_c::executeState_LiftUp() {
             }
             return;
         } else if (checkJumpTrigger()) {
-            sBcPointData d1 = mWallBcData;
-            sBcPointData d2 = mHeadBcData;
+            sBcSensorLine d1 = mWallBcData;
+            sBcSensorLine d2 = mHeadBcData;
             fn_80143060(d1, d2, true);
             if (!fn_80143220(d1, d2)) {
                 return;
@@ -4026,11 +4026,11 @@ void dAcPy_c::calcPenguinSwimGroundRev() {
     rotMtx.concat(mMtx_c::createTrans(0.0f, 0.0f, 20.0f));
     mVec3_c resVec;
     rotMtx.multVecZero(resVec);
-    const sBcPointData *bgPointData = getWallBgPointData();
+    const sBcSensorLine *bgPointData = getWallBgPointData();
     if (bgPointData != nullptr) {
         float bgOffs[2];
-        bgOffs[0] = bgPointData->mInfMargin / 4096.0f;
-        bgOffs[1] = bgPointData->mSupMargin / 4096.0f;
+        bgOffs[0] = bgPointData->mLineA / 4096.0f;
+        bgOffs[1] = bgPointData->mLineB / 4096.0f;
         mVec3_c wallPos1(mPos.x, mPos.y + bgOffs[0], mPos.z);
         mVec3_c wallPos2(resVec.x, mPos.y + bgOffs[0], resVec.z);
         for (int i = 0; i < 2; i++) {
@@ -4148,8 +4148,8 @@ bool dAcPy_c::setKaniHangToVineAction() {
 
 bool dAcPy_c::setVineToKaniHangAction() {
     if (mKey.buttonUp()) {
-        sBcPointData r = mVineBcData;
-        r.mInfMargin = getHangBcOffsetY() * 4096.0f;
+        sBcSensorLine r = mVineBcData;
+        r.mLineA = getHangBcOffsetY() * 4096.0f;
         if (!(mBc.checkVineCollision(&r) & 3)) {
             float y = mPos.y + getHangBcOffsetY();
             float x = mPos.x;
@@ -10044,10 +10044,10 @@ void dAcPy_c::setBcData(int setInstant) {
         onStatus(STATUS_B8);
     }
     const sBcPlayerPointData *data = getBgPointData();
-    sBcPointData footData = data->mFoot;
-    sBcPointData headData = data->mHead;
-    sBcPointData wallData = data->mWall;
-    sBcPointData vineData = data->mVine;
+    sBcSensorLine footData = data->mFoot;
+    sBcSensorLine headData = data->mHead;
+    sBcSensorLine wallData = data->mWall;
+    sBcSensorLine vineData = data->mVine;
     if (!isMameAction() && !isStatus(STATUS_4E) && !isStatus(STATUS_ENEMY_STAGE_CLEAR)) {
         footData.mFlags |= 0x200000;
     }
@@ -10060,7 +10060,7 @@ void dAcPy_c::setBcData(int setInstant) {
         footData.mFlags |= 0x80000000;
     } else if (isStatus(STATUS_VINE)) {
         footData.mFlags |= 0x2000;
-        wallData.mSupMargin = headData.mOffset - 0x2000;
+        wallData.mLineB = headData.mOffset - 0x2000;
     } else if (isStatus(STATUS_SPIN_HIP_ATTACK_FALL)) {
         footData.mFlags |= 0xd00000;
     } else if (isState(StateID_HipAttack)) {
@@ -10134,8 +10134,8 @@ void dAcPy_c::setBcData(int setInstant) {
             x -= 0x2000;
             angY -= x.sin() * mAngle.y.sin() * 81920.0f;
         }
-        headData.mInfMargin += angY;
-        headData.mSupMargin += angY;
+        headData.mLineA += angY;
+        headData.mLineB += angY;
     }
     if (setInstant == 1) {
         mFootBcData = footData;
@@ -10143,19 +10143,19 @@ void dAcPy_c::setBcData(int setInstant) {
         mWallBcData = wallData;
         mVineBcData = vineData;
     } else {
-        sLib::chase(&mFootBcData.mInfMargin, footData.mInfMargin, 0x1000);
-        sLib::chase(&mFootBcData.mSupMargin, footData.mSupMargin, 0x1000);
+        sLib::chase(&mFootBcData.mLineA, footData.mLineA, 0x1000);
+        sLib::chase(&mFootBcData.mLineB, footData.mLineB, 0x1000);
         sLib::chase(&mFootBcData.mOffset, footData.mOffset, 0x1000);
 
-        sLib::chase(&mHeadBcData.mInfMargin, headData.mInfMargin, 0x1000);
-        sLib::chase(&mHeadBcData.mSupMargin, headData.mSupMargin, 0x1000);
+        sLib::chase(&mHeadBcData.mLineA, headData.mLineA, 0x1000);
+        sLib::chase(&mHeadBcData.mLineB, headData.mLineB, 0x1000);
 
-        sLib::chase(&mWallBcData.mInfMargin, wallData.mInfMargin, 0x1000);
-        sLib::chase(&mWallBcData.mSupMargin, wallData.mSupMargin, 0x1000);
+        sLib::chase(&mWallBcData.mLineA, wallData.mLineA, 0x1000);
+        sLib::chase(&mWallBcData.mLineB, wallData.mLineB, 0x1000);
         sLib::chase(&mWallBcData.mOffset, wallData.mOffset, 0x1000);
 
-        sLib::chase(&mVineBcData.mInfMargin, vineData.mInfMargin, 0x1000);
-        sLib::chase(&mVineBcData.mSupMargin, vineData.mSupMargin, 0x1000);
+        sLib::chase(&mVineBcData.mLineA, vineData.mLineA, 0x1000);
+        sLib::chase(&mVineBcData.mLineB, vineData.mLineB, 0x1000);
         sLib::chase(&mVineBcData.mOffset, vineData.mOffset, 0x1000);
 
         if (mHeadBcData.mOffset < headData.mOffset) {
@@ -10189,7 +10189,7 @@ void dAcPy_c::setBcData(int setInstant) {
     }
 }
 
-void dAcPy_c::fn_80143060(sBcPointData &data1, sBcPointData &data2, bool mode) {
+void dAcPy_c::fn_80143060(sBcSensorLine &data1, sBcSensorLine &data2, bool mode) {
     dAcPy_c *carryPlayer = getCarryPlayer();
     if (carryPlayer == nullptr) {
         return;
@@ -10207,7 +10207,7 @@ void dAcPy_c::fn_80143060(sBcPointData &data1, sBcPointData &data2, bool mode) {
     }
 
     int headOffset = data->mHead.mOffset + l_tall_type_offsets[getTallType(-1)];
-    int wallLMargin = data->mWall.mSupMargin + l_tall_type_offsets[getTallType(-1)];
+    int wallLMargin = data->mWall.mLineB + l_tall_type_offsets[getTallType(-1)];
 
     if (isStatus(STATUS_46)) {
         int thing = (int) (carryPlayer->mPos.y * 4096.0f) - (int) (mPos.y * 4096.0f);
@@ -10218,26 +10218,26 @@ void dAcPy_c::fn_80143060(sBcPointData &data1, sBcPointData &data2, bool mode) {
         if (headOffset < data2.mOffset) {
             headOffset = data2.mOffset;
         }
-        int tmp2 = data->mWall.mSupMargin + thing;
+        int tmp2 = data->mWall.mLineB + thing;
         if (wallLMargin > tmp2) {
             wallLMargin = tmp2;
         }
-        if (wallLMargin < data1.mSupMargin) {
-            wallLMargin = data1.mSupMargin;
+        if (wallLMargin < data1.mLineB) {
+            wallLMargin = data1.mLineB;
         }
     }
 
     data2.mFlags = data->mHead.mFlags;
-    data2.mInfMargin = data->mHead.mInfMargin;
-    data2.mSupMargin = data->mHead.mSupMargin;
+    data2.mLineA = data->mHead.mLineA;
+    data2.mLineB = data->mHead.mLineB;
     data2.mOffset = headOffset;
-    data1.mSupMargin = wallLMargin;
+    data1.mLineB = wallLMargin;
     if (!isMameAction()) {
         data2.mFlags = 0x9c0001;
     }
 }
 
-bool dAcPy_c::fn_80143220(sBcPointData &data1, sBcPointData &data2) {
+bool dAcPy_c::fn_80143220(sBcSensorLine &data1, sBcSensorLine &data2) {
     dAcPy_c *carryPlayer = getCarryPlayer();
     if (carryPlayer == nullptr) {
         return false;
@@ -10265,7 +10265,7 @@ bool dAcPy_c::fn_80143220(sBcPointData &data1, sBcPointData &data2) {
     return false;
 }
 
-void dAcPy_c::reviseBcDataCarryPlayer(sBcPointData &data1, sBcPointData &data2) {
+void dAcPy_c::reviseBcDataCarryPlayer(sBcSensorLine &data1, sBcSensorLine &data2) {
     dAcPy_c *ridePlayer = getRidePlayer();
     if (ridePlayer != nullptr && !ridePlayer->isMameAction()) {
         data2.mFlags = 0x9c0001;
@@ -10286,17 +10286,17 @@ void dAcPy_c::reviseBcDataCarryPlayer(sBcPointData &data1, sBcPointData &data2) 
     }
 }
 
-void dAcPy_c::reviseBcDataCarryHardBlock(sBcPointData &data1, sBcPointData &data2) {
+void dAcPy_c::reviseBcDataCarryHardBlock(sBcSensorLine &data1, sBcSensorLine &data2) {
     if (getCarryHardBlock()) {
         const sBcPlayerPointData *data = getBgPointData_Powerup(mPowerup, 0);
         if (data1.mOffset < data->mWall.mOffset) {
             data1.mOffset = data->mWall.mOffset;
         }
-        data2.mInfMargin = data->mHead.mInfMargin;
-        data2.mSupMargin = data->mHead.mSupMargin;
+        data2.mLineA = data->mHead.mLineA;
+        data2.mLineB = data->mHead.mLineB;
         data2.mOffset += 0xc000;
         data2.mFlags = 0x9c0001;
-        data1.mSupMargin += 0xc000;
+        data1.mLineB += 0xc000;
     }
 }
 
@@ -10481,7 +10481,7 @@ void dAcPy_c::checkBgCrossSub() {
         onNowBgCross(BGC_VINE_TOUCH_R);
         return;
     }
-    sBcPointData vineData = mVineBcData;
+    sBcSensorLine vineData = mVineBcData;
     int v = mWallBcData.mOffset * 0.7f;
     if (vineData.mOffset < v) {
         vineData.mOffset = v;
