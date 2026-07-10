@@ -5267,7 +5267,7 @@ void daPlBase_c::checkBgCross() {
     if (bgFlags & 0xc0) {
         dBg_ctr_c *ctrWall = mBc.mpCtrWall;
         if (ctrWall) {
-            if (ctrWall->m_d0 & 0x800000) {
+            if (ctrWall->mFlags & 0x800000) {
                 onNowBgCross(BGC_11);
             }
             if (ctrWall->m_c8 == 0 && *ctrWall->mRotation != 0) {
@@ -5333,7 +5333,7 @@ bool daPlBase_c::isCarryObjBgCarried(u8 side) {
     if (ctrWall != nullptr) {
         mVec2_c diff = ctrWall->m_a0 - ctrWall->m_ac;
         set_m_d80(side, diff.x);
-        if (ctrWall->m_d0 & 0x800) {
+        if (ctrWall->mFlags & 0x800) {
             dActor_c* carriedActor = ctrWall->mpActor;
             if (carriedActor != nullptr && carriedActor->checkCarried(nullptr)) {
                 return true;

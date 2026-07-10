@@ -1,5 +1,6 @@
 #pragma once
 
+#include <game/bases/d_bg_ctr.hpp>
 #include <game/bases/d_rc.hpp>
 
 enum SensorFlags {
@@ -44,26 +45,6 @@ public:
     sBcPointData mHead;
     sBcPointData mWall;
     sBcPointData mVine;
-};
-
-class dBg_ctr_c {
-public:
-    dActor_c *mpActor;
-    u8 mPad1[0x9c];
-    mVec2_c m_a0;
-    mVec2_c m_ac;
-    u8 mPad2[0xc];
-    short *mRotation;
-    short m_c0;
-    short m_c2;
-    u8 mPad4[0x4];
-    int m_c8;
-    u32 mFlags;
-    int m_d0;
-    u8 mpPad5[0xc];
-    int m_e0;
-
-    void addDokanMoveDiff(mVec3_c *);
 };
 
 class dBc_c {

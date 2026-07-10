@@ -93,15 +93,15 @@ bool m3d::anmTexSrt_c::create(nw4r::g3d::ResMdl mdl, nw4r::g3d::ResAnmTexSrt anm
         return false;
     }
 
-    children = (m3d::anmTexSrt_c::child_c *) MEMAllocFromAllocator(&mAllocator, nw4r::ut::RoundUp(count * sizeof(child_c), 0x20));
-    if (children == nullptr) {
+    mpChildren = (m3d::anmTexSrt_c::child_c *) MEMAllocFromAllocator(&mAllocator, nw4r::ut::RoundUp(count * sizeof(child_c), 0x20));
+    if (mpChildren == nullptr) {
         remove();
         return false;
     }
 
     nw4r::g3d::AnmObjTexSrtOverride *texSrtOverride = nw4r::g3d::G3dObj::DynamicCast<nw4r::g3d::AnmObjTexSrtOverride>(mpObj);
 
-    child_c *child = &children[0];
+    child_c *child = &mpChildren[0];
     for (int i = 0; i < count; i++) {
         new(child) child_c();
         if (!child->create(mdl, anmTexSrt, &mAllocator, nullptr)) {
@@ -126,12 +126,12 @@ m3d::anmTexSrt_c::~anmTexSrt_c() {
 
 void m3d::anmTexSrt_c::remove() {
     nw4r::g3d::AnmObjTexSrtOverride *texSrt = nw4r::g3d::G3dObj::DynamicCast<nw4r::g3d::AnmObjTexSrtOverride>(mpObj);
-    if (texSrt != nullptr && children != nullptr) {
+    if (texSrt != nullptr && mpChildren != nullptr) {
         int count = texSrt->Size();
         for (int i = 0; i < count; i++) {
-            children[i].remove();
+            mpChildren[i].remove();
         }
-        children = nullptr;
+        mpChildren = nullptr;
     }
     banm_c::remove();
 }
@@ -139,15 +139,15 @@ void m3d::anmTexSrt_c::remove() {
 void m3d::anmTexSrt_c::setAnm(m3d::bmdl_c &mdl, nw4r::g3d::ResAnmTexSrt anmTexSrt, long idx, m3d::playMode_e playMode) {
     nw4r::g3d::AnmObjTexSrtOverride *texSrt = nw4r::g3d::G3dObj::DynamicCast<nw4r::g3d::AnmObjTexSrtOverride>(mpObj);
     texSrt->Detach(idx);
-    children[idx].setAnm(mdl, anmTexSrt, playMode);
-    nw4r::g3d::AnmObjTexSrtRes *texSrtRes = nw4r::g3d::G3dObj::DynamicCast<nw4r::g3d::AnmObjTexSrtRes>(children[idx].getObj());
+    mpChildren[idx].setAnm(mdl, anmTexSrt, playMode);
+    nw4r::g3d::AnmObjTexSrtRes *texSrtRes = nw4r::g3d::G3dObj::DynamicCast<nw4r::g3d::AnmObjTexSrtRes>(mpChildren[idx].getObj());
     texSrt->Attach(idx, texSrtRes);
 }
 
 void m3d::anmTexSrt_c::releaseAnm(long idx) {
     nw4r::g3d::AnmObjTexSrtOverride *texSrt = nw4r::g3d::G3dObj::DynamicCast<nw4r::g3d::AnmObjTexSrtOverride>(mpObj);
     texSrt->Detach(idx);
-    children[idx].releaseAnm();
+    mpChildren[idx].releaseAnm();
 }
 
 void m3d::anmTexSrt_c::play() {
@@ -159,39 +159,39 @@ void m3d::anmTexSrt_c::play() {
 }
 
 void m3d::anmTexSrt_c::play(long idx) {
-    if (children[idx].IsBound()) {
-        children[idx].play();
+    if (mpChildren[idx].IsBound()) {
+        mpChildren[idx].play();
     }
 }
 
 float m3d::anmTexSrt_c::getFrame(long idx) const {
-    return children[idx].getFrame();
+    return mpChildren[idx].getFrame();
 }
 
 void m3d::anmTexSrt_c::setFrame(float frame, long idx) {
-    children[idx].setFrame(frame);
+    mpChildren[idx].setFrame(frame);
 }
 
 float m3d::anmTexSrt_c::getRate(long idx) const {
-    return children[idx].getRate();
+    return mpChildren[idx].getRate();
 }
 
 void m3d::anmTexSrt_c::setRate(float rate, long idx) {
-    children[idx].setRate(rate);
+    mpChildren[idx].setRate(rate);
 }
 
 bool m3d::anmTexSrt_c::isStop(long idx) const {
-    return children[idx].isStop();
+    return mpChildren[idx].isStop();
 }
 
 void m3d::anmTexSrt_c::setPlayMode(m3d::playMode_e mode, long idx) {
-    children[idx].mPlayMode = mode;
+    mpChildren[idx].mPlayMode = mode;
 }
 
 float m3d::anmTexSrt_c::getFrameMax(long idx) const {
-    return children[idx].mFrameMax;
+    return mpChildren[idx].mFrameMax;
 }
 
 void m3d::anmTexSrt_c::setFrameStart(float frame, long idx) {
-    children[idx].mFrameStart = frame;
+    mpChildren[idx].mFrameStart = frame;
 }

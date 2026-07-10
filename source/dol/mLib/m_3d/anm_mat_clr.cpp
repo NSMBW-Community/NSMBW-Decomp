@@ -84,11 +84,11 @@ bool m3d::anmMatClr_c::create(nw4r::g3d::ResMdl mdl, nw4r::g3d::ResAnmClr anmClr
     }
 
     mpObj = nw4r::g3d::AnmObjMatClrOverride::Construct(&mAllocator, nullptr, mdl, count);
-    children = (m3d::anmMatClr_c::child_c *) MEMAllocFromAllocator(&mAllocator, nw4r::ut::RoundUp(count * sizeof(child_c), 0x20));
+    mpChildren = (m3d::anmMatClr_c::child_c *) MEMAllocFromAllocator(&mAllocator, nw4r::ut::RoundUp(count * sizeof(child_c), 0x20));
 
     nw4r::g3d::AnmObjMatClrOverride *matClrOverride = nw4r::g3d::G3dObj::DynamicCast<nw4r::g3d::AnmObjMatClrOverride>(mpObj);
 
-    child_c *child = &children[0];
+    child_c *child = &mpChildren[0];
     for (int i = 0; i < count; i++) {
         new(child) child_c();
         if (!child->create(mdl, anmClr, &mAllocator, nullptr)) {
@@ -112,12 +112,12 @@ m3d::anmMatClr_c::~anmMatClr_c() {
 
 void m3d::anmMatClr_c::remove() {
     nw4r::g3d::AnmObjMatClrOverride *matClr = nw4r::g3d::G3dObj::DynamicCast<nw4r::g3d::AnmObjMatClrOverride>(mpObj);
-    if (matClr != nullptr && children != nullptr) {
+    if (matClr != nullptr && mpChildren != nullptr) {
         int count = matClr->Size();
         for (int i = 0; i < count; i++) {
-            children[i].remove();
+            mpChildren[i].remove();
         }
-        children = nullptr;
+        mpChildren = nullptr;
     }
     banm_c::remove();
 }
@@ -125,15 +125,15 @@ void m3d::anmMatClr_c::remove() {
 void m3d::anmMatClr_c::setAnm(m3d::bmdl_c &mdl, nw4r::g3d::ResAnmClr clr, long idx, m3d::playMode_e playMode) {
     nw4r::g3d::AnmObjMatClrOverride *matClr = nw4r::g3d::G3dObj::DynamicCast<nw4r::g3d::AnmObjMatClrOverride>(mpObj);
     matClr->Detach(idx);
-    children[idx].setAnm(mdl, clr, playMode);
-    nw4r::g3d::AnmObjMatClrRes *clrRes = nw4r::g3d::G3dObj::DynamicCast<nw4r::g3d::AnmObjMatClrRes>(children[idx].getObj());
+    mpChildren[idx].setAnm(mdl, clr, playMode);
+    nw4r::g3d::AnmObjMatClrRes *clrRes = nw4r::g3d::G3dObj::DynamicCast<nw4r::g3d::AnmObjMatClrRes>(mpChildren[idx].getObj());
     matClr->Attach(idx, clrRes);
 }
 
 void m3d::anmMatClr_c::releaseAnm(long idx) {
     nw4r::g3d::AnmObjMatClrOverride *matClr = nw4r::g3d::G3dObj::DynamicCast<nw4r::g3d::AnmObjMatClrOverride>(mpObj);
     matClr->Detach(idx);
-    children[idx].releaseAnm();
+    mpChildren[idx].releaseAnm();
 }
 
 void m3d::anmMatClr_c::play() {
@@ -145,43 +145,43 @@ void m3d::anmMatClr_c::play() {
 }
 
 void m3d::anmMatClr_c::play(long idx) {
-    if (children[idx].IsBound()) {
-        children[idx].play();
+    if (mpChildren[idx].IsBound()) {
+        mpChildren[idx].play();
     }
 }
 
 float m3d::anmMatClr_c::getFrame(long idx) const {
-    return children[idx].getFrame();
+    return mpChildren[idx].getFrame();
 }
 
 void m3d::anmMatClr_c::setFrame(float frame, long idx) {
-    children[idx].setFrame(frame);
+    mpChildren[idx].setFrame(frame);
 }
 
 float m3d::anmMatClr_c::getRate(long idx) const {
-    return children[idx].getRate();
+    return mpChildren[idx].getRate();
 }
 
 void m3d::anmMatClr_c::setRate(float rate, long idx) {
-    children[idx].setRate(rate);
+    mpChildren[idx].setRate(rate);
 }
 
 bool m3d::anmMatClr_c::isStop(long idx) const {
-    return children[idx].isStop();
+    return mpChildren[idx].isStop();
 }
 
 bool m3d::anmMatClr_c::checkFrame(float frame, long idx) const {
-    return children[idx].checkFrame(frame);
+    return mpChildren[idx].checkFrame(frame);
 }
 
 void m3d::anmMatClr_c::setPlayMode(m3d::playMode_e playMode, long idx) {
-    children[idx].mPlayMode = playMode;
+    mpChildren[idx].mPlayMode = playMode;
 }
 
 float m3d::anmMatClr_c::getFrameMax(long idx) const {
-    return children[idx].mFrameMax;
+    return mpChildren[idx].mFrameMax;
 }
 
 float m3d::anmMatClr_c::getFrameStart(long idx) const {
-    return children[idx].mFrameStart;
+    return mpChildren[idx].mFrameStart;
 }
