@@ -34,7 +34,6 @@
     "slices": [
         {
             "source": "runtime/rel_init.cpp",
-            "compilerFlags": "",
             "memoryRanges": {
                 ".text": "0x0-0x70"
             }
