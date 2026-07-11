@@ -1,9 +1,9 @@
+#include <game/bases/d_a_wm_peach.hpp>
 #include <game/bases/d_res_mng.hpp>
 #include <game/bases/d_cs_seq_manager.hpp>
-#include <game/bases/d_a_wm_peach.hpp>
 #include <game/bases/d_wm_lib.hpp>
 
-const char *resAnmNames[daWmPeach_c::ANIM_COUNT] = {
+const char *daWmPeach_c::smc_resAnmNames[ANIM_COUNT] = {
     "fly_wmap_B1",
     "fly_wmap_B2"
 };
@@ -63,7 +63,7 @@ void daWmPeach_c::createModel() {
     };
 
     for (int i = 0; i < ANIM_COUNT; i++) {
-        nw4r::g3d::ResAnmChr resAnmChr = mResFile.GetResAnmChr(resAnmNames[i]);
+        nw4r::g3d::ResAnmChr resAnmChr = mResFile.GetResAnmChr(smc_resAnmNames[i]);
         mChrAnim[i].create(resMdl, resAnmChr, &mAllocator, nullptr);
         mChrAnim[i].mPlayMode = playModes[i];
         mChrAnim[i].setRate(0.0f);

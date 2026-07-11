@@ -24,6 +24,7 @@ R_2_1_15ab80 = checkCutEnd__14dWmDemoActor_cFv
 R_2_1_15ab90 = vf78__13dWmObjActor_cFv
 R_2_1_15aba0 = vf74__13dWmObjActor_cFv
 R_2_1_15abb0 = GetActorType__13dWmObjActor_cFv
+R_2_1_15c140 = GetActorType__14dWmDemoActor_cFv
 R_2_1_1a7e90 = FUN_80915600__11dCsSeqMng_cFv
 R_2_5_0      = g_profile_CHARACTER_CHANGE_INDICATOR
 R_2_5_1c8    = g_profile_CHARACTER_CHANGE_SELECT_ARROW

@@ -4,6 +4,8 @@
 #include <game/mLib/m_3d/mdl.hpp>
 #include <game/bases/d_wm_demo_actor.hpp>
 
+/// @brief The worldmap Peach actor, used during the World 8-Castle unlock cutscene.
+/// @ingroup bases
 class daWmPeach_c : public dWmDemoActor_c {
 public:
     enum PROC_TYPE_e {
@@ -50,4 +52,6 @@ public:
     m3d::anmChr_c mChrAnim[ANIM_COUNT]; ///< The model animations.
     u32 mUnk250; ///< @unused
     PROC_TYPE_e mCurrProc; ///< The current process type. See PROC_TYPE_e.
+
+    static const char *smc_resAnmNames[ANIM_COUNT]; ///< The animation names.
 };

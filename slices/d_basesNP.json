@@ -27,6 +27,9 @@
             ".PPC.EMB.apuinfo":     { "index": 18, "align": 16, "size": "0x0" }
         }
     },
+    "keepWeak": [
+        "setAnim__11daWmPeach_cFifff"
+    ],
     "slices": [
         {
             "source": "runtime/rel_init.cpp",
