@@ -381,9 +381,9 @@ bool dEn_c::hitCallback_Ice(dCc_c *self, dCc_c *other) {
         daPlBase_c *player = (daPlBase_c *) other->getOwner();
 
         if (player->mSpeed.x >= 0.0f) {
-            mBoyoMng.mDirection = 0;
+            mIceDirection = 0;
         } else {
-            mBoyoMng.mDirection = 1;
+            mIceDirection = 1;
         }
 
         for (int i = 0; i < PLAYER_COUNT; i++) {

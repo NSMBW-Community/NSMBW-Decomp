@@ -757,9 +757,9 @@ bool daEnShell_c::hitCallback_Ice(dCc_c *self, dCc_c *other) {
     }
 
     if (other->mpOwner->mSpeed.x >= 0.0f) {
-        mBoyoMng.mDirection = DIR_LR_R;
+        mIceDirection = DIR_LR_R;
     } else {
-        mBoyoMng.mDirection = DIR_LR_L;
+        mIceDirection = DIR_LR_L;
     }
     for (int i = 0; i < PLAYER_COUNT; i++) {
         dAcPy_c *player = daPyMng_c::getPlayer(i);
