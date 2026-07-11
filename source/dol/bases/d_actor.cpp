@@ -221,7 +221,7 @@ dAcPy_c *dActor_c::searchNearPlayerNormal(mVec2_c &delta, const mVec2_c &pos) {
 dAcPy_c *dActor_c::searchNearPlayerLoop(mVec2_c &delta, const mVec2_c &pos) {
     dAcPy_c *closestPlayer = nullptr;
 
-    float loopOffset = dBg_c::m_bg_p->mLoopOffset;
+    float loopOffset = dBg_c::m_bg_p->mLoopOffsetX;
 
     mVec2_c loopPos;
     loopPos.x = dScStage_c::getLoopPosX(pos.x);
@@ -286,7 +286,7 @@ bool dActor_c::getTrgToSrcDirLoop(float trgX, float srcX) {
     float loopSrcX = dScStage_c::getLoopPosX(srcX);
     float diffX = loopTrgX - loopSrcX;
 
-    float loopOffset = dBg_c::m_bg_p->mLoopOffset / 2;
+    float loopOffset = dBg_c::m_bg_p->mLoopOffsetX / 2;
     if (diffX < 0.0f) {
         return !(diffX < -loopOffset);
     } else {

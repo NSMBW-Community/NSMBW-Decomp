@@ -43,12 +43,15 @@ public:
         }
         return res;
     }
+    static u8 getActScrollInfo(); /// @unofficial
+    static int getScrollNum();
+    static bool isScrollMode1() { return getScrollNum() == 1; }
 
     static bool checkPlayer(u8 plrNo) { return mActPlayerInfo & (1 << plrNo); }
     static int getRest(PLAYER_TYPE_e plrNo) { return mRest[plrNo]; }
     static PLAYER_TYPE_e getPlayerType(int plrNo) { return mPlayerType[plrNo]; }
     static int getPlayerMode(int plrNo) { return mPlayerMode[plrNo]; }
-    static nw4r::math::VEC3 getPlayerSetPos(u8 file, u8 gotoNo);
+    static mVec3_c getPlayerSetPos(u8 file, u8 gotoNo);
 
     static int mNum;
     static u32 mPauseDisable;
