@@ -409,6 +409,16 @@
             }
         },
         {
+            "nonMatching": true,
+            "source": "dol/bases/d_player_model_base.cpp",
+            "memoryRanges": {
+                ".text": "0xceca0-0xd0630",
+                ".data": "0x19ab0-0x1a6f8",
+                ".sdata2": "0x19f0-0x1a58",
+                ".rodata": "0x3670-0x4f68"
+            }
+        },
+        {
             "source": "dol/bases/d_rail.cpp",
             "memoryRanges": {
                 ".text": "0xd2a30-0xd30d0",

@@ -51,8 +51,10 @@ public:
         return m_08[index];
     }
 
-    u8 mPad[0x8];
-    float m_08[8];
+    u8 mPad[0x4];
+    float m_04;
+    float m_08[7];
+    u8 mPad2[0x4];
     dPyAnmMain_HIO_c mPyAnm;
     dPyModel_HIO_c mPyModel[3];
     dYoshiModel_HIO_c mYoshiModel[3];
@@ -293,11 +295,11 @@ public:
     }
 
     float getLastFrame() const {
-        return mpMdl->mAnm.mFrameMax - 1.0f;
+        return mpMdl->mAnms[0].mFrameMax - 1.0f;
     }
 
     bool isAnmStop() const {
-        return mpMdl->mAnm.isStop();
+        return mpMdl->mAnms[0].isStop();
     }
 
     mAng3_c getAng() const {
@@ -320,11 +322,11 @@ public:
     mVec3_c &getHatPos() const { return mpMdl->mHatPosMaybe; }
 
     float getSomeScale() {
-        return m_hio.get_08((dPyMdlBase_HIO_c::ScaleIndex_e) mpMdl->m_152);
+        return m_hio.get_08((dPyMdlBase_HIO_c::ScaleIndex_e) mpMdl->mPlayerMode);
     }
 
     float getSomeScale2() {
-        return m_hio.m_08[mpMdl->m_152];
+        return m_hio.m_08[mpMdl->mPlayerMode];
     }
 
     dPyMdlBase_c *mpMdl;

@@ -554,12 +554,12 @@ void daPlBase_c::executeState_Slip() {
             break;
         case SLIP_ACTION_STOOP:
             mMaxSpeedF = 0.0f;
-            if (mpMdlMng->mpMdl->mAnm.isStop()) {
+            if (mpMdlMng->mpMdl->mAnms[0].isStop()) {
                 changeState(StateID_Crouch, CROUCH_ARG_FROM_OTHER);
             }
             break;
         case SLIP_ACTION_END:
-            if (mpMdlMng->mpMdl->mAnm.isStop()) {
+            if (mpMdlMng->mpMdl->mAnms[0].isStop()) {
                 changeActionSlipEnd(BLEND_DEFAULT);
             }
         default:
@@ -839,7 +839,7 @@ void daPlBase_c::setHipAttack_ToStoop() {
 }
 
 void daPlBase_c::HipAction_Ready() {
-    if (mpMdlMng->mpMdl->mAnm.isStop()) {
+    if (mpMdlMng->mpMdl->mAnms[0].isStop()) {
         setHipAttack_AttackStart();
     }
 }
@@ -953,7 +953,7 @@ void daPlBase_c::HipAction_StandNormal() {
 
 void daPlBase_c::HipAction_StandNormalEnd() {
     if (!checkCrouch()) {
-        if (mpMdlMng->mpMdl->mAnm.isStop()) {
+        if (mpMdlMng->mpMdl->mAnms[0].isStop()) {
             changeState(StateID_Walk, BLEND_DEFAULT);
         } else {
             turnAngle();
@@ -962,7 +962,7 @@ void daPlBase_c::HipAction_StandNormalEnd() {
 }
 
 void daPlBase_c::HipAction_ToStoop() {
-    if (mpMdlMng->mpMdl->mAnm.isStop()) {
+    if (mpMdlMng->mpMdl->mAnms[0].isStop()) {
         changeState(StateID_Crouch, CROUCH_ARG_FROM_OTHER);
     } else {
         turnAngle();
@@ -1070,7 +1070,7 @@ void daPlBase_c::executeState_JumpDai() {
         turnAngle();
         switch ((JumpDaiSubstate_e) mSubstate) {
             case JUMP_DAI_MOVE_DOWN:
-                if (mpMdlMng->mpMdl->mAnm.isStop()) {
+                if (mpMdlMng->mpMdl->mAnms[0].isStop()) {
                     setWaitActionAnm(BLEND_DEFAULT);
                     mSubstate = JUMP_DAI_HIGH_JUMP;
                 }
@@ -1151,7 +1151,7 @@ void daPlBase_c::executeState_PlayerJumpDai() {
     } else {
         setNoHitPlayer(rideActor, 5);
         turnAngle();
-        if (mpMdlMng->mpMdl->mCurrAnmID == PLAYER_ANIM_JUMPED && mpMdlMng->mpMdl->mAnm.isStop()) {
+        if (mpMdlMng->mpMdl->mCurrAnmID == PLAYER_ANIM_JUMPED && mpMdlMng->mpMdl->mAnms[0].isStop()) {
             setWaitActionAnm(BLEND_DEFAULT);
         }
         switch ((JumpDaiSubstate_e) mSubstate) {
@@ -1380,7 +1380,7 @@ void daPlBase_c::DemoAnmNormal() {
     } else {
         turnAngle();
     }
-    if (mpMdlMng->mpMdl->mAnm.isStop()) {
+    if (mpMdlMng->mpMdl->mAnms[0].isStop()) {
         setControlDemoWait();
     }
 }
@@ -2112,7 +2112,7 @@ void daPlBase_c::setLandSmokeEffectLight() {
             pos.z = 3700.0f;
         }
     }
-    float sz = dPyMdlMng_c::m_hio.m_08[mpMdlMng->mpMdl->m_152];
+    float sz = dPyMdlMng_c::m_hio.m_08[mpMdlMng->mpMdl->mPlayerMode];
     mVec3_c size(sz, sz, sz);
     if (isNowBgCross(BGC_ON_SAND)) {
         if (mGroundType == GROUND_TYPE_FUNSUI) {
@@ -3300,7 +3300,7 @@ void daPlBase_c::executeDemoOutDokanLR() {
     // 1: Water tank only: move to X target
     // 2: Water tank only: move down slightly
     // 3: Water tank only: move to final X target, then transition to in-tank state
-    if (mpMdlMng->mpMdl->mAnm.isStop()) {
+    if (mpMdlMng->mpMdl->mAnms[0].isStop()) {
         mpMdlMng->setAnm(PLAYER_ANIM_LOW_WALK);
     }
     switch (mDemoSubstate) {
@@ -3515,7 +3515,7 @@ void daPlBase_c::executeState_DemoOutWaterTank() {
             }
             break;
         case 1:
-            if (mpMdlMng->mpMdl->mAnm.isStop()) {
+            if (mpMdlMng->mpMdl->mAnms[0].isStop()) {
                 mpMdlMng->setAnm(PLAYER_ANIM_LOW_WALK);
             }
             if (mDemoSubstateTimer == 0) {
@@ -3864,7 +3864,7 @@ void daPlBase_c::setDemoGoal_MultiJump() {
 void daPlBase_c::executeDemoGoal_Pole() {
     switch ((DemoGoalState_Pole_e) mDemoState) {
         case GOAL_DEMO_POLE_SWING:
-            if (!addCalcAngleY(-0x4000, 10) && mpMdlMng->mpMdl->mAnm.isStop()) {
+            if (!addCalcAngleY(-0x4000, 10) && mpMdlMng->mpMdl->mAnms[0].isStop()) {
                 mDemoState = GOAL_DEMO_WAIT_BELOW_PLAYER;
                 mpMdlMng->setAnm(PLAYER_ANIM_RTREE_WAIT);
                 onStatus(STATUS_GOAL_POLE_WAIT_BELOW_PLAYER);
@@ -3912,7 +3912,7 @@ void daPlBase_c::executeDemoGoal_Pole() {
             }
             break;
         case GOAL_DEMO_POLE_LAND:
-            if (mpMdlMng->mpMdl->mAnm.isStop()) {
+            if (mpMdlMng->mpMdl->mAnms[0].isStop()) {
                 mpMdlMng->setAnm(PLAYER_ANIM_STAMP);
                 mDemoState = GOAL_DEMO_POLE_WAIT_TURN;
                 mDemoSubstateTimer = sc_DemoPoleWaitTurn;
@@ -3950,7 +3950,7 @@ void daPlBase_c::executeDemoGoal_Wait() {
 }
 
 void daPlBase_c::executeDemoGoal_KimePose() {
-    if (mKimePoseMode != KIME_POSE_NONE && mpMdlMng->mpMdl->mAnm.checkFrame(107.0f)) {
+    if (mKimePoseMode != KIME_POSE_NONE && mpMdlMng->mpMdl->mAnms[0].checkFrame(107.0f)) {
         daPlBase_c *pl = daPyMng_c::getPlayer(mPlayerNo);
         if (pl != nullptr) {
             if (pl->isItemKinopio()) {
