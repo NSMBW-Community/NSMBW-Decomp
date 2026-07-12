@@ -4,7 +4,7 @@
 #include <game/mLib/m_3d/fanm.hpp>
 
 namespace m3d {
-    class anmChrBlend_c : public fanm_c {
+    class anmChrBlend_c : public banm_c {
     public:
         virtual banm_c::anmType_e getType() const { return banm_c::TYPE_ANM_CHR; };
 

@@ -435,9 +435,9 @@ void dAcPy_c::fn_80127740(int jumpType, AnmBlend_e blendMode) {
         }
         if (!isCarry()) {
             if (mJumpCounter == 1) {
-                mPyMdlMng.mpMdl->fn_800d5e00(1);
+                mPyMdlMng.mpMdl->setJumpAnmRand(dPyMdlBase_c::RND_WEIGHTED);
             } else {
-                mPyMdlMng.mpMdl->fn_800d5e00(0);
+                mPyMdlMng.mpMdl->setJumpAnmRand(dPyMdlBase_c::RND_EQUAL);
             }
         }
         if (blendMode == BLEND_NONE) {
@@ -687,7 +687,7 @@ void dAcPy_c::executeState_Land() {
         fn_801282d0(BLEND_DEFAULT);
     } else {
         mSpeedF = 0.0f;
-        if ((mKey.buttonWalk(nullptr) && mPyMdlMng.mpMdl->mAnm.getFrame() >= 10.0f) || mPyMdlMng.isAnmStop()) {
+        if ((mKey.buttonWalk(nullptr) && mPyMdlMng.mpMdl->mAnms[0].getFrame() >= 10.0f) || mPyMdlMng.isAnmStop()) {
             fn_801282d0(BLEND_DEFAULT);
         }
     }
@@ -2910,7 +2910,7 @@ void dAcPy_c::executeThrowCommon() {
     switch ((ThrowSubstate_e) mSubstate) {
         case THROW_ACTION_0:
             if (mPyMdlMng.mpMdl->mCurrAnmID == PLAYER_ANIM_SWIM_THROW) {
-                if (mPyMdlMng.mpMdl->mAnm.checkFrame(12.0f)) {
+                if (mPyMdlMng.mpMdl->mAnms[0].checkFrame(12.0f)) {
                     mSubstate = THROW_ACTION_2;
                     setThrowActor();
                 }
@@ -2920,7 +2920,7 @@ void dAcPy_c::executeThrowCommon() {
                     setJumpSpeed();
                     setJumpCommonBase();
                 }
-                if (mPyMdlMng.mpMdl->mAnm.checkFrame(5.0f)) {
+                if (mPyMdlMng.mpMdl->mAnms[0].checkFrame(5.0f)) {
                     mSubstate = THROW_ACTION_1;
                     setThrowActor();
                     onStatus(STATUS_92);
@@ -2931,7 +2931,7 @@ void dAcPy_c::executeThrowCommon() {
             if (isNowBgCross(BGC_FOOT) && checkJumpTrigger()) {
                 break;
             }
-            if (mPyMdlMng.mpMdl->mAnm.getFrame() >= 20.0f) {
+            if (mPyMdlMng.mpMdl->mAnms[0].getFrame() >= 20.0f) {
                 if (isNowBgCross(BGC_FOOT)) {
                     if (mSpeedF) {
                         changeState(StateID_Walk, BLEND_DEFAULT);
@@ -3457,7 +3457,7 @@ void dAcPy_c::SwimAction_Swim() {
             break;
         case 1:
             setPaddleSwimEffect();
-            if (mKey.triggerJump() && mPyMdlMng.mpMdl->mAnm.getFrame() > 9.0f) {
+            if (mKey.triggerJump() && mPyMdlMng.mpMdl->mAnms[0].getFrame() > 9.0f) {
                 mPyMdlMng.mpMdl->setFrame(0.0f);
                 resetPaddleSwimEffect();
                 onStatus(STATUS_40);
@@ -3474,7 +3474,7 @@ void dAcPy_c::SwimAction_Swim() {
             break;
         case 3:
             mPyMdlMng.mpMdl->setRate(1.0f);
-            if (mPyMdlMng.mpMdl->mAnm.checkFrame(1.0f) || mPyMdlMng.mpMdl->mAnm.checkFrame(9.0f)) {
+            if (mPyMdlMng.mpMdl->mAnms[0].checkFrame(1.0f) || mPyMdlMng.mpMdl->mAnms[0].checkFrame(9.0f)) {
                 startSound(SE_PLY_SWIM_KICK, 0);
             }
             setFlutterKickEffect();
@@ -3767,10 +3767,10 @@ void dAcPy_c::SwimAction_Penguin() {
             }
             break;
         case 1: {
-            if (mPyMdlMng.mpMdl->mAnm.checkFrame(1.0f) || mPyMdlMng.mpMdl->mAnm.checkFrame(9.0f)) {
+            if (mPyMdlMng.mpMdl->mAnms[0].checkFrame(1.0f) || mPyMdlMng.mpMdl->mAnms[0].checkFrame(9.0f)) {
                 startSound(SE_PLY_SWIM_KICK_PENGUIN, false);
             }
-            float rate = mPyMdlMng.mpMdl->mAnm.getRate();
+            float rate = mPyMdlMng.mpMdl->mAnms[0].getRate();
             if (m_b8c == 1.0f) {
                 setFlutterKickEffect();
                 sLib::chase(&rate, m_b8c, 0.1f);
@@ -3785,7 +3785,7 @@ void dAcPy_c::SwimAction_Penguin() {
         }
         case 2:
             setPaddleSwimEffect();
-            if (mPyMdlMng.mpMdl->mAnm.getFrame() < 9.0f) {
+            if (mPyMdlMng.mpMdl->mAnms[0].getFrame() < 9.0f) {
                 moveMode = 1;
             }
             if (mPyMdlMng.isAnmStop()) {
@@ -3842,7 +3842,7 @@ void dAcPy_c::SwimAction_FireBall() {
     }
     switch (m_b89) {
         case 0:
-            if (mPyMdlMng.mpMdl->mAnm.checkFrame(dPyMdlBase_c::scFireShootFrame)) {
+            if (mPyMdlMng.mpMdl->mAnms[0].checkFrame(dPyMdlBase_c::scFireShootFrame)) {
                 createFireBall(0);
                 m_b89 = 1;
             }
@@ -4305,7 +4305,7 @@ bool dAcPy_c::checkVineEnd() {
 }
 
 void dAcPy_c::setVineWalkSE() {
-    if (mPyMdlMng.mpMdl->mAnm.checkFrame(10.0f) || mPyMdlMng.mpMdl->mAnm.checkFrame(30.0f)) {
+    if (mPyMdlMng.mpMdl->mAnms[0].checkFrame(10.0f) || mPyMdlMng.mpMdl->mAnms[0].checkFrame(30.0f)) {
         switch (mBc.mFenceType) {
             case 0:
                 startSound(SE_PLY_MOVE_IVY, false);
@@ -4446,8 +4446,8 @@ void dAcPy_c::VineActionAttack() {
     if (checkVineEnd()) {
         return;
     }
-    u16 frame = mPyMdlMng.mpMdl->mAnm.getFrame();
-    if (mPyMdlMng.mpMdl->mAnm.checkFrame(3.0f)) {
+    u16 frame = mPyMdlMng.mpMdl->mAnms[0].getFrame();
+    if (mPyMdlMng.mpMdl->mAnms[0].checkFrame(3.0f)) {
         onStatus(STATUS_49);
         mMtx_c jntMtx;
         mPyMdlMng.mpMdl->getJointMtx(&jntMtx, 14);
@@ -4513,7 +4513,7 @@ bool dAcPy_c::checkNetPunch() {
     if (
         isState(StateID_Vine) &&
         mSubstate == VINE_ACTION_ATTACK &&
-        mPyMdlMng.mpMdl->mAnm.getFrame() >= 10.0f
+        mPyMdlMng.mpMdl->mAnms[0].getFrame() >= 10.0f
     ) {
         mSubstate = VINE_ACTION_ROLL;
         m_7bc = 0;
@@ -4752,7 +4752,7 @@ void dAcPy_c::PoleActionStart() {
     if (mKey.triggerJump()) {
         mSubstateValue = 1;
     }
-    if (mPyMdlMng.mpMdl->mAnm.getFrame() >= 5.0f && mSubstateValue != 0) {
+    if (mPyMdlMng.mpMdl->mAnms[0].getFrame() >= 5.0f && mSubstateValue != 0) {
         int dir;
         if (mKey.buttonWalk(&dir)) {
             mDirection = dir;
@@ -4793,7 +4793,7 @@ void dAcPy_c::setPoleActionUp() {
 
 void dAcPy_c::PoleActionUp() {
     setPoleTurnAngle();
-    if (mPyMdlMng.mpMdl->mAnm.checkFrame(0.0f)) {
+    if (mPyMdlMng.mpMdl->mAnms[0].checkFrame(0.0f)) {
         startSound(SE_PLY_POLE_CLIMB, false);
     }
     mSpeed.y = 0.0f;
@@ -5136,7 +5136,7 @@ void dAcPy_c::KaniAction_Walk() {
                 mPyMdlMng.setAnm(sc_WallWalkAnm[mDirection], rate, 10.0f, 0.0f);
             }
             mPyMdlMng.mpMdl->setRate(rate);
-            if (mPyMdlMng.mpMdl->mAnm.checkFrame(1.0f)) {
+            if (mPyMdlMng.mpMdl->mAnms[0].checkFrame(1.0f)) {
                 startSound(SE_PLY_SHUFFLE, false);
             }
         }
@@ -5155,8 +5155,8 @@ void dAcPy_c::KaniAction_HangInit() {
 
 void dAcPy_c::KaniAction_JumpHangInit() {
     onStatus(STATUS_KANI_HANG);
-    mPyMdlMng.mpMdl->mAnm.checkFrame(3.0f);
-    if (mPyMdlMng.mpMdl->mAnm.getFrame() > 9.0f) {
+    mPyMdlMng.mpMdl->mAnms[0].checkFrame(3.0f);
+    if (mPyMdlMng.mpMdl->mAnms[0].getFrame() > 9.0f) {
         mSubstate = KANI_ACTION_HANG;
     }
 }
@@ -5223,7 +5223,7 @@ void dAcPy_c::KaniAction_Hang() {
                     mPyMdlMng.setAnm(sc_WallHangAnm[mDirection], rate, 10.0f, 0.0f);
                 }
                 mPyMdlMng.mpMdl->setRate(rate);
-                if (mPyMdlMng.mpMdl->mAnm.checkFrame(1.0f)) {
+                if (mPyMdlMng.mpMdl->mAnms[0].checkFrame(1.0f)) {
                     startSound(SE_PLY_HANG_MOVE, false);
                 }
             }
@@ -5342,7 +5342,7 @@ void dAcPy_c::setSlideRopeSE() {
 }
 
 void dAcPy_c::setRopeHasigoSE() {
-    if (mPyMdlMng.mpMdl->mAnm.checkFrame(10.0f) || mPyMdlMng.mpMdl->mAnm.checkFrame(30.0f)) {
+    if (mPyMdlMng.mpMdl->mAnms[0].checkFrame(10.0f) || mPyMdlMng.mpMdl->mAnms[0].checkFrame(30.0f)) {
         startSound(SE_PLY_FOOTNOTE_HASHIGO_NAWA, false);
     }
 }
@@ -5546,7 +5546,7 @@ void dAcPy_c::updateRopeSwingAnm() {
                 checkStartSwingUp();
                 break;
             case ROPE_SWING_1:
-                if (mPyMdlMng.mpMdl->mAnm.checkFrame(32.0f)) {
+                if (mPyMdlMng.mpMdl->mAnms[0].checkFrame(32.0f)) {
                     mPyMdlMng.mpMdl->setRate(0.0f);
                     m_90c = ROPE_SWING_2;
                 }
@@ -5558,7 +5558,7 @@ void dAcPy_c::updateRopeSwingAnm() {
                 }
                 break;
             case ROPE_SWING_3:
-                if (mPyMdlMng.mpMdl->mAnm.checkFrame(64.0f)) {
+                if (mPyMdlMng.mpMdl->mAnms[0].checkFrame(64.0f)) {
                     mPyMdlMng.mpMdl->setRate(0.0f);
                     m_90c = ROPE_SWING_4;
                 }
@@ -5567,7 +5567,7 @@ void dAcPy_c::updateRopeSwingAnm() {
                 checkStartSwingDown();
                 break;
             case ROPE_SWING_7:
-                if (mPyMdlMng.mpMdl->mAnm.checkFrame(96.0f)) {
+                if (mPyMdlMng.mpMdl->mAnms[0].checkFrame(96.0f)) {
                     mPyMdlMng.mpMdl->setRate(0.0f);
                     m_90c = ROPE_SWING_8;
                 }
@@ -5585,7 +5585,7 @@ void dAcPy_c::updateRopeSwingAnm() {
                 checkStartSwingUp();
                 break;
             case ROPE_SWING_5:
-                if (mPyMdlMng.mpMdl->mAnm.checkFrame(86.0f)) {
+                if (mPyMdlMng.mpMdl->mAnms[0].checkFrame(86.0f)) {
                     mPyMdlMng.mpMdl->setRate(0.0f);
                     m_90c = ROPE_SWING_6;
                 }
@@ -5597,7 +5597,7 @@ void dAcPy_c::updateRopeSwingAnm() {
                 }
                 break;
             case ROPE_SWING_9:
-                if (mPyMdlMng.mpMdl->mAnm.checkFrame(64.0f)) {
+                if (mPyMdlMng.mpMdl->mAnms[0].checkFrame(64.0f)) {
                     m_90c = ROPE_SWING_0;
                 }
                 checkStartSwingUp();
@@ -5647,7 +5647,7 @@ void dAcPy_c::TarzanRopeActionUp() {
     if (m_914 == 0) {
         setIvyHangEffect();
     }
-    if (mPyMdlMng.mpMdl->mAnm.checkFrame(1.0f)) {
+    if (mPyMdlMng.mpMdl->mAnms[0].checkFrame(1.0f)) {
         setClimbRopeSE();
     }
     if (mKey.buttonDush()) {
@@ -6079,7 +6079,7 @@ void dAcPy_c::executeState_FlyDamage() {
             }
             break;
         case 2:
-            if (mPyMdlMng.mpMdl->mAnm.getFrame() >= sc_damageStopFrame[m_103c]) {
+            if (mPyMdlMng.mpMdl->mAnms[0].getFrame() >= sc_damageStopFrame[m_103c]) {
                 mPyMdlMng.mpMdl->setRate(0.0f);
                 mSubstate = 3;
                 mSubstateValue = 10;
@@ -6113,11 +6113,11 @@ void dAcPy_c::executeState_FlyDamage() {
             break;
         case 5:
             if (!isNowBgCross(BGC_FOOT)) {
-                if (mPyMdlMng.mpMdl->mAnm.getFrame() > 17.0f) {
+                if (mPyMdlMng.mpMdl->mAnms[0].getFrame() > 17.0f) {
                     mPyMdlMng.setAnm(PLAYER_ANIM_JUMP2, 10.0f, 0.0f);
                     changeState(StateID_Fall, false);
                 }
-            } else if (mPyMdlMng.mpMdl->mAnm.getFrame() > 17.0f) {
+            } else if (mPyMdlMng.mpMdl->mAnms[0].getFrame() > 17.0f) {
                 if (checkJumpTrigger()) {
                     break;
                 }
@@ -6701,13 +6701,13 @@ void dAcPy_c::executeState_Cloud() {
             }
             break;
         case 4:
-            if (mPyMdlMng.mpMdl->mAnm.checkFrame(4.0f)) {
+            if (mPyMdlMng.mpMdl->mAnms[0].checkFrame(4.0f)) {
                 createFireBall(0);
                 mSubstate = 5;
             }
             break;
         case 7:
-            if (mPyMdlMng.mpMdl->mAnm.checkFrame(5.0f)) {
+            if (mPyMdlMng.mpMdl->mAnms[0].checkFrame(5.0f)) {
                 mSubstate = 8;
                 setThrowActor();
             }
@@ -6851,7 +6851,7 @@ void dAcPy_c::executeState_CarryPlayer() {
             }
             break;
         case 3:
-            if (!mPyMdlMng.mpMdl->mAnm.checkFrame(dPyMdlBase_c::scFireShootFrame)) {
+            if (!mPyMdlMng.mpMdl->mAnms[0].checkFrame(dPyMdlBase_c::scFireShootFrame)) {
                 break;
             }
             createFireBall(0);
@@ -7297,7 +7297,7 @@ void dAcPy_c::executeState_Fire() {
     switch (mSubstate) {
         case 0:
             checkFireJump();
-            if (mPyMdlMng.mpMdl->mAnm.checkFrame(dPyMdlBase_c::scFireShootFrame)) {
+            if (mPyMdlMng.mpMdl->mAnms[0].checkFrame(dPyMdlBase_c::scFireShootFrame)) {
                 createFireBall(0);
                 mSubstate = 1;
                 offStatus(STATUS_FIREBALL_PREPARE_SHOOT);
@@ -7314,7 +7314,7 @@ void dAcPy_c::executeState_Fire() {
                 if (
                     !checkJumpTrigger() &&
                     (
-                        mPyMdlMng.mpMdl->mAnm.getFrame() >= 10.0f && mSpeedF ||
+                        mPyMdlMng.mpMdl->mAnms[0].getFrame() >= 10.0f && mSpeedF ||
                         mPyMdlMng.isAnmStop()
                     )
                 ) {
@@ -7322,7 +7322,7 @@ void dAcPy_c::executeState_Fire() {
                 }
             } else {
                 if (
-                    mPyMdlMng.mpMdl->mAnm.getFrame() >= 10.0f ||
+                    mPyMdlMng.mpMdl->mAnms[0].getFrame() >= 10.0f ||
                     (mPyMdlMng.isAnmStop() && mSpeed.y <= 0.0f)
                 ) {
                     changeState(StateID_Fall, false);
@@ -7517,8 +7517,8 @@ void dAcPy_c::PropelActionFall() {
         if (
             mPyMdlMng.mpMdl->mCurrAnmID == PLAYER_ANIM_SPIN_JUMP3 &&
             (
-                mPyMdlMng.mpMdl->mAnm.checkFrame(8.0f) ||
-                mPyMdlMng.mpMdl->mAnm.checkFrame(19.0f)
+                mPyMdlMng.mpMdl->mAnms[0].checkFrame(8.0f) ||
+                mPyMdlMng.mpMdl->mAnms[0].checkFrame(19.0f)
             )
         ) {
             startSound(SE_PLY_PRPL_FLY, false);
@@ -8875,11 +8875,11 @@ bool dAcPy_c::updateDemoKimePose(ClearType_e clearType) {
             // fallthrough
         case KIME_POSE_WITH_HAT: {
             dMarioMdl_c *mdl = (dMarioMdl_c *) mPyMdlMng.mpMdl;
-            if (mPyMdlMng.mpMdl->mAnm.checkFrame(41.0f)) {
+            if (mPyMdlMng.mpMdl->mAnms[0].checkFrame(41.0f)) {
                 mdl->fn_800cab00(1);
                 break;
             }
-            if (mPyMdlMng.mpMdl->mAnm.checkFrame(107.0f)) {
+            if (mPyMdlMng.mpMdl->mAnms[0].checkFrame(107.0f)) {
                 mdl->fn_800cab00(0);
                 break;
             }
@@ -8890,11 +8890,11 @@ bool dAcPy_c::updateDemoKimePose(ClearType_e clearType) {
             break;
         }
         case KIME_POSE_PROPELLER:
-            if (mPyMdlMng.mpMdl->mAnm.checkFrame(5.0f)) {
+            if (mPyMdlMng.mpMdl->mAnms[0].checkFrame(5.0f)) {
                 onStatus(STATUS_70);
                 break;
             }
-            if (mPyMdlMng.mpMdl->mAnm.checkFrame(12.0f)) {
+            if (mPyMdlMng.mpMdl->mAnms[0].checkFrame(12.0f)) {
                 offStatus(STATUS_70);
                 break;
             }
