@@ -706,31 +706,3 @@ bool dPyMdlBase_c::isFootStepTiming() {
 
     return false;
 }
-
-float * dPyMdlBase_c::getLegLengthP(u8) { return nullptr; }
-
-void dPyMdlBase_c::setPropelScale(float) {}
-
-s16 dPyMdlBase_c::getPropelRollAngle() const { return 0; }
-
-void dPyMdlBase_c::setPropelRollAngle(s16) {}
-
-s16 dPyMdlBase_c::getPropelRollSpeed() const { return 0; }
-
-void dPyMdlBase_c::setPropelRollSpeed(s16) {}
-
-bool dPyMdlBase_c::getHeadPropelJointMtx(mMtx_c *) { return false; }
-
-void dPyMdlBase_c::offStarAnm() {
-    m_17c &= ~0x100;
-}
-
-void dPyMdlBase_c::onStarAnm() {
-    m_17c |= 0x100;
-}
-
-void dPyMdlBase_c::setDark(int) {}
-
-void dPyMdlBase_c::calc2() {}
-
-int dPyMdlBase_c::getFaceJointIdx() const { return 0; }

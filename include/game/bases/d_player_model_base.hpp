@@ -48,25 +48,25 @@ public:
 
     dPyMdlBase_c(u8);
     virtual ~dPyMdlBase_c();
-    virtual int getFaceJointIdx() const;
+    virtual int getFaceJointIdx() const { return 0; }
     virtual void createModel();
     virtual void initialize();
     virtual void play();
     virtual void _calc();
-    virtual void calc2();
+    virtual void calc2() {}
     virtual void draw();
     virtual m3d::bmdl_c * getBodyMdl() { return nullptr; }
     virtual const nw4r::g3d::ResFile * getAnmResFile() const;
     virtual void setPlayerMode(int);
     virtual void setColorType(u8);
-    virtual void setDark(int);
+    virtual void setDark(int) {}
     virtual void setFunbariRate(float) {};
-    virtual void onStarAnm();
-    virtual void offStarAnm();
+    virtual void onStarAnm() { m_17c |= 0x100; }
+    virtual void offStarAnm() { m_17c &= ~0x100; }
     virtual void onStarEffect() { m_17c |= 0x200; };
     virtual void offStarEffect() { m_17c &= ~0x200; };
     virtual void getJointMtx(mMtx_c* mtx, int i);
-    virtual bool getHeadPropelJointMtx(mMtx_c *);
+    virtual bool getHeadPropelJointMtx(mMtx_c *) { return false; }
     virtual bool getJumpAnmName(int, char *, int); //< @unofficial
     virtual void setAnm(int, float, float, float);
     virtual int setPersonalAnm(int, nw4r::g3d::ResAnmChr *, int);
@@ -82,12 +82,12 @@ public:
     virtual void setBodyFrame(float);
     virtual void setRate(float);
     virtual void setBodyRate(float);
-    virtual void setPropelRollSpeed(s16);
-    virtual s16 getPropelRollSpeed() const;
-    virtual void setPropelRollAngle(s16);
-    virtual s16 getPropelRollAngle() const;
-    virtual void setPropelScale(float);
-    virtual float *getLegLengthP(u8);
+    virtual void setPropelRollSpeed(s16) {}
+    virtual s16 getPropelRollSpeed() const { return 0; }
+    virtual void setPropelRollAngle(s16) {}
+    virtual s16 getPropelRollAngle() const { return 0; }
+    virtual void setPropelScale(float) {}
+    virtual float *getLegLengthP(u8) { return nullptr; }
     virtual void updateBonusCap() {};
 
     int create(u8, u8, int);
