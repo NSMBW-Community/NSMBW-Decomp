@@ -47,6 +47,10 @@ public:
 
     enum ScaleIndex_e {};
 
+    float get_04() {
+        return m_04;
+    }
+
     float get_08(ScaleIndex_e index) {
         return m_08[index];
     }
