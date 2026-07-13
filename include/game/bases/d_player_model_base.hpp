@@ -35,15 +35,15 @@ public:
     };
 
     struct AnmData_s {
-        char * m_00;
-        char * m_04;
-        char * m_08;
-        char * m_0c;
-        m3d::playMode_e play_mode;
-        float m_14;
-        float m_18;
-        TexAnmType_e m_1c;
-        u32 m_20;
+        char * mName; //< Regular animation name
+        char * mRideName; //< Animation name when riding
+        char * mYoshiName; //< Yoshi personal animation name
+        char * mPlayerName; //< Player 3 personal animation name
+        m3d::playMode_e mPlayMode;
+        float mRate;
+        float mBlendDuration;
+        TexAnmType_e mTexAnmType;
+        u32 mFlags; //< Same type as dPyMdlBase_c's mFlags
     };
 
     dPyMdlBase_c(u8);
@@ -138,8 +138,8 @@ public:
     u8 m_151;
     u8 mPlayerMode;
     u8 m_powerup_tex;
-    int mCurrAnmID;
-    int mPrevAnmID;
+    int mCurrAnmID; //< AnmID_e or -1
+    int mPrevAnmID; //< AnmID_e or -1
     int m_15c;
     u32 mFlags;
     u32 m_164;
