@@ -5,7 +5,7 @@
 #include <game/mLib/m_mtx.hpp>
 #include <game/bases/d_heap_allocator.hpp>
 
-class dAcPy_c;
+class daPlBase_c;
 
 ///< @unofficial
 enum AnmID_e {
@@ -304,7 +304,7 @@ public:
     m3d::anmChr_c &getBodyAnm() { return mAnms[1]; }
 
     dHeapAllocator_c mAllocator;
-    dAcPy_c *mpOwner;
+    daPlBase_c *mpOwner;
     dPyMdlBase_c *mpSpinLiftParentMdl;
     m3d::anmChr_c mAnms[2];
     m3d::anmChrBlend_c mBlendAnm;
@@ -325,8 +325,8 @@ public:
     u32 m_164;
     u32 mJumpAnmVariant;
     u32 mPrevJumpAnmVariant;
-    u32 mCurrHeadPatID;
-    u32 mNextPatSwitchTimer;
+    int mCurrHeadPatID;
+    int mNextPatSwitchTimer;
     u8 m_178;
     /* 3 padding bytes */
     u32 m_17c;
