@@ -7,19 +7,19 @@
 const float dPyMdlBase_c::scWaterCrouchAnmSpeed = 0.1f;
 const float dPyMdlBase_c::scFireShootFrame = 4.0f;
 
-const char * dPyMdlBase_c::scJumpAnmVarDt[] = {
+const char *dPyMdlBase_c::scJumpAnmVarDt[] = {
     "jump", "jump_b", "jump_c"
 };
 
-const char * dPyMdlBase_c::sc2JumpAnmVarDt[] = {
+const char *dPyMdlBase_c::sc2JumpAnmVarDt[] = {
     "2jmp_c_1", "2jump1", "2jmp_b_1"
 };
 
-const char * dPyMdlBase_c::sc2JumpedAnmVarDt[] = {
+const char *dPyMdlBase_c::sc2JumpedAnmVarDt[] = {
     "2jmp_c_2", "2jump2", "2jmp_b_2"
 };
 
-const dPyMdlBase_c::AnmData_s dPyMdlBase_c::scPyAnmData[] = {
+const dPyMdlBase_c::AnmData_s dPyMdlBase_c::scPyAnmData[PLAYER_ANIM_COUNT] = {
     { "wait", "Rwait", "YB_Rwait", "P_wait", m3d::FORWARD_LOOP, 1.2f, 0.0f, TEX_ANM_1, 0x2080 },
     { "walk", nullptr, nullptr, nullptr, m3d::FORWARD_LOOP, 0.0f, -1.0f, TEX_ANM_1, 0x20c0 },
     { "run", "Rrun", "YB_Rrun", "P_run", m3d::FORWARD_LOOP, 0.0f, 10.0f, TEX_ANM_1, 0x20c0 },
@@ -205,13 +205,14 @@ dPyMdlBase_c::dPyMdlBase_c(u8 val) :
     mHatPosMaybe(0.0f, 0.0f, 0.0f),
     mHeadOffset(0.0f, 0.0f, 0.0f),
     mScale(1.0f, 1.0f, 1.0f),
-    m_another_player_ID(0), m_151(val),
-    mPlayerMode(POWERUP_NONE), m_powerup_tex(0xFF),
-    mCurrAnmID(-1), mPrevAnmID(-1),
-    m_15c(-1), m_168(0), m_16c(0),
+    mAnotherPlayerID(0), m_151(val),
+    mPlayerMode(POWERUP_NONE), mPowerupTex(-1),
+    mCurrAnmID(PLAYER_ANIM_NONE), mPrevAnmID(PLAYER_ANIM_NONE), m_15c(PLAYER_ANIM_NONE),
+    mJumpAnmVariant(0), mPrevJumpAnmVariant(0),
     mCurrHeadPatID(0), mNextPatSwitchTimer(0),
-    m_178(0), m_17c(0), m_180(0), m_184(0.0f), m_188(0.0f), m_18c_countdown(0),
-    m_1fc(0), m_1fe(0), m_200(0),
+    m_178(0), m_17c(0), m_180(0),
+    mStoopOffset(0.0f), mStoopOffsetTarget(0.0f), mStoopTimer(0),
+    mAngX(0), mAngY(0), mAngZ(0),
     m_204(0), m_208(0)
 {
     mFlags = 0;
@@ -220,13 +221,13 @@ dPyMdlBase_c::dPyMdlBase_c(u8 val) :
 
 dPyMdlBase_c::~dPyMdlBase_c() {}
 
-int dPyMdlBase_c::create(u8 a, u8 player_mode, int c) {
+int dPyMdlBase_c::create(u8 a, u8 playerMode, int c) {
     m_180 = c;
-    m_another_player_ID = a;
-    mAllocator.createFrmHeap(0xC000, mHeap::g_gameHeaps[0], NULL, 0x20);
+    mAnotherPlayerID = a;
+    mAllocator.createFrmHeap(0xC000, mHeap::g_gameHeaps[mHeap::GAME_HEAP_DEFAULT], NULL, 0x20);
     createModel();
     mAllocator.adjustFrmHeap();
-    setPlayerMode(player_mode);
+    setPlayerMode(playerMode);
     initialize();
 
     return 0;
@@ -244,8 +245,8 @@ void dPyMdlBase_c::play() {}
 
 void dPyMdlBase_c::_calc() {}
 
-void dPyMdlBase_c::calc(mMtx_c & a) {
-    mBaseMtx = a;
+void dPyMdlBase_c::calc(mMtx_c &baseMtx) {
+    mBaseMtx = baseMtx;
     _calc();
 }
 
@@ -254,11 +255,11 @@ void dPyMdlBase_c::calc(mVec3_c pos, mAng3_c rot, mVec3_c scale) {
     _calc();
 }
 
-void dPyMdlBase_c::getJointMtx(mMtx_c* mtx, int i) {
+void dPyMdlBase_c::getJointMtx(mMtx_c *mtx, int i) {
     getBodyMdl()->getNodeWorldMtx(i, mtx);
 }
 
-void dPyMdlBase_c::getJointPos(mVec3_c* pos, int i) {
+void dPyMdlBase_c::getJointPos(mVec3_c *pos, int i) {
     mMtx_c tmp;
     getJointMtx(&tmp, i);
 
@@ -268,12 +269,12 @@ void dPyMdlBase_c::getJointPos(mVec3_c* pos, int i) {
     *pos = mVec3_c(x, y, z);
 }
 
-void dPyMdlBase_c::setBaseMtx(mVec3_c& pos,mAng3_c& rot,mVec3_c& scale) {
+void dPyMdlBase_c::setBaseMtx(mVec3_c &pos, mAng3_c &rot, mVec3_c &scale) {
     if (m_180 != 0) {
         mScale = scale;
     }
 
-    float f1 = 0.0f;
+    float shiftZ = 0.0f;
     float f2 = scale.y * 8.0f;
     switch (mCurrAnmID) {
         case PLAYER_ANIM_TREE_START:
@@ -291,155 +292,140 @@ void dPyMdlBase_c::setBaseMtx(mVec3_c& pos,mAng3_c& rot,mVec3_c& scale) {
         case PLAYER_ANIM_NET_WALK2:
         case PLAYER_ANIM_NET_ATTACK:
             if (mPlayerMode == POWERUP_NONE) {
-                f1 = 0.0f;
+                shiftZ = 0.0f;
             }
-            f1 = -1.0f;
+            shiftZ = -1.0f;
             break;
     }
 
     float f3 = scale.y * 8.0f;
-    mMtx_c tmp_70;
-    mMtx_c tmp_a0;
-    mMtx_c tmp_d0;
-    mMtx_c tmp_100;
-    mMtx_c tmp_130;
-    mMtx_c tmp_160;
-    mMtx_c tmp_190;
 
-    tmp_70.YrotS(rot.y);
-    PSMTXTrans(tmp_d0, 0.0f, f2, f1);
-    PSMTXConcat(tmp_70, tmp_d0, tmp_70);
+    mMtx_c mtx;
+    mtx.YrotS(rot.y);
+    mtx.concat(mMtx_c::createTrans(0.0f, f2, shiftZ));
 
-    tmp_70.XrotM(-rot.x);
-    PSMTXTrans(tmp_100, 0.0f, -f2, 0.0f);
-    PSMTXConcat(tmp_70, tmp_100, tmp_70);
-    PSMTXTrans(tmp_130, 0.0f, f3, 0.0f);
-    PSMTXConcat(tmp_70, tmp_130, tmp_70);
+    mtx.XrotM(-rot.x);
+    mtx.concat(mMtx_c::createTrans(0.0f, -f2, 0.0f));
+    mtx.concat(mMtx_c::createTrans(0.0f, f3, 0.0f));
 
-    tmp_70.ZrotM(rot.z);
-    PSMTXTrans(tmp_160, 0.0f, -f3, 0.0f);
-    PSMTXConcat(tmp_70, tmp_160, tmp_70);
-    PSMTXScale(tmp_190, scale.x, scale.y, scale.z);
-    PSMTXConcat(tmp_70, tmp_190, tmp_70);
+    mtx.ZrotM(rot.z);
+    mtx.concat(mMtx_c::createTrans(0.0f, -f3, 0.0f));
+    mtx.concat(mMtx_c::createScale(scale));
 
-    mMtx = tmp_70;
+    mMtx = mtx;
 
-    mVec3_c tmp_19c = pos;
-
+    mVec3_c shiftedPos = pos;
     switch (mCurrAnmID) {
         case PLAYER_ANIM_DOOR_WALK:
-            tmp_19c.y += 1.0f;
+            shiftedPos.y += 1.0f;
             break;
         case PLAYER_ANIM_LOW_WALK_START:
         case PLAYER_ANIM_LOW_WALK:
-            tmp_19c.y += 4.0f;
+            shiftedPos.y += 4.0f;
             break;
         default:
-            tmp_19c.y -= 0.2f;
+            shiftedPos.y -= 0.2f;
             break;
     }
-    tmp_19c.y += m_184;
+    shiftedPos.y += mStoopOffset;
 
     if (m_17c & 0x400) {
-        tmp_19c.y += dPyMdlMng_c::m_hio.get_04();
+        shiftedPos.y += dPyMdlMng_c::m_hio.get_04();
     }
 
     if (m_180 == 0) {
-        dActor_c::changePosAngle(&tmp_19c, nullptr, 1);
+        dActor_c::changePosAngle(&shiftedPos, nullptr, 1);
     }
 
-    PSMTXTrans(tmp_a0, tmp_19c.x, tmp_19c.y, tmp_19c.z);
-    PSMTXConcat(tmp_a0, tmp_70, tmp_a0);
+    mMtx_c finalMtx;
+    finalMtx.trans(shiftedPos);
+    finalMtx.concat(mtx);
 
-    mBaseMtx = tmp_a0;
+    mBaseMtx = finalMtx;
 }
 
 void dPyMdlBase_c::draw() {}
 
-void dPyMdlBase_c::setSoftLight(m3d::bmdl_c & mdl) {
-    if (m_180 > 1) {
-        if ((int)m_180 != 2) {
+void dPyMdlBase_c::setSoftLight(m3d::bmdl_c &mdl) {
+    switch (m_180) {
+        case 0:
+        case 1:
+            dGameCom::SetSoftLight_Player(mdl, 0);
             return;
-        }
-    } else {
-        dGameCom::SetSoftLight_Player(mdl, 0);
-        return;
+        case 2:
+            dGameCom::SetSoftLight_Player(mdl, 1);
+            return;
     }
-
-    dGameCom::SetSoftLight_Player(mdl, 1);
 }
 
 void dPyMdlBase_c::setColorType(u8) {}
 
 bool dPyMdlBase_c::isBodyAnmOn() {
-    if ((mPrevAnmID == -1) || (mPrevAnmID == mCurrAnmID)) {
+    if (mPrevAnmID == PLAYER_ANIM_NONE || mPrevAnmID == mCurrAnmID) {
         return false;
     }
     return true;
 }
 
 void dPyMdlBase_c::setFrame(float f) {
-    mAnms[0].setFrame(f);
+    getFootAnm().setFrame(f);
     if (!isBodyAnmOn()) {
         setBodyFrame(f);
     }
 }
 
 void dPyMdlBase_c::setBodyFrame(float f) {
-    mAnms[1].setFrame(f);
+    getBodyAnm().setFrame(f);
 }
 
 void dPyMdlBase_c::setRate(float f) {
-    mAnms[0].setRate(f);
+    getFootAnm().setRate(f);
     if (!isBodyAnmOn()) {
         setBodyRate(f);
     }
 }
 
 void dPyMdlBase_c::setBodyRate(float f) {
-    mAnms[1].setRate(f);
+    getBodyAnm().setRate(f);
 }
 
 
-void dPyMdlBase_c::setJumpAnmRand(dPyMdlBase_c::RndType_e rnd_type) {
-    switch (rnd_type)
-    {
-    case RND_EQUAL:
-        m_168 = dGameCom::rndInt(3);
-        break;
-    case RND_WEIGHTED:
-        // ??? why is this converted to a float?
-        float x = (float)(u32)dGameCom::rndInt(10);
-        if (x < 6.0f) {
-            m_168 = 0;
-        } else if (x < 9.0f) {
-            m_168 = 1;
-        } else {
-            m_168 = 2;
-        }
-        break;
+void dPyMdlBase_c::setJumpAnmRand(dPyMdlBase_c::RndType_e rndType) {
+    switch (rndType) {
+        case RND_EQUAL:
+            mJumpAnmVariant = dGameCom::rndInt(3);
+            break;
+        case RND_WEIGHTED:
+            float x = dGameCom::rndInt(10);
+            if (x < 6.0f) {
+                mJumpAnmVariant = 0;
+            } else if (x < 9.0f) {
+                mJumpAnmVariant = 1;
+            } else {
+                mJumpAnmVariant = 2;
+            }
+            break;
     }
 
-    if (m_168 > 2) {
-        m_168 = 0;
+    if (mJumpAnmVariant > 2) {
+        mJumpAnmVariant = 0;
     }
 }
 
-void dPyMdlBase_c::setAnm(int anim_id, float rate, float c, float frame) {
-
-    if ((mPlayerMode == POWERUP_MINI_MUSHROOM) && (anim_id == PLAYER_ANIM_JUMP2)) {
+void dPyMdlBase_c::setAnm(int animID, float rate, float c, float frame) {
+    if (mPlayerMode == POWERUP_MINI_MUSHROOM && animID == PLAYER_ANIM_JUMP2) {
         setAnm(PLAYER_ANIM_MAME_JUMP2, dPyMdlMng_c::m_hio.mPyAnm.mAnm[PLAYER_ANIM_MAME_JUMP2].mRate, c, frame);
         return;
     }
 
-    int prev_anm_id = mCurrAnmID;
-    m_15c = -1;
-    mCurrAnmID = anim_id;
+    int prevAnmID = mCurrAnmID;
+    m_15c = PLAYER_ANIM_NONE;
+    mCurrAnmID = animID;
 
-    const dPyMdlBase_c::AnmData_s & anm_data = scPyAnmData[anim_id];
+    const dPyMdlBase_c::AnmData_s &anmData = scPyAnmData[animID];
 
-    if (prev_anm_id == anim_id) {
-        mAnms[0].mPlayMode = anm_data.mPlayMode;
+    if (prevAnmID == animID) {
+        getFootAnm().mPlayMode = anmData.mPlayMode;
         setRate(rate);
         if (frame != 0.0f) {
             setFrame(frame);
@@ -447,189 +433,188 @@ void dPyMdlBase_c::setAnm(int anim_id, float rate, float c, float frame) {
         return;
     }
 
-    m_164 = anm_data.mFlags;
-    mFlags = anm_data.mFlags;
+    m_164 = anmData.mFlags;
+    mFlags = anmData.mFlags;
 
-    nw4r::g3d::ResAnmChr anm = getAnmResFile()->GetResAnmChr(anm_data.mName);
+    nw4r::g3d::ResAnmChr anm = getAnmResFile()->GetResAnmChr(anmData.mName);
     setPersonalAnm(mCurrAnmID, &anm, 0);
 
-    float f31 = 0.0f;
-    if (frame != f31) {
-        f31 = frame;
+    float footFrame = 0.0f;
+    if (frame) {
+        footFrame = frame;
     } else {
         if (rate < 0.0f) {
-            f31 = anm.GetNumFrame() - 1.0f;
+            footFrame = anm.GetNumFrame() - 1.0f;
         }
 
-        if ((mFlags & 0x40) && (scPyAnmData[prev_anm_id].mFlags & 0x40)) {
-            f31 = mAnms[0].getFrame();
+        if ((mFlags & 0x40) && (scPyAnmData[prevAnmID].mFlags & 0x40)) {
+            footFrame = getFootAnm().getFrame();
         }
     }
 
-    if (f31 >= anm.GetNumFrame()) {
-        f31 = anm.GetNumFrame() - 1.0f;
+    if (footFrame >= anm.GetNumFrame()) {
+        footFrame = anm.GetNumFrame() - 1.0f;
     }
 
     if (m_17c & (4 | 2)) {
         if (m_17c & 4) {
-            setLinkAnm(anim_id, rate, c, f31);
+            setLinkAnm(animID, rate, c, footFrame);
         }
 
         if (!(m_164 & 2)) {
-            _setFootAnm(anm, anm_data.mPlayMode, rate, f31, c);
+            _setFootAnm(anm, anmData.mPlayMode, rate, footFrame, c);
             setCarryBodyAnm(c);
             return;
         }
     }
 
-    if (!(((!(m_17c & 8)) && (!(m_17c & 0x10))) || (mPrevAnmID == -1) || (m_164 & 0x20))) {
-        _setFootAnm(anm, anm_data.mPlayMode, rate, f31, 0.0f);
-        m3d::anmChr_c & body_anm = getBodyAnm();
+    if (((m_17c & 8) || (m_17c & 0x10)) && mPrevAnmID != PLAYER_ANIM_NONE && !(m_164 & 0x20)) {
+        _setFootAnm(anm, anmData.mPlayMode, rate, footFrame, 0.0f);
+        m3d::anmChr_c &body_anm = getBodyAnm();
         setBodyAnm(mPrevAnmID, body_anm.getRate(), body_anm.getFrame(), 0.0f);
+    } else if (m_164 & 0x1000) {
+        _setFootAnm(anm, anmData.mPlayMode, rate, footFrame, c);
+        setSlopeBodyAnm(c);
     } else {
-        if (m_164 & 0x1000) {
-            _setFootAnm(anm, anm_data.mPlayMode, rate, f31, c);
-            setSlopeBodyAnm(c);
-        } else {
-            _setFootAnm(anm, anm_data.mPlayMode, rate, f31, c);
-            mPrevAnmID = -1;
-            _setBodyAnm(anm, anm_data.mPlayMode, rate, f31, c);
-            setAnmBind();
-            setTexAnmType(anm_data.mTexAnmType);
-        }
+        _setFootAnm(anm, anmData.mPlayMode, rate, footFrame, c);
+        mPrevAnmID = PLAYER_ANIM_NONE;
+        _setBodyAnm(anm, anmData.mPlayMode, rate, footFrame, c);
+        setAnmBind();
+        setTexAnmType(anmData.mTexAnmType);
     }
-
 }
 
-const nw4r::g3d::ResFile * dPyMdlBase_c::getAnmResFile() const {
+const nw4r::g3d::ResFile *dPyMdlBase_c::getAnmResFile() const {
     return nullptr;
 }
 
 void dPyMdlBase_c::copyAnm() {}
 
-void dPyMdlBase_c::setBodyAnm(int anim_id, float a, float b, float c) {
-    const dPyMdlBase_c::AnmData_s & anm_data = scPyAnmData[anim_id];
-    u32 flag = anm_data.mFlags;
-    mPrevAnmID = anim_id;
-    m_164 = flag;
+void dPyMdlBase_c::setBodyAnm(int animID, float rate, float frame, float c) {
+    mPrevAnmID = animID;
 
-    nw4r::g3d::ResAnmChr anm = getAnmResFile()->GetResAnmChr(anm_data.mName);
+    const dPyMdlBase_c::AnmData_s &anmData = scPyAnmData[animID];
+    m_164 = anmData.mFlags;
+
+    nw4r::g3d::ResAnmChr anm = getAnmResFile()->GetResAnmChr(anmData.mName);
     setPersonalAnm(mPrevAnmID, &anm, 1);
-    _setBodyAnm(anm, anm_data.mPlayMode, a, b, c);
+    _setBodyAnm(anm, anmData.mPlayMode, rate, frame, c);
     setAnmBind();
 }
 
 void dPyMdlBase_c::releaseBodyAnm(float a) {
-    mPrevAnmID = -1;
-    const dPyMdlBase_c::AnmData_s & anm_data = scPyAnmData[mCurrAnmID];
-    m_164 = anm_data.mFlags;
-    nw4r::g3d::ResAnmChr anm = getAnmResFile()->GetResAnmChr(anm_data.mName);
+    mPrevAnmID = PLAYER_ANIM_NONE;
+
+    const dPyMdlBase_c::AnmData_s &anmData = scPyAnmData[mCurrAnmID];
+    m_164 = anmData.mFlags;
+
+    nw4r::g3d::ResAnmChr anm = getAnmResFile()->GetResAnmChr(anmData.mName);
     setPersonalAnm(mCurrAnmID, &anm, 1);
 
-    if (!((!(m_17c & (4 | 2))) || (m_164 & 2))) {
+    if ((m_17c & (4 | 2)) && !(m_164 & 2)) {
         setCarryBodyAnm(a);
     } else if (m_164 & 0x1000) {
         setSlopeBodyAnm(a);
     } else {
-        float frame = mAnms[0].getFrame();
-        float num_frames = anm.GetNumFrame();
-        if (frame >= num_frames) {
-            frame = num_frames - 1.0f;
+        float frame = getFootAnm().getFrame();
+        float numFrames = anm.GetNumFrame();
+        if (frame >= numFrames) {
+            frame = numFrames - 1.0f;
         }
-        _setBodyAnm(anm, (m3d::playMode_e) mAnms[0].mPlayMode, mAnms[0].getRate(), frame, a);
+        _setBodyAnm(anm, (m3d::playMode_e) getFootAnm().mPlayMode, getFootAnm().getRate(), frame, a);
     }
 }
 
 void dPyMdlBase_c::setCarryBodyAnm(float a) {
     static const u32 lbl_802f2f38[2][2] = {
-        {0x9D, 0x9B},
-        {0x9C, 0x9A}
+        {PLAYER_ANIM_CARRY_WAIT_R, PLAYER_ANIM_CARRY_P_WAIT_R},
+        {PLAYER_ANIM_CARRY_WAIT_L, PLAYER_ANIM_CARRY_P_WAIT_L}
     };
 
-    static const int lbl_8042cd90[2] = {0x1C, 0x70};
+    static const int lbl_8042cd90[2] = {PLAYER_ANIM_RCARRY_WAIT, PLAYER_ANIM_CARRY_P_WAIT_DUPLICATE};
 
-    int idx = 0;
-    int idxb;
+    int dir = 0;
     if (m_17c & 4) {
-        idx = 1;
+        dir = 1;
     }
 
     if (mFlags & 0xC000) {
-        idxb = 0;
+        int carryType = 0;
         if (mFlags & 0x4000) {
-            idxb = 1;
+            carryType = 1;
         }
 
-        float f = mAnms[0].getFrame();
-        setBodyAnm(lbl_802f2f38[idxb][idx], 1.2f, f, a);
+        float frame = getFootAnm().getFrame();
+        setBodyAnm(lbl_802f2f38[carryType][dir], 1.2f, frame, a);
     } else {
-        setBodyAnm(lbl_8042cd90[idx], 1.2f, 0.0f, a);
+        setBodyAnm(lbl_8042cd90[dir], 1.2f, 0.0f, a);
     }
 }
 
 void dPyMdlBase_c::setSlopeBodyAnm(float a) {
-    int idx;
-    switch(mCurrAnmID) {
+    int anmID;
+    switch (mCurrAnmID) {
         case PLAYER_ANIM_SLOPE_WAIT_R:
-            idx = PLAYER_ANIM_SLOPE_WAIT_R2;
+            anmID = PLAYER_ANIM_SLOPE_WAIT_R2;
             break;
         default:
-            idx = PLAYER_ANIM_SLOPE_WAIT_L2;
+            anmID = PLAYER_ANIM_SLOPE_WAIT_L2;
             break;
     }
-    float rate = dPyMdlMng_c::m_hio.mPyAnm.mAnm[idx & 0xFF].mRate;
-    setBodyAnm(idx, rate, 0.0f, a);
+
+    float rate = dPyMdlMng_c::getHIO(anmID).mRate;
+    setBodyAnm(anmID, rate, 0.0f, a);
 }
 
-void dPyMdlBase_c::_setFootAnm(nw4r::g3d::ResAnmChr&, m3d::playMode_e, float, float, float) {}
+void dPyMdlBase_c::_setFootAnm(nw4r::g3d::ResAnmChr &, m3d::playMode_e, float rate, float frame, float) {}
 
-void dPyMdlBase_c::_setBodyAnm(nw4r::g3d::ResAnmChr&, m3d::playMode_e, float, float, float) {}
+void dPyMdlBase_c::_setBodyAnm(nw4r::g3d::ResAnmChr &, m3d::playMode_e, float rate, float frame, float) {}
 
 void dPyMdlBase_c::setAnmBind() {}
 
 int dPyMdlBase_c::setPersonalRideAnm(int, nw4r::g3d::ResAnmChr *) { return 0; }
 
-void dPyMdlBase_c::setRideAnm(int idx, float a, float b, float c) {
-    int prev_158 = m_15c;
-    mCurrAnmID = -1;
-    m_15c = idx;
-    const AnmData_s & anm_data = scPyAnmData[idx];
+void dPyMdlBase_c::setRideAnm(int anmID, float rate, float b, float frame) {
+    int prev_15c = m_15c;
+    mCurrAnmID = PLAYER_ANIM_NONE;
+    m_15c = anmID;
+    const AnmData_s &anmData = scPyAnmData[anmID];
 
-    if (prev_158 == idx) {
-        mAnms[0].mPlayMode = anm_data.mPlayMode;
-        setRate(a);
-        if (c) {
-            setFrame(c);
+    if (prev_15c == anmID) {
+        getFootAnm().mPlayMode = anmData.mPlayMode;
+        setRate(rate);
+        if (frame) {
+            setFrame(frame);
         }
     } else {
         m_164 = 0;
         mFlags = 0;
-        nw4r::g3d::ResAnmChr anm = getAnmResFile()->GetResAnmChr(scPyAnmData[0].mRideName);
-        if (anm_data.mRideName != nullptr) {
-            anm = getAnmResFile()->GetResAnmChr(anm_data.mRideName);
-            setPersonalRideAnm(idx, &anm);
+        nw4r::g3d::ResAnmChr anm = getAnmResFile()->GetResAnmChr(scPyAnmData[PLAYER_ANIM_WAIT].mRideName);
+        if (anmData.mRideName != nullptr) {
+            anm = getAnmResFile()->GetResAnmChr(anmData.mRideName);
+            setPersonalRideAnm(anmID, &anm);
         }
 
-        float f6 = 0.0f;
-        if (c) {
-            if (c < anm.GetNumFrame()) {
-                f6 = c;
+        float actualFrame = 0.0f;
+        if (frame) {
+            if (frame < anm.GetNumFrame()) {
+                actualFrame = frame;
             }
         } else {
-            if (a < 0.0f) {
-                f6 = anm.GetNumFrame() - 1.0f;
+            if (rate < 0.0f) {
+                actualFrame = anm.GetNumFrame() - 1.0f;
             }
         }
 
-        _setFootAnm(anm, anm_data.mPlayMode, a, f6, b);
-        _setBodyAnm(anm, anm_data.mPlayMode, a, f6, b);
-        setTexAnmType(anm_data.mTexAnmType);
+        _setFootAnm(anm, anmData.mPlayMode, rate, actualFrame, b);
+        _setBodyAnm(anm, anmData.mPlayMode, rate, actualFrame, b);
+        setTexAnmType(anmData.mTexAnmType);
     }
 }
 
 int dPyMdlBase_c::setPersonalAnm(int, nw4r::g3d::ResAnmChr *, int) { return 0; }
 
-bool dPyMdlBase_c::getJumpAnmName(int p2, char * p3, int p4) {
+bool dPyMdlBase_c::getJumpAnmName(int jumpType, char *anmNameBuf, int p4) {
     bool ret = false;
 
     if (p4 == 1) {
@@ -641,56 +626,54 @@ bool dPyMdlBase_c::getJumpAnmName(int p2, char * p3, int p4) {
     }
 
     if (ret) {
-        switch (p2) {
+        switch (jumpType) {
             case 5:
-                strncpy(p3, scJumpAnmVarDt[m_168], 0x20);
+                strncpy(anmNameBuf, scJumpAnmVarDt[mJumpAnmVariant], 0x20);
                 break;
             case 8:
-                strncpy(p3, sc2JumpAnmVarDt[m_168], 0x20);
+                strncpy(anmNameBuf, sc2JumpAnmVarDt[mJumpAnmVariant], 0x20);
                 break;
             case 9:
-                strncpy(p3, sc2JumpedAnmVarDt[m_168], 0x20);
+                strncpy(anmNameBuf, sc2JumpedAnmVarDt[mJumpAnmVariant], 0x20);
                 break;
         }
         return true;
     } else {
-        m_16c = m_168;
-        m_168 = 0;
+        mPrevJumpAnmVariant = mJumpAnmVariant;
+        mJumpAnmVariant = 0;
         return false;
     }
 }
 
-void dPyMdlBase_c::setTexAnmType(dPyMdlBase_c::TexAnmType_e) {}
+void dPyMdlBase_c::setTexAnmType(dPyMdlBase_c::TexAnmType_e anmType) {}
 
 void dPyMdlBase_c::copyLinkAnm(float a) {
-    setLinkAnm(mCurrAnmID, mAnms[0].getRate(), a, mAnms[0].getFrame());
+    setLinkAnm(mCurrAnmID, getFootAnm().getRate(), a, getFootAnm().getFrame());
 }
 
 void dPyMdlBase_c::setLinkAnm(int idx, float rate, float b, float frame) {
-    dPyMdlBase_c * linkMdl = mpSpinLiftParentMdl;
-    if (linkMdl == nullptr) {
+    if (mpSpinLiftParentMdl == nullptr) {
         return;
     }
 
-    if (linkMdl->m_17c & 0x80) {
+    if (mpSpinLiftParentMdl->m_17c & 0x80) {
         return;
     }
 
-    int flags = mFlags;
-    if ((flags & 2) || (flags & 0x10) || (flags & 0xC000)) {
-        linkMdl->releaseBodyAnm(b);
+    if ((mFlags & 2) || (mFlags & 0x10) || (mFlags & 0xC000)) {
+        mpSpinLiftParentMdl->releaseBodyAnm(b);
     } else {
-        linkMdl->m_168 = m_168;
+        mpSpinLiftParentMdl->mJumpAnmVariant = mJumpAnmVariant;
         mpSpinLiftParentMdl->setBodyAnm(idx, rate, frame, b);
     }
 }
 
 void dPyMdlBase_c::calcStoopOffset() {
-    if (m_18c_countdown != 0) {
-        sLib::chase(&m_184, m_188, (m_184 - m_188) / (float)m_18c_countdown);
-        m_18c_countdown--;
+    if (mStoopTimer != 0) {
+        sLib::chase(&mStoopOffset, mStoopOffsetTarget, (mStoopOffset - mStoopOffsetTarget) / (float) mStoopTimer);
+        mStoopTimer--;
     } else {
-        m_184 = m_188;
+        mStoopOffset = mStoopOffsetTarget;
     }
 }
 
@@ -702,22 +685,22 @@ bool dPyMdlBase_c::isFootStepTiming() {
         case PLAYER_ANIM_B_DASH2:
         case PLAYER_ANIM_CARRY_WALK:
         case PLAYER_ANIM_CARRY_P_WALK:
-            if (mAnms[0].checkFrame(4.0f) || mAnms[0].checkFrame(34.0f)) {
+            if (getFootAnm().checkFrame(4.0f) || getFootAnm().checkFrame(34.0f)) {
                 return true;
             }
             break;
         case PLAYER_ANIM_DOOR_WALK:
-            if (mAnms[0].checkFrame(3.0f) || mAnms[0].checkFrame(18.0f)) {
+            if (getFootAnm().checkFrame(3.0f) || getFootAnm().checkFrame(18.0f)) {
                 return true;
             }
             break;
         case PLAYER_ANIM_LOW_WALK:
-            if (mAnms[0].checkFrame(0.0f) || mAnms[0].checkFrame(30.0f)) {
+            if (getFootAnm().checkFrame(0.0f) || getFootAnm().checkFrame(30.0f)) {
                 return true;
             }
             break;
         case PLAYER_ANIM_RF_JUMP:
-            if (mAnms[0].checkFrame(0.0f) || mAnms[0].checkFrame(15.0f) || mAnms[0].checkFrame(30.0f) || mAnms[0].checkFrame(45.0f)) {
+            if (getFootAnm().checkFrame(0.0f) || getFootAnm().checkFrame(15.0f) || getFootAnm().checkFrame(30.0f) || getFootAnm().checkFrame(45.0f)) {
                 return true;
             }
             break;
