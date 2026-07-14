@@ -46,13 +46,23 @@ public:
     void _calc() override;
     void calc2() override;
     void draw() override;
+    void setPlayerMode(int mode) override;
+    void setColorType(u8 type) override;
+    void setDark(int) override;
+    void onStarAnm() override;
+    void offStarAnm() override;
+    bool getHeadPropelJointMtx(mMtx_c *mtx) override;
     bool getJumpAnmName(int jumpType, char *anmNameBuf, int p4) override;
+    void copyAnm() override;
+    void _setFootAnm(nw4r::g3d::ResAnmChr &, m3d::playMode_e, float, float, float) override;
+    void _setBodyAnm(nw4r::g3d::ResAnmChr &, m3d::playMode_e, float, float, float) override;
+    void setAnmBind() override;
     bool setPersonalAnm(int anmID, nw4r::g3d::ResAnmChr *outAnmChr, int) override;
     bool setPersonalRideAnm(int anmID, nw4r::g3d::ResAnmChr *outAnmChr) override;
     void setTexAnmType(TexAnmType_e anmType) override;
 
-    virtual void FUN_800d4750(); ///< @unofficial
-    virtual void callbackTimingA();
+    virtual void FUN_800d4750(int mode); ///< @unofficial
+    virtual void callbackTimingA(nw4r::g3d::ChrAnmResult *anmRes, nw4r::g3d::ResNode resNode);
     virtual float getAimMotionShareScale() { return 1.0f; }
     virtual void createPlayerModel();
 
@@ -61,11 +71,14 @@ public:
     void resetTexAnmType();
     m3d::anmTexPat_c &getHeadTexAnm();
     void getPlayerObjectRes();
+    void changeLightTexture(m3d::mdl_c *mdl, _GXTexMapID texMapID);
+    void setStarAnm(m3d::mdl_c *mdl, m3d::anmMatClr_c *matClr);
+    void removeStarAnm(m3d::mdl_c *mdl);
     void calcBlendRate();
     void setStarEffect();
 
-    m3d::mdl_c &getMdl1() { return mInfo[mPlayerMode].mMdl1; }
-    m3d::mdl_c &getMdl2() { return mInfo[mPlayerMode].mMdl2; }
+    m3d::mdl_c &getMdl1() { return mInfo[mPyPlayerMode].mMdl1; }
+    m3d::mdl_c &getMdl2() { return mInfo[mPyPlayerMode].mMdl2; }
 
     nw4r::g3d::ResFile m_20c;
     nw4r::g3d::ResFile m_210;
@@ -76,11 +89,11 @@ public:
     m3d::anmTexPat_c mTexAnm1;
     m3d::anmMatClr_c mMatClrAnm1;
     m3d::anmTexPat_c mTexAnm2;
-    m3d::anmTexPat_c mTexAnmYoshi;
+    m3d::anmTexPat_c mTexAnmPropeller;
     m3d::anmTexPat_c mTexAnmPenguin;
     m3d::anmMatClr_c mMatClrAnm2;
-    PlayerMode_e mPlayerMode;
-    u32 m_774;
+    PlayerMode_e mPyPlayerMode;
+    PlayerMode_e mOtherPlayerMode;
     const char **mpArcNames; ///< [This is wrong, seems to be some struct]
     u32 m_77c;
     s16 m_780;

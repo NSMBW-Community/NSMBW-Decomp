@@ -7,6 +7,7 @@
 /// @ingroup clib
 namespace cLib {
 
+    s16 targetAngleX(const mVec3_c &vec1, const mVec3_c &vec2);
     s16 targetAngleY(const mVec3_c &vec1, const mVec3_c &vec2);
 
 } // namespace cLib

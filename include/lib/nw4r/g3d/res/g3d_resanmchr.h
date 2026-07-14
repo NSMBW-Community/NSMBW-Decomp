@@ -50,6 +50,8 @@ struct ChrAnmResult {
     void GetRotTrans(math::MTX34* pRotTrans) const;
 
     void SetScale(const math::VEC3* pScale);
+    void SetRotateDeg(const math::VEC3* pRotate);
+    void SetTranslate(const math::VEC3* pTrans);
     void SetRotTrans(const math::MTX34* pRotTrans);
 };
 
