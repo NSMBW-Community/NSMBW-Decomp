@@ -221,7 +221,7 @@ public:
     enum PlayerMode_e {
         PLAYER_MODE_NORMAL,
         PLAYER_MODE_RIDE,
-        PLAYER_MODE_YOSHI,
+        PLAYER_MODE_PROPELLER,
         PLAYER_MODE_PENGUIN,
         PLAYER_MODE_COUNT
     };
@@ -229,8 +229,8 @@ public:
     ///< @unofficial
     struct AnmData_s {
         const char *mName; ///< Regular animation name.
-        const char *mRideName; ///< Animation name when riding.
-        const char *mYoshiName; ///< Yoshi personal animation name.
+        const char *mRideName; ///< Animation name when riding Yoshi.
+        const char *mPropellerName; ///< Propeller suit animation name.
         const char *mPenguinName; ///< Penguin suit animation name.
         m3d::playMode_e mPlayMode;
         float mRate;
@@ -256,7 +256,7 @@ public:
     virtual void _calc();
     virtual void calc2() {}
     virtual void draw();
-    virtual m3d::bmdl_c *getBodyMdl() { return nullptr; }
+    virtual m3d::mdl_c *getBodyMdl() { return nullptr; }
     virtual const nw4r::g3d::ResFile *getAnmResFile() const;
     virtual void setPlayerMode(int mode);
     virtual void setColorType(u8 type);
@@ -311,6 +311,10 @@ public:
 
     mMtx_c &getMtx() { return mMtx; }
 
+    mAng3_c getAng() const {
+        return mAng3_c(mAngX, mAngY, mAngZ);
+    }
+
     void setAng(mAng3_c ang) {
         mAngX = ang.x;
         mAngY = ang.y;
@@ -318,6 +322,7 @@ public:
     }
 
     u32 get151CheckVal() { return 2; }
+    bool isStarAnm() const { return m_17c & 0x100; }
 
     m3d::anmChr_c &getFootAnm() { return mAnms[0]; }
     m3d::anmChr_c &getBodyAnm() { return mAnms[1]; }

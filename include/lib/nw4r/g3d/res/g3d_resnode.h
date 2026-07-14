@@ -64,11 +64,11 @@ struct ResNodeData : ResNodeDataTypedef {
     ulong flags;                // at 0x14
     Billboard bbmode;         // at 0x18
     ulong bbref_nodeid;         // at 0x1C
-    math::_VEC3 scale;        // at 0x20
-    math::_VEC3 rot;          // at 0x2C
-    math::_VEC3 translate;    // at 0x38
-    math::_VEC3 volume_min;   // at 0x44
-    math::_VEC3 volume_max;   // at 0x50
+    math::VEC3 scale;         // at 0x20
+    math::VEC3 rot;           // at 0x2C
+    math::VEC3 translate;     // at 0x38
+    math::VEC3 volume_min;    // at 0x44
+    math::VEC3 volume_max;    // at 0x50
     s32 toParentNode;         // at 0x5C
     s32 toChildNode;          // at 0x60
     s32 toNextSibling;        // at 0x64
@@ -147,6 +147,14 @@ public:
         }
 
         return BILLBOARD_OFF;
+    }
+
+    const math::VEC3& GetRot() const {
+        return ref().rot;
+    }
+
+    const math::VEC3& GetScale() const {
+        return ref().scale;
     }
 
     const math::VEC3& GetTranslate() const {

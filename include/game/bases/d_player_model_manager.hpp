@@ -21,7 +21,12 @@ struct dPyModelData_s {
 
 class dPyModel_HIO_c {
 public:
-    float mData[5];
+    float mData1;
+    float mData2[4];
+
+    float getValue(u8 playerMode) {
+        return mData2[playerMode];
+    }
 
     dPyModelData_s getModelData(u8 index) {
         return modelData[index];
@@ -39,6 +44,11 @@ class dPyMdlBase_HIO_c {
 public:
     u8 changeHioType(u8 hioType);
     float getValue(dPyModelData_s model, u8 powerup); ///< @unofficial
+
+    float getOffsetTarget(int playerType, u8 type) {
+        u8 t = changeHioType(playerType);
+        return mPyModel[t].mData2[type];
+    }
 
     float getValue(int playerType, int idx, int powerup) {
         dPyModelData_s modelData = mPyModel[changeHioType(playerType)].getModelData(idx);
