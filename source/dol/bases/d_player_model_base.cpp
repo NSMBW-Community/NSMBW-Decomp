@@ -20,183 +20,891 @@ const char *dPyMdlBase_c::sc2JumpedAnmVarDt[] = {
 };
 
 const dPyMdlBase_c::AnmData_s dPyMdlBase_c::scPyAnmData[PLAYER_ANIM_COUNT] = {
-    { "wait", "Rwait", "YB_Rwait", "P_wait", m3d::FORWARD_LOOP, 1.2f, 0.0f, TEX_ANM_1, 0x2080 },
-    { "walk", nullptr, nullptr, nullptr, m3d::FORWARD_LOOP, 0.0f, -1.0f, TEX_ANM_1, 0x20c0 },
-    { "run", "Rrun", "YB_Rrun", "P_run", m3d::FORWARD_LOOP, 0.0f, 10.0f, TEX_ANM_1, 0x20c0 },
-    { "b_dash", "Rb_dash", "YB_Rb_dash", "P_b_dash", m3d::FORWARD_LOOP, 0.0f, 10.0f, TEX_ANM_1, 0x20c0 },
-    { "b_dash2", "Rb_dash2", "YB_Rb_dash2", "P_b_dash2", m3d::FORWARD_LOOP, 0.0f, 10.0f, TEX_ANM_1, 0x20c0 },
-    { "jump", "Rjump", "YB_Rjump", nullptr, m3d::FORWARD_ONCE, 0.5f, 1.0f, TEX_ANM_1, 0x280 },
-    { "jump2", "Rjump2", "YB_Rjump2", nullptr, m3d::FORWARD_ONCE, 0.03f, 10.0f, TEX_ANM_1, 0x80 },
-    { "jumped", "Rjumped", "YB_Rjumped", nullptr, m3d::FORWARD_ONCE, 0.8f, 0.0f, TEX_ANM_1, 0x80 },
-    { "2jmp_c_1", nullptr, nullptr, nullptr, m3d::FORWARD_ONCE, 0.5f, 1.0f, TEX_ANM_7, 0x280 },
-    { "2jmp_c_2", nullptr, nullptr, nullptr, m3d::FORWARD_ONCE, 0.5f, 10.0f, TEX_ANM_8, 0x280 },
-    { "2jumped", nullptr, nullptr, nullptr, m3d::FORWARD_ONCE, 1.5f, 0.0f, TEX_ANM_1, 0x80 },
-    { "roll_jump", nullptr, nullptr, nullptr, m3d::FORWARD_ONCE, 0.5f, 1.0f, TEX_ANM_7, 0x0 },
-    { "2jump2", nullptr, nullptr, nullptr, m3d::FORWARD_ONCE, 0.5f, 10.0f, TEX_ANM_1, 0x0 },
-    { "mame_jump2", nullptr, nullptr, nullptr, m3d::FORWARD_LOOP, 5.0f, -1.0f, TEX_ANM_1, 0x0 },
-    { "turn", "Rturn", "YB_Rturn", "P_turn", m3d::FORWARD_ONCE, 0.1f, -1.0f, TEX_ANM_1, 0x0 },
-    { "turned", "Rturned", "YB_Rturned", "P_turned", m3d::FORWARD_ONCE, 3.0f, -1.0f, TEX_ANM_1, 0x0 },
-    { "hipsr", "Rhipsr", "YB_Rhipsr", "P_hipsr", m3d::FORWARD_ONCE, 1.0f, 0.0f, TEX_ANM_1, 0x1 },
-    { "hipat", "Rhipat", "YB_Rhipat", "P_hipat", m3d::FORWARD_ONCE, 1.0f, 0.0f, TEX_ANM_1, 0x1 },
-    { "hiped", "Rhiped", "YB_Rhiped", "P_hiped", m3d::FORWARD_ONCE, 1.0f, 0.0f, TEX_ANM_1, 0x1 },
-    { "hip_to_stoop", "Rhip_to_stoop", "YB_Rhip_to_stoop", "P_hip_to_stoop", m3d::FORWARD_ONCE, 1.5f, 0.0f, TEX_ANM_1, 0x1 },
-    { "stoop", "Rstoop", "YB_Rstoop", "P_stoop", m3d::FORWARD_LOOP, 1.0f, 3.0f, TEX_ANM_1, 0x401 },
-    { "stoop_start", "Rstoop_start", "YB_Rstoop_start", "P_stoop_start", m3d::FORWARD_ONCE, 1.0f, 0.0f, TEX_ANM_1, 0x1 },
-    { "slip", "Rslip", "YB_Rslip", nullptr, m3d::FORWARD_LOOP, 1.0f, 0.0f, TEX_ANM_1, 0x1 },
-    { "sliped", "Rsliped", "YB_Rsliped", nullptr, m3d::FORWARD_ONCE, 1.0f, 3.0f, TEX_ANM_1, 0x1 },
-    { "slip_to_stoop", "Rslip_to_stoop", "YB_Rslip_to_stoop", "P_slip_to_stoop", m3d::FORWARD_ONCE, 1.0f, 0.0f, TEX_ANM_1, 0x1 },
-    { "carry_wait", nullptr, nullptr, "P_carry_wait", m3d::FORWARD_LOOP, 0.5f, 0.0f, TEX_ANM_1, 0x2 },
-    { "carry_walk", nullptr, nullptr, "P_carry_walk", m3d::FORWARD_LOOP, 0.0f, -1.0f, TEX_ANM_1, 0x2 },
-    { "carry_throw", nullptr, nullptr, "P_carry_throw", m3d::FORWARD_ONCE, 1.0f, -1.0f, TEX_ANM_9, 0x2 },
-    { "carry_wait", nullptr, nullptr, "P_carry_wait", m3d::FORWARD_LOOP, 0.0f, -1.0f, TEX_ANM_1, 0x2 },
-    { "wsld", nullptr, nullptr, "P_wsld", m3d::FORWARD_ONCE, 1.0f, -1.0f, TEX_ANM_1, 0x0 },
-    { "fire_at", nullptr, nullptr, nullptr, m3d::FORWARD_ONCE, 1.2f, 0.0f, TEX_ANM_1, 0x80 },
-    { "swim_fire_at", nullptr, nullptr, nullptr, m3d::FORWARD_ONCE, 1.2f, 0.0f, TEX_ANM_1, 0x0 },
-    { "swim_fire_at2", nullptr, nullptr, nullptr, m3d::FORWARD_ONCE, 1.2f, 0.0f, TEX_ANM_1, 0x0 },
-    { "star_roll", nullptr, nullptr, nullptr, m3d::FORWARD_LOOP, 0.7f, 0.0f, TEX_ANM_1, 0x0 },
-    { "P_swim", nullptr, nullptr, nullptr, m3d::FORWARD_LOOP, 1.0f, 10.0f, TEX_ANM_1, 0x800000 },
-    { "swim", nullptr, nullptr, nullptr, m3d::FORWARD_LOOP, 1.0f, 0.0f, TEX_ANM_1, 0x10 },
-    { "swim_wait", nullptr, nullptr, nullptr, m3d::FORWARD_LOOP, 1.0f, 10.0f, TEX_ANM_1, 0x10 },
-    { "swim_throw", nullptr, nullptr, nullptr, m3d::FORWARD_ONCE, 1.0f, 0.0f, TEX_ANM_1, 0x2 },
-    { "swim_walk", nullptr, nullptr, nullptr, m3d::FORWARD_LOOP, 0.0f, -1.0f, TEX_ANM_1, 0x0 },
-    { "swim_standing", nullptr, nullptr, nullptr, m3d::FORWARD_LOOP, 1.0f, 10.0f, TEX_ANM_1, 0x0 },
-    { "paddle_1", nullptr, nullptr, nullptr, m3d::FORWARD_ONCE, 1.0f, 0.0f, TEX_ANM_1, 0x10 },
-    { "paddle_2", nullptr, nullptr, nullptr, m3d::FORWARD_ONCE, 1.0f, 0.0f, TEX_ANM_1, 0x10 },
-    { "paddle_carry", nullptr, nullptr, nullptr, m3d::FORWARD_ONCE, 0.0f, -1.0f, TEX_ANM_1, 0x2 },
-    { "tree_start", "Rtree_start", "YB_Rtree_start", "P_tree_start", m3d::FORWARD_ONCE, 0.9f, 0.0f, TEX_ANM_1, 0x0 },
-    { "tree_wait", "Rtree_wait", "YB_Rtree_wait", "P_tree_wait", m3d::FORWARD_LOOP, 1.0f, 10.0f, TEX_ANM_1, 0x0 },
-    { "tree_climb", nullptr, nullptr, "P_tree_climb", m3d::FORWARD_LOOP, 1.0f, 10.0f, TEX_ANM_1, 0x0 },
-    { "tree_pose", "Rtree_pose", "YB_Rtree_pose", "P_tree_pose", m3d::FORWARD_LOOP, 0.5f, 10.0f, TEX_ANM_1, 0x0 },
-    { "monkey_start", nullptr, nullptr, nullptr, m3d::FORWARD_ONCE, 0.7f, 0.0f, TEX_ANM_1, 0x0 },
-    { "monkey_wait_r", nullptr, nullptr, nullptr, m3d::FORWARD_LOOP, 0.5f, 0.0f, TEX_ANM_1, 0x0 },
-    { "monkey_wait_l", nullptr, nullptr, nullptr, m3d::FORWARD_LOOP, 0.5f, 0.0f, TEX_ANM_1, 0x0 },
-    { "monkey_r_to_l", nullptr, nullptr, nullptr, m3d::FORWARD_ONCE, 1.0f, 0.0f, TEX_ANM_1, 0x0 },
-    { "monkey_l_to_r", nullptr, nullptr, nullptr, m3d::FORWARD_ONCE, 1.0f, 0.0f, TEX_ANM_1, 0x0 },
-    { "net_wait", nullptr, nullptr, "P_net_wait", m3d::FORWARD_LOOP, 1.0f, 5.0f, TEX_ANM_1, 0x0 },
-    { "net_walk1", nullptr, nullptr, "P_net_walk1", m3d::FORWARD_LOOP, 0.0f, -1.0f, TEX_ANM_1, 0x0 },
-    { "net_walk2", nullptr, nullptr, "P_net_walk2", m3d::FORWARD_LOOP, 0.0f, -1.0f, TEX_ANM_1, 0x0 },
-    { "net_attack", nullptr, nullptr, "P_net_attack", m3d::FORWARD_ONCE, 1.2f, 0.0f, TEX_ANM_1, 0x0 },
-    { "pea_plant", nullptr, nullptr, nullptr, m3d::FORWARD_LOOP, 1.5f, -1.0f, TEX_ANM_1, 0x0 },
-    { "pea_plant_st", nullptr, nullptr, nullptr, m3d::FORWARD_ONCE, 2.0f, 0.0f, TEX_ANM_1, 0x0 },
-    { "pea_plant_wait", nullptr, nullptr, nullptr, m3d::FORWARD_LOOP, 1.2f, 10.0f, TEX_ANM_1, 0x0 },
-    { "wall_wait", nullptr, nullptr, nullptr, m3d::FORWARD_LOOP, 0.8f, 10.0f, TEX_ANM_1, 0x0 },
-    { "wall_walk_l", nullptr, nullptr, nullptr, m3d::FORWARD_LOOP, 0.0f, -1.0f, TEX_ANM_1, 0x0 },
-    { "wall_walk_r", nullptr, nullptr, nullptr, m3d::FORWARD_LOOP, 0.0f, -1.0f, TEX_ANM_1, 0x0 },
-    { "hang_start", nullptr, nullptr, nullptr, m3d::FORWARD_ONCE, 1.0f, 0.0f, TEX_ANM_1, 0xc },
-    { "hang_up", nullptr, nullptr, nullptr, m3d::FORWARD_ONCE, 2.0f, 5.0f, TEX_ANM_1, 0x4 },
-    { "hang_wait", nullptr, nullptr, "P_hang_wait", m3d::FORWARD_LOOP, 0.5f, 10.0f, TEX_ANM_1, 0xc },
-    { "hang_walk_l", nullptr, nullptr, "P_hang_walk_l", m3d::FORWARD_LOOP, 0.0f, -1.0f, TEX_ANM_1, 0xc },
-    { "hang_walk_r", nullptr, nullptr, "P_hang_walk_r", m3d::FORWARD_LOOP, 0.0f, -1.0f, TEX_ANM_1, 0xc },
-    { "w_jump1", nullptr, nullptr, nullptr, m3d::FORWARD_ONCE, 1.0f, -1.0f, TEX_ANM_1, 0x0 },
-    { "w_jump2", nullptr, nullptr, nullptr, m3d::FORWARD_ONCE, 1.0f, -1.0f, TEX_ANM_1, 0x0 },
-    { "2jumped", nullptr, nullptr, nullptr, m3d::FORWARD_ONCE, 1.0f, -1.0f, TEX_ANM_1, 0x0 },
-    { "jump_hang", nullptr, nullptr, "P_jump_hang", m3d::FORWARD_ONCE, 1.0f, 3.0f, TEX_ANM_1, 0xc },
-    { "spin_st", nullptr, nullptr, nullptr, m3d::FORWARD_ONCE, 1.0f, 0.0f, TEX_ANM_1, 0x0 },
-    { "spin_end", nullptr, nullptr, nullptr, m3d::FORWARD_ONCE, 1.0f, 0.0f, TEX_ANM_1, 0x0 },
-    { "spin_low_st", nullptr, nullptr, nullptr, m3d::FORWARD_ONCE, 1.0f, -1.0f, TEX_ANM_1, 0x1 },
-    { "spin_low_ed", nullptr, nullptr, nullptr, m3d::FORWARD_ONCE, 1.0f, -1.0f, TEX_ANM_1, 0x1 },
-    { "spin_jump2", nullptr, nullptr, nullptr, m3d::FORWARD_LOOP, 0.5f, 0.0f, TEX_ANM_1, 0x0 },
-    { "spin_jump_end", nullptr, nullptr, nullptr, m3d::FORWARD_ONCE, 1.0f, 0.0f, TEX_ANM_1, 0x0 },
-    { "damF", nullptr, nullptr, nullptr, m3d::FORWARD_ONCE, 1.0f, -1.0f, TEX_ANM_1, 0x0 },
-    { "damB", nullptr, nullptr, nullptr, m3d::FORWARD_ONCE, 1.0f, -1.0f, TEX_ANM_1, 0x0 },
-    { "dowF", nullptr, nullptr, nullptr, m3d::FORWARD_ONCE, 1.0f, -1.0f, TEX_ANM_6, 0x0 },
-    { "dowB", nullptr, nullptr, nullptr, m3d::FORWARD_ONCE, 1.0f, -1.0f, TEX_ANM_6, 0x0 },
-    { "firejmp", nullptr, nullptr, nullptr, m3d::FORWARD_LOOP, 0.5f, 0.0f, TEX_ANM_6, 0x0 },
-    { "e_shock", nullptr, nullptr, nullptr, m3d::FORWARD_LOOP, 0.5f, 0.0f, TEX_ANM_6, 0x0 },
-    { "dead", nullptr, nullptr, nullptr, m3d::FORWARD_ONCE, 1.5f, 0.0f, TEX_ANM_6, 0x0 },
-    { "dead_pose", nullptr, nullptr, nullptr, m3d::FORWARD_LOOP, 1.0f, 0.0f, TEX_ANM_6, 0x0 },
-    { "goal_start", "Rtree_start", "YB_Rtree_start", nullptr, m3d::FORWARD_ONCE, 0.5f, 5.0f, TEX_ANM_1, 0x0 },
-    { "goal_wait", "Rtree_wait", "YB_Rtree_wait", nullptr, m3d::FORWARD_LOOP, 1.0f, 5.0f, TEX_ANM_1, 0x0 },
-    { "goal_pose", "Rtree_pose", "YB_Rtree_pose", nullptr, m3d::FORWARD_LOOP, 0.5f, 0.0f, TEX_ANM_1, 0x0 },
-    { "goal_jump", "Rgoal_jump", "YB_Rgoal_jump", nullptr, m3d::FORWARD_ONCE, 0.5f, 0.0f, TEX_ANM_1, 0x0 },
-    { "goal_jump_ed", "Rgoal_jump_ed", "YB_Rgoal_jump_ed", nullptr, m3d::FORWARD_ONCE, 1.0f, 0.0f, TEX_ANM_1, 0x0 },
-    { "goal_puton_cap", "Rgoal_puton_cap", "YB_Rgoal_puton_cap", nullptr, m3d::FORWARD_ONCE, 1.0f, 3.0f, TEX_ANM_2, 0x0 },
-    { "PL_goal_puton_cap", "Rgoal_puton_cap", "YB_Rgoal_puton_cap", nullptr, m3d::FORWARD_ONCE, 1.0f, 0.0f, TEX_ANM_3, 0x1000000 },
-    { "P_goal_puton_cap", "Rgoal_puton_cap", "YB_Rgoal_puton_cap", nullptr, m3d::FORWARD_ONCE, 1.0f, 0.0f, TEX_ANM_4, 0x800000 },
-    { "wait", "PL_Rgoal_puton_cap", "YB_PL_Rgoal_puton_cap", "PLKB_goal_puton_cap", m3d::FORWARD_ONCE, 1.0f, 3.0f, TEX_ANM_5, 0x1000000 },
-    { "wait", "P_Rgoal_puton_cap", "YB_P_Rgoal_puton_cap", nullptr, m3d::FORWARD_ONCE, 1.0f, 3.0f, TEX_ANM_5, 0x800000 },
-    { "wait", "Rgoal_puton_cap", "YB_KB_Rgoal_puton_cap", nullptr, m3d::FORWARD_ONCE, 1.0f, 3.0f, TEX_ANM_5, 0x0 },
-    { "wait", "Reat", "YB_Reat", nullptr, m3d::FORWARD_ONCE, 3.0f, 0.0f, TEX_ANM_1, 0x20 },
-    { "wait", "Reat_out", "YB_Reat_out", nullptr, m3d::FORWARD_ONCE, 1.0f, 0.0f, TEX_ANM_1, 0x20 },
-    { "wait", "Reat_success", "YB_Reat_success", nullptr, m3d::FORWARD_ONCE, 1.0f, 0.0f, TEX_ANM_1, 0x20 },
-    { "wait", "Reat_fail", "YB_Reat_fail", nullptr, m3d::FORWARD_ONCE, 1.0f, 0.0f, TEX_ANM_1, 0x20 },
-    { "wait", "Reat_successB", "YB_Reat_successB", nullptr, m3d::FORWARD_ONCE, 1.0f, 0.0f, TEX_ANM_1, 0x20 },
-    { "wait", "Reat_successB", "YB_Reat_successB", nullptr, m3d::FORWARD_ONCE, 1.0f, 0.0f, TEX_ANM_1, 0x20 },
-    { "wait", "RSeat", "YB_RSeat", nullptr, m3d::FORWARD_ONCE, 3.0f, 0.0f, TEX_ANM_1, 0x20 },
-    { "wait", "RSeat_out", "YB_RSeat_out", nullptr, m3d::FORWARD_ONCE, 1.0f, 0.0f, TEX_ANM_1, 0x20 },
-    { "wait", "RSeat_success", "YB_RSeat_success", nullptr, m3d::FORWARD_ONCE, 1.0f, 0.0f, TEX_ANM_1, 0x20 },
-    { "wait", "RSeat_fail", "YB_RSeat_fail", nullptr, m3d::FORWARD_ONCE, 1.0f, 0.0f, TEX_ANM_1, 0x20 },
-    { "wait", "RSeat_successB", "YB_RSeat_successB", nullptr, m3d::FORWARD_ONCE, 1.0f, 0.0f, TEX_ANM_1, 0x20 },
-    { "wait", "RSeat_successB", "YB_RSeat_successB", nullptr, m3d::FORWARD_ONCE, 1.0f, 0.0f, TEX_ANM_1, 0x20 },
-    { "carryP_start", nullptr, nullptr, "P_carryP_start", m3d::FORWARD_ONCE, 0.3f, -1.0f, TEX_ANM_1, 0x2 },
-    { "carryP_wait", nullptr, nullptr, "P_carryP_wait", m3d::FORWARD_LOOP, 0.5f, 0.0f, TEX_ANM_1, 0x2 },
-    { "carryP_walk", nullptr, nullptr, "P_carryP_walk", m3d::FORWARD_LOOP, 0.0f, -1.0f, TEX_ANM_1, 0x2 },
-    { "carryP_throw", nullptr, nullptr, "P_carryP_throw", m3d::FORWARD_ONCE, 1.5f, -1.0f, TEX_ANM_9, 0x2 },
-    { "carryP_wait", nullptr, nullptr, "P_carryP_wait", m3d::FORWARD_LOOP, 0.0f, -1.0f, TEX_ANM_1, 0x2 },
-    { "Rwait", "ride_on", "YB_ride_on", nullptr, m3d::FORWARD_ONCE, 1.0f, -1.0f, TEX_ANM_1, 0x0 },
-    { "wait", "RFjump", "YB_RFjump", nullptr, m3d::FORWARD_LOOP, 3.0f, 0.0f, TEX_ANM_1, 0x0 },
-    { "wait", nullptr, "YB_set", nullptr, m3d::FORWARD_ONCE, 1.0f, -1.0f, TEX_ANM_1, 0x0 },
-    { "wait", nullptr, "YB_set_to_wait", nullptr, m3d::FORWARD_ONCE, 1.0f, -1.0f, TEX_ANM_1, 0x0 },
-    { "star_roll", nullptr, nullptr, "P_star_roll", m3d::FORWARD_LOOP, 1.0f, 0.0f, TEX_ANM_1, 0x0 },
-    { "Sjump", "RSjump", "YB_RSjump", "P_Sjump", m3d::FORWARD_ONCE, 1.0f, 0.0f, TEX_ANM_1, 0x1 },
-    { "Sjump2", "RSjump2", "YB_RSjump2", "P_Sjump2", m3d::FORWARD_ONCE, 1.0f, 3.0f, TEX_ANM_1, 0x1 },
-    { "Sjumped", "RSjumped", "YB_RSjumped", "P_Sjumped", m3d::FORWARD_ONCE, 1.0f, 0.0f, TEX_ANM_1, 0x1 },
-    { "get_down", nullptr, nullptr, nullptr, m3d::FORWARD_ONCE, 1.0f, -1.0f, TEX_ANM_1, 0x0 },
-    { "ice_turn", "Rturn", "YB_Rturn", nullptr, m3d::FORWARD_LOOP, 1.75f, -1.0f, TEX_ANM_1, 0x0 },
-    { "ice_turned", "Rturned", "YB_Rturned", nullptr, m3d::FORWARD_ONCE, 4.0f, -1.0f, TEX_ANM_1, 0x0 },
-    { "ice_slipF", nullptr, nullptr, nullptr, m3d::FORWARD_ONCE, 1.3f, 3.0f, TEX_ANM_1, 0x0 },
-    { "ice_slipB", nullptr, nullptr, nullptr, m3d::FORWARD_ONCE, 1.1f, 3.0f, TEX_ANM_1, 0x0 },
-    { "rope_swing", nullptr, nullptr, "P_rope_swing", m3d::FORWARD_ONCE, 0.0f, 10.0f, TEX_ANM_1, 0x0 },
-    { "shoot", nullptr, nullptr, nullptr, m3d::FORWARD_LOOP, 1.0f, 0.0f, TEX_ANM_1, 0x0 },
-    { "shoot_slip", nullptr, nullptr, nullptr, m3d::FORWARD_LOOP, 1.0f, 0.0f, TEX_ANM_1, 0x0 },
-    { "shoot_slip_end", nullptr, nullptr, nullptr, m3d::FORWARD_ONCE, 1.0f, 0.0f, TEX_ANM_1, 0x0 },
-    { "low_walk_start", nullptr, nullptr, nullptr, m3d::FORWARD_ONCE, 3.0f, 0.0f, TEX_ANM_1, 0x0 },
-    { "low_walk", nullptr, nullptr, "P_low_walk", m3d::FORWARD_LOOP, 1.0f, 0.0f, TEX_ANM_1, 0x0 },
-    { "swim_pipe", nullptr, nullptr, nullptr, m3d::FORWARD_LOOP, 1.0f, 0.0f, TEX_ANM_1, 0x0 },
-    { "door_walk", nullptr, nullptr, "P_door_walk", m3d::FORWARD_LOOP, 1.0f, 0.0f, TEX_ANM_1, 0x0 },
-    { "PL_spin_jump", nullptr, nullptr, nullptr, m3d::FORWARD_ONCE, 1.0f, 0.0f, TEX_ANM_1, 0x0 },
-    { "waitL", nullptr, nullptr, nullptr, m3d::FORWARD_LOOP, 1.2f, 10.0f, TEX_ANM_1, 0x4080 },
-    { "waitR", nullptr, nullptr, nullptr, m3d::FORWARD_LOOP, 1.2f, 10.0f, TEX_ANM_1, 0x8080 },
-    { "fire_at2", nullptr, nullptr, nullptr, m3d::FORWARD_ONCE, 1.2f, -1.0f, TEX_ANM_1, 0x0 },
-    { "blow_up", nullptr, nullptr, nullptr, m3d::FORWARD_LOOP, 1.0f, 10.0f, TEX_ANM_1, 0x0 },
-    { "P_slip", nullptr, nullptr, nullptr, m3d::FORWARD_LOOP, 1.0f, 30.0f, TEX_ANM_1, 0x0 },
-    { "P_slip_jump", nullptr, nullptr, nullptr, m3d::FORWARD_ONCE, 0.7f, 0.0f, TEX_ANM_1, 0x0 },
-    { "P_slip_jump2", nullptr, nullptr, nullptr, m3d::FORWARD_ONCE, 0.1f, 40.0f, TEX_ANM_1, 0x0 },
-    { "run", "Run", "YB_RFjump", nullptr, m3d::FORWARD_LOOP, 2.75f, 0.0f, TEX_ANM_1, 0x0 },
-    { "stamp", "Rstamp", "YB_Rstamp", "P_stamp", m3d::FORWARD_LOOP, 1.0f, 3.0f, TEX_ANM_1, 0x0 },
-    { "waitR", nullptr, nullptr, nullptr, m3d::FORWARD_LOOP, 1.2f, 10.0f, TEX_ANM_1, 0x4080 },
-    { "waitL", nullptr, nullptr, nullptr, m3d::FORWARD_LOOP, 1.2f, 10.0f, TEX_ANM_1, 0x8080 },
-    { "waitR3", nullptr, nullptr, nullptr, m3d::FORWARD_LOOP, 1.0f, 5.0f, TEX_ANM_1, 0x80 },
-    { "waitL3", nullptr, nullptr, nullptr, m3d::FORWARD_LOOP, 1.0f, 5.0f, TEX_ANM_1, 0x80 },
-    { "boss_key_get", nullptr, nullptr, nullptr, m3d::FORWARD_ONCE, 1.0f, 5.0f, TEX_ANM_1, 0x0 },
-    { "balloon_wait", nullptr, nullptr, nullptr, m3d::FORWARD_LOOP, 1.0f, 0.0f, TEX_ANM_1, 0x100 },
-    { "slope_waitL", nullptr, nullptr, nullptr, m3d::FORWARD_LOOP, 0.0f, 10.0f, TEX_ANM_1, 0x5080 },
-    { "slope_waitR", nullptr, nullptr, nullptr, m3d::FORWARD_LOOP, 0.0f, 10.0f, TEX_ANM_1, 0x9080 },
-    { "slope_waitL2", nullptr, nullptr, nullptr, m3d::FORWARD_LOOP, 1.2f, 10.0f, TEX_ANM_1, 0x4080 },
-    { "slope_waitR2", nullptr, nullptr, nullptr, m3d::FORWARD_LOOP, 1.2f, 10.0f, TEX_ANM_1, 0x8080 },
-    { "carryP_waitL", nullptr, nullptr, "P_carryP_waitL", m3d::FORWARD_LOOP, 1.2f, 10.0f, TEX_ANM_1, 0x4002 },
-    { "carryP_waitR", nullptr, nullptr, "P_carryP_waitR", m3d::FORWARD_LOOP, 1.2f, 10.0f, TEX_ANM_1, 0x8002 },
-    { "carry_waitL", nullptr, nullptr, "P_carry_waitL", m3d::FORWARD_LOOP, 1.2f, 10.0f, TEX_ANM_1, 0x4002 },
-    { "carry_waitR", nullptr, nullptr, "P_carry_waitR", m3d::FORWARD_LOOP, 1.2f, 10.0f, TEX_ANM_1, 0x8002 },
-    { "spin_jump3", nullptr, nullptr, nullptr, m3d::FORWARD_LOOP, 1.0f, 30.0f, TEX_ANM_1, 0x0 },
-    { "ride_wait", nullptr, nullptr, nullptr, m3d::FORWARD_LOOP, 1.0f, 10.0f, TEX_ANM_1, 0x80 },
-    { "P_paddle_1", nullptr, nullptr, nullptr, m3d::FORWARD_ONCE, 1.0f, 0.0f, TEX_ANM_1, 0x800010 },
-    { "P_paddle_2", nullptr, nullptr, nullptr, m3d::FORWARD_ONCE, 1.0f, 0.0f, TEX_ANM_1, 0x800010 },
-    { "waitL", nullptr, "YB_poseL", nullptr, m3d::FORWARD_ONCE, 1.0f, 0.0f, TEX_ANM_1, 0x0 },
-    { "waitR", nullptr, "YB_poseR", nullptr, m3d::FORWARD_ONCE, 1.0f, 0.0f, TEX_ANM_1, 0x0 },
-    { "waitR", nullptr, "YB_gorl_wait", nullptr, m3d::FORWARD_LOOP, 1.0f, 10.0f, TEX_ANM_1, 0x0 },
-    { "dm_notice", nullptr, nullptr, nullptr, m3d::FORWARD_ONCE, 1.0f, 0.0f, TEX_ANM_1, 0x80 },
-    { "dm_noti_wait", nullptr, nullptr, nullptr, m3d::FORWARD_LOOP, 1.0f, 0.0f, TEX_ANM_1, 0x80 },
-    { "dm_surprise", nullptr, nullptr, nullptr, m3d::FORWARD_ONCE, 1.0f, 0.0f, TEX_ANM_1, 0x80 },
-    { "dm_surp_wait", nullptr, nullptr, nullptr, m3d::FORWARD_LOOP, 1.0f, 0.0f, TEX_ANM_1, 0x80 },
-    { "wait_select", nullptr, nullptr, nullptr, m3d::FORWARD_LOOP, 1.0f, 0.0f, TEX_ANM_1, 0x0 },
-    { "course_in", nullptr, nullptr, nullptr, m3d::FORWARD_ONCE, 1.0f, 0.0f, TEX_ANM_A, 0x0 },
-    { "wait", nullptr, nullptr, nullptr, m3d::FORWARD_ONCE, 1.0f, 0.0f, TEX_ANM_1, 0x0 },
-    { "wait", nullptr, nullptr, nullptr, m3d::FORWARD_LOOP, 1.0f, 0.0f, TEX_ANM_1, 0x0 },
-    { "dm_escort", nullptr, nullptr, nullptr, m3d::FORWARD_ONCE, 1.0f, 0.0f, TEX_ANM_C, 0x0 },
-    { "dm_glad", nullptr, nullptr, nullptr, m3d::FORWARD_LOOP, 1.0f, 5.0f, TEX_ANM_D, 0x0 },
-    { "ending_wait", nullptr, nullptr, nullptr, m3d::FORWARD_LOOP, 1.0f, 10.0f, TEX_ANM_1, 0x0 },
-    { "coin_comp", nullptr, nullptr, nullptr, m3d::FORWARD_ONCE, 1.0f, 0.0f, TEX_ANM_B, 0x0 }
+    {
+        "wait", "Rwait", "YB_Rwait", "P_wait",
+        m3d::FORWARD_LOOP, 1.2f, 0.0f,
+        TEX_ANM_1, 0x2080
+    },
+    {
+        "walk", nullptr, nullptr, nullptr,
+        m3d::FORWARD_LOOP, 0.0f, -1.0f,
+        TEX_ANM_1, 0x20c0
+    },
+    {
+        "run", "Rrun", "YB_Rrun", "P_run",
+        m3d::FORWARD_LOOP, 0.0f, 10.0f,
+        TEX_ANM_1, 0x20c0
+    },
+    {
+        "b_dash", "Rb_dash", "YB_Rb_dash", "P_b_dash",
+        m3d::FORWARD_LOOP, 0.0f, 10.0f,
+        TEX_ANM_1, 0x20c0
+    },
+    {
+        "b_dash2", "Rb_dash2", "YB_Rb_dash2", "P_b_dash2",
+        m3d::FORWARD_LOOP, 0.0f, 10.0f,
+        TEX_ANM_1, 0x20c0
+    },
+    {
+        "jump", "Rjump", "YB_Rjump", nullptr,
+        m3d::FORWARD_ONCE, 0.5f, 1.0f,
+        TEX_ANM_1, 0x280
+    },
+    {
+        "jump2", "Rjump2", "YB_Rjump2", nullptr,
+        m3d::FORWARD_ONCE, 0.03f, 10.0f,
+        TEX_ANM_1, 0x80
+    },
+    {
+        "jumped", "Rjumped", "YB_Rjumped", nullptr,
+        m3d::FORWARD_ONCE, 0.8f, 0.0f,
+        TEX_ANM_1, 0x80
+    },
+    {
+        "2jmp_c_1", nullptr, nullptr, nullptr,
+        m3d::FORWARD_ONCE, 0.5f, 1.0f,
+        TEX_ANM_7, 0x280
+    },
+    {
+        "2jmp_c_2", nullptr, nullptr, nullptr,
+        m3d::FORWARD_ONCE, 0.5f, 10.0f,
+        TEX_ANM_8, 0x280
+    },
+    {
+        "2jumped", nullptr, nullptr, nullptr,
+        m3d::FORWARD_ONCE, 1.5f, 0.0f,
+        TEX_ANM_1, 0x80
+    },
+    {
+        "roll_jump", nullptr, nullptr, nullptr,
+        m3d::FORWARD_ONCE, 0.5f, 1.0f,
+        TEX_ANM_7, 0x0
+    },
+    {
+        "2jump2", nullptr, nullptr, nullptr,
+        m3d::FORWARD_ONCE, 0.5f, 10.0f,
+        TEX_ANM_1, 0x0
+    },
+    {
+        "mame_jump2", nullptr, nullptr, nullptr,
+        m3d::FORWARD_LOOP, 5.0f, -1.0f,
+        TEX_ANM_1, 0x0
+    },
+    {
+        "turn", "Rturn", "YB_Rturn", "P_turn",
+        m3d::FORWARD_ONCE, 0.1f, -1.0f,
+        TEX_ANM_1, 0x0
+    },
+    {
+        "turned", "Rturned", "YB_Rturned", "P_turned",
+        m3d::FORWARD_ONCE, 3.0f, -1.0f,
+        TEX_ANM_1, 0x0
+    },
+    {
+        "hipsr", "Rhipsr", "YB_Rhipsr", "P_hipsr",
+        m3d::FORWARD_ONCE, 1.0f, 0.0f,
+        TEX_ANM_1, 0x1
+    },
+    {
+        "hipat", "Rhipat", "YB_Rhipat", "P_hipat",
+        m3d::FORWARD_ONCE, 1.0f, 0.0f,
+        TEX_ANM_1, 0x1
+    },
+    {
+        "hiped", "Rhiped", "YB_Rhiped", "P_hiped",
+        m3d::FORWARD_ONCE, 1.0f, 0.0f,
+        TEX_ANM_1, 0x1
+    },
+    {
+        "hip_to_stoop", "Rhip_to_stoop", "YB_Rhip_to_stoop", "P_hip_to_stoop",
+        m3d::FORWARD_ONCE, 1.5f, 0.0f,
+        TEX_ANM_1, 0x1
+    },
+    {
+        "stoop", "Rstoop", "YB_Rstoop", "P_stoop",
+        m3d::FORWARD_LOOP, 1.0f, 3.0f,
+        TEX_ANM_1, 0x401
+    },
+    {
+        "stoop_start", "Rstoop_start", "YB_Rstoop_start", "P_stoop_start",
+        m3d::FORWARD_ONCE, 1.0f, 0.0f,
+        TEX_ANM_1, 0x1
+    },
+    {
+        "slip", "Rslip", "YB_Rslip", nullptr,
+        m3d::FORWARD_LOOP, 1.0f, 0.0f,
+        TEX_ANM_1, 0x1
+    },
+    {
+        "sliped", "Rsliped", "YB_Rsliped", nullptr,
+        m3d::FORWARD_ONCE, 1.0f, 3.0f,
+        TEX_ANM_1, 0x1
+    },
+    {
+        "slip_to_stoop", "Rslip_to_stoop", "YB_Rslip_to_stoop", "P_slip_to_stoop",
+        m3d::FORWARD_ONCE, 1.0f, 0.0f,
+        TEX_ANM_1, 0x1
+    },
+    {
+        "carry_wait", nullptr, nullptr, "P_carry_wait",
+        m3d::FORWARD_LOOP, 0.5f, 0.0f,
+        TEX_ANM_1, 0x2
+    },
+    {
+        "carry_walk", nullptr, nullptr, "P_carry_walk",
+        m3d::FORWARD_LOOP, 0.0f, -1.0f,
+        TEX_ANM_1, 0x2
+    },
+    {
+        "carry_throw", nullptr, nullptr, "P_carry_throw",
+        m3d::FORWARD_ONCE, 1.0f, -1.0f,
+        TEX_ANM_9, 0x2
+    },
+    {
+        "carry_wait", nullptr, nullptr, "P_carry_wait",
+        m3d::FORWARD_LOOP, 0.0f, -1.0f,
+        TEX_ANM_1, 0x2
+    },
+    {
+        "wsld", nullptr, nullptr, "P_wsld",
+        m3d::FORWARD_ONCE, 1.0f, -1.0f,
+        TEX_ANM_1, 0x0
+    },
+    {
+        "fire_at", nullptr, nullptr, nullptr,
+        m3d::FORWARD_ONCE, 1.2f, 0.0f,
+        TEX_ANM_1, 0x80
+    },
+    {
+        "swim_fire_at", nullptr, nullptr, nullptr,
+        m3d::FORWARD_ONCE, 1.2f, 0.0f,
+        TEX_ANM_1, 0x0
+    },
+    {
+        "swim_fire_at2", nullptr, nullptr, nullptr,
+        m3d::FORWARD_ONCE, 1.2f, 0.0f,
+        TEX_ANM_1, 0x0
+    },
+    {
+        "star_roll", nullptr, nullptr, nullptr,
+        m3d::FORWARD_LOOP, 0.7f, 0.0f,
+        TEX_ANM_1, 0x0
+    },
+    {
+        "P_swim", nullptr, nullptr, nullptr,
+        m3d::FORWARD_LOOP, 1.0f, 10.0f,
+        TEX_ANM_1, 0x800000
+    },
+    {
+        "swim", nullptr, nullptr, nullptr,
+        m3d::FORWARD_LOOP, 1.0f, 0.0f,
+        TEX_ANM_1, 0x10
+    },
+    {
+        "swim_wait", nullptr, nullptr, nullptr,
+        m3d::FORWARD_LOOP, 1.0f, 10.0f,
+        TEX_ANM_1, 0x10
+    },
+    {
+        "swim_throw", nullptr, nullptr, nullptr,
+        m3d::FORWARD_ONCE, 1.0f, 0.0f,
+        TEX_ANM_1, 0x2
+    },
+    {
+        "swim_walk", nullptr, nullptr, nullptr,
+        m3d::FORWARD_LOOP, 0.0f, -1.0f,
+        TEX_ANM_1, 0x0
+    },
+    {
+        "swim_standing", nullptr, nullptr, nullptr,
+        m3d::FORWARD_LOOP, 1.0f, 10.0f,
+        TEX_ANM_1, 0x0
+    },
+    {
+        "paddle_1", nullptr, nullptr, nullptr,
+        m3d::FORWARD_ONCE, 1.0f, 0.0f,
+        TEX_ANM_1, 0x10
+    },
+    {
+        "paddle_2", nullptr, nullptr, nullptr,
+        m3d::FORWARD_ONCE, 1.0f, 0.0f,
+        TEX_ANM_1, 0x10
+    },
+    {
+        "paddle_carry", nullptr, nullptr, nullptr,
+        m3d::FORWARD_ONCE, 0.0f, -1.0f,
+        TEX_ANM_1, 0x2
+    },
+    {
+        "tree_start", "Rtree_start", "YB_Rtree_start", "P_tree_start",
+        m3d::FORWARD_ONCE, 0.9f, 0.0f,
+        TEX_ANM_1, 0x0
+    },
+    {
+        "tree_wait", "Rtree_wait", "YB_Rtree_wait", "P_tree_wait",
+        m3d::FORWARD_LOOP, 1.0f, 10.0f,
+        TEX_ANM_1, 0x0
+    },
+    {
+        "tree_climb", nullptr, nullptr, "P_tree_climb",
+        m3d::FORWARD_LOOP, 1.0f, 10.0f,
+        TEX_ANM_1, 0x0
+    },
+    {
+        "tree_pose", "Rtree_pose", "YB_Rtree_pose", "P_tree_pose",
+        m3d::FORWARD_LOOP, 0.5f, 10.0f,
+        TEX_ANM_1, 0x0
+    },
+    {
+        "monkey_start", nullptr, nullptr, nullptr,
+        m3d::FORWARD_ONCE, 0.7f, 0.0f,
+        TEX_ANM_1, 0x0
+    },
+    {
+        "monkey_wait_r", nullptr, nullptr, nullptr,
+        m3d::FORWARD_LOOP, 0.5f, 0.0f,
+        TEX_ANM_1, 0x0
+    },
+    {
+        "monkey_wait_l", nullptr, nullptr, nullptr,
+        m3d::FORWARD_LOOP, 0.5f, 0.0f,
+        TEX_ANM_1, 0x0
+    },
+    {
+        "monkey_r_to_l", nullptr, nullptr, nullptr,
+        m3d::FORWARD_ONCE, 1.0f, 0.0f,
+        TEX_ANM_1, 0x0
+    },
+    {
+        "monkey_l_to_r", nullptr, nullptr, nullptr,
+        m3d::FORWARD_ONCE, 1.0f, 0.0f,
+        TEX_ANM_1, 0x0
+    },
+    {
+        "net_wait", nullptr, nullptr, "P_net_wait",
+        m3d::FORWARD_LOOP, 1.0f, 5.0f,
+        TEX_ANM_1, 0x0
+    },
+    {
+        "net_walk1", nullptr, nullptr, "P_net_walk1",
+        m3d::FORWARD_LOOP, 0.0f, -1.0f,
+        TEX_ANM_1, 0x0
+    },
+    {
+        "net_walk2", nullptr, nullptr, "P_net_walk2",
+        m3d::FORWARD_LOOP, 0.0f, -1.0f,
+        TEX_ANM_1, 0x0
+    },
+    {
+        "net_attack", nullptr, nullptr, "P_net_attack",
+        m3d::FORWARD_ONCE, 1.2f, 0.0f,
+        TEX_ANM_1, 0x0
+    },
+    {
+        "pea_plant", nullptr, nullptr, nullptr,
+        m3d::FORWARD_LOOP, 1.5f, -1.0f,
+        TEX_ANM_1, 0x0
+    },
+    {
+        "pea_plant_st", nullptr, nullptr, nullptr,
+        m3d::FORWARD_ONCE, 2.0f, 0.0f,
+        TEX_ANM_1, 0x0
+    },
+    {
+        "pea_plant_wait", nullptr, nullptr, nullptr,
+        m3d::FORWARD_LOOP, 1.2f, 10.0f,
+        TEX_ANM_1, 0x0
+    },
+    {
+        "wall_wait", nullptr, nullptr, nullptr,
+        m3d::FORWARD_LOOP, 0.8f, 10.0f,
+        TEX_ANM_1, 0x0
+    },
+    {
+        "wall_walk_l", nullptr, nullptr, nullptr,
+        m3d::FORWARD_LOOP, 0.0f, -1.0f,
+        TEX_ANM_1, 0x0
+    },
+    {
+        "wall_walk_r", nullptr, nullptr, nullptr,
+        m3d::FORWARD_LOOP, 0.0f, -1.0f,
+        TEX_ANM_1, 0x0
+    },
+    {
+        "hang_start", nullptr, nullptr, nullptr,
+        m3d::FORWARD_ONCE, 1.0f, 0.0f,
+        TEX_ANM_1, 0xc
+    },
+    {
+        "hang_up", nullptr, nullptr, nullptr,
+        m3d::FORWARD_ONCE, 2.0f, 5.0f,
+        TEX_ANM_1, 0x4
+    },
+    {
+        "hang_wait", nullptr, nullptr, "P_hang_wait",
+        m3d::FORWARD_LOOP, 0.5f, 10.0f,
+        TEX_ANM_1, 0xc
+    },
+    {
+        "hang_walk_l", nullptr, nullptr, "P_hang_walk_l",
+        m3d::FORWARD_LOOP, 0.0f, -1.0f,
+        TEX_ANM_1, 0xc
+    },
+    {
+        "hang_walk_r", nullptr, nullptr, "P_hang_walk_r",
+        m3d::FORWARD_LOOP, 0.0f, -1.0f,
+        TEX_ANM_1, 0xc
+    },
+    {
+        "w_jump1", nullptr, nullptr, nullptr,
+        m3d::FORWARD_ONCE, 1.0f, -1.0f,
+        TEX_ANM_1, 0x0
+    },
+    {
+        "w_jump2", nullptr, nullptr, nullptr,
+        m3d::FORWARD_ONCE, 1.0f, -1.0f,
+        TEX_ANM_1, 0x0
+    },
+    {
+        "2jumped", nullptr, nullptr, nullptr,
+        m3d::FORWARD_ONCE, 1.0f, -1.0f,
+        TEX_ANM_1, 0x0
+    },
+    {
+        "jump_hang", nullptr, nullptr, "P_jump_hang",
+        m3d::FORWARD_ONCE, 1.0f, 3.0f,
+        TEX_ANM_1, 0xc
+    },
+    {
+        "spin_st", nullptr, nullptr, nullptr,
+        m3d::FORWARD_ONCE, 1.0f, 0.0f,
+        TEX_ANM_1, 0x0
+    },
+    {
+        "spin_end", nullptr, nullptr, nullptr,
+        m3d::FORWARD_ONCE, 1.0f, 0.0f,
+        TEX_ANM_1, 0x0
+    },
+    {
+        "spin_low_st", nullptr, nullptr, nullptr,
+        m3d::FORWARD_ONCE, 1.0f, -1.0f,
+        TEX_ANM_1, 0x1
+    },
+    {
+        "spin_low_ed", nullptr, nullptr, nullptr,
+        m3d::FORWARD_ONCE, 1.0f, -1.0f,
+        TEX_ANM_1, 0x1
+    },
+    {
+        "spin_jump2", nullptr, nullptr, nullptr,
+        m3d::FORWARD_LOOP, 0.5f, 0.0f,
+        TEX_ANM_1, 0x0
+    },
+    {
+        "spin_jump_end", nullptr, nullptr, nullptr,
+        m3d::FORWARD_ONCE, 1.0f, 0.0f,
+        TEX_ANM_1, 0x0
+    },
+    {
+        "damF", nullptr, nullptr, nullptr,
+        m3d::FORWARD_ONCE, 1.0f, -1.0f,
+        TEX_ANM_1, 0x0
+    },
+    {
+        "damB", nullptr, nullptr, nullptr,
+        m3d::FORWARD_ONCE, 1.0f, -1.0f,
+        TEX_ANM_1, 0x0
+    },
+    {
+        "dowF", nullptr, nullptr, nullptr,
+        m3d::FORWARD_ONCE, 1.0f, -1.0f,
+        TEX_ANM_6, 0x0
+    },
+    {
+        "dowB", nullptr, nullptr, nullptr,
+        m3d::FORWARD_ONCE, 1.0f, -1.0f,
+        TEX_ANM_6, 0x0
+    },
+    {
+        "firejmp", nullptr, nullptr, nullptr,
+        m3d::FORWARD_LOOP, 0.5f, 0.0f,
+        TEX_ANM_6, 0x0
+    },
+    {
+        "e_shock", nullptr, nullptr, nullptr,
+        m3d::FORWARD_LOOP, 0.5f, 0.0f,
+        TEX_ANM_6, 0x0
+    },
+    {
+        "dead", nullptr, nullptr, nullptr,
+        m3d::FORWARD_ONCE, 1.5f, 0.0f,
+        TEX_ANM_6, 0x0
+    },
+    {
+        "dead_pose", nullptr, nullptr, nullptr,
+        m3d::FORWARD_LOOP, 1.0f, 0.0f,
+        TEX_ANM_6, 0x0
+    },
+    {
+        "goal_start", "Rtree_start", "YB_Rtree_start", nullptr,
+        m3d::FORWARD_ONCE, 0.5f, 5.0f,
+        TEX_ANM_1, 0x0
+    },
+    {
+        "goal_wait", "Rtree_wait", "YB_Rtree_wait", nullptr,
+        m3d::FORWARD_LOOP, 1.0f, 5.0f,
+        TEX_ANM_1, 0x0
+    },
+    {
+        "goal_pose", "Rtree_pose", "YB_Rtree_pose", nullptr,
+        m3d::FORWARD_LOOP, 0.5f, 0.0f,
+        TEX_ANM_1, 0x0
+    },
+    {
+        "goal_jump", "Rgoal_jump", "YB_Rgoal_jump", nullptr,
+        m3d::FORWARD_ONCE, 0.5f, 0.0f,
+        TEX_ANM_1, 0x0
+    },
+    {
+        "goal_jump_ed", "Rgoal_jump_ed", "YB_Rgoal_jump_ed", nullptr,
+        m3d::FORWARD_ONCE, 1.0f, 0.0f,
+        TEX_ANM_1, 0x0
+    },
+    {
+        "goal_puton_cap", "Rgoal_puton_cap", "YB_Rgoal_puton_cap", nullptr,
+        m3d::FORWARD_ONCE, 1.0f, 3.0f,
+        TEX_ANM_2, 0x0
+    },
+    {
+        "PL_goal_puton_cap", "Rgoal_puton_cap", "YB_Rgoal_puton_cap", nullptr,
+        m3d::FORWARD_ONCE, 1.0f, 0.0f,
+        TEX_ANM_3, 0x1000000
+    },
+    {
+        "P_goal_puton_cap", "Rgoal_puton_cap", "YB_Rgoal_puton_cap", nullptr,
+        m3d::FORWARD_ONCE, 1.0f, 0.0f,
+        TEX_ANM_4, 0x800000
+    },
+    {
+        "wait", "PL_Rgoal_puton_cap", "YB_PL_Rgoal_puton_cap", "PLKB_goal_puton_cap",
+        m3d::FORWARD_ONCE, 1.0f, 3.0f,
+        TEX_ANM_5, 0x1000000
+    },
+    {
+        "wait", "P_Rgoal_puton_cap", "YB_P_Rgoal_puton_cap", nullptr,
+        m3d::FORWARD_ONCE, 1.0f, 3.0f,
+        TEX_ANM_5, 0x800000
+    },
+    {
+        "wait", "Rgoal_puton_cap", "YB_KB_Rgoal_puton_cap", nullptr,
+        m3d::FORWARD_ONCE, 1.0f, 3.0f,
+        TEX_ANM_5, 0x0
+    },
+    {
+        "wait", "Reat", "YB_Reat", nullptr,
+        m3d::FORWARD_ONCE, 3.0f, 0.0f,
+        TEX_ANM_1, 0x20
+    },
+    {
+        "wait", "Reat_out", "YB_Reat_out", nullptr,
+        m3d::FORWARD_ONCE, 1.0f, 0.0f,
+        TEX_ANM_1, 0x20
+    },
+    {
+        "wait", "Reat_success", "YB_Reat_success", nullptr,
+        m3d::FORWARD_ONCE, 1.0f, 0.0f,
+        TEX_ANM_1, 0x20
+    },
+    {
+        "wait", "Reat_fail", "YB_Reat_fail", nullptr,
+        m3d::FORWARD_ONCE, 1.0f, 0.0f,
+        TEX_ANM_1, 0x20
+    },
+    {
+        "wait", "Reat_successB", "YB_Reat_successB", nullptr,
+        m3d::FORWARD_ONCE, 1.0f, 0.0f,
+        TEX_ANM_1, 0x20
+    },
+    {
+        "wait", "Reat_successB", "YB_Reat_successB", nullptr,
+        m3d::FORWARD_ONCE, 1.0f, 0.0f,
+        TEX_ANM_1, 0x20
+    },
+    {
+        "wait", "RSeat", "YB_RSeat", nullptr,
+        m3d::FORWARD_ONCE, 3.0f, 0.0f,
+        TEX_ANM_1, 0x20
+    },
+    {
+        "wait", "RSeat_out", "YB_RSeat_out", nullptr,
+        m3d::FORWARD_ONCE, 1.0f, 0.0f,
+        TEX_ANM_1, 0x20
+    },
+    {
+        "wait", "RSeat_success", "YB_RSeat_success", nullptr,
+        m3d::FORWARD_ONCE, 1.0f, 0.0f,
+        TEX_ANM_1, 0x20
+    },
+    {
+        "wait", "RSeat_fail", "YB_RSeat_fail", nullptr,
+        m3d::FORWARD_ONCE, 1.0f, 0.0f,
+        TEX_ANM_1, 0x20
+    },
+    {
+        "wait", "RSeat_successB", "YB_RSeat_successB", nullptr,
+        m3d::FORWARD_ONCE, 1.0f, 0.0f,
+        TEX_ANM_1, 0x20
+    },
+    {
+        "wait", "RSeat_successB", "YB_RSeat_successB", nullptr,
+        m3d::FORWARD_ONCE, 1.0f, 0.0f,
+        TEX_ANM_1, 0x20
+    },
+    {
+        "carryP_start", nullptr, nullptr, "P_carryP_start",
+        m3d::FORWARD_ONCE, 0.3f, -1.0f,
+        TEX_ANM_1, 0x2
+    },
+    {
+        "carryP_wait", nullptr, nullptr, "P_carryP_wait",
+        m3d::FORWARD_LOOP, 0.5f, 0.0f,
+        TEX_ANM_1, 0x2
+    },
+    {
+        "carryP_walk", nullptr, nullptr, "P_carryP_walk",
+        m3d::FORWARD_LOOP, 0.0f, -1.0f,
+        TEX_ANM_1, 0x2
+    },
+    {
+        "carryP_throw", nullptr, nullptr, "P_carryP_throw",
+        m3d::FORWARD_ONCE, 1.5f, -1.0f,
+        TEX_ANM_9, 0x2
+    },
+    {
+        "carryP_wait", nullptr, nullptr, "P_carryP_wait",
+        m3d::FORWARD_LOOP, 0.0f, -1.0f,
+        TEX_ANM_1, 0x2
+    },
+    {
+        "Rwait", "ride_on", "YB_ride_on", nullptr,
+        m3d::FORWARD_ONCE, 1.0f, -1.0f,
+        TEX_ANM_1, 0x0
+    },
+    {
+        "wait", "RFjump", "YB_RFjump", nullptr,
+        m3d::FORWARD_LOOP, 3.0f, 0.0f,
+        TEX_ANM_1, 0x0
+    },
+    {
+        "wait", nullptr, "YB_set", nullptr,
+        m3d::FORWARD_ONCE, 1.0f, -1.0f,
+        TEX_ANM_1, 0x0
+    },
+    {
+        "wait", nullptr, "YB_set_to_wait", nullptr,
+        m3d::FORWARD_ONCE, 1.0f, -1.0f,
+        TEX_ANM_1, 0x0
+    },
+    {
+        "star_roll", nullptr, nullptr, "P_star_roll",
+        m3d::FORWARD_LOOP, 1.0f, 0.0f,
+        TEX_ANM_1, 0x0
+    },
+    {
+        "Sjump", "RSjump", "YB_RSjump", "P_Sjump",
+        m3d::FORWARD_ONCE, 1.0f, 0.0f,
+        TEX_ANM_1, 0x1
+    },
+    {
+        "Sjump2", "RSjump2", "YB_RSjump2", "P_Sjump2",
+        m3d::FORWARD_ONCE, 1.0f, 3.0f,
+        TEX_ANM_1, 0x1
+    },
+    {
+        "Sjumped", "RSjumped", "YB_RSjumped", "P_Sjumped",
+        m3d::FORWARD_ONCE, 1.0f, 0.0f,
+        TEX_ANM_1, 0x1
+    },
+    {
+        "get_down", nullptr, nullptr, nullptr,
+        m3d::FORWARD_ONCE, 1.0f, -1.0f,
+        TEX_ANM_1, 0x0
+    },
+    {
+        "ice_turn", "Rturn", "YB_Rturn", nullptr,
+        m3d::FORWARD_LOOP, 1.75f, -1.0f,
+        TEX_ANM_1, 0x0
+    },
+    {
+        "ice_turned", "Rturned", "YB_Rturned", nullptr,
+        m3d::FORWARD_ONCE, 4.0f, -1.0f,
+        TEX_ANM_1, 0x0
+    },
+    {
+        "ice_slipF", nullptr, nullptr, nullptr,
+        m3d::FORWARD_ONCE, 1.3f, 3.0f,
+        TEX_ANM_1, 0x0
+    },
+    {
+        "ice_slipB", nullptr, nullptr, nullptr,
+        m3d::FORWARD_ONCE, 1.1f, 3.0f,
+        TEX_ANM_1, 0x0
+    },
+    {
+        "rope_swing", nullptr, nullptr, "P_rope_swing",
+        m3d::FORWARD_ONCE, 0.0f, 10.0f,
+        TEX_ANM_1, 0x0
+    },
+    {
+        "shoot", nullptr, nullptr, nullptr,
+        m3d::FORWARD_LOOP, 1.0f, 0.0f,
+        TEX_ANM_1, 0x0
+    },
+    {
+        "shoot_slip", nullptr, nullptr, nullptr,
+        m3d::FORWARD_LOOP, 1.0f, 0.0f,
+        TEX_ANM_1, 0x0
+    },
+    {
+        "shoot_slip_end", nullptr, nullptr, nullptr,
+        m3d::FORWARD_ONCE, 1.0f, 0.0f,
+        TEX_ANM_1, 0x0
+    },
+    {
+        "low_walk_start", nullptr, nullptr, nullptr,
+        m3d::FORWARD_ONCE, 3.0f, 0.0f,
+        TEX_ANM_1, 0x0
+    },
+    {
+        "low_walk", nullptr, nullptr, "P_low_walk",
+        m3d::FORWARD_LOOP, 1.0f, 0.0f,
+        TEX_ANM_1, 0x0
+    },
+    {
+        "swim_pipe", nullptr, nullptr, nullptr,
+        m3d::FORWARD_LOOP, 1.0f, 0.0f,
+        TEX_ANM_1, 0x0
+    },
+    {
+        "door_walk", nullptr, nullptr, "P_door_walk",
+        m3d::FORWARD_LOOP, 1.0f, 0.0f,
+        TEX_ANM_1, 0x0
+    },
+    {
+        "PL_spin_jump", nullptr, nullptr, nullptr,
+        m3d::FORWARD_ONCE, 1.0f, 0.0f,
+        TEX_ANM_1, 0x0
+    },
+    {
+        "waitL", nullptr, nullptr, nullptr,
+        m3d::FORWARD_LOOP, 1.2f, 10.0f,
+        TEX_ANM_1, 0x4080
+    },
+    {
+        "waitR", nullptr, nullptr, nullptr,
+        m3d::FORWARD_LOOP, 1.2f, 10.0f,
+        TEX_ANM_1, 0x8080
+    },
+    {
+        "fire_at2", nullptr, nullptr, nullptr,
+        m3d::FORWARD_ONCE, 1.2f, -1.0f,
+        TEX_ANM_1, 0x0
+    },
+    {
+        "blow_up", nullptr, nullptr, nullptr,
+        m3d::FORWARD_LOOP, 1.0f, 10.0f,
+        TEX_ANM_1, 0x0
+    },
+    {
+        "P_slip", nullptr, nullptr, nullptr,
+        m3d::FORWARD_LOOP, 1.0f, 30.0f,
+        TEX_ANM_1, 0x0
+    },
+    {
+        "P_slip_jump", nullptr, nullptr, nullptr,
+        m3d::FORWARD_ONCE, 0.7f, 0.0f,
+        TEX_ANM_1, 0x0
+    },
+    {
+        "P_slip_jump2", nullptr, nullptr, nullptr,
+        m3d::FORWARD_ONCE, 0.1f, 40.0f,
+        TEX_ANM_1, 0x0
+    },
+    {
+        "run", "Run", "YB_RFjump", nullptr,
+        m3d::FORWARD_LOOP, 2.75f, 0.0f,
+        TEX_ANM_1, 0x0
+    },
+    {
+        "stamp", "Rstamp", "YB_Rstamp", "P_stamp",
+        m3d::FORWARD_LOOP, 1.0f, 3.0f,
+        TEX_ANM_1, 0x0
+    },
+    {
+        "waitR", nullptr, nullptr, nullptr,
+        m3d::FORWARD_LOOP, 1.2f, 10.0f,
+        TEX_ANM_1, 0x4080
+    },
+    {
+        "waitL", nullptr, nullptr, nullptr,
+        m3d::FORWARD_LOOP, 1.2f, 10.0f,
+        TEX_ANM_1, 0x8080
+    },
+    {
+        "waitR3", nullptr, nullptr, nullptr,
+        m3d::FORWARD_LOOP, 1.0f, 5.0f,
+        TEX_ANM_1, 0x80
+    },
+    {
+        "waitL3", nullptr, nullptr, nullptr,
+        m3d::FORWARD_LOOP, 1.0f, 5.0f,
+        TEX_ANM_1, 0x80
+    },
+    {
+        "boss_key_get", nullptr, nullptr, nullptr,
+        m3d::FORWARD_ONCE, 1.0f, 5.0f,
+        TEX_ANM_1, 0x0
+    },
+    {
+        "balloon_wait", nullptr, nullptr, nullptr,
+        m3d::FORWARD_LOOP, 1.0f, 0.0f,
+        TEX_ANM_1, 0x100
+    },
+    {
+        "slope_waitL", nullptr, nullptr, nullptr,
+        m3d::FORWARD_LOOP, 0.0f, 10.0f,
+        TEX_ANM_1, 0x5080
+    },
+    {
+        "slope_waitR", nullptr, nullptr, nullptr,
+        m3d::FORWARD_LOOP, 0.0f, 10.0f,
+        TEX_ANM_1, 0x9080
+    },
+    {
+        "slope_waitL2", nullptr, nullptr, nullptr,
+        m3d::FORWARD_LOOP, 1.2f, 10.0f,
+        TEX_ANM_1, 0x4080
+    },
+    {
+        "slope_waitR2", nullptr, nullptr, nullptr,
+        m3d::FORWARD_LOOP, 1.2f, 10.0f,
+        TEX_ANM_1, 0x8080
+    },
+    {
+        "carryP_waitL", nullptr, nullptr, "P_carryP_waitL",
+        m3d::FORWARD_LOOP, 1.2f, 10.0f,
+        TEX_ANM_1, 0x4002
+    },
+    {
+        "carryP_waitR", nullptr, nullptr, "P_carryP_waitR",
+        m3d::FORWARD_LOOP, 1.2f, 10.0f,
+        TEX_ANM_1, 0x8002
+    },
+    {
+        "carry_waitL", nullptr, nullptr, "P_carry_waitL",
+        m3d::FORWARD_LOOP, 1.2f, 10.0f,
+        TEX_ANM_1, 0x4002
+    },
+    {
+        "carry_waitR", nullptr, nullptr, "P_carry_waitR",
+        m3d::FORWARD_LOOP, 1.2f, 10.0f,
+        TEX_ANM_1, 0x8002
+    },
+    {
+        "spin_jump3", nullptr, nullptr, nullptr,
+        m3d::FORWARD_LOOP, 1.0f, 30.0f,
+        TEX_ANM_1, 0x0
+    },
+    {
+        "ride_wait", nullptr, nullptr, nullptr,
+        m3d::FORWARD_LOOP, 1.0f, 10.0f,
+        TEX_ANM_1, 0x80
+    },
+    {
+        "P_paddle_1", nullptr, nullptr, nullptr,
+        m3d::FORWARD_ONCE, 1.0f, 0.0f,
+        TEX_ANM_1, 0x800010
+    },
+    {
+        "P_paddle_2", nullptr, nullptr, nullptr,
+        m3d::FORWARD_ONCE, 1.0f, 0.0f,
+        TEX_ANM_1, 0x800010
+    },
+    {
+        "waitL", nullptr, "YB_poseL", nullptr,
+        m3d::FORWARD_ONCE, 1.0f, 0.0f,
+        TEX_ANM_1, 0x0
+    },
+    {
+        "waitR", nullptr, "YB_poseR", nullptr,
+        m3d::FORWARD_ONCE, 1.0f, 0.0f,
+        TEX_ANM_1, 0x0
+    },
+    {
+        "waitR", nullptr, "YB_gorl_wait", nullptr,
+        m3d::FORWARD_LOOP, 1.0f, 10.0f,
+        TEX_ANM_1, 0x0
+    },
+    {
+        "dm_notice", nullptr, nullptr, nullptr,
+        m3d::FORWARD_ONCE, 1.0f, 0.0f,
+        TEX_ANM_1, 0x80
+    },
+    {
+        "dm_noti_wait", nullptr, nullptr, nullptr,
+        m3d::FORWARD_LOOP, 1.0f, 0.0f,
+        TEX_ANM_1, 0x80
+    },
+    {
+        "dm_surprise", nullptr, nullptr, nullptr,
+        m3d::FORWARD_ONCE, 1.0f, 0.0f,
+        TEX_ANM_1, 0x80
+    },
+    {
+        "dm_surp_wait", nullptr, nullptr, nullptr,
+        m3d::FORWARD_LOOP, 1.0f, 0.0f,
+        TEX_ANM_1, 0x80
+    },
+    {
+        "wait_select", nullptr, nullptr, nullptr,
+        m3d::FORWARD_LOOP, 1.0f, 0.0f,
+        TEX_ANM_1, 0x0
+    },
+    {
+        "course_in", nullptr, nullptr, nullptr,
+        m3d::FORWARD_ONCE, 1.0f, 0.0f,
+        TEX_ANM_A, 0x0
+    },
+    {
+        "wait", nullptr, nullptr, nullptr,
+        m3d::FORWARD_ONCE, 1.0f, 0.0f,
+        TEX_ANM_1, 0x0
+    },
+    {
+        "wait", nullptr, nullptr, nullptr,
+        m3d::FORWARD_LOOP, 1.0f, 0.0f,
+        TEX_ANM_1, 0x0
+    },
+    {
+        "dm_escort", nullptr, nullptr, nullptr,
+        m3d::FORWARD_ONCE, 1.0f, 0.0f,
+        TEX_ANM_C, 0x0
+    },
+    {
+        "dm_glad", nullptr, nullptr, nullptr,
+        m3d::FORWARD_LOOP, 1.0f, 5.0f,
+        TEX_ANM_D, 0x0
+    },
+    {
+        "ending_wait", nullptr, nullptr, nullptr,
+        m3d::FORWARD_LOOP, 1.0f, 10.0f,
+        TEX_ANM_1, 0x0
+    },
+    {
+        "coin_comp", nullptr, nullptr, nullptr,
+        m3d::FORWARD_ONCE, 1.0f, 0.0f,
+        TEX_ANM_B, 0x0
+    }
 };
 
 dPyMdlBase_c::dPyMdlBase_c(u8 val) :
