@@ -45,31 +45,41 @@ public:
     void play() override;
     void _calc() override;
     void calc2() override;
+    void draw() override;
+    bool getJumpAnmName(int jumpType, char *anmNameBuf, int p4) override;
+    bool setPersonalAnm(int anmID, nw4r::g3d::ResAnmChr *outAnmChr, int) override;
+    bool setPersonalRideAnm(int anmID, nw4r::g3d::ResAnmChr *outAnmChr) override;
+    void setTexAnmType(TexAnmType_e anmType) override;
 
     virtual void FUN_800d4750(); ///< @unofficial
     virtual void callbackTimingA();
     virtual float getAimMotionShareScale() { return 1.0f; }
     virtual void createPlayerModel();
 
-    void getPlayerObjectRes();
     void setInitTexAnm();
+    void _setHeadTexAnm(nw4r::g3d::ResAnmTexPat &anmTexPat, m3d::playMode_e playMode, float rate, float frame);
+    void resetTexAnmType();
+    m3d::anmTexPat_c &getHeadTexAnm();
+    void getPlayerObjectRes();
     void calcBlendRate();
     void setStarEffect();
-    m3d::anmTexPat_c *getHeadTexAnm();
+
+    m3d::mdl_c &getMdl1() { return mInfo[mPlayerMode].mMdl1; }
+    m3d::mdl_c &getMdl2() { return mInfo[mPlayerMode].mMdl2; }
 
     nw4r::g3d::ResFile m_20c;
     nw4r::g3d::ResFile m_210;
     nw4r::g3d::ResFile m_214;
     mEf::levelEffect_c mLevelEf1;
     mEf::levelEffect_c mLevelEf2;
-    mdl_inf_c mInfo[4];
+    mdl_inf_c mInfo[PLAYER_MODE_COUNT];
     m3d::anmTexPat_c mTexAnm1;
     m3d::anmMatClr_c mMatClrAnm1;
     m3d::anmTexPat_c mTexAnm2;
-    m3d::anmTexPat_c mTexAnm3;
-    m3d::anmTexPat_c mTexAnm4;
+    m3d::anmTexPat_c mTexAnmYoshi;
+    m3d::anmTexPat_c mTexAnmPenguin;
     m3d::anmMatClr_c mMatClrAnm2;
-    u32 m_770;
+    PlayerMode_e mPlayerMode;
     u32 m_774;
     const char **mpArcNames; ///< [This is wrong, seems to be some struct]
     u32 m_77c;
@@ -81,4 +91,6 @@ public:
     nodeCallbackPLH_c mCallbackPLH;
     other_inf_s mOtherInf2[4];
     other_inf_s mOtherInf1[4];
+
+    static const TexAnmData_s scTexAnmData[TEX_ANM_COUNT];
 };

@@ -200,32 +200,51 @@ public:
     };
 
     enum TexAnmType_e {
-        TEX_ANM_0,
-        TEX_ANM_1,
-        TEX_ANM_2,
-        TEX_ANM_3,
-        TEX_ANM_4,
-        TEX_ANM_5,
-        TEX_ANM_6,
-        TEX_ANM_7,
-        TEX_ANM_8,
-        TEX_ANM_9,
-        TEX_ANM_A,
-        TEX_ANM_B,
-        TEX_ANM_C,
-        TEX_ANM_D
+        TEX_ANM_NONE,
+        TEX_ANM_WAIT,
+        TEX_ANM_GOAL_PUTON_CAP,
+        TEX_ANM_PL_GOAL_PUTON_CAP,
+        TEX_ANM_P_GOAL_PUTON_CAP,
+        TEX_ANM_P_RGOAL_PUTON_CAP,
+        TEX_ANM_DAM,
+        TEX_ANM_JUMP,
+        TEX_ANM_JUMPED,
+        TEX_ANM_THROW,
+        TEX_ANM_COURSE_IN,
+        TEX_ANM_COIN_COMP,
+        TEX_ANM_DM_ESCORT,
+        TEX_ANM_DM_GLAD,
+        TEX_ANM_COUNT
     };
 
+    ///< @unofficial
+    enum PlayerMode_e {
+        PLAYER_MODE_NORMAL,
+        PLAYER_MODE_RIDE,
+        PLAYER_MODE_YOSHI,
+        PLAYER_MODE_PENGUIN,
+        PLAYER_MODE_COUNT
+    };
+
+    ///< @unofficial
     struct AnmData_s {
         const char *mName; ///< Regular animation name.
         const char *mRideName; ///< Animation name when riding.
         const char *mYoshiName; ///< Yoshi personal animation name.
-        const char *mPlayerName; ///< Player 3 personal animation name.
+        const char *mPenguinName; ///< Penguin suit animation name.
         m3d::playMode_e mPlayMode;
         float mRate;
         float mBlendDuration;
         TexAnmType_e mTexAnmType;
         u32 mFlags; ///< Same type as dPyMdlBase_c's mFlags.
+    };
+
+    ///< @unofficial
+    struct TexAnmData_s {
+        const char *mName;
+        m3d::playMode_e mPlayMode;
+        float mRate;
+        float mFrame;
     };
 
     dPyMdlBase_c(u8);
@@ -251,14 +270,14 @@ public:
     virtual bool getHeadPropelJointMtx(mMtx_c *mtx) { return false; }
     virtual bool getJumpAnmName(int jumpType, char *anmNameBuf, int p4); ///< @unofficial
     virtual void setAnm(int animID, float rate, float c, float frame);
-    virtual int setPersonalAnm(int, nw4r::g3d::ResAnmChr *, int);
+    virtual bool setPersonalAnm(int anmID, nw4r::g3d::ResAnmChr *outAnmChr, int);
     virtual void setBodyAnm(int animID, float rate, float frame, float c);
     virtual void releaseBodyAnm(float);
     virtual void copyAnm();
     virtual void _setFootAnm(nw4r::g3d::ResAnmChr &, m3d::playMode_e, float, float, float);
     virtual void _setBodyAnm(nw4r::g3d::ResAnmChr &, m3d::playMode_e, float, float, float);
     virtual void setAnmBind();
-    virtual int setPersonalRideAnm(int, nw4r::g3d::ResAnmChr *);
+    virtual bool setPersonalRideAnm(int anmID, nw4r::g3d::ResAnmChr *outAnmChr);
     virtual void setTexAnmType(TexAnmType_e anmType);
     virtual void setFrame(float frame);
     virtual void setBodyFrame(float frame);
@@ -325,7 +344,7 @@ public:
     u32 m_164;
     u32 mJumpAnmVariant;
     u32 mPrevJumpAnmVariant;
-    int mCurrHeadPatID;
+    TexAnmType_e mCurrTexAnmType;
     int mNextPatSwitchTimer;
     u8 m_178;
     /* 3 padding bytes */
