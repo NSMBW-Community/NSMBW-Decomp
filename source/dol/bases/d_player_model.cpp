@@ -1,8 +1,25 @@
 #include <game/bases/d_player_model.hpp>
 #include <game/bases/d_res_mng.hpp>
 
+const dPyMdlBase_c::TexAnmData_s dPlayerMdl_c::scTexAnmData[TEX_ANM_COUNT] = {
+    { "PH_wait", m3d::FORWARD_LOOP, 0.0f, 0.0f },
+    { "PH_wait", m3d::FORWARD_LOOP, 0.0f, 0.0f },
+    { "PH_goal_puton_cap", m3d::FORWARD_ONCE, 1.0f, 0.0f },
+    { "PH_PL_goal_puton_cap", m3d::FORWARD_ONCE, 1.0f, 0.0f },
+    { "PH_P_goal_puton_cap", m3d::FORWARD_ONCE, 1.0f, 0.0f },
+    { "PH_P_Rgoal_puton_cap", m3d::FORWARD_ONCE, 1.0f, 0.0f },
+    { "PH_dam", m3d::FORWARD_ONCE, 1.0f, 0.0f },
+    { "PH_jump", m3d::FORWARD_ONCE, 1.0f, 0.0f },
+    { "PH_jumped", m3d::FORWARD_ONCE, 1.0f, 0.0f },
+    { "PH_throw", m3d::FORWARD_ONCE, 1.0f, 0.0f },
+    { "PH_courese_in", m3d::FORWARD_ONCE, 1.0f, 0.0f },
+    { "PH_coin_comp", m3d::FORWARD_ONCE, 1.0f, 0.0f },
+    { "PH_dm_escort", m3d::FORWARD_ONCE, 1.0f, 0.0f },
+    { "PH_dm_glad", m3d::FORWARD_LOOP, 1.0f, 0.0f }
+};
+
 dPlayerMdl_c::dPlayerMdl_c(u8 val) : dPyMdlBase_c(val),
-    m_770(0), m_774(0), m_77c(0),
+    mPlayerMode(PLAYER_MODE_NORMAL), m_774(0), m_77c(0),
     m_780(0), m_782(0x400),
     m_784(1.0f), mMotionShareScale(1.0f, 1.0f, 1.0f),
     mCallback(this),
@@ -121,13 +138,13 @@ void dPlayerMdl_c::_calc() {
     mMtx_c mtx;
     getJointMtx(&mtx, m_77c);
     mtx.concat(mMtx_c::createTrans(mHeadOffset));
-    mInfo[m_770].mMdl2.setLocalMtx(&mtx);
-    mInfo[m_770].mMdl2.calc(false);
+    getMdl2().setLocalMtx(&mtx);
+    getMdl2().calc(false);
 
     mMtx_c mtx2;
     getJointMtx(&mtx2, m_77c);
     mtx2.multVecZero(mHatPosMaybe);
-    mtx2.concat(mMtx_c::createTrans(0.0f, -(*(((float *) &mpArcNames[m_770]) + 10)), 0.0f));
+    mtx2.concat(mMtx_c::createTrans(0.0f, -(*(((float *) &mpArcNames[mPlayerMode]) + 10)), 0.0f));
     mtx2.multVecZero(mHeadPosMaybe);
 }
 
@@ -147,19 +164,188 @@ void dPlayerMdl_c::play() {
     mMatClrAnm1.play();
     getBodyMdl()->play();
 
-    mInfo[m_770].mMdl2.play();
-    if (mCurrHeadPatID == 1) {
+    getMdl2().play();
+    if (mCurrTexAnmType == 1) {
         if (mNextPatSwitchTimer != 0) {
-            getHeadTexAnm()->setRate(0.0f, 1);
+            getHeadTexAnm().setRate(0.0f, 1);
             mNextPatSwitchTimer--;
         } else {
-            getHeadTexAnm()->setRate(1.0f, 1);
-            if (getHeadTexAnm()->checkFrame(0.0f, 1)) {
+            getHeadTexAnm().setRate(1.0f, 1);
+            if (getHeadTexAnm().checkFrame(0.0f, 1)) {
                 mNextPatSwitchTimer = cM::rndF(60.0f) + 3;
             }
         }
     }
-    getHeadTexAnm()->play(1);
+    getHeadTexAnm().play(1);
     mTexAnm1.play();
     m_780 -= m_782;
+}
+
+void dPlayerMdl_c::draw() {
+    getBodyMdl()->entry();
+    getMdl2().entry();
+    setSoftLight(*getBodyMdl());
+    setSoftLight(getMdl2());
+}
+
+void dPlayerMdl_c::setInitTexAnm() {
+    nw4r::g3d::ResAnmTexPat pat = m_20c.GetResAnmTexPat("PH_wait");
+    _setHeadTexAnm(pat, m3d::FORWARD_LOOP, 0.0f, 0.0f);
+}
+
+void dPlayerMdl_c::_setHeadTexAnm(nw4r::g3d::ResAnmTexPat &anmTexPat, m3d::playMode_e playMode, float rate, float frame) {
+    getHeadTexAnm().setAnm(getMdl2(), anmTexPat, 1, playMode);
+    getHeadTexAnm().setRate(rate, 1);
+    getHeadTexAnm().setFrame(frame, 1);
+    getMdl2().setAnm(getHeadTexAnm());
+}
+
+void dPlayerMdl_c::setTexAnmType(TexAnmType_e anmType) {
+    if (mCurrTexAnmType == anmType) {
+        return;
+    }
+
+    mCurrTexAnmType = anmType;
+    const TexAnmData_s &texAnmData = scTexAnmData[anmType];
+    nw4r::g3d::ResAnmTexPat texPat = m_20c.GetResAnmTexPat(texAnmData.mName);
+    _setHeadTexAnm(texPat, texAnmData.mPlayMode, texAnmData.mRate, texAnmData.mFrame);
+
+    if (mCurrTexAnmType == TEX_ANM_NONE) {
+        mNextPatSwitchTimer = 0;
+    }
+}
+
+void dPlayerMdl_c::resetTexAnmType() {
+    TexAnmType_e prevAnmType = mCurrTexAnmType;
+    switch (prevAnmType) {
+        case TEX_ANM_NONE:
+            setInitTexAnm();
+            break;
+        default:
+            mCurrTexAnmType = TEX_ANM_NONE;
+            setTexAnmType(prevAnmType);
+            break;
+    }
+}
+
+m3d::anmTexPat_c &dPlayerMdl_c::getHeadTexAnm() {
+    if (mPlayerMode == PLAYER_MODE_YOSHI) {
+        return mTexAnmYoshi;
+    } else if (mPlayerMode == PLAYER_MODE_PENGUIN) {
+        return mTexAnmPenguin;
+    } else {
+        return mTexAnm2;
+    }
+}
+
+bool dPlayerMdl_c::setPersonalRideAnm(int anmID, nw4r::g3d::ResAnmChr *outAnmChr) {
+    if (mPlayerMode == PLAYER_MODE_PENGUIN) {
+        bool found = false;
+        switch (anmID) {
+            case PLAYER_ANIM_HIP_TO_STOOP:
+                *outAnmChr = m_210.GetResAnmChr("P_Rhip_to_stoop");
+                found = true;
+                break;
+            case PLAYER_ANIM_STOOP:
+                *outAnmChr = m_210.GetResAnmChr("P_Rstoop");
+                found = true;
+                break;
+            case PLAYER_ANIM_STOOP_START:
+                *outAnmChr = m_210.GetResAnmChr("P_Rstoop_start");
+                found = true;
+                break;
+            case PLAYER_ANIM_SLIP_TO_STOOP:
+                *outAnmChr = m_210.GetResAnmChr("P_Rslip_to_stoop");
+                found = true;
+                break;
+            case PLAYER_ANIM_RS_EAT:
+                *outAnmChr = m_210.GetResAnmChr("P_RSeat");
+                found = true;
+                break;
+            case PLAYER_ANIM_RS_EAT_OUT:
+                *outAnmChr = m_210.GetResAnmChr("P_RSeat_out");
+                found = true;
+                break;
+            case PLAYER_ANIM_RS_EAT_SUCCESS:
+                *outAnmChr = m_210.GetResAnmChr("P_RSeat_success");
+                found = true;
+                break;
+            case PLAYER_ANIM_RS_EAT_FAIL:
+                *outAnmChr = m_210.GetResAnmChr("P_RSeat_fail");
+                found = true;
+                break;
+            case PLAYER_ANIM_RS_EAT_SUCCESSB:
+                *outAnmChr = m_210.GetResAnmChr("P_RSeat_successB");
+                found = true;
+                break;
+            case PLAYER_ANIM_S_JUMP:
+                *outAnmChr = m_210.GetResAnmChr("P_Rsjump");
+                found = true;
+                break;
+            case PLAYER_ANIM_S_JUMP2:
+                *outAnmChr = m_210.GetResAnmChr("P_RSjump2");
+                found = true;
+                break;
+            case PLAYER_ANIM_S_JUMPED:
+                *outAnmChr = m_210.GetResAnmChr("P_RSjumped");
+                found = true;
+                break;
+        }
+
+        if (found) {
+            mFlags |= 0x800000;
+            m_164 |= 0x800000;
+            return true;
+        }
+    }
+
+    return false;
+}
+
+bool dPlayerMdl_c::setPersonalAnm(int anmID, nw4r::g3d::ResAnmChr *outAnmChr, int p3) {
+    char anmNameBuf[32];
+    if (getJumpAnmName(anmID, anmNameBuf, p3)) {
+        *outAnmChr = m_210.GetResAnmChr(anmNameBuf);
+        return true;
+    }
+
+    if (mPlayerMode == PLAYER_MODE_YOSHI) {
+        bool found = false;
+        switch (anmID) {
+            case PLAYER_ANIM_LOW_WALK_START:
+                *outAnmChr = m_210.GetResAnmChr("P_Plow_walk_start");
+                found = true;
+                break;
+            case PLAYER_ANIM_LOW_WALK:
+                *outAnmChr = m_210.GetResAnmChr("P_Plow_walk");
+                found = true;
+                break;
+        }
+        if (found) {
+            if (!p3) {
+                mFlags |= 0x1000000;
+            }
+            m_164 |= 0x1000000;
+            return true;
+        }
+    } else if (mPlayerMode == PLAYER_MODE_PENGUIN && scPyAnmData[anmID].mPenguinName != nullptr) {
+        *outAnmChr = m_210.GetResAnmChr(scPyAnmData[anmID].mPenguinName);
+        if (!p3) {
+            mFlags |= 0x800000;
+        }
+        m_164 |= 0x800000;
+        return true;
+    }
+
+    return false;
+}
+
+bool dPlayerMdl_c::getJumpAnmName(int jumpType, char *anmNameBuf, int p4) {
+    if (dPyMdlBase_c::getJumpAnmName(jumpType, anmNameBuf, p4)) {
+        if (mPlayerMode == PLAYER_MODE_PENGUIN && jumpType == 5 && mJumpAnmVariant == 0) {
+            strncpy(anmNameBuf, "P_jump", 0x20);
+        }
+        return true;
+    }
+    return false;
 }
