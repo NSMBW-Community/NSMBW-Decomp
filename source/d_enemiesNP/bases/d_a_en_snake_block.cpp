@@ -57,7 +57,7 @@ void daEnSnakeBlock_c::dBlock_c::draw(const mVec3_c &offset) {
     mVec3_c drawPos = mPos + offset;
     dActor_c::changePosAngle(&drawPos, nullptr, 1);
 
-    mMtx_c mtx = mMtx_c::createTrans(drawPos);
+    mMtx_c mtx = mMtx_c::createTrans(drawPos.x, drawPos.y, drawPos.z);
     mModel.setLocalMtx(&mtx);
 
     mModel.setScale(mVec3_c(1.0f, 1.0f, 1.0f));

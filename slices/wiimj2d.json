@@ -409,6 +409,13 @@
             }
         },
         {
+            "source": "dol/bases/d_player_model.cpp",
+            "nonMatching": true,
+            "memoryRanges": {
+                ".text": "0xcc740-0xceca0"
+            }
+        },
+        {
             "source": "dol/bases/d_player_model_base.cpp",
             "memoryRanges": {
                 ".text": "0xceca0-0xd0630",
