@@ -1,6 +1,8 @@
 #pragma once
 
 #include <game/bases/d_player_model_base.hpp>
+#include <game/bases/d_mario_mdl.hpp>
+#include <game/bases/d_yoshi_mdl.hpp>
 
 class dPyAnm_HIO_c {
 public:
@@ -40,22 +42,10 @@ public:
     float mData[4];
 };
 
-class dMarioMdl_c : public dPyMdlBase_c {
-    u8 mPad[0x668];
-public:
-    dMarioMdl_c(u8 modelType);
-};
-
 class dKinopioMdl_c : public dPyMdlBase_c {
     u8 mPad[0x670];
 public:
     dKinopioMdl_c(u8 modelType);
-};
-
-class dYoshiMdl_c : public dPyMdlBase_c {
-    u8 mPad[0x1f8];
-public:
-    dYoshiMdl_c(u8 modelType);
 };
 
 class dPyMdlBase_HIO_c {

@@ -4,6 +4,8 @@
 
 class dYoshiMdl_c : public dPyMdlBase_c {
 public:
+    dYoshiMdl_c(u8 modelType);
+
     enum YoshiColor_e {};
 
     YoshiColor_e getColor() { return mColor; }

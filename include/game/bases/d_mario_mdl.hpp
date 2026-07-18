@@ -9,5 +9,9 @@ public:
         TYPE_1
     };
 
-    void setHeadID(HeadType_e type);
+    dMarioMdl_c(u8 modelType);
+
+    void setHeadID(HeadType_e type); ///< @unofficial
+
+    u8 mPad[0x668];
 };
