@@ -429,6 +429,15 @@
             }
         },
         {
+            "source": "dol/bases/d_player_model_manager.cpp",
+            "nonMatching": true,
+            "memoryRanges": {
+                ".text": "0xd0630-0xd0a10",
+                ".data": "0x1a6f8-0x1a708",
+                ".bss": "0x1f710-0x20070"
+            }
+        },
+        {
             "source": "dol/bases/d_rail.cpp",
             "memoryRanges": {
                 ".text": "0xd2a30-0xd30d0",
