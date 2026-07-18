@@ -40,12 +40,15 @@ public:
 
     dPlayerMdl_c(u8);
     ~dPlayerMdl_c() override;
+    int getFaceJointIdx() const override { return m_77c; }
     void createModel() override;
     void initialize() override;
     void play() override;
     void _calc() override;
     void calc2() override;
     void draw() override;
+    m3d::mdl_c *getBodyMdl() override { return &mInfo[mPyPlayerMode].mMdl1; }
+    const nw4r::g3d::ResFile *getAnmResFile() const override { return &m_210; }
     void setPlayerMode(int mode) override;
     void setColorType(u8 type) override;
     void setDark(int) override;
@@ -60,6 +63,12 @@ public:
     bool setPersonalAnm(int anmID, nw4r::g3d::ResAnmChr *outAnmChr, int) override;
     bool setPersonalRideAnm(int anmID, nw4r::g3d::ResAnmChr *outAnmChr) override;
     void setTexAnmType(TexAnmType_e anmType) override;
+    void setPropelRollSpeed(s16 speed) override; // [TODO: implement as inlines]
+    s16 getPropelRollSpeed() const override; // [TODO: implement as inlines]
+    void setPropelRollAngle(s16 speed) override; // [TODO: implement as inlines]
+    s16 getPropelRollAngle() const override; // [TODO: implement as inlines]
+    void setPropelScale(float scale) override; // [TODO: implement as inlines]
+    float *getLegLengthP(u8) override; // [TODO: implement as inlines]
 
     virtual void FUN_800d4750(int mode); ///< @unofficial
     virtual void callbackTimingA(nw4r::g3d::ChrAnmResult *anmRes, nw4r::g3d::ResNode resNode);
@@ -105,5 +114,6 @@ public:
     other_inf_s mOtherInf2[4];
     other_inf_s mOtherInf1[4];
 
+    static const int scPropelRollBaseSpeed;
     static const TexAnmData_s scTexAnmData[TEX_ANM_COUNT];
 };

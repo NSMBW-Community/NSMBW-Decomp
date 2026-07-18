@@ -1375,7 +1375,7 @@ void dAcPy_c::executeState_CannonJump() {
                 }
             }
             mVec3_c tmp(m_12a8.x - mPos.x, m_12a8.y - mPos.y, 0.0f);
-            if (PSVECMag(tmp) >= 8.0f) {
+            if (tmp.Len() >= 8.0f) {
                 if (!isStatus(STATUS_8E)) {
                     offStatus(STATUS_7F);
                 }

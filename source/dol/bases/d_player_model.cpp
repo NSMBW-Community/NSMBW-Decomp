@@ -6,22 +6,7 @@
 #include <game/cLib/c_lib.hpp>
 #include <nw4r/ut.h>
 
-const dPyMdlBase_c::TexAnmData_s dPlayerMdl_c::scTexAnmData[TEX_ANM_COUNT] = {
-    { "PH_wait", m3d::FORWARD_LOOP, 0.0f, 0.0f },
-    { "PH_wait", m3d::FORWARD_LOOP, 0.0f, 0.0f },
-    { "PH_goal_puton_cap", m3d::FORWARD_ONCE, 1.0f, 0.0f },
-    { "PH_PL_goal_puton_cap", m3d::FORWARD_ONCE, 1.0f, 0.0f },
-    { "PH_P_goal_puton_cap", m3d::FORWARD_ONCE, 1.0f, 0.0f },
-    { "PH_P_Rgoal_puton_cap", m3d::FORWARD_ONCE, 1.0f, 0.0f },
-    { "PH_dam", m3d::FORWARD_ONCE, 1.0f, 0.0f },
-    { "PH_jump", m3d::FORWARD_ONCE, 1.0f, 0.0f },
-    { "PH_jumped", m3d::FORWARD_ONCE, 1.0f, 0.0f },
-    { "PH_throw", m3d::FORWARD_ONCE, 1.0f, 0.0f },
-    { "PH_courese_in", m3d::FORWARD_ONCE, 1.0f, 0.0f },
-    { "PH_coin_comp", m3d::FORWARD_ONCE, 1.0f, 0.0f },
-    { "PH_dm_escort", m3d::FORWARD_ONCE, 1.0f, 0.0f },
-    { "PH_dm_glad", m3d::FORWARD_LOOP, 1.0f, 0.0f }
-};
+const int dPlayerMdl_c::scPropelRollBaseSpeed = 0x400;
 
 dPlayerMdl_c::dPlayerMdl_c(u8 val) : dPyMdlBase_c(val),
     mPyPlayerMode(PLAYER_MODE_NORMAL), mOtherPlayerMode(PLAYER_MODE_NORMAL), m_77c(0),
@@ -76,23 +61,23 @@ void dPlayerMdl_c::createPlayerModel() {
 
         resNode = mdlMain.GetResNode(3);
         nodePos = resNode.GetTranslate();
-        mOtherInf1[i].len1 = VEC3Len(&nodePos);
-        mOtherInf1[i].lensq1 = VEC3LenSq(&nodePos);
+        mOtherInf1[i].len1 = nodePos.Len();
+        mOtherInf1[i].lensq1 = nodePos.LenSq();
 
         resNode = mdlMain.GetResNode(4);
         nodePos = resNode.GetTranslate();
-        mOtherInf1[i].len2 = VEC3Len(&nodePos);
-        mOtherInf1[i].lensq2 = VEC3LenSq(&nodePos);
+        mOtherInf1[i].len2 = nodePos.Len();
+        mOtherInf1[i].lensq2 = nodePos.LenSq();
 
         resNode = mdlMain.GetResNode(6);
         nodePos = resNode.GetTranslate();
-        mOtherInf2[i].len1 = VEC3Len(&nodePos);
-        mOtherInf2[i].lensq1 = VEC3LenSq(&nodePos);
+        mOtherInf2[i].len1 = nodePos.Len();
+        mOtherInf2[i].lensq1 = nodePos.LenSq();
 
         resNode = mdlMain.GetResNode(7);
         nodePos = resNode.GetTranslate();
-        mOtherInf2[i].len2 = VEC3Len(&nodePos);
-        mOtherInf2[i].lensq2 = VEC3LenSq(&nodePos);
+        mOtherInf2[i].len2 = nodePos.Len();
+        mOtherInf2[i].lensq2 = nodePos.LenSq();
     }
 
     nw4r::g3d::ResAnmChr anm = m_210.GetResAnmChr("wait");
@@ -103,27 +88,25 @@ void dPlayerMdl_c::createPlayerModel() {
     mBlendAnm.attach(0, &getFootAnm(), 1.0f);
     mBlendAnm.attach(1, &getBodyAnm(), 1.0f);
 
-    nw4r::g3d::ResMdl starMdl;
-    nw4r::g3d::ResAnmClr starAnm;
-
-    static const char *starAnmName1[] = {
+    static const char *starAnmNameB[] = {
         "PB_star_color",
         "PB_star_color2",
         "PB_star_color2"
     };
-    static const char *starAnmName2[] = {
+
+    mdlMain = m_20c.GetResMdl(mpArcNames[2]);
+    nw4r::g3d::ResAnmClr starAnm1 = m_210.GetResAnmClr(starAnmNameB[m_180]);
+    mMatClrAnm1.create(mdlMain, starAnm1, &mAllocator);
+
+    static const char *starAnmNameH[] = {
         "PH_star_color",
         "PH_star_color2",
         "PH_star_color2"
     };
 
-    starMdl = m_20c.GetResMdl(mpArcNames[2]);
-    starAnm = m_210.GetResAnmClr(starAnmName1[m_180]);
-    mMatClrAnm1.create(starMdl, starAnm, &mAllocator, nullptr, 1);
-
-    starMdl = m_20c.GetResMdl(mpArcNames[6]);
-    starAnm = m_210.GetResAnmClr(starAnmName2[m_180]);
-    mMatClrAnm2.create(starMdl, starAnm, &mAllocator, nullptr, 1);
+    nw4r::g3d::ResMdl starMdl2 = m_20c.GetResMdl(mpArcNames[6]);
+    nw4r::g3d::ResAnmClr starAnm2 = m_210.GetResAnmClr(starAnmNameH[m_180]);
+    mMatClrAnm2.create(starMdl2, starAnm2, &mAllocator);
 }
 
 void dPlayerMdl_c::_calc() {
@@ -196,6 +179,23 @@ void dPlayerMdl_c::_setHeadTexAnm(nw4r::g3d::ResAnmTexPat &anmTexPat, m3d::playM
     getHeadTexAnm().setFrame(frame, 1);
     getMdl2().setAnm(getHeadTexAnm());
 }
+
+const dPyMdlBase_c::TexAnmData_s dPlayerMdl_c::scTexAnmData[TEX_ANM_COUNT] = {
+    { "PH_wait", m3d::FORWARD_LOOP, 0.0f, 0.0f },
+    { "PH_wait", m3d::FORWARD_LOOP, 1.0f, 0.0f },
+    { "PH_goal_puton_cap", m3d::FORWARD_ONCE, 1.0f, 0.0f },
+    { "PH_PL_goal_puton_cap", m3d::FORWARD_ONCE, 1.0f, 0.0f },
+    { "PH_P_goal_puton_cap", m3d::FORWARD_ONCE, 1.0f, 0.0f },
+    { "PH_P_Rgoal_puton_cap", m3d::FORWARD_ONCE, 1.0f, 0.0f },
+    { "PH_dam", m3d::FORWARD_ONCE, 1.0f, 0.0f },
+    { "PH_jump", m3d::FORWARD_ONCE, 1.0f, 0.0f },
+    { "PH_jumped", m3d::FORWARD_ONCE, 1.0f, 0.0f },
+    { "PH_throw", m3d::FORWARD_ONCE, 1.0f, 0.0f },
+    { "PH_courese_in", m3d::FORWARD_ONCE, 1.0f, 0.0f },
+    { "PH_coin_comp", m3d::FORWARD_ONCE, 1.0f, 0.0f },
+    { "PH_dm_escort", m3d::FORWARD_ONCE, 1.0f, 0.0f },
+    { "PH_dm_glad", m3d::FORWARD_LOOP, 1.0f, 0.0f }
+};
 
 void dPlayerMdl_c::setTexAnmType(TexAnmType_e anmType) {
     if (mCurrTexAnmType == anmType) {
@@ -310,11 +310,11 @@ bool dPlayerMdl_c::setPersonalAnm(int anmID, nw4r::g3d::ResAnmChr *outAnmChr, in
         bool found = false;
         switch (anmID) {
             case PLAYER_ANIM_LOW_WALK_START:
-                *outAnmChr = m_210.GetResAnmChr("P_Plow_walk_start");
+                *outAnmChr = m_210.GetResAnmChr("PL_low_walk_start");
                 found = true;
                 break;
             case PLAYER_ANIM_LOW_WALK:
-                *outAnmChr = m_210.GetResAnmChr("P_Plow_walk");
+                *outAnmChr = m_210.GetResAnmChr("PL_low_walk");
                 found = true;
                 break;
         }
@@ -431,7 +431,7 @@ void dPlayerMdl_c::FUN_800d4750(int mode) {
 }
 
 void dPlayerMdl_c::setPlayerMode(int mode) {
-    static int l_player_model_dt[] = { 1, 0, 0, 1, 2, 3 };
+    static const int l_player_model_dt[] = { 1, 0, 0, 1, 2, 3, 0 };
 
     mPlayerMode = mode;
     FUN_800d4750(l_player_model_dt[mode]);
@@ -643,8 +643,8 @@ void dPlayerMdl_c::setStarEffect() {
                     idx = 1;
                     break;
             }
-            static const char *efNames[] = { "Wm_mr_starkira", "Wm_mr_starkira_s" };
-            dEf::createPlayerEffect_change(mAnotherPlayerID, &mLevelEf1, efNames[idx], 0, &v, nullptr, &mScale);
+            static const char *sc_starEffectID[] = { "Wm_mr_starkira", "Wm_mr_starkira_s" };
+            dEf::createPlayerEffect_change(mAnotherPlayerID, &mLevelEf1, sc_starEffectID[idx], 0, &v, nullptr, &mScale);
             break;
         }
         case 1:
