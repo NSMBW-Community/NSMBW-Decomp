@@ -40,6 +40,24 @@ public:
     float mData[4];
 };
 
+class dMarioMdl_c : public dPyMdlBase_c {
+    u8 mPad[0x668];
+public:
+    dMarioMdl_c(u8 modelType);
+};
+
+class dKinopioMdl_c : public dPyMdlBase_c {
+    u8 mPad[0x670];
+public:
+    dKinopioMdl_c(u8 modelType);
+};
+
+class dYoshiMdl_c : public dPyMdlBase_c {
+    u8 mPad[0x1f8];
+public:
+    dYoshiMdl_c(u8 modelType);
+};
+
 class dPyMdlBase_HIO_c {
 public:
     u8 changeHioType(u8 hioType);
@@ -76,20 +94,29 @@ public:
 
 class dPyMdlMng_c {
 public:
-    enum ModelType_e {};
+    enum ModelType_e {
+        TYPE_MARIO1,
+        TYPE_MARIO2,
+        TYPE_TOAD1,
+        TYPE_TOAD2,
+        TYPE_TOAD3,
+        TYPE_YOSHI,
+    };
     enum SceneType_e {
         SCENE_TYPE_0
     };
 
     dPyMdlMng_c(ModelType_e modelType);
+
     virtual ~dPyMdlMng_c();
-    void calc(mMtx_c &);
-    void calc(mVec3_c, mAng3_c, mVec3_c);
+    void construct(u8 modelType);
+    void create(u8 playerNo, u8 powerup, SceneType_e sceneType);
+
+    void play();
+    void calc(mMtx_c &mtx);
+    void calc(mVec3_c pos, mAng3_c rot, mVec3_c scale);
     void calc2();
     void draw();
-    void play();
-
-    void create(u8 playerNo, u8 powerup, SceneType_e sceneType);
 
     static dPyAnm_HIO_c &getHIO(u8 anmID) {
         return m_hio.mPyAnm.mAnm[anmID];
@@ -164,7 +191,7 @@ public:
     }
 
     dPyMdlBase_c *mpMdl;
-    u8 mPad[0x4];
+    u32 m_0c;
 
     static dPyMdlBase_HIO_c *getHIO() {
         return &m_hio;
