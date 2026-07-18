@@ -412,7 +412,11 @@
             "source": "dol/bases/d_player_model.cpp",
             "nonMatching": true,
             "memoryRanges": {
-                ".text": "0xcc740-0xceca0"
+                ".text": "0xcc740-0xceca0",
+                ".data": "0x19780-0x19ab0",
+                ".rodata": "0x3570-0x3670",
+                ".sdata": "0x610-0x660",
+                ".sdata2": "0x19b0-0x19f0"
             }
         },
         {
