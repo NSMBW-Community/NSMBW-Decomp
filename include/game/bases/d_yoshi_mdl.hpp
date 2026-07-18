@@ -12,4 +12,5 @@ public:
 
     u8 mPad[0x40];
     YoshiColor_e mColor;
+    u8 mPad2[0x1b4];
 };

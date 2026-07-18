@@ -430,9 +430,9 @@
         },
         {
             "source": "dol/bases/d_player_model_manager.cpp",
-            "nonMatching": true,
             "memoryRanges": {
                 ".text": "0xd0630-0xd0a10",
+                ".ctors": "0x138-0x13c",
                 ".data": "0x1a6f8-0x1a708",
                 ".bss": "0x1f710-0x20070"
             }
