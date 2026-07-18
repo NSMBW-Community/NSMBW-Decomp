@@ -10,16 +10,18 @@ public:
     class nodeCallback_c : public m3d::mdl_c::callback_c {
     public:
         nodeCallback_c(dPlayerMdl_c *owner) : mpOwner(owner) {}
-        virtual void timingA(ulong nodeId, nw4r::g3d::ChrAnmResult *anmRes, nw4r::g3d::ResMdl resMdl);
-        virtual void timingB(ulong nodeId, nw4r::g3d::WorldMtxManip *manip, nw4r::g3d::ResMdl resMdl);
+        ~nodeCallback_c() override {}
+        void timingA(ulong nodeId, nw4r::g3d::ChrAnmResult *anmRes, nw4r::g3d::ResMdl resMdl) override;
+        void timingB(ulong nodeId, nw4r::g3d::WorldMtxManip *manip, nw4r::g3d::ResMdl resMdl) override;
 
         dPlayerMdl_c *mpOwner;
     };
     class nodeCallbackPLH_c : public m3d::mdl_c::callback_c {
     public:
         nodeCallbackPLH_c(dPlayerMdl_c *owner) : mpOwner(owner) {}
-        virtual void timingA(ulong nodeId, nw4r::g3d::ChrAnmResult *anmRes, nw4r::g3d::ResMdl resMdl);
-        virtual void timingB(ulong nodeId, nw4r::g3d::WorldMtxManip *manip, nw4r::g3d::ResMdl resMdl);
+        ~nodeCallbackPLH_c() override {}
+        void timingA(ulong nodeId, nw4r::g3d::ChrAnmResult *anmRes, nw4r::g3d::ResMdl resMdl) override;
+        void timingB(ulong nodeId, nw4r::g3d::WorldMtxManip *manip, nw4r::g3d::ResMdl resMdl) override;
 
         dPlayerMdl_c *mpOwner;
     };
