@@ -50,6 +50,9 @@ public:
 
 class dPyMdlBase_HIO_c {
 public:
+    dPyMdlBase_HIO_c();
+    ~dPyMdlBase_HIO_c();
+
     u8 changeHioType(u8 hioType);
     float getValue(dPyModelData_s model, u8 powerup); ///< @unofficial
 
@@ -79,7 +82,7 @@ public:
     u8 mPad2[0x4];
     dPyAnmMain_HIO_c mPyAnm;
     dPyModel_HIO_c mPyModel[3];
-    dYoshiModel_HIO_c mYoshiModel[3];
+    dYoshiModel_HIO_c mYoshiModel;
 };
 
 class dPyMdlMng_c {

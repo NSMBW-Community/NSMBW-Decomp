@@ -30,7 +30,11 @@ void dPyMdlMng_c::create(u8 a, u8 b, dPyMdlMng_c::SceneType_e c) {
     mpMdl->create(a, b, c);
 }
 
-dPyMdlMng_c::~dPyMdlMng_c() {}
+dPyMdlMng_c::~dPyMdlMng_c() {
+    if (mpMdl) {
+        delete mpMdl;
+    }
+}
 
 void dPyMdlMng_c::play() {
     mpMdl->play();
