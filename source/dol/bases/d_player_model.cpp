@@ -466,7 +466,7 @@ void dPlayerMdl_c::setDark(int value) {
     nw4r::g3d::ResMdl mdl = getMdl2().getResMdl();
     nw4r::g3d::ResMatTevColor matTevColor;
     GXColor color;
-    for (int i = 0; i < mdl.GetResMatNumEntries(); i++) {
+    for (ulong i = 0; i < mdl.GetResMatNumEntries(); i++) {
         matTevColor = mdl.GetResMat(i).GetResMatTevColor();
         matTevColor.GXGetTevColor(GX_TEVREG1, &color);
         color.a *= factor;
@@ -528,7 +528,7 @@ void dPlayerMdl_c::removeStarAnm(m3d::mdl_c *mdl) {
     changeLightTexture(mdl, GX_TEXMAP2);
     mdl->removeAnm(nw4r::g3d::ScnMdlSimple::ANMOBJTYPE_MATCLR);
     d3d::resetTevColorAll(mdl, GX_TEVREG0, false);
-    d3d::resetTevColorAll(mdl, GX_TEVREG2, false);
+    d3d::resetTevKColorAll(mdl, GX_KCOLOR3, false);
 }
 
 void dPlayerMdl_c::calcBlendRate() {
@@ -651,13 +651,13 @@ void dPlayerMdl_c::setStarEffect() {
             mLevelEf1.createEffect("Wm_2d_mrstarkira", nullptr, &v, 0, &sc);
             break;
         case 2:
-            dEf::createPlayerEffect_change(mAnotherPlayerID, &mLevelEf1, "Wm_2d_mrstarkira", 0, &v, nullptr, &sc);
+            dEf::createPlayerEffect(mAnotherPlayerID, &mLevelEf1, "Wm_2d_mrstarkira", 0, &v, nullptr, &sc);
             break;
     }
     if (m_180 == 0) {
         mVec3_c s = scale * mScale;
         mVec3_c jointPos;
         getJointPos(&jointPos, 8);
-        dEf::createPlayerEffect_change(mAnotherPlayerID, &mLevelEf2, "Wm_mr_startail", 0, &jointPos, nullptr, &s);
+        dEf::createPlayerEffect(mAnotherPlayerID, &mLevelEf2, "Wm_mr_startail", 0, &jointPos, nullptr, &s);
     }
 }
