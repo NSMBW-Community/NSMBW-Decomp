@@ -629,12 +629,12 @@ bool dWmEnemy_c::CheckIsHitToPlayer() {
     }
     if (hitWait) {
         daWmPlayer_c::ms_instance->m_2fc = true;
-        dCsSeqMng_c::ms_instance->FUN_801017c0(dCsSeqMng_c::SMC_DEMO_START_BATTLE, this, 0, 0x80);
+        dCsSeqMng_c::ms_instance->FUN_801017c0(dCsSeqMng_c::SMC_DEMO_START_BATTLE, this, nullptr, 0x80);
         deleteSound();
         return true;
     } else {
         if (hitMove) {
-            dCsSeqMng_c::ms_instance->FUN_801017c0(dCsSeqMng_c::SMC_DEMO_START_BATTLE, this, 0, 0x80);
+            dCsSeqMng_c::ms_instance->FUN_801017c0(dCsSeqMng_c::SMC_DEMO_START_BATTLE, this, nullptr, 0x80);
             deleteSound();
             return true;
         } else {

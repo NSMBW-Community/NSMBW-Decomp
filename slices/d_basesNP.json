@@ -123,6 +123,17 @@
             }
         },
         {
+            "source": "d_basesNP/bases/d_a_wm_peach_castle.cpp",
+            "nonMatching": true,
+            "memoryRanges": {
+                ".text": "0x176cd0-0x177690",
+                ".ctors": "0x424-0x428",
+                ".rodata": "0x8ed0-0x8ef8",
+                ".data": "0x46940-0x46be0",
+                ".bss": "0x10030-0x10040"
+            }
+        },
+        {
             "source": "d_basesNP/bases/d_s_autoselect.cpp",
             "memoryRanges": {
                 ".text": "0x1b13f0-0x1b14a0",
