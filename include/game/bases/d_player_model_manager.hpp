@@ -2,6 +2,7 @@
 
 #include <game/bases/d_player_model_base.hpp>
 #include <game/bases/d_mario_mdl.hpp>
+#include <game/bases/d_kinopio_mdl.hpp>
 #include <game/bases/d_yoshi_mdl.hpp>
 
 class dPyAnm_HIO_c {
@@ -40,12 +41,6 @@ public:
 class dYoshiModel_HIO_c {
 public:
     float mData[4];
-};
-
-class dKinopioMdl_c : public dPyMdlBase_c {
-    u8 mPad[0x670];
-public:
-    dKinopioMdl_c(u8 modelType);
 };
 
 class dPyMdlBase_HIO_c {

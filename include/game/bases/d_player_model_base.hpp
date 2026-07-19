@@ -364,6 +364,7 @@ public:
     s16 mAngX;
     s16 mAngY;
     s16 mAngZ;
+    /* 2 padding bytes */
     u32 m_204;
     u32 m_208;
 

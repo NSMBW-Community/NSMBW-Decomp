@@ -40,6 +40,24 @@ public:
         float lensq2;
     };
 
+    ///< @unofficial
+    struct ModelInfo_s {
+        const char * mModelArcName;
+        const char * mAnimArcName;
+        const char * mModelNameBody;
+        const char * mModelNameBodySmall;
+        const char * mModelNameBodyPropeller;
+        const char * mModelNameBodyPenguin;
+        const char * mModelNameHead;
+        const char * mModelNameHeadSmall;
+        const char * mModelNameHeadPropeller;
+        const char * mModelNameHeadPenguin;
+        float m_28;
+        float m_2c;
+        float m_30;
+        float m_34;
+    };
+
     dPlayerMdl_c(u8);
     ~dPlayerMdl_c() override;
     int getFaceJointIdx() const override { return m_77c; }
@@ -105,7 +123,7 @@ public:
     m3d::anmMatClr_c mMatClrAnm2;
     PlayerMode_e mPyPlayerMode;
     PlayerMode_e mOtherPlayerMode;
-    const char **mpArcNames; ///< [This is wrong, seems to be some struct]
+    const ModelInfo_s *mpArcNames;
     u32 m_77c;
     s16 m_780;
     s16 m_782;
