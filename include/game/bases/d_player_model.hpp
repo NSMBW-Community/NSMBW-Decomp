@@ -40,22 +40,21 @@ public:
         float lensq2;
     };
 
+    enum ModeName_e {
+        MODEL_NAME_NORMAL,
+        MODEL_NAME_SMALL,
+        MODEL_NAME_PROPELLER,
+        MODEL_NAME_PENGUIN,
+        MODEL_NAME_COUNT
+    };
+
     ///< @unofficial
     struct ModelInfo_s {
         const char * mModelArcName;
         const char * mAnimArcName;
-        const char * mModelNameBody;
-        const char * mModelNameBodySmall;
-        const char * mModelNameBodyPropeller;
-        const char * mModelNameBodyPenguin;
-        const char * mModelNameHead;
-        const char * mModelNameHeadSmall;
-        const char * mModelNameHeadPropeller;
-        const char * mModelNameHeadPenguin;
-        float m_28;
-        float m_2c;
-        float m_30;
-        float m_34;
+        const char * mModelNameBody[MODEL_NAME_COUNT];
+        const char * mModelNameHead[MODEL_NAME_COUNT];
+        float m_28[MODEL_NAME_COUNT];
     };
 
     dPlayerMdl_c(u8);

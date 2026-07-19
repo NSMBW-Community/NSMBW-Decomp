@@ -25,16 +25,16 @@ void dMarioMdl_c::createPlayerModel() {
     dPlayerMdl_c::createPlayerModel();
 
     nw4r::g3d::ResAnmTexPat wait_tex_pat = m_20c.GetResAnmTexPat("Ph_wait");
-    nw4r::g3d::ResMdl res_mdl_head = m_20c.GetResMdl(mpArcNames->mModelNameHead);
+    nw4r::g3d::ResMdl res_mdl_head = m_20c.GetResMdl(mpArcNames->mModelNameHead[MODEL_NAME_NORMAL]);
     mTexAnm2.create(res_mdl_head, wait_tex_pat, &mAllocator, 2);
 
-    nw4r::g3d::ResMdl res_mdl_peng = m_20c.GetResMdl(mpArcNames->mModelNameHeadPenguin);
+    nw4r::g3d::ResMdl res_mdl_peng = m_20c.GetResMdl(mpArcNames->mModelNameHead[MODEL_NAME_PENGUIN]);
     mTexAnmPenguin.create(res_mdl_peng, wait_tex_pat, &mAllocator, 2);
 
-    nw4r::g3d::ResMdl res_mdl_prop = m_20c.GetResMdl(mpArcNames->mModelNameHeadPropeller);
+    nw4r::g3d::ResMdl res_mdl_prop = m_20c.GetResMdl(mpArcNames->mModelNameHead[MODEL_NAME_PROPELLER]);
     mTexAnmPropeller.create(res_mdl_prop, wait_tex_pat, &mAllocator, 2);
 
-    nw4r::g3d::ResMdl res_mdl_body = m_20c.GetResMdl(mpArcNames->mModelNameBody);
+    nw4r::g3d::ResMdl res_mdl_body = m_20c.GetResMdl(mpArcNames->mModelNameBody[MODEL_NAME_NORMAL]);
     nw4r::g3d::ResAnmTexPat switch_tex_pat = m_20c.GetResAnmTexPat("PB_switch");
     mTexAnm1.create(res_mdl_body, switch_tex_pat, &mAllocator);
 

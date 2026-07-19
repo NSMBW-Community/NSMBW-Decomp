@@ -12,5 +12,13 @@ namespace m3d {
         void attach(int idx, nw4r::g3d::AnmObjChrRes *chrRes, float weight);
         void attach(int idx, m3d::anmChr_c *anmChrRes, float weight);
         void detach(int idx);
+
+        bool create(nw4r::g3d::ResMdl mdl, mAllocator_c *allocator, int count) {
+            return create(mdl, count, allocator, nullptr);
+        }
+
+        bool create(nw4r::g3d::ResMdl mdl, mAllocator_c *allocator) {
+            return create(mdl, allocator, 1);
+        }
     };
 }

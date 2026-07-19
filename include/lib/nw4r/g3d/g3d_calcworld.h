@@ -67,6 +67,7 @@ public:
         }
     }
     void SetMatrix(const math::MTX34 &mtx) { PSMTXCopy(mtx, *mpM); }
+    void ResetMatrix() { PSMTXIdentity(*mpM); }
 
     void GetScale(math::VEC3 *dst) const {
         if (dst) {

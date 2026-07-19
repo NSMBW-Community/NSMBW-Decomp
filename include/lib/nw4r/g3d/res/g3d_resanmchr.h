@@ -271,6 +271,10 @@ public:
         return ofs_to_obj<ResDic>(ref().toChrDataDic).GetIndex(name);
     }
 
+    s32 GetNodeAnmIndex(const char *name) const {
+        return ofs_to_obj<ResDic>(ref().toChrDataDic).GetIndex(name);
+    }
+
     int GetNumFrame() const {
         return ref().info.numFrame;
     }

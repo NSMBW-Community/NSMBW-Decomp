@@ -3,7 +3,7 @@
 #include <game/bases/d_player_model_base.hpp>
 #include <game/bases/d_mario_mdl.hpp>
 #include <game/bases/d_kinopio_mdl.hpp>
-#include <game/bases/d_yoshi_mdl.hpp>
+#include <game/bases/d_yoshi_model.hpp>
 
 class dPyAnm_HIO_c {
 public:

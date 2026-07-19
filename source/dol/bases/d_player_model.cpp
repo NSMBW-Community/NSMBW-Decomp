@@ -32,15 +32,15 @@ void dPlayerMdl_c::initialize() {
 }
 
 void dPlayerMdl_c::getPlayerObjectRes() {
-    m_20c = dResMng_c::m_instance->getRes(mpArcNames[0], "g3d/model.brres");
+    m_20c = dResMng_c::m_instance->getRes(mpArcNames->mModelArcName, "g3d/model.brres");
     m_210 = dResMng_c::m_instance->getRes("P_rcha", "g3d/model.brres");
-    m_214 = dResMng_c::m_instance->getRes(mpArcNames[1], "g3d/model.brres");
+    m_214 = dResMng_c::m_instance->getRes(mpArcNames->mAnimArcName, "g3d/model.brres");
 }
 
 void dPlayerMdl_c::createPlayerModel() {
     nw4r::g3d::ResMdl mdlMain;
     for (int i = 0; i < 4; i++) {
-        nw4r::g3d::ResMdl mdl = m_20c.GetResMdl(mpArcNames[6 + i]);
+        nw4r::g3d::ResMdl mdl = m_20c.GetResMdl(mpArcNames->mModelNameHead[i]);
         mInfo[i].mMdl2.create(mdl, &mAllocator,
             nw4r::g3d::ScnMdl::BUFFER_RESTEV | nw4r::g3d::ScnMdl::ANM_MATCLR | nw4r::g3d::ScnMdl::ANM_TEXPAT |
             nw4r::g3d::ScnMdl::ANM_VIS | nw4r::g3d::ScnMdl::BUFFER_RESMATMISC | nw4r::g3d::ScnMdl::BUFFER_RESGENMODE,
@@ -48,7 +48,7 @@ void dPlayerMdl_c::createPlayerModel() {
         );
         setSoftLight(mInfo[i].mMdl2);
 
-        mdlMain = m_20c.GetResMdl(mpArcNames[2 + i]);
+        mdlMain = m_20c.GetResMdl(mpArcNames->mModelNameBody[i]);
         mInfo[i].mMdl1.create(mdlMain, &mAllocator,
             nw4r::g3d::ScnMdl::BUFFER_RESTEV | nw4r::g3d::ScnMdl::ANM_MATCLR | nw4r::g3d::ScnMdl::ANM_TEXPAT |
             nw4r::g3d::ScnMdl::BUFFER_RESMATMISC | nw4r::g3d::ScnMdl::BUFFER_RESGENMODE,
@@ -94,7 +94,7 @@ void dPlayerMdl_c::createPlayerModel() {
         "PB_star_color2"
     };
 
-    mdlMain = m_20c.GetResMdl(mpArcNames[2]);
+    mdlMain = m_20c.GetResMdl(mpArcNames->mModelNameBody[0]);
     nw4r::g3d::ResAnmClr starAnm1 = m_210.GetResAnmClr(starAnmNameB[m_180]);
     mMatClrAnm1.create(mdlMain, starAnm1, &mAllocator);
 
@@ -104,7 +104,7 @@ void dPlayerMdl_c::createPlayerModel() {
         "PH_star_color2"
     };
 
-    nw4r::g3d::ResMdl starMdl2 = m_20c.GetResMdl(mpArcNames[6]);
+    nw4r::g3d::ResMdl starMdl2 = m_20c.GetResMdl(mpArcNames->mModelNameHead[0]);
     nw4r::g3d::ResAnmClr starAnm2 = m_210.GetResAnmClr(starAnmNameH[m_180]);
     mMatClrAnm2.create(starMdl2, starAnm2, &mAllocator);
 }
@@ -124,7 +124,7 @@ void dPlayerMdl_c::_calc() {
     mMtx_c mtx2;
     getJointMtx(&mtx2, m_77c);
     mtx2.multVecZero(mHatPosMaybe);
-    mtx2.concat(mMtx_c::createTrans(0.0f, -(*(((float *) &mpArcNames[mPyPlayerMode]) + 10)), 0.0f));
+    mtx2.concat(mMtx_c::createTrans(0.0f, -mpArcNames->m_28[mPyPlayerMode], 0.0f));
     mtx2.multVecZero(mHeadPosMaybe);
 }
 
@@ -375,7 +375,7 @@ void dPlayerMdl_c::copyAnm() {
 }
 
 void dPlayerMdl_c::_setFootAnm(nw4r::g3d::ResAnmChr &anmChr, m3d::playMode_e playMode, float rate, float frame, float p5) {
-    nw4r::g3d::ResMdl mdl = m_20c.GetResMdl(*(&mpArcNames[mPyPlayerMode] + 2));
+    nw4r::g3d::ResMdl mdl = m_20c.GetResMdl(mpArcNames->mModelNameBody[mPyPlayerMode]);
     m3d::anmChr_c &anm = getFootAnm();
 
     anm.setAnm(*getBodyMdl(), anmChr, playMode);
@@ -396,7 +396,7 @@ void dPlayerMdl_c::_setFootAnm(nw4r::g3d::ResAnmChr &anmChr, m3d::playMode_e pla
 }
 
 void dPlayerMdl_c::_setBodyAnm(nw4r::g3d::ResAnmChr &anmChr, m3d::playMode_e playMode, float rate, float frame, float p5) {
-    nw4r::g3d::ResMdl mdl = m_20c.GetResMdl(*(&mpArcNames[mPyPlayerMode] + 2));
+    nw4r::g3d::ResMdl mdl = m_20c.GetResMdl(mpArcNames->mModelNameBody[mPyPlayerMode]);
     m3d::anmChr_c &anm = getBodyAnm();
 
     anm.setAnm(*getBodyMdl(), anmChr, playMode);
@@ -410,7 +410,7 @@ void dPlayerMdl_c::_setBodyAnm(nw4r::g3d::ResAnmChr &anmChr, m3d::playMode_e pla
 }
 
 void dPlayerMdl_c::setAnmBind() {
-    nw4r::g3d::ResMdl mdl = m_20c.GetResMdl(*(&mpArcNames[mPyPlayerMode] + 2));
+    nw4r::g3d::ResMdl mdl = m_20c.GetResMdl(mpArcNames->mModelNameBody[mPyPlayerMode]);
 
     nw4r::g3d::AnmObjChr *footObj = getFootAnm().getObj();
     footObj->Release();
