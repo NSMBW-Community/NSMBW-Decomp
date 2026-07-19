@@ -2,19 +2,33 @@
 #include <game/bases/d_a_player_manager.hpp>
 
 const dPlayerMdl_c::ModelInfo_s scArcDt[2] = {
-    { "Mario", "L_rcha", "Mb_model", "Smb_model", "Plmb_model", "Pmb_model", "Mh_model", "Smh_model", "Plmh_model", "Pmh_model", 13.0f, 10.0f, 13.0f, 13.0f },
-    { "Luigi", "L_rcha", "Lb_model", "Slb_model", "Pllb_model", "Plb_model", "Lh_model", "Slh_model", "Pllh_model", "Plh_model", 14.0f, 11.0f, 14.0f, 14.0f },
+    {
+        "Mario", "L_rcha",
+        "MB_model", "SMB_model", "PLMB_model", "PMB_model",
+        "MH_model", "SMH_model", "PLMH_model", "PMH_model",
+        13.0f, 10.0f, 13.0f, 13.0f
+    },
+    {
+        "Luigi", "L_rcha",
+        "LB_model", "SLB_model", "PLLB_model", "PLB_model",
+        "LH_model", "SLH_model", "PLLH_model", "PLH_model",
+        14.0f, 11.0f, 14.0f, 14.0f
+    }
 };
 
-char * scArcCapDt[2][2] = {
-    {"a", "b"},
-    {"c", "d"}
+ const char * const scArcCapDt[2][2] = {
+    {"MC_model", "SMC_model"},
+    {"LC_model", "SLC_model"}
 };
 
-dMarioMdl_c::dMarioMdl_c(u8 modelType) : dPlayerMdl_c(modelType), m_820(0), m_868(0), m_86c(0) {
-    mpArcNames = &scArcDt[modelType];
+dMarioMdl_c::dMarioMdl_c(u8 modelType) : dPlayerMdl_c(modelType),
+    m_824(0), m_870(0), m_86c(0)
+{
+    mpArcNames = &scArcDt[m_151];
     m_77c = 0x10;
 }
+
+dMarioMdl_c::~dMarioMdl_c() {}
 
 void dMarioMdl_c::initialize() {
     dPlayerMdl_c::initialize();
@@ -24,21 +38,21 @@ void dMarioMdl_c::initialize() {
 void dMarioMdl_c::createPlayerModel() {
     dPlayerMdl_c::createPlayerModel();
 
-    nw4r::g3d::ResAnmTexPat wait_tex_pat = m_20c.GetResAnmTexPat("Ph_wait");
+    nw4r::g3d::ResAnmTexPat wait_tex_pat = m_20c.GetResAnmTexPat("PH_wait");
     nw4r::g3d::ResMdl res_mdl_head = m_20c.GetResMdl(mpArcNames->mModelNameHead[MODEL_NAME_NORMAL]);
-    mTexAnm2.create(res_mdl_head, wait_tex_pat, &mAllocator, 2);
+    mTexAnm2.create(res_mdl_head, wait_tex_pat, &mAllocator, nullptr, 2);
 
     nw4r::g3d::ResMdl res_mdl_peng = m_20c.GetResMdl(mpArcNames->mModelNameHead[MODEL_NAME_PENGUIN]);
-    mTexAnmPenguin.create(res_mdl_peng, wait_tex_pat, &mAllocator, 2);
+    mTexAnmPenguin.create(res_mdl_peng, wait_tex_pat, &mAllocator, nullptr, 2);
 
     nw4r::g3d::ResMdl res_mdl_prop = m_20c.GetResMdl(mpArcNames->mModelNameHead[MODEL_NAME_PROPELLER]);
-    mTexAnmPropeller.create(res_mdl_prop, wait_tex_pat, &mAllocator, 2);
+    mTexAnmPropeller.create(res_mdl_prop, wait_tex_pat, &mAllocator, nullptr, 2);
 
     nw4r::g3d::ResMdl res_mdl_body = m_20c.GetResMdl(mpArcNames->mModelNameBody[MODEL_NAME_NORMAL]);
     nw4r::g3d::ResAnmTexPat switch_tex_pat = m_20c.GetResAnmTexPat("PB_switch");
     mTexAnm1.create(res_mdl_body, switch_tex_pat, &mAllocator);
 
-    for (int i = 0; i < (int)ARRAY_SIZE(mCapModels); i++) {
+    for (int i = 0; i < (int) ARRAY_SIZE(mCapModels); i++) {
         nw4r::g3d::ResMdl res_cap_mdl = m_20c.GetResMdl(scArcCapDt[m_151][i]);
         mCapModels[i].create(res_cap_mdl, &mAllocator, 0x863);
         setSoftLight(mCapModels[i]);
@@ -59,7 +73,7 @@ void dMarioMdl_c::_calc() {
 
     // This feels very fake, but I couldn't get it to match another way...
     if (!((mPyPlayerMode != PLAYER_MODE_NORMAL) && (mPyPlayerMode != PLAYER_MODE_RIDE))) {
-        if (m_868 == 0) {
+        if (m_86c == 0) {
             d3d::setMatCullMode(&mInfo[mPyPlayerMode].mMdl2, 2, GX_CULL_ALL);
             d3d::setMatCullMode(&mInfo[mPyPlayerMode].mMdl2, 3, GX_CULL_BACK);
         } else {
@@ -70,21 +84,21 @@ void dMarioMdl_c::_calc() {
 
     mMtx_c mtx;
     getJointMtx(&mtx, 15);
-    mCapModels[m_86c].setLocalMtx(&mtx);
-    mCapModels[m_86c].calc(false);
+    mCapModels[m_870].setLocalMtx(&mtx);
+    mCapModels[m_870].calc(false);
 }
 
 void dMarioMdl_c::play() {
     dPlayerMdl_c::play();
-    mCapModels[m_86c].play();
+    mCapModels[m_870].play();
 }
 
 void dMarioMdl_c::draw() {
     dPlayerMdl_c::draw();
 
-    if (m_178 & 1) {
-        mCapModels[m_86c].entry();
-        setSoftLight(mCapModels[m_86c]);
+    if (m_17c & 1) {
+        mCapModels[m_870].entry();
+        setSoftLight(mCapModels[m_870]);
     }
 }
 
@@ -128,14 +142,12 @@ void dMarioMdl_c::setTexAnmType(dPyMdlBase_c::TexAnmType_e type) {
 }
 
 bool dMarioMdl_c::setPersonalAnm(int anmID, nw4r::g3d::ResAnmChr *outAnmChr, int c) {
-    bool ret = dPlayerMdl_c::setPersonalAnm(anmID, outAnmChr, c);
-    if (ret) {
+    if (dPlayerMdl_c::setPersonalAnm(anmID, outAnmChr, c)) {
         return true;
     }
 
     char anm_name[32];
-    ret = false;
-
+    bool ret = false;
     if (m_151 == 1) {
         switch (anmID) {
             case 0x00:
@@ -190,29 +202,27 @@ bool dMarioMdl_c::setPersonalAnm(int anmID, nw4r::g3d::ResAnmChr *outAnmChr, int
             m_164 |= 0x200000;
             return true;
         }
-
-        return false;
     }
 
-    return ret;
+    return false;
 }
 
 void dMarioMdl_c::FUN_800d4750(int mode) {
     dPlayerMdl_c::FUN_800d4750(mode);
 
     if (mPyPlayerMode == 1) {
-        m_86c = 1;
+        m_870 = 1;
     } else {
-        m_86c = 0;
+        m_870 = 0;
     }
 }
 
 void dMarioMdl_c::fn_800cab00(int isHatLess) {
     if (daPyMng_c::mBonusNoCap && !m_151) {
-        m_868 = 1;
+        m_86c = 1;
         m_17c &= ~1;
     } else {
-        m_868 = isHatLess;
+        m_86c = isHatLess;
         if (isHatLess == 1) {
             m_17c |= 1;
         } else {
@@ -222,12 +232,11 @@ void dMarioMdl_c::fn_800cab00(int isHatLess) {
 }
 
 float dMarioMdl_c::getAimMotionShareScale() {
-
-    static float scMarioHipScale[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
-    static float scMarioHangCliffScale[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
-    static float scLuigiHipScale[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
-    static float scLuigiOrgHipScale[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
-    static float scLuigiHangCliffScale[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
+    static const float scMarioHipScale[4] = { 1.0f, 0.546f, 1.0f, 0.72f };
+    static const float scMarioHangCliffScale[4] = { 0.0f, 0.0f, 0.0f, 0.55f };
+    static const float scLuigiHipScale[4] = { 1.15f, 0.614f, 1.15f, 0.896f };
+    static const float scLuigiOrgHipScale[4] = { 1.0f, 0.534f, 1.0f, 0.779f };
+    static const float scLuigiHangCliffScale[4] = { -0.25f, -0.05f, -0.25f, 0.4f };
 
     dPyMdlBase_c::PlayerMode_e mode = mPyPlayerMode;
 
@@ -247,9 +256,9 @@ float dMarioMdl_c::getAimMotionShareScale() {
         float f1;
 
         if (mFlags & 0x200000) {
-            f1 = scLuigiHipScale[mode];
-        } else {
             f1 = scLuigiOrgHipScale[mode];
+        } else {
+            f1 = scLuigiHipScale[mode];
         }
 
         if (!(mFlags & 8)) {

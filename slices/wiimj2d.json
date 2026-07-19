@@ -370,11 +370,12 @@
         },
         {
             "source": "dol/bases/d_mario_mdl.cpp",
-            "nonMatching": true,
             "memoryRanges": {
                 ".text": "0xc39d0-0xc4480",
                 ".rodata": "0x33a0-0x3470",
-                ".data": "0x190e0-0x19318"
+                ".data": "0x190e0-0x19318",
+                ".sdata": "0x5a0-0x5d8",
+                ".sdata2": "0x18b8-0x18c8"
             }
         },
         {

@@ -1,6 +1,7 @@
 memcpy=0x80004364
 memset=0x800046B4
 DVDDiskCheck=0x80006780
+setMatCullMode__3d3dFPQ23m3d6bmdl_ci11_GXCullMode=0x8000D190
 resetTevColorAll__3d3dFPQ23m3d6bmdl_c11_GXTevRegIDb=0x8000D260
 resetTevKColorAll__3d3dFPQ23m3d6bmdl_c14_GXTevKColorIDb=0x8000D3B0
 __ct__7mVec3_cFv=0x80015E30
@@ -954,6 +955,7 @@ mAllBalloon__9daPyMng_c=0x80429FAC
 mPauseEnableInfo__9daPyMng_c=0x80429FB0
 mPauseDisable__9daPyMng_c=0x80429FB4
 mStopTimerInfo__9daPyMng_c=0x80429FB8
+mBonusNoCap__9daPyMng_c=0x80429FC8
 mKinopioCarryCount__9daPyMng_c=0x80429FCC
 m_instance__18dActorGroupIdMng_c=0x8042A010
 m_instance__11dActorMng_c=0x8042A020

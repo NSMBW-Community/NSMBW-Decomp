@@ -50,10 +50,10 @@ public:
 
     ///< @unofficial
     struct ModelInfo_s {
-        const char * mModelArcName;
-        const char * mAnimArcName;
-        const char * mModelNameBody[MODEL_NAME_COUNT];
-        const char * mModelNameHead[MODEL_NAME_COUNT];
+        const char *mModelArcName;
+        const char *mAnimArcName;
+        const char *mModelNameBody[MODEL_NAME_COUNT];
+        const char *mModelNameHead[MODEL_NAME_COUNT];
         float m_28[MODEL_NAME_COUNT];
     };
 
