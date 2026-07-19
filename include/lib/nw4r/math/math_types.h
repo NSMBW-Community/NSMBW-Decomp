@@ -211,6 +211,8 @@ struct _MTX34 {
     };
 };
 
+struct MTX34;
+MTX34 *MTX34Add(MTX34* pOut, const MTX34* pA, const MTX34* pB);
 struct MTX34 : _MTX34 {
     typedef f32 (*MtxRef)[4];
     typedef const f32 (*MtxRefConst)[4];
@@ -226,6 +228,10 @@ struct MTX34 : _MTX34 {
         _20 = f20; _21 = f21; _22 = f22; _23 = f23;
     }
     // clang-format on
+
+    void Add(const MTX34& rA) {
+        MTX34Add(this, this, &rA);
+    }
 
     operator MtxRef() {
         return mtx;

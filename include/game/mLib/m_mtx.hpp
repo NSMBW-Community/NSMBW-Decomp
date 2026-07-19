@@ -14,6 +14,10 @@ public:
     /// @brief Constructs a matrix from an MTX34.
     mMtx_c(const nw4r::math::MTX34 &mtx) : MTX34(mtx) {}
 
+    mMtx_c(const mMtx_c &other) {
+        *this = other;
+    }
+
     /// @brief Constructs a matrix with the given components.
     mMtx_c(float _00, float _01, float _02, float _03, float _10, float _11, float _12, float _13, float _20, float _21, float _22, float _23);
 

@@ -22,4 +22,5 @@ public:
     bool fn_8014eb70(dAcPy_c *player, int); ///< @unofficial
     void getMouthMtx(mMtx_c *mtx);
     daPlBase_c *getPlayerRideOn() const;
+    void setTongueHitEffect(mVec3_c &pos);
 };
