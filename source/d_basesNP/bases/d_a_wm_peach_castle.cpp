@@ -66,7 +66,7 @@ void daWmPeachCastle_c::createModel() {
 
     nw4r::g3d::ResMdl resMdl = mResFile.GetResMdl("cobPeachCastle");
     mModel.create(resMdl, &mAllocator, nw4r::g3d::ScnMdl::BUFFER_RESMATMISC);
-    
+
     static const char *resAnmNames[ANIM_COUNT] = {
         "cobPeachCastleFlag",
         "cobPeachCastleOpen",
@@ -124,14 +124,14 @@ void daWmPeachCastle_c::processCutsceneCommand(int cutsceneCommandId, bool isFir
 
             case dCsSeqMng_c::CUTSCENE_CMD_78:
                 FUN_808e4cf0();
-            
+
             case dCsSeqMng_c::CUTSCENE_CMD_20:
                 FUN_808e4c60();
                 mChrAnim[cobPeachCastleClose].setFrame(0.0f);
                 mChrAnim[cobPeachCastleClose].setRate(1.0f);
                 dWmSeManager_c::m_pInstance->playSound(dWmSeManager_c::WM_SE_OBJ_CS_DOOR_CLOSE_PEACH, mPos, 1);
                 break;
-            
+
             default:
                 break;
         }
@@ -151,7 +151,7 @@ void daWmPeachCastle_c::processCutsceneCommand(int cutsceneCommandId, bool isFir
                 mIsCutEnd = true;
             }
             break;
-        
+
         default:
             mIsCutEnd = true;
             break;
@@ -173,12 +173,12 @@ void daWmPeachCastle_c::FUN_808e4b50() {
     mChrBlendAnim.attach(0, &mChrAnim[cobPeachCastleFlag], 1.0f);
 }
 
-void daWmPeachCastle_c::FUN_808e4bd0() {
-    static const char *nodeNames[] = {
-        "LeftDoor",
-        "RightDoor"
-    };
+static const char *nodeNames[] = {
+    "LeftDoor",
+    "RightDoor"
+};
 
+void daWmPeachCastle_c::FUN_808e4bd0() {
     dUnkAnimClass_c::ReleaseAnim(mChrAnim[cobPeachCastleOpen]);
     dUnkAnimClass_c::BindNodesByName(mModel, mChrAnim[cobPeachCastleOpen], ARRAY_SIZE(nodeNames), nodeNames, nw4r::g3d::AnmObjChr::BIND_ONE);
     mChrAnim[cobPeachCastleOpen].setRate(0.0f);
@@ -187,11 +187,6 @@ void daWmPeachCastle_c::FUN_808e4bd0() {
 }
 
 void daWmPeachCastle_c::FUN_808e4c60() {
-    static const char *nodeNames[] = {
-        "LeftDoor",
-        "RightDoor"
-    };
-
     dUnkAnimClass_c::ReleaseAnim(mChrAnim[cobPeachCastleClose]);
     dUnkAnimClass_c::BindNodesByName(mModel, mChrAnim[cobPeachCastleClose], ARRAY_SIZE(nodeNames), nodeNames, nw4r::g3d::AnmObjChr::BIND_ONE);
     mChrAnim[cobPeachCastleClose].setRate(0.0f);

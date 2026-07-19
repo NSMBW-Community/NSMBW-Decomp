@@ -124,7 +124,6 @@
         },
         {
             "source": "d_basesNP/bases/d_a_wm_peach_castle.cpp",
-            "nonMatching": true,
             "memoryRanges": {
                 ".text": "0x176cd0-0x177690",
                 ".ctors": "0x424-0x428",
