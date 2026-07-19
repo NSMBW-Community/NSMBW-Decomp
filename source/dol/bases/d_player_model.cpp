@@ -290,8 +290,8 @@ bool dPlayerMdl_c::setPersonalRideAnm(int anmID, nw4r::g3d::ResAnmChr *outAnmChr
         }
 
         if (found) {
-            mFlags |= 0x800000;
-            m_164 |= 0x800000;
+            mFlags |= FLAG_0080_0000;
+            m_164 |= FLAG_0080_0000;
             return true;
         }
     }
@@ -320,17 +320,17 @@ bool dPlayerMdl_c::setPersonalAnm(int anmID, nw4r::g3d::ResAnmChr *outAnmChr, in
         }
         if (found) {
             if (!p3) {
-                mFlags |= 0x1000000;
+                mFlags |= FLAG_0100_0000;
             }
-            m_164 |= 0x1000000;
+            m_164 |= FLAG_0100_0000;
             return true;
         }
     } else if (mPyPlayerMode == PLAYER_MODE_PENGUIN && scPyAnmData[anmID].mPenguinName != nullptr) {
         *outAnmChr = m_210.GetResAnmChr(scPyAnmData[anmID].mPenguinName);
         if (!p3) {
-            mFlags |= 0x800000;
+            mFlags |= FLAG_0080_0000;
         }
-        m_164 |= 0x800000;
+        m_164 |= FLAG_0080_0000;
         return true;
     }
 
@@ -387,7 +387,7 @@ void dPlayerMdl_c::_setFootAnm(nw4r::g3d::ResAnmChr &anmChr, m3d::playMode_e pla
     }
     getBodyMdl()->setAnm(mBlendAnm, p5);
     mStoopTimer = p5;
-    if (mFlags & 1) {
+    if (mFlags & FLAG_0000_0001) {
         mStoopOffsetTarget = dPyMdlMng_c::m_hio.getOffsetTarget(m_151, mPyPlayerMode);
     } else {
         mStoopOffsetTarget = 0.0f;
@@ -556,7 +556,7 @@ void dPlayerMdl_c::callbackTimingA(nw4r::g3d::ChrAnmResult *anmRes, nw4r::g3d::R
         } else {
             anmRes->SetTranslate(&resNode.GetTranslate());
             if (id == 11 || id == 14) {
-                if (mPyPlayerMode == PLAYER_MODE_PENGUIN && !(m_164 & 0x800000)) {
+                if (mPyPlayerMode == PLAYER_MODE_PENGUIN && !(m_164 & FLAG_0080_0000)) {
                     anmRes->SetRotateDeg(&resNode.GetRot());
                     anmRes->SetScale(&resNode.GetScale());
                 }

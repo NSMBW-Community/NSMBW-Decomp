@@ -16,7 +16,7 @@ const dPlayerMdl_c::ModelInfo_s scArcDt[2] = {
     }
 };
 
- const char * const scArcCapDt[2][2] = {
+const char * const scArcCapDt[2][2] = {
     {"MC_model", "SMC_model"},
     {"LC_model", "SLC_model"}
 };
@@ -111,9 +111,9 @@ void dMarioMdl_c::setColorType(u8 type) {
     mPowerupTex = type;
 
     float f1 = 0.0f;
-    if (type == 1) {
+    if (type == POWERUP_MUSHROOM) {
         f1 = 1.0f;
-    } else if (type == 2) {
+    } else if (type == POWERUP_FIRE_FLOWER) {
         f1 = 2.0f;
     }
 
@@ -150,45 +150,45 @@ bool dMarioMdl_c::setPersonalAnm(int anmID, nw4r::g3d::ResAnmChr *outAnmChr, int
     bool ret = false;
     if (m_151 == 1) {
         switch (anmID) {
-            case 0x00:
+            case PLAYER_ANIM_WAIT:
                 strncpy(anm_name, "LB_wait", ARRAY_SIZE(anm_name));
                 ret = true;
                 break;
-            case 0x01:
+            case PLAYER_ANIM_WALK:
                 strncpy(anm_name, "LB_walk", ARRAY_SIZE(anm_name));
                 ret = true;
                 break;
-            case 0x02:
+            case PLAYER_ANIM_RUN:
                 strncpy(anm_name, "LB_run", ARRAY_SIZE(anm_name));
                 ret = true;
                 break;
-            case 0x87:
-            case 0x91:
+            case PLAYER_ANIM_WAIT_L:
+            case PLAYER_ANIM_WAIT_L_DUPLICATE:
                 strncpy(anm_name, "LB_waitL", ARRAY_SIZE(anm_name));
                 ret = true;
                 break;
-            case 0x88:
-            case 0x90:
+            case PLAYER_ANIM_WAIT_R:
+            case PLAYER_ANIM_WAIT_R_DUPLICATE:
                 strncpy(anm_name, "LB_waitR", ARRAY_SIZE(anm_name));
                 ret = true;
                 break;
-            case 0x92:
+            case PLAYER_ANIM_WAIT_R3:
                 strncpy(anm_name, "LB_waitR3", ARRAY_SIZE(anm_name));
                 ret = true;
                 break;
-            case 0x93:
+            case PLAYER_ANIM_WAIT_L3:
                 strncpy(anm_name, "LB_waitL3", ARRAY_SIZE(anm_name));
                 ret = true;
                 break;
-            case 0x98:
+            case PLAYER_ANIM_SLOPE_WAIT_L2:
                 strncpy(anm_name, "LB_slope_waitL2", ARRAY_SIZE(anm_name));
                 ret = true;
                 break;
-            case 0x99:
+            case PLAYER_ANIM_SLOPE_WAIT_R2:
                 strncpy(anm_name, "LB_slope_waitR2", ARRAY_SIZE(anm_name));
                 ret = true;
                 break;
-            case 0xAF:
+            case PLAYER_ANIM_ENDING_WAIT:
                 strncpy(anm_name, "LB_ending_wait", ARRAY_SIZE(anm_name));
                 ret = true;
                 break;
@@ -197,9 +197,9 @@ bool dMarioMdl_c::setPersonalAnm(int anmID, nw4r::g3d::ResAnmChr *outAnmChr, int
         if (ret) {
             *outAnmChr = m_214.GetResAnmChr(anm_name);
             if (c == 0) {
-                mFlags |= 0x200000;
+                mFlags |= FLAG_0020_0000;
             }
-            m_164 |= 0x200000;
+            m_164 |= FLAG_0020_0000;
             return true;
         }
     }
@@ -240,14 +240,14 @@ float dMarioMdl_c::getAimMotionShareScale() {
 
     dPyMdlBase_c::PlayerMode_e mode = mPyPlayerMode;
 
-    if ((mFlags & 0x800000) || (mFlags & 0x1000000)) {
+    if ((mFlags & FLAG_0080_0000) || (mFlags & FLAG_0100_0000)) {
         mode = PLAYER_MODE_NORMAL;
     }
 
     if (m_151 == 0) {
         float f1 = scMarioHipScale[mode];
 
-        if (!(mFlags & 8)) {
+        if (!(mFlags & FLAG_0000_0008)) {
             return f1;
         }
 
@@ -255,13 +255,13 @@ float dMarioMdl_c::getAimMotionShareScale() {
     } else {
         float f1;
 
-        if (mFlags & 0x200000) {
+        if (mFlags & FLAG_0020_0000) {
             f1 = scLuigiOrgHipScale[mode];
         } else {
             f1 = scLuigiHipScale[mode];
         }
 
-        if (!(mFlags & 8)) {
+        if (!(mFlags & FLAG_0000_0008)) {
             return f1;
         }
 
@@ -270,5 +270,5 @@ float dMarioMdl_c::getAimMotionShareScale() {
 }
 
 void dMarioMdl_c::updateBonusCap() {
-    fn_800cab00(false);
+    fn_800cab00(0);
 }

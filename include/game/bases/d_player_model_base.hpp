@@ -227,6 +227,43 @@ public:
     };
 
     ///< @unofficial
+    enum Flag_e {
+        FLAG_NONE = 0,
+        FLAG_0000_0001 = 0x00000001,
+        FLAG_0000_0002 = 0x00000002,
+        FLAG_0000_0004 = 0x00000004,
+        FLAG_0000_0008 = 0x00000008,
+        FLAG_0000_0010 = 0x00000010,
+        FLAG_0000_0020 = 0x00000020,
+        FLAG_0000_0040 = 0x00000040,
+        FLAG_0000_0080 = 0x00000080,
+        FLAG_0000_0100 = 0x00000100,
+        FLAG_0000_0200 = 0x00000200,
+        FLAG_0000_0400 = 0x00000400,
+        FLAG_0000_0800 = 0x00000800,
+        FLAG_0000_1000 = 0x00001000,
+        FLAG_0000_2000 = 0x00002000,
+        FLAG_0000_4000 = 0x00004000,
+        FLAG_0000_8000 = 0x00008000,
+        FLAG_0001_0000 = 0x00010000,
+        FLAG_0002_0000 = 0x00020000,
+        FLAG_0004_0000 = 0x00040000,
+        FLAG_0008_0000 = 0x00080000,
+        FLAG_0010_0000 = 0x00100000,
+        FLAG_0020_0000 = 0x00200000,
+        FLAG_0040_0000 = 0x00400000,
+        FLAG_0080_0000 = 0x00800000,
+        FLAG_0100_0000 = 0x01000000,
+        FLAG_0200_0000 = 0x02000000,
+        FLAG_0400_0000 = 0x04000000,
+        FLAG_0800_0000 = 0x08000000,
+        FLAG_1000_0000 = 0x10000000,
+        FLAG_2000_0000 = 0x20000000,
+        FLAG_4000_0000 = 0x40000000,
+        FLAG_8000_0000 = 0x80000000,
+    };
+
+    ///< @unofficial
     struct AnmData_s {
         const char *mName; ///< Regular animation name.
         const char *mRideName; ///< Animation name when riding Yoshi.
@@ -236,7 +273,7 @@ public:
         float mRate;
         float mBlendDuration;
         TexAnmType_e mTexAnmType;
-        u32 mFlags; ///< Same type as dPyMdlBase_c's mFlags.
+        u32 mFlags; ///< Is a Flag_e.
     };
 
     ///< @unofficial
@@ -347,8 +384,8 @@ public:
     int mCurrAnmID; ///< Is an AnmID_e.
     int mPrevAnmID; ///< Is an AnmID_e.
     int m_15c; ///< Is an AnmID_e.
-    u32 mFlags;
-    u32 m_164;
+    u32 mFlags; ///< Is a Flag_e.
+    u32 m_164; ///< Is a Flag_e.
     u32 mJumpAnmVariant;
     u32 mPrevJumpAnmVariant;
     TexAnmType_e mCurrTexAnmType;
