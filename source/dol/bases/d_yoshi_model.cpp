@@ -289,6 +289,10 @@ void dYoshiMdl_c::nodeCallback_c::timingA(ulong nodeId, nw4r::g3d::ChrAnmResult 
     }
 }
 
+inline float get_zero() {
+    return 0.0f;
+}
+
 void dYoshiMdl_c::nodeCallback_c::timingB(ulong nodeId, nw4r::g3d::WorldMtxManip *manip, nw4r::g3d::ResMdl resMdl) {
     if (!mpOwner->m_208) {
         return;
@@ -309,8 +313,8 @@ void dYoshiMdl_c::nodeCallback_c::timingB(ulong nodeId, nw4r::g3d::WorldMtxManip
                     rot = rotY;
                 }
                 trans.x = mpOwner->m_3f4.y * 3.0f;
-                trans.y = mpOwner->m_3f4.y * 0.0f;
-                trans.z = mpOwner->m_3f4.y * 0.0f;
+                trans.y = mpOwner->m_3f4.y * get_zero();
+                trans.z = mpOwner->m_3f4.y * get_zero();
             }
             manip->GetMatrix(&mtx);
             mtx.ZXYrotM(0, 0, rot);
