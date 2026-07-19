@@ -97,7 +97,7 @@ void dYoshiMdl_c::calc2() {
         sLib::chase(&m_3f4.x, 0.0f, 0.1f);
     }
     float target = 0.0f;
-    if (m_294 == 2 && mFlags & 0x2000 && mPrevAnmID != PLAYER_ANIM_R_EAT_OUT && mPrevAnmID != PLAYER_ANIM_R_EAT_SUCCESSB) {
+    if (m_294 == 2 && mFlags & FLAG_0000_2000 && mPrevAnmID != PLAYER_ANIM_R_EAT_OUT && mPrevAnmID != PLAYER_ANIM_R_EAT_SUCCESSB) {
         target = 1.0f;
     }
     sLib::chase(&m_3f4.y, target, 0.2f);
@@ -134,9 +134,9 @@ bool dYoshiMdl_c::setPersonalAnm(int anmID, nw4r::g3d::ResAnmChr *outAnmChr, int
     if (scPyAnmData[anmID].mPropellerName != nullptr) {
         *outAnmChr = m_214.GetResAnmChr(scPyAnmData[anmID].mPropellerName);
         if (!p4) {
-            mFlags |= 0x100000;
+            mFlags |= FLAG_0010_0000;
         }
-        m_164 |= 0x100000;
+        m_164 |= FLAG_0010_0000;
         return true;
     }
     return false;
@@ -156,7 +156,7 @@ void dYoshiMdl_c::_setBodyAnm(nw4r::g3d::ResAnmChr &anmChr, m3d::playMode_e play
 
     int anmID = getPrevAnmID();
     int newAnmID = PLAYER_ANIM_NONE;
-    if (m_164 & 0x20 && mFlags & 0x400) {
+    if (m_164 & FLAG_0000_0020 && mFlags & FLAG_0000_0400) {
         // [Possibly an inline (because of the mPrevAnmID access)]
         switch (mPrevAnmID) {
             case PLAYER_ANIM_R_EAT:
@@ -204,7 +204,7 @@ void dYoshiMdl_c::releaseBodyAnm(float f) {
     nw4r::g3d::ResAnmChr anmChr = getAnmResFile()->GetResAnmChr(anmData.mName);
     setPersonalAnm(mCurrAnmID, &anmChr, 1);
     float f2 = 5.0f;
-    if (mFlags & 1) {
+    if (mFlags & FLAG_0000_0001) {
         f2 = 0.0f;
     }
     _setBodyAnm(anmChr, (m3d::playMode_e) getFootAnm().mPlayMode, getFootAnm().getRate(), getFootAnm().getFrame(), f2);
@@ -262,7 +262,7 @@ void dYoshiMdl_c::getFootAnmTrans(mVec3_c *vec, const char *name) {
 }
 
 const nw4r::g3d::ResFile *dYoshiMdl_c::getAnmResFile() const {
-    if (m_164 & 0x100000) {
+    if (m_164 & FLAG_0010_0000) {
         return &m_214;
     }
     return &m_210;
@@ -271,7 +271,7 @@ const nw4r::g3d::ResFile *dYoshiMdl_c::getAnmResFile() const {
 void dYoshiMdl_c::nodeCallback_c::timingA(ulong nodeId, nw4r::g3d::ChrAnmResult *anmRes, nw4r::g3d::ResMdl resMdl) {
     nw4r::g3d::ResNode resNode = resMdl.GetResNode(nodeId);
 
-    if (!(mpOwner->mFlags & 0x100000) && nodeId != 0) {
+    if (!(mpOwner->mFlags & FLAG_0010_0000) && nodeId != 0) {
         mVec3_c v;
         if (nodeId == 1) {
             anmRes->GetTranslate(&v);
@@ -282,7 +282,7 @@ void dYoshiMdl_c::nodeCallback_c::timingA(ulong nodeId, nw4r::g3d::ChrAnmResult 
             anmRes->SetTranslate(&v);
         }
     }
-    if (mpOwner->m_164 & 0x20 && nodeId == 1) {
+    if ((mpOwner->m_164 & FLAG_0000_0020) && nodeId == 1) {
         mVec3_c vec;
         mpOwner->getFootAnmTrans(&vec, "skl_root");
         anmRes->SetTranslate(vec);
@@ -300,7 +300,7 @@ void dYoshiMdl_c::nodeCallback_c::timingB(ulong nodeId, nw4r::g3d::WorldMtxManip
         case 15: {
             mVec3_c trans(0.0f, 0.0f, 0.0f);
             s16 rot = 0;
-            if (mpOwner->m_3f4.x > 0.0f && !(mpOwner->m_164 & 0x20)) {
+            if (mpOwner->m_3f4.x > 0.0f && !(mpOwner->m_164 & FLAG_0000_0020)) {
                 rot = mpOwner->m_3f4.x * -5000.0f;
             }
             if (mpOwner->m_3f4.y > 0.0f) {
