@@ -6210,7 +6210,7 @@ void dAcPy_c::initializeState_Balloon() {
         daPyMng_c::mAllBalloon = true;
     }
     if (mPlayerType == PLAYER_MARIO && mPyMdlMng.mpMdl->m_151 == 0) {
-        ((dMarioMdl_c *) mPyMdlMng.mpMdl)->setHeadID(dMarioMdl_c::TYPE_0);
+        ((dMarioMdl_c *) mPyMdlMng.mpMdl)->setHeadID(dMarioMdl_c::HEAD_TYPE_HAT);
     }
     if (mPowerup != POWERUP_NONE && mPowerup != POWERUP_MINI_MUSHROOM) {
         mAmiRelated2 = 0.9f;
@@ -8876,11 +8876,11 @@ bool dAcPy_c::updateDemoKimePose(ClearType_e clearType) {
         case KIME_POSE_WITH_HAT: {
             dMarioMdl_c *mdl = (dMarioMdl_c *) mPyMdlMng.mpMdl;
             if (mPyMdlMng.mpMdl->mAnms[0].checkFrame(41.0f)) {
-                mdl->setHeadID(dMarioMdl_c::TYPE_1);
+                mdl->setHeadID(dMarioMdl_c::HEAD_TYPE_NO_HAT);
                 break;
             }
             if (mPyMdlMng.mpMdl->mAnms[0].checkFrame(107.0f)) {
-                mdl->setHeadID(dMarioMdl_c::TYPE_0);
+                mdl->setHeadID(dMarioMdl_c::HEAD_TYPE_HAT);
                 break;
             }
             if (mPyMdlMng.isAnmStop()) {
