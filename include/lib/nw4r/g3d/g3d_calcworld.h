@@ -66,8 +66,14 @@ public:
             PSMTXCopy(*mpM, *dst);
         }
     }
+    void SetMatrix(const math::MTX34 *mtx) {
+        if (mtx) {
+            PSMTXCopy(*mtx, *mpM);
+        } else {
+            PSMTXIdentity(*mpM);
+        }
+    }
     void SetMatrix(const math::MTX34 &mtx) { PSMTXCopy(mtx, *mpM); }
-    void ResetMatrix() { PSMTXIdentity(*mpM); }
 
     void GetScale(math::VEC3 *dst) const {
         if (dst) {

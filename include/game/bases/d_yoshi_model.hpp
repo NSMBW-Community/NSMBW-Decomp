@@ -51,12 +51,13 @@ public:
     mVec3_c getTonguePos();
     mMtx_c getTongueTipMtx();
     void setTongueJointMtx(int jointIdx, const mMtx_c *mtx);
-    mMtx_c *getTongueJointMtx(int jointIdx);
+    mMtx_c &getTongueJointMtx(int jointIdx);
     void setTongueJointMtxBuf(int jointIdx, const mMtx_c *mtx);
-    mMtx_c *getTongueJointMtxBuf(int jointIdx);
-
+    mMtx_c &getTongueJointMtxBuf(int jointIdx);
     void setTongueBendCalc();
-    void setTongueBgCheck();
+    void updateTongueMtx();
+    bool setTongueBgCheck();
+    void setTongueCcCheck(float);
 
     YoshiColor_e getColor() { return (YoshiColor_e) mColor; }
 
@@ -70,8 +71,7 @@ public:
     nw4r::g3d::ResFile m_250;
     mdl_inf_c mMdl;
     int m_294;
-    float m_298;
-    float m_29c;
+    mVec2_c m_298;
     int m_2a0;
     mMtx_c mTongueJointMtxs[7];
     mVec2_c m_3f4;
