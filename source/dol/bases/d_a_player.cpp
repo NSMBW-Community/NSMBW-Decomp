@@ -17,7 +17,7 @@
 #include <game/bases/d_water_entry_manager.hpp>
 #include <game/bases/d_s_stage.hpp>
 #include <game/bases/d_save_mng.hpp>
-#include <game/bases/d_yoshi_mdl.hpp>
+#include <game/bases/d_yoshi_model.hpp>
 #include <game/mLib/m_fader.hpp>
 #include <game/sLib/s_GlobalData.hpp>
 #include <constants/sound_list.h>

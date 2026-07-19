@@ -117,7 +117,7 @@ enum AnmID_e {
     PLAYER_ANIM_RS_EAT_SUCCESS,
     PLAYER_ANIM_RS_EAT_FAIL,
     PLAYER_ANIM_RS_EAT_SUCCESSB,
-    PLAYER_ANIM_RS_EAT_SUCCESS_DUPLICATE,
+    PLAYER_ANIM_RS_EAT_SUCCESSB_DUPLICATE,
     PLAYER_ANIM_CARRY_P_START,
     PLAYER_ANIM_CARRY_P_WAIT,
     PLAYER_ANIM_CARRY_P_WALK,
@@ -266,7 +266,7 @@ public:
     virtual void offStarAnm() { m_17c &= ~0x100; }
     virtual void onStarEffect() { m_17c |= 0x200; };
     virtual void offStarEffect() { m_17c &= ~0x200; };
-    virtual void getJointMtx(mMtx_c* mtx, int i);
+    virtual void getJointMtx(mMtx_c *mtx, int i);
     virtual bool getHeadPropelJointMtx(mMtx_c *mtx) { return false; }
     virtual bool getJumpAnmName(int jumpType, char *anmNameBuf, int p4); ///< @unofficial
     virtual void setAnm(int animID, float rate, float c, float frame);
@@ -323,6 +323,8 @@ public:
 
     u32 get151CheckVal() { return 2; }
     bool isStarAnm() const { return m_17c & 0x100; }
+    bool isFlag20() const { return m_17c & 0x20; }
+    int getPrevAnmID() const { return mPrevAnmID; }
 
     m3d::anmChr_c &getFootAnm() { return mAnms[0]; }
     m3d::anmChr_c &getBodyAnm() { return mAnms[1]; }
@@ -366,7 +368,7 @@ public:
     s16 mAngZ;
     /* 2 padding bytes */
     u32 m_204;
-    u32 m_208;
+    int m_208;
 
     static const float scWaterCrouchAnmSpeed;
     static const float scFireShootFrame;

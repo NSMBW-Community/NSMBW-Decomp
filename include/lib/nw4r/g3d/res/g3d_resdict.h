@@ -41,6 +41,7 @@ public:
     }
 
     s32 GetIndex(const ResName name) const;
+    s32 GetIndex(const char *name) const;
 
     ulong GetNumData() const {
         if (IsValid()) {

@@ -569,6 +569,16 @@
             }
         },
         {
+            "source": "dol/bases/d_yoshi_model.cpp",
+            "nonMatching": true,
+            "memoryRanges": {
+                ".text": "0xf7b60-0xf9800",
+                ".data": "0x1de90-0x1dfd8",
+                ".sdata": "0x1560-0x1588",
+                ".sdata2": "0x1fd8-0x2018"
+            }
+        },
+        {
             "source": "dol/bases/d_SelectCursor.cpp",
             "memoryRanges": {
                 ".data": "0x24348-0x24478",
