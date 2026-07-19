@@ -369,6 +369,15 @@
             }
         },
         {
+            "source": "dol/bases/d_mario_mdl.cpp",
+            "nonMatching": true,
+            "memoryRanges": {
+                ".text": "0xc39d0-0xc4480",
+                ".rodata": "0x33a0-0x3470",
+                ".data": "0x190e0-0x19318"
+            }
+        },
+        {
             "source": "dol/bases/d_md_actor.cpp",
             "memoryRanges": {
                 ".text": "0xc7080-0xc73e0",
