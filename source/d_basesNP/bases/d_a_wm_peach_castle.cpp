@@ -18,7 +18,7 @@ int daWmPeachCastle_c::create() {
     createModel();
     calcModel();
 
-    FUN_808e4730();
+    initState();
     mClipSphere.set(mPos, 200.0f);
 
     return SUCCEEDED;
@@ -43,17 +43,17 @@ int daWmPeachCastle_c::draw() {
     return SUCCEEDED;
 }
 
-void daWmPeachCastle_c::FUN_808e4730() {
-    FUN_808e4b50();
+void daWmPeachCastle_c::initState() {
+    initFlagAnim();
     mModel.setAnm(mChrBlendAnim);
-    FUN_808e47b0();
+    initUnk();
     if (dWmObjActor_c::GetCurrentPlayResultStatus() != 8) {
         dCsSeqMng_c::ms_instance->FUN_801017c0(dCsSeqMng_c::SMC_DEMO_CASTLE_CLR, this, daWmPlayer_c::ms_instance, 200);
     }
 }
 
-void daWmPeachCastle_c::FUN_808e47b0() {
-    _2B8 = 0;
+void daWmPeachCastle_c::initUnk() {
+    mUnk2B8 = 0;
 }
 
 int daWmPeachCastle_c::doDelete() {
@@ -116,17 +116,17 @@ void daWmPeachCastle_c::processCutsceneCommand(int cutsceneCommandId, bool isFir
         switch (cutsceneCommandId) {
             case dCsSeqMng_c::CUTSCENE_CMD_17:
             case dCsSeqMng_c::CUTSCENE_CMD_19:
-                FUN_808e4bd0();
+                initDoorOpenAnim();
                 mChrAnim[cobPeachCastleOpen].setFrame(0.0f);
                 mChrAnim[cobPeachCastleOpen].setRate(2.4f);
                 dWmSeManager_c::m_pInstance->playSound(dWmSeManager_c::WM_SE_OBJ_CS_DOOR_OPEN_PEACH, mPos, 1);
                 break;
 
             case dCsSeqMng_c::CUTSCENE_CMD_78:
-                FUN_808e4cf0();
+                ensureCourseClear();
 
             case dCsSeqMng_c::CUTSCENE_CMD_20:
-                FUN_808e4c60();
+                initDoorCloseAnim();
                 mChrAnim[cobPeachCastleClose].setFrame(0.0f);
                 mChrAnim[cobPeachCastleClose].setRate(1.0f);
                 dWmSeManager_c::m_pInstance->playSound(dWmSeManager_c::WM_SE_OBJ_CS_DOOR_CLOSE_PEACH, mPos, 1);
@@ -158,7 +158,7 @@ void daWmPeachCastle_c::processCutsceneCommand(int cutsceneCommandId, bool isFir
     }
 }
 
-void daWmPeachCastle_c::FUN_808e4b50() {
+void daWmPeachCastle_c::initFlagAnim() {
     static const char *nodeNames[] = {
         "FlagA0", "FlagA1", "FlagA2",
         "FlagB0", "FlagB1", "FlagB2",
@@ -173,30 +173,30 @@ void daWmPeachCastle_c::FUN_808e4b50() {
     mChrBlendAnim.attach(0, &mChrAnim[cobPeachCastleFlag], 1.0f);
 }
 
-static const char *nodeNames[] = {
+const char *daWmPeachCastle_c::smc_doorNodeNames[] = {
     "LeftDoor",
     "RightDoor"
 };
 
-void daWmPeachCastle_c::FUN_808e4bd0() {
+void daWmPeachCastle_c::initDoorOpenAnim() {
     dUnkAnimClass_c::ReleaseAnim(mChrAnim[cobPeachCastleOpen]);
-    dUnkAnimClass_c::BindNodesByName(mModel, mChrAnim[cobPeachCastleOpen], ARRAY_SIZE(nodeNames), nodeNames, nw4r::g3d::AnmObjChr::BIND_ONE);
+    dUnkAnimClass_c::BindNodesByName(mModel, mChrAnim[cobPeachCastleOpen], ARRAY_SIZE(smc_doorNodeNames), smc_doorNodeNames, nw4r::g3d::AnmObjChr::BIND_ONE);
     mChrAnim[cobPeachCastleOpen].setRate(0.0f);
     mChrAnim[cobPeachCastleOpen].setFrame(0.0f);
     mChrBlendAnim.attach(1, &mChrAnim[cobPeachCastleOpen], 1.0f);
 }
 
-void daWmPeachCastle_c::FUN_808e4c60() {
+void daWmPeachCastle_c::initDoorCloseAnim() {
     dUnkAnimClass_c::ReleaseAnim(mChrAnim[cobPeachCastleClose]);
-    dUnkAnimClass_c::BindNodesByName(mModel, mChrAnim[cobPeachCastleClose], ARRAY_SIZE(nodeNames), nodeNames, nw4r::g3d::AnmObjChr::BIND_ONE);
+    dUnkAnimClass_c::BindNodesByName(mModel, mChrAnim[cobPeachCastleClose], ARRAY_SIZE(smc_doorNodeNames), smc_doorNodeNames, nw4r::g3d::AnmObjChr::BIND_ONE);
     mChrAnim[cobPeachCastleClose].setRate(0.0f);
     mChrAnim[cobPeachCastleClose].setFrame(0.0f);
     mChrBlendAnim.attach(1, &mChrAnim[cobPeachCastleClose], 1.0f);
 }
 
-void daWmPeachCastle_c::FUN_808e4cf0() {
+void daWmPeachCastle_c::ensureCourseClear() {
     if (!IsCourseClear()) {
-        dMj2dGame_c* save = dSaveMng_c::m_instance->getSaveGame(-1);
+        dMj2dGame_c *save = dSaveMng_c::m_instance->getSaveGame(-1);
         save->onCourseDataFlag(WORLD_1, STAGE_PEACH_CASTLE, dMj2dGame_c::GOAL_NORMAL);
         dInfo_c::m_instance->m_60 = 2;
     }

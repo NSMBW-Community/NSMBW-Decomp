@@ -6,7 +6,7 @@
 #include <game/bases/d_wm_obj_actor.hpp>
 
 /**
-* @brief TODO
+* @brief The actor for Peach's Castle found on the World Map.
 * @ingroup bases
 * @paramtable
 */
@@ -14,9 +14,9 @@ class daWmPeachCastle_c : public dWmObjActor_c {
 public:
     /// @brief The available animations for this actor.
     enum ANIM_e {
-        cobPeachCastleFlag,
-        cobPeachCastleOpen,
-        cobPeachCastleClose,
+        cobPeachCastleFlag, ///< The flag animation.
+        cobPeachCastleOpen, ///< The door open animation.
+        cobPeachCastleClose, ///< The door close animation.
         ANIM_COUNT
     };
 
@@ -30,21 +30,23 @@ public:
 
     virtual void processCutsceneCommand(int cutsceneCommandId, bool isFirstFrame);
 
-    void FUN_808e4730();
-    void FUN_808e47b0();
+    void initState(); ///< Sets up the actor's initial state.
+    void initUnk(); ///< Initializes #mUnk2B8.
 
     void createModel(); ///< Initializes the resources for the actor.
     void calcModel(); ///< Updates the model's transformation matrix.
 
-    void FUN_808e4b50();
-    void FUN_808e4bd0();
-    void FUN_808e4c60();
-    void FUN_808e4cf0();
+    void initFlagAnim(); ///< Initializes the flag animation.
+    void initDoorOpenAnim(); ///< Initializes the door open animation.
+    void initDoorCloseAnim(); ///< Initializes the door close animation.
+    void ensureCourseClear(); ///< Ensures the course associated to the actor is cleared.
 
     dHeapAllocator_c mAllocator; ///< The allocator.
     nw4r::g3d::ResFile mResFile; ///< The resource file.
     m3d::mdl_c mModel; ///< The model.
     m3d::anmChr_c mChrAnim[ANIM_COUNT]; ///< The model animations.
-    m3d::anmChrBlend_c mChrBlendAnim;
-    int _2B8;
+    m3d::anmChrBlend_c mChrBlendAnim; ///< The blended animation.
+    int mUnk2B8; ///< @unused
+
+    static const char *smc_doorNodeNames[]; ///< The node names for the door open/close animations. @hideinitializer
 };
