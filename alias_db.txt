@@ -410,7 +410,6 @@ R_2_5_45fd8  = g_profile_WM_KOOPASHIP
 R_2_5_46378  = g_profile_WM_MANTA
 R_2_5_46490  = g_profile_WM_MAP
 R_2_5_467a4  = g_profile_WM_NOTE
-R_2_5_46974  = g_profile_WM_PEACH_CASTLE
 R_2_5_46c14  = g_profile_WM_SANDPILLAR
 R_2_5_471b4  = g_profile_WM_SINKSHIP
 R_2_5_4728c  = g_profile_WM_SMALLCLOUD
