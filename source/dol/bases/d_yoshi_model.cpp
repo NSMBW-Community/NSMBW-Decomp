@@ -111,7 +111,7 @@ void dYoshiMdl_c::play() {
         mNextPatSwitchTimer--;
     } else if (mAnmTexPat.isStop(0)) {
         mNextPatSwitchTimer = dGameCom::rndF(60.0f) + 3.0f;
-        mAnmTexPat.setRate(1.0f, 0);
+        mAnmTexPat.setFrame(0.0f, 0);
     }
     mAnmTexPat.play();
 }
@@ -289,10 +289,6 @@ void dYoshiMdl_c::nodeCallback_c::timingA(ulong nodeId, nw4r::g3d::ChrAnmResult 
     }
 }
 
-inline float get_zero() {
-    return 0.0f;
-}
-
 void dYoshiMdl_c::nodeCallback_c::timingB(ulong nodeId, nw4r::g3d::WorldMtxManip *manip, nw4r::g3d::ResMdl resMdl) {
     if (!mpOwner->m_208) {
         return;
@@ -312,9 +308,8 @@ void dYoshiMdl_c::nodeCallback_c::timingB(ulong nodeId, nw4r::g3d::WorldMtxManip
                 if (rot > rotY) {
                     rot = rotY;
                 }
-                trans.x = mpOwner->m_3f4.y * 3.0f;
-                trans.y = mpOwner->m_3f4.y * get_zero();
-                trans.z = mpOwner->m_3f4.y * get_zero();
+                trans.set(3.0f, 0.0f, 0.0f);
+                trans *= mpOwner->m_3f4.y;
             }
             manip->GetMatrix(&mtx);
             mtx.ZXYrotM(0, 0, rot);
