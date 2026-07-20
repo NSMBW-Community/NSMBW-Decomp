@@ -30,30 +30,27 @@ namespace DynamicModuleCallback {
     void *InitCallback(void *self);
 }
 
-/// @brief An entry in the @ref DynamicNameTable "profile to module name table".
-/// @ingroup bases
-/// @unofficial
-struct sDynNameTableEntry {
-    ProfileName mProf; ///< The profile name of this entry.
-    const char *mModuleName; ///< The name of the module to load for the profile, or @p nullptr if the profile is statically linked.
-};
-
 /// @brief Serves as the bridge between the game's profile system and the dynamic module linking system.
 /// @ingroup bases
 namespace dDyl {
+
+    /// @brief An entry in the @ref DynamicNameTable "profile to module name table".
+    struct DynamicName_t {
+        ProfileName mProf; ///< The profile name of this entry.
+        const char *mModuleName; ///< The name of the module to load for the profile, or @p nullptr if the profile is statically linked.
+    };
 
     /**
     * @brief First initialization step of the dynamic module system.
     * @details Creates the necessary data structures and maps the profiles to the
     * corresponding modules using the provided name table.
-    * @unofficial
     * @param profileCount The total number of profiles.
     * @param pNameTable The profile to module name table.
     * @param nNameTable The number of entries in @p pNameTable.
     * @param heap The heap to be used for allocations.
     * @return Always returns @p true .
     */
-    bool Init(int profileCount, const sDynNameTableEntry *pNameTable, int nNameTable, EGG::Heap *heap);
+    bool cCc_Init(int profileCount, const DynamicName_t *pNameTable, int nNameTable, EGG::Heap *heap);
 
     /**
     * @brief Initializes the dynamic module system.

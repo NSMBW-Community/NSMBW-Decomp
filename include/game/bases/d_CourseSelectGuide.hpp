@@ -120,10 +120,7 @@ private:
     void doDelete(); ///< Prepares the view for deletion.
 
     void CollectionCoinSet(); ///< Updates the star coin icons.
-
-    /// @brief Updates the player icons in the remaining lives info to the active player.
-    /// @unofficial
-    void PlayerIconSet();
+    void WaKuPosSet(); ///< Updates the player icons in the remaining lives info to the active player.
 
     /**
      * @brief Updates the textbox that displays the current course.

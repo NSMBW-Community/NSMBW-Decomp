@@ -624,18 +624,18 @@ bool dActor_c::setEatSpitOut(dActor_c *eatingActor) {
 }
 
 bool dActor_c::setEatGlupDown(dActor_c *eatingActor) {
-    static const int yoshiEatPopupTypes[] = { dSmallScore_c::POPUP_TYPE_200, dSmallScore_c::POPUP_TYPE_1000 };
-    static const int yoshiEatPoints[] = { 200, 1000 };
+    static const int l_eatglupdown_score_name_dt[] = { dSmallScore_c::POPUP_TYPE_200, dSmallScore_c::POPUP_TYPE_1000 };
+    static const int l_eatglupdown_add_score_dt[] = { 200, 1000 };
 
     if (mEatPoints != EAT_POINTS_NONE) {
         mVec3_c smallScorePos = eatingActor->mPos;
         smallScorePos.y += 40.0f;
 
         s8 plrNo = eatingActor->getPlrNo();
-        dGameCom::CreateSmallScore(smallScorePos, yoshiEatPopupTypes[mEatPoints], plrNo, false);
+        dGameCom::CreateSmallScore(smallScorePos, l_eatglupdown_score_name_dt[mEatPoints], plrNo, false);
 
         if (plrNo != -1) {
-            daPyMng_c::addScore(yoshiEatPoints[mEatPoints], plrNo);
+            daPyMng_c::addScore(l_eatglupdown_add_score_dt[mEatPoints], plrNo);
             dMultiMng_c::mspInstance->incEnemyDown(plrNo);
         }
     }

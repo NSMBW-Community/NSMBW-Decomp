@@ -8,11 +8,11 @@ DynamicModuleControl s_ProfileDMC("d_profile", nullptr);
 
 /// @brief The profile to module name table.
 /// @hideinitializer
-const sDynNameTableEntry DynamicNameTable[] = {
+const dDyl::DynamicName_t DynamicNameTable[] = {
     { fProfile::INVALID, nullptr }
 };
 
-const sDynNameTableEntry *pDynamicNameTable; ///< A pointer to @ref sDynNameTableEntry "the profile to module name table".
+const dDyl::DynamicName_t *pDynamicNameTable; ///< A pointer to @ref dDyl::DynamicName_t "the profile to module name table".
 int nDynamicNameTable; ///< The amount of entries in #pDynamicNameTable .
 
 DynamicModuleControlBase **dDyl::pDMC;
@@ -21,7 +21,7 @@ EGG::FrmHeap *dDyl::cCc_frmHeap;
 BOOL dDyl::Initialized;
 mDvd_callback_c *dDyl::DVD;
 
-bool dDyl::Init(int profileCount, const sDynNameTableEntry *pNameTable, int nNameTable, EGG::Heap *heap) {
+bool dDyl::cCc_Init(int profileCount, const dDyl::DynamicName_t *pNameTable, int nNameTable, EGG::Heap *heap) {
     // [Memory waste: profileCount * 4 would have been enough space to allocate pDMC]
     cCc_frmHeap = mHeap::createFrmHeap(profileCount * 16 + nNameTable * sizeof(DynamicModuleControl),
                                heap, DYL_FRM_HEAP_NAME, 0x20, mHeap::OPT_NONE);
@@ -34,7 +34,7 @@ bool dDyl::Init(int profileCount, const sDynNameTableEntry *pNameTable, int nNam
     pDynamicNameTable = pNameTable;
     nDynamicNameTable = nNameTable;
     for (int i = 0; i < nDynamicNameTable; i++) {
-        const sDynNameTableEntry *curr = &pDynamicNameTable[i];
+        const dDyl::DynamicName_t *curr = &pDynamicNameTable[i];
         if (curr->mModuleName == nullptr) {
             continue;
         }
@@ -104,7 +104,7 @@ void *DynamicModuleCallback::InitCallback(void *heap) {
 }
 
 void dDyl::InitAsync() {
-    Init(fProfile::PROFILE_COUNT, DynamicNameTable, ARRAY_SIZE(DynamicNameTable), mHeap::g_dylinkHeap);
+    cCc_Init(fProfile::PROFILE_COUNT, DynamicNameTable, ARRAY_SIZE(DynamicNameTable), mHeap::g_dylinkHeap);
     DVD = mDvd_callback_c::create(DynamicModuleCallback::InitCallback, mHeap::g_dylinkHeap);
 }
 

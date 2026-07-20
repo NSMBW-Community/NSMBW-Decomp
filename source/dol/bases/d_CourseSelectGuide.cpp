@@ -224,7 +224,7 @@ bool dCourseSelectGuide_c::createLayout() {
     mLayout.ReverseAnimeStartSetup(ANIM_OUT_COURSE_INFO, false);
     mLayout.AnimePlay();
     mLayout.calc();
-    PlayerIconSet();
+    WaKuPosSet();
     mLayout.ReverseAnimeStartSetup(ANIM_IN_SHADOW, false);
     mLayout.ReverseAnimeStartSetup(ANIM_IN_UNDER, false);
     mLayout.ReverseAnimeStartSetup(ANIM_IN_ZANKI, false);
@@ -259,8 +259,8 @@ void dCourseSelectGuide_c::ScissorMaskSet() {
     mLayout.mScissorMask = scissorMask;
 }
 
-void dCourseSelectGuide_c::PlayerIconSet() {
-    static const int picPaneNums[PLAYER_COUNT] = { P_marioFace_00, P_luigiFace_00, P_BkinoFace_00, P_YkinoFace_00 };
+void dCourseSelectGuide_c::WaKuPosSet() {
+    static const int PPANE_IDX_TBL[PLAYER_COUNT] = { P_marioFace_00, P_luigiFace_00, P_BkinoFace_00, P_YkinoFace_00 };
 
     for (int i = 0; i < PLAYER_COUNT; i++) {
         mpPicturePanes[P_marioFace_00 + i]->SetVisible(false);
@@ -274,8 +274,8 @@ void dCourseSelectGuide_c::PlayerIconSet() {
         if (dGameCom::PlayerEnterCheck(playerIndex)) {
             mVec3_c translate;
             translate = mpNullPanes[currPane]->GetTranslate();
-            mpPicturePanes[picPaneNums[playerType]]->SetTranslate(translate);
-            mpPicturePanes[picPaneNums[playerType]]->SetVisible(true);
+            mpPicturePanes[PPANE_IDX_TBL[playerType]]->SetTranslate(translate);
+            mpPicturePanes[PPANE_IDX_TBL[playerType]]->SetVisible(true);
             currPane++;
             playerCount++;
         }
@@ -288,7 +288,7 @@ void dCourseSelectGuide_c::PlayerIconSet() {
 }
 
 void dCourseSelectGuide_c::RestNumberDisp() {
-    static const int textBoxIdxs[PLAYER_COUNT] = { T_lifeNumber_00, T_lifeNumber_01, T_lifeNumber_03, T_lifeNumber_02 };
+    static const int TPANE_IDX_TBL[PLAYER_COUNT] = { T_lifeNumber_00, T_lifeNumber_01, T_lifeNumber_03, T_lifeNumber_02 };
 
     for (int i = 0; i < PLAYER_COUNT; i++) {
         PLAYER_TYPE_e playerType = daPyCom_c::sc_PLAYER_ORDER[i];
@@ -296,7 +296,7 @@ void dCourseSelectGuide_c::RestNumberDisp() {
         int rest = daPyMng_c::getRest(playerType);
         if (mRest[i] != rest) {
             mRest[i] = rest;
-            int textIdx = textBoxIdxs[i];
+            int textIdx = TPANE_IDX_TBL[i];
             LytTextBox_c *textBox = mpTextBoxes[textIdx];
             dGameCom::LayoutDispNumber(rest, dGameDisplay_c::c_PLAYNUM_DIGIT, textBox, true);
         }
@@ -492,13 +492,13 @@ void dCourseSelectGuide_c::CollectionCoinSet() {
 }
 
 bool dCourseSelectGuide_c::isArrowDispRequest(int dir) {
-    static const u8 flags[] = {
+    static const u8 BIT_CHECK_TBL[] = {
         BIT_FLAG(DIR_UP),
         BIT_FLAG(DIR_DOWN),
         BIT_FLAG(DIR_LEFT),
         BIT_FLAG(DIR_RIGHT)
     };
-    return (mMoveDirection & flags[dir]) != 0;
+    return (mMoveDirection & BIT_CHECK_TBL[dir]) != 0;
 }
 
 void dCourseSelectGuide_c::initializeState_WorldCourseOnStageWait() {}
@@ -586,7 +586,7 @@ void dCourseSelectGuide_c::executeState_GuideOnStageWait() {
     }
 }
 void dCourseSelectGuide_c::finalizeState_GuideOnStageWait() {
-    PlayerIconSet();
+    WaKuPosSet();
 }
 
 void dCourseSelectGuide_c::initializeState_GuideOnStageAnimeEndCheck() {

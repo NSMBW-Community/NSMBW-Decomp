@@ -21,7 +21,4 @@ private:
     /// @bug The implementation is flawed.
     /// @xlink{https://roadrunnerwmc.github.io/blog/2020/05/08/nsmb-rng.html, This post explains why}.
     inline u32 ranqdStep();
-
-    static u32 mConst1; ///< Constant @p a from the @p ranqd1 algorithm.
-    static u32 mConst2; ///< Constant @p c from the @p ranqd1 algorithm.
 };

@@ -529,14 +529,14 @@ int dWmEnemy_c::getEnemyWalkSeID() {
 }
 
 bool dWmEnemy_c::IsExecEnable() {
-    static const int cutsceneCommands[] = {
+    static const int sc_ExecEnableDemo[] = {
         dCsSeqMng_c::CUTSCENE_CMD_NONE,
         dCsSeqMng_c::CUTSCENE_CMD_56,
         dCsSeqMng_c::CUTSCENE_CMD_136,
         dCsSeqMng_c::CUTSCENE_CMD_86,
         dCsSeqMng_c::CUTSCENE_CMD_87
     };
-    return isCutsceneCommandPlaying(cutsceneCommands, ARRAY_SIZE(cutsceneCommands));
+    return isCutsceneCommandPlaying(sc_ExecEnableDemo, ARRAY_SIZE(sc_ExecEnableDemo));
 }
 
 bool dWmEnemy_c::IsPlayerComingCore() {
