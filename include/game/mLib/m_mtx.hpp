@@ -2,17 +2,18 @@
 #include <types.h>
 #include <game/mLib/m_angle.hpp>
 #include <game/mLib/m_vec.hpp>
+#include <lib/egg/math/eggMatrix.h>
 #include <nw4r/math.h>
 
 /// @brief A 3x4 matrix.
 /// @ingroup mlib
-class mMtx_c : public nw4r::math::MTX34 {
+class mMtx_c : public EGG::Matrix34f {
 public:
     /// @brief Constructs an empty matrix.
     mMtx_c() {}
 
     /// @brief Constructs a matrix from an MTX34.
-    mMtx_c(const nw4r::math::MTX34 &mtx) : MTX34(mtx) {}
+    mMtx_c(const nw4r::math::MTX34 &mtx) : Matrix34f(mtx) {}
 
     mMtx_c(const mMtx_c &other) {
         *this = other;
@@ -26,15 +27,6 @@ public:
 
     /// @brief Const Mtx cast operator.
     operator const Mtx*() const { return &mtx; }
-
-    mMtx_c &operator=(const mMtx_c &other) {
-        for (int i = 0; i < 3; i++) {
-            for (int j = 0; j < 4; j++) {
-                m[i][j] = other.m[i][j];
-            }
-        }
-        return *this;
-    }
 
     void XrotS(mAng angle); ///< Generates a rotation matrix for the X axis with the given angle.
     void XrotM(mAng angle); ///< Rotates the matrix on the X axis by the given angle.
