@@ -4,8 +4,8 @@
 
 /// @ingroup clib
 namespace cRandom {
-    const u32 l_RANDOM_ADD = 0x19660D; ///< Constant @p a from the @p ranqd1 algorithm.
-    const u32 l_RANDOM_MUL = 0x3C6EF35F; ///< Constant @p c from the @p ranqd1 algorithm.
+    u32 l_RANDOM_ADD = 0x19660D; ///< Constant @p a from the @p ranqd1 algorithm.
+    u32 l_RANDOM_MUL = 0x3C6EF35F; ///< Constant @p c from the @p ranqd1 algorithm.
 }
 
 // This decompiled terribly but at least it matches
