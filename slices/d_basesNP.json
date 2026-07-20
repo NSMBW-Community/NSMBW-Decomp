@@ -27,6 +27,9 @@
             ".PPC.EMB.apuinfo":     { "index": 18, "align": 16, "size": "0x0" }
         }
     },
+    "keepWeak": [
+        "setAnim__11daWmPeach_cFifff"
+    ],
     "slices": [
         {
             "source": "runtime/rel_init.cpp",
@@ -107,6 +110,26 @@
                 ".rodata": "0x8840-0x8880",
                 ".data": "0x44820-0x44a68",
                 ".bss": "0xfda8-0xfdc0"
+            }
+        },
+        {
+            "source": "d_basesNP/bases/d_a_wm_peach.cpp",
+            "memoryRanges": {
+                ".text": "0x176630-0x176cd0",
+                ".ctors": "0x420-0x424",
+                ".rodata": "0x8ea0-0x8ed0",
+                ".data": "0x46838-0x46940",
+                ".bss": "0x10020-0x10030"
+            }
+        },
+        {
+            "source": "d_basesNP/bases/d_a_wm_peach_castle.cpp",
+            "memoryRanges": {
+                ".text": "0x176cd0-0x177690",
+                ".ctors": "0x424-0x428",
+                ".rodata": "0x8ed0-0x8ef8",
+                ".data": "0x46940-0x46be0",
+                ".bss": "0x10030-0x10040"
             }
         },
         {
