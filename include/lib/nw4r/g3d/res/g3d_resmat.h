@@ -554,6 +554,8 @@ public:
         return ref().id;
     }
 
+    void DCStore(bool sync);
+
     ResGenMode GetResGenMode() {
         return ResGenMode(&ref().genMode);
     }

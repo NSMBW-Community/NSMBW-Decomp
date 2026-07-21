@@ -57,7 +57,6 @@ namespace m3d {
             return create(resMdl, allocator, bufferOption, 1, nullptr);
         }
 
-    private:
         mdlCallback_c mCallback;
     };
 }
