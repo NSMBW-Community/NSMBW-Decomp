@@ -369,7 +369,7 @@
             }
         },
         {
-            "source": "dol/bases/d_mario_mdl.cpp",
+            "source": "dol/bases/d_mario_model.cpp",
             "memoryRanges": {
                 ".text": "0xc39d0-0xc4480",
                 ".rodata": "0x33a0-0x3470",

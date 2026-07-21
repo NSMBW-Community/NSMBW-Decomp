@@ -1,4 +1,4 @@
-#include <game/bases/d_mario_mdl.hpp>
+#include <game/bases/d_mario_model.hpp>
 #include <game/bases/d_a_player_manager.hpp>
 
 const dPlayerMdl_c::ModelInfo_s scArcDt[2] = {

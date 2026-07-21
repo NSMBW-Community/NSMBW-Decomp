@@ -13,7 +13,7 @@
 #include <game/bases/d_info.hpp>
 #include <game/bases/d_next.hpp>
 #include <game/bases/d_mask_manager.hpp>
-#include <game/bases/d_mario_mdl.hpp>
+#include <game/bases/d_mario_model.hpp>
 #include <game/bases/d_water_entry_manager.hpp>
 #include <game/bases/d_s_stage.hpp>
 #include <game/bases/d_save_mng.hpp>
