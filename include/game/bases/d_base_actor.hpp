@@ -125,7 +125,7 @@ private:
      */
     static void setTmpCtData(const mVec3_c *position, const mAng3_c *rotation);
 
-    fLiNdBa_c mLinkActor; ///< The node in #m_actorManage.
+    fLiNdBaLink_c mLinkActor; ///< The node in #m_actorManage.
 
 public:
     mMtx_c mMatrix; ///< The actor's partial transformation matrix. See makeMtx() for details.

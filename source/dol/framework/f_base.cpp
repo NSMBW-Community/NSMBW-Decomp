@@ -56,7 +56,7 @@ fBase_c::fBase_c() :
 
 fBase_c::~fBase_c() {
     // [Clear the unused list]
-    fLiNdBa_c *curr = mUnusedList.getFirst();
+    fLiNdBaLink_c *curr = mUnusedList.getFirst();
     while (curr != nullptr) {
         curr->removeSelf();
         curr = mUnusedList.getFirst();

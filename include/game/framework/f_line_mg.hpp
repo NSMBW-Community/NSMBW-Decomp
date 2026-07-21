@@ -27,14 +27,14 @@ public:
      * @param id The ID to search for.
      * @return The node belonging to such base, or @p nullptr.
      */
-    const fLiNdBa_c *searchNodeByID(fBaseID_e id) const;
+    const fLiNdBaLink_c *searchNodeByID(fBaseID_e id) const;
 
-    fLiNdBa_c *getFirst() const {
-        return (fLiNdBa_c *) cLineMg_c::getFirst();
+    fLiNdBaLink_c *getFirst() const {
+        return (fLiNdBaLink_c *) cLineMg_c::getFirst();
     }
 
-    fLiNdBa_c *getLast() const {
-        return (fLiNdBa_c *) cLineMg_c::getLast();
+    fLiNdBaLink_c *getLast() const {
+        return (fLiNdBaLink_c *) cLineMg_c::getLast();
     }
 };
 

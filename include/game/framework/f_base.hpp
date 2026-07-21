@@ -285,6 +285,6 @@ private:
     static fTrNdBa_c *m_tmpCtConnectParent; ///< Temporary storage for the next constructed base's parent connect node.
 
     friend class fManager_c;
-    friend class fLiNdBa_c;
+    friend class fLiNdBaLink_c;
     friend class fTrMgBa_c;
 };

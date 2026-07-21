@@ -66,7 +66,7 @@ private:
     /// @ref m_deleteManage "delete" list.
     fLiNdBaPr_c mMainNode;
     fLiNdBaPr_c mDrawNode; ///< The node in the @ref m_drawManage "draw list".
-    fLiNdBa_c mSearchNode; ///< The node in the @ref m_searchManage "search lists".
+    fLiNdBaLink_c mSearchNode; ///< The node in the @ref m_searchManage "search lists".
 
     static fTrMgBaFu_c m_connectManage; ///< A tree that connects all loaded bases.
     static fLiMgBaFuPr_c m_createManage; ///< A list of all the bases scheduled for creation.

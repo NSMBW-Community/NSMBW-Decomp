@@ -35,22 +35,22 @@ bool fLiMgBaFu_c::lineListProc() {
     }
 
     // Call the processing function for each node in the list
-    fLiNdBa_c *curr = getFirst();
+    fLiNdBaLink_c *curr = getFirst();
     while (curr != nullptr) {
-        fLiNdBa_c *next = curr->getNext();
+        fLiNdBaLink_c *next = curr->getNext();
         (curr->mpOwner->*mpProcFunc)();
         curr = next;
     }
     return true;
 }
 
-const fLiNdBa_c *fLiMgBa_c::searchNodeByID(fBaseID_e id) const {
+const fLiNdBaLink_c *fLiMgBa_c::searchNodeByID(fBaseID_e id) const {
     // [Possible optimizations:
     // - Cancel search if the null base ID is passed (it will never yield a result)
     // - Since IDs are assigned through an incrementing counter and lists are ordered by
     //   decreasing ID, the search can be ended early if the current ID is less than the
     //   searched one]
-    for (fLiNdBa_c *curr = getFirst(); curr != nullptr; curr = curr->getNext()) {
+    for (fLiNdBaLink_c *curr = getFirst(); curr != nullptr; curr = curr->getNext()) {
         if (curr->mpOwner->mUniqueID == id) {
             return curr;
         }
@@ -61,7 +61,7 @@ const fLiNdBa_c *fLiMgBa_c::searchNodeByID(fBaseID_e id) const {
 int fLiMgBa_c::countNodeByProfName(ProfileName prof) const {
     int count = 0;
 
-    for (fLiNdBa_c *curr = getFirst(); curr != nullptr; curr = curr->getNext()) {
+    for (fLiNdBaLink_c *curr = getFirst(); curr != nullptr; curr = curr->getNext()) {
         if (curr->mpOwner->mProfName == prof) {
             count++;
         }
@@ -69,7 +69,7 @@ int fLiMgBa_c::countNodeByProfName(ProfileName prof) const {
     return count;
 }
 
-void fLiNdBa_c::removeSelf() {
+void fLiNdBaLink_c::removeSelf() {
     if (mpOwner != nullptr) {
         mpOwner->mUnusedList.removeLineNode(this);
         mpOwner = nullptr;

@@ -16,7 +16,7 @@ int fManager_c::getSearchTableNum() {
 }
 
 fBase_c *fManager_c::searchBaseByID(fBaseID_e id) {
-    const fLiNdBa_c *res = m_searchManage[id & 7].searchNodeByID(id);
+    const fLiNdBaLink_c *res = m_searchManage[id & 7].searchNodeByID(id);
     if (res != nullptr) {
         return res->mpOwner;
     }
