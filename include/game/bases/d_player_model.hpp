@@ -82,12 +82,12 @@ public:
     bool setPersonalAnm(int anmID, nw4r::g3d::ResAnmChr *outAnmChr, int) override;
     bool setPersonalRideAnm(int anmID, nw4r::g3d::ResAnmChr *outAnmChr) override;
     void setTexAnmType(TexAnmType_e anmType) override;
-    void setPropelRollSpeed(s16 speed) override; // [TODO: implement as inlines]
-    s16 getPropelRollSpeed() const override; // [TODO: implement as inlines]
-    void setPropelRollAngle(s16 speed) override; // [TODO: implement as inlines]
-    s16 getPropelRollAngle() const override; // [TODO: implement as inlines]
-    void setPropelScale(float scale) override; // [TODO: implement as inlines]
-    float *getLegLengthP(u8) override; // [TODO: implement as inlines]
+    void setPropelRollSpeed(s16 speed) override { m_782 = speed; }
+    s16 getPropelRollSpeed() const override { return m_782; }
+    void setPropelRollAngle(s16 speed) override { m_780 = speed; }
+    s16 getPropelRollAngle() const override { return m_780; }
+    void setPropelScale(float scale) override { m_784 = scale; }
+    float *getLegLengthP(u8 i) override { return &mLegLengths[i][mPyPlayerMode].len1; }
 
     virtual void FUN_800d4750(int mode); ///< @unofficial
     virtual void callbackTimingA(nw4r::g3d::ChrAnmResult *anmRes, nw4r::g3d::ResNode resNode);
@@ -130,8 +130,7 @@ public:
     mVec3_c mMotionShareScale;
     nodeCallback_c mCallback;
     nodeCallbackPLH_c mCallbackPLH;
-    other_inf_s mOtherInf2[4];
-    other_inf_s mOtherInf1[4];
+    other_inf_s mLegLengths[2][4];
 
     static const int scPropelRollBaseSpeed;
     static const TexAnmData_s scTexAnmData[TEX_ANM_COUNT];
