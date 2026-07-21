@@ -2,8 +2,8 @@
 #include <types.h>
 #include <lib/egg/core/eggFrmHeap.h>
 #include <game/framework/f_profile.hpp>
+#include <game/framework/f_arc_load.hpp>
 #include <game/framework/f_base_id.hpp>
-#include <game/framework/f_helper_unk.hpp>
 #include <game/framework/f_manager.hpp>
 #include <game/framework/f_line_mg.hpp>
 
@@ -91,7 +91,7 @@ protected:
 
     fManager_c mMng; ///< The base's process manager.
 
-    fBaHelper_c *mpUnusedHelper; ///< See [Unused Content](#unused-content). @unused
+    fArcLoad_c *mpUnusedHelper; ///< See [Unused Content](#unused-content). @unused
     fLiMgBa_c mUnusedList; ///< See [Unused Content](#unused-content). @unused
 
     // [No p because of the string "fBase_c::mHeap"]

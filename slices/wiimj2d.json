@@ -708,7 +708,7 @@
             }
         },
         {
-            "source": "dol/framework/f_helper_unk.cpp",
+            "source": "dol/framework/f_arc_load.cpp",
             "memoryRanges": {
                 ".text": "0x15b2e0-0x15b490"
             }

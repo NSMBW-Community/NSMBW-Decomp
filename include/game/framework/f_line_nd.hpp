@@ -23,9 +23,7 @@ public:
     }
 
     /// @brief Removes this node from the owner's @ref fBase_c::mUnusedList "mUnusedList".
-    /// @unofficial
-    /// @decompnote{Might not actually belong to this class (XOR trick on hash).}
-    void removeSelf();
+    void clearData();
 
     fBase_c *mpOwner; ///< The owner of this node.
 };

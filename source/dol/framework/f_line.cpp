@@ -69,7 +69,7 @@ int fLiMgBa_c::countNodeByProfName(ProfileName prof) const {
     return count;
 }
 
-void fLiNdBaLink_c::removeSelf() {
+void fLiNdBaLink_c::clearData() {
     if (mpOwner != nullptr) {
         mpOwner->mUnusedList.removeLineNode(this);
         mpOwner = nullptr;

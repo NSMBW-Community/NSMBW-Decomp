@@ -58,7 +58,7 @@ fBase_c::~fBase_c() {
     // [Clear the unused list]
     fLiNdBaLink_c *curr = mUnusedList.getFirst();
     while (curr != nullptr) {
-        curr->removeSelf();
+        curr->clearData();
         curr = mUnusedList.getFirst();
     }
 }
@@ -126,7 +126,7 @@ int fBase_c::createPack() {
 int fBase_c::preDelete() {
     // [Unused code]
     if (mpUnusedHelper != nullptr) {
-        if (!mpUnusedHelper->LoadOnlyOne()) {
+        if (!mpUnusedHelper->checkDelete()) {
             return NOT_READY;
         }
     }
@@ -153,7 +153,7 @@ void fBase_c::postDelete(MAIN_STATE_e state) {
 
         // Delete the unused helper
         if (mpUnusedHelper != nullptr) {
-            mpUnusedHelper->Delete();
+            mpUnusedHelper->arcListDelete();
         }
 
         // Delete the base itself
