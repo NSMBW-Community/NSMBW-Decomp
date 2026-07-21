@@ -1,6 +1,7 @@
 #pragma once
 #include <types.h>
 #include <game/mLib/m_vec.hpp>
+#include <game/bases/d_a_player_base.hpp>
 
 class daPyDemoMng_c {
 public:
@@ -21,6 +22,18 @@ public:
     int getControlDemoPlayerNum() const;
     int getNextDemoNo();
 
+    void setBossDownPlayerNo(int plNo);
+    void setBossDown(daPlBase_c *player) {
+        setBossDownPlayerNo(player->getPlrNo());
+    }
+
+    int getPlrNo() const { return mPlayerNo; }
+    void setPlrNo(int playerNo) { mPlayerNo = playerNo; }
+    int get_88() const { return m_88; }
+    void inc_88() { m_88++; }
+
+    static daPyDemoMng_c *getInstance() { return mspInstance; }
+
     char mPad1[0x10];
     u32 mFlags;
     u32 mGoalType;
@@ -40,11 +53,6 @@ public:
     int m_88;
     u8 mPad8[0x8];
     int m_94;
-
-    int getPlrNo() const { return mPlayerNo; }
-    void setPlrNo(int playerNo) { mPlayerNo = playerNo; }
-    int get_88() const { return m_88; }
-    void inc_88() { m_88++; }
 
     static daPyDemoMng_c *mspInstance;
 };
