@@ -571,7 +571,6 @@
         },
         {
             "source": "dol/bases/d_yoshi_model.cpp",
-            "nonMatching": true,
             "memoryRanges": {
                 ".text": "0xf7b60-0xf9800",
                 ".data": "0x1de90-0x1dfd8",
