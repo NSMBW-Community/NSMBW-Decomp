@@ -28,7 +28,7 @@ bool dSmallScore_c::createLayout(d2d::ResAccMultLoader_c *res) {
         "T_coinPoint_00",
     };
 
-    static const char *N_PANE_NAME_TBL[N_COUNT] = {
+    static const char *NPANE_NAME_DT[N_COUNT] = {
         "N_coin_00"
     };
 
@@ -42,7 +42,7 @@ bool dSmallScore_c::createLayout(d2d::ResAccMultLoader_c *res) {
 
     mLayout.TPaneRegister(T_PANE_NAME_TBL, mpTextBoxes, T_COUNT);
     mpTextBoxes[T_coin_x_00]->setMessage(dMessage_c::getMesRes(), BMG_CATEGORY_SMALL_SCORE, MSG_LOWERCASE_X, 0);
-    mLayout.NPaneRegister(N_PANE_NAME_TBL, mpNullPanes, N_COUNT);
+    mLayout.NPaneRegister(NPANE_NAME_DT, mpNullPanes, N_COUNT);
 
     mpTextBoxes[T_100_00]->SetVisible(false);
     mpTextBoxes[T_1000_00]->SetVisible(false);

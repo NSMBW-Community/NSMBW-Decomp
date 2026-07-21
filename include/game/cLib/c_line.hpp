@@ -1,31 +1,29 @@
 #pragma once
 #include <types.h>
 
-/// @brief A doubly-linked list node. See cListMg_c.
+/// @brief A doubly-linked list node. See cLineMg_c.
 /// @ingroup clib
-/// @unofficial
-class cListNd_c {
+class cLineNd_c {
 public:
     /// @brief Constructs a new list node.
-    cListNd_c() : mpPrev(nullptr), mpNext(nullptr) {}
+    cLineNd_c() : mpPrev(nullptr), mpNext(nullptr) {}
 
-    cListNd_c *getPrev() const { return mpPrev; }
-    cListNd_c *getNext() const { return mpNext; }
+    cLineNd_c *getPrev() const { return mpPrev; }
+    cLineNd_c *getNext() const { return mpNext; }
 
 protected:
-    cListNd_c *mpPrev; ///< The previous node.
-    cListNd_c *mpNext; ///< The next node.
+    cLineNd_c *mpPrev; ///< The previous node.
+    cLineNd_c *mpNext; ///< The next node.
 
-    friend class cListMg_c;
+    friend class cLineMg_c;
 };
 
-/// @brief A doubly-linked list container. See cListNd_c.
+/// @brief A doubly-linked list container. See cLineNd_c.
 /// @ingroup clib
-/// @unofficial
-class cListMg_c {
+class cLineMg_c {
 public:
     /// @brief Constructs a new list container.
-    cListMg_c() : mpFirst(nullptr), mpLast(nullptr) {}
+    cLineMg_c() : mpFirst(nullptr), mpLast(nullptr) {}
 
     /**
      * @brief Inserts a node after the given previous node.
@@ -34,7 +32,7 @@ public:
      * @param prevNode The node to insert it after, or @p nullptr to insert it at the beginning.
      * @return If the operation was successful.
      */
-    bool insertAfter(cListNd_c *node, cListNd_c *prevNode);
+    bool insertLineNode(cLineNd_c *node, cLineNd_c *prevNode);
 
     /**
      * @brief Removes a node from the list.
@@ -42,7 +40,7 @@ public:
      * @param node The node to remove.
      * @return If the operation was successful.
      */
-    bool remove(cListNd_c *node);
+    bool removeLineNode(cLineNd_c *node);
 
     /**
      * @brief Adds a node to the end of the list.
@@ -50,7 +48,7 @@ public:
      * @param node The node to append.
      * @return If the operation was successful.
      */
-    bool append(cListNd_c *node);
+    bool addLastLineNode(cLineNd_c *node);
 
     /**
      * @brief Adds a node to the beginning of the list.
@@ -58,12 +56,12 @@ public:
      * @param node The node to prepend.
      * @return If the operation was successful.
      */
-    bool prepend(cListNd_c *node);
+    bool addTopLineNode(cLineNd_c *node);
 
-    cListNd_c *getFirst() const { return mpFirst; }
-    cListNd_c *getLast() const { return mpLast; }
+    cLineNd_c *getFirst() const { return mpFirst; }
+    cLineNd_c *getLast() const { return mpLast; }
 
 protected:
-    cListNd_c *mpFirst; ///< The first node in the list.
-    cListNd_c *mpLast; ///< The last node in the list.
+    cLineNd_c *mpFirst; ///< The first node in the list.
+    cLineNd_c *mpLast; ///< The last node in the list.
 };

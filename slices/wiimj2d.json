@@ -666,7 +666,7 @@
             }
         },
         {
-            "source": "dol/cLib/c_list.cpp",
+            "source": "dol/cLib/c_line.cpp",
             "memoryRanges": {
                 ".text": "0x15a8d0-0x15aa20"
             }
@@ -723,7 +723,7 @@
             }
         },
         {
-            "source": "dol/framework/f_list.cpp",
+            "source": "dol/framework/f_line.cpp",
             "memoryRanges": {
                 ".text": "0x15c500-0x15c6b0"
             }

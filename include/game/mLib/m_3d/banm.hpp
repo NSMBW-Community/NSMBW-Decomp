@@ -48,6 +48,6 @@ namespace m3d {
         mAllocator_c mAllocator;
 
     private:
-        static u32 sHeapAlignment; ///< @unofficial
+        static u32 ms_DefaultAllocOptBit;
     };
 }

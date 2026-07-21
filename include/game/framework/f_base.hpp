@@ -5,7 +5,7 @@
 #include <game/framework/f_base_id.hpp>
 #include <game/framework/f_helper_unk.hpp>
 #include <game/framework/f_manager.hpp>
-#include <game/framework/f_list_mg.hpp>
+#include <game/framework/f_line_mg.hpp>
 
 #define ACTOR_PARAM_CONFIG(name, offset, size) static const u16 PARAM_##name = ((offset << 8) | size)
 #define ACTOR_PARAM_LOCAL(param, name) ((param >> (PARAM_##name >> 8)) & ((1 << (PARAM_##name & 0xff)) - 1))

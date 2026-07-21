@@ -16,7 +16,7 @@ mAngle(),
 mAngle3D()
 {
     // Append the actor to the list
-    m_actorManage.append(&mLinkActor);
+    m_actorManage.addLastLineNode(&mLinkActor);
 
     // Copy position and angle if set
     if (m_tmpCtPosP != nullptr) {
@@ -45,7 +45,7 @@ mAngle3D()
 }
 
 dBaseActor_c::~dBaseActor_c() {
-    m_actorManage.remove(&mLinkActor);
+    m_actorManage.removeLineNode(&mLinkActor);
 }
 
 int dBaseActor_c::preCreate() {

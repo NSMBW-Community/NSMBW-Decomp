@@ -1,8 +1,6 @@
 #pragma once
 #include <types.h>
 #include <game/bases/d_base.hpp>
-#include <game/cLib/c_list.hpp>
-#include <game/framework/f_list_mg.hpp>
 #include <game/mLib/m_angle.hpp>
 #include <game/mLib/m_mtx.hpp>
 #include <game/mLib/m_vec.hpp>

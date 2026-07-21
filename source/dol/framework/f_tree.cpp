@@ -1,10 +1,9 @@
 #include <types.h>
-#include <game/framework/f_tree_mg_ptmf.hpp>
 #include <game/framework/f_tree_mg.hpp>
 #include <game/framework/f_tree_nd.hpp>
 #include <game/framework/f_base.hpp>
 
-bool fTrMgPTMF_c::walkPack() {
+bool fTrMgBaFu_c::treeListProc() {
 
     // Gracefully fail if the processing function isn't set
     if (mpProcFunc == 0) {

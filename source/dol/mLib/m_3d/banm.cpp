@@ -2,7 +2,7 @@
 #include <game/mLib/m_heap.hpp>
 #include <constants/sjis_constants.h>
 
-u32 m3d::banm_c::sHeapAlignment;
+u32 m3d::banm_c::ms_DefaultAllocOptBit = mHeap::OPT_NONE;
 
 m3d::banm_c::~banm_c() {
     banm_c::remove();
@@ -25,7 +25,7 @@ bool m3d::banm_c::createAllocator(mAllocator_c *allocator, size_t *size) {
     size_t aligned = nw4r::ut::RoundUp(mHeap::frmHeapCost(*size, 0x20), 0x20) - mHeap::frmHeapCost(0, 0x20);
     *size = nw4r::ut::RoundUp(mHeap::frmHeapCost(aligned, 0x20), 0x20);
 
-    mpHeap = mHeap::createFrmHeap(aligned, allocator->mpHeap, M3D_BANM_HEAP_NAME, sHeapAlignment, mHeap::OPT_NONE);
+    mpHeap = mHeap::createFrmHeap(aligned, allocator->mpHeap, M3D_BANM_HEAP_NAME, ms_DefaultAllocOptBit, mHeap::OPT_NONE);
     mAllocator.attach(mpHeap, 0x20);
     return true;
 }

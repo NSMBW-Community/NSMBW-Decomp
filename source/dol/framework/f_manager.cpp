@@ -1,11 +1,11 @@
 #include <game/framework/f_manager.hpp>
 #include <game/framework/f_base.hpp>
 
-fTrMgPTMF_c fManager_c::m_connectManage(&fBase_c::connectProc);
-fLiMgPTMF_c fManager_c::m_createManage(&fBase_c::createPack);
-fLiMgPTMF_c fManager_c::m_executeManage(&fBase_c::executePack);
-fLiMgPTMF_c fManager_c::m_drawManage(&fBase_c::drawPack);
-fLiMgPTMF_c fManager_c::m_deleteManage(&fBase_c::deletePack);
+fTrMgBaFu_c fManager_c::m_connectManage(&fBase_c::connectProc);
+fLiMgBaFuPr_c fManager_c::m_createManage(&fBase_c::createPack);
+fLiMgBaFuPr_c fManager_c::m_executeManage(&fBase_c::executePack);
+fLiMgBaFuPr_c fManager_c::m_drawManage(&fBase_c::drawPack);
+fLiMgBaFuPr_c fManager_c::m_deleteManage(&fBase_c::deletePack);
 fLiMgBa_c fManager_c::m_searchManage[8];
 
 u32 fManager_c::m_StopProcInf;
@@ -56,27 +56,27 @@ fBase_c *fManager_c::searchBaseByGroupType(u8 groupType, const fBase_c *parent) 
 void fManager_c::mainLoop() {
     if ((m_StopProcInf & PROC_FLAG_DELETE) == 0) {
         m_nowLoopProc = DELETE;
-        m_deleteManage.walkPack();
+        m_deleteManage.lineListProc();
     }
 
     if ((m_StopProcInf & PROC_FLAG_CREATE) == 0) {
         m_nowLoopProc = CREATE;
-        m_createManage.walkPack();
+        m_createManage.lineListProc();
     }
 
     if ((m_StopProcInf & PROC_FLAG_EXECUTE) == 0) {
         m_nowLoopProc = EXECUTE;
-        m_executeManage.walkPack();
+        m_executeManage.lineListProc();
     }
 
     if ((m_StopProcInf & PROC_FLAG_DRAW) == 0) {
         m_nowLoopProc = DRAW;
-        m_drawManage.walkPack();
+        m_drawManage.lineListProc();
     }
 
     if ((m_StopProcInf & PROC_FLAG_CONNECT) == 0) {
         m_nowLoopProc = CONNECT;
-        m_connectManage.walkPack();
+        m_connectManage.treeListProc();
     }
 
     m_nowLoopProc = NONE;

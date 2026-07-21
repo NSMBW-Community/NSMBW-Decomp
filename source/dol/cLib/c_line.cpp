@@ -1,11 +1,11 @@
-#include <game/cLib/c_list.hpp>
+#include <game/cLib/c_line.hpp>
 #include <types.h>
 
-bool cListMg_c::insertAfter(cListNd_c *node, cListNd_c *prevNode) {
+bool cLineMg_c::insertLineNode(cLineNd_c *node, cLineNd_c *prevNode) {
 
     // If no previous node is given, prepend the new node
     if (prevNode == nullptr)
-        return prepend(node);
+        return addTopLineNode(node);
 
     if (node != nullptr) {
         node->mpNext = prevNode->mpNext;
@@ -27,7 +27,7 @@ bool cListMg_c::insertAfter(cListNd_c *node, cListNd_c *prevNode) {
     return true;
 }
 
-bool cListMg_c::remove(cListNd_c *node) {
+bool cLineMg_c::removeLineNode(cLineNd_c *node) {
     if (node != nullptr) {
 
         // If the node has a predecessor, update it
@@ -57,7 +57,7 @@ bool cListMg_c::remove(cListNd_c *node) {
     return true;
 }
 
-bool cListMg_c::append(cListNd_c *node) {
+bool cLineMg_c::addLastLineNode(cLineNd_c *node) {
     if (node != nullptr) {
 
         // If the last node exists, update it
@@ -77,7 +77,7 @@ bool cListMg_c::append(cListNd_c *node) {
     return true;
 }
 
-bool cListMg_c::prepend(cListNd_c *node) {
+bool cLineMg_c::addTopLineNode(cLineNd_c *node) {
     if (node != nullptr) {
 
         // If the first node exists, update it

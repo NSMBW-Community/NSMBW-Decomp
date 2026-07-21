@@ -1,10 +1,8 @@
 #pragma once
 #include <game/framework/f_base_id.hpp>
-#include <game/framework/f_list_mg_ptmf.hpp>
-#include <game/framework/f_list_mg.hpp>
-#include <game/framework/f_list_nd.hpp>
-#include <game/framework/f_list_nd_prio.hpp>
-#include <game/framework/f_tree_mg_ptmf.hpp>
+#include <game/framework/f_line_mg.hpp>
+#include <game/framework/f_line_nd.hpp>
+#include <game/framework/f_tree_mg.hpp>
 #include <game/framework/f_tree_nd.hpp>
 #include <game/framework/f_profile.hpp>
 
@@ -66,15 +64,15 @@ private:
 
     /// @brief The node in the @ref m_createManage "create", @ref m_executeManage "execute" or
     /// @ref m_deleteManage "delete" list.
-    fLiNdPrio_c mMainNode;
-    fLiNdPrio_c mDrawNode; ///< The node in the @ref m_drawManage "draw list".
+    fLiNdBaPr_c mMainNode;
+    fLiNdBaPr_c mDrawNode; ///< The node in the @ref m_drawManage "draw list".
     fLiNdBa_c mSearchNode; ///< The node in the @ref m_searchManage "search lists".
 
-    static fTrMgPTMF_c m_connectManage; ///< A tree that connects all loaded bases.
-    static fLiMgPTMF_c m_createManage; ///< A list of all the bases scheduled for creation.
-    static fLiMgPTMF_c m_executeManage; ///< A list of all the bases scheduled for execution.
-    static fLiMgPTMF_c m_deleteManage; ///< A list of all the bases scheduled for deletion.
-    static fLiMgPTMF_c m_drawManage; ///< A list of all the bases scheduled for drawing.
+    static fTrMgBaFu_c m_connectManage; ///< A tree that connects all loaded bases.
+    static fLiMgBaFuPr_c m_createManage; ///< A list of all the bases scheduled for creation.
+    static fLiMgBaFuPr_c m_executeManage; ///< A list of all the bases scheduled for execution.
+    static fLiMgBaFuPr_c m_deleteManage; ///< A list of all the bases scheduled for deletion.
+    static fLiMgBaFuPr_c m_drawManage; ///< A list of all the bases scheduled for drawing.
 
     /// @brief An array of lists used for base lookup.
     /// @details Bases are distributed across the lists in a round-robin fashion, allowing bases to be

@@ -9237,12 +9237,12 @@ void dAcPy_c::initChangeNormal() {
         static const float offsets[3] = { 21.0f, 11.0f, 0.0f };
         mPos.y += offsets[currTallType] - offsets[prevTallType];
     }
-    static const int tallTypeChange[3][3] = {
+    static const int l_change_type_data[3][3] = {
         {7, 7, 1},
         {2, 7, 3},
         {4, 5, 6}
     };
-    m_67 = tallTypeChange[prevTallType][currTallType];
+    m_67 = l_change_type_data[prevTallType][currTallType];
     switch (m_67) {
         case 0:
         case 1:

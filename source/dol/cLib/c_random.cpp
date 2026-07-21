@@ -4,8 +4,8 @@
 
 /// @ingroup clib
 namespace cRandom {
-    u32 l_RANDOM_ADD = 0x19660D; ///< Constant @p a from the @p ranqd1 algorithm.
-    u32 l_RANDOM_MUL = 0x3C6EF35F; ///< Constant @p c from the @p ranqd1 algorithm.
+    u32 l_RANDOM_MUL = 0x19660D; ///< Constant @p a from the @p ranqd1 algorithm.
+    u32 l_RANDOM_ADD = 0x3C6EF35F; ///< Constant @p c from the @p ranqd1 algorithm.
 }
 
 // This decompiled terribly but at least it matches
@@ -15,8 +15,8 @@ inline u32 cM_rand_c::ranqdStep() {
     // Variables must be declared in this order or there will be regswaps
     register u32 c, b, a, x;
     x = mSeed;
-    a = cRandom::l_RANDOM_ADD;
-    b = cRandom::l_RANDOM_MUL;
+    a = cRandom::l_RANDOM_MUL;
+    b = cRandom::l_RANDOM_ADD;
 
     // Longlong math needs to be done in asm in order to match...
     asm {
