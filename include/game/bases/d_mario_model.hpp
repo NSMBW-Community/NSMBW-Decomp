@@ -17,7 +17,7 @@ public:
     void draw() override;
     void setColorType(u8 type) override;
     bool setPersonalAnm(int anmID, nw4r::g3d::ResAnmChr *outAnmChr, int) override;
-    void setTexAnmType(dPyMdlBase_c::TexAnmType_e type) override; // useless override
+    void setTexAnmType(TexAnmType_e type) override; // useless override
     void updateBonusCap() override;
     void FUN_800d4750(int mode) override;
     float getAimMotionShareScale() override;

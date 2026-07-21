@@ -61,23 +61,23 @@ void dPlayerMdl_c::createPlayerModel() {
 
         resNode = mdlMain.GetResNode(3);
         nodePos = resNode.GetTranslate();
-        mOtherInf1[i].len1 = nodePos.Len();
-        mOtherInf1[i].lensq1 = nodePos.LenSq();
+        mLegLengths[1][i].len1 = nodePos.Len();
+        mLegLengths[1][i].lensq1 = nodePos.LenSq();
 
         resNode = mdlMain.GetResNode(4);
         nodePos = resNode.GetTranslate();
-        mOtherInf1[i].len2 = nodePos.Len();
-        mOtherInf1[i].lensq2 = nodePos.LenSq();
+        mLegLengths[1][i].len2 = nodePos.Len();
+        mLegLengths[1][i].lensq2 = nodePos.LenSq();
 
         resNode = mdlMain.GetResNode(6);
         nodePos = resNode.GetTranslate();
-        mOtherInf2[i].len1 = nodePos.Len();
-        mOtherInf2[i].lensq1 = nodePos.LenSq();
+        mLegLengths[0][i].len1 = nodePos.Len();
+        mLegLengths[0][i].lensq1 = nodePos.LenSq();
 
         resNode = mdlMain.GetResNode(7);
         nodePos = resNode.GetTranslate();
-        mOtherInf2[i].len2 = nodePos.Len();
-        mOtherInf2[i].lensq2 = nodePos.LenSq();
+        mLegLengths[0][i].len2 = nodePos.Len();
+        mLegLengths[0][i].lensq2 = nodePos.LenSq();
     }
 
     nw4r::g3d::ResAnmChr anm = m_210.GetResAnmChr("wait");
