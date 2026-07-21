@@ -3,16 +3,15 @@
 
 /// @brief Random number generation helper class.
 /// @ingroup clib
-/// @unofficial
-class cM_rand_c {
+class cRandom_c {
 public:
 
     /// @brief Initializes the class with the given seed.
-    cM_rand_c(u32 seed) : mSeed(seed) {}
+    cRandom_c(u32 seed) : mSeed(seed) {}
 
-    u32 ranqd1(u32 max); ///< Generates an integer between 0 and the given max.
-    float ranqd2(); ///< Generates a floating point number between 0 and 1.
-    float ranqd3(); ///< Generates a floating point number between -0.5 and 0.5.
+    u32 getRandomByAsm(ulong max); ///< Generates an integer between 0 and the given max.
+    float getRandomFByAsm(); ///< Generates a floating point number between 0 and 1.
+    float getRandomF2ByAsm(); ///< Generates a floating point number between -0.5 and 0.5.
 
     u32 mSeed; ///< The current seed.
 
