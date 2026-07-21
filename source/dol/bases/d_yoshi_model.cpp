@@ -396,15 +396,14 @@ mMtx_c &dYoshiMdl_c::getTongueJointMtxBuf(int jointIdx) {
 void dYoshiMdl_c::setTongueBendCalc() {
     if (m_294 == 1) {
         mMtx_c tongueMtxs[7];
-        mVec3_c currPos;
-        mVec3_c prevPos;
-        mVec3_c jointPos;
-        getJointPos(&jointPos, 0);
+        mVec3_c tongueJointPos[2];
+        mVec3_c baseJointPos;
+        getJointPos(&baseJointPos, 0);
         if (!m_2a0) {
             m_2a0 = 1;
-            m_298.y = jointPos.y;
+            m_298.y = baseJointPos.y;
         }
-        float diff = m_298.y - jointPos.y;
+        float diff = m_298.y - baseJointPos.y;
         if (diff >= 30.0f) {
             diff = 30.0f;
         }
@@ -413,9 +412,9 @@ void dYoshiMdl_c::setTongueBendCalc() {
         }
         float tongueLength = 0.0f;
         for (int i = 1; i < (int) ARRAY_SIZE(mTongueJointMtxs); i++) {
-            getTongueJointMtxBuf(i - 1).multVecZero(prevPos);
-            getTongueJointMtxBuf(i).multVecZero(currPos);
-            tongueLength += (currPos - prevPos).Len();
+            getTongueJointMtxBuf(i - 1).multVecZero(tongueJointPos[0]);
+            getTongueJointMtxBuf(i).multVecZero(tongueJointPos[1]);
+            tongueLength += (tongueJointPos[1] - tongueJointPos[0]).Len();
 
             float factor = tongueLength / 10.0f;
             float y = diff * (factor * factor * factor) / 1000.0f;
@@ -423,11 +422,12 @@ void dYoshiMdl_c::setTongueBendCalc() {
             mtx.concat(mMtx_c::createScale(0.0f, 0.0f, 0.0f));
             tongueMtxs[i] = mtx;
         }
+        s16 angle;
         for (int i = 1; i < (int) ARRAY_SIZE(mTongueJointMtxs); i++) {
             mMtx_c mtx = getTongueJointMtxBuf(i);
-            getTongueJointMtxBuf(i - 1).multVecZero(prevPos);
-            mtx.multVecZero(currPos);
-            s16 angle = -cLib::targetAngleX(prevPos, currPos);
+            getTongueJointMtxBuf(i - 1).multVecZero(tongueJointPos[0]);
+            mtx.multVecZero(tongueJointPos[1]);
+            angle = -cLib::targetAngleX(tongueJointPos[0], tongueJointPos[1]);
             mtx.Add(tongueMtxs[i]);
             mtx.ZrotM(angle);
             setTongueJointMtxBuf(i, &mtx);
@@ -438,18 +438,17 @@ void dYoshiMdl_c::setTongueBendCalc() {
 }
 
 void dYoshiMdl_c::updateTongueMtx() {
-    mVec3_c currPos;
-    mVec3_c prevPos;
+    mVec3_c tongueJointPos[2];
     mVec3_c pos = getTonguePos();
     for (int i = 1; i < (int) ARRAY_SIZE(mTongueJointMtxs); i++) {
-        getTongueJointMtxBuf(i - 1).multVecZero(prevPos);
-        getTongueJointMtxBuf(i).multVecZero(currPos);
-        if (std::fabs(pos.x - currPos.x) > m_298.x) {
-            float v = m_298.x - std::fabs(pos.x - prevPos.x);
+        getTongueJointMtxBuf(i - 1).multVecZero(tongueJointPos[0]);
+        getTongueJointMtxBuf(i).multVecZero(tongueJointPos[1]);
+        if (std::fabs(pos.x - tongueJointPos[1].x) > m_298.x) {
+            float v = m_298.x - std::fabs(pos.x - tongueJointPos[0].x);
             if (v < 0.0f) {
                 v = 0.0f;
             }
-            mVec3_c shift = currPos - prevPos;
+            mVec3_c shift = tongueJointPos[1] - tongueJointPos[0];
             float scale = 0.0f;
             if (std::fabs(shift.x) > 0.1f) {
                 scale = std::fabs(v / shift.x);
@@ -475,18 +474,17 @@ bool dYoshiMdl_c::setTongueBgCheck() {
     if (m_294 != 1) {
         return false;
     }
-    mVec3_c currPos;
-    mVec3_c prevPos;
+    mVec3_c tongueJointPos[2];
     mVec3_c pos = getTonguePos();
     for (int i = 1; i < (int) ARRAY_SIZE(mTongueJointMtxs); i++) {
-        getTongueJointMtxBuf(i - 1).multVecZero(prevPos);
-        getTongueJointMtxBuf(i).multVecZero(currPos);
+        getTongueJointMtxBuf(i - 1).multVecZero(tongueJointPos[0]);
+        getTongueJointMtxBuf(i).multVecZero(tongueJointPos[1]);
         float wallX;
-        if (std::fabs(pos.x - prevPos.x) < m_298.x && dBc_c::checkWall(&prevPos, &currPos, &wallX, 0, 1, nullptr)) {
+        if (std::fabs(pos.x - tongueJointPos[0].x) < m_298.x && dBc_c::checkWall(&tongueJointPos[0], &tongueJointPos[1], &wallX, 0, 1, nullptr)) {
             float offset = std::fabs(wallX - pos.x);
             if (offset < 4.0f) {
                 offset = 4.0f;
-                if (currPos.x < pos.x) {
+                if (tongueJointPos[1].x < pos.x) {
                     wallX = pos.x - offset;
                 } else {
                     wallX = offset + pos.x;
@@ -495,7 +493,7 @@ bool dYoshiMdl_c::setTongueBgCheck() {
             if (m_298.x > offset) {
                 m_298.x = offset;
                 if (mpOwner != nullptr && mpOwner->mKind == dActor_c::STAGE_ACTOR_YOSHI) {
-                    mVec3_c wallHitPos(wallX, prevPos.y, prevPos.z);
+                    mVec3_c wallHitPos(wallX, tongueJointPos[0].y, tongueJointPos[0].z);
                     ((daYoshi_c *) mpOwner)->setTongueHitEffect(wallHitPos);
                 }
             }
