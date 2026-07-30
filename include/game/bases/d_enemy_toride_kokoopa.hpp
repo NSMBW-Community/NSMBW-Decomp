@@ -85,7 +85,7 @@ public:
     STATE_VIRTUAL_FUNC_DECLARE(dEnTorideKokoopa_c, ShellAtk);
     STATE_VIRTUAL_FUNC_DECLARE(dEnTorideKokoopa_c, ShellOut);
     STATE_VIRTUAL_FUNC_DECLARE(dEnTorideKokoopa_c, DieFumi_St);
-    virtual bool lockonTurn();
+    virtual BOOL lockonTurn();
     virtual void calcKokoopaMdl() {}
     virtual void calcShellMdl() {}
     virtual void drawKokoopa() {}
@@ -145,7 +145,7 @@ public:
     virtual void shelllandonSE() { mSndObject.startSound(SE_BOSS_CMN_SMART_SHELL_LAND, m_d0, 0); }
     virtual void shellinSE() { mSndObject.startSound(SE_BOSS_CMN_SHELL_IN, m_d0, 0); }
     virtual void shelloutSE() { mSndObject.startSound(SE_BOSS_CMN_SHELL_OUT, m_d0, 0); }
-    virtual void shellatkSE() { mSndObject.startSound(SE_BOSS_CMN_SMART_SHELL_ROLL, m_d0, 0); }
+    virtual void shellatkSE() { mSndObject.holdSound(SE_BOSS_CMN_SMART_SHELL_ROLL, m_d0, 0); }
     virtual void getupSE() {}
     virtual void blitzchargeSE() {}
     virtual void notice1Vo();

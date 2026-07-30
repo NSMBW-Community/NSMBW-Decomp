@@ -39,9 +39,10 @@ static const float l_shellatk_speed[2] = { -4.0f, 4.0f };
 static const s16 shorts[] = { 0x38E, 0xFC72 }; ///< @unofficial
 
 
-dEnTorideKokoopa_c::dEnTorideKokoopa_c() : mResFile(0), m_644(0), m_6ec(0), mJumpAnmNames(nullptr),
-        m_6f4(nullptr), m_6f8(0), m_6fc(nullptr), m_70c(BASE_ID_NULL), m_71c(0), m_72c(0),
-        mLookAngle(0), m_730(1), m_a68(1.0f), m_a6c(-1), m_a70(-1), mEffectNames(nullptr) {
+dEnTorideKokoopa_c::dEnTorideKokoopa_c() : m_6ec(nullptr), mJumpAnmNames(nullptr),
+        m_6f4(nullptr), m_6f8(nullptr), m_6fc(nullptr), m_70c(BASE_ID_NULL),
+        m_71c(0), m_72c(0), mLookAngle(0), m_730(1), m_a68(1.0f), m_a6c(-1),
+        m_a70(-1), mEffectNames(nullptr) {
 
     mpVoicesInfo = nullptr;
     mFacePos = mPos;
@@ -642,7 +643,7 @@ int dEnTorideKokoopa_c::calcAttackTarget() {
     return j;
 }
 
-bool dEnTorideKokoopa_c::lockonTurn() {
+BOOL dEnTorideKokoopa_c::lockonTurn() {
     dAcPy_c *player = daPyMng_c::getPlayer(m_700);
     if (player == nullptr) {
         return false;
@@ -1522,10 +1523,7 @@ void dEnTorideKokoopa_c::executeState_FumiHit() {
             if (mTimer1 != 0) {
                 break;
             }
-            mVec3_c vec;
-            vec.x = scale - m_a40.x;
-            vec.y = scale - m_a40.y;
-            vec.z = scale - m_a40.z;
+            mVec3_c vec = mVec3_c(scale - m_a40.x, scale - m_a40.y, scale - m_a40.z);
             int time = getFumiRecoverTime();
             if (time <= 0) {
                 m_a4c = vec;
