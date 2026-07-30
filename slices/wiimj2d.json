@@ -352,6 +352,18 @@
             }
         },
         {
+            "nonMatching": true,
+            "source": "dol/bases/d_enemy_toride_kokoopa.cpp",
+            "memoryRanges": {
+                ".text": "0xa1f90-0xaa030",
+                ".ctors": "0xf0-0xf4",
+                ".rodata": "0x2bd8-0x2cb0",
+                ".data": "0x15cc0-0x16bf8",
+                ".bss": "0x6ab8-0x71b8",
+                ".sdata2": "0x1388-0x1408"
+            }
+        },
+        {
             "source": "dol/bases/d_lytbase.cpp",
             "memoryRanges": {
                 ".text": "0xc2220-0xc33d0",

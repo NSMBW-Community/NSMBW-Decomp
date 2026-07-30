@@ -116,4 +116,6 @@ namespace dGameCom {
 
     void initGame();
     void AreaLanguageFolder(const char *, char *);
+
+    float getDispCenterX();
 }

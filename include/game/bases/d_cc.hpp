@@ -336,7 +336,6 @@ public:
 
     u8 mInfo; ///< Info flags for this collider. See CC_INFO_e.
 
-private:
     bool mIsLinked; ///< Whether this collider has been placed in the collider list.
 
 private:

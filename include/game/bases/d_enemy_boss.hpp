@@ -76,12 +76,12 @@ public:
     virtual void setShellDead(dActor_c *) {}
     virtual void damageProc() {}
     virtual void deadProc() {}
-    virtual bool isFumiInvalid() const { return false; }
+    virtual int isFumiInvalid() const { return false; }
     virtual bool isFumiDmgInvalid() const { return false; }
-    virtual bool isFireInvalid() const { return false; }
+    virtual int isFireInvalid() const { return false; }
     virtual bool isSlideInvalid() const { return true; }
     virtual bool isShellInvalid() const { return false; }
-    virtual bool isStarInvalid() const { return false; }
+    virtual int isStarInvalid() const { return false; }
     virtual void fumideadEffect() {}
     virtual void fumidmgEffect() {}
     virtual void hitFireEffect() {}

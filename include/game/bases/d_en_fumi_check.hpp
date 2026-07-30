@@ -30,7 +30,14 @@ class NonUniqueFumiCheck_c : public FumiCheckBase_c {
 public:
     NonUniqueFumiCheck_c() {}
     virtual ~NonUniqueFumiCheck_c() {}
-    virtual bool operate(int &i, dEn_c *, FumiCcInfo_c &) { i = 0; return false; }
+    bool operate(int &i, dEn_c *, FumiCcInfo_c &) override { i = 0; return false; }
+};
+
+class KokoopaSpFumiCheck_c : public FumiCheckBase_c {
+public:
+    KokoopaSpFumiCheck_c() {}
+    virtual ~KokoopaSpFumiCheck_c() {}
+    bool operate(int &i, dEn_c *, FumiCcInfo_c &) override;
 };
 
 class MugenComboFumiCheck_c : public FumiCheckBase_c {

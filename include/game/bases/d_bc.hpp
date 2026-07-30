@@ -161,6 +161,7 @@ public:
     bool getSakaUpDown(u8 direction);
     short getSakaAngleBySpeed(float);
     int getSakaType();
+    bool getWallOfs(mVec3_c *, int);
 
     u32 getFlags() const { return mFlags; }
 
