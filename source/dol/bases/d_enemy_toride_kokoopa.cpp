@@ -184,15 +184,9 @@ void dEnTorideKokoopa_c::setFumiDamage(dActor_c * other) {
         dScoreMng_c::m_instance->ScoreSet(this, 5, playerNo);
     }
 
-    fBase_c *x;
-    if (m_70c == BASE_ID_NULL) {
-        x = nullptr;
-    } else {
-        x = fManager_c::searchBaseByID(m_70c);
-    }
-
-    if (x) {
-        x->deleteRequest();
+    fBase_c *blitz = getBlitz();
+    if (blitz != nullptr) {
+        blitz->deleteRequest();
     }
 
     changeState(StateID_FumiHit);
@@ -217,15 +211,9 @@ void dEnTorideKokoopa_c::setFumiDead(dActor_c * other) {
         dScoreMng_c::m_instance->ScoreSet(this, 6, playerNo);
     }
 
-    fBase_c *x;
-    if (m_70c == BASE_ID_NULL) {
-        x = nullptr;
-    } else {
-        x = fManager_c::searchBaseByID(m_70c);
-    }
-
-    if (x) {
-        x->deleteRequest();
+    fBase_c *blitz = getBlitz();
+    if (blitz != nullptr) {
+        blitz->deleteRequest();
     }
 
     mActorProperties &= ~8;
@@ -262,18 +250,12 @@ void dEnTorideKokoopa_c::setFireDamage(dActor_c * other) {
         dScoreMng_c::m_instance->ScoreSet(this, 5, playerNo);
     }
 
-    fBase_c *x;
-    if (m_70c == BASE_ID_NULL) {
-        x = nullptr;
-    } else {
-        x = fManager_c::searchBaseByID(m_70c);
+    fBase_c *blitz = getBlitz();
+    if (blitz != nullptr) {
+        blitz->deleteRequest();
     }
 
-    if (x) {
-        x->deleteRequest();
-    }
-
-    changeState(StateID_FumiHit);
+    changeState(StateID_FireHit);
 }
 
 
@@ -291,15 +273,9 @@ void dEnTorideKokoopa_c::setFireDead(dActor_c * other) {
         dScoreMng_c::m_instance->ScoreSet(this, 6, playerNo);
     }
 
-    fBase_c *x;
-    if (m_70c == BASE_ID_NULL) {
-        x = nullptr;
-    } else {
-        x = fManager_c::searchBaseByID(m_70c);
-    }
-
-    if (x) {
-        x->deleteRequest();
+    fBase_c *blitz = getBlitz();
+    if (blitz != nullptr) {
+        blitz->deleteRequest();
     }
 
     if (mAnmMatClr.children[1].getObj()) {
@@ -335,18 +311,12 @@ void dEnTorideKokoopa_c::setStarDamage(dActor_c * other) {
         dScoreMng_c::m_instance->ScoreSet(this, 5, playerNo);
     }
 
-    fBase_c *x;
-    if (m_70c == BASE_ID_NULL) {
-        x = nullptr;
-    } else {
-        x = fManager_c::searchBaseByID(m_70c);
+    fBase_c *blitz = getBlitz();
+    if (blitz != nullptr) {
+        blitz->deleteRequest();
     }
 
-    if (x) {
-        x->deleteRequest();
-    }
-
-    changeState(StateID_FumiHit);
+    changeState(StateID_StarHit);
 }
 
 
@@ -368,15 +338,9 @@ void dEnTorideKokoopa_c::setStarDead(dActor_c * other) {
         dScoreMng_c::m_instance->ScoreSet(this, 6, playerNo);
     }
 
-    fBase_c *x;
-    if (m_70c == BASE_ID_NULL) {
-        x = nullptr;
-    } else {
-        x = fManager_c::searchBaseByID(m_70c);
-    }
-
-    if (x) {
-        x->deleteRequest();
+    fBase_c *blitz = getBlitz();
+    if (blitz != nullptr) {
+        blitz->deleteRequest();
     }
 
     mActorProperties &= ~8;
@@ -403,22 +367,15 @@ void dEnTorideKokoopa_c::setQuakeDamage() {
     removeCc();
     mCc2.release();
 
-    dScoreMng_c::m_instance->UnKnownScoreSet(this, 5);
+    dScoreMng_c::m_instance->UnKnownScoreSet(this, 5, 0.0f, 24.0f);
 
-    fBase_c *x;
-    if (m_70c == BASE_ID_NULL) {
-        x = nullptr;
-    } else {
-        x = fManager_c::searchBaseByID(m_70c);
+    fBase_c *blitz = getBlitz();
+    if (blitz != nullptr) {
+        blitz->deleteRequest();
     }
 
-    if (x) {
-        x->deleteRequest();
-    }
-
-    changeState(StateID_FumiHit);
+    changeState(StateID_QuakeHit);
 }
-
 
 void dEnTorideKokoopa_c::setQuakeDead() {
     u8 dir = getPl_LRflag(mPos);
@@ -435,13 +392,8 @@ void dEnTorideKokoopa_c::setQuakeDead() {
 
     dScoreMng_c::m_instance->UnKnownScoreSet(this, 6, 0.0f, 24.0f);
 
-    fBase_c *base;
-    if (m_70c == BASE_ID_NULL) {
-        base = nullptr;
-    } else {
-        base = fManager_c::searchBaseByID(m_70c);
-    }
-    if (base) {
+    fBase_c *base = getBlitz();
+    if (base != nullptr) {
         base->deleteRequest();
     }
 
@@ -477,18 +429,12 @@ void dEnTorideKokoopa_c::setShellDamage(dActor_c * other) {
         dScoreMng_c::m_instance->ScoreSet(this, 5, playerNo);
     }
 
-    fBase_c *x;
-    if (m_70c == BASE_ID_NULL) {
-        x = nullptr;
-    } else {
-        x = fManager_c::searchBaseByID(m_70c);
+    fBase_c *blitz = getBlitz();
+    if (blitz != nullptr) {
+        blitz->deleteRequest();
     }
 
-    if (x) {
-        x->deleteRequest();
-    }
-
-    changeState(StateID_FumiHit);
+    changeState(StateID_ShellHit);
 }
 
 
@@ -506,15 +452,9 @@ void dEnTorideKokoopa_c::setShellDead(dActor_c * other) {
         dScoreMng_c::m_instance->ScoreSet(this, 6, playerNo);
     }
 
-    fBase_c *x;
-    if (m_70c == BASE_ID_NULL) {
-        x = nullptr;
-    } else {
-        x = fManager_c::searchBaseByID(m_70c);
-    }
-
-    if (x) {
-        x->deleteRequest();
+    fBase_c *blitz = getBlitz();
+    if (blitz != nullptr) {
+        blitz->deleteRequest();
     }
 
     if (mAnmMatClr.children[1].getObj()) {
@@ -718,6 +658,14 @@ void dEnTorideKokoopa_c::blitzMove(dActor_c * other) {
     calcKokoopaMdl();
     mBlitzPos = calcBlitzPos();
     other->mPos = mBlitzPos;
+}
+
+void DUMMY_ORDERING() {
+    dEnTorideKokoopa_c *x;
+    x->getDownTime();
+    x->getFumiRecoverTime();
+    x->getTenmetsuTime_Fire();
+    x->getTenmetsuTime_Press();
 }
 
 void dEnTorideKokoopa_c::calcRootJntPos() {
@@ -1371,14 +1319,7 @@ void dEnTorideKokoopa_c::executeState_AttackSearch() {
             break;
         }
         case 2: {
-            dActor_c *actor;
-            if (m_70c == BASE_ID_NULL) {
-                actor = nullptr;
-            } else {
-                actor = (dActor_c *)fManager_c::searchBaseByID(m_70c);
-            }
-
-            blitzMove(actor);
+            blitzMove(getBlitz());
 
             m_704--;
             if ((m_704 <= 0) && (i3 != 0)) {
@@ -1409,22 +1350,16 @@ void dEnTorideKokoopa_c::executeState_Attack() {
         mSpeed.y = 0.0f;
     }
 
-    dActor_c *actor;
-    if (m_70c == BASE_ID_NULL) {
-        actor = nullptr;
-    } else {
-        actor = (dActor_c *)fManager_c::searchBaseByID(m_70c);
-    }
-
-    if (actor == nullptr) {
+    dActor_c *blitz = getBlitz();
+    if (blitz == nullptr) {
         m_23b = 2;
     }
 
     switch (m_23b) {
         case 1: {
-            blitzMove(actor);
+            blitzMove(blitz);
             if (isShootBlitz()) {
-                actor->mDirection = mDirection;
+                blitz->mDirection = mDirection;
                 calcWandCcData();
                 setBlitzTarget();
                 blitzShoot();

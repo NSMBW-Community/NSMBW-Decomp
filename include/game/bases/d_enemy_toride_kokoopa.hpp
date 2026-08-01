@@ -177,6 +177,15 @@ public:
     bool isCreateBlitz() const;
     bool isShootBlitz() const;
 
+    dActor_c *getBlitz() {
+        fBaseID_e id = m_70c;
+        if (id == BASE_ID_NULL) {
+            return nullptr;
+        }
+        return (dActor_c *) fManager_c::trySearchBaseByID(id);
+    }
+
+
     u8 mPad_598[4];
     nw4r::g3d::ResFile mResFile;
     m3d::mdl_c mModel;

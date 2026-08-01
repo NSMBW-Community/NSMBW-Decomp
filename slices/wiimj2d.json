@@ -352,7 +352,6 @@
             }
         },
         {
-            "nonMatching": true,
             "source": "dol/bases/d_enemy_toride_kokoopa.cpp",
             "memoryRanges": {
                 ".text": "0xa1f90-0xaa030",

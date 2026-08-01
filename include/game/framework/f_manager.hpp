@@ -53,6 +53,13 @@ public:
     /// @details [This calls fLiMgBa_c::searchNodeByID internally].
     static fBase_c *searchBaseByID(fBaseID_e id);
 
+    static fBase_c *trySearchBaseByID(fBaseID_e id) {
+        if (id == BASE_ID_NULL) {
+            return nullptr;
+        }
+        return fManager_c::searchBaseByID(id);
+    }
+
     /// @brief Searches for a base with a given profile name, optionally under a given parent.
     /// @details [This calls fTrMgBa_c::searchNodeByProfName internally].
     static fBase_c *searchBaseByProfName(ProfileName profID, const fBase_c *parent);
