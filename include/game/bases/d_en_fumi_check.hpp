@@ -33,7 +33,7 @@ public:
     bool operate(int &i, dEn_c *, FumiCcInfo_c &) override { i = 0; return false; }
 };
 
-class KokoopaSpFumiCheck_c : public FumiCheckBase_c {
+class KokoopaSpFumiCheck_c : public NonUniqueFumiCheck_c {
 public:
     KokoopaSpFumiCheck_c() {}
     virtual ~KokoopaSpFumiCheck_c() {}

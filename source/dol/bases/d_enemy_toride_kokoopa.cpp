@@ -932,28 +932,29 @@ void dEnTorideKokoopa_c::shellWallEffect() {
     };
 
     if (mEffectNames[17] != nullptr) {
-        mVec3_c wall_pos;
-        mVec3_c pos;
-        mVec3_c pos2;
-        float f48;
         u8 idx = !(mSpeed.x >= 0.0f);
-        mAng3_c angle;
 
+        mVec3_c wall_pos;
         mBc.getWallOfs(&wall_pos, 0);
 
-        pos = mPos;
-
-        pos2.y = mPos.y + wall_pos.y;
-        pos2.z = mPos.z;
-        pos2.x = mPos.x + l_EnMuki[mDirection] * 24.0f;
+        mVec3_c pos(
+            mPos.x,
+            mPos.y + wall_pos.y,
+            mPos.z
+        );
+        mVec3_c pos2(
+            pos.x + l_EnMuki[mDirection] * 24.0f,
+            pos.y,
+            pos.z
+        );
+        float f48;
 
         dBc_c::checkWall(&pos, &pos2, &f48, mLayer, 1, nullptr);
 
         pos.x = f48;
         pos.z = 5500.0f;
-        angle.x = 0;
-        angle.y = cs_ef_angle[idx];
-        angle.z = 0;
+
+        mAng3_c angle(0, cs_ef_angle[idx], 0);
 
         mEf::createEffect(mEffectNames[17], 0, &pos, &angle, nullptr);
     }
