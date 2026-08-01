@@ -1761,8 +1761,9 @@ void dEnTorideKokoopa_c::initializeState_ShellAtk() {
 
     float f4 = dGameCom::getDispCenterX() + m_7dc[0];
     float f5 = dGameCom::getDispCenterX() + m_7dc[1];
+    float f6 = (f4 + f5) * 0.5f;
 
-    if (mPos.x >= (f4 + f5) * 0.5f) {
+    if (mPos.x >= f6) {
         mDirection = 1;
     } else {
         mDirection = 0;
