@@ -6,6 +6,17 @@
 #include <game/bases/d_game_com.hpp>
 #include <game/bases/d_a_player_manager.hpp>
 
+const sCcDatNewF l_wand_cc = {
+    0.0f, 0.0f,
+    0.0f, 0.0f,
+    CC_KIND_ENEMY,
+    CC_ATTACK_NONE,
+    BIT_FLAG(CC_KIND_PLAYER) | BIT_FLAG(CC_KIND_PLAYER_ATTACK) | BIT_FLAG(CC_KIND_YOSHI),
+    0,
+    CC_STATUS_NONE,
+    dEnTorideKokoopa_c::wandCcCallback
+};
+
 STATE_VIRTUAL_DEFINE(dEnTorideKokoopa_c, Jump_St);
 STATE_VIRTUAL_DEFINE(dEnTorideKokoopa_c, Jump);
 STATE_VIRTUAL_DEFINE(dEnTorideKokoopa_c, BigJump_St);
@@ -26,18 +37,16 @@ STATE_VIRTUAL_DEFINE(dEnTorideKokoopa_c, ShellAtk_St);
 STATE_VIRTUAL_DEFINE(dEnTorideKokoopa_c, ShellAtk);
 STATE_VIRTUAL_DEFINE(dEnTorideKokoopa_c, ShellOut);
 STATE_VIRTUAL_DEFINE(dEnTorideKokoopa_c, DieFumi_St);
-// STATE_VIRTUAL_DEFINE(dEnTorideKokoopa_c, DieFire);
-// STATE_VIRTUAL_DEFINE(dEnTorideKokoopa_c, DieShell);
+STATE_VIRTUAL_DEFINE(dEnTorideKokoopa_c, DieFire);
+STATE_VIRTUAL_DEFINE(dEnTorideKokoopa_c, DieShell);
+STATE_VIRTUAL_DEFINE(dEnTorideKokoopa_c, DemoWait);
 STATE_VIRTUAL_DEFINE(dEnTorideKokoopa_c, DemoAwake);
 STATE_VIRTUAL_DEFINE(dEnTorideKokoopa_c, DemoAwake_Wait);
 STATE_VIRTUAL_DEFINE(dEnTorideKokoopa_c, DemoIkaku);
 STATE_VIRTUAL_DEFINE(dEnTorideKokoopa_c, DemoIkaku_Wait);
 STATE_VIRTUAL_DEFINE(dEnTorideKokoopa_c, DemoEscape_St);
 
-
-static const float l_shellatk_speed[2] = { -4.0f, 4.0f };
-static const s16 shorts[] = { 0x38E, 0xFC72 }; ///< @unofficial
-
+static const float l_shellatk_speed[2] = { 4.0f, -4.0f };
 
 dEnTorideKokoopa_c::dEnTorideKokoopa_c() : m_6ec(nullptr), mJumpAnmNames(nullptr),
         m_6f4(nullptr), m_6f8(nullptr), m_6fc(nullptr), m_70c(BASE_ID_NULL),
@@ -48,12 +57,7 @@ dEnTorideKokoopa_c::dEnTorideKokoopa_c() : m_6ec(nullptr), mJumpAnmNames(nullptr
     mFacePos = mPos;
     mFumiProc.mFumiCheck.m_00 = 5;
 
-    KokoopaSpFumiCheck_c * check = new KokoopaSpFumiCheck_c();
-
-    if (mFumiProc.mFumiCheck.mpFumiCheck != nullptr) {
-        delete mFumiProc.mFumiCheck.mpFumiCheck;
-    }
-    mFumiProc.mFumiCheck.mpFumiCheck = check;
+    mFumiProc.refresh(new KokoopaSpFumiCheck_c());
 }
 
 dEnTorideKokoopa_c::~dEnTorideKokoopa_c() {
@@ -235,7 +239,7 @@ void dEnTorideKokoopa_c::setFumiDead(dActor_c * other) {
         -1,
         -1,
         dir,
-        other->getPlrNo()
+        (u8) other->getPlrNo()
     };
 }
 
@@ -310,11 +314,11 @@ void dEnTorideKokoopa_c::setFireDead(dActor_c * other) {
         3.0f,
         -4.0f,
         -0.1875f,
-        &StateID_DieFire,
+        &dEnBoss_c::StateID_DieFire,
         -1,
         -1,
         dir,
-        other->getPlrNo()
+        (u8) other->getPlrNo()
     };
 }
 
@@ -382,11 +386,11 @@ void dEnTorideKokoopa_c::setStarDead(dActor_c * other) {
         3.0f,
         -4.0f,
         -0.1875f,
-        &StateID_DieFumi_St,
+        &StateID_DieStar,
         -1,
         -1,
         dir,
-        other->getPlrNo()
+        (u8) other->getPlrNo()
     };
 }
 
@@ -452,7 +456,7 @@ void dEnTorideKokoopa_c::setQuakeDead() {
         -1,
         -1,
         dir,
-        0
+        (u8) -1
     };
 }
 
@@ -524,11 +528,11 @@ void dEnTorideKokoopa_c::setShellDead(dActor_c * other) {
         3.0f,
         -4.0f,
         -0.1875f,
-        &StateID_DieShell,
+        &dEnBoss_c::StateID_DieShell,
         -1,
         -1,
         dir,
-        other->getPlrNo()
+        (u8) other->getPlrNo()
     };
 }
 
@@ -570,7 +574,8 @@ float dEnTorideKokoopa_c::calcJumpRate() {
 bool dEnTorideKokoopa_c::movelimitCheck(float offset) {
     float f1 = mPos.x + l_EnMuki[mDirection] * offset;
     float f0 = dGameCom::getDispCenterX();
-    float f2 = m_7dc[mDirection] + f0;
+    float f2 = m_7dc[mDirection];
+    f2 += f0;
     bool ret = false;
     if (mDirection == 0) {
         if (f1 >= f2) {
@@ -598,15 +603,12 @@ void dEnTorideKokoopa_c::moveRevise() {
     float f3 = m_7dc[u1] + dGameCom::getDispCenterX();
 
     if (mSpeed.x >= 0.0f) {
-        float f0 = f3 - 1.0f;
-        if (mPos.x > f0) {
-            mPos.x = f0;
+        if (mPos.x > f3 - 1.0f) {
+            mPos.x = f3 - 1.0f;
         }
     } else {
-        float f0 = 1.0f;
-        f0 += f3;
-        if (mPos.x < f0) {
-            mPos.x = f0;
+        if (mPos.x < f3 + 1.0f) {
+            mPos.x = f3 + 1.0f;
         }
     }
 }
@@ -926,7 +928,7 @@ void dEnTorideKokoopa_c::fumideadEffect() {
 
 void dEnTorideKokoopa_c::shellWallEffect() {
     static const s16 cs_ef_angle[] = {
-        0x8000, 0
+        -0x8000, 0
     };
 
     if (mEffectNames[17] != nullptr) {
@@ -1146,7 +1148,8 @@ void dEnTorideKokoopa_c::initializeState_Jump() {
         speed.y = *((float *)&mJumpAnmNames[10]);
     }
 
-    mSpeed.x = l_EnMuki[mDirection] * calcJumpRate() * speed.x;
+    float speedX = l_EnMuki[mDirection] * calcJumpRate();
+    mSpeed.x = speedX * speed.x;
     mSpeed.y = speed.y;
 
     jumpEffect();
@@ -1213,7 +1216,8 @@ void dEnTorideKokoopa_c::initializeState_BigJump() {
         speed.y = *((float *)&mJumpAnmNames[12]);
     }
 
-    mSpeed.x = l_EnMuki[mDirection] * calcJumpRate() * speed.x;
+    float speedX = l_EnMuki[mDirection] * calcJumpRate();
+    mSpeed.x = speedX * speed.x;
     mSpeed.y = speed.y;
 
     jumpEffect();
@@ -1391,7 +1395,7 @@ void dEnTorideKokoopa_c::initializeState_Attack() {
         mModel.setAnm(mAnmChr, 0.0f);
         mAnmChr.setRate(m_a68);
     }
-    mCc2.set(this, &l_wand_cc);
+    mCc2.set(this, (sCcDatNewF *) &l_wand_cc);
     mCc2.entry();
     m_23b = 1;
 }
@@ -1704,7 +1708,7 @@ void dEnTorideKokoopa_c::finalizeState_ShellAtk_St() {
     reviveCc();
 }
 void dEnTorideKokoopa_c::executeState_ShellAtk_St() {
-    static float y_speeds[] = {
+    const static float y_speeds[] = {
         0.0f, 1.5f, 2.75f, 4.0f
     }; ///< @unofficial
     mModel.play();
@@ -1738,7 +1742,7 @@ void dEnTorideKokoopa_c::executeState_ShellAtk_St() {
         hitFireDamageEffect();
     }
 
-    mAngle.y = 0;
+    mAngle.z = 0;
     if (mBc.checkFootEnm()) {
         shelllandonSE();
         shellLandonEffect();
@@ -1755,8 +1759,8 @@ void dEnTorideKokoopa_c::executeState_ShellAtk_St() {
 
 void dEnTorideKokoopa_c::initializeState_ShellAtk() {
 
-    float f4 = m_7dc[0] + dGameCom::getDispCenterX();
-    float f5 = m_7dc[1] + dGameCom::getDispCenterX();
+    float f4 = dGameCom::getDispCenterX() + m_7dc[0];
+    float f5 = dGameCom::getDispCenterX() + m_7dc[1];
 
     if (mPos.x >= (f4 + f5) * 0.5f) {
         mDirection = 1;
@@ -1764,18 +1768,17 @@ void dEnTorideKokoopa_c::initializeState_ShellAtk() {
         mDirection = 0;
     }
 
-    float speed = l_shellatk_speed[mDirection];
     mActorProperties &= ~0x200;
     m_a64 = 5;
     mAccelF = 0.3f;
-    mSpeed.x = speed;
+    mSpeed.x = l_shellatk_speed[mDirection];
 
     if (mPos.x - 32.0f < f5) {
-        mSpeedMax.x = speed;
+        mSpeedMax.x = l_shellatk_speed[mDirection];
         m_a60 = f5 + 32.0f;
         m_a64 = 6;
     } else if (mPos.x + 32.0f > f4) {
-        mSpeedMax.x = speed;
+        mSpeedMax.x = l_shellatk_speed[mDirection];
         m_a60 = f4 - 32.0f;
         m_a64 = 6;
     } else {
@@ -1787,6 +1790,8 @@ void dEnTorideKokoopa_c::finalizeState_ShellAtk() {
     mActorProperties |= 0x200;
 }
 void dEnTorideKokoopa_c::executeState_ShellAtk() {
+    static const s16 shorts[] = { 910, -910 }; ///< @unofficial
+
     calcSpeedX();
     calcSpeedY();
     float f2 = mPos.x;

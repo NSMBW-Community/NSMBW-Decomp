@@ -47,12 +47,6 @@ void dEnBoss_c::allocate() {
     mAllocator.adjustFrmHeapRestoreCurrent();
 }
 
-void dEnBoss_c::createBossLife() {
-    if (mpBossLife == nullptr) {
-        mpBossLife = new dBossLife_Common_c(18);
-    }
-}
-
 int dEnBoss_c::preExecute() {
     if (dEn_c::preExecute() == NOT_READY) {
         return NOT_READY;

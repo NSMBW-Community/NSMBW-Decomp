@@ -3,8 +3,6 @@
 #include <game/bases/d_enemy_boss.hpp>
 #include <game/mLib/m_effect.hpp>
 
-sCcDatNewF l_wand_cc;
-
 class dEnTorideKokoopa_c : public dEnBoss_c {
 public:
     /// @unofficial
@@ -31,15 +29,6 @@ public:
     bool hitCallback_PenguinSlide(dCc_c *self, dCc_c *other) override;
     bool isQuakeDamage() override;
 
-    void initializeState_DemoWait() override;
-    void executeState_DemoWait() override;
-    void finalizeState_DemoWait() override;
-    void initializeState_DieFire() override;
-    void executeState_DieFire() override;
-    void finalizeState_DieFire() override;
-    void initializeState_DieShell() override;
-    void executeState_DieShell() override;
-    void finalizeState_DieShell() override;
     void setBattleReady() override;
     void tenmetsuProc() override;
     void tenmetsuFin() override;
@@ -85,6 +74,10 @@ public:
     STATE_VIRTUAL_FUNC_DECLARE(dEnTorideKokoopa_c, ShellAtk);
     STATE_VIRTUAL_FUNC_DECLARE(dEnTorideKokoopa_c, ShellOut);
     STATE_VIRTUAL_FUNC_DECLARE(dEnTorideKokoopa_c, DieFumi_St);
+    STATE_VIRTUAL_FUNC_DECLARE(dEnTorideKokoopa_c, DemoWait);
+    STATE_VIRTUAL_FUNC_DECLARE(dEnTorideKokoopa_c, DieShell);
+    STATE_VIRTUAL_FUNC_DECLARE(dEnTorideKokoopa_c, DieFire);
+
     virtual BOOL lockonTurn();
     virtual void calcKokoopaMdl() {}
     virtual void calcShellMdl() {}
@@ -183,10 +176,6 @@ public:
     bool checkDownJump();
     bool isCreateBlitz() const;
     bool isShootBlitz() const;
-
-    // TODO: Not sure how to define these...
-    // static sFStateVirtualID_c<dEnTorideKokoopa_c> &StateID_DieFire;
-    // static sFStateVirtualID_c<dEnTorideKokoopa_c> &StateID_DieShell;
 
     u8 mPad_598[4];
     nw4r::g3d::ResFile mResFile;

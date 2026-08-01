@@ -51,7 +51,11 @@ public:
 
     virtual void setBattleReady() {}
     virtual void createModel() {}
-    virtual void createBossLife();
+    virtual void createBossLife() {
+        if (mpBossLife == nullptr) {
+            mpBossLife = new dBossLife_Common_c(18);
+        }
+    }
     virtual int createInit();
     virtual void tenmetsuReady() {} ///< Prepares the flashing effect after the boss takes damage.
     virtual void tenmetsuProc() {} ///< Handles the flashing effect after the boss takes damage.
