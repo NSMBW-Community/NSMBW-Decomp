@@ -48,10 +48,10 @@ STATE_VIRTUAL_DEFINE(dEnTorideKokoopa_c, DemoEscape_St);
 
 static const float l_shellatk_speed[2] = { 4.0f, -4.0f };
 
-dEnTorideKokoopa_c::dEnTorideKokoopa_c() : m_6ec(nullptr), mJumpAnmNames(nullptr),
-        m_6f4(nullptr), m_6f8(nullptr), m_6fc(nullptr), m_70c(BASE_ID_NULL),
-        m_71c(0), m_72c(0), mLookAngle(0), m_730(1), m_a68(1.0f), m_a6c(-1),
-        m_a70(-1), mEffectNames(nullptr) {
+dEnTorideKokoopa_c::dEnTorideKokoopa_c() : m_6ec(nullptr), mJumpAnmInfo(nullptr),
+        m_6f4(nullptr), m_6f8(nullptr), mDemoAnmInfo(nullptr), m_70c(BASE_ID_NULL),
+        m_71c(0), mCurLookAngle(0), mLookAngle(0), mDrawFlags(DRAW_KOKOOPA), m_a68(1.0f), mRootJntIdx(-1),
+        mShellJntIdx(-1), mEffectNames(nullptr) {
 
     mpVoicesInfo = nullptr;
     mFacePos = mPos;
@@ -61,7 +61,7 @@ dEnTorideKokoopa_c::dEnTorideKokoopa_c() : m_6ec(nullptr), mJumpAnmNames(nullptr
 }
 
 dEnTorideKokoopa_c::~dEnTorideKokoopa_c() {
-    mCc2.release();
+    mWandCc.release();
 }
 
 int dEnTorideKokoopa_c::preExecute() {
@@ -79,7 +79,7 @@ int dEnTorideKokoopa_c::preExecute() {
     moveAdjust_HIO();
 
     if (mpBossLife->mLife > 0) {
-        sLib::chaseAngle(&m_72c, mLookAngle, 0x300);
+        sLib::chaseAngle(&mCurLookAngle, mLookAngle, 0x300);
     }
 
     return SUCCEEDED;
@@ -87,23 +87,23 @@ int dEnTorideKokoopa_c::preExecute() {
 
 void dEnTorideKokoopa_c::postExecute(MAIN_STATE_e state) {
     if (state == SUCCESS) {
-        if (m_7e8 > 0) {
-            m_7e8--;
+        if (mFireLoopEffectTimer > 0) {
+            mFireLoopEffectTimer--;
             hitFireLoopEffect();
         }
 
-        mCc2.clear();
+        mWandCc.clear();
     }
 
     dEnBoss_c::postExecute(state);
 }
 
 int dEnTorideKokoopa_c::draw() {
-    if (m_730 & 1) {
+    if (mDrawFlags & DRAW_KOKOOPA) {
         drawKokoopa();
     }
 
-    if (m_730 & 2) {
+    if (mDrawFlags & DRAW_SHELL) {
         drawShell();
     }
 
@@ -111,7 +111,7 @@ int dEnTorideKokoopa_c::draw() {
 }
 
 void dEnTorideKokoopa_c::finalUpdate() {
-    if (m_730 & 1) {
+    if (mDrawFlags & DRAW_KOKOOPA) {
         calcKokoopaMdl();
 
         mBlitzPos = calcBlitzPos();
@@ -121,7 +121,7 @@ void dEnTorideKokoopa_c::finalUpdate() {
         calcRootJntPos();
     }
 
-    if (m_730 & 2) {
+    if (mDrawFlags & DRAW_SHELL) {
         calcShellMdl();
         calcShellJntPos();
     }
@@ -152,7 +152,7 @@ bool dEnTorideKokoopa_c::isQuakeDamage() {
     if (!mCc.mIsLinked) {
         return false;
     }
-    if (m_730 & 2) {
+    if (mDrawFlags & DRAW_SHELL) {
         return false;
     }
 
@@ -163,7 +163,7 @@ bool dEnTorideKokoopa_c::hitCallback_PenguinSlide(dCc_c *self, dCc_c *other) {
     daPlBase_c *player = (daPlBase_c *)other->mpOwner;
     daPlBase_c::DamageType_e dmg = daPlBase_c::DAMAGE_HIP_ATTACK;
 
-    if (m_730 & 2) {
+    if (mDrawFlags & DRAW_SHELL) {
         dmg = daPlBase_c::DAMAGE_2;
     }
 
@@ -178,7 +178,7 @@ void dEnTorideKokoopa_c::setFumiDamage(dActor_c * other) {
     }
 
     removeCc();
-    mCc2.release();
+    mWandCc.release();
     int playerNo = other->getPlrNo();
     if (playerNo >= 0 && playerNo < PLAYER_COUNT) {
         dScoreMng_c::m_instance->ScoreSet(this, 5, playerNo);
@@ -201,10 +201,10 @@ void dEnTorideKokoopa_c::setFumiDead(dActor_c * other) {
     }
 
     removeCc();
-    mCc2.release();
+    mWandCc.release();
 
     mLookAngle = 0;
-    m_72c = 0;
+    mCurLookAngle = 0;
 
     int playerNo = other->getPlrNo();
     if (playerNo >= 0 && playerNo < PLAYER_COUNT) {
@@ -233,7 +233,7 @@ void dEnTorideKokoopa_c::setFumiDead(dActor_c * other) {
 
 
 void dEnTorideKokoopa_c::setFireDamage(dActor_c * other) {
-    m_7e8 = 60;
+    mFireLoopEffectTimer = 60;
 
     if (!mpBossLife->isDmgSection()) {
         return;
@@ -244,7 +244,7 @@ void dEnTorideKokoopa_c::setFireDamage(dActor_c * other) {
     }
 
     removeCc();
-    mCc2.release();
+    mWandCc.release();
     int playerNo = other->getPlrNo();
     if (playerNo >= 0 && playerNo < PLAYER_COUNT) {
         dScoreMng_c::m_instance->ScoreSet(this, 5, playerNo);
@@ -263,10 +263,10 @@ void dEnTorideKokoopa_c::setFireDead(dActor_c * other) {
     u8 dir = !(mPos.x < other->mPos.x);
 
     removeCc();
-    mCc2.release();
+    mWandCc.release();
 
     mLookAngle = 0;
-    m_72c = 0;
+    mCurLookAngle = 0;
 
     int playerNo = other->getPlrNo();
     if (playerNo >= 0 && playerNo < PLAYER_COUNT) {
@@ -282,7 +282,7 @@ void dEnTorideKokoopa_c::setFireDead(dActor_c * other) {
         mAnmMatClr.setFrame(0.0f, 1);
     }
 
-    m_7e8 = 60;
+    mFireLoopEffectTimer = 60;
     mActorProperties &= ~8;
 
     mDeathInfo = (sDeathInfoData) {
@@ -305,7 +305,7 @@ void dEnTorideKokoopa_c::setStarDamage(dActor_c * other) {
     }
 
     removeCc();
-    mCc2.release();
+    mWandCc.release();
     int playerNo = other->getPlrNo();
     if (playerNo >= 0 && playerNo < PLAYER_COUNT) {
         dScoreMng_c::m_instance->ScoreSet(this, 5, playerNo);
@@ -328,10 +328,10 @@ void dEnTorideKokoopa_c::setStarDead(dActor_c * other) {
     }
 
     removeCc();
-    mCc2.release();
+    mWandCc.release();
 
     mLookAngle = 0;
-    m_72c = 0;
+    mCurLookAngle = 0;
 
     int playerNo = other->getPlrNo();
     if (playerNo >= 0 && playerNo < PLAYER_COUNT) {
@@ -365,7 +365,7 @@ void dEnTorideKokoopa_c::setQuakeDamage() {
     }
 
     removeCc();
-    mCc2.release();
+    mWandCc.release();
 
     dScoreMng_c::m_instance->UnKnownScoreSet(this, 5, 0.0f, 24.0f);
 
@@ -385,10 +385,10 @@ void dEnTorideKokoopa_c::setQuakeDead() {
     }
 
     removeCc();
-    mCc2.release();
+    mWandCc.release();
 
     mLookAngle = 0;
-    m_72c = 0;
+    mCurLookAngle = 0;
 
     dScoreMng_c::m_instance->UnKnownScoreSet(this, 6, 0.0f, 24.0f);
 
@@ -423,7 +423,7 @@ void dEnTorideKokoopa_c::setShellDamage(dActor_c * other) {
     }
 
     removeCc();
-    mCc2.release();
+    mWandCc.release();
     int playerNo = other->getPlrNo();
     if (playerNo >= 0 && playerNo < PLAYER_COUNT) {
         dScoreMng_c::m_instance->ScoreSet(this, 5, playerNo);
@@ -442,10 +442,10 @@ void dEnTorideKokoopa_c::setShellDead(dActor_c * other) {
     u8 dir = !(mPos.x < other->mPos.x);
 
     removeCc();
-    mCc2.release();
+    mWandCc.release();
 
     mLookAngle = 0;
-    m_72c = 0;
+    mCurLookAngle = 0;
 
     int playerNo = other->getPlrNo();
     if (playerNo >= 0 && playerNo < PLAYER_COUNT) {
@@ -501,7 +501,7 @@ float dEnTorideKokoopa_c::calcJumpRate() {
     float jump_dist = getJumpDist();
     float ret = 1.0f;
     if (movelimitCheck(jump_dist + 4.0f)) {
-        float f1 = std::fabs(m_7dc[mDirection] + dGameCom::getDispCenterX() - mPos.x);
+        float f1 = std::fabs(mArenaEdgeOffset[mDirection] + dGameCom::getDispCenterX() - mPos.x);
         if (f1 < 16.0f) {
             ret = -1.0f;
         } else {
@@ -514,7 +514,7 @@ float dEnTorideKokoopa_c::calcJumpRate() {
 bool dEnTorideKokoopa_c::movelimitCheck(float offset) {
     float f1 = mPos.x + l_EnMuki[mDirection] * offset;
     float f0 = dGameCom::getDispCenterX();
-    float f2 = m_7dc[mDirection];
+    float f2 = mArenaEdgeOffset[mDirection];
     f2 += f0;
     bool ret = false;
     if (mDirection == 0) {
@@ -540,7 +540,7 @@ void dEnTorideKokoopa_c::moveRevise() {
         u1 = 0;
     }
 
-    float f3 = m_7dc[u1] + dGameCom::getDispCenterX();
+    float f3 = mArenaEdgeOffset[u1] + dGameCom::getDispCenterX();
 
     if (mSpeed.x >= 0.0f) {
         if (mPos.x > f3 - 1.0f) {
@@ -586,7 +586,7 @@ int dEnTorideKokoopa_c::calcAttackTarget() {
 }
 
 BOOL dEnTorideKokoopa_c::lockonTurn() {
-    dAcPy_c *player = daPyMng_c::getPlayer(m_700);
+    dAcPy_c *player = daPyMng_c::getPlayer(mAttackTargetPlayerId);
     if (player == nullptr) {
         return false;
     }
@@ -601,7 +601,7 @@ BOOL dEnTorideKokoopa_c::lockonTurn() {
 }
 
 void dEnTorideKokoopa_c::calcLookAngle() {
-    dAcPy_c *player = daPyMng_c::getPlayer(m_700);
+    dAcPy_c *player = daPyMng_c::getPlayer(mAttackTargetPlayerId);
     mLookAngle = cM::atan2s(player->mPos.y - mFacePos.y, std::fabs(player->mPos.x - mFacePos.x));
 
     if (mLookAngle < 0) {
@@ -669,12 +669,12 @@ void DUMMY_ORDERING() {
 }
 
 void dEnTorideKokoopa_c::calcRootJntPos() {
-    mModel.getNodeWorldMtxMultVecZero(m_a6c, mRootJntPos);
+    mModel.getNodeWorldMtxMultVecZero(mRootJntIdx, mRootJntPos);
     mRootJntPos.z = 5500.0f;
 }
 
 void dEnTorideKokoopa_c::calcShellJntPos() {
-    mModel2.getNodeWorldMtxMultVecZero(m_a70, mShellJntPos);
+    mShellModel.getNodeWorldMtxMultVecZero(mShellJntIdx, mShellJntPos);
     mShellJntPos.z = 5500.0f;
 }
 
@@ -909,13 +909,13 @@ void dEnTorideKokoopa_c::shellWallEffect() {
 }
 
 void dEnTorideKokoopa_c::notice1Vo() {
-    if ((*(int *)((u8 *)m_6fc + 4) != 0) && (mpVoicesInfo != nullptr) && (mpVoicesInfo->mEntries[0].mSoundID != (ulong)SE_VOC_NO_SOUND) && mAnmChr.checkFrame(mpVoicesInfo->mEntries[0].mAnmFrame)) {
+    if ((mDemoAnmInfo->mAwakeName != nullptr) && (mpVoicesInfo != nullptr) && (mpVoicesInfo->mEntries[0].mSoundID != (ulong)SE_VOC_NO_SOUND) && mAnmChr.checkFrame(mpVoicesInfo->mEntries[0].mAnmFrame)) {
         mSndObject.startSound(mpVoicesInfo->mEntries[0].mSoundID, m_d0, 0);
     }
 }
 
 void dEnTorideKokoopa_c::notice2Vo() {
-    if ((*(int *)((u8 *)m_6fc + 12) != 0) && (mpVoicesInfo != nullptr)) {
+    if ((mDemoAnmInfo->mIkakuName != nullptr) && (mpVoicesInfo != nullptr)) {
         for (int i = 1; i <= 2; i++) {
             if ((mpVoicesInfo->mEntries[i].mSoundID != (ulong)SE_VOC_NO_SOUND) && mAnmChr.checkFrame(mpVoicesInfo->mEntries[i].mAnmFrame)) {
                 mSndObject.startSound(mpVoicesInfo->mEntries[i].mSoundID, m_d0, 0);
@@ -1040,9 +1040,9 @@ bool dEnTorideKokoopa_c::isShootBlitz() const {
 }
 
 void dEnTorideKokoopa_c::setBeginMoveState() {
-    m_7e4 = dGameCom::rndInt(3) + 1;
+    mNumJumps = dGameCom::rndInt(3) + 1;
     mAccelY = getJumpGravity();
-    if (m_7e4 > 1) {
+    if (mNumJumps > 1) {
         changeState(StateID_Jump_St);
     } else {
         changeState(StateID_BigJump_St);
@@ -1050,8 +1050,8 @@ void dEnTorideKokoopa_c::setBeginMoveState() {
 }
 
 void dEnTorideKokoopa_c::initializeState_Jump_St() {
-    if (mJumpAnmNames[0] != nullptr) {
-        mAnmChr.setAnm(mModel, mResFile.GetResAnmChr(mJumpAnmNames[0]), m3d::FORWARD_ONCE);
+    if (mJumpAnmInfo->mJumpStName != nullptr) {
+        mAnmChr.setAnm(mModel, mResFile.GetResAnmChr(mJumpAnmInfo->mJumpStName), m3d::FORWARD_ONCE);
         mModel.setAnm(mAnmChr, 0.0f);
         mAnmChr.setRate(m_a68);
     }
@@ -1077,8 +1077,8 @@ void dEnTorideKokoopa_c::executeState_Jump_St() {
 }
 
 void dEnTorideKokoopa_c::initializeState_Jump() {
-    if (mJumpAnmNames[1] != nullptr) {
-        mAnmChr.setAnm(mModel, mResFile.GetResAnmChr(mJumpAnmNames[1]), m3d::FORWARD_ONCE);
+    if (mJumpAnmInfo->mJumpName != nullptr) {
+        mAnmChr.setAnm(mModel, mResFile.GetResAnmChr(mJumpAnmInfo->mJumpName), m3d::FORWARD_ONCE);
         mModel.setAnm(mAnmChr, 0.0f);
         mAnmChr.setRate(1.0f);
     }
@@ -1090,15 +1090,13 @@ void dEnTorideKokoopa_c::initializeState_Jump() {
 
     mVec2_c speed;
     if (ok) {
-        speed.x = *((float *)&mJumpAnmNames[5]);
-        speed.y = *((float *)&mJumpAnmNames[6]);
+        speed = mJumpAnmInfo->mJumpSpeed0;
     } else {
-        speed.x = *((float *)&mJumpAnmNames[9]);
-        speed.y = *((float *)&mJumpAnmNames[10]);
+        speed = mJumpAnmInfo->mJumpSpeed1;
     }
 
-    float speedX = l_EnMuki[mDirection] * calcJumpRate();
-    mSpeed.x = speedX * speed.x;
+    float rate = l_EnMuki[mDirection] * calcJumpRate();
+    mSpeed.x = rate * speed.x;
     mSpeed.y = speed.y;
 
     jumpEffect();
@@ -1118,8 +1116,9 @@ void dEnTorideKokoopa_c::executeState_Jump() {
 }
 
 void dEnTorideKokoopa_c::initializeState_BigJump_St() {
-    if (mJumpAnmNames[2] != nullptr) {
-        mAnmChr.setAnm(mModel, mResFile.GetResAnmChr(mJumpAnmNames[2]), m3d::FORWARD_ONCE);
+    char *anm_name = mJumpAnmInfo->mBigJumpStName;
+    if (anm_name != nullptr) {
+        mAnmChr.setAnm(mModel, mResFile.GetResAnmChr(anm_name), m3d::FORWARD_ONCE);
         mModel.setAnm(mAnmChr, 0.0f);
         mAnmChr.setRate(m_a68);
     }
@@ -1145,8 +1144,9 @@ void dEnTorideKokoopa_c::executeState_BigJump_St() {
 }
 
 void dEnTorideKokoopa_c::initializeState_BigJump() {
-    if (mJumpAnmNames[3] != nullptr) {
-        mAnmChr.setAnm(mModel, mResFile.GetResAnmChr(mJumpAnmNames[3]), m3d::FORWARD_ONCE);
+    char *anm_name = mJumpAnmInfo->mBigJumpName;
+    if (anm_name != nullptr) {
+        mAnmChr.setAnm(mModel, mResFile.GetResAnmChr(anm_name), m3d::FORWARD_ONCE);
         mModel.setAnm(mAnmChr, 0.0f);
         mAnmChr.setRate(1.0f);
     }
@@ -1158,15 +1158,13 @@ void dEnTorideKokoopa_c::initializeState_BigJump() {
 
     mVec2_c speed;
     if (ok) {
-        speed.x = *((float *)&mJumpAnmNames[7]);
-        speed.y = *((float *)&mJumpAnmNames[8]);
+        speed = mJumpAnmInfo->mBigJumpSpeed0;
     } else {
-        speed.x = *((float *)&mJumpAnmNames[11]);
-        speed.y = *((float *)&mJumpAnmNames[12]);
+        speed = mJumpAnmInfo->mBigJumpSpeed1;
     }
 
-    float speedX = l_EnMuki[mDirection] * calcJumpRate();
-    mSpeed.x = speedX * speed.x;
+    float rate = l_EnMuki[mDirection] * calcJumpRate();
+    mSpeed.x = rate * speed.x;
     mSpeed.y = speed.y;
 
     jumpEffect();
@@ -1186,8 +1184,9 @@ void dEnTorideKokoopa_c::executeState_BigJump() {
 }
 
 void dEnTorideKokoopa_c::initializeState_LandOn() {
-    if (mJumpAnmNames[4] != nullptr) {
-        mAnmChr.setAnm(mModel, mResFile.GetResAnmChr(mJumpAnmNames[4]), m3d::FORWARD_ONCE);
+    char * anm_name = mJumpAnmInfo->mLandOnName;
+    if (anm_name != nullptr) {
+        mAnmChr.setAnm(mModel, mResFile.GetResAnmChr(anm_name), m3d::FORWARD_ONCE);
         mModel.setAnm(mAnmChr, 0.0f);
         mAnmChr.setRate(m_a68);
     }
@@ -1208,10 +1207,10 @@ void dEnTorideKokoopa_c::executeState_LandOn() {
     }
 
     if (mAnmChr.isStop()) {
-        m_7e4--;
-        if (m_7e4 > 1) {
+        mNumJumps--;
+        if (mNumJumps > 1) {
             changeState(StateID_Jump_St);
-        } else if (m_7e4 == 1) {
+        } else if (mNumJumps == 1) {
             changeState(StateID_BigJump_St);
         } else {
             changeState(StateID_AttackReady);
@@ -1264,7 +1263,7 @@ void dEnTorideKokoopa_c::executeState_AttackBegin() {
         mSpeed.y = 0.0f;
     }
 
-    m_700 = calcAttackTarget();
+    mAttackTargetPlayerId = calcAttackTarget();
     lockonTurn();
     calcLookAngle();
     if (mAnmChr.isStop() || (m_6f4[0] == nullptr)) {
@@ -1286,7 +1285,7 @@ void dEnTorideKokoopa_c::initializeState_AttackSearch() {
         mModel.setAnm(mAnmMatClr);
         mAnmMatClr.setFrame(0.0f, 1);
     }
-    mCc2.release();
+    mWandCc.release();
     m_23b = 1;
 }
 void dEnTorideKokoopa_c::finalizeState_AttackSearch() {}
@@ -1301,7 +1300,7 @@ void dEnTorideKokoopa_c::executeState_AttackSearch() {
         mSpeed.y = 0.0f;
     }
 
-    m_700 = calcAttackTarget();
+    mAttackTargetPlayerId = calcAttackTarget();
     int i3 = lockonTurn();
     calcLookAngle();
     blitzchargeSE();
@@ -1310,9 +1309,9 @@ void dEnTorideKokoopa_c::executeState_AttackSearch() {
             if (isCreateBlitz()) {
                 m_70c = createBlitz();
                 if (mpBossLife->isTwoDamage() && (mAtkCnt == 1)) {
-                    m_704 = getAtkSearch2ndTime();
+                    mAttackSearchTimer = getAtkSearch2ndTime();
                 } else {
-                    m_704 = ((float)getAtkSearchTime()) / m_a68;
+                    mAttackSearchTimer = ((float)getAtkSearchTime()) / m_a68;
                 }
                 m_23b = 2;
             }
@@ -1321,8 +1320,8 @@ void dEnTorideKokoopa_c::executeState_AttackSearch() {
         case 2: {
             blitzMove(getBlitz());
 
-            m_704--;
-            if ((m_704 <= 0) && (i3 != 0)) {
+            mAttackSearchTimer--;
+            if (!(mAttackSearchTimer > 0) && (i3 != 0)) {
                 changeState(StateID_Attack);
             }
             break;
@@ -1337,8 +1336,8 @@ void dEnTorideKokoopa_c::initializeState_Attack() {
         mModel.setAnm(mAnmChr, 0.0f);
         mAnmChr.setRate(m_a68);
     }
-    mCc2.set(this, (sCcDatNewF *) &l_wand_cc);
-    mCc2.entry();
+    mWandCc.set(this, (sCcDatNewF *) &l_wand_cc);
+    mWandCc.entry();
     m_23b = 1;
 }
 void dEnTorideKokoopa_c::finalizeState_Attack() {}
@@ -1399,7 +1398,7 @@ void dEnTorideKokoopa_c::initializeState_AttackEnd() {
     m_23b = 1;
 }
 void dEnTorideKokoopa_c::finalizeState_AttackEnd() {
-    mCc2.release();
+    mWandCc.release();
 }
 void dEnTorideKokoopa_c::executeState_AttackEnd() {
     mModel.play();
@@ -1441,13 +1440,13 @@ void dEnTorideKokoopa_c::initializeState_FumiHit() {
     }
 
     removeCc();
-    mCc2.release();
-    mCc2.release(); //< copy-paste error?
+    mWandCc.release();
+    mWandCc.release(); //< copy-paste error?
     mSpeed.set(0.0f, 0.0f, 0.0f);
     mAngle.x = 0;
     mAngle.y = 0;
-    m_a40 = getPressScale();
-    mScale = m_a40;
+    mPressScale = getPressScale();
+    mScale = mPressScale;
     mTimer1 = getPressTime();
     m_23b = 1;
 }
@@ -1463,18 +1462,18 @@ void dEnTorideKokoopa_c::executeState_FumiHit() {
             if (mTimer1 != 0) {
                 break;
             }
-            mVec3_c vec = mVec3_c(scale - m_a40.x, scale - m_a40.y, scale - m_a40.z);
+            mVec3_c vec = mVec3_c(scale - mPressScale.x, scale - mPressScale.y, scale - mPressScale.z);
             int time = getFumiRecoverTime();
             if (time <= 0) {
-                m_a4c = vec;
+                mRecoverScaleStep = vec;
             } else {
-                m_a4c = vec / time;
+                mRecoverScaleStep = vec / time;
             }
             m_23b = 2;
             break;
         }
         case 2: {
-            mScale += m_a4c;
+            mScale += mRecoverScaleStep;
             if (mScale.y >= scale) {
                 mScale.x = scale;
                 mScale.y = scale;
@@ -1497,7 +1496,7 @@ void dEnTorideKokoopa_c::initializeState_FireHit() {
     }
 
     removeCc();
-    mCc2.release();
+    mWandCc.release();
     mAccelY = -0.275f;
     mSpeed.set(0.0f, 6.5f, 0.0f);
     mActorProperties &= ~8;
@@ -1524,7 +1523,7 @@ void dEnTorideKokoopa_c::initializeState_StarHit() {
     }
 
     removeCc();
-    mCc2.release();
+    mWandCc.release();
     mAccelY = -0.275f;
     mSpeed.set(0.0f, 6.5f, 0.0f);
     mActorProperties &= ~8;
@@ -1560,7 +1559,7 @@ void dEnTorideKokoopa_c::initializeState_SlideHit() {
     }
 
     removeCc();
-    mCc2.release();
+    mWandCc.release();
     mAccelY = -0.275f;
     mSpeed.set(0.0f, 6.5f, 0.0f);
     mActorProperties &= ~8;
@@ -1585,7 +1584,7 @@ void dEnTorideKokoopa_c::initializeState_ShellHit() {
     }
 
     removeCc();
-    mCc2.release();
+    mWandCc.release();
     mAccelY = -0.275f;
     mSpeed.set(0.0f, 6.5f, 0.0f);
     mActorProperties &= ~8;
@@ -1603,7 +1602,7 @@ void dEnTorideKokoopa_c::executeState_ShellHit() {
 
 
 void dEnTorideKokoopa_c::initializeState_ShellAtk_St() {
-    if (m_730 == 1) {
+    if (mDrawFlags == DRAW_KOKOOPA) {
         char * anm_name = m_6f8[2];
         if (anm_name != nullptr) {
             mAnmChr.setAnm(mModel, mResFile.GetResAnmChr(anm_name), m3d::FORWARD_ONCE);
@@ -1613,9 +1612,9 @@ void dEnTorideKokoopa_c::initializeState_ShellAtk_St() {
 
         anm_name = m_6f8[4];
         if (anm_name != nullptr) {
-            mAnmChr2.setAnm(mModel2, mResFile.GetResAnmChr(anm_name), m3d::FORWARD_ONCE);
-            mModel2.setAnm(mAnmChr2, 0.0f);
-            mAnmChr2.setRate(1.0f);
+            mShellAnmChr.setAnm(mShellModel, mResFile.GetResAnmChr(anm_name), m3d::FORWARD_ONCE);
+            mShellModel.setAnm(mShellAnmChr, 0.0f);
+            mShellAnmChr.setRate(1.0f);
         }
     }
 
@@ -1633,10 +1632,10 @@ void dEnTorideKokoopa_c::initializeState_ShellAtk_St() {
         mSpeedMax.y = -4.0f;
     }
 
-    m_a5c = 0x200;
+    mShellRotStep = 0x200;
     mLookAngle = 0;
-    m_a3c = 4;
-    m_730 |= 2;
+    mNumLandFramesLeft = 4;
+    mDrawFlags |= DRAW_SHELL;
     mActorProperties &= ~8;
     shellinSE();
 }
@@ -1648,16 +1647,16 @@ void dEnTorideKokoopa_c::executeState_ShellAtk_St() {
         0.0f, 1.5f, 2.75f, 4.0f
     }; ///< @unofficial
     mModel.play();
-    mModel2.play();
+    mShellModel.play();
 
-    if (mAnmChr.isStop() && (m_730 != 2)) {
+    if (mAnmChr.isStop() && (mDrawFlags != DRAW_SHELL)) {
         changeShell();
-        m_730 = 2;
+        mDrawFlags = DRAW_SHELL;
     }
 
     if ((*mStateMgr.getOldStateID() == StateID_FireHit) ||
             (*mStateMgr.getOldStateID() == StateID_SlideHit)) {
-        if ((mSpeed.y >= 0.0f) || (m_730 == 2)) {
+        if ((mSpeed.y >= 0.0f) || (mDrawFlags == DRAW_SHELL)) {
             calcSpeedY();
             posMove();
         }
@@ -1666,12 +1665,12 @@ void dEnTorideKokoopa_c::executeState_ShellAtk_St() {
         posMove();
     }
 
-    if (m_730 == 2) {
-        m_a5c += 0x200;
-        if (m_a5c > 0x1800) {
-            m_a5c = 0x1800;
+    if (mDrawFlags == DRAW_SHELL) {
+        mShellRotStep += 0x200;
+        if (mShellRotStep > 0x1800) {
+            mShellRotStep = 0x1800;
         }
-        mAngle.y += m_a5c;
+        mAngle.y += mShellRotStep;
         shellatkSE();
         shellBumMarEffect();
     } else if (*mStateMgr.getOldStateID() == StateID_FireHit) {
@@ -1683,9 +1682,9 @@ void dEnTorideKokoopa_c::executeState_ShellAtk_St() {
         shelllandonSE();
         shellLandonEffect();
 
-        m_a3c--;
-        if (m_a3c > 0) {
-            mSpeed.y = y_speeds[m_a3c];
+        mNumLandFramesLeft--;
+        if (mNumLandFramesLeft > 0) {
+            mSpeed.y = y_speeds[mNumLandFramesLeft];
         } else {
             mSpeed.y = 0.0f;
             changeState(StateID_ShellAtk);
@@ -1695,31 +1694,31 @@ void dEnTorideKokoopa_c::executeState_ShellAtk_St() {
 
 void dEnTorideKokoopa_c::initializeState_ShellAtk() {
 
-    float f4 = dGameCom::getDispCenterX() + m_7dc[0];
-    float f5 = dGameCom::getDispCenterX() + m_7dc[1];
-    float f6 = (f4 + f5) * 0.5f;
+    float arena_right = dGameCom::getDispCenterX() + mArenaEdgeOffset[0];
+    float arena_left = dGameCom::getDispCenterX() + mArenaEdgeOffset[1];
+    float arena_mid = (arena_right + arena_left) * 0.5f;
 
-    if (mPos.x >= f6) {
+    if (mPos.x >= arena_mid) {
         mDirection = 1;
     } else {
         mDirection = 0;
     }
 
     mActorProperties &= ~0x200;
-    m_a64 = 5;
+    mShellAtkRemNumSweeps = 5;
     mAccelF = 0.3f;
     mSpeed.x = l_shellatk_speed[mDirection];
 
-    if (mPos.x - 32.0f < f5) {
+    if (mPos.x - 32.0f < arena_left) {  // Close to left edge -> go right immediately
         mSpeedMax.x = l_shellatk_speed[mDirection];
-        m_a60 = f5 + 32.0f;
-        m_a64 = 6;
-    } else if (mPos.x + 32.0f > f4) {
+        mShellAtkSweepStartXPos = arena_left + 32.0f;
+        mShellAtkRemNumSweeps = 6;
+    } else if (mPos.x + 32.0f > arena_right) {  // Close to right edge -> go left immediately
         mSpeedMax.x = l_shellatk_speed[mDirection];
-        m_a60 = f4 - 32.0f;
-        m_a64 = 6;
+        mShellAtkSweepStartXPos = arena_right - 32.0f;
+        mShellAtkRemNumSweeps = 6;
     } else {
-        m_a60 = mPos.x;
+        mShellAtkSweepStartXPos = mPos.x;
         mSpeedMax.x = l_shellatk_speed[mDirection ^ 1];
     }
 }
@@ -1731,7 +1730,7 @@ void dEnTorideKokoopa_c::executeState_ShellAtk() {
 
     calcSpeedX();
     calcSpeedY();
-    float f2 = mPos.x;
+    float prev_x_pos = mPos.x;
     posMove();
     if (mBc.checkFootEnm()) {
         mSpeed.y = 0.0f;
@@ -1743,9 +1742,9 @@ void dEnTorideKokoopa_c::executeState_ShellAtk() {
         mDirection = 1;
     }
 
-    mAngle.y += m_a5c;
+    mAngle.y += mShellRotStep;
     s16 a = 0;
-    if (m_a64 > 1) {
+    if (mShellAtkRemNumSweeps > 1) {
         a = -shorts[mDirection];
     }
     sLib::chaseAngle((s16 *)&mAngle.z, a, 0x80);
@@ -1754,9 +1753,10 @@ void dEnTorideKokoopa_c::executeState_ShellAtk() {
     shellBumMarEffect();
     shellAtkEffect();
 
-    if (((f2 < m_a60) && (mPos.x >= m_a60)) || ((f2 > m_a60) && (mPos.x <= m_a60))) {
-        m_a64--;
-        if (m_a64 > 0) {
+    if (((prev_x_pos < mShellAtkSweepStartXPos) && (mPos.x >= mShellAtkSweepStartXPos)) || ((prev_x_pos > mShellAtkSweepStartXPos) && (mPos.x <= mShellAtkSweepStartXPos))) {
+        // Completed sweep
+        mShellAtkRemNumSweeps--;
+        if (mShellAtkRemNumSweeps > 0) {
             mSpeedMax.x = -mSpeedMax.x;
         } else {
             mSpeed.x = 0.0f;
@@ -1780,9 +1780,9 @@ void dEnTorideKokoopa_c::initializeState_ShellOut() {
 
     anm_name = m_6f8[5];
     if (anm_name != nullptr) {
-        mAnmChr2.setAnm(mModel2, mResFile.GetResAnmChr(anm_name), m3d::FORWARD_ONCE);
-        mModel2.setAnm(mAnmChr2, 1.0f);
-        mAnmChr2.setRate(1.0f);
+        mShellAnmChr.setAnm(mShellModel, mResFile.GetResAnmChr(anm_name), m3d::FORWARD_ONCE);
+        mShellModel.setAnm(mShellAnmChr, 1.0f);
+        mShellAnmChr.setRate(1.0f);
     }
 
     mSpeedMax.x = 0.0f;
@@ -1802,7 +1802,7 @@ void dEnTorideKokoopa_c::initializeState_ShellOut() {
 void dEnTorideKokoopa_c::finalizeState_ShellOut() {}
 void dEnTorideKokoopa_c::executeState_ShellOut() {
     mModel.play();
-    mModel2.play();
+    mShellModel.play();
 
     calcSpeedY();
     posMove();
@@ -1817,13 +1817,13 @@ void dEnTorideKokoopa_c::executeState_ShellOut() {
 
     switch (m_23b) {
         case 1: {
-            if (!(m_730 & 1) && mAnmChr.checkFrame(getKokoopaOnFrm())) {
-                m_730 |= 1;
+            if (!(mDrawFlags & DRAW_KOKOOPA) && mAnmChr.checkFrame(getKokoopaOnFrm())) {
+                mDrawFlags |= DRAW_KOKOOPA;
             }
-            if ((m_730 & 2) && mAnmChr.checkFrame(getShellOffFrm())) {
-                m_730 &= ~2;
+            if ((mDrawFlags & DRAW_SHELL) && mAnmChr.checkFrame(getShellOffFrm())) {
+                mDrawFlags &= ~DRAW_SHELL;
             }
-            if (m_730 == 1) {
+            if (mDrawFlags == DRAW_KOKOOPA) {
                 changeKokoopa();
                 m_23b = 2;
             }
@@ -1853,8 +1853,8 @@ void dEnTorideKokoopa_c::initializeState_DieFumi_St() {
     mSpeed.set(0.0f, 0.0f, 0.0f);
     mAngle.x = 0;
     mAngle.y = 0;
-    m_a40 = getPressScale();
-    mScale = m_a40;
+    mPressScale = getPressScale();
+    mScale = mPressScale;
     mTimer1 = getPressTime();
 
     m_23b = 1;
@@ -1871,18 +1871,18 @@ void dEnTorideKokoopa_c::executeState_DieFumi_St() {
             if (mTimer1 != 0) {
                 break;
             }
-            mVec3_c vec = mVec3_c(scale - m_a40.x, scale - m_a40.y, scale - m_a40.z);
+            mVec3_c vec = mVec3_c(scale - mPressScale.x, scale - mPressScale.y, scale - mPressScale.z);
             int time = getFumiRecoverTime();
             if (time <= 0) {
-                m_a4c = vec;
+                mRecoverScaleStep = vec;
             } else {
-                m_a4c = vec / time;
+                mRecoverScaleStep = vec / time;
             }
             m_23b = 2;
             break;
         }
         case 2: {
-            mScale += m_a4c;
+            mScale += mRecoverScaleStep;
             if (mScale.y >= scale) {
                 mScale.x = scale;
                 mScale.y = scale;
@@ -1922,8 +1922,8 @@ void dEnTorideKokoopa_c::executeState_DieShell() {
 
 
 void dEnTorideKokoopa_c::initializeState_DemoWait() {
-    if ((m_6fc != nullptr) && (m_6fc[0] != nullptr)) {
-        mAnmChr.setAnm(mModel, mResFile.GetResAnmChr(m_6fc[0]), m3d::FORWARD_LOOP);
+    if ((mDemoAnmInfo != nullptr) && (mDemoAnmInfo->mWaitName != nullptr)) {
+        mAnmChr.setAnm(mModel, mResFile.GetResAnmChr(mDemoAnmInfo->mWaitName), m3d::FORWARD_LOOP);
         mModel.setAnm(mAnmChr, 0.0f);
         mAnmChr.setRate(1.0f);
     }
@@ -1932,7 +1932,7 @@ void dEnTorideKokoopa_c::initializeState_DemoWait() {
     mDirection = getPl_LRflag(mPos);
     mAngle.y = l_EnMuki[mDirection] * defaultDirAngle();
 
-    m_730 = 1;
+    mDrawFlags = DRAW_KOKOOPA;
 }
 void dEnTorideKokoopa_c::finalizeState_DemoWait() {}
 void dEnTorideKokoopa_c::executeState_DemoWait() {
@@ -1946,14 +1946,14 @@ void dEnTorideKokoopa_c::executeState_DemoWait() {
 }
 
 void dEnTorideKokoopa_c::initializeState_DemoAwake() {
-    char *anm_name = m_6fc[1];
+    char *anm_name = mDemoAnmInfo->mAwakeName;
     if (anm_name != nullptr) {
         mAnmChr.setAnm(mModel, mResFile.GetResAnmChr(anm_name), m3d::FORWARD_ONCE);
         mModel.setAnm(mAnmChr, 5.0f);
         mAnmChr.setRate(1.0f);
 
-        m_644 = mResFile.GetResAnmTexPat(m_6fc[1]);
-        mAnmTexPat.setAnm(mModel, m_644, 0, m3d::FORWARD_ONCE);
+        mResAnmTexPat = mResFile.GetResAnmTexPat(mDemoAnmInfo->mAwakeName);
+        mAnmTexPat.setAnm(mModel, mResAnmTexPat, 0, m3d::FORWARD_ONCE);
         mModel.setAnm(mAnmTexPat, 0.0f);
         mAnmTexPat.setRate(1.0f, 0);
     }
@@ -1983,14 +1983,14 @@ void dEnTorideKokoopa_c::executeState_DemoAwake() {
 
 
 void dEnTorideKokoopa_c::initializeState_DemoAwake_Wait() {
-    char *anm_name = m_6fc[2];
+    char *anm_name = mDemoAnmInfo->mAwakeWaitName;
     if (anm_name != nullptr) {
         mAnmChr.setAnm(mModel, mResFile.GetResAnmChr(anm_name), m3d::FORWARD_LOOP);
         mModel.setAnm(mAnmChr, 0.0f);
         mAnmChr.setRate(1.0f);
 
-        m_644 = mResFile.GetResAnmTexPat(m_6fc[2]);
-        mAnmTexPat.setAnm(mModel, m_644, 0, m3d::FORWARD_LOOP);
+        mResAnmTexPat = mResFile.GetResAnmTexPat(mDemoAnmInfo->mAwakeWaitName);
+        mAnmTexPat.setAnm(mModel, mResAnmTexPat, 0, m3d::FORWARD_LOOP);
         mModel.setAnm(mAnmTexPat, 0.0f);
         mAnmTexPat.setRate(1.0f, 0);
     }
@@ -2010,14 +2010,14 @@ void dEnTorideKokoopa_c::executeState_DemoAwake_Wait() {
 
 
 void dEnTorideKokoopa_c::initializeState_DemoIkaku() {
-    char *anm_name = m_6fc[3];
+    char *anm_name = mDemoAnmInfo->mIkakuName;
     if (anm_name != nullptr) {
         mAnmChr.setAnm(mModel, mResFile.GetResAnmChr(anm_name), m3d::FORWARD_ONCE);
         mModel.setAnm(mAnmChr, 0.0f);
         mAnmChr.setRate(1.0f);
 
-        m_644 = mResFile.GetResAnmTexPat(m_6fc[3]);
-        mAnmTexPat.setAnm(mModel, m_644, 0, m3d::FORWARD_ONCE);
+        mResAnmTexPat = mResFile.GetResAnmTexPat(mDemoAnmInfo->mIkakuName);
+        mAnmTexPat.setAnm(mModel, mResAnmTexPat, 0, m3d::FORWARD_ONCE);
         mModel.setAnm(mAnmTexPat, 0.0f);
         mAnmTexPat.setRate(1.0f, 0);
     }
@@ -2045,14 +2045,14 @@ void dEnTorideKokoopa_c::executeState_DemoIkaku() {
 }
 
 void dEnTorideKokoopa_c::initializeState_DemoIkaku_Wait() {
-    char *anm_name = m_6fc[4];
+    char *anm_name = mDemoAnmInfo->mIkakuWaitName;
     if (anm_name != nullptr) {
         mAnmChr.setAnm(mModel, mResFile.GetResAnmChr(anm_name), m3d::FORWARD_LOOP);
         mModel.setAnm(mAnmChr, 0.0f);
         mAnmChr.setRate(1.0f);
 
-        m_644 = mResFile.GetResAnmTexPat(m_6fc[4]);
-        mAnmTexPat.setAnm(mModel, m_644, 0, m3d::FORWARD_LOOP);
+        mResAnmTexPat = mResFile.GetResAnmTexPat(mDemoAnmInfo->mIkakuWaitName);
+        mAnmTexPat.setAnm(mModel, mResAnmTexPat, 0, m3d::FORWARD_LOOP);
         mModel.setAnm(mAnmTexPat, 0.0f);
         mAnmTexPat.setRate(1.0f, 0);
     }

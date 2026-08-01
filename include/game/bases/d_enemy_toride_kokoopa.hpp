@@ -16,6 +16,36 @@ public:
         VoiceInfo_s mEntries[11];
     };
 
+    /// @unofficial
+    struct JumpAnmData_s {
+        char * mJumpStName;
+        char * mJumpName;
+        char * mBigJumpStName;
+        char * mBigJumpName;
+        char * mLandOnName;
+        mVec2_c mJumpSpeed0;
+        mVec2_c mBigJumpSpeed0;
+        mVec2_c mJumpSpeed1;
+        mVec2_c mBigJumpSpeed1;
+    };
+
+    /// @unofficial
+    struct DemoAnmData_s {
+        char *mWaitName;
+        char *mAwakeName;  ///< Plays notice1Vo only when not nullptr
+        char *mAwakeWaitName;
+        char *mIkakuName;  ///< Plays notice2Vo only when not nullptr
+        char *mIkakuWaitName;
+    };
+
+    /// @unofficial
+    enum DrawFlags_e {
+        DRAW_NONE,
+        DRAW_KOKOOPA,
+        DRAW_SHELL,
+        DRAW_BOTH
+    };
+
     dEnTorideKokoopa_c();
     virtual ~dEnTorideKokoopa_c();
 
@@ -46,9 +76,9 @@ public:
     void setShellDead(dActor_c *) override;
     void damageProc() override;
     void deadProc() override;
-    int isFumiInvalid() const override { return m_730 & 2; }
-    int isFireInvalid() const override { return m_730 & 2; }
-    int isStarInvalid() const override { return m_730 & 2; }
+    int isFumiInvalid() const override { return mDrawFlags & DRAW_SHELL; }
+    int isFireInvalid() const override { return mDrawFlags & DRAW_SHELL; }
+    int isStarInvalid() const override { return mDrawFlags & DRAW_SHELL; }
     void fumideadEffect() override;
     void fumidmgEffect() override;
     void damageSVo() override;
@@ -191,43 +221,43 @@ public:
     m3d::mdl_c mModel;
     m3d::anmChr_c mAnmChr;
     m3d::anmMatClr_c mAnmMatClr;
-    nw4r::g3d::ResAnmTexPat m_644;
+    nw4r::g3d::ResAnmTexPat mResAnmTexPat;
     m3d::anmTexPat_c mAnmTexPat;
-    m3d::mdl_c mModel2;
-    m3d::anmChr_c mAnmChr2;
+    m3d::mdl_c mShellModel;
+    m3d::anmChr_c mShellAnmChr;
     char **m_6ec; //< TODO: make a structure out of this
-    char **mJumpAnmNames; //< TODO: make a structure out of this
+    JumpAnmData_s *mJumpAnmInfo;
     char **m_6f4; //< TODO: make a structure out of this
     char **m_6f8; //< TODO: make a structure out of this
-    char **m_6fc; //< TODO: make a structure out of this
-    u32 m_700;
-    int m_704;
+    DemoAnmData_s *mDemoAnmInfo;
+    u32 mAttackTargetPlayerId;
+    int mAttackSearchTimer;
     u8 mPad_708[4];
     fBaseID_e m_70c;
     mVec3_c mBlitzPos;
     u32 m_71c;
     mVec3_c mFacePos;
-    s16 m_72c;
+    s16 mCurLookAngle;
     s16 mLookAngle;
-    int m_730;
+    int mDrawFlags; ///< Is a DrawFlags_e.
     int mAtkCnt;
-    dCc_c mCc2;
-    float m_7dc[2];
-    int m_7e4;
-    int m_7e8;
+    dCc_c mWandCc;
+    float mArenaEdgeOffset[2]; ///< Indexed by mDirection. Horizontal distance measured from the display center.
+    int mNumJumps;
+    int mFireLoopEffectTimer;
     mEf::levelEffect_c mLevelEffect;
     mEf::levelEffect_c mLevelEffect2;
-    int m_a3c;
-    mVec3_c m_a40;
-    mVec3_c m_a4c;
+    int mNumLandFramesLeft;
+    mVec3_c mPressScale;
+    mVec3_c mRecoverScaleStep;
     u8 mPad_a58[4];
-    s16 m_a5c;
+    s16 mShellRotStep; ///< Angle by which to rotate the shell during shell attacks. Incremented by 0x200 each frame, capped at 0x1800.
     u8 mPad_a5e[2];
-    float m_a60;
-    int m_a64;
+    float mShellAtkSweepStartXPos; ///< The x-position at which a sweep starts.
+    int mShellAtkRemNumSweeps; ///< The number of full-width sweeps in shell form remaining during the ShellAtk state.
     float m_a68;
-    u32 m_a6c;
-    u32 m_a70;
+    int mRootJntIdx;
+    int mShellJntIdx;
     mVec3_c mRootJntPos;
     mVec3_c mShellJntPos;
     char **mEffectNames;
