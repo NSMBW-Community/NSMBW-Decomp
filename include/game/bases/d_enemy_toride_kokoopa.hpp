@@ -7,7 +7,7 @@ class dEnTorideKokoopa_c : public dEnBoss_c {
 public:
     /// @unofficial
     struct VoiceInfo_s {
-        SOUND_e mSoundID;
+        dAudio::SoundEffectID_t mSoundID;
         float mAnmFrame;
     };
 
@@ -18,11 +18,11 @@ public:
 
     /// @unofficial
     struct JumpAnmData_s {
-        char * mJumpStName;
-        char * mJumpName;
-        char * mBigJumpStName;
-        char * mBigJumpName;
-        char * mLandOnName;
+        const char *mJumpStName;
+        const char *mJumpName;
+        const char *mBigJumpStName;
+        const char *mBigJumpName;
+        const char *mLandOnName;
         mVec2_c mJumpSpeed0;
         mVec2_c mBigJumpSpeed0;
         mVec2_c mJumpSpeed1;
@@ -31,19 +31,19 @@ public:
 
     /// @unofficial
     struct DemoAnmData_s {
-        char *mWaitName;
-        char *mAwakeName;  ///< Plays notice1Vo only when not nullptr
-        char *mAwakeWaitName;
-        char *mIkakuName;  ///< Plays notice2Vo only when not nullptr
-        char *mIkakuWaitName;
+        const char *mWaitName;
+        const char *mAwakeName;  ///< Plays notice1Vo only when not nullptr
+        const char *mAwakeWaitName;
+        const char *mIkakuName;  ///< Plays notice2Vo only when not nullptr
+        const char *mIkakuWaitName;
     };
 
     /// @unofficial
     enum DrawFlags_e {
-        DRAW_NONE,
-        DRAW_KOKOOPA,
-        DRAW_SHELL,
-        DRAW_BOTH
+        DRAW_NONE = 0,
+        DRAW_KOKOOPA = BIT_FLAG(0),
+        DRAW_SHELL = BIT_FLAG(1),
+        DRAW_BOTH = DRAW_KOKOOPA | DRAW_SHELL
     };
 
     dEnTorideKokoopa_c();
@@ -128,8 +128,8 @@ public:
     virtual s16 getTurnSpeed();
     virtual int getFumiRecoverTime() { return 4; }
     virtual fBaseID_e createBlitz() { return BASE_ID_NULL; }
-    virtual float vf4d0() = nullptr; ///< @unofficial
-    virtual mVec3_c getMagicStickEffectOffset() const;
+    virtual float vf4d0() = 0; ///< @unofficial
+    virtual mVec3_c getMagicStickEffectOffset() const { return mVec3_c(0.0f, 0.0f, 18.0f); }
     virtual void setKokoopaCc() {}
     virtual void setShellCc() {}
     virtual float getJumpDist() const { return 64.0f; }
@@ -225,10 +225,10 @@ public:
     m3d::anmTexPat_c mAnmTexPat;
     m3d::mdl_c mShellModel;
     m3d::anmChr_c mShellAnmChr;
-    char **m_6ec; //< TODO: make a structure out of this
+    const char **m_6ec; //< TODO: make a structure out of this
     JumpAnmData_s *mJumpAnmInfo;
-    char **m_6f4; //< TODO: make a structure out of this
-    char **m_6f8; //< TODO: make a structure out of this
+    const char **m_6f4; //< TODO: make a structure out of this
+    const char **m_6f8; //< TODO: make a structure out of this
     DemoAnmData_s *mDemoAnmInfo;
     u32 mAttackTargetPlayerId;
     int mAttackSearchTimer;

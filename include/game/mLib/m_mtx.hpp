@@ -32,6 +32,12 @@ public:
         return *this;
     }
 
+    mVec3_c operator*(const mVec3_c &v) const {
+        mVec3_c ret;
+        PSMTXMultVec(*this, v, ret);
+        return ret;
+    }
+
     void XrotS(mAng angle); ///< Generates a rotation matrix for the X axis with the given angle.
     void XrotM(mAng angle); ///< Rotates the matrix on the X axis by the given angle.
     void YrotS(mAng angle); ///< Generates a rotation matrix for the Y axis with the given angle.
