@@ -8,7 +8,7 @@ and a global scale. It also offers a small base search API.
 ## Global Base Searching
 Bases can be searched globally based on various criteria:
 - Use searchBaseByID() to find a base by its @ref fBase_c::mUniqueID "unique identifier".
-- Use searchBaseByProfName() to find bases using a certain @ref fProfile::PROFILE_NAME_e
+- Use searchBaseByProfName() to find bases using a certain @ref fProf::PROFILE_NAME_e
 "profile name".
 - Use searchBaseByGroupType() to find bases belonging to the given @ref fBase_c::GROUP_TYPE_e
 "group type".

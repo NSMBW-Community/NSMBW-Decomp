@@ -127,7 +127,7 @@ int Pausewindow_c::create() {
 
     if (
         dGameCom::isNowCourseClear() ||
-        dScene_c::m_nowScene != fProfile::STAGE ||
+        dScene_c::m_nowScene != fProf::STAGE ||
         dInfo_c::m_startGameInfo.mLevel1 == STAGE_CANNON
     ) {
         mpPicturePanes[P_shadowBlack]->SetVisible(false);

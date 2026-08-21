@@ -2549,7 +2549,7 @@ dAcPy_c *dAcPy_c::getCarryPlayer() {
 
 dActor_c *dAcPy_c::getCarryPropelBlock() {
     dActor_c *actor = (dActor_c *) fManager_c::searchBaseByID(mCarryActorID);
-    if (actor != nullptr && actor->mProfName == fProfile::AC_PROP_BLOCK) {
+    if (actor != nullptr && actor->mProfName == fProf::AC_PROP_BLOCK) {
         return actor;
     }
     return nullptr;
@@ -2563,7 +2563,7 @@ dActor_c *dAcPy_c::getCarryPropelActor() {
             if (player->mPowerup == POWERUP_PROPELLER_SHROOM) {
                 return actor;
             }
-        } else if (actor->mProfName == fProfile::AC_PROP_BLOCK) {
+        } else if (actor->mProfName == fProf::AC_PROP_BLOCK) {
             return actor;
         }
     }
@@ -2573,8 +2573,8 @@ dActor_c *dAcPy_c::getCarryPropelActor() {
 dActor_c *dAcPy_c::getCarryHardBlock() {
     dActor_c *actor = (dActor_c *) fManager_c::searchBaseByID(mCarryActorID);
     if (actor != nullptr && (
-        actor->mProfName == fProfile::AC_LIGHT_BLOCK ||
-        actor->mProfName == fProfile::AC_PROP_BLOCK
+        actor->mProfName == fProf::AC_LIGHT_BLOCK ||
+        actor->mProfName == fProf::AC_PROP_BLOCK
     )) {
         return actor;
     }
@@ -5938,7 +5938,7 @@ bool dAcPy_c::setFlyDamageAction(int action, dActor_c *actor) {
             switch ((u32) actor->mKind) {
                 case STAGE_ACTOR_PLAYER:
                 case STAGE_ACTOR_ENEMY:
-                    if (actor->mProfName == fProfile::EN_SLIP_PENGUIN2) {
+                    if (actor->mProfName == fProf::EN_SLIP_PENGUIN2) {
                         bool dir = 0;
                         if (actor->mSpeed.x < 0.0f) {
                             dir = 1;
@@ -6463,7 +6463,7 @@ void dAcPy_c::initializeState_IceDamage() {
     onStatus(STATUS_07);
     onStatus(STATUS_NO_ANIM);
     onStatus(STATUS_DISABLE_STATE_CHANGE);
-    dActor_c *ice = dActor_c::construct(fProfile::PLAYER_ICE, this, 0,& mPos, nullptr, 0);
+    dActor_c *ice = dActor_c::construct(fProf::PLAYER_ICE, this, 0,& mPos, nullptr, 0);
     mIceActorID = ice->mUniqueID;
     dQuake_c::m_instance->shockMotor(mPlayerNo, dQuake_c::TYPE_4, 0, false);
     mPyMdlMng.setAnm(PLAYER_ANIM_JUMP, 0.0f, 0.0f, 0.0f);
@@ -7246,12 +7246,12 @@ void dAcPy_c::createFireBall(int i) {
         startSound(SE_PLY_THROW_FIRE, false);
         pos = loopPos;
         u32 param = (i << 16) | (mAmiLayer << 12) | (mLayer << 8) | (m_12f4 << 4) | mPlayerNo;
-        dActor_c::construct(fProfile::PL_FIREBALL, param, &pos, nullptr, 0);
+        dActor_c::construct(fProf::PL_FIREBALL, param, &pos, nullptr, 0);
     } else if (mPowerup == POWERUP_PENGUIN_SUIT || mPowerup == POWERUP_ICE_FLOWER) {
         startSound(SE_PLY_THROW_ICEBALL, false);
         pos = loopPos;
         u32 param = (i << 16) | (mAmiLayer << 12) | (mLayer << 8) | (m_12f4 << 4) | mPlayerNo;
-        dActor_c::construct(fProfile::ICEBALL, param, &pos, nullptr, 0);
+        dActor_c::construct(fProf::ICEBALL, param, &pos, nullptr, 0);
     }
 }
 
@@ -8244,10 +8244,10 @@ bool dAcPy_c::searchDoorActor() {
     dActor_c *door = nullptr;
     while ((door = (dActor_c *) fManager_c::searchBaseByGroupType(ACTOR, door)) != nullptr) {
         if (
-            door->mProfName == fProfile::EN_DOOR ||
-            door->mProfName == fProfile::EN_OBAKEDOOR ||
-            door->mProfName == fProfile::EN_TORIDEDOOR ||
-            door->mProfName == fProfile::EN_CASTLEDOOR
+            door->mProfName == fProf::EN_DOOR ||
+            door->mProfName == fProf::EN_OBAKEDOOR ||
+            door->mProfName == fProf::EN_TORIDEDOOR ||
+            door->mProfName == fProf::EN_CASTLEDOOR
         ) {
             if (std::fabs(door->mPos.x - mPos.x) < 16.0f && std::fabs(door->mPos.y - mPos.y) < 16.0f) {
                 mRelatedActorID = door->mUniqueID;
@@ -8487,9 +8487,9 @@ bool dAcPy_c::setDoorDemo(dActor_c *door) {
             mDoorSize = 0;
             int profName = door->mProfName;
             if (
-                profName == fProfile::EN_TORIDEDOOR ||
-                profName == fProfile::EN_CASTLEDOOR
-                // || profName == fProfile::EN_KOOPADOOR
+                profName == fProf::EN_TORIDEDOOR ||
+                profName == fProf::EN_CASTLEDOOR
+                // || profName == fProf::EN_KOOPADOOR
             ) {
                 mDoorSize = 1;
             }
@@ -10622,7 +10622,7 @@ void dAcPy_c::clearJumpActionInfo(int) {
 
     bool checkRes = false;
     if (mBc.mpCtrHead != nullptr && mBc.mpCtrHead->mpActor != nullptr) {
-        if (mBc.mpCtrHead->mpActor->mProfName == fProfile::EN_GOALPOLE) {
+        if (mBc.mpCtrHead->mpActor->mProfName == fProf::EN_GOALPOLE) {
             checkRes = true;
         }
         if (mBc.mpCtrHead->mpActor->mActorProperties & 0x10 || mBc.mpCtrHead->mpActor->mActorProperties & 0x20) {

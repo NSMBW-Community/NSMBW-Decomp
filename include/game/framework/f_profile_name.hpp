@@ -2,9 +2,9 @@
 
 #include <types.h>
 
-namespace fProfile {
+namespace fProf {
 
-    /// @brief A name of a profile. Can be used to index into fProfile::sProfileList.
+    /// @brief A name of a profile. Can be used to index into fProfListMg_c::m_data_p.
     /// @ingroup profile
     enum PROFILE_NAME_e {
         PROFILE_NULL = (u16) -1,

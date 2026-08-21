@@ -25,11 +25,11 @@ const char *dWmEnemy_c::smc_PathPointC[WORLD_USED_COUNT] = {
 namespace dWmEnemy {
 
 const ProfileName sc_EnemyProfName[] = {
-    fProfile::WM_KURIBO,
-    fProfile::WM_BROS,
-    fProfile::WM_PUKU,
-    fProfile::WM_PAKKUN,
-    fProfile::WM_JUGEM
+    fProf::WM_KURIBO,
+    fProf::WM_BROS,
+    fProf::WM_PUKU,
+    fProf::WM_PAKKUN,
+    fProf::WM_JUGEM
 };
 
 bool isEnemyWalk() {

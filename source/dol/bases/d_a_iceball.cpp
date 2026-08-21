@@ -215,7 +215,7 @@ void daIceBall_c::ccCallback_Iceball(dCc_c *self, dCc_c *other) {
     dActor_c *otherActor = other->getOwner();
 
     if (otherActor->mKind == fBase_c::ENEMY) {
-        if (otherActor->mProfName == fProfile::EN_MARUTA) {
+        if (otherActor->mProfName == fProf::EN_MARUTA) {
             if (thisIceball->mSpeed.y >= 0.0f) {
                 return;
             }
@@ -228,7 +228,7 @@ void daIceBall_c::ccCallback_Iceball(dCc_c *self, dCc_c *other) {
 
         thisIceball->mHitEntity = true;
     } else if (other->mCcData.mAttack == CC_ATTACK_KOOPA_FIRE) {
-        if ((otherActor->mProfName == fProfile::KOOPA_FIRE) && ((int)(otherActor->mParam & 0xF) == 1)) {
+        if ((otherActor->mProfName == fProf::KOOPA_FIRE) && ((int)(otherActor->mParam & 0xF) == 1)) {
             dAudio::SndObjctCmnMap_c *map = dAudio::g_pSndObjMap;
             dAudio::SoundEffectID_t(SE_OBJ_PNGN_ICEBALL_DISAPP).playObjSound(map, thisIceball->mPos, 0);
         }

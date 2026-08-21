@@ -148,7 +148,7 @@ public:
     float mMaxFallSpeed; ///< The actor's maximum fall speed.
     float mAccelF; ///< The actor's horizontal acceleration.
 
-    u32 mActorProperties; ///< The actor's properties. See fProfile::fActorProfile_c::mActorProperties.
+    u32 mActorProperties; ///< The actor's properties. See fProf::fActorProfile_c::mActorProperties.
     bool mVisible; ///< Whether the actor should be visible or not. Defaults to @p true .
 
 private:

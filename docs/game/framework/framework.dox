@@ -47,26 +47,26 @@ various utilities for searching for bases meeting specific criteria.
 
 @{
 
-@defgroup profile fProfile
+@defgroup profile fProf
 @brief A profile is a basic set of information needed to construct a base.
 @details
 
 There exist two kinds of profiles:
-- @ref fProfile::fBaseProfile_c "fBaseProfile_c": A basic profile that includes a constructor function
+- @ref fProf::fBaseProfile_c "fBaseProfile_c": A basic profile that includes a constructor function
 and a value for execution/drawing priority. All @ref fBase_c::GROUP_TYPE_e "non-actor bases" utilize this
 profile type.
-- @ref fProfile::fActorProfile_c "fActorProfile_c": A specialized profile dedicated to
+- @ref fProf::fActorProfile_c "fActorProfile_c": A specialized profile dedicated to
 @ref fBase_c::GROUP_TYPE_e::ACTOR "actor bases", featuring additional properties.
 
-The game maintains a @ref fProfile::sProfileList "list" of all profiles for base construction purposes.
+The game maintains a @ref fProfListMg_c::m_data_p "list" of all profiles for base construction purposes.
 
 ## Profile Names
-Each profile has an @ref fProfile::PROFILE_NAME_e "associated name", which can be used to determine a
+Each profile has an @ref fProf::PROFILE_NAME_e "associated name", which can be used to determine a
 base's profile and also acts as an index into the profile list. A list of all profile names in string
 form is also available, although unused.
 
 A @ref ProfileName "typedef" for profile names is provided to enhance code readability.
-@hint{The @ref fProfile::PROFILE_NAME_e "profile name list" can be used to look up a specific base, to
+@hint{The @ref fProf::PROFILE_NAME_e "profile name list" can be used to look up a specific base, to
 see its components and aid in the implementation of custom bases.}
 
 ## Creating Profiles

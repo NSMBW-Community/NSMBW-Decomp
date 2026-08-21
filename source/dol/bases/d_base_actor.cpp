@@ -40,7 +40,7 @@ mAngle3D()
     mScale.y = 1.0f;
     mScale.z = 1.0f;
 
-    fProfile::fProfilePtr_c profile = (*fProfile::sProfileList)[mProfName];
+    fProfListMg_c::fProfilePtr_c profile = (*fProfListMg_c::m_data_p)[mProfName];
     mActorProperties = profile.mActorProfile->mActorProperties;
 }
 

@@ -11,9 +11,9 @@
 #include <game/mLib/m_fader.hpp>
 
 u32 dScene_c::mPara;
-ProfileName dScene_c::m_nextScene = fProfile::INVALID;
-ProfileName dScene_c::m_nowScene = fProfile::INVALID;
-ProfileName dScene_c::m_oldScene = fProfile::INVALID;
+ProfileName dScene_c::m_nextScene = fProf::INVALID;
+ProfileName dScene_c::m_nowScene = fProf::INVALID;
+ProfileName dScene_c::m_oldScene = fProf::INVALID;
 bool dScene_c::m_otherSceneFlg = true;
 
 u16 dScene_c::m_fadeInFrame = 30;
@@ -54,7 +54,7 @@ void dScene_c::postCreate(fBase_c::MAIN_STATE_e status) {
     if (status == SUCCESS) {
         dReset::Manage_c::GetInstance()->SetSoftResetFinish();
         dAudio::createSndObjctCmn();
-        fBase_c::createChild(fProfile::LASTACTOR, this, 0, fBase_c::OTHER);
+        fBase_c::createChild(fProf::LASTACTOR, this, 0, fBase_c::OTHER);
     }
     dBase_c::postCreate(status);
 }
@@ -84,7 +84,7 @@ int dScene_c::preExecute() {
         return NOT_READY;
     }
 
-    if (m_nextScene != fProfile::INVALID) {
+    if (m_nextScene != fProf::INVALID) {
         // Prepare to go to next scene
         if (mFader_c::isStatus(mFaderBase_c::HIDDEN)) {
             dFader_c::startFadeOut(m_fadeOutFrame); // Initiate fade out if not started yet
@@ -131,11 +131,11 @@ void dScene_c::postDraw(fBase_c::MAIN_STATE_e status) {
 }
 
 void dScene_c::setStartScene() {
-    m_nextScene = fProfile::BOOT;
-    m_nowScene = fProfile::BOOT;
-    m_oldScene = fProfile::BOOT;
+    m_nextScene = fProf::BOOT;
+    m_nowScene = fProf::BOOT;
+    m_oldScene = fProf::BOOT;
     m_otherSceneFlg = false;
-    dAudio::setNextScene(fProfile::BOOT, 0);
+    dAudio::setNextScene(fProf::BOOT, 0);
 }
 
 void dScene_c::setResetScene() {
@@ -143,7 +143,7 @@ void dScene_c::setResetScene() {
 }
 
 dScene_c *dScene_c::createNextScene() {
-    if (m_otherSceneFlg || m_nextScene == fProfile::INVALID) {
+    if (m_otherSceneFlg || m_nextScene == fProf::INVALID) {
         return nullptr;
     }
 
@@ -151,7 +151,7 @@ dScene_c *dScene_c::createNextScene() {
     if (newScene != nullptr) {
         m_oldScene = m_nowScene;
         m_nowScene = m_nextScene;
-        m_nextScene = fProfile::INVALID;
+        m_nextScene = fProf::INVALID;
         m_otherSceneFlg = true;
         return newScene;
     }
@@ -160,7 +160,7 @@ dScene_c *dScene_c::createNextScene() {
 }
 
 void dScene_c::setNextScene(ProfileName nextScene, unsigned long param, bool forceChange) {
-    if (m_nextScene != fProfile::INVALID) {
+    if (m_nextScene != fProf::INVALID) {
         return;
     }
 
@@ -172,7 +172,7 @@ void dScene_c::setNextScene(ProfileName nextScene, unsigned long param, bool for
         (resetMng->mModeProc == dReset::Manage_c::SAFETY_WAIT));
 
     if (!isChangeDisallowed || forceChange) {
-        if (m_nowScene == fProfile::STAGE && nextScene != fProfile::STAGE) {
+        if (m_nowScene == fProf::STAGE && nextScene != fProf::STAGE) {
             dScStage_c::m_isCourseOut = true;
         }
         dAudio::setNextScene(nextScene, param);

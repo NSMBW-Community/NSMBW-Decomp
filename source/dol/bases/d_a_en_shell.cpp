@@ -55,7 +55,7 @@ void daEnShell_c::createShell(const char *arcName, const char *resPath, const ch
 
     dActor_c::setSoftLight_Enemy(mModel);
 
-    if (mProfName == fProfile::EN_NOKONOKO || mProfName == fProfile::EN_PATAPATA) {
+    if (mProfName == fProf::EN_NOKONOKO || mProfName == fProf::EN_PATAPATA) {
         nw4r::g3d::ResAnmChr anim = mResFile.GetResAnmChr("revival_shell");
         mAnim.create(mdl, anim, &mAllocator);
     }
@@ -169,7 +169,7 @@ void daEnShell_c::Normal_VsEnHitCheck(dCc_c *self, dCc_c *other) {
     if (
         isState(daEnCarry_c::StateID_Carry) &&
         other->mCcData.mVsDamage & BIT_FLAG(CC_ATTACK_SHELL) &&
-        otherActor->mProfName != fProfile::EN_HATENA_BALLOON &&
+        otherActor->mProfName != fProf::EN_HATENA_BALLOON &&
         hitCallback_Shell(self, other)
     ) {
         other->mInfo |= CC_NO_HIT;
@@ -596,7 +596,7 @@ bool daEnShell_c::cullCheck_Shell() {
     float offs = 256.0f;
     if (mBc.mFlags & 0x8000) {
         const dRide_ctr_c *ride = mRc.getRide();
-        if (ride != nullptr && ride->mOwner != nullptr && ride->mOwner->mProfName == fProfile::AC_FLOOR_GYRATION) {
+        if (ride != nullptr && ride->mOwner != nullptr && ride->mOwner->mProfName == fProf::AC_FLOOR_GYRATION) {
             offs = 64.0f;
         }
     }

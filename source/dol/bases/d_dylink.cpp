@@ -9,7 +9,7 @@ DynamicModuleControl s_ProfileDMC("d_profile", nullptr);
 /// @brief The profile to module name table.
 /// @hideinitializer
 const dDyl::DynamicName_t DynamicNameTable[] = {
-    { fProfile::INVALID, nullptr }
+    { fProf::INVALID, nullptr }
 };
 
 const dDyl::DynamicName_t *pDynamicNameTable; ///< A pointer to @ref dDyl::DynamicName_t "the profile to module name table".
@@ -104,7 +104,7 @@ void *DynamicModuleCallback::InitCallback(void *heap) {
 }
 
 void dDyl::InitAsync() {
-    cCc_Init(fProfile::PROFILE_COUNT, DynamicNameTable, ARRAY_SIZE(DynamicNameTable), mHeap::g_dylinkHeap);
+    cCc_Init(fProf::PROFILE_COUNT, DynamicNameTable, ARRAY_SIZE(DynamicNameTable), mHeap::g_dylinkHeap);
     DVD = mDvd_callback_c::create(DynamicModuleCallback::InitCallback, mHeap::g_dylinkHeap);
 }
 
