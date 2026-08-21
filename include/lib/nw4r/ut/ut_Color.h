@@ -32,7 +32,7 @@ public:
     }
 
     Color& operator=(ulong color) {
-        Toulongref() = color;
+        ToU32ref() = color;
         return *this;
     }
     Color& operator=(const GXColor& rColor) {
@@ -41,25 +41,25 @@ public:
     }
 
     Color operator|(ulong color) const {
-        return Color(Toulong() | color);
+        return Color(ToU32() | color);
     }
     Color operator&(ulong color) const {
-        return Color(Toulong() & color);
+        return Color(ToU32() & color);
     }
 
-    ulong& Toulongref() {
+    ulong& ToU32ref() {
         return *reinterpret_cast<ulong*>(this);
     }
-    const ulong& Toulongref() const {
+    const ulong& ToU32ref() const {
         return *reinterpret_cast<const ulong*>(this);
     }
 
-    ulong Toulong() const {
-        return Toulongref();
+    ulong ToU32() const {
+        return ToU32ref();
     }
 
     operator ulong() const {
-        return Toulongref();
+        return ToU32ref();
     }
 
     // clang-format off
