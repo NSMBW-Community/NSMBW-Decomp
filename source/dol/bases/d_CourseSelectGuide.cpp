@@ -377,7 +377,7 @@ void dCourseSelectGuide_c::doDelete() {
 }
 
 void dCourseSelectGuide_c::CourseNumberSet(dWmLib::TypePoint_e type) {
-    static const int sc_startPointIcons[WORLD_USED_COUNT] = {
+    static const int START_MARK_ID_TBL[WORLD_USED_COUNT] = {
         MSG_CS_ICON_START_RIGHT, // W1
         MSG_CS_ICON_START_UP,    // W2
         MSG_CS_ICON_START_RIGHT, // W3
@@ -446,7 +446,7 @@ void dCourseSelectGuide_c::CourseNumberSet(dWmLib::TypePoint_e type) {
             break;
         case dWmLib::COURSE_TYPE_INVALID:
             if (dWmLib::getStartPointKinokoHouseKindNum() == 0 || dWmLib::IsCourseClear(mWorldNo, STAGE_START_KINOKO_HOUSE)) {
-                messageID = sc_startPointIcons[mWorldNo];
+                messageID = START_MARK_ID_TBL[mWorldNo];
                 break;
             }
             if (dWmLib::isStartPointKinokoHouseStar()) {
