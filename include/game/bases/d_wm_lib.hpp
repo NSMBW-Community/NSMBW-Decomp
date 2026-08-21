@@ -30,8 +30,7 @@ namespace dWmLib {
         COURSE_TYPE_INVALID
     };
 
-    /// @unofficial
-    enum PointType_e {
+    enum TypePoint_e {
         POINT_TYPE_INTERSECTION,
         POINT_TYPE_PATH,
         POINT_TYPE_START_NODE,

@@ -376,7 +376,7 @@ void dCourseSelectGuide_c::doDelete() {
     mLayout.doDelete();
 }
 
-void dCourseSelectGuide_c::CourseSelectSet(dWmLib::PointType_e type) {
+void dCourseSelectGuide_c::CourseNumberSet(dWmLib::TypePoint_e type) {
     static const int sc_startPointIcons[WORLD_USED_COUNT] = {
         MSG_CS_ICON_START_RIGHT, // W1
         MSG_CS_ICON_START_UP,    // W2
@@ -960,13 +960,13 @@ void dCourseSelectGuide_c::finalizeState_ScrollGuideExitAnimeEndCheck() {
     mInMapView = false;
 }
 
-void dCourseSelectGuide_c::UpdateGuide(short courseNo, dWmLib::PointType_e type) {
+void dCourseSelectGuide_c::WorldCourseNumberWrite(int courseNo, dWmLib::TypePoint_e type) {
     if (mCourseNo == courseNo) {
         return;
     }
     mCourseType = dWmLib::GetCourseTypeFromCourseNo(courseNo);
     mCourseNo = courseNo;
-    CourseSelectSet(type);
+    CourseNumberSet(type);
     if (type != dWmLib::POINT_TYPE_PATH) {
         CollectionCoinSet();
     }

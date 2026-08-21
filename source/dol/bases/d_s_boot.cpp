@@ -147,8 +147,7 @@ sPhase_c::METHOD_RESULT_e myCreate_ExtensionMng(void *) {
     return sPhase_c::OK;
 }
 
-/// @unofficial
-sPhase_c::METHOD_RESULT_e myCreate_Painter(void *) {
+sPhase_c::METHOD_RESULT_e myCreate_setPainterCallbackProc(void *) {
     dGraph_c::ms_Instance->mpPainterFunc = painter;
     return sPhase_c::OK;
 }
@@ -156,7 +155,7 @@ sPhase_c::METHOD_RESULT_e myCreate_Painter(void *) {
 sPhase_c::phaseMethod myCreate_PhaseMethod[] = {
     myCreate_WiiStrap,
     myCreate_LogoScreen,
-    myCreate_Painter
+    myCreate_setPainterCallbackProc
 };
 
 /// @brief This phase is run via dScene_c::mpPhase, so before dScBoot_c::execute() is run.
@@ -194,7 +193,7 @@ sPhase_c::METHOD_RESULT_e myReadArc_resSndWait(void *thisPtr) {
     return sPhase_c::WAIT;
 }
 
-sPhase_c::METHOD_RESULT_e myCreate_HbmManage(void *) {
+sPhase_c::METHOD_RESULT_e myReadArc_PhaseHbm_0(void *) {
     sPhase_c::METHOD_RESULT_e res = sPhase_c::WAIT;
     if (dHbm::Manage_c::GetInstance()->Load()) {
         res = sPhase_c::OK;
@@ -306,7 +305,7 @@ sPhase_c::phaseMethod myBackGround_PhaseMethod[] = {
     myCreate_YesNoWindowReady,
     myCreate_ExtensionMng,
     myReadArc_ExtensionMng,
-    myCreate_HbmManage,
+    myReadArc_PhaseHbm_0,
     myReadArc_MakeControllerInformation,
     myCreate_ControllerInformationReady,
     myReadArc_BootSound,

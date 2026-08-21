@@ -435,9 +435,9 @@ void dAcPy_c::fn_80127740(int jumpType, AnmBlend_e blendMode) {
         }
         if (!isCarry()) {
             if (mJumpCounter == 1) {
-                mPyMdlMng.mpMdl->fn_800d5e00(1);
+                mPyMdlMng.mpMdl->setJumpAnmRand(dPyMdlBase_c::RND_TYPE_1);
             } else {
-                mPyMdlMng.mpMdl->fn_800d5e00(0);
+                mPyMdlMng.mpMdl->setJumpAnmRand(dPyMdlBase_c::RND_TYPE_0);
             }
         }
         if (blendMode == BLEND_NONE) {
@@ -3200,18 +3200,18 @@ void dAcPy_c::setWaterInEffect() {
     mVec3_c efPos(mPos.x, mWaterHeight, mPos.z);
     if (bigSplash || mWaterDepth == 3) {
         float f = 1.0f;
-        u32 i;
+        dPyEffect_c::Type_e type;
         if (mPowerup == POWERUP_MINI_MUSHROOM) {
             startSound(SE_PLY_SPLASH_MAME, false);
-            i = 3;
+            type = dPyEffect_c::TYPE_WATER_IN_MINI;
         } else {
             startSound(SE_PLY_SPLASH, false);
-            i = 2;
+            type = dPyEffect_c::TYPE_WATER_IN_NORMAL;
             if (mPowerup == POWERUP_NONE) {
                 f = 0.8f;
             }
         }
-        dPyEffectMng_c::mspInstance->fn_800d2de0(f, i, efPos, mLayer);
+        dPyEffectMng_c::mspInstance->setEffect(type, efPos, f, mLayer);
         dBg_c::m_bg_p->setWaterInWave(efPos.x, efPos.y, 1);
     } else {
         float f = 1.0f;
@@ -3220,7 +3220,7 @@ void dAcPy_c::setWaterInEffect() {
         } else if (mPowerup == POWERUP_NONE) {
             f = 0.8f;
         }
-        dPyEffectMng_c::mspInstance->fn_800d2de0(f, 4, efPos, mLayer);
+        dPyEffectMng_c::mspInstance->setEffect(dPyEffect_c::TYPE_SMALL_SPLASH, efPos, f, mLayer);
         if (mPowerup == POWERUP_MINI_MUSHROOM) {
             startSound(SE_PLY_SPLASH_SHALLOW_MAME, false);
         } else {
@@ -3241,16 +3241,16 @@ void dAcPy_c::setWaterOutEffect() {
 
     if (mWaterDepth == 3) {
         float f = 1.0f;
-        u32 i;
+        dPyEffect_c::Type_e type;
         if (mPowerup == POWERUP_MINI_MUSHROOM) {
-            i = 1;
+            type = dPyEffect_c::TYPE_WATER_OUT_MINI;
         } else {
-            i = 0;
+            type = dPyEffect_c::TYPE_WATER_OUT_NORMAL;
             if (mPowerup == POWERUP_NONE) {
                 f = 0.8f;
             }
         }
-        dPyEffectMng_c::mspInstance->fn_800d2de0(f, i, efPos, mLayer);
+        dPyEffectMng_c::mspInstance->setEffect(type, efPos, f, mLayer);
         dBg_c::m_bg_p->setWaterInWave(efPos.x, efPos.y, 3);
         startSound(SE_PLY_SPLASH_OUT, false);
     } else {
@@ -3260,7 +3260,7 @@ void dAcPy_c::setWaterOutEffect() {
         } else if (mPowerup == POWERUP_NONE) {
             f = 0.8f;
         }
-        dPyEffectMng_c::mspInstance->fn_800d2de0(f, 4, efPos, mLayer);
+        dPyEffectMng_c::mspInstance->setEffect(dPyEffect_c::TYPE_SMALL_SPLASH, efPos, f, mLayer);
         startSound(SE_PLY_SPLASH_SHALLOW_OUT, false);
         dBg_c::m_bg_p->setWaterInWave(efPos.x, efPos.y, 2);
     }
@@ -6210,7 +6210,7 @@ void dAcPy_c::initializeState_Balloon() {
         daPyMng_c::mAllBalloon = true;
     }
     if (mPlayerType == PLAYER_MARIO && mPyMdlMng.mpMdl->m_151 == 0) {
-        ((dMarioMdl_c *) mPyMdlMng.mpMdl)->fn_800cab00(0);
+        ((dMarioMdl_c *) mPyMdlMng.mpMdl)->setHeadID(dMarioMdl_c::TYPE_0);
     }
     if (mPowerup != POWERUP_NONE && mPowerup != POWERUP_MINI_MUSHROOM) {
         mAmiRelated2 = 0.9f;
@@ -7190,11 +7190,11 @@ bool dAcPy_c::checkSetFireBall() {
             return false;
         }
         if (mPowerup == POWERUP_FIRE_FLOWER) {
-            if (daFireBall_Player_c::CheckFireBallLimit(mPlayerNo, 0)) {
+            if (daFireBall_Player_c::isFireBallEnable(mPlayerNo, daFireBall_Player_c::CREATE_ALIVE)) {
                 return true;
             }
         } else if (mPowerup == POWERUP_PENGUIN_SUIT || mPowerup == POWERUP_ICE_FLOWER) {
-            if (daIceBall_c::CheckIceballLimit(mPlayerNo, 0)) {
+            if (daIceBall_c::isIceBallEnable(mPlayerNo, daIceBall_c::CREATE_ALIVE)) {
                 return true;
             }
         }
@@ -7340,11 +7340,11 @@ void dAcPy_c::setSpinFireBall() {
             carryPlayer->setSpinFireBall();
         }
     } else if (mPowerup == POWERUP_FIRE_FLOWER) {
-        if (daFireBall_Player_c::CheckFireBallLimit(mPlayerNo, 1)) {
+        if (daFireBall_Player_c::isFireBallEnable(mPlayerNo, daFireBall_Player_c::CREATE_SPIN)) {
             createFireBall(1);
         }
     } else if (mPowerup == POWERUP_PENGUIN_SUIT || mPowerup == POWERUP_ICE_FLOWER) {
-        if (daIceBall_c::CheckIceballLimit(mPlayerNo, 1)) {
+        if (daIceBall_c::isIceBallEnable(mPlayerNo, daIceBall_c::CREATE_SPIN)) {
             createFireBall(1);
         }
     }
@@ -8876,11 +8876,11 @@ bool dAcPy_c::updateDemoKimePose(ClearType_e clearType) {
         case KIME_POSE_WITH_HAT: {
             dMarioMdl_c *mdl = (dMarioMdl_c *) mPyMdlMng.mpMdl;
             if (mPyMdlMng.mpMdl->mAnm.checkFrame(41.0f)) {
-                mdl->fn_800cab00(1);
+                mdl->setHeadID(dMarioMdl_c::TYPE_1);
                 break;
             }
             if (mPyMdlMng.mpMdl->mAnm.checkFrame(107.0f)) {
-                mdl->fn_800cab00(0);
+                mdl->setHeadID(dMarioMdl_c::TYPE_0);
                 break;
             }
             if (mPyMdlMng.isAnmStop()) {

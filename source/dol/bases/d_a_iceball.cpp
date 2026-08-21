@@ -53,7 +53,9 @@ STATE_DEFINE(daIceBall_c, Kill);
 int daIceBall_c::create() {
     mPlayerNo = ACTOR_PARAM(PlayerNo);
 
-    bool isCreateOK = CheckIceballLimit(mPlayerNo, ACTOR_PARAM(LimitMode));
+    CreateKind_e kind = (CreateKind_e) ACTOR_PARAM(LimitMode);
+
+    bool isCreateOK = isIceBallEnable(mPlayerNo, kind);
 
     mAliveTimer = 60;
 
@@ -492,9 +494,9 @@ void daIceBall_c::finalizeState_Kill() {}
 
 void daIceBall_c::executeState_Kill() {}
 
-bool daIceBall_c::CheckIceballLimit(int playerId, int limitMode) {
+bool daIceBall_c::isIceBallEnable(int playerId, CreateKind_e kind) {
     if (daIceBall_c::sm_IceBallCount[playerId] < smc_MAX_ICEBALL_COUNT) {
-        if (limitMode == 1) {
+        if (kind == CREATE_SPIN) {
             return true;
         }
 
