@@ -1,6 +1,7 @@
 R_2_1_70     = __register_global_object
 R_2_1_f0     = finalizeProlog__Fv
 R_2_1_100    = finalizeEpilog__Fv
+R_2_1_420    = isWarning__17dWarningManager_cFv
 R_2_1_1be0   = __dt__7mVec3_cFv
 R_2_1_88b0   = __dt__Q26dWmLib19ForceInCourseList_tFv
 R_2_1_49500  = finalUpdate__12dBaseActor_cFv
@@ -56,7 +57,6 @@ R_2_5_93b0   = g_profile_MODE_SELECT
 R_2_5_98e0   = g_profile_MODEL_PLAY_ARROW
 R_2_5_9db0   = g_profile_MODEL_PLAY_BASE
 R_2_5_a3c0   = g_profile_MODEL_PLAY_DATE
-R_2_5_a890   = g_profile_MODEL_PLAY_GUIDE
 R_2_5_a978   = g_profile_MODEL_PLAY_MANAGER
 R_2_5_b1d0   = g_profile_MULTI_COURSE_SELECT
 R_2_5_c0f8   = g_profile_MULTI_COURSE_SELECT_CONTENTS
