@@ -11,8 +11,8 @@
  */
 class dModelPlayGuide_c : public dBase_c {
 public:
-    dModelPlayGuide_c(); ///< @copydoc fBase_c::fBase_c
-    virtual ~dModelPlayGuide_c(); ///< @copydoc fBase_c::~fBase_c
+    dModelPlayGuide_c(); ///< @copydoc dBase_c::dBase_c
+    virtual ~dModelPlayGuide_c(); ///< @copydoc dBase_c::~dBase_c
     virtual int create();
     virtual int doDelete();
     virtual int preExecute();
