@@ -8,6 +8,11 @@ class dAcPy_c;
 
 class dPyMdlBase_c {
 public:
+    enum RndType_e {
+        RND_TYPE_0,
+        RND_TYPE_1
+    };
+
     virtual ~dPyMdlBase_c();
     virtual int getFaceJointIdx();
     virtual void createModel();
@@ -53,7 +58,7 @@ public:
 
     bool isFootStepTiming();
     void getJointPos(mVec3_c *, int);
-    void fn_800d5e00(int);
+    void setJumpAnmRand(RndType_e type);
     void copyLinkAnm(float f);
 
     float getFrameMax() { return mAnm.mFrameMax; }

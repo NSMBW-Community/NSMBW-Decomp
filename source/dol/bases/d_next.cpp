@@ -188,7 +188,7 @@ void dNext_c::changeScene() {
 
     mSceneChangeDone = true;
     dScStage_c::m_exitMode = dScStage_c::EXIT_3;
-    dScene_c::setNextScene(fProfile::STAGE, param, false);
+    dScene_c::setNextScene(fProf::STAGE, param, false);
 }
 
 void dNext_c::execute() {

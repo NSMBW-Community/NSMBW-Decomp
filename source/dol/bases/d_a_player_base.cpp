@@ -1974,7 +1974,7 @@ public:
 };
 
 void daPlBase_c::calcWindSpeed() {
-    daTagWind_c *windActor = (daTagWind_c *) fManager_c::searchBaseByProfName(fProfile::TAG_WIND, nullptr);
+    daTagWind_c *windActor = (daTagWind_c *) fManager_c::searchBaseByProfName(fProf::TAG_WIND, nullptr);
     if (windActor == nullptr) {
         mWindSpeed = 0.0f;
         return;
@@ -4529,7 +4529,7 @@ bool daPlBase_c::setEnemyStageClearDemo() {
             isNowBgCross(BGC_LIFT) &&
             mBc.mpCtrHead != nullptr &&
             mBc.mpCtrHead->mpActor != nullptr &&
-            mBc.mpCtrHead->mpActor->mProfName == fProfile::EN_CHIKUWA_BLOCK
+            mBc.mpCtrHead->mpActor->mProfName == fProf::EN_CHIKUWA_BLOCK
         ) {
             return false;
         }
@@ -5079,8 +5079,8 @@ void daPlBase_c::checkBgCross() {
             if (mBc.mpCtrFoot != nullptr &&
                 mBc.mpCtrFoot->mpActor != nullptr &&
                 !(
-                    mBc.mpCtrFoot->mpActor->mProfName != fProfile::EN_HATENA_BLOCK_LINE &&
-                    mBc.mpCtrFoot->mpActor->mProfName != fProfile::EN_RENGA_BLOCK_LINE
+                    mBc.mpCtrFoot->mpActor->mProfName != fProf::EN_HATENA_BLOCK_LINE &&
+                    mBc.mpCtrFoot->mpActor->mProfName != fProf::EN_RENGA_BLOCK_LINE
                 )
             ) {
                 onNowBgCross(BGC_LINE_BLOCK_HIT);

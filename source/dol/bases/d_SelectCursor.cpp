@@ -26,14 +26,14 @@ int dSelectCursor_c::create() {
         ANIM_CURSOR
     };
 
-    static const char *PPANE_TABLE[P_COUNT] = {
+    static const char *PPANE_NAME_DT[P_COUNT] = {
         "P_cursor_00",
         "P_cursor_01",
         "P_cursor_02",
         "P_cursor_03"
     };
 
-    static const char *NPANE_TABLE[N_COUNT] = {
+    static const char *NPANE_NAME_DT[N_COUNT] = {
         "N_cursor_00",
         "N_LU_00",
         "N_RU_00",
@@ -59,8 +59,8 @@ int dSelectCursor_c::create() {
         mLayouts[i].mBase.AnimeResRegister(AnmNameTbl, ANIM_COUNT);
         mLayouts[i].mBase.GroupRegister(GROUP_NAME_DT, ANIME_INDEX_TBL, ANIM_COUNT);
         mLayouts[i].mpRootPane = mLayouts[i].mBase.getRootPane();
-        mLayouts[i].mBase.PPaneRegister(PPANE_TABLE, mLayouts[i].mpPicturePanes, P_COUNT);
-        mLayouts[i].mBase.NPaneRegister(NPANE_TABLE, mLayouts[i].mpNullPanes, N_COUNT);
+        mLayouts[i].mBase.PPaneRegister(PPANE_NAME_DT, mLayouts[i].mpPicturePanes, P_COUNT);
+        mLayouts[i].mBase.NPaneRegister(NPANE_NAME_DT, mLayouts[i].mpNullPanes, N_COUNT);
         mLayouts[i].mpRootPane->SetVisible(false);
         Cancel(i);
 

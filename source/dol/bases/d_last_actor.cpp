@@ -19,9 +19,9 @@ int dLastActor_c::doDelete() {
 
 int dLastActor_c::execute() {
     if (EGG::EffectManager::sEffectManager != nullptr) {
-        if (dScene_c::m_nowScene == fProfile::WORLD_MAP) {
+        if (dScene_c::m_nowScene == fProf::WORLD_MAP) {
             EffectManager_c::calcGroupForWm();
-        } else if (dScene_c::m_nowScene == fProfile::MOVIE) {
+        } else if (dScene_c::m_nowScene == fProf::MOVIE) {
             if (!dScMovie_c::m_instance->mMovieEnded || dScMovie_c::m_instance->mEffectCreated) {
                 EffectManager_c::calcGroup();
             }

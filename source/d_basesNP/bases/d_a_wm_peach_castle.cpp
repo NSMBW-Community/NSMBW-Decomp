@@ -4,8 +4,8 @@
 #include <game/bases/d_cs_seq_manager.hpp>
 #include <game/bases/d_info.hpp>
 #include <game/bases/d_res_mng.hpp>
+#include <game/bases/d_s_chr_lib.hpp>
 #include <game/bases/d_save_mng.hpp>
-#include <game/bases/d_unk_anim_class.hpp>
 #include <game/bases/d_wm_lib.hpp>
 #include <game/bases/d_wm_se_manager.hpp>
 
@@ -167,8 +167,8 @@ void daWmPeachCastle_c::initFlagAnim() {
         "FlagE0", "FlagE1", "FlagE2",
     };
 
-    dUnkAnimClass_c::ReleaseAnim(mChrAnim[cobPeachCastleFlag]);
-    dUnkAnimClass_c::BindNodesByName(mModel, mChrAnim[cobPeachCastleFlag], ARRAY_SIZE(nodeNames), nodeNames, nw4r::g3d::AnmObjChr::BIND_ONE);
+    dsChrLib::releaseAnim(&mChrAnim[cobPeachCastleFlag]);
+    dsChrLib::bindAnimToNodeList(&mModel, &mChrAnim[cobPeachCastleFlag], ARRAY_SIZE(nodeNames), nodeNames, nw4r::g3d::AnmObjChr::BIND_ONE);
     mChrAnim[cobPeachCastleFlag].setRate(1.0f);
     mChrBlendAnim.attach(0, &mChrAnim[cobPeachCastleFlag], 1.0f);
 }
@@ -179,16 +179,16 @@ const char *daWmPeachCastle_c::smc_doorNodeNames[] = {
 };
 
 void daWmPeachCastle_c::initDoorOpenAnim() {
-    dUnkAnimClass_c::ReleaseAnim(mChrAnim[cobPeachCastleOpen]);
-    dUnkAnimClass_c::BindNodesByName(mModel, mChrAnim[cobPeachCastleOpen], ARRAY_SIZE(smc_doorNodeNames), smc_doorNodeNames, nw4r::g3d::AnmObjChr::BIND_ONE);
+    dsChrLib::releaseAnim(&mChrAnim[cobPeachCastleOpen]);
+    dsChrLib::bindAnimToNodeList(&mModel, &mChrAnim[cobPeachCastleOpen], ARRAY_SIZE(smc_doorNodeNames), smc_doorNodeNames, nw4r::g3d::AnmObjChr::BIND_ONE);
     mChrAnim[cobPeachCastleOpen].setRate(0.0f);
     mChrAnim[cobPeachCastleOpen].setFrame(0.0f);
     mChrBlendAnim.attach(1, &mChrAnim[cobPeachCastleOpen], 1.0f);
 }
 
 void daWmPeachCastle_c::initDoorCloseAnim() {
-    dUnkAnimClass_c::ReleaseAnim(mChrAnim[cobPeachCastleClose]);
-    dUnkAnimClass_c::BindNodesByName(mModel, mChrAnim[cobPeachCastleClose], ARRAY_SIZE(smc_doorNodeNames), smc_doorNodeNames, nw4r::g3d::AnmObjChr::BIND_ONE);
+    dsChrLib::releaseAnim(&mChrAnim[cobPeachCastleClose]);
+    dsChrLib::bindAnimToNodeList(&mModel, &mChrAnim[cobPeachCastleClose], ARRAY_SIZE(smc_doorNodeNames), smc_doorNodeNames, nw4r::g3d::AnmObjChr::BIND_ONE);
     mChrAnim[cobPeachCastleClose].setRate(0.0f);
     mChrAnim[cobPeachCastleClose].setFrame(0.0f);
     mChrBlendAnim.attach(1, &mChrAnim[cobPeachCastleClose], 1.0f);

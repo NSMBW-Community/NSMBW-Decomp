@@ -20,7 +20,7 @@ STATE_VIRTUAL_DEFINE(dEn_c, DieYoshiFumi);
 STATE_VIRTUAL_DEFINE(dEn_c, DieGoal);
 STATE_VIRTUAL_DEFINE(dEn_c, DieOther);
 
-const float dEn_c::smc_DEADFALL_GRAVITY = -0.25f + 0.00625001f; // [Where is the 0.00000001 coming from?]
+const float dEn_c::smc_DEADFALL_GRAVITY = 1.3f * -0.1875f;
 const float dEn_c::smc_DEADFALL_YSPEED = 3.9f;
 const float dEn_c::smc_DEADFALL_YSPEED_MAX = -4.0f;
 const s16 dEn_c::smc_DEADFALL_SPINSPEED = 0xc00;

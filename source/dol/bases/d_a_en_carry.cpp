@@ -9,8 +9,8 @@ bool daEnCarry_c::acmIsCarryEnemy(dActor_c *actor) {
             return true;
         }
     }
-    return actor->mProfName == fProfile::EN_MECHA_KOOPA ||
-           actor->mProfName == fProfile::EN_BOMHEI;
+    return actor->mProfName == fProf::EN_MECHA_KOOPA ||
+           actor->mProfName == fProf::EN_BOMHEI;
 }
 
 int daEnCarry_c::acmShellPlayerNo(dActor_c *actor) const {

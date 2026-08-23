@@ -1,8 +1,6 @@
 #pragma once
 #include <types.h>
 #include <game/bases/d_base.hpp>
-#include <game/cLib/c_list.hpp>
-#include <game/framework/f_list_mg.hpp>
 #include <game/mLib/m_angle.hpp>
 #include <game/mLib/m_mtx.hpp>
 #include <game/mLib/m_vec.hpp>
@@ -127,7 +125,7 @@ private:
      */
     static void setTmpCtData(const mVec3_c *position, const mAng3_c *rotation);
 
-    fLiNdBa_c mLinkActor; ///< The node in #m_actorManage.
+    fLiNdBaLink_c mLinkActor; ///< The node in #m_actorManage.
 
 public:
     mMtx_c mMatrix; ///< The actor's partial transformation matrix. See makeMtx() for details.
@@ -150,7 +148,7 @@ public:
     float mMaxFallSpeed; ///< The actor's maximum fall speed.
     float mAccelF; ///< The actor's horizontal acceleration.
 
-    u32 mActorProperties; ///< The actor's properties. See fProfile::fActorProfile_c::mActorProperties.
+    u32 mActorProperties; ///< The actor's properties. See fProf::fActorProfile_c::mActorProperties.
     bool mVisible; ///< Whether the actor should be visible or not. Defaults to @p true .
 
 private:

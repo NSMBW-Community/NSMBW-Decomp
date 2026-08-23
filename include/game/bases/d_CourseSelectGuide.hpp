@@ -120,18 +120,13 @@ private:
     void doDelete(); ///< Prepares the view for deletion.
 
     void CollectionCoinSet(); ///< Updates the star coin icons.
-
-    /// @brief Updates the player icons in the remaining lives info to the active player.
-    /// @unofficial
-    void PlayerIconSet();
+    void WaKuPosSet(); ///< Updates the player icons in the remaining lives info to the active player.
 
     /**
      * @brief Updates the textbox that displays the current course.
      * @param type The point type.
-     *
-     * @unofficial
      */
-    void CourseSelectSet(dWmLib::PointType_e type);
+    void CourseNumberSet(dWmLib::TypePoint_e type);
 
     bool isArrowDispRequest(int dir); ///< Returns whether the arrow for direction @p dir should be shown.
 
@@ -141,9 +136,8 @@ private:
      * @param type The point type.
      *
      * The updated elements include the course name, the star coins collected and the checkpoint status.
-     * @unofficial
      */
-    void UpdateGuide(short courseNo, dWmLib::PointType_e type);
+    void WorldCourseNumberWrite(int courseNo, dWmLib::TypePoint_e type);
 
     /// @brief Checks for attached controller extensions and updates the button hints with the correct icon.
     /// @details The updated elements include the "View Map" and "Items" button legends.

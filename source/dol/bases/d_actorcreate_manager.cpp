@@ -9,12 +9,12 @@
 
 dActorCreateMng_c *dActorCreateMng_c::m_instance;
 const ProfileName dActorCreateMng_c::l_GoAheadEnemy[] = {
-    fProfile::EN_PUKUCOIN,
-    fProfile::EN_KARON,
-    fProfile::EN_BIGKARON,
-    fProfile::EN_KARON_HEAD,
-    fProfile::WAKI_KERONPA,
-    fProfile::PROFILE_NULL
+    fProf::EN_PUKUCOIN,
+    fProf::EN_KARON,
+    fProf::EN_BIGKARON,
+    fProf::EN_KARON_HEAD,
+    fProf::WAKI_KERONPA,
+    fProf::PROFILE_NULL
 };
 
 void dActorCreateMng_c::ActorCreateInfoClear() {
@@ -500,7 +500,7 @@ float dActorCreateMng_c::addMapObjZposCount_layer2() {
 }
 
 dActor_c *dActorCreateMng_c::mapActorSpawn(sMapActorData *data, dActorData_c *info, u8 *spawnFlags, u16 *deleteVal, u8 areaNo) {
-    if (data->getProfileName() == fProfile::DUMMY_ACTOR) {
+    if (data->getProfileName() == fProf::DUMMY_ACTOR) {
         return nullptr;
     }
 

@@ -413,7 +413,7 @@ void daEnNoko_c::endFunsui() {
 }
 
 float daEnNoko_c::getWindStrength() {
-    daTagWind_c *tagWind = (daTagWind_c *) fManager_c::searchBaseByProfName(fProfile::TAG_WIND, nullptr);
+    daTagWind_c *tagWind = (daTagWind_c *) fManager_c::searchBaseByProfName(fProf::TAG_WIND, nullptr);
 
     if (tagWind == nullptr) {
         return 0.0f;

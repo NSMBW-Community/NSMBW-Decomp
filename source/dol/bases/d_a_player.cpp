@@ -435,9 +435,9 @@ void dAcPy_c::fn_80127740(int jumpType, AnmBlend_e blendMode) {
         }
         if (!isCarry()) {
             if (mJumpCounter == 1) {
-                mPyMdlMng.mpMdl->fn_800d5e00(1);
+                mPyMdlMng.mpMdl->setJumpAnmRand(dPyMdlBase_c::RND_TYPE_1);
             } else {
-                mPyMdlMng.mpMdl->fn_800d5e00(0);
+                mPyMdlMng.mpMdl->setJumpAnmRand(dPyMdlBase_c::RND_TYPE_0);
             }
         }
         if (blendMode == BLEND_NONE) {
@@ -2549,7 +2549,7 @@ dAcPy_c *dAcPy_c::getCarryPlayer() {
 
 dActor_c *dAcPy_c::getCarryPropelBlock() {
     dActor_c *actor = (dActor_c *) fManager_c::searchBaseByID(mCarryActorID);
-    if (actor != nullptr && actor->mProfName == fProfile::AC_PROP_BLOCK) {
+    if (actor != nullptr && actor->mProfName == fProf::AC_PROP_BLOCK) {
         return actor;
     }
     return nullptr;
@@ -2563,7 +2563,7 @@ dActor_c *dAcPy_c::getCarryPropelActor() {
             if (player->mPowerup == POWERUP_PROPELLER_SHROOM) {
                 return actor;
             }
-        } else if (actor->mProfName == fProfile::AC_PROP_BLOCK) {
+        } else if (actor->mProfName == fProf::AC_PROP_BLOCK) {
             return actor;
         }
     }
@@ -2573,8 +2573,8 @@ dActor_c *dAcPy_c::getCarryPropelActor() {
 dActor_c *dAcPy_c::getCarryHardBlock() {
     dActor_c *actor = (dActor_c *) fManager_c::searchBaseByID(mCarryActorID);
     if (actor != nullptr && (
-        actor->mProfName == fProfile::AC_LIGHT_BLOCK ||
-        actor->mProfName == fProfile::AC_PROP_BLOCK
+        actor->mProfName == fProf::AC_LIGHT_BLOCK ||
+        actor->mProfName == fProf::AC_PROP_BLOCK
     )) {
         return actor;
     }
@@ -3200,18 +3200,18 @@ void dAcPy_c::setWaterInEffect() {
     mVec3_c efPos(mPos.x, mWaterHeight, mPos.z);
     if (bigSplash || mWaterDepth == 3) {
         float f = 1.0f;
-        u32 i;
+        dPyEffect_c::Type_e type;
         if (mPowerup == POWERUP_MINI_MUSHROOM) {
             startSound(SE_PLY_SPLASH_MAME, false);
-            i = 3;
+            type = dPyEffect_c::TYPE_WATER_IN_MINI;
         } else {
             startSound(SE_PLY_SPLASH, false);
-            i = 2;
+            type = dPyEffect_c::TYPE_WATER_IN_NORMAL;
             if (mPowerup == POWERUP_NONE) {
                 f = 0.8f;
             }
         }
-        dPyEffectMng_c::mspInstance->fn_800d2de0(f, i, efPos, mLayer);
+        dPyEffectMng_c::mspInstance->setEffect(type, efPos, f, mLayer);
         dBg_c::m_bg_p->setWaterInWave(efPos.x, efPos.y, 1);
     } else {
         float f = 1.0f;
@@ -3220,7 +3220,7 @@ void dAcPy_c::setWaterInEffect() {
         } else if (mPowerup == POWERUP_NONE) {
             f = 0.8f;
         }
-        dPyEffectMng_c::mspInstance->fn_800d2de0(f, 4, efPos, mLayer);
+        dPyEffectMng_c::mspInstance->setEffect(dPyEffect_c::TYPE_SMALL_SPLASH, efPos, f, mLayer);
         if (mPowerup == POWERUP_MINI_MUSHROOM) {
             startSound(SE_PLY_SPLASH_SHALLOW_MAME, false);
         } else {
@@ -3241,16 +3241,16 @@ void dAcPy_c::setWaterOutEffect() {
 
     if (mWaterDepth == 3) {
         float f = 1.0f;
-        u32 i;
+        dPyEffect_c::Type_e type;
         if (mPowerup == POWERUP_MINI_MUSHROOM) {
-            i = 1;
+            type = dPyEffect_c::TYPE_WATER_OUT_MINI;
         } else {
-            i = 0;
+            type = dPyEffect_c::TYPE_WATER_OUT_NORMAL;
             if (mPowerup == POWERUP_NONE) {
                 f = 0.8f;
             }
         }
-        dPyEffectMng_c::mspInstance->fn_800d2de0(f, i, efPos, mLayer);
+        dPyEffectMng_c::mspInstance->setEffect(type, efPos, f, mLayer);
         dBg_c::m_bg_p->setWaterInWave(efPos.x, efPos.y, 3);
         startSound(SE_PLY_SPLASH_OUT, false);
     } else {
@@ -3260,7 +3260,7 @@ void dAcPy_c::setWaterOutEffect() {
         } else if (mPowerup == POWERUP_NONE) {
             f = 0.8f;
         }
-        dPyEffectMng_c::mspInstance->fn_800d2de0(f, 4, efPos, mLayer);
+        dPyEffectMng_c::mspInstance->setEffect(dPyEffect_c::TYPE_SMALL_SPLASH, efPos, f, mLayer);
         startSound(SE_PLY_SPLASH_SHALLOW_OUT, false);
         dBg_c::m_bg_p->setWaterInWave(efPos.x, efPos.y, 2);
     }
@@ -5938,7 +5938,7 @@ bool dAcPy_c::setFlyDamageAction(int action, dActor_c *actor) {
             switch ((u32) actor->mKind) {
                 case STAGE_ACTOR_PLAYER:
                 case STAGE_ACTOR_ENEMY:
-                    if (actor->mProfName == fProfile::EN_SLIP_PENGUIN2) {
+                    if (actor->mProfName == fProf::EN_SLIP_PENGUIN2) {
                         bool dir = 0;
                         if (actor->mSpeed.x < 0.0f) {
                             dir = 1;
@@ -6210,7 +6210,7 @@ void dAcPy_c::initializeState_Balloon() {
         daPyMng_c::mAllBalloon = true;
     }
     if (mPlayerType == PLAYER_MARIO && mPyMdlMng.mpMdl->m_151 == 0) {
-        ((dMarioMdl_c *) mPyMdlMng.mpMdl)->fn_800cab00(0);
+        ((dMarioMdl_c *) mPyMdlMng.mpMdl)->setHeadID(dMarioMdl_c::TYPE_0);
     }
     if (mPowerup != POWERUP_NONE && mPowerup != POWERUP_MINI_MUSHROOM) {
         mAmiRelated2 = 0.9f;
@@ -6463,7 +6463,7 @@ void dAcPy_c::initializeState_IceDamage() {
     onStatus(STATUS_07);
     onStatus(STATUS_NO_ANIM);
     onStatus(STATUS_DISABLE_STATE_CHANGE);
-    dActor_c *ice = dActor_c::construct(fProfile::PLAYER_ICE, this, 0,& mPos, nullptr, 0);
+    dActor_c *ice = dActor_c::construct(fProf::PLAYER_ICE, this, 0,& mPos, nullptr, 0);
     mIceActorID = ice->mUniqueID;
     dQuake_c::m_instance->shockMotor(mPlayerNo, dQuake_c::TYPE_4, 0, false);
     mPyMdlMng.setAnm(PLAYER_ANIM_JUMP, 0.0f, 0.0f, 0.0f);
@@ -7190,11 +7190,11 @@ bool dAcPy_c::checkSetFireBall() {
             return false;
         }
         if (mPowerup == POWERUP_FIRE_FLOWER) {
-            if (daFireBall_Player_c::CheckFireBallLimit(mPlayerNo, 0)) {
+            if (daFireBall_Player_c::isFireBallEnable(mPlayerNo, daFireBall_Player_c::CREATE_ALIVE)) {
                 return true;
             }
         } else if (mPowerup == POWERUP_PENGUIN_SUIT || mPowerup == POWERUP_ICE_FLOWER) {
-            if (daIceBall_c::CheckIceballLimit(mPlayerNo, 0)) {
+            if (daIceBall_c::isIceBallEnable(mPlayerNo, daIceBall_c::CREATE_ALIVE)) {
                 return true;
             }
         }
@@ -7246,12 +7246,12 @@ void dAcPy_c::createFireBall(int i) {
         startSound(SE_PLY_THROW_FIRE, false);
         pos = loopPos;
         u32 param = (i << 16) | (mAmiLayer << 12) | (mLayer << 8) | (m_12f4 << 4) | mPlayerNo;
-        dActor_c::construct(fProfile::PL_FIREBALL, param, &pos, nullptr, 0);
+        dActor_c::construct(fProf::PL_FIREBALL, param, &pos, nullptr, 0);
     } else if (mPowerup == POWERUP_PENGUIN_SUIT || mPowerup == POWERUP_ICE_FLOWER) {
         startSound(SE_PLY_THROW_ICEBALL, false);
         pos = loopPos;
         u32 param = (i << 16) | (mAmiLayer << 12) | (mLayer << 8) | (m_12f4 << 4) | mPlayerNo;
-        dActor_c::construct(fProfile::ICEBALL, param, &pos, nullptr, 0);
+        dActor_c::construct(fProf::ICEBALL, param, &pos, nullptr, 0);
     }
 }
 
@@ -7340,11 +7340,11 @@ void dAcPy_c::setSpinFireBall() {
             carryPlayer->setSpinFireBall();
         }
     } else if (mPowerup == POWERUP_FIRE_FLOWER) {
-        if (daFireBall_Player_c::CheckFireBallLimit(mPlayerNo, 1)) {
+        if (daFireBall_Player_c::isFireBallEnable(mPlayerNo, daFireBall_Player_c::CREATE_SPIN)) {
             createFireBall(1);
         }
     } else if (mPowerup == POWERUP_PENGUIN_SUIT || mPowerup == POWERUP_ICE_FLOWER) {
-        if (daIceBall_c::CheckIceballLimit(mPlayerNo, 1)) {
+        if (daIceBall_c::isIceBallEnable(mPlayerNo, daIceBall_c::CREATE_SPIN)) {
             createFireBall(1);
         }
     }
@@ -8244,10 +8244,10 @@ bool dAcPy_c::searchDoorActor() {
     dActor_c *door = nullptr;
     while ((door = (dActor_c *) fManager_c::searchBaseByGroupType(ACTOR, door)) != nullptr) {
         if (
-            door->mProfName == fProfile::EN_DOOR ||
-            door->mProfName == fProfile::EN_OBAKEDOOR ||
-            door->mProfName == fProfile::EN_TORIDEDOOR ||
-            door->mProfName == fProfile::EN_CASTLEDOOR
+            door->mProfName == fProf::EN_DOOR ||
+            door->mProfName == fProf::EN_OBAKEDOOR ||
+            door->mProfName == fProf::EN_TORIDEDOOR ||
+            door->mProfName == fProf::EN_CASTLEDOOR
         ) {
             if (std::fabs(door->mPos.x - mPos.x) < 16.0f && std::fabs(door->mPos.y - mPos.y) < 16.0f) {
                 mRelatedActorID = door->mUniqueID;
@@ -8487,9 +8487,9 @@ bool dAcPy_c::setDoorDemo(dActor_c *door) {
             mDoorSize = 0;
             int profName = door->mProfName;
             if (
-                profName == fProfile::EN_TORIDEDOOR ||
-                profName == fProfile::EN_CASTLEDOOR
-                // || profName == fProfile::EN_KOOPADOOR
+                profName == fProf::EN_TORIDEDOOR ||
+                profName == fProf::EN_CASTLEDOOR
+                // || profName == fProf::EN_KOOPADOOR
             ) {
                 mDoorSize = 1;
             }
@@ -8876,11 +8876,11 @@ bool dAcPy_c::updateDemoKimePose(ClearType_e clearType) {
         case KIME_POSE_WITH_HAT: {
             dMarioMdl_c *mdl = (dMarioMdl_c *) mPyMdlMng.mpMdl;
             if (mPyMdlMng.mpMdl->mAnm.checkFrame(41.0f)) {
-                mdl->fn_800cab00(1);
+                mdl->setHeadID(dMarioMdl_c::TYPE_1);
                 break;
             }
             if (mPyMdlMng.mpMdl->mAnm.checkFrame(107.0f)) {
-                mdl->fn_800cab00(0);
+                mdl->setHeadID(dMarioMdl_c::TYPE_0);
                 break;
             }
             if (mPyMdlMng.isAnmStop()) {
@@ -9237,12 +9237,12 @@ void dAcPy_c::initChangeNormal() {
         static const float offsets[3] = { 21.0f, 11.0f, 0.0f };
         mPos.y += offsets[currTallType] - offsets[prevTallType];
     }
-    static const int tallTypeChange[3][3] = {
+    static const int l_change_type_data[3][3] = {
         {7, 7, 1},
         {2, 7, 3},
         {4, 5, 6}
     };
-    m_67 = tallTypeChange[prevTallType][currTallType];
+    m_67 = l_change_type_data[prevTallType][currTallType];
     switch (m_67) {
         case 0:
         case 1:
@@ -10622,7 +10622,7 @@ void dAcPy_c::clearJumpActionInfo(int) {
 
     bool checkRes = false;
     if (mBc.mpCtrHead != nullptr && mBc.mpCtrHead->mpActor != nullptr) {
-        if (mBc.mpCtrHead->mpActor->mProfName == fProfile::EN_GOALPOLE) {
+        if (mBc.mpCtrHead->mpActor->mProfName == fProf::EN_GOALPOLE) {
             checkRes = true;
         }
         if (mBc.mpCtrHead->mpActor->mActorProperties & 0x10 || mBc.mpCtrHead->mpActor->mActorProperties & 0x20) {

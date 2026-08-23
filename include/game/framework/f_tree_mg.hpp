@@ -2,8 +2,9 @@
 #include <types.h>
 #include <game/cLib/c_tree.hpp>
 #include <game/framework/f_profile.hpp>
+#include <game/framework/f_tree_nd.hpp>
 
-class fTrNdBa_c;
+class fBase_c;
 
 /// @brief A base tree, made of fTrNdBa_c nodes.
 /// @ingroup framework
@@ -28,4 +29,21 @@ public:
      * @return The node of the first base matching this criteria, or @p nullptr if none was found.
      */
     const fTrNdBa_c *searchNodeByGroupType(u8 groupType, const fTrNdBa_c *parent) const;
+};
+
+/// @brief A base tree made of fTrNdBa_c nodes, with a reference to a process function.
+/// @ingroup framework
+class fTrMgBaFu_c : public fTrMgBa_c {
+public:
+
+    /// @brief Constructs a new tree.
+    /// @param procFunc The process function, or @p nullptr .
+    fTrMgBaFu_c(int (fBase_c::*procFunc)()) : mpProcFunc(procFunc) {}
+
+    /// @brief Calls @ref mpProcFunc "the process function" on each base in the tree.
+    /// @return Always returns true.
+    bool treeListProc();
+
+private:
+    int (fBase_c::*mpProcFunc)(); ///< The process function for the tree.
 };

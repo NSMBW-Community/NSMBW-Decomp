@@ -1,6 +1,6 @@
 #include <game/bases/d_profile.hpp>
 
-fProfile::fProfilePtr_c profileList[] = {
+fProfListMg_c::fProfilePtr_c profileList[] = {
     { .mBaseProfile  = &g_profile_BOOT },
     { .mBaseProfile  = &g_profile_AUTO_SELECT },
     { .mBaseProfile  = &g_profile_SELECT },
@@ -754,7 +754,7 @@ fProfile::fProfilePtr_c profileList[] = {
 };
 
 void initProfile() {
-    fProfile::sProfileList = &profileList;
+    fProfListMg_c::m_data_p = &profileList;
 }
 
 void finalizeProlog() {
@@ -762,5 +762,5 @@ void finalizeProlog() {
 }
 
 void finalizeEpilog() {
-    fProfile::sProfileList = nullptr;
+    fProfListMg_c::m_data_p = nullptr;
 }

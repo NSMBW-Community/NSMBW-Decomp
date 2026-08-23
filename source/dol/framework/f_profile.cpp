@@ -1,5 +1,3 @@
 #include <game/framework/f_profile.hpp>
 
-using namespace fProfile;
-
-const fProfile::fProfilePtr_c (*fProfile::sProfileList)[PROFILE_COUNT];
+const fProfListMg_c::fProfilePtr_c (*fProfListMg_c::m_data_p)[fProf::PROFILE_COUNT];

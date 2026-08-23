@@ -25,11 +25,11 @@ const char *dWmEnemy_c::smc_PathPointC[WORLD_USED_COUNT] = {
 namespace dWmEnemy {
 
 const ProfileName sc_EnemyProfName[] = {
-    fProfile::WM_KURIBO,
-    fProfile::WM_BROS,
-    fProfile::WM_PUKU,
-    fProfile::WM_PAKKUN,
-    fProfile::WM_JUGEM
+    fProf::WM_KURIBO,
+    fProf::WM_BROS,
+    fProf::WM_PUKU,
+    fProf::WM_PAKKUN,
+    fProf::WM_JUGEM
 };
 
 bool isEnemyWalk() {
@@ -529,14 +529,14 @@ int dWmEnemy_c::getEnemyWalkSeID() {
 }
 
 bool dWmEnemy_c::IsExecEnable() {
-    static const int cutsceneCommands[] = {
+    static const int sc_ExecEnableDemo[] = {
         dCsSeqMng_c::CUTSCENE_CMD_NONE,
         dCsSeqMng_c::CUTSCENE_CMD_56,
         dCsSeqMng_c::CUTSCENE_CMD_136,
         dCsSeqMng_c::CUTSCENE_CMD_86,
         dCsSeqMng_c::CUTSCENE_CMD_87
     };
-    return isCutsceneCommandPlaying(cutsceneCommands, ARRAY_SIZE(cutsceneCommands));
+    return isCutsceneCommandPlaying(sc_ExecEnableDemo, ARRAY_SIZE(sc_ExecEnableDemo));
 }
 
 bool dWmEnemy_c::IsPlayerComingCore() {

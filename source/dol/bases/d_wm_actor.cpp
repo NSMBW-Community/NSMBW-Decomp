@@ -36,9 +36,9 @@ int dWmActor_c::preExecute() {
     }
 
     if (dInfo_c::m_instance->mIsWorldSelect) {
-        if (mProfName != fProfile::WM_CS_SEQ_MNG
-            && mProfName != fProfile::WM_ISLAND
-            && mProfName != fProfile::WM_DIRECTOR) {
+        if (mProfName != fProf::WM_CS_SEQ_MNG
+            && mProfName != fProf::WM_ISLAND
+            && mProfName != fProf::WM_DIRECTOR) {
             return NOT_READY;
         }
     }
@@ -64,9 +64,9 @@ int dWmActor_c::preDraw() {
     }
 
     if (dInfo_c::m_instance->mIsWorldSelect) {
-        if (mProfName != fProfile::WM_CS_SEQ_MNG
-            && mProfName != fProfile::WM_ISLAND
-            && mProfName != fProfile::WM_DIRECTOR) {
+        if (mProfName != fProf::WM_CS_SEQ_MNG
+            && mProfName != fProf::WM_ISLAND
+            && mProfName != fProf::WM_DIRECTOR) {
             return NOT_READY;
         }
     }

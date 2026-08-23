@@ -1,18 +1,22 @@
 #include <types.h>
 #include <game/cLib/c_random.hpp>
+/// @file
 
-u32 cM_rand_c::mConst1 = 0x19660D;
-u32 cM_rand_c::mConst2 = 0x3C6EF35F;
+/// @ingroup clib
+namespace cRandom {
+    u32 l_RANDOM_MUL = 0x19660D; ///< Constant @p a from the @p ranqd1 algorithm.
+    u32 l_RANDOM_ADD = 0x3C6EF35F; ///< Constant @p c from the @p ranqd1 algorithm.
+}
 
 // This decompiled terribly but at least it matches
 // Original algorithm: https://s3.amazonaws.com/nrbook.com/book_C210_pdf/chap07c.pdf (page 284-285)
-inline u32 cM_rand_c::ranqdStep() {
+inline u32 cRandom_c::ranqdStep() {
 
     // Variables must be declared in this order or there will be regswaps
     register u32 c, b, a, x;
     x = mSeed;
-    a = mConst1;
-    b = mConst2;
+    a = cRandom::l_RANDOM_MUL;
+    b = cRandom::l_RANDOM_ADD;
 
     // Longlong math needs to be done in asm in order to match...
     asm {
@@ -25,18 +29,18 @@ inline u32 cM_rand_c::ranqdStep() {
     return x;
 }
 
-u32 cM_rand_c::ranqd1(u32 max) {
+u32 cRandom_c::getRandomByAsm(ulong max) {
     mSeed = ranqdStep();
     return ((u64) mSeed * max) >> 32;
 }
 
-float cM_rand_c::ranqd2() {
+float cRandom_c::getRandomFByAsm() {
     mSeed = ranqdStep();
     u32 tmp = 0x3f800000 | (mSeed >> 9 & 0x7fffff);
     return (*(float *)&tmp)-1.0f;
 }
 
-float cM_rand_c::ranqd3() {
+float cRandom_c::getRandomF2ByAsm() {
     mSeed = ranqdStep();
     u32 tmp = 0x3f800000 | (mSeed >> 9 & 0x7fffff);
     return (*(float *)&tmp)-1.5f;

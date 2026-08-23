@@ -2,9 +2,20 @@
 
 #include <game/mLib/m_vec.hpp>
 
+class dPyEffect_c {
+public:
+    enum Type_e {
+        TYPE_WATER_OUT_NORMAL,
+        TYPE_WATER_OUT_MINI,
+        TYPE_WATER_IN_NORMAL,
+        TYPE_WATER_IN_MINI,
+        TYPE_SMALL_SPLASH
+    };
+};
+
 class dPyEffectMng_c {
 public:
-    void fn_800d2de0(float, int, mVec3_c &, u8); ///< @unofficial
+    void setEffect(dPyEffect_c::Type_e type, mVec3_c &, float, u8 layer);
 
     static dPyEffectMng_c *mspInstance;
 };

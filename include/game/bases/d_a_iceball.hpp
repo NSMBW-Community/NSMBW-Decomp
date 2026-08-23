@@ -10,6 +10,11 @@
 /// @ingroup bases
 class daIceBall_c : public dActorState_c {
 public:
+    enum CreateKind_e {
+        CREATE_ALIVE, ///< Use #smc_MAX_ALIVE_ICEBALL_COUNT.
+        CREATE_SPIN ///< Use #smc_MAX_ICEBALL_COUNT.
+    };
+
     struct GlobalData_t {
         float calcExtraBoost(float speedDiff) const {
             return speedDiff * mBoostExtraScale;
@@ -78,10 +83,9 @@ public:
 
     /// @brief Checks if a new iceball can be created for a player based on the limit mode.
     /// @param playerNo The player number.
-    /// @param limitMode The limit mode for iceball creation.
-    /// 0: 2 alive iceballs allowed, 1: 6 alive iceballs allowed. @see mAliveTimer
+    /// @param kind The iceball creation kind.
     /// @return Whether a new iceball can be created.
-    static bool CheckIceballLimit(int playerNo, int limitMode);
+    static bool isIceBallEnable(int playerNo, CreateKind_e kind);
 
     /// @brief Timer for the iceball's lifetime.
     /// This is used to limit how quickly the player can throw multiple iceballs.

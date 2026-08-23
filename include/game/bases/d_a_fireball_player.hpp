@@ -2,5 +2,10 @@
 
 class daFireBall_Player_c {
 public:
-    static bool CheckFireBallLimit(int playerNo, int limitMode);
+    enum CreateKind_e {
+        CREATE_ALIVE,
+        CREATE_SPIN
+    };
+
+    static bool isFireBallEnable(int playerNo, CreateKind_e kind);
 };

@@ -4,5 +4,10 @@
 
 class dMarioMdl_c : public dPyMdlBase_c {
 public:
-    void fn_800cab00(int); ///< @unofficial
+    enum HeadType_e {
+        TYPE_0,
+        TYPE_1
+    };
+
+    void setHeadID(HeadType_e type);
 };

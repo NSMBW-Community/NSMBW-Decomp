@@ -62,12 +62,12 @@ sPhase_c::METHOD_RESULT_e myDylinkInitPhase_0c(void *) {
 
 sPhase_c::METHOD_RESULT_e myDylinkInitPhase_2a(void *) {
     if (
-        dDyl::LinkASync(fProfile::CRSIN) == 1 &&
-        dDyl::LinkASync(fProfile::STAGE) == 1 &&
-        dDyl::LinkASync(fProfile::RESTART_CRSIN) == 1 &&
-        dDyl::LinkASync(fProfile::GAMEOVER) == 1 &&
-        dDyl::LinkASync(fProfile::RESULT) == 1 &&
-        dDyl::LinkASync(fProfile::MOVIE) == 1
+        dDyl::LinkASync(fProf::CRSIN) == 1 &&
+        dDyl::LinkASync(fProf::STAGE) == 1 &&
+        dDyl::LinkASync(fProf::RESTART_CRSIN) == 1 &&
+        dDyl::LinkASync(fProf::GAMEOVER) == 1 &&
+        dDyl::LinkASync(fProf::RESULT) == 1 &&
+        dDyl::LinkASync(fProf::MOVIE) == 1
     ) {
         return sPhase_c::OK;
     }
@@ -75,7 +75,7 @@ sPhase_c::METHOD_RESULT_e myDylinkInitPhase_2a(void *) {
 }
 
 sPhase_c::METHOD_RESULT_e myDylinkInitPhase_2b(void *) {
-    if (dDyl::LinkASync(fProfile::BOOT) == 1) {
+    if (dDyl::LinkASync(fProf::BOOT) == 1) {
         return sPhase_c::OK;
     }
     return sPhase_c::WAIT;
@@ -86,28 +86,28 @@ sPhase_c::METHOD_RESULT_e myDylinkInitPhase_2c(void *) {
 }
 
 sPhase_c::METHOD_RESULT_e myDylinkInitPhase_2d(void *) {
-    if (dDyl::LinkASync(fProfile::WORLD_9_DEMO) == 1) {
+    if (dDyl::LinkASync(fProf::WORLD_9_DEMO) == 1) {
         return sPhase_c::OK;
     }
     return sPhase_c::WAIT;
 }
 
 sPhase_c::METHOD_RESULT_e myDylinkInitPhase_2e(void *) {
-    if (dDyl::LinkASync(fProfile::WORLD_MAP) == 1) {
+    if (dDyl::LinkASync(fProf::WORLD_MAP) == 1) {
         return sPhase_c::OK;
     }
     return sPhase_c::WAIT;
 }
 
 sPhase_c::METHOD_RESULT_e myDylinkInitPhase_3a(void *) {
-    if (dDyl::LinkASync(fProfile::GAME_SETUP) == 1) {
+    if (dDyl::LinkASync(fProf::GAME_SETUP) == 1) {
         return sPhase_c::OK;
     }
     return sPhase_c::WAIT;
 }
 
 sPhase_c::METHOD_RESULT_e myDylinkInitPhase_3b(void *) {
-    if (dDyl::LinkASync(fProfile::MULTI_PLAY_COURSE_SELECT) == 1) {
+    if (dDyl::LinkASync(fProf::MULTI_PLAY_COURSE_SELECT) == 1) {
         return sPhase_c::OK;
     }
     return sPhase_c::WAIT;
@@ -116,10 +116,10 @@ sPhase_c::METHOD_RESULT_e myDylinkInitPhase_3b(void *) {
 } // anonymous namespace
 
 sPhase_c::METHOD_RESULT_e myCreate_linkWaitProc(void *) {
-    if (dDyl::LinkASync(fProfile::YES_NO_WINDOW) != 1) {
+    if (dDyl::LinkASync(fProf::YES_NO_WINDOW) != 1) {
         return sPhase_c::WAIT;
     }
-    if (dDyl::LinkASync(fProfile::CONTROLLER_INFORMATION) != 1) {
+    if (dDyl::LinkASync(fProf::CONTROLLER_INFORMATION) != 1) {
         return sPhase_c::WAIT;
     }
     return sPhase_c::OK;
@@ -128,7 +128,7 @@ sPhase_c::METHOD_RESULT_e myCreate_linkWaitProc(void *) {
 /// @unofficial
 sPhase_c::METHOD_RESULT_e myCreate_WiiStrap(void *thisPtr) {
     dScBoot_c *self = (dScBoot_c *) thisPtr;
-    dWiiStrap_c *strapScreen = (dWiiStrap_c *) fBase_c::createChild(fProfile::WII_STRAP, self, 0, 0);
+    dWiiStrap_c *strapScreen = (dWiiStrap_c *) fBase_c::createChild(fProf::WII_STRAP, self, 0, 0);
     self->mpWiiStrap = strapScreen;
     return sPhase_c::OK;
 }
@@ -147,8 +147,7 @@ sPhase_c::METHOD_RESULT_e myCreate_ExtensionMng(void *) {
     return sPhase_c::OK;
 }
 
-/// @unofficial
-sPhase_c::METHOD_RESULT_e myCreate_Painter(void *) {
+sPhase_c::METHOD_RESULT_e myCreate_setPainterCallbackProc(void *) {
     dGraph_c::ms_Instance->mpPainterFunc = painter;
     return sPhase_c::OK;
 }
@@ -156,7 +155,7 @@ sPhase_c::METHOD_RESULT_e myCreate_Painter(void *) {
 sPhase_c::phaseMethod myCreate_PhaseMethod[] = {
     myCreate_WiiStrap,
     myCreate_LogoScreen,
-    myCreate_Painter
+    myCreate_setPainterCallbackProc
 };
 
 /// @brief This phase is run via dScene_c::mpPhase, so before dScBoot_c::execute() is run.
@@ -194,7 +193,7 @@ sPhase_c::METHOD_RESULT_e myReadArc_resSndWait(void *thisPtr) {
     return sPhase_c::WAIT;
 }
 
-sPhase_c::METHOD_RESULT_e myCreate_HbmManage(void *) {
+sPhase_c::METHOD_RESULT_e myReadArc_PhaseHbm_0(void *) {
     sPhase_c::METHOD_RESULT_e res = sPhase_c::WAIT;
     if (dHbm::Manage_c::GetInstance()->Load()) {
         res = sPhase_c::OK;
@@ -257,9 +256,9 @@ sPhase_c::METHOD_RESULT_e myReadArc_WipeCircle(void *) {
 /// @unofficial
 sPhase_c::METHOD_RESULT_e myCreate_CreateYesNoWindow(void *selfPtr) {
     dScBoot_c *self = (dScBoot_c *) selfPtr;
-    dYesNoWindow_c *ynWindow = (dYesNoWindow_c *) fBase_c::createChild(fProfile::YES_NO_WINDOW, self, 0, 0);
+    dYesNoWindow_c *ynWindow = (dYesNoWindow_c *) fBase_c::createChild(fProf::YES_NO_WINDOW, self, 0, 0);
     self->mpYesNoWindow = ynWindow;
-    dSelectCursor_c *selectCursor = (dSelectCursor_c *) fBase_c::createChild(fProfile::SELECT_CURSOR, self, 0, 0);
+    dSelectCursor_c *selectCursor = (dSelectCursor_c *) fBase_c::createChild(fProf::SELECT_CURSOR, self, 0, 0);
     self->mpSelectCursor = selectCursor;
     return sPhase_c::OK;
 }
@@ -273,7 +272,7 @@ sPhase_c::METHOD_RESULT_e myReadArc_ExtensionMng(void *) {
 
 sPhase_c::METHOD_RESULT_e myReadArc_MakeControllerInformation(void *selfPtr) {
     dScBoot_c *self = (dScBoot_c *) selfPtr;
-    dControllerInformation_c *controllerInfo = (dControllerInformation_c *) fBase_c::createChild(fProfile::CONTROLLER_INFORMATION, self, 0, 0);
+    dControllerInformation_c *controllerInfo = (dControllerInformation_c *) fBase_c::createChild(fProf::CONTROLLER_INFORMATION, self, 0, 0);
     self->mpControllerInformation = controllerInfo;
     return sPhase_c::OK;
 }
@@ -306,7 +305,7 @@ sPhase_c::phaseMethod myBackGround_PhaseMethod[] = {
     myCreate_YesNoWindowReady,
     myCreate_ExtensionMng,
     myReadArc_ExtensionMng,
-    myCreate_HbmManage,
+    myReadArc_PhaseHbm_0,
     myReadArc_MakeControllerInformation,
     myCreate_ControllerInformationReady,
     myReadArc_BootSound,
@@ -410,10 +409,10 @@ int dScBoot_c::doDelete() {
     setFadeInFrame(30);
     setFadeOutFrame(30);
 
-    if (!dDyl::Unlink(fProfile::YES_NO_WINDOW)) {
+    if (!dDyl::Unlink(fProf::YES_NO_WINDOW)) {
         return NOT_READY;
     }
-    if (!dDyl::Unlink(fProfile::CONTROLLER_INFORMATION)) {
+    if (!dDyl::Unlink(fProf::CONTROLLER_INFORMATION)) {
         return NOT_READY;
     }
 
