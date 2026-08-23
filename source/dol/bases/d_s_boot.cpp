@@ -891,7 +891,7 @@ void dScBoot_c::executeState_ErrorWindowOnStageWait() {
             dHbm::Manage_c::GetInstance()->mFlags &= ~0x40;
             mStateMgr.changeState(StateID_NandCommandEndWait);
         }
-    } else if (!dWarningManager_c::isError()) {
+    } else if (!dWarningManager_c::isWarningInline()) {
         dHbm::Manage_c::GetInstance()->mFlags &= ~0x40;
         mStateMgr.changeState(StateID_ErrorInfinityDisp);
     }

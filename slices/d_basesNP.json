@@ -47,6 +47,13 @@
             }
         },
         {
+            "source": "d_basesNP/bases/d_model_play_guide.cpp",
+            "memoryRanges": {
+                ".text": "0x27820-0x27b20",
+                ".data": "0xa890-0xa940"
+            }
+        },
+        {
             "source": "d_basesNP/bases/d_awa.cpp",
             "memoryRanges": {
                 ".text": "0x4b0d0-0x4b730",
