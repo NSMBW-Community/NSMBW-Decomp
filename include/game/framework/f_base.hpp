@@ -91,8 +91,8 @@ protected:
 
     fManager_c mMng; ///< The base's process manager.
 
-    fArcLoad_c *mpUnusedHelper; ///< See [Unused Content](#unused-content). @unused
-    fLiMgBa_c mUnusedList; ///< See [Unused Content](#unused-content). @unused
+    fArcLoad_c *mpArcList; ///< See [Unused Content](#unused-content). @unused
+    fLiMgBa_c mBaseLinks; ///< See [Unused Content](#unused-content). @unused
 
     // [No p because of the string "fBase_c::mHeap"]
     EGG::FrmHeap *mHeap; ///< The base's dedicated heap. @unused

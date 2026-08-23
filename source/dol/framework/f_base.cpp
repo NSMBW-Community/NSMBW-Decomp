@@ -56,10 +56,10 @@ fBase_c::fBase_c() :
 
 fBase_c::~fBase_c() {
     // [Clear the unused list]
-    fLiNdBaLink_c *curr = mUnusedList.getFirst();
+    fLiNdBaLink_c *curr = mBaseLinks.getFirst();
     while (curr != nullptr) {
         curr->clearData();
-        curr = mUnusedList.getFirst();
+        curr = mBaseLinks.getFirst();
     }
 }
 
@@ -124,9 +124,9 @@ int fBase_c::createPack() {
 }
 
 int fBase_c::preDelete() {
-    // [Unused code]
-    if (mpUnusedHelper != nullptr) {
-        if (!mpUnusedHelper->checkDelete()) {
+    // Wait for arc list to be ready for deletion if it exists
+    if (mpArcList != nullptr) {
+        if (!mpArcList->checkDelete()) {
             return NOT_READY;
         }
     }
@@ -151,9 +151,9 @@ void fBase_c::postDelete(MAIN_STATE_e state) {
             mHeap->destroy();
         }
 
-        // Delete the unused helper
-        if (mpUnusedHelper != nullptr) {
-            mpUnusedHelper->arcListDelete();
+        // Unload arc list if it exists
+        if (mpArcList != nullptr) {
+            mpArcList->arcListDelete();
         }
 
         // Delete the base itself

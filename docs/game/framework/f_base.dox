@@ -100,9 +100,9 @@ profile module would have been loaded/unloaded.
 is *Heap that each process can have individually (fBase_c::mHeap)*. Two working methods for creating
 this heap are still in the game (entryFrmHeap(), entryFrmHeapNonAdjust()), but are unused. This per-base
 allocation method was most likely discontinued in favour of mAllocator_c and its derivatives.
-- Two additional unused list-like structures are present in the class: #mpUnusedHelper and
-#mUnusedList. Since the symbols for the related functions have not yet been cracked, it's difficult
-to tell what their purpose might have been.
+- Two additional unused list-like structures are present in the class: #mpArcList and
+#mBaseLinks. It's difficult to tell what their purpose might have been as only small portions of their code
+are left in the game.
 
 @todo Link to unused relocation system article and mAllocator_c when their page gets written.
 */
