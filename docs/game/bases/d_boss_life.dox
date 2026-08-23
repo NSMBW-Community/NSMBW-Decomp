@@ -1,0 +1,42 @@
+/*!
+@class dBossLifeInf_c
+@details
+## Overview
+This class defines the common interface used to manage boss HP and to apply damage
+from different attack types. Derived classes are responsible for deciding how much
+damage each attack type deals and how the boss's damage state changes as its HP
+decreases.
+
+## Current Hit Points
+The current HP is stored in #mLife.
+
+## Applying Damage
+Damage should normally be applied through one of the @p update methods
+rather than modifying #mLife directly.
+
+Each @p update method obtains the damage amount from its corresponding
+@p getDamage method. This means that derived classes can change the damage dealt
+by an attack simply by overriding the appropriate @p getDamage method.
+
+All @p update methods eventually call #updateCommon, which subtracts the supplied
+damage from #mLife and returns the resulting HP. If the boss survives the attack,
+it then calls #damageRev.
+
+## Adjusting Damage
+#damageRev can be overridden by a derived class
+to perform post-damage adjustments or state changes without having to reimplement every
+@p update method.
+
+## Checking Damage State
+The #isNonDamage, #isOneDamage, and #isTwoDamage methods provide
+phase/state information based on the boss's current HP. Their exact meaning is
+implementation-defined, so code using this interface should treat them as the
+derived class's definition of the corresponding damage states.
+
+#isDmgSection can additionally be used by implementations that divide HP into
+discrete sections. The base implementation returns @p false.
+
+## Implementing a Derived Class
+A concrete implementation must provide the damage-state methods and the damage
+values for each supported attack type.
+*/
