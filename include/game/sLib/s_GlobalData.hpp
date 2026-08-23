@@ -18,4 +18,5 @@ struct remove_reference { typedef T type; };
 template <class T>
 struct remove_reference<T&> { typedef T type; };
 
+#define GLOBAL_DATA_DEF(cls, data) template<> const cls::GlobalData_t sGlobalData_c<cls>::mData = data
 #define GLOBAL_DATA sGlobalData_c<remove_reference<decltype(*this)>::type>::mData

@@ -5,10 +5,9 @@
 #include <game/bases/d_quake.hpp>
 #include <game/sLib/s_GlobalData.hpp>
 
-template<>
-const dEnBoss_c::GlobalData_t sGlobalData_c<dEnBoss_c>::mData = {
+GLOBAL_DATA_DEF(dEnBoss_c, {
     false
-};
+});
 
 STATE_VIRTUAL_DEFINE(dEnBoss_c, DemoWait);
 STATE_VIRTUAL_DEFINE_INH(dEnBoss_c, DieFumi, sStateID_c); // [Why is this not properly inherited?]
@@ -18,11 +17,7 @@ STATE_VIRTUAL_DEFINE(dEnBoss_c, DieShell);
 STATE_VIRTUAL_DEFINE(dEnBoss_c, DieStar);
 STATE_VIRTUAL_DEFINE(dEnBoss_c, DieQuake);
 
-dEnBoss_c::dEnBoss_c() : mTenmetsuTime(0) {
-    m_d0 = 0;
-    mQuakeDamage = 0;
-    mpBossLife = nullptr;
-}
+dEnBoss_c::dEnBoss_c() : mTenmetsuTime(0), m_d0(0), mQuakeDamage(0), mpBossLife(nullptr) {}
 
 dEnBoss_c::~dEnBoss_c() {}
 
@@ -49,7 +44,7 @@ void dEnBoss_c::allocate() {
 
 void dEnBoss_c::createBossLife() {
     if (mpBossLife == nullptr) {
-        mpBossLife = new dBossLife_Common_c(18);
+        mpBossLife = new dBossLife_Common_c(6 * 3);
     }
 }
 
@@ -173,14 +168,14 @@ bool dEnBoss_c::hitCallback_Fire(dCc_c *self, dCc_c *other) {
     }
 
     dActor_c *player = other->getOwner();
-    int prev2 = getLife();
-    int prev = mpBossLife->updateFire();
+    int prevLives = getLife();
+    int newLives = mpBossLife->updateFire();
 
     if (sGlobalData_c<dEnBoss_c>::mData.mInstantKill) {
         mpBossLife->mLife = 0;
     }
 
-    if (prev >= prev2) {
+    if (newLives >= prevLives) {
         fireballInvalid(self, other);
     } else {
         if (isDead()) {
@@ -212,14 +207,16 @@ bool dEnBoss_c::hitCallback_Shell(dCc_c *self, dCc_c *other) {
     }
 
     dActor_c *player = other->getOwner();
-    int prev2 = getLife();
-    int prev = mpBossLife->updateShell();
+    int prevLives = getLife();
+    int newLives = mpBossLife->updateShell();
 
     if (sGlobalData_c<dEnBoss_c>::mData.mInstantKill) {
         mpBossLife->mLife = 0;
     }
 
-    if (prev < prev2) {
+    if (newLives >= prevLives) {
+        // Ignore invalid shell hit
+    } else {
         if (isDead()) {
             mpBossLife->mLife = 0;
             mTenmetsuTime = getTenmetsuTime_Shell();

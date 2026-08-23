@@ -53,39 +53,52 @@ public:
     virtual void createModel() {}
     virtual void createBossLife();
     virtual int createInit();
+
     virtual void tenmetsuReady() {} ///< Prepares the flashing effect after the boss takes damage.
     virtual void tenmetsuProc() {} ///< Handles the flashing effect after the boss takes damage.
     virtual void tenmetsuFin() {} ///< Ends the flashing effect after the boss takes damage.
     virtual int getTenmetsuTime_Fire() { return 40; }
     virtual int getTenmetsuTime_Shell() { return 40; }
     virtual int getTenmetsuTime_Press() { return 40; }
+
     virtual void deadAllKill();
+
     virtual void setFumiDamage(dActor_c *) {}
     virtual void setFumiDead(dActor_c *) {}
+
     virtual void setFireDamage(dActor_c *) {}
     virtual void setFireDead(dActor_c *) {}
+
     virtual void setHipatkDamage(dActor_c *actor) { setFumiDamage(actor); }
     virtual void setHipatkDead(dActor_c *actor) { setFumiDead(actor); }
+
     virtual void setSlideDamage(dActor_c *) {}
     virtual void setSlideDead(dActor_c *) {}
+
     virtual void setStarDamage(dActor_c *) {}
     virtual void setStarDead(dActor_c *) {}
+
     virtual void setQuakeDamage() {}
     virtual void setQuakeDead() {}
+
     virtual void setShellDamage(dActor_c *) {}
     virtual void setShellDead(dActor_c *) {}
+
     virtual void damageProc() {}
     virtual void deadProc() {}
+
     virtual bool isFumiInvalid() const { return false; }
     virtual bool isFumiDmgInvalid() const { return false; }
     virtual bool isFireInvalid() const { return false; }
     virtual bool isSlideInvalid() const { return true; }
     virtual bool isShellInvalid() const { return false; }
     virtual bool isStarInvalid() const { return false; }
+
     virtual void fumideadEffect() {}
     virtual void fumidmgEffect() {}
     virtual void hitFireEffect() {}
     virtual void hitShellEffect() {}
+
     virtual void fumidmgSE() { playSE(SE_BOSS_CMN_STOMPED); }
     virtual void fumideadSE() { playSE(SE_BOSS_CMN_STOMPED_LAST1); }
     virtual void stardmgSE() { playSE(SE_BOSS_CMN_DAMAGE_STAR_DEF); }
@@ -96,6 +109,7 @@ public:
     virtual void firedeadSE() { playSE(SE_BOSS_CMN_DAMAGE_FIRE_LAST); }
     virtual void quakedmgSE() { playSE(SE_BOSS_CMN_DAMAGE_STAR_DEF); }
     virtual void quakedeadSE() { playSE(SE_BOSS_CMN_DAMAGE_STAR_LAST);}
+
     virtual void fumiDeadVo() {}
     virtual void damageSVo() {}
     virtual void damageLVo() {}
