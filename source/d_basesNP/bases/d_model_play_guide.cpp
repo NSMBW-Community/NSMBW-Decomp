@@ -39,7 +39,6 @@ bool dModelPlayGuide_c::createLayout() {
     }
 
     mpRootPane = mLayout.getRootPane();
-
     return true;
 }
 
