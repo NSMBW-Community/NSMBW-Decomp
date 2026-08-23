@@ -9,7 +9,8 @@ public:
     static void CreateWarningManager();
     static void addWarningForbid() NOINLINE { m_WarningForbid++; }
     static void subWarningForbid() NOINLINE { if (m_WarningForbid > 0) m_WarningForbid--; }
-    static bool isError() NOINLINE { return m_Created && m_WarningCheck; }
+    static bool isWarning() NOINLINE { return m_Created && m_WarningCheck; }
+    static bool isWarningInline() { return m_Created && m_WarningCheck; }
 
     u8 mPad1[0xb00];
     int m_b00;

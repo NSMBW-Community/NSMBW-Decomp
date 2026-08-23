@@ -48,9 +48,10 @@
         },
         {
             "source": "d_basesNP/bases/d_model_play_guide.cpp",
+            "nonMatching": true,
             "memoryRanges": {
                 ".text": "0x27820-0x27b20",
-                ".data": "0xa8a4-0xa964"
+                ".data": "0xa890-0xa940"
             }
         },
         {

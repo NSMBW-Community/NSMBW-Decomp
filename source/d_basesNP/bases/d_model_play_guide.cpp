@@ -20,7 +20,7 @@ int dModelPlayGuide_c::create() {
     }
 
     mIsCreated = true;
-    mLayout.mDrawOrder = 139;
+    mLayout.mDrawOrder = m2d::DRAW_ORDER_MODEL_PLAY_GUIDE;
     mpRootPane->SetVisible(true);
 
     return SUCCEEDED;
@@ -32,7 +32,7 @@ bool dModelPlayGuide_c::createLayout() {
         return false;
     }
 
-    if (dGameCom::GetAspectRatio() == 1) {
+    if (dGameCom::GetAspectRatio() == EGG::Screen::TV_MODE_16_9) {
         mLayout.build("modelPlayGuide_02.brlyt", nullptr);
     } else {
         mLayout.build("modelPlayGuide_43.brlyt", nullptr);
@@ -48,7 +48,7 @@ int dModelPlayGuide_c::preExecute() {
         return NOT_READY;
     }
 
-    return !dWarningManager_c::isError();
+    return !dWarningManager_c::isWarning();
 }
 
 int dModelPlayGuide_c::execute() {
