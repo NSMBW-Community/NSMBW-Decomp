@@ -3,8 +3,8 @@
 #include <game/bases/d_actor.hpp>
 #include <game/bases/d_game_com.hpp>
 
-const float scWaterCrouchAnmSpeed = 0.1f;
-const float scFireShootFrame = 4.0f;
+const float dPyMdlBase_c::scWaterCrouchAnmSpeed = 0.1f;
+const float dPyMdlBase_c::scFireShootFrame = 4.0f;
 
 const char * dPyMdlBase_c::scJumpAnmVarDt[] = {
     "jump", "jump_b", "jump_c"
@@ -198,18 +198,29 @@ const dPyMdlBase_c::AnmData_s dPyMdlBase_c::scPyAnmData[] = {
     { "coin_comp", nullptr, nullptr, nullptr, m3d::FORWARD_ONCE, 1.0f, 0.0f, TEX_ANM_B, 0x0 }
 };
 
-const u32 dPyMdlBase_c::lbl_802f2f38[2][2] = {
-    {0x9D, 0x9B},
-    {0x9C, 0x9A}
-};
-
-dPyMdlBase_c::dPyMdlBase_c(u8 val) : mHeadPosMaybe(0.0f, 0.0f, 0.0f), mHatPosMaybe(0.0f, 0.0f, 0.0f), mHeadOffset(0.0f, 0.0f, 0.0f), mScale(1.0f, 1.0f, 1.0f), m_another_player_ID(0), m_151(val), mPlayerMode(0), m_powerup_tex(0xFF), mCurrAnmID(-1), mPrevAnmID(-1), m_158(-1), m_164(0), m_168(0), mCurrHeadPatID(0), mNextPatSwitchTimer(0), m_174(0), m_178(0), m_17c(0), m_180(0.0f), m_184(0.0f), m_188_countdown(0), m_1f8(0), m_1fa(0), m_1fc(0), m_200(0), m_204(0) {
+dPyMdlBase_c::dPyMdlBase_c(u8 val) :
+    mpOwner(nullptr), mpSpinLiftParentMdl(nullptr),
+    mHeadPosMaybe(0.0f, 0.0f, 0.0f),
+    mHatPosMaybe(0.0f, 0.0f, 0.0f),
+    mHeadOffset(0.0f, 0.0f, 0.0f),
+    mScale(1.0f, 1.0f, 1.0f),
+    m_another_player_ID(0), m_151(val),
+    mPlayerMode(0), m_powerup_tex(0xFF),
+    mCurrAnmID(-1), mPrevAnmID(-1),
+    m_15c(-1), m_168(0), m_16c(0),
+    mCurrHeadPatID(0), mNextPatSwitchTimer(0),
+    m_178(0), m_17c(0), m_180(0), m_184(0.0f), m_188(0.0f), m_18c_countdown(0),
+    m_1fc(0), m_1fe(0), m_200(0),
+    m_204(0), m_208(0)
+{
     mFlags = 0;
-    m_160 = 0;
+    m_164 = 0;
 }
 
+dPyMdlBase_c::~dPyMdlBase_c() {}
+
 int dPyMdlBase_c::create(u8 a, u8 b, int c) {
-    m_17c = c;
+    m_180 = c;
     m_another_player_ID = a;
     mAllocator.createFrmHeap(0xC000, mHeap::g_gameHeaps[0], NULL, 0x20);
     createModel();
@@ -250,26 +261,39 @@ void dPyMdlBase_c::getJointPos(mVec3_c* pos, int i) {
     mMtx_c tmp;
     getJointMtx(&tmp, i);
 
-    mVec3_c tmp2;
-    tmp2 = tmp.getTranslation();
-    pos->set(tmp2.x, tmp2.y, tmp2.z);
+    float x = tmp.m[0][3];
+    float y = tmp.m[1][3];
+    float z = tmp.m[2][3];
+    *pos = mVec3_c(x, y, z);
 }
 
 void dPyMdlBase_c::setBaseMtx(mVec3_c& pos,mAng3_c& rot,mVec3_c& scale) {
-    if (m_17c != 0) {
+    if (m_180 != 0) {
         mScale = scale;
     }
 
-    float f1 = 0.0f;;
+    float f1 = 0.0f;
     float f2 = scale.y * 8.0f;
-    if (mCurrAnmID == 0x2B || mCurrAnmID == 0x2C || mCurrAnmID == 0x2D) {
-        f2 = 0.0f;
-    } else if (mCurrAnmID == 0x34 || mCurrAnmID == 0x35 || mCurrAnmID == 0x36 || mCurrAnmID == 0x37) {
-        f1 = -1.0f;
-    } else if (mCurrAnmID == 0x7E) {
-        f2 = 0.0f;
-    } else if (mCurrAnmID == 0x7F) {
-        f2 = scale.y * 5.0f;
+    switch (mCurrAnmID) {
+        case 0x2B:
+        case 0x2C:
+        case 0x2D:
+        case 0x2E:
+        case 0x7E:
+            f2 = 0.0f;
+            break;
+        case 0x7F:
+            f2 = scale.y * 5.0f;
+            break;
+        case 0x34:
+        case 0x35:
+        case 0x36:
+        case 0x37:
+            if (mPlayerMode == 0) {
+                f1 = 0.0f;
+            }
+            f1 = -1.0f;
+            break;
     }
 
     float f3 = scale.y * 8.0f;
@@ -291,7 +315,7 @@ void dPyMdlBase_c::setBaseMtx(mVec3_c& pos,mAng3_c& rot,mVec3_c& scale) {
     PSMTXTrans(tmp_130, 0.0f, f3, 0.0f);
     PSMTXConcat(tmp_70, tmp_130, tmp_70);
 
-    tmp_70.ZrotM(-rot.z);
+    tmp_70.ZrotM(rot.z);
     PSMTXTrans(tmp_160, 0.0f, -f3, 0.0f);
     PSMTXConcat(tmp_70, tmp_160, tmp_70);
     PSMTXScale(tmp_190, scale.x, scale.y, scale.z);
@@ -301,20 +325,25 @@ void dPyMdlBase_c::setBaseMtx(mVec3_c& pos,mAng3_c& rot,mVec3_c& scale) {
 
     mVec3_c tmp_19c = pos;
 
-    if (mCurrAnmID == 0x82 || mCurrAnmID == 0x83) {
-        tmp_19c.y += 4.0f;
-    } else if (mCurrAnmID == 0x85) {
-        tmp_19c.y += 1.0f;
-    } else {
-        tmp_19c.y -= 0.2f;
+    switch (mCurrAnmID) {
+        case 0x85:
+            tmp_19c.y += 1.0f;
+            break;
+        case 0x82:
+        case 0x83:
+            tmp_19c.y += 4.0f;
+            break;
+        default:
+            tmp_19c.y -= 0.2f;
+            break;
     }
-    tmp_19c.y += m_180;
+    tmp_19c.y += m_184;
 
-    if (m_178 & 0x400) {
-        tmp_19c.y += dPyMdlMng_c::m_hio.m_04;
+    if (m_17c & 0x400) {
+        tmp_19c.y += dPyMdlMng_c::m_hio.get_04();
     }
 
-    if (m_17c == 0) {
+    if (m_180 == 0) {
         dActor_c::changePosAngle(&tmp_19c, nullptr, 1);
     }
 
@@ -327,8 +356,8 @@ void dPyMdlBase_c::setBaseMtx(mVec3_c& pos,mAng3_c& rot,mVec3_c& scale) {
 void dPyMdlBase_c::draw() {}
 
 void dPyMdlBase_c::setSoftLight(m3d::bmdl_c & mdl) {
-    if (m_17c > 1) {
-        if ((int)m_17c != 2) {
+    if (m_180 > 1) {
+        if ((int)m_180 != 2) {
             return;
         }
     } else {
@@ -375,23 +404,23 @@ void dPyMdlBase_c::setJumpAnmRand(dPyMdlBase_c::RndType_e rnd_type) {
     switch (rnd_type)
     {
     case RND_EQUAL:
-        m_164 = dGameCom::rndInt(3);
+        m_168 = dGameCom::rndInt(3);
         break;
     case RND_WEIGHTED:
         // ??? why is this converted to a float?
         float x = (float)(u32)dGameCom::rndInt(10);
         if (x < 6.0f) {
-            m_164 = 0;
+            m_168 = 0;
         } else if (x < 9.0f) {
-            m_164 = 1;
+            m_168 = 1;
         } else {
-            m_164 = 2;
+            m_168 = 2;
         }
         break;
     }
 
-    if (m_164 > 2) {
-        m_164 = 0;
+    if (m_168 > 2) {
+        m_168 = 0;
     }
 }
 
@@ -403,7 +432,7 @@ void dPyMdlBase_c::setAnm(int anim_id, float rate, float c, float frame) {
     }
 
     int prev_anm_id = mCurrAnmID;
-    m_158 = -1;
+    m_15c = -1;
     mCurrAnmID = anim_id;
 
     const dPyMdlBase_c::AnmData_s & anm_data = scPyAnmData[anim_id];
@@ -417,15 +446,15 @@ void dPyMdlBase_c::setAnm(int anim_id, float rate, float c, float frame) {
         return;
     }
 
-    m_160 = scPyAnmData[anim_id].m_20;
-    mFlags = scPyAnmData[anim_id].m_20;
+    m_164 = anm_data.m_20;
+    mFlags = anm_data.m_20;
 
-    nw4r::g3d::ResAnmChr anm = getAnmResFile()->GetResAnmChr(scPyAnmData[anim_id].m_00);
+    nw4r::g3d::ResAnmChr anm = getAnmResFile()->GetResAnmChr(anm_data.m_00);
     setPersonalAnm(mCurrAnmID, &anm, 0);
 
-    float f31;
-    if (frame != 0.0f) {
-        f31 = 0.0f;
+    float f31 = 0.0f;
+    if (frame != f31) {
+        f31 = frame;
     } else {
         if (rate < 0.0f) {
             f31 = anm.GetNumFrame() - 1.0f;
@@ -440,24 +469,24 @@ void dPyMdlBase_c::setAnm(int anim_id, float rate, float c, float frame) {
         f31 = anm.GetNumFrame() - 1.0f;
     }
 
-    if (m_178 & (4 | 2)) {
-        if (m_178 & 4) {
+    if (m_17c & (4 | 2)) {
+        if (m_17c & 4) {
             setLinkAnm(anim_id, rate, c, f31);
         }
 
-        if (!(m_160 & 2)) {
+        if (!(m_164 & 2)) {
             _setFootAnm(anm, anm_data.play_mode, rate, f31, c);
             setCarryBodyAnm(c);
             return;
         }
     }
 
-    if (!(((!(m_178 & 8)) && (!(m_178 & 0x10))) || (mPrevAnmID == -1) || (m_160 & 0x20))) {
+    if (!(((!(m_17c & 8)) && (!(m_17c & 0x10))) || (mPrevAnmID == -1) || (m_164 & 0x20))) {
         _setFootAnm(anm, anm_data.play_mode, rate, f31, 0.0f);
-        m3d::anmChr_c & body_anm = mAnms[1];
+        m3d::anmChr_c & body_anm = getBodyAnm();
         setBodyAnm(mPrevAnmID, body_anm.getRate(), body_anm.getFrame(), 0.0f);
     } else {
-        if (m_160 & 0x1000) {
+        if (m_164 & 0x1000) {
             _setFootAnm(anm, anm_data.play_mode, rate, f31, c);
             setSlopeBodyAnm(c);
         } else {
@@ -471,7 +500,7 @@ void dPyMdlBase_c::setAnm(int anim_id, float rate, float c, float frame) {
 
 }
 
-const nw4r::g3d::ResFile * dPyMdlBase_c::getAnmResFile() {
+const nw4r::g3d::ResFile * dPyMdlBase_c::getAnmResFile() const {
     return nullptr;
 }
 
@@ -481,7 +510,7 @@ void dPyMdlBase_c::setBodyAnm(int anim_id, float a, float b, float c) {
     const dPyMdlBase_c::AnmData_s & anm_data = scPyAnmData[anim_id];
     u32 flag = anm_data.m_20;
     mPrevAnmID = anim_id;
-    m_160 = flag;
+    m_164 = flag;
 
     nw4r::g3d::ResAnmChr anm = getAnmResFile()->GetResAnmChr(anm_data.m_00);
     setPersonalAnm(mPrevAnmID, &anm, 1);
@@ -492,13 +521,13 @@ void dPyMdlBase_c::setBodyAnm(int anim_id, float a, float b, float c) {
 void dPyMdlBase_c::releaseBodyAnm(float a) {
     mPrevAnmID = -1;
     const dPyMdlBase_c::AnmData_s & anm_data = scPyAnmData[mCurrAnmID];
-    m_160 = anm_data.m_20;
+    m_164 = anm_data.m_20;
     nw4r::g3d::ResAnmChr anm = getAnmResFile()->GetResAnmChr(anm_data.m_00);
     setPersonalAnm(mCurrAnmID, &anm, 1);
 
-    if (!((!(m_178 & (4 | 2))) || (m_160 & 2))) {
+    if (!((!(m_17c & (4 | 2))) || (m_164 & 2))) {
         setCarryBodyAnm(a);
-    } else if (m_160 & 0x1000) {
+    } else if (m_164 & 0x1000) {
         setSlopeBodyAnm(a);
     } else {
         float frame = mAnms[0].getFrame();
@@ -510,14 +539,17 @@ void dPyMdlBase_c::releaseBodyAnm(float a) {
     }
 }
 
-
-int lbl_8042cd90[2] = {0x1C, 0x70};
-
 void dPyMdlBase_c::setCarryBodyAnm(float a) {
+    static const u32 lbl_802f2f38[2][2] = {
+        {0x9D, 0x9B},
+        {0x9C, 0x9A}
+    };
+
+    static const int lbl_8042cd90[2] = {0x1C, 0x70};
 
     int idx = 0;
     int idxb;
-    if (m_178 & 4) {
+    if (m_17c & 4) {
         idx = 1;
     }
 
@@ -549,28 +581,28 @@ void dPyMdlBase_c::setAnmBind() {}
 int dPyMdlBase_c::setPersonalRideAnm(int, nw4r::g3d::ResAnmChr *) { return 0; }
 
 void dPyMdlBase_c::setRideAnm(int idx, float a, float b, float c) {
-    int prev_158 = m_158;
+    int prev_158 = m_15c;
     mCurrAnmID = -1;
-    m_158 = idx;
+    m_15c = idx;
     const AnmData_s & anm_data = scPyAnmData[idx];
 
     if (prev_158 == idx) {
         mAnms[0].mPlayMode = anm_data.play_mode;
         setRate(a);
-        if (c != 0.0f) {
+        if (c) {
             setFrame(c);
         }
     } else {
-        m_160 = 0;
+        m_164 = 0;
         mFlags = 0;
-        nw4r::g3d::ResAnmChr anm = getAnmResFile()->GetResAnmChr("Rwait");
+        nw4r::g3d::ResAnmChr anm = getAnmResFile()->GetResAnmChr(scPyAnmData[0].m_04);
         if (anm_data.m_04 != nullptr) {
             anm = getAnmResFile()->GetResAnmChr(anm_data.m_04);
             setPersonalRideAnm(idx, &anm);
         }
 
         float f6 = 0.0f;
-        if (c != 0.0f) {
+        if (c) {
             if (c < anm.GetNumFrame()) {
                 f6 = c;
             }
@@ -592,7 +624,7 @@ bool dPyMdlBase_c::getJumpAnmName(int p2, char * p3, int p4) {
     bool ret = false;
 
     if (p4 == 1) {
-        if (m_160 & 0x200) {
+        if (m_164 & 0x200) {
             ret = true;
         }
     } else if (mFlags & 0x200) {
@@ -602,19 +634,19 @@ bool dPyMdlBase_c::getJumpAnmName(int p2, char * p3, int p4) {
     if (ret) {
         switch (p2) {
             case 5:
-                strncpy(p3, scJumpAnmVarDt[m_164], 0x20);
+                strncpy(p3, scJumpAnmVarDt[m_168], 0x20);
                 break;
             case 8:
-                strncpy(p3, sc2JumpAnmVarDt[m_164], 0x20);
+                strncpy(p3, sc2JumpAnmVarDt[m_168], 0x20);
                 break;
             case 9:
-                strncpy(p3, sc2JumpedAnmVarDt[m_164], 0x20);
+                strncpy(p3, sc2JumpedAnmVarDt[m_168], 0x20);
                 break;
         }
         return true;
     } else {
-        m_168 = m_164;
-        m_164 = 0;
+        m_16c = m_168;
+        m_168 = 0;
         return false;
     }
 }
@@ -631,7 +663,7 @@ void dPyMdlBase_c::setLinkAnm(int idx, float rate, float b, float frame) {
         return;
     }
 
-    if (linkMdl->m_178 & 0x80) {
+    if (linkMdl->m_17c & 0x80) {
         return;
     }
 
@@ -639,17 +671,17 @@ void dPyMdlBase_c::setLinkAnm(int idx, float rate, float b, float frame) {
     if ((flags & 2) || (flags & 0x10) || (flags & 0xC000)) {
         linkMdl->releaseBodyAnm(b);
     } else {
-        linkMdl->m_164 = m_164;
+        linkMdl->m_168 = m_168;
         mpSpinLiftParentMdl->setBodyAnm(idx, rate, frame, b);
     }
 }
 
 void dPyMdlBase_c::calcStoopOffset() {
-    if (m_188_countdown != 0) {
-        sLib::chase(&m_180, m_184, (m_180 - m_184) / (float)m_188_countdown);
-        m_188_countdown--;
+    if (m_18c_countdown != 0) {
+        sLib::chase(&m_184, m_188, (m_184 - m_188) / (float)m_18c_countdown);
+        m_18c_countdown--;
     } else {
-        m_180 = m_184;
+        m_184 = m_188;
     }
 }
 
@@ -690,11 +722,11 @@ void dPyMdlBase_c::setPropelRollSpeed(s16) {}
 bool dPyMdlBase_c::getHeadPropelJointMtx(mMtx_c *) { return false; }
 
 void dPyMdlBase_c::offStarAnm() {
-    m_178 &= ~0x100;
+    m_17c &= ~0x100;
 }
 
 void dPyMdlBase_c::onStarAnm() {
-    m_178 |= 0x100;
+    m_17c |= 0x100;
 }
 
 void dPyMdlBase_c::setDark(int) {}

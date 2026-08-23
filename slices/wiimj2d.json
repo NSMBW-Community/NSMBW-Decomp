@@ -409,13 +409,13 @@
             }
         },
         {
-            "nonMatching": true,
             "source": "dol/bases/d_player_model_base.cpp",
             "memoryRanges": {
                 ".text": "0xceca0-0xd0630",
                 ".data": "0x19ab0-0x1a6f8",
-                ".sdata2": "0x19f0-0x1a58",
-                ".rodata": "0x3670-0x4f68"
+                ".rodata": "0x3670-0x4f68",
+                ".sdata": "0x660-0x8f8",
+                ".sdata2": "0x19f0-0x1a58"
             }
         },
         {

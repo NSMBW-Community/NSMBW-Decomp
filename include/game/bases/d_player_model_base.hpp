@@ -47,7 +47,7 @@ public:
     };
 
     dPyMdlBase_c(u8);
-    virtual ~dPyMdlBase_c() {};
+    virtual ~dPyMdlBase_c();
     virtual int getFaceJointIdx() const;
     virtual void createModel();
     virtual void initialize();
@@ -56,15 +56,15 @@ public:
     virtual void calc2();
     virtual void draw();
     virtual m3d::bmdl_c * getBodyMdl() { return nullptr; }
-    virtual const nw4r::g3d::ResFile * getAnmResFile();
+    virtual const nw4r::g3d::ResFile * getAnmResFile() const;
     virtual void setPlayerMode(int);
     virtual void setColorType(u8);
     virtual void setDark(int);
     virtual void setFunbariRate(float) {};
     virtual void onStarAnm();
     virtual void offStarAnm();
-    virtual void onStarEffect() { m_178 |= 0x200; };
-    virtual void offStarEffect() { m_178 &= ~0x200; };
+    virtual void onStarEffect() { m_17c |= 0x200; };
+    virtual void offStarEffect() { m_17c &= ~0x200; };
     virtual void getJointMtx(mMtx_c* mtx, int i);
     virtual bool getHeadPropelJointMtx(mMtx_c *);
     virtual bool getJumpAnmName(int, char *, int); //< @unofficial
@@ -119,6 +119,10 @@ public:
 
     u32 get151CheckVal() { return 2; }
 
+
+    m3d::anmChr_c &getFootAnm() { return mAnms[0]; }
+    m3d::anmChr_c &getBodyAnm() { return mAnms[1]; }
+
     dHeapAllocator_c mAllocator;
     dAcPy_c *mpOwner;
     dPyMdlBase_c *mpSpinLiftParentMdl;
@@ -136,28 +140,29 @@ public:
     u8 m_powerup_tex;
     int mCurrAnmID;
     int mPrevAnmID;
-    int m_158;
+    int m_15c;
     u32 mFlags;
-    u32 m_160;
     u32 m_164;
     u32 m_168;
+    u32 m_16c;
     u32 mCurrHeadPatID;
     u32 mNextPatSwitchTimer;
-    u8 m_174;
+    u8 m_178;
     /* 3 padding bytes */
-    u32 m_178;
     u32 m_17c;
-    float m_180;
+    u32 m_180;
     float m_184;
-    int m_188_countdown;
-    mVec3_c m_18c_vecs[6];
-    u8 mPad9[0x24];
+    float m_188;
+    int m_18c_countdown;
+    mVec3_c m_190_vecs[6];
+    u8 mPad9[0x20];
     u16 m_1f8;
     u16 m_1fa;
     s16 m_1fc;
     s16 m_1fe;
-    u32 m_200;
+    s16 m_200;
     u32 m_204;
+    u32 m_208;
 
     static const float scWaterCrouchAnmSpeed;
     static const float scFireShootFrame;
