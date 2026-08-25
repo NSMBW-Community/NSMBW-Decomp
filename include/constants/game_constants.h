@@ -125,8 +125,8 @@ enum STAGE_e {
     STAGE_ENEMY_2,
     STAGE_ENEMY_3,
     STAGE_CANNON,
-    STAGE_UNK37,
-    STAGE_DOOMSHIP,
+    STAGE_TRSHIP,
+    STAGE_AIRSHIP,
     STAGE_START_KINOKO_HOUSE, ///< The toad house on the starting node of each world.
     STAGE_TITLE,
     STAGE_PEACH_CASTLE,

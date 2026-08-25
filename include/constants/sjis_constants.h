@@ -52,3 +52,60 @@
 
 // [Translation: Heap for dynamic link control (dDyl::cCc_frmHeap)]
 #define DYL_FRM_HEAP_NAME "ダイナミックリンク制御用ヒープ(dDyl::cCc_frmHeap)"
+
+// [Translation: Road]
+#define CSV_ACTION_ROAD "道"
+
+// [Translation: Sand]
+#define CSV_ACTION_SAND "砂"
+
+// [Translation: Wood]
+#define CSV_ACTION_WOOD "木"
+
+// [Translation: Jump]
+#define CSV_ACTION_JUMP "ジャンプ"
+
+// [Translation: Ladder]
+#define CSV_ACTION_LADDER "はしご"
+
+// [Translation: Vine]
+#define CSV_ACTION_VINE "ツタ"
+
+// [Translation: Slope]
+#define CSV_ACTION_SLOPE "坂"
+
+// [Translation: Icey slope]
+#define CSV_ACTION_ICE_SLOPE "氷坂"
+
+// [Translation: Switch block]
+#define CSV_ACTION_SWITCH_BLOCK "スイッチブロック"
+
+// [Translation: Quicksand]
+#define CSV_ACTION_QUICKSAND "流砂"
+
+// [Translation: Snow]
+#define CSV_ACTION_SNOW "雪"
+
+// [Translation: Ice]
+#define CSV_ACTION_ICE "氷"
+
+// [Translation: Cloud]
+#define CSV_ACTION_CLOUD "雲"
+
+// [Translation: Water]
+#define CSV_ACTION_WATER "水"
+
+// [Translation: Right ladder]
+#define CSV_ACTION_RIGHT_LADDER "はしご右"
+
+// [Translation: Left ladder]
+#define CSV_ACTION_LEFT_LADDER "はしご左"
+
+// [Translation: Rock ladder]
+#define CSV_ACTION_ROCK_LADDER "はしご岩"
+
+// [Translation: Rope ladder]
+#define CSV_ACTION_ROPE_LADDER "はしご縄"
+
+// [Translation: Dirt]
+#define CSV_ACTION_DIRT "土"

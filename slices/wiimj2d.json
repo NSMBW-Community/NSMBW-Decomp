@@ -502,6 +502,17 @@
             }
         },
         {
+            "source": "dol/bases/d_wm_csvdata.cpp",
+            "nonMatching": true,
+            "memoryRanges": {
+                ".text": "0xecdf0-0xef960",
+                ".data": "0x1d960-0x1daa8",
+                ".rodata": "0x5690-0x56e0",
+                ".sdata": "0x1298-0x1428",
+                ".sdata2": "0x1ee0-0x1f18"
+            }
+        },
+        {
             "source": "dol/bases/d_wm_demo_actor.cpp",
             "memoryRanges": {
                 ".text": "0xef960-0xf08d0",

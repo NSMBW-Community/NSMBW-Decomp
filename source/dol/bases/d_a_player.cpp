@@ -8396,7 +8396,7 @@ void dAcPy_c::executeState_DemoInJump() {
                 mDemoSubstate++;
                 int world = dScStage_c::m_instance->mCurrWorld;
                 if (world == WORLD_4 || world == WORLD_6 || world == WORLD_8) {
-                    if (dScStage_c::m_instance->mCurrCourse == STAGE_DOOMSHIP) {
+                    if (dScStage_c::m_instance->mCurrCourse == STAGE_AIRSHIP) {
                         startPlayerVoice(VOICE_JR_A_BATTLE_APP, 0);
                     }
                 }

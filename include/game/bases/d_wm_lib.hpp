@@ -2,7 +2,7 @@
 #include <constants/game_constants.h>
 #include <game/mLib/m_vec.hpp>
 #include <game/mLib/m_3d/bmdl.hpp>
-#include <game/bases/d_wm_csv_data.hpp>
+#include <game/bases/d_wm_csvdata.hpp>
 
 namespace dWmLib {
     enum Direction3D_e {
