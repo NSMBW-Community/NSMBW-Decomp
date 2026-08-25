@@ -18,7 +18,7 @@ public:
     static const float smc_DIR_PRM[];
 
     daBullet_c();
-    virtual ~daBullet_c();
+    virtual ~daBullet_c() {}
 
     virtual int create();
     virtual int preExecute();

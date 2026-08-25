@@ -148,7 +148,6 @@
         },
         {
             "source": "dol/bases/d_a_bullet.cpp",
-            "nonMatching": true,
             "memoryRanges": {
                 ".text": "0x172d0-0x18f40",
                 ".data": "0x3420-0x3828",
