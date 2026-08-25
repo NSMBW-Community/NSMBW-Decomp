@@ -147,6 +147,16 @@
             }
         },
         {
+            "source": "dol/bases/d_a_bullet.cpp",
+            "memoryRanges": {
+                ".text": "0x172d0-0x18f40",
+                ".ctors": "0x24-0x28",
+                ".data": "0x3420-0x3828",
+                ".bss": "0x10e8-0x12e8",
+                ".sdata2": "0x198-0x1d8"
+            }
+        },
+        {
             "source": "dol/bases/d_a_en_carry.cpp",
             "memoryRanges": {
                 ".text": "0x20430-0x20b70",
