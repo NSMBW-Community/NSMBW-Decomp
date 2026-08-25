@@ -72,7 +72,7 @@ int daBullet_c::preExecute() {
 int daBullet_c::execute() {
     mStateMgr.executeState();
 
-    if (mHasSplashed == 0) {
+    if (!mHasSplashed) {
         mHasSplashed = splashProc();
     }
 
@@ -81,7 +81,7 @@ int daBullet_c::execute() {
 }
 
 void daBullet_c::cullingProc() {
-    ActorScrOutCheck(0);
+    ActorScrOutCheck(SKIP_NONE);
 }
 
 int daBullet_c::draw() {
@@ -104,15 +104,12 @@ void daBullet_c::collisionCallback(dCc_c *self, dCc_c *other) {
     dActor_c *actor = other->getOwner();
     daPlBase_c *player = (daPlBase_c *) actor;
     daBullet_c *bullet = (daBullet_c *) self->getOwner();
-    int kind = actor->mKind;
+    STAGE_ACTOR_KIND_e kind = (STAGE_ACTOR_KIND_e) actor->mKind;
 
     if (kind == STAGE_ACTOR_PLAYER) {
         if (bullet->checkPlayerDamage(self, other)) {
             self->mInfo |= CC_NO_HIT;
-            return;
-        }
-
-        if (!player->isNoDamage()) {
+        } else if (!player->isNoDamage()) {
             bullet->setDamage_Player(actor);
         }
     } else if (kind == STAGE_ACTOR_YOSHI) {
@@ -127,25 +124,14 @@ void daBullet_c::collisionCallback(dCc_c *self, dCc_c *other) {
 
         if (bullet->checkYoshiDamage(self, other)) {
             self->mInfo |= CC_NO_HIT;
-            return;
-        }
-
-        if (!player->isNoDamage()) {
+        } else if (!player->isNoDamage()) {
             bullet->setDamage_Player(actor);
-            return;
         }
     } else {
-        if (other->mCcData.mAttack == CC_ATTACK_SHELL) {
-            if (bullet->hitProc_Shell(other)) {
-                self->mInfo |= CC_NO_HIT;
-                return;
-            }
-        }
-
-        if (other->mCcData.mAttack == CC_ATTACK_YOSHI_BULLET) {
-            if (bullet->hitProc_YoshiBullet(other)) {
-                self->mInfo |= CC_NO_HIT;
-            }
+        if (other->mCcData.mAttack == CC_ATTACK_SHELL && bullet->hitProc_Shell(other)) {
+            self->mInfo |= CC_NO_HIT;
+        } else if (other->mCcData.mAttack == CC_ATTACK_YOSHI_BULLET && bullet->hitProc_YoshiBullet(other)) {
+            self->mInfo |= CC_NO_HIT;
         }
     }
 }
@@ -202,52 +188,37 @@ bool daBullet_c::checkYoshiDamage(dCc_c *self, dCc_c *other) {
 }
 
 void daBullet_c::setDeadMove(const mVec3_c &speed, short angle) {
-    mSpeed.x = speed.x;
-    mSpeed.y = speed.y;
-    mSpeed.z = speed.z;
+    mSpeed = speed;
 
-    mSpeedMax.x = speed.x;
-    mSpeedMax.y = smc_DEAD_FALL_YMAXSPEED;
-    mSpeedMax.z = 0.0f;
+    mSpeedMax.set(speed.x, smc_DEAD_FALL_YMAXSPEED, 0.0f);
 
     mAccelY = smc_DEAD_FALL_GRAVITY;
 
     if (mDirection == mDeadMoveDirection) {
-        mDeadRollDelta.x = angle;
-        mDeadRollDelta.y = 0;
-        mDeadRollDelta.z = 0;
-        return;
+        mDeadRollDelta.set(angle, 0, 0);
+    } else {
+        mDeadRollDelta.set(-angle, 0, 0);
     }
-
-    mDeadRollDelta.x = -angle;
-    mDeadRollDelta.y = 0;
-    mDeadRollDelta.z = 0;
 }
 
 bool daBullet_c::hitProc_Star(dCc_c *other) {
     dActor_c *owner = other->getOwner();
 
     if (mPos.x >= owner->mPos.x) {
-        mDeadMoveDirection = 0;
+        mDeadMoveDirection = DIR_LR_R;
     } else {
-        mDeadMoveDirection = 1;
+        mDeadMoveDirection = DIR_LR_L;
     }
 
     float mag = 1.75f + 0.35f * std::fabs(owner->mSpeed.x);
-    mVec3_c speed;
-    speed.x = mag * smc_DIR_PRM[mDeadMoveDirection];
-    speed.y = 3.75f;
-    speed.z = 0.0f;
+    mVec3_c speed(mag * smc_DIR_PRM[mDeadMoveDirection], 3.75f, 0.0f);
 
     setDeadMove(speed, 0x1000);
 
-    float collY = mCc.mCollPos.y;
-    float collX = mCc.mCollPos.x;
-    mVec3_c effectPos(collX, collY, 5500.0f);
+    mVec3_c effectPos(mCc.getCollPosX(), mCc.getCollPosY(), 5500.0f);
     mEf::createEffect("Wm_en_hit", 0, &effectPos, nullptr, nullptr);
 
-    dAudio::SndObjctCmnEmy_c* sndObj = dAudio::g_pSndObjEmy;
-    sndObj->startSound(SE_EMY_DOWN_NO_SCORE, dAudio::cvtSndObjctPos(mPos), 0);
+    dAudio::g_pSndObjEmy->startSound(SE_EMY_DOWN_NO_SCORE, mPos, 0);
 
     mHitType = HIT_STAR;
 
@@ -258,56 +229,44 @@ bool daBullet_c::hitProc_Shell(dCc_c *other) {
     dActor_c *owner = other->getOwner();
 
     if (owner->mSpeed.x >= 0.0f) {
-        mDeadMoveDirection = 0;
+        mDeadMoveDirection = DIR_LR_R;
     } else {
-        mDeadMoveDirection = 1;
+        mDeadMoveDirection = DIR_LR_L;
     }
 
     float mag = 1.75f + 0.35f * std::fabs(owner->mSpeed.x);
-    mVec3_c speed;
-    speed.x = mag * smc_DIR_PRM[mDeadMoveDirection];
-    speed.y = 2.75f;
-    speed.z = 0.0f;
+    mVec3_c speed(mag * smc_DIR_PRM[mDeadMoveDirection], 3.75f, 0.0f);
 
     setDeadMove(speed, 0x1000);
 
-    float collY = mCc.mCollPos.y;
-    float collX = mCc.mCollPos.x;
-    mVec3_c effectPos(collX, collY, 5500.0f);
+    mVec3_c effectPos(mCc.getCollPosX(), mCc.getCollPosY(), 5500.0f);
     mEf::createEffect("Wm_en_hit", 0, &effectPos, nullptr, nullptr);
 
-    dAudio::SndObjctCmnEmy_c* sndObj = dAudio::g_pSndObjEmy;
-    sndObj->startSound(SE_EMY_DOWN_NO_SCORE, dAudio::cvtSndObjctPos(mPos), 0);
+    dAudio::g_pSndObjEmy->startSound(SE_EMY_DOWN_NO_SCORE, mPos, 0);
 
-    mHitType = 3;
+    mHitType = HIT_SHELL;
 
     return true;
 }
 
 bool daBullet_c::hitProc_YoshiBullet(dCc_c *other) {
-    dActor_c *actor = other->getOwner();
+    dActor_c *owner = other->getOwner();
 
-    if (actor->mSpeed.x >= 0.0f) {
-        mDeadMoveDirection = 0;
+    if (owner->mSpeed.x >= 0.0f) {
+        mDeadMoveDirection = DIR_LR_R;
     } else {
-        mDeadMoveDirection = 1;
+        mDeadMoveDirection = DIR_LR_L;
     }
 
-    float mag = 1.75f + 0.35f * std::fabs(actor->mSpeed.x);
-    mVec3_c speed;
-    speed.x = mag * smc_DIR_PRM[mDeadMoveDirection];
-    speed.y = 2.75f;
-    speed.z = 0.0f;
+    float mag = 1.75f + 0.35f * std::fabs(owner->mSpeed.x);
+    mVec3_c speed(mag * smc_DIR_PRM[mDeadMoveDirection], 3.75f, 0.0f);
 
     setDeadMove(speed, 0xC00);
 
-    float collY = mCc.mCollPos.y;
-    float collX = mCc.mCollPos.x;
-    mVec3_c effectPos(collX, collY, 5500.0f);
+    mVec3_c effectPos(mCc.getCollPosX(), mCc.getCollPosY(), 5500.0f);
     mEf::createEffect("Wm_en_hit", 0, &effectPos, nullptr, nullptr);
 
-    dAudio::SndObjctCmnEmy_c* sndObj = dAudio::g_pSndObjEmy;
-    sndObj->startSound(SE_EMY_DOWN_NO_SCORE, dAudio::cvtSndObjctPos(mPos), 0);
+    dAudio::g_pSndObjEmy->startSound(SE_EMY_DOWN_NO_SCORE, mPos, 0);
 
     mHitType = HIT_YOSHI_BULLET;
 
@@ -340,7 +299,7 @@ bool daBullet_c::setEatSpitOut(dActor_c *eatingActor) {
     mCc.mCcData.mVsKind =
         BIT_FLAG(CC_KIND_PLAYER) |
         BIT_FLAG(CC_KIND_PLAYER_ATTACK) |
-        BIT_FLAG(CC_KIND_YOSHI) | 
+        BIT_FLAG(CC_KIND_YOSHI) |
         BIT_FLAG(CC_KIND_ENEMY);
     mCc.mCcData.mVsDamage = 0;
     mCc.mCcData.mCallback = revengeCallback;
@@ -356,15 +315,17 @@ bool daBullet_c::setEatSpitOut(dActor_c *eatingActor) {
 void daBullet_c::setSpitOutMove(dActor_c *eatingActor) {}
 
 bool daBullet_c::splashProc() {
-    float height = 0.0f;
     bool result = false;
 
-    int type = dBc_c::checkWater(mPos.x, mPos.y + 4.0f, mLayer, &height);
-    if (type == dBc_c::WATER_CHECK_WATER || type == dBc_c::WATER_CHECK_WATER_BUBBLE) {
-        mVec3_c splashPos(mPos.x, height, 6500.0f);
-        waterSplashEffect(splashPos, 1.0f);
-
-        result = true;
+    float height = 0.0f;
+    switch (dBc_c::checkWater(mPos.x, mPos.y + 4.0f, mLayer, &height)) {
+        case dBc_c::WATER_CHECK_WATER:
+        case dBc_c::WATER_CHECK_WATER_BUBBLE:
+            waterSplashEffect(mVec3_c(mPos.x, height, 6500.0f), 1.0f);
+            result = true;
+            break;
+        default:
+            break;
     }
 
     return result;
@@ -377,10 +338,7 @@ void daBullet_c::waterSplashEffect(const mVec3_c &pos, float scale) {
 
     dEffActorMng_c::m_instance->createWaterSplashEff(splashPos, splashFlags, -1, splashScale);
 
-    dAudio::SndObjctCmnMap_c* sndObj = dAudio::g_pSndObjMap;
-    mVec2_c objPos = dAudio::cvtSndObjctPos(pos);
-
-    sndObj->startSound(SE_OBJ_CMN_SPLASH, objPos, 0);
+    dAudio::g_pSndObjMap->startSound(SE_OBJ_CMN_SPLASH, pos, 0);
 
     dBg_c::m_bg_p->setWaterInWave(pos.x, pos.y, 6);
 }
@@ -442,9 +400,9 @@ void daBullet_c::executeState_HitReflect() {
 }
 
 void daBullet_c::deadRoll() {
-    mAngle.x += (u16)mDeadRollDelta.x;
-    mAngle.y += (u16)mDeadRollDelta.y;
-    mAngle.z += (u16)mDeadRollDelta.z;
+    mAngle.x += (u16) mDeadRollDelta.x;
+    mAngle.y += (u16) mDeadRollDelta.y;
+    mAngle.z += (u16) mDeadRollDelta.z;
 }
 
 void daBullet_c::initializeState_HitStar() {}

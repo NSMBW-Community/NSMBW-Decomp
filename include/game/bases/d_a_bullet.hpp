@@ -5,17 +5,14 @@
 
 class daBullet_c : public dActorState_c {
 public:
-    enum HIT_TYPE {
+    /// @unofficial
+    enum HitType_e {
         HIT_NONE,
         HIT_REFLECT,
         HIT_STAR,
         HIT_SHELL,
         HIT_YOSHI_BULLET
     };
-
-    static const float smc_DEAD_FALL_GRAVITY;
-    static const float smc_DEAD_FALL_YMAXSPEED;
-    static const float smc_DIR_PRM[];
 
     daBullet_c();
     virtual ~daBullet_c() {}
@@ -75,4 +72,8 @@ private:
     int mDeadMoveDirection;
     int mHitType;
     mAng3_c mDeadRollDelta;
+
+    static const float smc_DEAD_FALL_GRAVITY;
+    static const float smc_DEAD_FALL_YMAXSPEED;
+    static const float smc_DIR_PRM[];
 };
