@@ -3,7 +3,7 @@
 #include <game/framework/f_profile_name.hpp>
 #include <game/bases/d_game_com.hpp>
 
-CUSTOM_BASE_PROFILE(COLLECTION_COIN_BASE, dCollectionCoinBase_c, fProf::COLLECTION_COIN_BASE, fProf::DRAW_ORDER::COLLECTION_COIN_BASE);
+BASE_PROFILE(COLLECTION_COIN_BASE, dCollectionCoinBase_c);
 
 dCollectionCoinBase_c::dCollectionCoinBase_c() : mIsCreated(false) {}
 
@@ -27,7 +27,6 @@ int dCollectionCoinBase_c::create() {
 }
 
 bool dCollectionCoinBase_c::createLayout() {
-
     static const char *N_PANE_NAME_TBL[] = {
         "N_coinDateAll_00",
         "N_coinBarPos_00", "N_coinBarPos_01", "N_coinBarPos_02",
@@ -80,18 +79,18 @@ int dCollectionCoinBase_c::doDelete() {
 
 void dCollectionCoinBase_c::setDatePos() {
     for (int i = 0; i < STAR_COIN_MENU_LEVEL_COUNT; i++) {
-        nw4r::lyt::Pane *N_coinBarPos = mpNullPanes[N_coinBarPos_00+i];
+        nw4r::lyt::Pane *N_coinBarPos = mpNullPanes[N_coinBarPos_00 + i];
         nw4r::lyt::Pane *rootPane = mpDates[i]->mpRootPane;
 
         nw4r::math::MTX34 mtx = N_coinBarPos->GetGlobalMtx();
 
-        nw4r::math::VEC3 trans;
+        mVec3_c trans;
         trans.x = mtx[0][3];
         trans.y = mtx[1][3];
         trans.z = 0.0f;
         rootPane->SetTranslate(trans);
 
-        nw4r::math::VEC2 scale;
+        mVec2_c scale;
         scale.x = mtx[0][0];
         scale.y = mtx[1][1];
         rootPane->SetScale(scale);

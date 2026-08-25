@@ -14,7 +14,6 @@ class dCollectionCoinBase_c : public dBase_c {
 public:
 
     /// @brief The null panes used in the layout.
-    /// @unofficial
     enum N_PANE_e {
         N_coinDateAll_00,
         N_coinBarPos_00,
@@ -42,7 +41,7 @@ public:
     virtual int draw();
 
     /// @brief Loads the resources and creates the layout for the base.
-    /// @return If the creation was successful.
+    /// @return Whether the creation was successful.
     bool createLayout();
 
     /// @brief Updates the position of the dates every frame.
@@ -55,6 +54,6 @@ public:
     nw4r::lyt::Pane *mpRootPane; ///< The root pane of the layout.
     nw4r::lyt::Pane *mpNullPanes[N_COUNT]; ///< The null panes of the layout.
 
-    bool mIsCreated; ///< If the layout has been successfully created.
-    bool mIsVisible; ///< If the layout is currently visible.
+    bool mIsCreated; ///< Whether the layout has been successfully created.
+    bool mIsVisible; ///< Whether the layout is currently visible.
 };
