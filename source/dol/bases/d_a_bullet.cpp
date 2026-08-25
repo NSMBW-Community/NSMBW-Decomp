@@ -21,6 +21,8 @@ const float daBullet_c::smc_DIR_PRM[2] = {
     -1.0f
 };
 
+daBullet_c::~daBullet_c() {}
+
 int daBullet_c::create() {
     allocate();
     mActorProperties |= 0xA0;
