@@ -235,7 +235,7 @@ bool daBullet_c::hitProc_Shell(dCc_c *other) {
     }
 
     float mag = 1.75f + 0.35f * std::fabs(owner->mSpeed.x);
-    mVec3_c speed(mag * smc_DIR_PRM[mDeadMoveDirection], 3.75f, 0.0f);
+    mVec3_c speed(mag * smc_DIR_PRM[mDeadMoveDirection], 2.75f, 0.0f);
 
     setDeadMove(speed, 0x1000);
 
@@ -259,7 +259,7 @@ bool daBullet_c::hitProc_YoshiBullet(dCc_c *other) {
     }
 
     float mag = 1.75f + 0.35f * std::fabs(owner->mSpeed.x);
-    mVec3_c speed(mag * smc_DIR_PRM[mDeadMoveDirection], 3.75f, 0.0f);
+    mVec3_c speed(mag * smc_DIR_PRM[mDeadMoveDirection], 2.75f, 0.0f);
 
     setDeadMove(speed, 0xC00);
 
