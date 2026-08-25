@@ -31,6 +31,8 @@
 
 #define STAR_COIN_COUNT 3 ///< The amount of Star Coins per level.
 
+#define STAR_COIN_MENU_LEVEL_COUNT 12 ///< The maximum number of levels in the Star Coins Menu.
+
 #define STARTING_LIVES_COUNT 5 ///< The amount of starting lives.
 
 #define SUPER_GUIDE_DEATH_COUNT 8 ///< The amount of deaths required for the Super Guide to show.

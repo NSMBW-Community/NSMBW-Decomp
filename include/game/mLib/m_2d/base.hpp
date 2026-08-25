@@ -7,6 +7,7 @@ namespace m2d {
 /// @brief The draw order for 2D layouts.
 enum LAYOUT_DRAW_ORDER_e {
     DRAW_ORDER_COURSE_SELECT_GUIDE = 2,
+    DRAW_ORDER_COLLECTION_COIN_BASE = 5,
     DRAW_ORDER_SMALL_SCORE = 7,
     DRAW_ORDER_DEFAULT = 128, ///< The default draw order.
     DRAW_ORDER_MODEL_PLAY_GUIDE = 139,

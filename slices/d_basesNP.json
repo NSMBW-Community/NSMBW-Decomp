@@ -47,6 +47,14 @@
             }
         },
         {
+            "source": "d_basesNP/bases/d_collection_coin_base.cpp",
+            "memoryRanges": {
+                ".text": "0x89e0-0x8e00",
+                ".data": "0x1ba8-0x1d30",
+                ".rodata": "0x130-0x138"
+            }
+        },
+        {
             "source": "d_basesNP/bases/d_model_play_guide.cpp",
             "memoryRanges": {
                 ".text": "0x27820-0x27b20",
