@@ -51,6 +51,8 @@ public:
     void SetMapEnemyInfo(int, int, int, int);
     void FUN_800bbc40(int, int, int);
 
+    void startGame(const dInfo_c::StartGameInfo_s &);
+
     u8 getCourse() const { return m_startGameInfo.mLevel1; }
     u8 getWorld() const { return m_startGameInfo.mWorld1; }
     dCyuukan_c *getCyuukan() { return &mCyuukan; }

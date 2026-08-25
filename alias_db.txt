@@ -460,7 +460,6 @@ R_2_5_4da38  = g_profile_WORLD_9_DEMO
 R_2_5_4dff8  = g_profile_CRSIN
 R_2_5_4e710  = g_profile_GAMEOVER
 R_2_5_4ea98  = g_profile_MOVIE
-R_2_5_4f150  = g_profile_RESTART_CRSIN
 R_2_5_4f238  = g_profile_STAGE
 R_2_5_4fa70  = g_profile_WORLD_MAP
 R_2_5_4fff8  = g_profile_WORLD_SELECT

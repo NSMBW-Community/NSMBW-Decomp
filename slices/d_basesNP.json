@@ -155,6 +155,13 @@
             }
         },
         {
+            "source": "d_basesNP/bases/d_s_restart_crsin.cpp",
+            "memoryRanges": {
+                ".text": "0x1b6200-0x1b63f0",
+                ".data": "0x4f150-0x4f1a8"
+            }
+        },
+        {
             "source": "d_basesNP/bases/d_s_select.cpp",
             "memoryRanges": {
                 ".text": "0x1b63f0-0x1b64a0",
