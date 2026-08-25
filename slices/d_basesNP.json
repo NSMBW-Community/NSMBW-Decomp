@@ -48,10 +48,10 @@
         },
         {
             "source": "d_basesNP/bases/d_collection_coin_base.cpp",
-            "nonMatching": true,
             "memoryRanges": {
                 ".text": "0x89e0-0x8e00",
-                ".data": "0x1ba8-0x1d30"
+                ".data": "0x1ba8-0x1d30",
+                ".rodata": "0x130-0x138"
             }
         },
         {
