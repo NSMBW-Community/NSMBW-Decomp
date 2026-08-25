@@ -84,16 +84,16 @@ void dCollectionCoinBase_c::setDatePos() {
         nw4r::lyt::Pane *rootPane = mpDates[i]->mpRootPane;
 
         nw4r::math::MTX34 mtx = N_coinBarPos->GetGlobalMtx();
-        float transZ = 0.0f;
-        float scaleX = mtx[0][0];
-        float scaleY = mtx[1][1];
-        float transY = mtx[1][3];
-        float transX = mtx[0][3];
 
-        nw4r::math::VEC3 trans(transX, transY, transZ);
+        nw4r::math::VEC3 trans;
+        trans.x = mtx[0][3];
+        trans.y = mtx[1][3];
+        trans.z = 0.0f;
         rootPane->SetTranslate(trans);
 
-        nw4r::math::VEC2 scale(scaleX, scaleY);
+        nw4r::math::VEC2 scale;
+        scale.x = mtx[0][0];
+        scale.y = mtx[1][1];
         rootPane->SetScale(scale);
 
         u8 alpha = mpNullPanes[N_coinDateAll_00]->GetAlpha();
