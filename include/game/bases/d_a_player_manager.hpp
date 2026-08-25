@@ -67,4 +67,5 @@ public:
     static s16 m_star_count[4];
     static int mAllBalloon;
     static int mTimeUpPlayerNum;
+    static int mBonusNoCap;
 };

@@ -15,7 +15,7 @@ inline bool isZero(float val) {
 }
 
 float mVec3_c::normalize() {
-    float mag = PSVECMag(*this);
+    float mag = Len();
     if (!isZero(mag)) {
         operator*=(1.0f/mag);
     }
@@ -24,7 +24,7 @@ float mVec3_c::normalize() {
 }
 
 bool mVec3_c::normalizeRS() {
-    float mag = PSVECMag(*this);
+    float mag = Len();
     if (isZero(mag)) {
         return false;
     }

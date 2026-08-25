@@ -76,6 +76,9 @@ public:
     bool GXGetTevOrder(GXTevStageID stage, GXTexCoordID* pCoord,
                        GXTexMapID* pMap, GXChannelID* pChannel) const;
 
+    void GXSetTevOrder(GXTevStageID stage, GXTexCoordID coord, GXTexMapID map,
+                       GXChannelID channel);
+
     void GXSetTevColorIn(GXTevStageID stage, GXTevColorArg a, GXTevColorArg b,
                          GXTevColorArg c, GXTevColorArg d);
 

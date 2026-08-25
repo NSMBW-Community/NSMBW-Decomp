@@ -1,6 +1,6 @@
 #pragma once
 #include <game/bases/d_a_player_base.hpp>
-#include <game/bases/d_yoshi_mdl.hpp>
+#include <game/bases/d_yoshi_model.hpp>
 
 class daYoshi_c : public daPlBase_c {
 public:
@@ -22,4 +22,5 @@ public:
     bool fn_8014eb70(dAcPy_c *player, int); ///< @unofficial
     void getMouthMtx(mMtx_c *mtx);
     daPlBase_c *getPlayerRideOn() const;
+    void setTongueHitEffect(mVec3_c &pos);
 };
