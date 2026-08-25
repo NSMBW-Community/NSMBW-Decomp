@@ -385,7 +385,7 @@ void daBullet_c::waterSplashEffect(const mVec3_c &pos, float scale) {
     dBg_c::m_bg_p->setWaterInWave(pos.x, pos.y, 6);
 }
 
-bool daBullet_c::setDamage_Player(dActor_c *actor) {
+void daBullet_c::setDamage_Player(dActor_c *actor) {
     daPlBase_c *player = (daPlBase_c *) actor;
     player->setDamage(this, daPlBase_c::DAMAGE_DEFAULT);
 }

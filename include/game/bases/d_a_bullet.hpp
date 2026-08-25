@@ -64,7 +64,7 @@ public:
     bool checkYoshiDamage(dCc_c *self, dCc_c *other);
 
     bool splashProc();
-    bool setDamage_Player(dActor_c *actor);
+    void setDamage_Player(dActor_c *actor);
 
     static void collisionCallback(dCc_c *self, dCc_c *other);
     static void revengeCallback(dCc_c *self, dCc_c *other);
