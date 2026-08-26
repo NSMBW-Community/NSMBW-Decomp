@@ -28,5 +28,5 @@ public:
     /// @brief Starts the Peach's Castle stage.
     static void reStartPeachCastle();
 
-    static dInfo_c::StartGameInfo_s m_startGameInfo;
+    static dInfo_c::StartGameInfo_s m_startGameInfo; ///< Info used to start a level.
 };
