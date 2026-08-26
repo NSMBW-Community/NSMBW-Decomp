@@ -3,6 +3,9 @@
 #include <game/bases/d_actor_state.hpp>
 #include <game/bases/d_heap_allocator.hpp>
 
+/// @brief The base class for various projectile actors.
+/// @statetable
+/// @ingroup bases
 class daBullet_c : public dActorState_c {
 public:
     /// @unofficial
@@ -14,8 +17,8 @@ public:
         HIT_YOSHI_BULLET
     };
 
-    daBullet_c();
-    virtual ~daBullet_c() {}
+    daBullet_c(); ///< @copydoc dActor_c::dActor_c
+    virtual ~daBullet_c() {} ///< @copydoc dActor_c::~dActor_c
 
     virtual int create();
     virtual int preExecute();
@@ -37,16 +40,16 @@ public:
     STATE_VIRTUAL_FUNC_DECLARE(daBullet_c, HitShell);
     STATE_VIRTUAL_FUNC_DECLARE(daBullet_c, HitYoshiBullet);
 
-    virtual void createMdl();
-    virtual void removeMdl();
-    virtual void initialize();
+    virtual void createMdl(); ///< Creates the model for the bullet.
+    virtual void removeMdl(); ///< Removes the model for the bullet.
+    virtual void initialize(); ///< Subclass-specific initialization logic for the bullet.
 
-    virtual void setSpitOutMove(dActor_c *eatingActor);
-    virtual void setDeadMove(const mVec3_c &speed, short angle);
-    virtual void cullingProc();
+    virtual void setSpitOutMove(dActor_c *eatingActor); ///< Handle the bullet being spat out by Yoshi.
+    virtual void setDeadMove(const mVec3_c &speed, short angle); ///< Sets the movement parameters for the bullet after it has been hit.
+    virtual void cullingProc(); ///< Culls the bullet if needed.
 
-    virtual bool hitProc_Star(dCc_c *other);
-    virtual bool hitProc_Shell(dCc_c *other);
+    virtual bool hitProc_Star(dCc_c *other); ///< Handles the bullet being hit by a player or Yoshi with a star.
+    virtual bool hitProc_Shell(dCc_c *other); ///< Handles the bullet being hit by a shell.
     virtual bool hitProc_YoshiBullet(dCc_c *other);
     virtual bool hitProc_Reflect(dCc_c *other);
 
@@ -55,25 +58,25 @@ public:
     virtual void moveSE();
     virtual void deadRoll();
 
-    void allocate();
+    void allocate(); ///< Creates the allocator and load the model.
 
-    bool checkPlayerDamage(dCc_c *self, dCc_c *other);
-    bool checkYoshiDamage(dCc_c *self, dCc_c *other);
+    bool checkPlayerDamage(dCc_c *self, dCc_c *other); ///< Returns whether a player with a star is touching the bullet.
+    bool checkYoshiDamage(dCc_c *self, dCc_c *other); ///< Returns whether a Yoshi with a star is touching the bullet.
 
-    bool splashProc();
-    void setDamage_Player(dActor_c *actor);
+    bool splashProc(); ///< Checks if the water has been hit by the bullet and creates a splash effect if so.
+    void setDamage_Player(dActor_c *actor); ///< Triggers damage to a player that touched the bullet.
 
-    static void collisionCallback(dCc_c *self, dCc_c *other);
-    static void revengeCallback(dCc_c *self, dCc_c *other);
+    static void collisionCallback(dCc_c *self, dCc_c *other); ///< Regular collision callback for the bullet.
+    static void revengeCallback(dCc_c *self, dCc_c *other); ///< Collision callback for when the bullet was spat back out by Yoshi.
 
 private:
-    dHeapAllocator_c mAllocator;
-    BOOL mHasSplashed;
-    int mDeadMoveDirection;
-    int mHitType;
-    mAng3_c mDeadRollDelta;
+    dHeapAllocator_c mAllocator; ///< The allocator.
+    BOOL mHasSplashed; ///< Whether the bullet has splashed in water yet.
+    int mHitMoveDirection; ///< The direction to travel after the bullet has been hit.
+    HitType_e mHitType; ///< The type of hit that the bullet has received.
+    mAng3_c mHitRollDelta; ///< The rotation delta to apply to the bullet each frame after it has been hit.
 
-    static const float smc_DEAD_FALL_GRAVITY;
-    static const float smc_DEAD_FALL_YMAXSPEED;
-    static const float smc_DIR_PRM[];
+    static const float smc_DEAD_FALL_GRAVITY; ///< The gravity to apply to a falling bullet.
+    static const float smc_DEAD_FALL_YMAXSPEED; ///< The maximum falling speed of a bullet.
+    static const float smc_DIR_PRM[]; ///< The unit direction values for left and right movement of the bullet.
 };

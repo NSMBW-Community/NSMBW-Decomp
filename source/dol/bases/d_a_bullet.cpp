@@ -51,17 +51,16 @@ int daBullet_c::preExecute() {
             case HIT_REFLECT:
                 mStateMgr.changeState(StateID_HitReflect);
                 break;
-
             case HIT_STAR:
                 mStateMgr.changeState(StateID_HitStar);
                 break;
-
             case HIT_SHELL:
                 mStateMgr.changeState(StateID_HitShell);
                 break;
-
             case HIT_YOSHI_BULLET:
                 mStateMgr.changeState(StateID_HitYoshiBullet);
+                break;
+            default:
                 break;
         }
     }
@@ -194,10 +193,10 @@ void daBullet_c::setDeadMove(const mVec3_c &speed, short angle) {
 
     mAccelY = smc_DEAD_FALL_GRAVITY;
 
-    if (mDirection == mDeadMoveDirection) {
-        mDeadRollDelta.set(angle, 0, 0);
+    if (mDirection == mHitMoveDirection) {
+        mHitRollDelta.set(angle, 0, 0);
     } else {
-        mDeadRollDelta.set(-angle, 0, 0);
+        mHitRollDelta.set(-angle, 0, 0);
     }
 }
 
@@ -205,13 +204,13 @@ bool daBullet_c::hitProc_Star(dCc_c *other) {
     dActor_c *owner = other->getOwner();
 
     if (mPos.x >= owner->mPos.x) {
-        mDeadMoveDirection = DIR_LR_R;
+        mHitMoveDirection = DIR_LR_R;
     } else {
-        mDeadMoveDirection = DIR_LR_L;
+        mHitMoveDirection = DIR_LR_L;
     }
 
     float mag = 1.75f + 0.35f * std::fabs(owner->mSpeed.x);
-    mVec3_c speed(mag * smc_DIR_PRM[mDeadMoveDirection], 3.75f, 0.0f);
+    mVec3_c speed(mag * smc_DIR_PRM[mHitMoveDirection], 3.75f, 0.0f);
 
     setDeadMove(speed, 0x1000);
 
@@ -229,13 +228,13 @@ bool daBullet_c::hitProc_Shell(dCc_c *other) {
     dActor_c *owner = other->getOwner();
 
     if (owner->mSpeed.x >= 0.0f) {
-        mDeadMoveDirection = DIR_LR_R;
+        mHitMoveDirection = DIR_LR_R;
     } else {
-        mDeadMoveDirection = DIR_LR_L;
+        mHitMoveDirection = DIR_LR_L;
     }
 
     float mag = 1.75f + 0.35f * std::fabs(owner->mSpeed.x);
-    mVec3_c speed(mag * smc_DIR_PRM[mDeadMoveDirection], 2.75f, 0.0f);
+    mVec3_c speed(mag * smc_DIR_PRM[mHitMoveDirection], 2.75f, 0.0f);
 
     setDeadMove(speed, 0x1000);
 
@@ -253,13 +252,13 @@ bool daBullet_c::hitProc_YoshiBullet(dCc_c *other) {
     dActor_c *owner = other->getOwner();
 
     if (owner->mSpeed.x >= 0.0f) {
-        mDeadMoveDirection = DIR_LR_R;
+        mHitMoveDirection = DIR_LR_R;
     } else {
-        mDeadMoveDirection = DIR_LR_L;
+        mHitMoveDirection = DIR_LR_L;
     }
 
     float mag = 1.75f + 0.35f * std::fabs(owner->mSpeed.x);
-    mVec3_c speed(mag * smc_DIR_PRM[mDeadMoveDirection], 2.75f, 0.0f);
+    mVec3_c speed(mag * smc_DIR_PRM[mHitMoveDirection], 2.75f, 0.0f);
 
     setDeadMove(speed, 0xC00);
 
@@ -274,9 +273,9 @@ bool daBullet_c::hitProc_YoshiBullet(dCc_c *other) {
 }
 
 bool daBullet_c::hitProc_Reflect(dCc_c *other) {
-    mDeadMoveDirection = mDirection ^ 1;
+    mHitMoveDirection = mDirection ^ 1;
 
-    mVec3_c speed(1.75f * smc_DIR_PRM[mDeadMoveDirection], 2.75f, 0.0f);
+    mVec3_c speed(1.75f * smc_DIR_PRM[mHitMoveDirection], 2.75f, 0.0f);
 
     setDeadMove(speed, 0x600);
     mHitType = HIT_REFLECT;
@@ -400,9 +399,9 @@ void daBullet_c::executeState_HitReflect() {
 }
 
 void daBullet_c::deadRoll() {
-    mAngle.x += (u16) mDeadRollDelta.x;
-    mAngle.y += (u16) mDeadRollDelta.y;
-    mAngle.z += (u16) mDeadRollDelta.z;
+    mAngle.x += (u16) mHitRollDelta.x;
+    mAngle.y += (u16) mHitRollDelta.y;
+    mAngle.z += (u16) mHitRollDelta.z;
 }
 
 void daBullet_c::initializeState_HitStar() {}
