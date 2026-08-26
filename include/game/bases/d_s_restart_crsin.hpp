@@ -4,10 +4,10 @@
 
 /**
  * @brief This scene is used to "restart" levels.
- * It is used for the following purposes:
+ * @ingroup bases
+ * @details It is used for the following purposes:
  * - Returning to Peach's Castle after a Hint Movie ends.
  * - Starting the title screen stage.
- * @ingroup bases
  */
 class dScRestartCrsin_c : public dScene_c {
 public:
@@ -23,7 +23,7 @@ public:
     /// @brief Starts the title screen stage or a title replay.
     /// @param isReplay Whether it will start a random replay or the title screen.
     /// @param forceChange If the scene transition should always be performed.
-    static void startTitle(unsigned char isReplay, bool forceChange);
+    static void startTitle(u8 isReplay, bool forceChange);
 
     /// @brief Starts the Peach's Castle stage.
     static void reStartPeachCastle();

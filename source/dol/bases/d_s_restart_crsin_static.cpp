@@ -4,8 +4,8 @@
 
 dInfo_c::StartGameInfo_s dScRestartCrsin_c::m_startGameInfo;
 
-void dScRestartCrsin_c::startTitle(unsigned char isReplay, bool forceChange) {
-    static const u8 c_stage[15][2] = {
+void dScRestartCrsin_c::startTitle(u8 isReplay, bool forceChange) {
+    static const u8 c_stage[][2] = {
         {WORLD_1, STAGE_4},
         {WORLD_1, STAGE_6},
         {WORLD_2, STAGE_1},
@@ -27,12 +27,12 @@ void dScRestartCrsin_c::startTitle(unsigned char isReplay, bool forceChange) {
         m_startGameInfo.mWorld1 = WORLD_1;
         m_startGameInfo.mLevel1 = STAGE_TITLE;
         m_startGameInfo.mGameMode = dInfo_c::GAME_MODE_TITLE;
-        m_startGameInfo.mIsReplay = 0;
+        m_startGameInfo.mIsReplay = false;
     } else {
         m_startGameInfo.mWorld1 = c_stage[dScStage_c::m_titleRandomTable[dScStage_c::m_titleCount]][0];
         m_startGameInfo.mLevel1 = c_stage[dScStage_c::m_titleRandomTable[dScStage_c::m_titleCount]][1];
         m_startGameInfo.mGameMode = dInfo_c::GAME_MODE_TITLE_REPLAY;
-        m_startGameInfo.mIsReplay = 1;
+        m_startGameInfo.mIsReplay = true;
     }
 
     m_startGameInfo.mWorld2 = m_startGameInfo.mWorld1;

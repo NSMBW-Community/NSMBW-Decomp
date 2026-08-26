@@ -20,19 +20,18 @@ int dScRestartCrsin_c::create() {
     dScene_c::setFadeInOutFrame(1);
 
     nw4r::ut::Color color;
-    color = 0xFF;
+    color = nw4r::ut::Color::BLACK;
     dSys_c::setClearColor(color);
 
     return SUCCEEDED;
 }
 
 int dScRestartCrsin_c::preExecute() {
-    return dScene_c::preExecute() != 0;
+    return dScene_c::preExecute() != NOT_READY;
 }
 
 int dScRestartCrsin_c::execute() {
     dInfo_c::m_instance->startGame(m_startGameInfo);
-
     return SUCCEEDED;
 }
 
