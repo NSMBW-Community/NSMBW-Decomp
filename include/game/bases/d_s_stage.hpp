@@ -50,6 +50,8 @@ public:
     static u32 m_exeFrame;
     static int m_loopType;
     static PLAYER_TYPE_e mCollectionCoin[STAR_COIN_COUNT];
+    static int m_titleCount;
+    static u8 m_titleRandomTable[];
 
     static const char mCdArcName[];
 
