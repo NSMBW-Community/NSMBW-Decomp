@@ -1,0 +1,45 @@
+/*!
+@class dCsvData_c
+@details
+## Overview
+This class reads the CSV files located in WorldMap/RouteInfo.arc, which describe the structure of the world map -
+how the nodes are connected, which course unlocks which other course, and which world map enemies are present.
+
+## Point data layout
+Each line in the point CSV file contains a number of fields, separated by commas.
+If no more non-empty fields are present, the line may be terminated early with a carriage return and newline character.
+
+The fields are as follows:
+### Line number
+This is ignored by the game but is just a sequential number starting from 1 for each line in the file.
+### Point name
+The name of the point which is being described.
+### Point types
+This is a comma-separated list of properties of the point. See PointFlag_e.
+### Open point names (Regular exit)
+This is a comma-separated list of point names which are unlocked when the player completes the course at this point.
+### Open route names (Regular exit)
+This is a comma-separated list of route names which are unlocked when the player completes the course at this point.
+### Flag data (Regular exit)
+This seems to never be used in the vanilla world maps, but it is referenced in:
+- ReadFlagData()
+- GetRouteAnimNum()
+- GetRouteAnimName()
+### Open point names (Secret exit)
+This is a comma-separated list of point names which are unlocked when the player completes the secret exit of the course at this point.
+### Open route names (Secret exit)
+This is a comma-separated list of route names which are unlocked when the player completes the secret exit of the course at this point.
+### Flag data (Secret exit)
+See the regular exit version of this.
+
+## Route data layout
+Each line in the route CSV file contains a number of fields, separated by commas.
+The fields are as follows:
+### Route name
+The name of the route, in the format @p Rxxxxyyyy, where @p xxxx and @p yyyy denote the two connected points.
+### Route action type
+The type of the route. This determines the animation of the player when they traverse the route. See ActionType_e.
+### Route Flags
+This is a comma-separated list of flags for the route. Only used in World 5 for the moving vines.
+
+*/
