@@ -503,12 +503,14 @@
         },
         {
             "source": "dol/bases/d_wm_csvdata.cpp",
-            "nonMatching": true,
             "memoryRanges": {
                 ".text": "0xecdf0-0xef960",
+                ".ctors": "0x170-0x174",
                 ".data": "0x1d960-0x1daa8",
                 ".rodata": "0x5690-0x56e0",
+                ".bss": "0x22650-0x22660",
                 ".sdata": "0x1298-0x1428",
+                ".sbss": "0x578-0x590",
                 ".sdata2": "0x1ee0-0x1f18"
             }
         },

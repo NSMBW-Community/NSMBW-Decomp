@@ -54,6 +54,8 @@ namespace dWmLib {
     u8 getStartPointKinokoHouseKindNum();
     bool isStartPointKinokoHouseStar();
     bool isStartPointKinokoHouseRed();
+    void GetStartPointNameFromRouteName(const char *routeName, char *pointName);
+    void GetEndPointNameFromRouteName(const char *routeName, char *pointName);
 
     int GetOpenStatus(int world, int course);
     int GetClearStatus(int world, int course);
