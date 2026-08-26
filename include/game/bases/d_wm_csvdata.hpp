@@ -186,6 +186,7 @@ public:
     /// @param maxLevel The maximum depth of the search.
     /// @param resetLevel Whether to reset the search depth counter. Should be true for the initial call and false for recursive calls.
     /// @return True if a path was found, false otherwise.
+    /// @unofficial
     bool findSubRoutesForRoute(const char *startPointName, const char *endPointName, Route_s *route, int maxLevel, bool resetLevel = true);
 
     /// @brief Searches the subroute graph for a path between two points and appends the child points to @p route.
