@@ -118,21 +118,25 @@ public:
         u8 m_1bc;
     };
 
+    /// @brief Contains the data for a point-to-point route on the world map.
     struct SubRoute_s {
-        char mName[MAX_ROUTE_NAME_LEN];
-        ActionType_e mActionType;
+        char mName[MAX_ROUTE_NAME_LEN]; ///< The name of the route.
+        ActionType_e mActionType; ///< The action type of the route.
         int m_10;
         u8 mFlags;
     };
 
+    /// @brief Contains the points of a route on the world map.
+    /// @details The difference between this and SubRoute_s is that a route can span multiple subroutes.
+    /// E.g. R00010003, consisting of subroutes R00010002 and R00020003 and the points 0001, 0002, and 0003.
     struct Route_s {
-        char mName[MAX_ROUTE_NAME_LEN];
-        char (*mChildPoints)[MAX_POINT_NAME_LEN];
-        int mPointNum;
-        int mLevel;
+        char mName[MAX_ROUTE_NAME_LEN]; ///< The name of the route.
+        char (*mChildPoints)[MAX_POINT_NAME_LEN]; ///< The points that make up the route.
+        int mChildPointNum; ///< The number of occupied entries in mChildPoints.
+        int mNumSubroutes; ///< The number of subroutes this route is make up of.
     };
 
-    virtual ~dCsvData_c();
+    virtual ~dCsvData_c(); ///< Destroys the class.
 
     /// @brief Initializes the class and loads the CSV data for the specified world and subworld.
     void initialize(int world, int subworld);
@@ -156,31 +160,55 @@ public:
     void addKeyPoint(const m3d::mdl_c &model); ///< Adds a key point from a model.
     void SetRouteInfo(const m3d::mdl_c &model); ///< Creates a route from a model and adds it to the route list.
 
-    const char *GetPointName(int idx) const;
-    const char *GetOpenPointName(bool regularExit, int idx, int openPointIdx) const;
-    int GetOpenPointNum(bool regularExit, int idx) const;
-    const char *GetOpenRouteName(bool regularExit, int idx, int openRouteIdx) const;
-    int GetOpenRouteNum(bool regularExit, int idx) const;
-    u32 GetPointFlags(int idx, PointFlag_e type) const; ///< @unofficial
-    u32 GetEnemyPointFlags(int idx, EnemyFlag_e type) const; ///< @unofficial
-    u32 GetPointParam(int idx);
-    const char *GetRouteName(int idx);
-    const char *GetChildPointName(int idx, int childIdx);
-    const char *GetSubRouteName(int idx);
-    int GetSubRouteIdx(const char *pointA, const char *pointB);
-    int GetPointNum(int idx);
-    u32 GetSubRouteFlag(int idx);
-    int GetRouteAnimNum(bool regularExit, int idx);
-    const char *GetRouteAnimName(bool regularExit, int idx, int animIdx);
+    const char *GetPointName(int idx) const; ///< Returns the name of a point at the specified index.
+    const char *GetOpenPointName(bool regularExit, int idx, int openPointIdx) const; ///< Returns the name of a point that is opened from a regular or secret exit from this point.
+    int GetOpenPointNum(bool regularExit, int idx) const; ///< Returns the number of points that are opened from a regular or secret exit from this point.
+    const char *GetOpenRouteName(bool regularExit, int idx, int openRouteIdx) const; ///< Returns the name of a route that is opened from a regular or secret exit from this point.
+    int GetOpenRouteNum(bool regularExit, int idx) const; ///< Returns the number of routes that are opened from a regular or secret exit from this point.
+    u32 GetPointFlags(int idx, PointFlag_e flags) const; ///< Returns the flags ANDed with @p flags. @unofficial
+    u32 GetEnemyPointFlags(int idx, EnemyFlag_e flags) const; ///< Returns the enemy flags ANDed with @p flags. @unofficial
+    u32 GetPointParam(int idx); ///< Returns the parameter value for this point.
 
-    bool appendChildFromSubRoute(const char *, const char *, Route_s *, int, bool);
-    bool fn_800f5d20(const char *, const char *, Route_s *, int, bool);
-    void appendChildFromModel(const nw4r::g3d::ResNode &node, int);
-    void adjustChildInfo(Route_s *route);
+    const char *GetRouteName(int idx); ///< Returns the name of a route at the specified index.
+    const char *GetChildPointName(int idx, int childIdx); ///< Returns the name of a point that is part of a route at the specified index.
+    const char *GetSubRouteName(int idx); ///< Returns the name of a subroute at the specified index.
+    int GetSubRouteIdx(const char *pointA, const char *pointB); ///< Returns the index of a route connecting two points.
+    int GetPointNum(int idx); ///< Returns the number of points that are part of a route at the specified index.
+    u32 GetSubRouteFlag(int idx); ///< Returns the flags for a route at the specified index.
 
-    bool isLineEnd(char *csv, int pos);
+    int GetRouteAnimNum(bool regularExit, int idx); ///< Returns the number of flag data entries for a point.
+    const char *GetRouteAnimName(bool regularExit, int idx, int animIdx); ///< Returns the value of a flag data entry for a point.
 
+    /// @brief Searches the subroute graph for a path between two points and writes the length of the path to @p route.
+    /// @param startPointName The name of the starting point.
+    /// @param endPointName The name of the ending point.
+    /// @param route The route to write the path length to.
+    /// @param maxLevel The maximum depth of the search.
+    /// @param resetLevel Whether to reset the search depth counter. Should be true for the initial call and false for recursive calls.
+    /// @return True if a path was found, false otherwise.
+    bool findSubRoutesForRoute(const char *startPointName, const char *endPointName, Route_s *route, int maxLevel, bool resetLevel = true);
+
+    /// @brief Searches the subroute graph for a path between two points and appends the child points to @p route.
+    /// @details This function assumes the length of the path has already been determined with findSubRoutesForRoute.
+    /// @param startPointName The name of the starting point.
+    /// @param endPointName The name of the ending point.
+    /// @param route The route to write the points to.
+    /// @param maxLevel The maximum depth of the search.
+    /// @param resetLevel Whether to reset the search depth counter. Should be true for the initial call and false for recursive calls.
+    /// @return True if everything was successful, false otherwise.
+    bool appendChildFromSubRoute(const char *startPointName, const char *endPointName, Route_s *route, int maxLevel, bool resetLevel = true);
+
+    void appendChildFromModel(const nw4r::g3d::ResNode &node, int); ///< Appends the child points of a route from a model to @p route.
+    void adjustChildInfo(Route_s *route); ///< Reverses the order of the child points of a route.
+
+    bool isLineEnd(char *csv, int pos); ///< Returns whether the the CSV has a line ending at the specified position.
+
+    /// @brief Initializes a route with the specified number of child points.
+    /// @param route The route to initialize.
+    /// @param childCount The number of child points to allocate for the route.
     static void initRouteStruct(Route_s *route, int childCount);
+
+    /// @brief Destroys a route and frees its child point data.
     static void destroyRouteStruct(Route_s *route);
 
 private:
