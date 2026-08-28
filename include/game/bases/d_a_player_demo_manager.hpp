@@ -21,6 +21,7 @@ public:
     int getPoleBelowPlayer(int playerNo);
     int getControlDemoPlayerNum() const;
     int getNextDemoNo();
+    void releaseDemoMode(int);
 
     void setBossDownPlayerNo(int plNo);
     void setBossDown(daPlBase_c *player) {

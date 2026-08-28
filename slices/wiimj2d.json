@@ -147,6 +147,19 @@
             }
         },
         {
+            "source": "dol/bases/d_a_boss_demo.cpp",
+            "memoryRanges": {
+                ".text": "0x16430-0x172d0",
+                ".ctors": "0x20-0x24",
+                ".data": "0x3140-0x3420",
+                ".bss": "0xfd8-0x10e8",
+                ".sdata": "0x180-0x190",
+                ".sbss": "0x90-0x98",
+                ".sdata2": "0x188-0x198",
+                ".sbss2": "0x0-0x8"
+            }
+        },
+        {
             "source": "dol/bases/d_a_bullet.cpp",
             "memoryRanges": {
                 ".text": "0x172d0-0x18f40",

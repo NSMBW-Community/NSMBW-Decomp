@@ -2,11 +2,15 @@
 
 #include <game/mLib/m_vec.hpp>
 
+class daBossDemo_c;
+
 class dActorMng_c {
 public:
-    u8 mPad1[0x28];
+    u8 mPad1[0x18];
+    daBossDemo_c *mpCurrBossDemo;
+    u8 mPad2[0xc];
     int mGoombaZOrderThing;
-    u8 mPad2[0x218];
+    u8 mPad3[0x218];
 
     void createUpCoin(const mVec3_c &pos, u8 dir, u8 count, u8 layer);
     void allEnemyDeath(int);

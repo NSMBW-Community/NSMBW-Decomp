@@ -2,6 +2,7 @@
 #include <game/bases/d_scene.hpp>
 #include <game/bases/d_info.hpp>
 #include <game/bases/d_fader.hpp>
+#include <game/bases/d_otehon_clear.hpp>
 #include <game/mLib/m_vec.hpp>
 #include <constants/game_constants.h>
 
@@ -29,7 +30,7 @@ public:
 
     static void setTitleReplayRandomTable();
 
-    static void setNextScene(u16, int, Exit_e, dFader_c::fader_type_e);
+    static void setNextScene(ProfileName, int, Exit_e, dFader_c::fader_type_e);
 
     static void createReplayDataHeap(EGG::Heap *heap, ulong size, int options);
 
@@ -56,6 +57,7 @@ public:
     static const char mCdArcName[];
 
     static bool m_isCourseOut; ///< Whether the game is transitioning from a stage scene to a non-stage scene.
+    static dOtehonClear_c *m_OtehonClear_p;
     static bool m_KoopaJrEscape;
     static dInfo_c::GameMode_e m_gameMode;
     static Exit_e m_exitMode;
