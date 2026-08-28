@@ -21,9 +21,9 @@ const sCcDatNewF l_noko_cc = {
     dEn_c::normal_collcheck
 };
 
-const float l_walk_speed[2] = { 0.5f, -0.5f };
-const s16 l_turn_speed[2] = { ANGLE_360_DIV(32), -ANGLE_360_DIV(32) };
-const s16 l_turn_target_angle[2] = { DEG_TO_ANGLE(90), -DEG_TO_ANGLE(90) };
+const float daEnNoko_c::smc_WALK_SPEED[2] = { 0.5f, -0.5f };
+const s16 daEnNoko_c::smc_TURN_SPEED[2] = { ANGLE_360_DIV(32), -ANGLE_360_DIV(32) };
+const s16 daEnNoko_c::smc_TURN_TARGET_ANGLE[2] = { DEG_TO_ANGLE(90), -DEG_TO_ANGLE(90) };
 
 STATE_DEFINE(daEnNoko_c, BlockAppear);
 STATE_DEFINE(daEnNoko_c, Walk);
@@ -52,7 +52,7 @@ int daEnNoko_c::create() {
     u8 dir = getPl_LRflag(mPos);
     mDirection = dir;
     mAmiLayer = ACTOR_PARAM(SubLayer);
-    mAngle.y = l_turn_target_angle[dir];
+    mAngle.y = smc_TURN_TARGET_ANGLE[dir];
     mCreatePos = mPos;
     mFlags |= dEn_c::EN_FLAG_16;
     mPos.z = l_Ami_Zpos[ACTOR_PARAM(SubLayer)];
@@ -269,7 +269,7 @@ bool daEnNoko_c::playerDamageTurn(dActor_c *actor) {
     }
 
     mDirection = dir;
-    mAngle.y = l_turn_target_angle[dir];
+    mAngle.y = smc_TURN_TARGET_ANGLE[dir];
     mHeadAngle *= -1;
     turnAround();
 
@@ -297,7 +297,7 @@ bool daEnNoko_c::turnProc() {
     doTurn(&turnDir, &turnSpeed);
     mAngle.y += turnSpeed;
 
-    mAng target = l_turn_target_angle[turnDir];
+    mAng target = smc_TURN_TARGET_ANGLE[turnDir];
     if (mAngle.y.abs() >= target.abs()) {
         mAngle.y = target;
         return true;
@@ -308,7 +308,7 @@ bool daEnNoko_c::turnProc() {
 
 void daEnNoko_c::doTurn(int *dir, s16 *turnSpeed) {
     *dir = mDirection;
-    *turnSpeed = l_turn_speed[*dir];
+    *turnSpeed = smc_TURN_SPEED[*dir];
 }
 
 void daEnNoko_c::setZPos() {
@@ -473,9 +473,9 @@ void daEnNoko_c::initializeState_Walk() {
     mShellMode = SHELL_MODE_NOKO_WALK;
     mAccelY = -0.1875f;
     mAccelF = 0.05f;
-    mSpeedMax.set(l_walk_speed[mDirection], -4.0f, 0.0f);
+    mSpeedMax.set(smc_WALK_SPEED[mDirection], -4.0f, 0.0f);
     mSensorFootNormal = l_noko_foot;
-    mSpeed.x = l_walk_speed[mDirection];
+    mSpeed.x = smc_WALK_SPEED[mDirection];
     m_8c8 = 0;
 }
 
@@ -493,7 +493,7 @@ void daEnNoko_c::executeState_Walk() {
             mSpeedMax.x = 0.0f;
         }
     } else {
-        mSpeedMax.x = l_walk_speed[mDirection];
+        mSpeedMax.x = smc_WALK_SPEED[mDirection];
     }
 
     calcSpeedX();
@@ -688,7 +688,7 @@ void daEnNoko_c::initializeState_BgmDanceEd() {
     setMoveAnimation("walkA", m3d::FORWARD_ONCE, 4.0f);
     mSpeed.x = 0.0f;
     mDanceTimer = 4;
-    mBgmDanceRotSpeed = abs(l_turn_target_angle[mDirection]) / mDanceTimer;
+    mBgmDanceRotSpeed = abs(smc_TURN_TARGET_ANGLE[mDirection]) / mDanceTimer;
 }
 
 void daEnNoko_c::finalizeState_BgmDanceEd() {}
@@ -704,10 +704,10 @@ void daEnNoko_c::executeState_BgmDanceEd() {
 
     if (mDanceTimer > 0) {
         mDanceTimer--;
-        sLib::chaseAngle(&mAngle.y.mAngle, l_turn_target_angle[mDirection], mBgmDanceRotSpeed);
+        sLib::chaseAngle(&mAngle.y.mAngle, smc_TURN_TARGET_ANGLE[mDirection], mBgmDanceRotSpeed);
 
         if (mDanceTimer <= 0) {
-            mAngle.y = l_turn_target_angle[mDirection];
+            mAngle.y = smc_TURN_TARGET_ANGLE[mDirection];
             changeState(StateID_Walk);
         }
     }
