@@ -34,6 +34,9 @@ public:
     static int getYoshiColor(u8 plrNo);
     static int getYoshiFruit(u8 plrNo);
     static daYoshi_c *createYoshi(mVec3_c &, int, dAcPy_c *);
+    static bool setYoshi(daYoshi_c *);
+    static void initYoshiPriority(daYoshi_c *);
+    static void releaseYoshi(daYoshi_c *);
 
     static bool isItemKinopio(int plrNo) {
         bool res = false;

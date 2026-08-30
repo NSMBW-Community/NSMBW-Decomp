@@ -4,7 +4,7 @@
 #include <game/mLib/m_vec.hpp>
 #include <game/mLib/m_mtx.hpp>
 
-class dAcPy_c;
+class daPlBase_c;
 
 class dPyMdlBase_c {
 public:
@@ -73,10 +73,11 @@ public:
     u32 get151CheckVal() { return 2; }
 
     u8 mPad1[0x1c];
-    dAcPy_c *mpOwner;
+    daPlBase_c *mpOwner;
     dPyMdlBase_c *mpSpinLiftParentMdl;
     m3d::anmChr_c mAnm;
-    u8 mPad3[0x6c];
+    m3d::anmChr_c mAnm2;
+    u8 mPad3[0x34];
     mVec3_c mHatPosMaybe;
     u8 mPad4[0x30];
     mMtx_c mMtx;
@@ -86,7 +87,8 @@ public:
     u8 m_151;
     u8 m_152;
     int mCurrAnmID;
-    u8 mPad7[8];
+    int mPrevAnmID;
+    u8 mPad7[4];
     u32 mFlags;
     u8 mPad8[0x18];
     u32 m_17c;

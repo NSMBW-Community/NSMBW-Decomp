@@ -295,6 +295,7 @@ namespace dAudio {
     void setMainBgmNo(int);
     void setBgmMode(int);
     void updateBgmInfo();
+    u8 getBgmAccentSign();
     bool isBgmAccentSign(u8);
     void pauseOffMove(int);
     void pauseMove(int);

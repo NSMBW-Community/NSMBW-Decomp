@@ -9598,7 +9598,7 @@ bool dAcPy_c::ccCheckStamp(dCc_c *self, dCc_c *other) {
             if (
                 self->getCenterPosY() > other->getUnderPos() &&
                 (!selfPlayer->isNowBgCross(BGC_FOOT) || selfPlayer->isOnSinkSand()) &&
-                yoshi->m_94 == 0
+                yoshi->m_50 == 0
             ) {
                 return yoshi->fn_8014eb70(selfPlayer, 0);
             }
@@ -9677,7 +9677,7 @@ void dAcPy_c::ccCallBack(dCc_c *self, dCc_c *other) {
         if (ccCheckStamp(self, other)) {
             return;
         }
-        if (yoshi->m_94 == 0) {
+        if (yoshi->m_50 == 0) {
             return;
         }
 

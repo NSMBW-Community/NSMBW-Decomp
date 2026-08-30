@@ -706,6 +706,8 @@ public:
 
     mVec3_c getCarryPos();
 
+    PLAYER_TYPE_e getPlayerType() const { return mPlayerType; }
+
     mMtx_c getCarryMtx() {
         mMtx_c mtx;
         mtx.trans(getCarryPos());
@@ -725,6 +727,7 @@ public:
         return sc_DirSpeed[mDirection];
     }
 
+    PLAYER_TYPE_e mPlayerType;
     int mIsRescueKinopio;
     PLAYER_POWERUP_e mPowerupCopy;
     PLAYER_POWERUP_e mPowerupCopy2;
@@ -863,7 +866,6 @@ public:
     dPropelParts_c mPropelParts;
     dPlayerOrchestra_c mPlayerOrchestra;
 
-    ACTOR_PARAM_CONFIG(PlayerNo, 0, 4);
     ACTOR_PARAM_CONFIG(CreateAction, 16, 8);
     ACTOR_PARAM_CONFIG(Direction, 24, 1);
 

@@ -518,7 +518,9 @@ public:
         STATUS_FOLLOW_MAME_KURIBO, ///< Mini Goombas are attached to the player.
         STATUS_IS_PENGUIN, ///< The player is in the penguin suit.
         STATUS_HIP_ATTACK, ///< The player is in the ground pound action and is not yet about to stand back up.
-        STATUS_B3 = 0xb3, /// [Yoshi only?]
+        STATUS_B0 = 0xb0, /// [Yoshi only?]
+        STATUS_B2 = 0xb2, /// [Yoshi only?]
+        STATUS_B3, /// [Yoshi only?]
         STATUS_ABOUT_TO_BE_DELETED = 0xb5,
         STATUS_ITEM_KINOPIO_DISPLAY_OUT,
         STATUS_B7,
@@ -538,7 +540,8 @@ public:
         STATUS_C5,
         STATUS_C8 = 0xc8,
         STATUS_C9,
-        STATUS_CA
+        STATUS_CA,
+        STATUS_CB
     };
 
     class jmpInf_c {
@@ -1077,7 +1080,6 @@ public:
 
     float getDirSpeed() const { return sc_DirSpeed[mDirection]; }
 
-    PLAYER_TYPE_e getPlayerType() const { return mPlayerType; }
     u8 getDirection() const { return mDirection; }
     PLAYER_POWERUP_e getPowerup() const { return mPowerup; }
 
@@ -1295,7 +1297,7 @@ public:
     float m_1138;
     float m_113c;
 
-    PLAYER_TYPE_e mPlayerType;
+    ACTOR_PARAM_CONFIG(PlayerNo, 0, 4);
 
     static const float sc_DirSpeed[];
     static const float sc_JumpSpeed;

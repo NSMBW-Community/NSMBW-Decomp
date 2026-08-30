@@ -2850,8 +2850,9 @@ float daPlBase_c::getWaterDokanCenterOffset(float param1) {
     /// @unofficial
     static const float l_maxOffsets[] = { 12.0f, 15.0f, 13.0f, 13.0f };
     float max = 16.0f;
-    if (mKind == 1) {
-        max = l_maxOffsets[mPlayerType];
+    if (mKind == STAGE_ACTOR_PLAYER) {
+        dAcPy_c *selfPlayer = (dAcPy_c *) this;
+        max = l_maxOffsets[selfPlayer->mPlayerType];
     }
     float pos = getCenterY() - mPos.y;
     if (pos > max) {
@@ -2977,7 +2978,7 @@ void daPlBase_c::initDemoInDokanUD(u8 dir) {
         float tmp;
         if (mKind == STAGE_ACTOR_YOSHI) {
             tmp = 30.0f;
-            daPlBase_c *pl = ((daYoshi_c *) this)->getPlayerRideOn();
+            dAcPy_c *pl = ((daYoshi_c *) this)->getPlayerRideOn();
             if (pl != nullptr) {
                 int t = pl->mPlayerType;
                 switch (pl->mPowerup) {
