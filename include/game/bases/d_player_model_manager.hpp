@@ -240,7 +240,9 @@ enum AnmID_e {
 
 class dPyMdlMng_c {
 public:
-    enum ModelType_e {};
+    enum ModelType_e {
+        MODEL_TYPE_YOSHI = 5
+    };
     enum SceneType_e {
         SCENE_TYPE_0
     };
@@ -290,6 +292,18 @@ public:
 
     int getAnm() const {
         return mpMdl->mCurrAnmID;
+    }
+
+    int getPrevAnm() const {
+        return mpMdl->mPrevAnmID;
+    }
+
+    m3d::anmChr_c &getAnm1() const {
+        return mpMdl->mAnm;
+    }
+
+    m3d::anmChr_c &getAnm2() const {
+        return mpMdl->mAnm2;
     }
 
     float getLastFrame() const {

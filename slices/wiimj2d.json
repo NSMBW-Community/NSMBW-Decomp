@@ -624,6 +624,18 @@
             }
         },
         {
+            "source": "dol/bases/d_a_yoshi.cpp",
+            "nonMatching": true,
+            "memoryRanges": {
+                ".text": "0x144c80-0x14e080",
+                ".ctors": "0x1ec-0x1f0",
+                ".data": "0x283b0-0x28ed0",
+                ".rodata": "0x7b10-0x7c28",
+                ".bss": "0x25438-0x258f8",
+                ".sdata2": "0x2998-0x2a70"
+            }
+        },
+        {
             "source": "dol/bases/d_pausewindow.cpp",
             "memoryRanges": {
                 ".text": "0x153d00-0x1552f0",

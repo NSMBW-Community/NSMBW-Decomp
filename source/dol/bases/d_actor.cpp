@@ -665,8 +665,8 @@ float dActor_c::calcEatScaleRate(dActor_c *eatingActor) {
     float res = 1.0f;
     daYoshi_c *yoshi = (daYoshi_c *) eatingActor;
 
-    if (yoshi->m_a0 <= 1) {
-        res = yoshi->m_a0 / 1.25f;
+    if (yoshi->m_5c <= 1) {
+        res = yoshi->m_5c / 1.25f;
     }
     return res;
 }

@@ -30,4 +30,10 @@ public:
 
     sSpeedData mDataNormal;
     sSpeedData mDataStar;
+
+    static sSpeedData sc_player_mame;
+    static sSpeedData sc_player_mame_star;
+    static sSpeedData sc_player_normal;
+    static sSpeedData sc_player_normal_star;
+    static const float sc_gravity_data[];
 };
