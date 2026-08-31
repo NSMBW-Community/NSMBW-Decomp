@@ -4,6 +4,7 @@
 #include <lib/nw4r/g3d.h>
 #include <lib/MSL/stdlib.h>
 #include <constants/sjis_constants.h>
+/// @file
 
 const int dCsvData_c::c_COURSE_ID = STAGE_1;
 const int dCsvData_c::c_GHOST_ID = STAGE_GHOST_HOUSE;
@@ -19,8 +20,8 @@ const int dCsvData_c::c_PEACH_ID = STAGE_PEACH_CASTLE;
 
 const char *l_routeInfoArcName = "RouteInfo";
 
-// Reads a single CSV field into a buffer.
-// Returns the length of the field read.
+/// @brief Reads a single CSV field into a buffer.
+/// @return The length of the field read.
 int read(char *buffer, const char *csv, int bufferSize) {
     int len = 0;
     if (*csv == '"') {

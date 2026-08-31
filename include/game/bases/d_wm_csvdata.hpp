@@ -2,6 +2,7 @@
 
 #include <types.h>
 #include <game/mLib/m_3d.hpp>
+/// @file
 
 #define MAX_POINT_COUNT (192)
 #define MAX_SUBROUTE_COUNT (160)
@@ -100,21 +101,21 @@ public:
     /// @brief Contains the data for a single point on the world map.
     struct Point_s {
         char mName[MAX_POINT_NAME_LEN]; ///< The name of the point.
-        char mOpenPointNameRegular[MAX_OPEN_POINT_COUNT][MAX_POINT_NAME_LEN]; ///< The points to be opened from a regular exit.
-        char mRouteNameRegular[MAX_OPEN_ROUTE_COUNT][MAX_ROUTE_NAME_LEN]; ///< The routes to be opened from a regular exit.
-        char mOpenPointNameSecret[MAX_OPEN_POINT_COUNT][MAX_POINT_NAME_LEN]; ///< The points to be opened from a secret exit.
-        char mRouteNameSecret[MAX_OPEN_ROUTE_COUNT][MAX_ROUTE_NAME_LEN]; ///< The routes to be opened from a secret exit.
+        char mOpenPointNameRegular[MAX_OPEN_POINT_COUNT][MAX_POINT_NAME_LEN]; ///< The points to be opened by the regular exit.
+        char mRouteNameRegular[MAX_OPEN_ROUTE_COUNT][MAX_ROUTE_NAME_LEN]; ///< The routes to be opened by the regular exit.
+        char mOpenPointNameSecret[MAX_OPEN_POINT_COUNT][MAX_POINT_NAME_LEN]; ///< The points to be opened by the secret exit.
+        char mRouteNameSecret[MAX_OPEN_ROUTE_COUNT][MAX_ROUTE_NAME_LEN]; ///< The routes to be opened by the secret exit.
         int mOpenPointNumRegular; ///< The number of points in mOpenPointNameRegular.
         int mOpenRouteNumRegular; ///< The number of routes in mRouteNameRegular.
         int mOpenRouteNumSecret; ///< The number of routes in mRouteNameSecret.
         int mOpenPointNumSecret; ///< The number of points in mOpenPointNameSecret.
-        char mFlagDataRegular[MAX_FLAG_DATA_COUNT][MAX_FLAG_DATA_LEN]; ///< The point flag data for a regular exit.
-        char mFlagDataSecret[MAX_FLAG_DATA_COUNT][MAX_FLAG_DATA_LEN]; ///< The point flag data for a secret exit.
+        char mFlagDataRegular[MAX_FLAG_DATA_COUNT][MAX_FLAG_DATA_LEN]; ///< The point flag data for the regular exit.
+        char mFlagDataSecret[MAX_FLAG_DATA_COUNT][MAX_FLAG_DATA_LEN]; ///< The point flag data for the secret exit.
         int mFlagDataNumRegular; ///< The number of entries in mFlagDataRegular.
         int mFlagDataNumSecret; ///< The number of entries in mFlagDataSecret.
-        u32 mFlags; ///< Is a bitfield of PointFlag_e values.
-        u8 mParam; ///< A parameter value for the point. [Seems to only be used for "anchor[0-9]" / "anchor[xy][0-9]" points].
-        u32 mFlagsEnemy; ///< Is a bitfield of EnemyFlag_e values.
+        u32 mFlags; ///< A bitfield of PointFlag_e values.
+        u8 mParam; ///< A parameter value for the point. @decompnote{Seems to only be used for "anchor[0-9]" / "anchor[xy][0-9]" points}.
+        u32 mFlagsEnemy; ///< A bitfield of EnemyFlag_e values.
         u8 m_1bc;
     };
 
@@ -133,7 +134,7 @@ public:
         char mName[MAX_ROUTE_NAME_LEN]; ///< The name of the route.
         char (*mChildPoints)[MAX_POINT_NAME_LEN]; ///< The points that make up the route.
         int mChildPointNum; ///< The number of occupied entries in mChildPoints.
-        int mNumSubroutes; ///< The number of subroutes this route is make up of.
+        int mNumSubroutes; ///< The number of subroutes this route is made up of.
     };
 
     virtual ~dCsvData_c(); ///< Destroys the class.

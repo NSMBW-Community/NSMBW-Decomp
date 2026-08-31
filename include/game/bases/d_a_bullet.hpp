@@ -44,7 +44,7 @@ public:
     virtual void removeMdl(); ///< Removes the model for the bullet.
     virtual void initialize(); ///< Subclass-specific initialization logic for the bullet.
 
-    virtual void setSpitOutMove(dActor_c *eatingActor); ///< Handle the bullet being spat out by Yoshi.
+    virtual void setSpitOutMove(dActor_c *eatingActor); ///< Handles the bullet being spat out by Yoshi.
     virtual void setDeadMove(const mVec3_c &speed, short angle); ///< Sets the movement parameters for the bullet after it has been hit.
     virtual void cullingProc(); ///< Culls the bullet if needed.
 
@@ -63,7 +63,7 @@ public:
     bool checkPlayerDamage(dCc_c *self, dCc_c *other); ///< Returns whether a player with a star is touching the bullet.
     bool checkYoshiDamage(dCc_c *self, dCc_c *other); ///< Returns whether a Yoshi with a star is touching the bullet.
 
-    bool splashProc(); ///< Checks if the water has been hit by the bullet and creates a splash effect if so.
+    bool splashProc(); ///< Checks if the bullet has hit water and creates a splash effect if so.
     void setDamage_Player(dActor_c *actor); ///< Triggers damage to a player that touched the bullet.
 
     static void collisionCallback(dCc_c *self, dCc_c *other); ///< Regular collision callback for the bullet.
