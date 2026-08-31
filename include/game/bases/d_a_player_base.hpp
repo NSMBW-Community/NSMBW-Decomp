@@ -130,6 +130,19 @@ public:
     };
 
     /// @unofficial
+    enum LandSubstate_e {
+        LAND_ACTION_0,
+        LAND_ACTION_1
+    };
+
+    /// @unofficial
+    enum TurnSubstate_e {
+        TURN_ACTION_0,
+        TURN_ACTION_1,
+        TURN_ACTION_2
+    };
+
+    /// @unofficial
     enum DemoType_e {
         DEMO_0,
         DEMO_1,

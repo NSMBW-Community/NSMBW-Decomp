@@ -25,6 +25,14 @@ public:
         WALK_ANM_STATE_MOVE
     };
 
+    /// @unofficial
+    enum CloudSubstate_e {
+        CLOUD_ANM_STATE_INITIAL,
+        CLOUD_ANM_STATE_MOVE,
+        CLOUD_ANM_STATE_CROUCH,
+        CLOUD_ANM_STATE_END_CROUCH
+    };
+
     daYoshi_c(); ///< @copydoc daPlBase_c::daPlBase_c()
     virtual ~daYoshi_c(); ///< @copydoc daPlBase_c::~daPlBase_c()
 
@@ -53,6 +61,12 @@ public:
     virtual void walkAction_Wait() override;
     virtual void walkActionInit_Move(AnmBlend_e blend) override;
     virtual void walkAction_Move() override;
+    virtual bool checkCrouch() override;
+    virtual bool setCancelCrouch() override;
+    virtual void slipActionMove(int) override;
+    virtual void setFallAction() override;
+    virtual float getCloudOffsetY() override;
+    bool setHipAttackOnEnemy(mVec3_c *attachPos) override;
     virtual short getMukiAngle(u8 direction) override;
     virtual int turnAngle() override;
 
@@ -68,6 +82,17 @@ public:
     void changeWalkAction();
     void setJumpCommonBase();
     void setJumpSpeed();
+    void setJumpAnm();
+    void setFunbariJumpEffect();
+    void calcYoshiJump();
+    void updateJumpAction();
+    void setCrouchSmokeEffect();
+    void CrouchAction_Ground();
+    void setTurnSmokeEffect();
+    void setTurnMoveSpeed();
+    bool setHipAttackAction();
+    void setCloudStateMove();
+    void setCloudStateCrouch();
 
     void changePlrNo(u8);
     void changeEatState(const sStateIDIf_c &state);
@@ -97,12 +122,13 @@ public:
     static void atCcCallback(dCc_c *self, dCc_c *other);
 
     dPyMdlMng_c mModelMng;
-    sFStateMgr_c<daYoshi_c, sStateMethodUsr_FI_c> mStateMgr;
+    sFStateMgr_c<daYoshi_c, sStateMethodUsr_FI_c> mStateMgr; // [Seems unused?]
     u8 mPad1[0x4];
     fBaseID_e m_4c;
     int m_50;
     float m_54;
-    u8 mPad2[0x4];
+    u8 m_58;
+    bool m_59;
     int m_5c;
     u8 mPad3[0xc];
     u8 mYoshiDirection;
