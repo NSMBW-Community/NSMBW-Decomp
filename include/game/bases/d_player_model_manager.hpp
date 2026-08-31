@@ -32,7 +32,8 @@ public:
 
 class dYoshiModel_HIO_c {
 public:
-    float mData[4];
+    float mCloudOffset;
+    float mData[3];
 };
 
 class dPyMdlBase_HIO_c {

@@ -600,3 +600,604 @@ void daYoshi_c::setJumpSpeed() {
 
     mSpeed.y = jumpSpeed;
 }
+
+void daYoshi_c::setJumpAnm() {
+    if (isStatus(STATUS_STAR_JUMP)) {
+        mModelMng.setAnm(PLAYER_ANIM_STAR_ROLL_DUPLICATE);
+    } else if (isStatus(STATUS_KANI_JUMP)) {
+        mModelMng.setAnm(PLAYER_ANIM_W_JUMP1, 0.0f, 0.0f);
+    } else if (isStatus(STATUS_SIT_JUMP)) {
+        mModelMng.setAnm(PLAYER_ANIM_S_JUMP);
+    } else {
+        mModelMng.setAnm(PLAYER_ANIM_JUMP, 0.0f, 0.0f);
+    }
+}
+
+void daYoshi_c::setFunbariJumpEffect() {
+    startSound(SE_PLY_YOSHI_FJUMP, false);
+    mVec3_c pos;
+    mModelMng.mpMdl->getJointPos(&pos, 15);
+    mAng3_c ang(0, 0, 0);
+    if (mDirection == DIR_LR_L) {
+        ang.y = DEG_TO_ANGLE(-180);
+    }
+    mLevelEffect2.createEffect("Wm_mr_yssweat", 0, &pos, &ang, nullptr);
+}
+
+void daYoshi_c::calcYoshiJump() {
+    gravitySet();
+    switch (m_58) {
+        case 0:
+            if (!m_59) {
+                m_58 = 4;
+            } else if (mSpeed.y < 0.0f) {
+                if (isStatus(STATUS_SIT_JUMP)) {
+                    mModelMng.setAnm(PLAYER_ANIM_S_JUMP2);
+                } else {
+                    mModelMng.setAnm(STATUS_STUNNED, 10.0f, 0.0f);
+                }
+                m_58 = 1;
+            }
+            break;
+        case 1:
+            if (mSpeed.y < -2.0f && mKey.buttonYoshiJump()) {
+                m_59 = false;
+                m_58 = 2;
+                mModelMng.setAnm(PLAYER_ANIM_F_JUMP);
+            }
+            break;
+        case 2:
+            setFunbariJumpEffect();
+            float rate = mSpeed.y;
+            if (rate < 0.0f) {
+                rate = 0.0f;
+            }
+            mModelMng.mpMdl->setFunbariRate(rate / 2.0f);
+            float limit = 1.5f;
+            if (std::fabs(mMaxSpeedF) > limit) {
+                if (mMaxSpeedF > 0.0f) {
+                    mMaxSpeedF = limit;
+                } else {
+                    mMaxSpeedF = -limit;
+                }
+                mAccelF = 0.05f;
+            }
+            if (mSpeed.y > -1.0f) {
+                mAccelY = 0.07f;
+            } else {
+                mAccelY = 0.2f;
+            }
+            if (isNowBgCross(BGC_HEAD)) {
+                m_58 = 4;
+            } else if (!mKey.buttonYoshiJump() || mSpeed.y > 2.4f) {
+                mModelMng.setAnm(PLAYER_ANIM_JUMP2, 10.0f, 0.0f);
+                m_58 = 4;
+            }
+            break;
+    }
+}
+
+void daYoshi_c::updateJumpAction() {
+    turnAngle();
+
+    if (setHipAttackAction()) {
+        return;
+    }
+
+    if (isNowBgCross((BgCross1_e) (BGC_WALL_TOUCH_L_2 | BGC_WALL_TOUCH_R_2))) {
+        mKey.offStatus(dAcPyKey_c::STATUS_DISABLE_LR);
+    }
+    calcYoshiJump();
+
+    if (!isNowBgCross(BGC_FOOT)) {
+        return;
+    }
+
+    setLandJumpEffect(1);
+    if (isStatus(STATUS_SIT_JUMP)) {
+        changeState(StateID_Crouch, CROUCH_ARG_FROM_SIT_JUMP);
+    } else if (!checkWalkNextAction()) {
+        mAngle.x = 0;
+        if (isStatus(STATUS_JUMP) && isNowBgCross(BGC_GROUNDED_MOVE_UP)) {
+            changeState(StateID_Land, true);
+        } else if (mSpeedF) {
+            changeWalkAction();
+        } else {
+            if (isStatus(STATUS_KANI_JUMP)) {
+                mModelMng.setAnm(PLAYER_ANIM_2JUMPED_DUPLICATE, 0.0f, 0.0f);
+            } else {
+                mModelMng.setAnm(PLAYER_ANIM_JUMPED);
+            }
+            changeState(StateID_Land, false);
+        }
+    }
+}
+
+void daYoshi_c::initializeState_Jump() {
+    daPlBase_c::initializeState_Jump();
+    m_58 = 0;
+    onStatus(STATUS_B2);
+    mSpeedMax.x = 0.0f;
+    mAngle.x = 0;
+    mAngle.y = getMukiAngle(mDirection);
+    setStartJumpEffect(1);
+    jmpInf_c *jmpInf = stateArg<jmpInf_c *>();
+    int jumpMode = 1;
+    if (jmpInf != nullptr) {
+        jumpMode = jmpInf->mJumpMode;
+        if (jumpMode == 2 && !mKey.buttonJump()) {
+            jumpMode = 0;
+        }
+    }
+    switch (jumpMode) {
+        case 2:
+            startSound(SE_PLY_JUMP_S_HIGH, false);
+            break;
+        case 1:
+            startSound(SE_PLY_JUMP, false);
+            break;
+    }
+    if (jmpInf != nullptr && jmpInf->mSpeed) {
+        mSpeed.y = jmpInf->mSpeed;
+    } else {
+        setJumpSpeed();
+    }
+    setJumpAnm();
+    setJumpCommonBase();
+}
+
+void daYoshi_c::finalizeState_Jump() {
+    daPlBase_c::finalizeState_Jump();
+    offStatus(STATUS_B2);
+}
+
+void daYoshi_c::executeState_Jump() {
+    daPlBase_c::executeState_Jump();
+    gravitySet();
+    maxFallSpeedSet();
+    moveSpeedSet();
+    powerSet();
+    updateJumpAction();
+}
+
+void daYoshi_c::setFallAction() {
+    if (isNowBgCross(BGC_FOOT)) {
+        return;
+    }
+
+    if (m_50 == 0) {
+        changeState(StateID_AloneWait);
+    } else {
+        changeState(StateID_Fall);
+    }
+}
+
+void daYoshi_c::initializeState_Fall() {
+    daPlBase_c::initializeState_Fall();
+    onStatus(STATUS_B2);
+    m_58 = 0;
+    setJumpCommonBase();
+    moveSpeedSet();
+}
+
+void daYoshi_c::finalizeState_Fall() {
+    daPlBase_c::finalizeState_Fall();
+    offStatus(STATUS_B2);
+}
+
+void daYoshi_c::executeState_Fall() {
+    daPlBase_c::executeState_Fall();
+    gravitySet();
+    maxFallSpeedSet();
+    moveSpeedSet();
+    powerSet();
+    updateJumpAction();
+    setDelayHelpJump();
+}
+
+void daYoshi_c::initializeState_Land() {
+    if (mSubstate != LAND_ACTION_1) {
+        return;
+    }
+
+    mSpeedF = 0.0f;
+    mModelMng.setAnm(PLAYER_ANIM_2JUMPED, 2.0f, 0.0f, 0.0f);
+}
+
+void daYoshi_c::finalizeState_Land() {}
+
+void daYoshi_c::executeState_Land() {
+    gravitySet();
+    maxFallSpeedSet();
+    simpleMoveSpeedSet();
+    powerSet();
+    if (checkWalkNextAction()) {
+        return;
+    }
+
+    if (isNowBgCross((BgCross1_e) (BGC_WALL_TOUCH_L_2 | BGC_WALL_TOUCH_R_2))) {
+        mKey.offStatus(dAcPyKey_c::STATUS_DISABLE_LR);
+    }
+
+    if (mSubstate == 0) {
+        if (mKey.buttonWalk(nullptr) || mModelMng.isAnmStop()) {
+            changeWalkAction();
+        }
+    } else {
+        mSpeedF = 0.0f;
+        if (mKey.buttonWalk(nullptr) && mModelMng.mpMdl->mAnm.getFrame() >= 10.0f || mModelMng.isAnmStop()) {
+            changeWalkAction();
+        }
+    }
+}
+
+void daYoshi_c::initializeState_SitJump() {
+    m_58 = 0;
+    onStatus(STATUS_CAN_SPIN);
+    onStatus(STATUS_9E);
+    onStatus(STATUS_SIT_JUMP);
+    onStatus(STATUS_JUMP);
+    onStatus(STATUS_B2);
+    mSpeedMax.x = 0.0f;
+    int arg = stateArg<int>();
+    if (arg == 0) {
+        startSound(SE_PLY_JUMP, false);
+        setJumpSpeed();
+        setJumpAnm();
+    } else {
+        mModelMng.setAnm(PLAYER_ANIM_S_JUMP2);
+    }
+    setStartJumpEffect(1);
+    setJumpCommonBase();
+}
+
+void daYoshi_c::finalizeState_SitJump() {
+    mAngle.x = 0;
+    mAngle.y = getMukiAngle(mDirection);
+    offStatus(STATUS_JUMP);
+    offStatus(STATUS_9E);
+    offStatus(STATUS_CAN_SPIN);
+    offStatus(STATUS_88);
+    offStatus(STATUS_SIT_JUMP);
+    offStatus(STATUS_B2);
+}
+
+void daYoshi_c::executeState_SitJump() {
+    gravitySet();
+    maxFallSpeedSet();
+    moveSpeedSet();
+    airPowerSet();
+    updateJumpAction();
+    if (!(mModelMng.getFlags() & 1)) {
+        offStatus(STATUS_SIT_JUMP);
+    }
+    if (mSpeed.y < 0.0f) {
+        offStatus(STATUS_AA);
+        if (!mKey.buttonCrouch() && !checkStandUpRoof()) {
+            jmpInf_c jmpInf(mSpeed.y, 0, BLEND_DEFAULT);
+            changeState(StateID_Jump, &jmpInf);
+        }
+    }
+}
+
+bool daYoshi_c::checkCrouch() {
+    if (
+        !isStatus(STATUS_51) &&
+        !isStatus(STATUS_SIT_JUMP) &&
+        mKey.buttonCrouch() &&
+        !isNowBgCross((BgCross1_e) (BGC_IN_SINK_SAND | BGC_ON_SINK_SAND)) &&
+        !isStatus(STATUS_BE)
+    ) {
+        changeState(StateID_Crouch, CROUCH_ARG_FROM_WALK);
+        return true;
+    }
+    return false;
+}
+
+void daYoshi_c::initializeState_Crouch() {
+    mSubstate = 0;
+    switch (stateArg<CrouchArg_e>()) {
+        case CROUCH_ARG_FROM_WALK:
+            if (!isNowBgCross(BGC_WATER_SHALLOW)) {
+                mModelMng.setAnm(PLAYER_ANIM_STOOP_START);
+            } else {
+                mModelMng.setAnm(PLAYER_ANIM_STOOP_START, 3.0f, 0.0f, dPyMdlBase_c::scWaterCrouchAnmSpeed);
+            }
+            break;
+        case CROUCH_ARG_FROM_OTHER:
+            mModelMng.setAnm(PLAYER_ANIM_STOOP, 3.0f, 0.0f);
+            break;
+        case CROUCH_ARG_FROM_SIT_JUMP:
+            mModelMng.setAnm(PLAYER_ANIM_S_JUMPED, 0.0f);
+            break;
+    }
+    startSound(SE_PLY_QUAT, true);
+    onStatus(STATUS_51);
+    onStatus(STATUS_B2);
+}
+
+void daYoshi_c::finalizeState_Crouch() {
+    offStatus(STATUS_AA);
+    offStatus(STATUS_51);
+    offStatus(STATUS_A0);
+    offStatus(STATUS_B2);
+}
+
+void daYoshi_c::executeState_Crouch() {
+    gravitySet();
+    maxFallSpeedSet();
+    if (isNowBgCross(BGC_FOOT)) {
+        mMaxSpeedF = 0.0f;
+        grandPowerSet();
+    } else {
+        simpleMoveSpeedSet();
+        airPowerSet();
+    }
+    turnAngle();
+    CrouchAction_Ground();
+    int anmID = mModelMng.getAnm();
+    if ((anmID == PLAYER_ANIM_STOOP_START || anmID == PLAYER_ANIM_S_JUMPED) && mModelMng.isAnmStop()) {
+        mModelMng.setAnm(PLAYER_ANIM_STOOP, 10.0f, 0.0f);
+    }
+}
+
+bool daYoshi_c::setCancelCrouch() {
+    daPlBase_c::setCancelCrouch();
+}
+
+void daYoshi_c::setCrouchSmokeEffect() {
+    if (mSpeedF && !isNowBgCross(BGC_WATER_SHALLOW)) {
+        mVec3_c pos;
+        mModelMng.mpMdl->getJointPos(&pos, 1);
+        setBrakeSmokeEffect(pos);
+        setSlipSE();
+    }
+}
+
+void daYoshi_c::CrouchAction_Ground() {
+    offStatus(STATUS_A0);
+
+    if (isNowBgCross((BgCross1_e) (BGC_IN_SINK_SAND | BGC_ON_SINK_SAND)) && setCancelCrouch()) {
+        return;
+    }
+
+    if (setCrouchJump()) {
+        return;
+    }
+
+    if (checkCrouchSlip()) {
+        return;
+    }
+
+    if (!isNowBgCross(BGC_FOOT)) {
+        changeState(StateID_SitJump, true);
+    } else {
+        setCrouchSmokeEffect();
+        if (!mKey.buttonCrouch() && !setCancelCrouch()) {
+            return;
+        }
+    }
+}
+
+void daYoshi_c::initializeState_Slip() {
+    daPlBase_c::initializeState_Slip();
+}
+
+void daYoshi_c::finalizeState_Slip() {
+    daPlBase_c::finalizeState_Slip();
+}
+
+void daYoshi_c::slipActionMove(int a) {
+    if (isNowBgCross(BGC_FOOT) && std::fabs(mSpeedF) > 0.1f) {
+        setSlipSmokeEffect();
+        setSlipSE();
+    }
+    daPlBase_c::slipActionMove(a);
+}
+
+void daYoshi_c::executeState_Slip() {
+    daPlBase_c::executeState_Slip();
+}
+
+void daYoshi_c::setTurnSmokeEffect() {
+    mVec3_c pos;
+    mModelMng.mpMdl->getJointPos(&pos, 7);
+    setBrakeSmokeEffect(pos);
+    setTurnSmokeEffect();
+}
+
+void daYoshi_c::setTurnMoveSpeed() {
+    sTurnPowerData data;
+    getTurnPower(data);
+    if (mSubstate != 2) {
+        mMaxSpeedF = 0.0f;
+        if (isSaka()) {
+            u8 dir = mDirection;
+            if (mSpeedF < 0.0f) {
+                dir = 1;
+            } else if (mSpeedF > 0.0f) {
+                dir = 0;
+            }
+            if (mBc.getSakaUpDown(dir) == 1) {
+                mAccelF = data.mSakaUp;
+            } else {
+                mAccelF = data.mSakaDown;
+            }
+        } else {
+            mAccelF = data.mNormal;
+        }
+    } else {
+        int dir;
+        if (mKey.buttonWalk(&dir)) {
+            if (mKey.buttonDush()) {
+                mMaxSpeedF = sc_DirSpeed[dir] * getSpeedData()->mHighSpeed;
+            } else {
+                mMaxSpeedF = sc_DirSpeed[dir] * getSpeedData()->mLowSpeed;
+            }
+        } else {
+            mMaxSpeedF = 0.0f;
+        }
+        mAccelF = data.mAir;
+    }
+}
+
+void daYoshi_c::initializeState_Turn() {
+    u8 dir = 0;
+    mSubstate = 0;
+    mModelMng.setAnm(PLAYER_ANIM_TURN, 0.0f, 0.0f);
+    if (mSpeedF < 0.0f) {
+        dir = 1;
+    }
+    mAngle.y = getMukiAngle(dir);
+    mDirection ^= 1;
+    mAccelY = getGravityData()[0];
+    mMaxFallSpeed = sc_MaxFallSpeed;
+    setTurnMoveSpeed();
+    dAcPy_c *pl = getPlayerRideOn();
+    if (pl != nullptr) {
+        pl->mKey.onStatus(dAcPyKey_c::STATUS_SHAKE_COOLDOWN);
+    }
+}
+
+void daYoshi_c::finalizeState_Turn() {
+    fadeOutTurnEffect();
+}
+
+void daYoshi_c::executeState_Turn() {
+    if (checkWalkNextAction()) {
+        return;
+    }
+
+    setTurnMoveSpeed();
+    switch ((TurnSubstate_e) mSubstate) {
+        case TURN_ACTION_0:
+            setTurnSmokeEffect();
+            if (mSpeedF == 0.0f) {
+                mSubstateTimer = 8;
+                mSubstate = TURN_ACTION_1;
+            }
+            if (!mKey.buttonWalk(nullptr)) {
+                if (mSpeedF) {
+                    mDirection = (mSpeedF < 0.0f) ? DIR_LR_L : DIR_LR_R;
+                }
+                setTurnEnd();
+            }
+            break;
+        case TURN_ACTION_1:
+            setTurnSmokeEffect();
+            if (mDirection != mPrevDirection) {
+                setTurnEnd();
+            } else if (mSubstateTimer == 0) {
+                fadeOutTurnEffect();
+                mSubstate = TURN_ACTION_2;
+                mModelMng.setAnm(PLAYER_ANIM_TURNED, 1.0f, 0.0f, 0.0f);
+            }
+            break;
+        case TURN_ACTION_2:
+            if (mDirection != mPrevDirection || mModelMng.isAnmStop()) {
+                setTurnEnd();
+            }
+            break;
+    }
+}
+
+bool daYoshi_c::setHipAttackAction() {
+    if (
+        !isStatus(STATUS_A7) &&
+        !isNowBgCross(BGC_FOOT) &&
+        !isNowBgCross(BGC_37) &&
+        mKey.checkHipAttack()
+    ) {
+        changeState(StateID_HipAttack, HIP_ATTACK_ARG_PLAYER);
+        return true;
+    }
+    return false;
+}
+
+bool daYoshi_c::setHipAttackOnEnemy(mVec3_c *attachPos) {
+    if (isState(StateID_HipAttack) && isStatus(STATUS_HIP_ATTACK_FALL)) {
+        onStatus(STATUS_PRESS_ATTACH);
+        mPressAttachPos = *attachPos;
+        return true;
+    }
+
+    return false;
+}
+
+void daYoshi_c::initializeState_HipAttack() {
+    daPlBase_c::initializeState_HipAttack();
+    onStatus(STATUS_91);
+}
+
+void daYoshi_c::finalizeState_HipAttack() {
+    daPlBase_c::finalizeState_HipAttack();
+    offStatus(STATUS_91);
+}
+
+void daYoshi_c::executeState_HipAttack() {
+    daPlBase_c::executeState_HipAttack();
+}
+
+void daYoshi_c::initializeState_Cloud() {
+    daPlBase_c::initializeState_Cloud();
+    onStatus(STATUS_B2);
+    dAcPy_c *pl = getPlayerRideOn();
+    if (pl != nullptr) {
+        pl->setScrollMode(6);
+    }
+}
+
+void daYoshi_c::finalizeState_Cloud() {
+    daPlBase_c::finalizeState_Cloud();
+    offStatus(STATUS_B2);
+    dAcPy_c *pl = getPlayerRideOn();
+    if (pl != nullptr) {
+        pl->setScrollMode(0);
+    }
+}
+
+float daYoshi_c::getCloudOffsetY() {
+    return dPyMdlMng_c::m_hio.mYoshiModel->mCloudOffset;
+}
+
+void daYoshi_c::setCloudStateMove() {
+    setWaitActionAnm(BLEND_NONE);
+    mSubstate = CLOUD_ANM_STATE_MOVE;
+}
+
+void daYoshi_c::setCloudStateCrouch() {
+    onStatus(STATUS_51);
+    mModelMng.setAnm(PLAYER_ANIM_STOOP_START);
+    mSubstate = CLOUD_ANM_STATE_CROUCH;
+}
+
+void daYoshi_c::executeState_Cloud() {
+    if (updateCloudMove()) {
+        return;
+    }
+
+    switch (mSubstate) {
+        case CLOUD_ANM_STATE_INITIAL:
+            if (mModelMng.isAnmStop()) {
+                setCloudStateMove();
+            }
+            // fallthrough
+        case CLOUD_ANM_STATE_MOVE:
+            if (mKey.buttonCrouch()) {
+                setCloudStateCrouch();
+            }
+            break;
+        case CLOUD_ANM_STATE_CROUCH:
+            if (!mKey.buttonCrouch()) {
+                offStatus(STATUS_51);
+                mModelMng.mpMdl->setRate(1.0f);
+                mSubstate = CLOUD_ANM_STATE_END_CROUCH;
+            }
+            break;
+        case CLOUD_ANM_STATE_END_CROUCH:
+            if (mModelMng.isAnmStop()) {
+                setCloudStateMove();
+            }
+            break;
+    }
+}

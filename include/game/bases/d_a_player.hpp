@@ -32,12 +32,6 @@ public:
     };
 
     /// @unofficial
-    enum LandSubstate_e {
-        LAND_ACTION_0,
-        LAND_ACTION_1
-    };
-
-    /// @unofficial
     enum SpinJumpSubstate_e {
         SPIN_JUMP_ACTION_0,
         SPIN_JUMP_ACTION_1

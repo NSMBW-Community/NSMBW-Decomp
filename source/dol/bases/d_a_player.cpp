@@ -2344,12 +2344,12 @@ void dAcPy_c::setTurnSmokeEffect() {
 void dAcPy_c::executeState_Turn() {
     turnPowerSet();
     if (!checkWalkNextAction()) {
-        switch (mSubstate) {
-            case 0:
+        switch ((TurnSubstate_e) mSubstate) {
+            case TURN_ACTION_0:
                 setTurnSmokeEffect();
                 if (mSpeedF == 0.0f) {
                     mSubstateTimer = 8;
-                    mSubstate = 1;
+                    mSubstate = TURN_ACTION_1;
                 }
                 if (!mKey.buttonWalk(nullptr)) {
                     if (mSpeedF) {
@@ -2358,13 +2358,13 @@ void dAcPy_c::executeState_Turn() {
                     setTurnEnd();
                 }
                 break;
-            case 1:
+            case TURN_ACTION_1:
                 setTurnSmokeEffect();
                 if (mDirection != mPrevDirection) {
                     setTurnEnd();
                 } else if (mSubstateTimer == 0) {
                     fadeOutTurnEffect();
-                    mSubstate = 2;
+                    mSubstate = TURN_ACTION_2;
                     if (getPowerChangeType(false) == POWER_CHANGE_ICE) {
                         mPyMdlMng.setAnm(PLAYER_ANIM_ICE_TURNED, 0.0f, 0.0f);
                     } else {
@@ -2372,7 +2372,7 @@ void dAcPy_c::executeState_Turn() {
                     }
                 }
                 break;
-            case 2:
+            case TURN_ACTION_2:
                 float maxSpeed = 0.0f;
                 int dir;
                 if (mKey.buttonWalk(&dir)) {
