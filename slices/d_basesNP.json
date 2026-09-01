@@ -148,6 +148,17 @@
             }
         },
         {
+            "source": "d_basesNP/bases/d_a_wm_sand_pillar.cpp",
+            "nonMatching": true,
+            "memoryRanges": {
+                ".text": "0x177690-0x179380",
+                ".ctors": "0x428-0x42c",
+                ".rodata": "0x8ef8-0x8f98",
+                ".data": "0x46be0-0x47180",
+                ".bss": "0x10040-0x10290"
+            }
+        },
+        {
             "source": "d_basesNP/bases/d_s_autoselect.cpp",
             "memoryRanges": {
                 ".text": "0x1b13f0-0x1b14a0",

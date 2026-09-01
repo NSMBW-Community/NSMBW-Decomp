@@ -27,6 +27,14 @@ namespace m3d {
         float getFrameMax(long idx) const;
         void setFrameStart(float frame, long idx);
 
+        bool create2(nw4r::g3d::ResMdl mdl, nw4r::g3d::ResAnmTexSrt anmTexSrt, mAllocator_c *allocator) {
+            return create(mdl, anmTexSrt, allocator, nullptr, 1);
+        }
+
+        bool create(nw4r::g3d::ResMdl mdl, nw4r::g3d::ResAnmTexSrt anmTexSrt, mAllocator_c *allocator) {
+            return create2(mdl, anmTexSrt, allocator);
+        }
+
         class child_c : public fanm_c {
         public:
             virtual banm_c::anmType_e getType( void ) const { return TYPE_ANM_TEX_SRT; };
