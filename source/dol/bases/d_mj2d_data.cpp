@@ -143,7 +143,7 @@ int dMj2dGame_c::getStartKinokoKind(int world) const {
 }
 
 void dMj2dGame_c::setDeathCount(int world, int level, bool isSwitchPressed, u8 count) {
-    if (count >= SUPER_GUIDE_DEATH_COUNT && world < NORMAL_WORLD_COUNT && (level <= STAGE_CASTLE || level == STAGE_DOOMSHIP)) {
+    if (count >= SUPER_GUIDE_DEATH_COUNT && world < NORMAL_WORLD_COUNT && (level <= STAGE_CASTLE || level == STAGE_AIRSHIP)) {
         mGameCompletion |= SUPER_GUIDE_TRIGGERED;
     }
 

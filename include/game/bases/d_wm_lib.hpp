@@ -2,7 +2,7 @@
 #include <constants/game_constants.h>
 #include <game/mLib/m_vec.hpp>
 #include <game/mLib/m_3d/bmdl.hpp>
-#include <game/bases/d_wm_csv_data.hpp>
+#include <game/bases/d_wm_csvdata.hpp>
 
 namespace dWmLib {
     enum Direction3D_e {
@@ -54,6 +54,8 @@ namespace dWmLib {
     u8 getStartPointKinokoHouseKindNum();
     bool isStartPointKinokoHouseStar();
     bool isStartPointKinokoHouseRed();
+    void GetStartPointNameFromRouteName(const char *routeName, char *pointName);
+    void GetEndPointNameFromRouteName(const char *routeName, char *pointName);
 
     int GetOpenStatus(int world, int course);
     int GetClearStatus(int world, int course);

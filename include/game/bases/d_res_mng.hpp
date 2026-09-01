@@ -43,9 +43,19 @@ public:
         return mRes.getRes(arcName, resPath);
     }
 
+    /// @copydoc dRes_c::getRes(const char *, const char*, unsigned long *) const
+    nw4r::g3d::ResFile getRes(const char *arcName, const char *resPath, unsigned long *fileSize) const {
+        return mRes.getRes(arcName, resPath, fileSize);
+    }
+
     /// @copydoc dRes_c::getResSilently(const char *, const char*) const
     nw4r::g3d::ResFile getResSilently(const char *arcName, const char *resPath) const {
         return mRes.getResSilently(arcName, resPath);
+    }
+
+    /// @copydoc dRes_c::getResSilently(const char *, const char*, unsigned long *) const
+    nw4r::g3d::ResFile getResSilently(const char *arcName, const char *resPath, unsigned long *fileSize) const {
+        return mRes.getResSilently(arcName, resPath, fileSize);
     }
 
     /// @copydoc dRes_c::syncAllRes()

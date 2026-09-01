@@ -233,10 +233,10 @@ void Pausewindow_c::setWorldCourseWrite() {
         case STAGE_PEACH_CASTLE:
             msgID = MSG_WM_ICON_PEACH_CASTLE;
             break;
-        case STAGE_UNK37:
+        case STAGE_TRSHIP:
             msgID = MSG_WM_ICON_ANCHOR;
             break;
-        case STAGE_DOOMSHIP:
+        case STAGE_AIRSHIP:
             if (dWmLib::isKoopaShipAnchor()) {
                 msgID = MSG_WM_ICON_ANCHOR;
             } else {

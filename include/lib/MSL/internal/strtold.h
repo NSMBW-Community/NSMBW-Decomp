@@ -5,6 +5,7 @@
 extern "C" {
 #endif
 
+int atoi(const char *);
 double atof(const char*);
 
 #ifdef __cplusplus

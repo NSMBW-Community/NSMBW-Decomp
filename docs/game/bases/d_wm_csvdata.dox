@@ -1,0 +1,93 @@
+/*!
+@class dCsvData_c
+@details
+## Overview
+This class reads the CSV files located in @p WorldMap/RouteInfo.arc, which describe the structure of the world map -
+how the nodes (points) are connected, which course unlocks which other course, and which world map enemies are present.
+
+## Point data layout
+Each line in the point CSV file contains a number of fields, separated by commas.
+If no more non-empty fields are present, the line may be terminated early with a carriage return and newline character.
+
+The fields are as follows:
+<table>
+<thead>
+  <tr>
+    <th>Field</th>
+    <th>Description</th>
+  </tr>
+</thead>
+<tbody>
+  <tr>
+    <td>Line number</td>
+    <td>A sequential number starting from 1 for each line in the file, ignored by the game.</td>
+  </tr>
+  <tr>
+    <td>Point name</td>
+    <td>The name of the point.</td>
+  </tr>
+  <tr>
+    <td>Point types</td>
+    <td>A comma-separated list of the point's properties. See PointFlag_e.</td>
+  </tr>
+  <tr>
+    <td>Open point names (Regular exit)</td>
+    <td>A comma-separated list of point names which are unlocked when the player completes the course at this point.</td>
+  </tr>
+  <tr>
+    <td>Open route names (Regular exit)</td>
+    <td>A comma-separated list of route names which are unlocked when the player completes the course at this point.</td>
+  </tr>
+  <tr>
+    <td>Flag data (Regular exit)</td>
+    <td>
+      Seems to never be used in the vanilla world maps, but is referenced in:
+      <ul>
+        <li>ReadFlagData()</li>
+        <li>GetRouteAnimNum()</li>
+        <li>GetRouteAnimName()</li>
+      </ul>
+    </td>
+  </tr>
+  <tr>
+    <td>Open point names (Secret exit)</td>
+    <td>A comma-separated list of point names which are unlocked when the player completes the secret exit of the course at this point.</td>
+  </tr>
+  <tr>
+    <td>Open route names (Secret exit)</td>
+    <td>A comma-separated list of route names which are unlocked when the player completes the secret exit of the course at this point.</td>
+  </tr>
+  <tr>
+    <td>Flag data (Secret exit)</td>
+    <td>See the regular exit version of this.</td>
+  </tr>
+</tbody>
+</table>
+
+## Route data layout
+Each line in the route CSV file contains a number of fields, separated by commas.
+
+The fields are as follows:
+<table>
+<thead>
+  <tr>
+    <th>Field</th>
+    <th>Description</th>
+  </tr>
+</thead>
+<tbody>
+  <tr>
+    <td>Route name</td>
+    <td>The name of the route, in the format @p Rxxxxyyyy, where @p xxxx and @p yyyy denote the two connected points.</td>
+  </tr>
+  <tr>
+    <td>Route action type</td>
+    <td>The route type. This determines the animation of the player when they traverse the route. See ActionType_e.</td>
+  </tr>
+  <tr>
+    <td>Route flags</td>
+    <td>A comma-separated list of flags for the route. Only used in World 5 for the moving vines.</td>
+  </tr>
+</tbody>
+</table>
+*/
