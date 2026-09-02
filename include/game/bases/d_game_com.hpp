@@ -113,6 +113,7 @@ namespace dGameCom {
     void LayoutDispNumber(const int &value, const int &fillLeft, LytTextBox_c *textBox, bool fillWidth);
 
     bool isNowCourseClear();
+    void setMultiCourseClear(int);
 
     void initGame();
     void AreaLanguageFolder(const char *, char *);

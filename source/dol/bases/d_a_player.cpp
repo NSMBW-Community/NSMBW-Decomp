@@ -6383,7 +6383,7 @@ bool dAcPy_c::setBalloonButtonA() {
 bool dAcPy_c::checkAllBalloonFade() {
     if (!isStatus(STATUS_ALL_DOWN_FADE)) {
         onStatus(STATUS_ALL_DOWN_FADE);
-        dScStage_c::setNextScene(3, 0, dScStage_c::EXIT_1, dFader_c::FADER_BOWSER);
+        dScStage_c::setNextScene(fProf::WORLD_MAP, 0, dScStage_c::EXIT_1, dFader_c::FADER_BOWSER);
         return true;
     }
     return false;
@@ -7836,9 +7836,9 @@ void dAcPy_c::checkRest() {
         }
     }
     if (!allDown) {
-        dScStage_c::setNextScene(3, 0, dScStage_c::EXIT_1, dFader_c::FADER_BOWSER);
+        dScStage_c::setNextScene(fProf::WORLD_MAP, 0, dScStage_c::EXIT_1, dFader_c::FADER_BOWSER);
     } else {
-        dScStage_c::setNextScene(9, 0, dScStage_c::EXIT_1, dFader_c::FADER_BOWSER);
+        dScStage_c::setNextScene(fProf::GAMEOVER, 0, dScStage_c::EXIT_1, dFader_c::FADER_BOWSER);
     }
 }
 
@@ -8998,7 +8998,7 @@ void dAcPy_c::executeState_DemoCannonWarp() {
         case 3:
             if (mDemoSubstateTimer == 0) {
                 mDemoSubstate = 4;
-                dScStage_c::setNextScene(3, 0, dScStage_c::EXIT_0, dFader_c::FADER_CIRCLE_TARGET);
+                dScStage_c::setNextScene(fProf::WORLD_MAP, 0, dScStage_c::EXIT_0, dFader_c::FADER_CIRCLE_TARGET);
                 if (daPyDemoMng_c::mspInstance->mPlayerNo < 0) {
                     daPyDemoMng_c::mspInstance->mPlayerNo = mPlayerNo;
                 }

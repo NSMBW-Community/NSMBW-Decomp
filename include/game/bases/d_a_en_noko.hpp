@@ -143,4 +143,8 @@ public:
     ACTOR_PARAM_CONFIG(BlockHitPlayer, 24, 2); ///< The player number that hit the block from which this Koopa spawned.
     ACTOR_PARAM_CONFIG(BlockAppear, 28, 1); ///< Whether the Koopa should spawn from a block.
     ACTOR_PARAM_CONFIG(SpitOut, 29, 1); ///< Whether this Koopa was spat out by Yoshi.
+
+    static const float smc_WALK_SPEED[];
+    static const s16 smc_TURN_SPEED[];
+    static const s16 smc_TURN_TARGET_ANGLE[];
 };

@@ -23,7 +23,7 @@ public:
     static bool decNum(int);
     static bool addRest(int);
     static bool decRest(int);
-    static u32 getEntryNum();
+    static int getEntryNum();
     static bool isEntryNum1() { return getEntryNum() == 1; }
     static void startYoshiBGM();
     static void stopYoshiBGM();
@@ -44,6 +44,7 @@ public:
         return res;
     }
 
+    static int getNum() { return mNum; }
     static bool checkPlayer(u8 plrNo) { return mActPlayerInfo & (1 << plrNo); }
     static int getRest(PLAYER_TYPE_e plrNo) { return mRest[plrNo]; }
     static PLAYER_TYPE_e getPlayerType(int plrNo) { return mPlayerType[plrNo]; }
