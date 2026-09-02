@@ -47,7 +47,7 @@ public:
     virtual void setFrame(float);
     virtual void setBodyFrame();
     virtual void setRate(float);
-    virtual void setBodyRate();
+    virtual void setBodyRate(float);
     virtual void setPropelRollSpeed(s16) const;
     virtual s16 getPropelRollSpeed();
     virtual void setPropelRollAngle(s16);
@@ -60,6 +60,7 @@ public:
     void getJointPos(mVec3_c *, int);
     void setJumpAnmRand(RndType_e type);
     void copyLinkAnm(float f);
+    bool isBodyAnmOn();
 
     float getFrameMax() { return mAnm.mFrameMax; }
     mMtx_c &getMtx() { return mMtx; }
@@ -83,7 +84,7 @@ public:
     mMtx_c mMtx;
     u8 mPad5[0xc];
     mVec3_c mScale;
-    u8 mPad6[0x1];
+    u8 mPlayerNo;
     u8 m_151;
     u8 m_152;
     int mCurrAnmID;

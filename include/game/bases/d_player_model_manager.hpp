@@ -266,6 +266,10 @@ public:
         mpMdl->setAnm(anmID, rate, blendDuration, f);
     }
 
+    void setBodyAnm(int anmID, float rate, float blendDuration, float f) {
+        mpMdl->setBodyAnm(anmID, rate, blendDuration, f);
+    }
+
     void setAnm(int anmID, float blendDuration, float f) {
         float rate = getHIO(anmID).mRate;
         setAnm(anmID, rate, blendDuration, f);
@@ -277,6 +281,10 @@ public:
 
     void setAnm(int anmID, float f = 0.0f) {
         setAnm(anmID, m_hio.mPyAnm.mAnm[(u8) anmID], f);
+    }
+
+    void setBodyAnm(int anmID) {
+        setBodyAnm(anmID, m_hio.mPyAnm.mAnm[(u8) anmID].mRate, 0.0f, 0.0f);
     }
 
     void setAnmOnlyRate(int anmID, const dPyAnm_HIO_c &hio, float a, float b) {
