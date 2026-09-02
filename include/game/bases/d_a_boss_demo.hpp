@@ -13,8 +13,8 @@ public:
         bool mForceOtehonClear;
     };
 
-    daBossDemo_c() : dActorState_c() {}
-    ~daBossDemo_c() {}
+    daBossDemo_c() : dActorState_c() {} ///< @copydoc dActorState_c::dActorState_c
+    ~daBossDemo_c() {} ///< @copydoc dActorState_c::~dActorState_c
 
     virtual int create() override;
     virtual int doDelete() override;

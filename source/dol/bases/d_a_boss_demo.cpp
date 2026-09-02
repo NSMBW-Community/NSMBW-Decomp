@@ -100,16 +100,16 @@ bool daBossDemo_c::isOtehonClear() {
         return true;
     }
 
-    bool res = false;
+    bool result = false;
     int world = dScStage_c::m_instance->mCurrWorld;
     int course = dScStage_c::m_instance->mCurrCourse;
     if (
         dInfo_c::m_startGameInfo.mGameMode == dInfo_c::GAME_MODE_SUPER_GUIDE &&
         !dWmLib::IsCourseClear(world, course)
     ) {
-        res = true;
+        result = true;
     }
-    return res;
+    return result;
 }
 
 void daBossDemo_c::initializeState_Ready() {}
