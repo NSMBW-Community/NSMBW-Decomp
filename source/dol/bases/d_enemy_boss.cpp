@@ -62,7 +62,7 @@ int dEnBoss_c::preExecute() {
         }
     }
 
-    if (mQuakeDamage && !(dQuake_c::m_instance->mFlags & dQuake_c::FLAG_1)) {
+    if (mQuakeDamage && !(dQuake_c::getInstance()->mFlags & dQuake_c::FLAG_1)) {
         mQuakeDamage = 0;
     }
 

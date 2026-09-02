@@ -1323,7 +1323,7 @@ void dAcPy_c::initializeState_CannonJump() {
         onStatus(STATUS_7A);
     }
     clearNowBgCross();
-    dQuake_c::m_instance->shockMotor(mPlayerNo, dQuake_c::TYPE_5, 0, false);
+    dQuake_c::getInstance()->shockMotor(mPlayerNo, dQuake_c::TYPE_5, 0, false);
     startPlayerVoice(VOICE_CANNON_SHOT_S, 0);
     mPyMdlMng.setAnm(PLAYER_ANIM_SHOOT);
     mKey.onStatus(dAcPyKey_c::STATUS_DISABLE_LR);
@@ -2687,7 +2687,7 @@ void dAcPy_c::setSpinLiftUpReserve() {
                 mPyMdlMng.mpMdl->mpSpinLiftParentMdl = player->getModel();
             }
             changeState(StateID_LiftUp, 0);
-            dQuake_c::m_instance->shockMotor(mPlayerNo, dQuake_c::TYPE_7, 0, false);
+            dQuake_c::getInstance()->shockMotor(mPlayerNo, dQuake_c::TYPE_7, 0, false);
             actor->setSpinLiftUpActor(this);
         }
         clearSpinLiftUpReserve();
@@ -6137,7 +6137,7 @@ void dAcPy_c::setBreakBalloonJump(u8 playerNo, short angle) {
     offStatus(STATUS_DISABLE_STATE_CHANGE);
     startPlayerVoice(VOICE_HUKKATSU, 0);
     startSound(SE_PLY_BALLOON_BRAKE, false);
-    dQuake_c::m_instance->shockMotor(mPlayerNo, dQuake_c::TYPE_4, 0, false);
+    dQuake_c::getInstance()->shockMotor(mPlayerNo, dQuake_c::TYPE_4, 0, false);
     mJumpDaiFallTimer = 30;
     mTimer_ce8 = 30;
     mCcRevDisabledTimer = 30;
@@ -6426,7 +6426,7 @@ bool dAcPy_c::setBalloonInDispOutBase(int i, int j) {
     }
     if (i == 2 || i == 0) {
         startPlayerVoice(VOICE_SCROLL_OUT, 0);
-        dQuake_c::m_instance->shockMotor(mPlayerNo, dQuake_c::TYPE_4, 0, false);
+        dQuake_c::getInstance()->shockMotor(mPlayerNo, dQuake_c::TYPE_4, 0, false);
     }
     return true;
 }
@@ -6465,7 +6465,7 @@ void dAcPy_c::initializeState_IceDamage() {
     onStatus(STATUS_DISABLE_STATE_CHANGE);
     dActor_c *ice = dActor_c::construct(fProf::PLAYER_ICE, this, 0,& mPos, nullptr, 0);
     mIceActorID = ice->mUniqueID;
-    dQuake_c::m_instance->shockMotor(mPlayerNo, dQuake_c::TYPE_4, 0, false);
+    dQuake_c::getInstance()->shockMotor(mPlayerNo, dQuake_c::TYPE_4, 0, false);
     mPyMdlMng.setAnm(PLAYER_ANIM_JUMP, 0.0f, 0.0f, 0.0f);
     mPyMdlMng.mpMdl->setFrame(0.0f);
 }
@@ -6967,7 +6967,7 @@ bool dAcPy_c::setEatSpitOut(dActor_c *eatingActor) {
     daYoshi_c *yoshi = (daYoshi_c *) eatingActor;
     if (isState(StateID_PlayerEat)) {
         setNoHitPlayer(yoshi, 10);
-        dQuake_c::m_instance->shockMotor(mPlayerNo, dQuake_c::TYPE_4, 0, false);
+        dQuake_c::getInstance()->shockMotor(mPlayerNo, dQuake_c::TYPE_4, 0, false);
         mDirection = yoshi->mDirection;
         mAngle.y = getMukiAngle(mDirection);
         if (m_1298 == 1) {
@@ -7935,7 +7935,7 @@ void dAcPy_c::initializeState_DemoDown() {
             stopOtherDownDemo();
             break;
     }
-    dQuake_c::m_instance->shockMotor(mPlayerNo, dQuake_c::TYPE_4, 0, false);
+    dQuake_c::getInstance()->shockMotor(mPlayerNo, dQuake_c::TYPE_4, 0, false);
 }
 
 void dAcPy_c::finalizeState_DemoDown() {
@@ -8079,7 +8079,7 @@ void dAcPy_c::initializeState_DemoFireDown() {
     setZPosition(3000.0f);
     startSound(SE_PLY_SPLASH_LAVA, false);
     startSound(SE_PLY_DOWN, false);
-    dQuake_c::m_instance->shockMotor(mPlayerNo, dQuake_c::TYPE_4, 0, false);
+    dQuake_c::getInstance()->shockMotor(mPlayerNo, dQuake_c::TYPE_4, 0, false);
     stopOtherDownDemo();
 }
 
@@ -8952,7 +8952,7 @@ void dAcPy_c::executeState_DemoCannonWarp() {
                 mSpeed.x = mSpeedF * mAng(mAngle.y).sin();
                 mSpeed.z = mSpeedF * mAng(mAngle.y).cos();
                 mAmiRelated2 = 1.0f;
-                dQuake_c::m_instance->shockMotor(mPlayerNo, dQuake_c::TYPE_5, 0, false);
+                dQuake_c::getInstance()->shockMotor(mPlayerNo, dQuake_c::TYPE_5, 0, false);
                 startPlayerVoice(VOICE_CANNON_SHOT, 0);
             }
             break;
@@ -9382,7 +9382,7 @@ void dAcPy_c::setFireBallDamage(u8 type) {
             startPlayerVoice(VOICE_HIP_ATTACKED, 0);
             break;
     }
-    dQuake_c::m_instance->shockMotor(mPlayerNo, dQuake_c::TYPE_7, 0, false);
+    dQuake_c::getInstance()->shockMotor(mPlayerNo, dQuake_c::TYPE_7, 0, false);
 }
 
 ///< @unofficial
@@ -9598,7 +9598,7 @@ bool dAcPy_c::ccCheckStamp(dCc_c *self, dCc_c *other) {
             if (
                 self->getCenterPosY() > other->getUnderPos() &&
                 (!selfPlayer->isNowBgCross(BGC_FOOT) || selfPlayer->isOnSinkSand()) &&
-                yoshi->m_50 == 0
+                yoshi->mPlayerRideOn == BASE_ID_NULL
             ) {
                 return yoshi->fn_8014eb70(selfPlayer, 0);
             }
@@ -9677,7 +9677,7 @@ void dAcPy_c::ccCallBack(dCc_c *self, dCc_c *other) {
         if (ccCheckStamp(self, other)) {
             return;
         }
-        if (yoshi->m_50 == 0) {
+        if (yoshi->mPlayerRideOn == BASE_ID_NULL) {
             return;
         }
 
@@ -11366,7 +11366,7 @@ bool dAcPy_c::setDamage(dActor_c *actor, daPlBase_c::DamageType_e damageType) {
     }
 
     if (setDamage2(actor, damageType)) {
-        dQuake_c::m_instance->shockMotor(mPlayerNo, dQuake_c::TYPE_4, 0, false);
+        dQuake_c::getInstance()->shockMotor(mPlayerNo, dQuake_c::TYPE_4, 0, false);
         return true;
     }
 
@@ -11379,7 +11379,7 @@ bool dAcPy_c::setForcedDamage(dActor_c *actor, daPlBase_c::DamageType_e damageTy
     }
 
     if (setDamage2(actor, damageType)) {
-        dQuake_c::m_instance->shockMotor(mPlayerNo, dQuake_c::TYPE_4, 0, false);
+        dQuake_c::getInstance()->shockMotor(mPlayerNo, dQuake_c::TYPE_4, 0, false);
         return true;
     }
 

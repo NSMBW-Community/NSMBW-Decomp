@@ -12,4 +12,7 @@ public:
     YoshiColor_e mColor;
     u8 mPad2[0x44];
     u32 m_294;
+    float m_298;
+
+    static const float scTongueLengthMax;
 };

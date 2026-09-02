@@ -48,7 +48,7 @@ namespace {
     };
 }
 
-daYoshi_c::daYoshi_c() : mModelMng(dPyMdlMng_c::MODEL_TYPE_YOSHI), mStateMgr(*this, sStateID::null) {
+daYoshi_c::daYoshi_c() : mModelMng(dPyMdlMng_c::MODEL_TYPE_YOSHI), mEatStateMgr(*this, sStateID::null) {
     setKind(STAGE_ACTOR_YOSHI);
     mExecStopMask = BIT_FLAG(STAGE_ACTOR_YOSHI);
     mEatBehavior = EAT_TYPE_NONE;
@@ -80,7 +80,7 @@ int daYoshi_c::create() {
     mGravityData = dAcPy_HIO_Speed_c::sc_gravity_data;
     mMaxFallSpeed = -4.0f;
     mAccelY = -0.15f;
-    m_50 = 0;
+    mPlayerRideOn = BASE_ID_NULL;
     int beginType = ACTOR_PARAM(BeginType);
     if (beginType == 1) {
         changeState(StateID_BlockOut);
@@ -98,7 +98,7 @@ int daYoshi_c::create() {
 }
 
 int daYoshi_c::doDelete() {
-    if (m_50 != 0) {
+    if (mPlayerRideOn != BASE_ID_NULL) {
         return NOT_READY;
     }
     dActor_c *pl = (dActor_c *) fManager_c::searchBaseByID(m_4c);
@@ -380,7 +380,7 @@ void daYoshi_c::changeWalkAction() {
 }
 
 bool daYoshi_c::checkWalkNextAction() {
-    if (m_50 == 0) {
+    if (mPlayerRideOn == BASE_ID_NULL) {
         changeState(StateID_AloneWait);
         return true;
     }
@@ -765,7 +765,7 @@ void daYoshi_c::setFallAction() {
         return;
     }
 
-    if (m_50 == 0) {
+    if (mPlayerRideOn == BASE_ID_NULL) {
         changeState(StateID_AloneWait);
     } else {
         changeState(StateID_Fall);
@@ -1199,5 +1199,589 @@ void daYoshi_c::executeState_Cloud() {
                 setCloudStateMove();
             }
             break;
+    }
+}
+
+void daYoshi_c::initializeState_Funsui() {
+    daPlBase_c::initializeState_Funsui();
+    onStatus(STATUS_91);
+}
+
+void daYoshi_c::finalizeState_Funsui() {
+    daPlBase_c::finalizeState_Funsui();
+    offStatus(STATUS_91);
+}
+
+void daYoshi_c::executeState_Funsui() {
+    daPlBase_c::executeState_Funsui();
+}
+
+void daYoshi_c::releaseFunsuiAction() {
+    setFallAction();
+}
+
+dAcPy_c *daYoshi_c::getPlayerRideOn() const {
+    if (mPlayerRideOn != BASE_ID_NULL) {
+        return (dAcPy_c *) fManager_c::searchBaseByID(mPlayerRideOn);
+    }
+    return nullptr;
+}
+
+bool daYoshi_c::checkRideOffAble() {
+    if (
+        isStatus(STATUS_91) ||
+        isNowBgCross(BGC_IN_SINK_SAND) ||
+        isEnableCreateEgg()
+    ) {
+        return false;
+    }
+    return true;
+}
+
+bool daYoshi_c::fn_8014eb70(dAcPy_c *player, int i) {
+    if (player->mRideActorID != BASE_ID_NULL) {
+        return false;
+    }
+
+    player->releaseCarryActor();
+    changePlrNo(player->getPlrNo());
+    mModelMng.mpMdl->mpSpinLiftParentMdl = player->getModel();
+    mPlayerRideOn = player->getID();
+    onStatus(STATUS_4C);
+    changeState(StateID_StartRideOn);
+    mDirection = player->mDirection;
+
+    if (i == 0) {
+        startSound(SE_VOC_YS_YOSHI, false);
+        dQuake_c::getInstance()->shockMotor(player->getPlrNo(), dQuake_c::TYPE_7, 0, false);
+    } else {
+        mAngle.y = getMukiAngle(mDirection);
+    }
+    player->setRideOnYoshi(this);
+
+    return true;
+}
+
+void daYoshi_c::setRideOffPlayer() {
+    mModelMng.mpMdl->mpSpinLiftParentMdl = nullptr;
+    if (!isDemo()) {
+        if (fManager_c::searchBaseByID(m_4c) != nullptr && setDamageSpitOut(false)) {
+            changeEatState(StateID_EatOut);
+        }
+        changeState(StateID_AloneWait);
+    }
+
+    changePlrNo(-1);
+    daPyMng_c::setYoshiPriority(this);
+    offStatus(STATUS_4C);
+    mPlayerRideOn = BASE_ID_NULL;
+}
+
+void daYoshi_c::changePlrNo(u8 plrNo) {
+    mPlayerNo = plrNo;
+    mModelMng.mpMdl->mPlayerNo = plrNo;
+    if (mPlayerNo != -1) {
+        mKey.mRemoconID = mPlayerNo;
+        mBc.mOwningPlrNo = mPlayerNo;
+        mSndObj.m_58 = dAudio::getRemotePlayer(mPlayerNo);
+        mExecStopMask = BIT_FLAG(STAGE_ACTOR_PLAYER);
+    } else {
+        mKey.mRemoconID = -1;
+        mBc.mOwningPlrNo = 0;
+        mSndObj.m_58 = dAudio::getRemotePlayer(0);
+        if (!isStatus(STATUS_GOAL_POLE_TOUCHED)) {
+            mExecStopMask = BIT_FLAG(STAGE_ACTOR_YOSHI);
+        }
+    }
+}
+
+void daYoshi_c::executeEatState() {
+    mEatStateMgr.executeState();
+}
+
+void daYoshi_c::changeEatState(const sStateIDIf_c &state) {
+    mEatAction = EAT_ACTION_START_TURN_WAIT;
+    mEatStateMgr.changeState(state);
+}
+
+void daYoshi_c::initializeState_EatNone() {
+    onStatus(STATUS_B1);
+}
+
+void daYoshi_c::finalizeState_EatNone() {
+    offStatus(STATUS_B1);
+}
+
+void daYoshi_c::executeState_EatNone() {
+    if (isStatus(STATUS_B2)) {
+        setCcAtYoshiMouthReq();
+    }
+}
+
+void daYoshi_c::setHitTongueActor(dActor_c *actor) {
+    dActor_c *hitTongueActor =  (dActor_c *) fManager_c::searchBaseByID(m_4c);
+    if (hitTongueActor != nullptr) {
+        hitTongueActor->mEatState = EAT_STATE_NONE;
+        hitTongueActor->mEatenByID = BASE_ID_NULL;
+    }
+    m_4c = actor->getID();
+    setEatAction_Success(0);
+    actor->mEatState = EAT_STATE_EATING;
+    actor->mEatenByID = getID();
+    setEatTongueCall(actor);
+}
+
+bool daYoshi_c::setEatAction() {
+    if (mKey.triggerEat()) {
+        if (!isStatus(STATUS_B1) || isStatus(STATUS_HIP_ATTACK)) {
+            return false;
+        }
+
+        dAcPy_c *player = getPlayerRideOn();
+        if (player != nullptr) {
+            player->mKey.onStatus(dAcPyKey_c::STATUS_SHAKE_COOLDOWN);
+        }
+
+        dActor_c *hitTongueActor = (dActor_c *) fManager_c::searchBaseByID(m_4c);
+        if (hitTongueActor == nullptr) {
+            if (m_64 == nullptr) {
+                changeEatState(StateID_Eat);
+                return true;
+            }
+        } else {
+            changeEatState(StateID_EatOut);
+            return true;
+        }
+    }
+
+    return false;
+}
+
+bool daYoshi_c::fn_8014f030(dAcPy_c *player) {
+    if (!isEatState(StateID_EatNone)) {
+        return false;
+    }
+
+    if (fManager_c::searchBaseByID(m_4c) != nullptr && fManager_c::searchBaseByID(m_4c) == player) {
+        changeEatState(StateID_EatOut);
+        return true;
+    } else {
+        return false;
+    }
+}
+
+bool daYoshi_c::setDamageSpitOut(bool b) {
+    if (isEatState(StateID_EatOut)) {
+        b = true;
+    }
+
+    daPlBase_c *pl = (daPlBase_c *) fManager_c::searchBaseByID(m_4c);
+    if (pl != nullptr) {
+        if (!b) {
+            if (pl->mKind != STAGE_ACTOR_PLAYER) {
+                return false;
+            }
+            if (pl->isItemKinopio()) {
+                return false;
+            }
+        } else if (pl->mKind == STAGE_ACTOR_PLAYER) {
+            pl->mTimer_a8 = 10;
+        }
+
+        pl->mEatState = EAT_STATE_SPIT;
+        setEatSpitOutCall(pl);
+        setEatOutSE();
+        releaseEatActor();
+        return true;
+    }
+
+    return false;
+}
+
+void daYoshi_c::initializeState_Eat() {
+    mNum = mPlayerNo;
+    onStatus(STATUS_B0);
+    mYoshiDirection = mDirection;
+    int absAngle1 = mAngle.y.abs();
+    int absAngle2 = abs(getMukiAngle(mYoshiDirection));
+    if (absAngle2 <= absAngle1) {
+        setEatAction_StartTurnWait();
+    } else {
+        setEatAction_Start();
+    }
+    m_5c = 10;
+    m_2e8 = 0;
+}
+
+void daYoshi_c::finalizeEatCommon() {
+    mNum = -1;
+
+    dYoshiMdl_c *mdl = (dYoshiMdl_c *) mModelMng.mpMdl;
+
+    daPlBase_c *pl = (daPlBase_c *) fManager_c::searchBaseByID(m_4c);
+    if (pl != nullptr && pl->mEatState == EAT_STATE_EATING) {
+        setEatTongueOffCall(pl);
+        releaseEatActor();
+    }
+
+    pl = (daPlBase_c *) fManager_c::searchBaseByID(m_4c);
+    if (pl == nullptr) {
+        mdl->m_294 = 0;
+    }
+    if (mFruitCount >= 5) {
+        mFruitCount = 4;
+    }
+}
+
+void daYoshi_c::finalizeState_Eat() {
+    offStatus(STATUS_AF);
+    offStatus(STATUS_B0);
+    offStatus(STATUS_B3);
+    offStatus(STATUS_DISABLE_STATE_CHANGE);
+
+    mModelMng.mpMdl->m_17c &= ~BIT_FLAG(3);
+    mModelMng.mpMdl->releaseBodyAnm(0.0f);
+    finalizeEatCommon();
+}
+
+bool daYoshi_c::calcOpenMouth() {
+    switch (m_7c) {
+        case 1:
+            if (mModelMng.getAnm2().checkFrame(9.0f)) {
+                m_7c = 2;
+                m_80 = mModelMng.getAnm2().getRate();
+                if (mModelMng.mpMdl->isBodyAnmOn()) {
+                    mModelMng.mpMdl->setBodyRate(0.0f);
+                } else {
+                    mModelMng.mpMdl->setRate(0.0f);
+                }
+            }
+            break;
+        case 2:
+            if (m_78 != 0) {
+                m_78--;
+            }
+            if (m_78 == 0) {
+                m_7c = 0;
+                if (mModelMng.mpMdl->isBodyAnmOn()) {
+                    mModelMng.mpMdl->setBodyRate(m_80);
+                } else {
+                    mModelMng.mpMdl->setRate(m_80);
+                }
+            }
+            break;
+        default:
+            break;
+    }
+    return m_7c != 0;
+}
+
+void daYoshi_c::setEatAction_StartTurnWait() {
+    mEatAction = EAT_ACTION_START_TURN_WAIT;
+}
+
+void daYoshi_c::EatAction_StartTurnWait() {
+    if (mPlayerRideOn == BASE_ID_NULL) {
+        changeEatState(StateID_EatNone);
+        return;
+    }
+
+    int absAngle1 = mAngle.y.abs();
+    int absAngle2 = abs(getMukiAngle(mYoshiDirection));
+    if (absAngle2 <= absAngle1) {
+        setEatAction_Start();
+    }
+}
+
+void daYoshi_c::setEatAction_Start() {
+    onStatus(STATUS_AF);
+    mModelMng.mpMdl->m_17c |= BIT_FLAG(3);
+    if (isNowBgCross(BGC_FOOT)) {
+        mModelMng.mpMdl->setBodyAnm(PLAYER_ANIM_R_EAT, dPyMdlMng_c::getHIO(PLAYER_ANIM_R_EAT).mRate, 0.0f, 0.0f);
+    } else {
+        float c = dPyMdlMng_c::getHIO()->mYoshiModel->mData[2];
+        float b = dPyMdlMng_c::getHIO()->mYoshiModel->mData[1];
+        float a = dPyMdlMng_c::getHIO()->mYoshiModel->mData[0];
+        mModelMng.mpMdl->setBodyAnm(PLAYER_ANIM_R_EAT, a, b, c);
+    }
+
+    dYoshiMdl_c *mdl = (dYoshiMdl_c *) mModelMng.mpMdl;
+    mdl->m_294 = 1;
+    mdl->m_298 = dYoshiMdl_c::scTongueLengthMax;
+    mEatAction = EAT_ACTION_START;
+    startSound(SE_PLY_YOSHI_TONGUE, false);
+}
+
+void daYoshi_c::EatAction_Start() {
+    setCcAtYoshiEatReq();
+    if (mModelMng.getAnm2().isStop()) {
+        setEatAction_Fail();
+    }
+}
+
+void daYoshi_c::setEatActorMouthIn() {
+    offStatus(STATUS_B0);
+    daPlBase_c *pl = (daPlBase_c *) fManager_c::searchBaseByID(m_4c);
+    if (pl != nullptr) {
+        pl->mEatState = EAT_STATE_EATEN;
+        setEatMouthCall(pl);
+    }
+
+    dYoshiMdl_c *mdl = (dYoshiMdl_c *) mModelMng.mpMdl;
+    mdl->m_294 = 2;
+    offStatus(STATUS_AF);
+    if (isEnableCreateEgg()) {
+        onStatus(STATUS_B3);
+        onStatus(STATUS_DISABLE_STATE_CHANGE);
+        onStatus(STATUS_C6);
+    }
+}
+
+void daYoshi_c::setEatAction_Success(int a) {
+    float frame = 0.0f;
+    m_78 = 0;
+    m_7c = 0;
+    if (a == 0) {
+        if (mModelMng.getAnm() == PLAYER_ANIM_R_EAT_FAIL) {
+            frame = mModelMng.getAnm2().getFrame();
+        }
+    } else {
+        frame = 15.0f;
+    }
+    dActor_c *actor = (dActor_c *) fManager_c::searchBaseByID(m_4c);
+    if (actor != nullptr) {
+        u8 behavior = actor->mEatBehavior;
+        if (behavior == EAT_TYPE_DRINK_BIG || a == 1) {
+            if (isEnableCreateEgg()) {
+                mModelMng.mpMdl->m_17c &= ~BIT_FLAG(3);
+                mModelMng.mpMdl->releaseBodyAnm(0.0f);
+                mModelMng.setAnm(PLAYER_ANIM_R_EAT_SUCCESSB_DUPLICATE);
+            } else {
+                mModelMng.setBodyAnm(PLAYER_ANIM_R_EAT_SUCCESSB);
+            }
+            mModelMng.mpMdl->setFrame(frame);
+            mEatAction = EAT_ACTION_SUCCESS_DRINK_BIG;
+        } else if (behavior == EAT_TYPE_DRINK) {
+            mModelMng.setBodyAnm(PLAYER_ANIM_R_EAT_SUCCESSB);
+            mModelMng.mpMdl->setFrame(frame);
+            mEatAction = EAT_ACTION_SUCCESS_DRINK;
+        } else {
+            mModelMng.setBodyAnm(PLAYER_ANIM_R_EAT_SUCCESS);
+            mModelMng.mpMdl->setFrame(frame);
+            mEatAction = EAT_ACTION_SUCCESS_EAT;
+        }
+    }
+    startSound(SE_VOC_YS_EAT, false);
+}
+
+void daYoshi_c::EatAction_SuccessEat() {
+    dActor_c *actor = (dActor_c *) fManager_c::searchBaseByID(m_4c);
+    if (actor == nullptr) {
+        m_4c = BASE_ID_NULL;
+        changeEatState(StateID_EatNone);
+        return;
+    }
+
+    int frame = 9.0f - mModelMng.getAnm2().getFrame();
+    if (frame < 10) {
+        m_5c = frame;
+    }
+    if (mModelMng.getAnm2().checkFrame(9.0f)) {
+        m_5c = 0;
+        setEatActorMouthIn();
+    }
+
+    if (mModelMng.getAnm2().isStop()) {
+        if (actor->mEatBehavior == EAT_TYPE_FIREBALL) {
+            actor->deleteRequest();
+            m_4c = BASE_ID_NULL;
+            dActor_c *fire = dActor_c::construct(fProf::YOSHI_FIRE, mPlayerNo << 4, nullptr, nullptr, nullptr);
+            m_4c = fire->getID();
+        } else if (actor->mEatBehavior == EAT_TYPE_ICEBALL) {
+            actor->deleteRequest();
+            m_4c = BASE_ID_NULL;
+            dActor_c *fire = dActor_c::construct(fProf::YOSHI_FIRE, mPlayerNo << 4 | 1, nullptr, nullptr, nullptr);
+            m_4c = fire->getID();
+        }
+        changeEatState(StateID_EatNone);
+    }
+}
+
+void daYoshi_c::EatAction_SuccessDrink() {
+    dActor_c *actor = (dActor_c *) fManager_c::searchBaseByID(m_4c);
+    int frame = 9.0f - mModelMng.getAnm2().getFrame();
+    if (frame >= 0 && frame < 10) {
+        m_5c = frame;
+    }
+
+    if (calcOpenMouth()) {
+        return;
+    }
+
+    if (mModelMng.getAnm2().checkFrame(10.0f)) {
+        setEatActorMouthIn();
+    } else if (mModelMng.getAnm2().checkFrame(27.0f)) {
+        setEatGlupDownCall(actor);
+        releaseEatActor();
+        startSound(SE_VOC_YS_GOKUN, false);
+        dYoshiMdl_c *mdl = (dYoshiMdl_c *) mModelMng.mpMdl;
+        mdl->m_294 = 0;
+    } else if (mModelMng.getAnm2().getFrame() >= 28.0f) {
+        changeEatState(StateID_EatNone);
+    }
+}
+
+void daYoshi_c::eatDrinkBigCommonAction() {
+    dActor_c *actor = (dActor_c *) fManager_c::searchBaseByID(m_4c);
+    if (mModelMng.getAnm2().checkFrame(44.0f)) {
+        setEatGlupDownCall(actor);
+        releaseEatActor();
+        startSound(SE_VOC_YS_GOKUN, false);
+        dYoshiMdl_c *mdl = (dYoshiMdl_c *) mModelMng.mpMdl;
+        mdl->m_294 = 0;
+    } else if (isEnableCreateEgg()) {
+        if (mModelMng.getAnm2().isStop()) {
+            checkYoshiEggCommon();
+        }
+    } else if (mModelMng.getAnm2().getFrame() >= 45.0f) {
+        changeEatState(StateID_EatNone);
+    }
+}
+
+void daYoshi_c::EatAction_SuccessDrinkBig() {
+    int frame = 9.0f - mModelMng.getAnm2().getFrame();
+    if (frame >= 0 && frame < 10) {
+        m_5c = frame;
+    }
+
+    if (!calcOpenMouth()) {
+        if (mModelMng.getAnm2().checkFrame(10.0f)) {
+            setEatActorMouthIn();
+        } else {
+            eatDrinkBigCommonAction();
+        }
+    }
+}
+
+void daYoshi_c::setEatAction_Fail() {
+    if (mModelMng.getPrevAnm() != PLAYER_ANIM_R_EAT_FAIL) {
+        mModelMng.setBodyAnm(PLAYER_ANIM_R_EAT_FAIL);
+    }
+    mEatAction = EAT_ACTION_FAIL;
+}
+
+void daYoshi_c::EatAction_Fail() {
+    if (mModelMng.getAnm2().getFrame() < 8.0f) {
+        setCcAtYoshiEatReq();
+    }
+
+    if (mModelMng.getAnm2().checkFrame(9.0f)) {
+        offStatus(STATUS_B0);
+        dYoshiMdl_c *mdl = (dYoshiMdl_c *) mModelMng.mpMdl;
+        mdl->m_294 = 0;
+    }
+
+    if (mModelMng.getAnm2().isStop()) {
+        changeEatState(StateID_EatNone);
+    }
+}
+
+void daYoshi_c::executeState_Eat() {
+    if (mPlayerRideOn == BASE_ID_NULL) {
+        mYoshiDirection = mDirection;
+    }
+
+    static void (daYoshi_c::*l_EatActionProc[])() = {
+        &daYoshi_c::EatAction_StartTurnWait,
+        &daYoshi_c::EatAction_Start,
+        &daYoshi_c::EatAction_SuccessEat,
+        &daYoshi_c::EatAction_SuccessDrink,
+        &daYoshi_c::EatAction_SuccessDrinkBig,
+        &daYoshi_c::EatAction_Fail
+    };
+
+    (this->*l_EatActionProc[mEatAction])();
+}
+
+void daYoshi_c::initializeState_EatMouth() {
+    onStatus(STATUS_B4);
+    mNum = mPlayerNo;
+    mYoshiDirection = mDirection;
+    m_5c = 0;
+    dActor_c *actor = (dActor_c *) fManager_c::searchBaseByID(m_4c);
+    if (actor != nullptr) {
+        actor->mEatenByID = getID();
+        setEatTongueCall(actor);
+    }
+    setEatActorMouthIn();
+    mModelMng.mpMdl->m_17c |= BIT_FLAG(3);
+    setEatAction_Success(1);
+    if (!isEnableCreateEgg()) {
+        mSomeTimer = 5;
+    }
+}
+
+void daYoshi_c::finalizeState_EatMouth() {
+    offStatus(STATUS_B4);
+    mModelMng.mpMdl->m_17c &= ~BIT_FLAG(3);
+    mModelMng.mpMdl->releaseBodyAnm(0.0f);
+    finalizeEatCommon();
+    m_68 = 30;
+    offStatus(STATUS_B3);
+}
+
+void daYoshi_c::executeState_EatMouth() {
+    if (mPlayerRideOn == BASE_ID_NULL) {
+        mYoshiDirection = mDirection;
+    }
+    eatDrinkBigCommonAction();
+}
+
+void daYoshi_c::initializeState_EatOut() {
+    mModelMng.mpMdl->m_17c |= BIT_FLAG(4);
+    mModelMng.setBodyAnm(PLAYER_ANIM_R_EAT_OUT);
+    m_60 = 0;
+    m_64 = 30;
+}
+
+void daYoshi_c::finalizeState_EatOut() {
+    mModelMng.mpMdl->m_17c &= ~BIT_FLAG(4);
+    mModelMng.mpMdl->releaseBodyAnm(0.0f);
+    if (m_60 == 0 && fManager_c::searchBaseByID(m_4c) != nullptr) {
+        setDamageSpitOut(false);
+    }
+    if (fManager_c::searchBaseByID(m_4c) == nullptr) {
+        dYoshiMdl_c *mdl = (dYoshiMdl_c *) mModelMng.mpMdl;
+        mdl->m_294 = 0;
+    }
+}
+
+void daYoshi_c::setEatOutSE() {
+    dActor_c *actor = (dActor_c *) fManager_c::searchBaseByID(m_4c);
+    if (actor != nullptr) {
+        if (actor->mProfName == fProf::YOSHI_FIRE) {
+            startSound(SE_PLY_YOSHI_FIRE, false);
+        } else {
+            startSound(SE_VOC_YS_ATTACK, false);
+        }
+    }
+}
+
+void daYoshi_c::executeState_EatOut() {
+    turnAngle();
+    if (mModelMng.getAnm2().checkFrame(8.0f)) {
+        m_60 = 1;
+        dActor_c *actor = (dActor_c *) fManager_c::searchBaseByID(m_4c);
+        if (actor != nullptr) {
+            actor->mEatState = EAT_STATE_SPAT;
+            if (setEatSpitOutCall(actor)) {
+                setEatOutSE();
+                releaseEatActor();
+            }
+        }
+    }
+
+    if (mModelMng.getAnm2().isStop()) {
+        changeEatState(StateID_EatNone);
     }
 }

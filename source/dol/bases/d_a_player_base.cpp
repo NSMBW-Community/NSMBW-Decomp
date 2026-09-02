@@ -1229,7 +1229,7 @@ void daPlBase_c::initializeState_Funsui() {
     mpMdlMng->setAnm(PLAYER_ANIM_BLOW_UP);
     if (mPlayerNo >= 0) {
         startPlayerVoice(VOICE_INTO_SANDPILLAR, 0);
-        dQuake_c::m_instance->shockMotor(mPlayerNo, dQuake_c::TYPE_7, 0, false);
+        dQuake_c::getInstance()->shockMotor(mPlayerNo, dQuake_c::TYPE_7, 0, false);
         mSubstateTimer = 8;
     }
 }
@@ -1244,7 +1244,7 @@ void daPlBase_c::executeState_Funsui() {
         dEf::createPlayerEffect(mPlayerNo, &mSmokeEffect, "Wm_mr_sprisesmoke", 0, &mPos, nullptr, nullptr);
         if (mSubstateTimer == 0) {
             mSubstateTimer = 8;
-            dQuake_c::m_instance->shockMotor(mPlayerNo, dQuake_c::TYPE_8, 0, false);
+            dQuake_c::getInstance()->shockMotor(mPlayerNo, dQuake_c::TYPE_8, 0, false);
         }
     }
     turnAngle();
@@ -4852,7 +4852,7 @@ void daPlBase_c::setStampPlayerJump(bool b, float yOffset) {
             jumpSpeed = daPlBase_c::sc_JumpSpeed - 0.35f;
         }
         if (b) {
-            dQuake_c::m_instance->shockMotor(mPlayerNo, dQuake_c::TYPE_7, 0, false);
+            dQuake_c::getInstance()->shockMotor(mPlayerNo, dQuake_c::TYPE_7, 0, false);
             if (mKey.buttonJump()) {
                 jumpSpeed = daPlBase_c::sc_JumpSpeed + 0.5f;
             }
@@ -4877,7 +4877,7 @@ void daPlBase_c::initStampReduction() {
     }
     mSquishCooldownTimer = 10;
     startPlayerVoice(VOICE_STOMPED, 0);
-    dQuake_c::m_instance->shockMotor(mPlayerNo, dQuake_c::TYPE_7, 0, false);
+    dQuake_c::getInstance()->shockMotor(mPlayerNo, dQuake_c::TYPE_7, 0, false);
 }
 
 void daPlBase_c::calcJumpDaiReductionScale(int i1, int i2) {
@@ -5855,7 +5855,7 @@ bool daPlBase_c::setPressBgDamage(int i1, int i2) {
     } else {
         if (setDamage2(nullptr, DAMAGE_DEFAULT)) {
             mBc.clearBgcSaveAll();
-            dQuake_c::m_instance->shockMotor(mPlayerNo, dQuake_c::TYPE_4, 0, false);
+            dQuake_c::getInstance()->shockMotor(mPlayerNo, dQuake_c::TYPE_4, 0, false);
             return true;
         }
     }
@@ -6552,7 +6552,7 @@ s8 daPlBase_c::calcComboCount(int max) {
 }
 
 void daPlBase_c::startQuakeShock(dQuake_c::TYPE_SHOCK_e arg) {
-    dQuake_c::m_instance->shockMotor(mPlayerNo, arg, 0, false);
+    dQuake_c::getInstance()->shockMotor(mPlayerNo, arg, 0, false);
 }
 
 void daPlBase_c::startPatternRumble(const char *pattern) {

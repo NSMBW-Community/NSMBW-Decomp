@@ -66,15 +66,15 @@ int dEn_c::preExecute() {
     }
 
     if (!mNoRespawn && !isState(StateID_Ice) && isQuakeDamage()) {
-        if (dQuake_c::m_instance->mFlags & dQuake_c::FLAG_1) {
+        if (dQuake_c::getInstance()->mFlags & dQuake_c::FLAG_1) {
             if (checkDispIn()) {
                 setDeathInfo_Quake(0);
             }
-        } else if (dQuake_c::m_instance->mFlags & dQuake_c::FLAG_2) {
+        } else if (dQuake_c::getInstance()->mFlags & dQuake_c::FLAG_2) {
             if (checkDispIn()) {
                 setDeathInfo_Quake(1);
             }
-        } else if (dQuake_c::m_instance->mFlags & dQuake_c::FLAG_0) {
+        } else if (dQuake_c::getInstance()->mFlags & dQuake_c::FLAG_0) {
             quakeAction();
         }
     }

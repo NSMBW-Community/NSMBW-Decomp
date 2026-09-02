@@ -437,7 +437,8 @@ public:
         STATUS_49,
         STATUS_4A,
         STATUS_RIDE_YOSHI, ///< The player is riding Yoshi.
-        STATUS_JUMP_DAI_COOLDOWN = 0x4d, ///< The player recently failed to perform a big jump because of a ceiling.
+        STATUS_4C,
+        STATUS_JUMP_DAI_COOLDOWN, ///< The player recently failed to perform a big jump because of a ceiling.
         STATUS_4E,
         STATUS_4F,
         STATUS_50,
@@ -531,10 +532,13 @@ public:
         STATUS_FOLLOW_MAME_KURIBO, ///< Mini Goombas are attached to the player.
         STATUS_IS_PENGUIN, ///< The player is in the penguin suit.
         STATUS_HIP_ATTACK, ///< The player is in the ground pound action and is not yet about to stand back up.
-        STATUS_B0 = 0xb0, /// [Yoshi only?]
-        STATUS_B2 = 0xb2, /// [Yoshi only?]
+        STATUS_AF, /// [Yoshi only?]
+        STATUS_B0, /// [Yoshi only?]
+        STATUS_B1, /// [Yoshi only?]
+        STATUS_B2, /// [Yoshi only?]
         STATUS_B3, /// [Yoshi only?]
-        STATUS_ABOUT_TO_BE_DELETED = 0xb5,
+        STATUS_B4, /// [Yoshi only?]
+        STATUS_ABOUT_TO_BE_DELETED,
         STATUS_ITEM_KINOPIO_DISPLAY_OUT,
         STATUS_B7,
         STATUS_B8,
@@ -551,6 +555,7 @@ public:
         STATUS_CAN_WATER_SLIDE, ///< The player can slide on water because of the penguin suit.
         STATUS_C4,
         STATUS_C5,
+        STATUS_C6,
         STATUS_C8 = 0xc8,
         STATUS_C9,
         STATUS_CA,
