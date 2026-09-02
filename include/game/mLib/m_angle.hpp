@@ -29,6 +29,10 @@ struct mAng {
         return sLib::chase(&mAngle, target, step);
     }
 
+    BOOL chaseAngle(short target, short step) {
+        return sLib::chaseAngle(&mAngle, target, step);
+    }
+
     int abs() const {
         return ::abs(mAngle);
     }

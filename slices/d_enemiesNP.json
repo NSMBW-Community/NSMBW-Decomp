@@ -48,6 +48,16 @@
             }
         },
         {
+            "source": "d_enemiesNP/bases/d_a_en_bomhei.cpp",
+            "memoryRanges": {
+                ".text": "0x25fa0-0x2b0e0",
+                ".ctors": "0x60-0x64",
+                ".data": "0x80c0-0x8838",
+                ".rodata": "0x10b8-0x1330",
+                ".bss": "0x1618-0x1998"
+            }
+        },
+        {
             "source": "d_enemiesNP/bases/d_a_en_noko.cpp",
             "memoryRanges": {
                 ".text": "0xcf710-0xd2930",

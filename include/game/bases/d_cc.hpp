@@ -23,6 +23,7 @@ enum CC_STATUS_FLAG_e {
     */
     CC_STATUS_NO_PASS_INFO = BIT_FLAG(2),
     CC_STATUS_8 = BIT_FLAG(8),
+    CC_STATUS_9 = BIT_FLAG(9),
 };
 
 ///< @unofficial
@@ -44,8 +45,8 @@ enum CC_KIND_e {
     CC_KIND_ITEM,
     CC_KIND_TAMA,
     CC_KIND_KILLER,
-    CC_KIND_GOAL_POLE,
-    CC_KIND_COUNT = CC_KIND_GOAL_POLE // Goal pole is special and doesn't count
+    CC_KIND_COUNT,
+    CC_KIND_GOAL_POLE = CC_KIND_COUNT ///< [Unsure why this goes above the count]
 };
 
 ///< @unofficial

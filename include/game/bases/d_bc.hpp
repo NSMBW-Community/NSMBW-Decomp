@@ -138,6 +138,7 @@ public:
     u16 getHeadAttr();
     short getHeadSakaMoveAngle(u8 direction);
     void clearBgcSaveAll();
+    void checkBombBreak(mVec2_c, mVec2_c);
 
     bool getSakaUpDown(u8 direction);
     short getSakaAngleBySpeed(float);

@@ -17,6 +17,16 @@ class dBg_c {
     };
 
 public:
+    float getLiquidHeight() const { return mLiquidHeight; }
+
+    float getDispScale() { return mDispScale; }
+    float getPrevDispScale() { return mPrevDispScale; }
+
+    void setWaterInWave(float x, float y, u8 type);
+    float getLeftLimit();
+    float getRightLimit();
+    void BgUnitChange(u16, u16, int, u16);
+
     u8 mPad1[0x8fe70];
     float m_8fe00;
     u8 mPad2[0x2c];
@@ -33,15 +43,6 @@ public:
     dBg_autoScroll_c mAutoscrolls[2];
     u8 mPad7[0x1a];
     u8 m_9008e;
-
-    float getLiquidHeight() const { return mLiquidHeight; }
-
-    void setWaterInWave(float x, float y, u8 type);
-    float getLeftLimit();
-    float getRightLimit();
-
-    float getDispScale() { return mDispScale; }
-    float getPrevDispScale() { return mPrevDispScale; }
 
     static dBg_c *m_bg_p;
 };

@@ -12,9 +12,11 @@ public:
 
     u8 mPad1[0x138];
     int m_138;
-    u8 mPad2[0x18];
-    int m_154;
+    u8 mPad2[0x10];
+    int mBomheiCount;
     u8 mPad3[0x4];
+    int m_154;
+    u8 mPad4[0x4];
     int m_15c;
 
     static dEnemyMng_c *m_instance;

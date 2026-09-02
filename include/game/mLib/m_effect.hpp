@@ -1,6 +1,6 @@
 #pragma once
 #include <lib/nw4r/ef.h>
-#include <lib/egg/util/eggEffect.hpp>
+#include <lib/egg/util/eggEffect.h>
 #include <game/mLib/m_vec.hpp>
 #include <game/mLib/m_mtx.hpp>
 
