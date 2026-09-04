@@ -15,7 +15,7 @@ namespace {
         0,
         0,
         CC_STATUS_NONE,
-        &daYoshi_c::ccCallback
+        &daYoshi_c::ccCallBack
     };
 
     const sCcDatNewF scYoshiAtCcData = {
@@ -25,7 +25,7 @@ namespace {
         0,
         0,
         CC_STATUS_NONE,
-        &daYoshi_c::atCcCallback
+        &daYoshi_c::atCcCallBack
     };
 
     const sBcPointData scBcFoot = {
@@ -2042,7 +2042,7 @@ void daYoshi_c::executeMain() {
 
         onStatus(STATUS_77);
         if (mPlayerRideOn != BASE_ID_NULL && mKey.mActionTriggered) {
-            daPlBase_c *pl = getPlayerRideOn();
+            dAcPy_c *pl = getPlayerRideOn();
             if (pl != nullptr) {
                 pl->mKey.onStatus(dAcPyKey_c::STATUS_SHAKE_COOLDOWN);
             }
@@ -2134,7 +2134,7 @@ s8 &daYoshi_c::getPlrNo() {
 
 void daYoshi_c::setZPosition() {
     if (mPlayerRideOn != BASE_ID_NULL) {
-        daPlBase_c *player = getPlayerRideOn();
+        dAcPy_c *player = getPlayerRideOn();
         if (player != nullptr) {
             mPos.z = player->mPos.z;
         }
@@ -2147,7 +2147,7 @@ void daYoshi_c::setZPosition() {
 
 void daYoshi_c::setZPosition(float z) {
     if (mPlayerRideOn != BASE_ID_NULL) {
-        daPlBase_c *player = getPlayerRideOn();
+        dAcPy_c *player = getPlayerRideOn();
         if (player != nullptr) {
             player->setZPosition(z);
             setZPosition();
@@ -2157,7 +2157,7 @@ void daYoshi_c::setZPosition(float z) {
 
 void daYoshi_c::setZPositionDirect(float z) {
     if (mPlayerRideOn != BASE_ID_NULL) {
-        daPlBase_c *player = getPlayerRideOn();
+        dAcPy_c *player = getPlayerRideOn();
         if (player != nullptr) {
             player->setZPositionDirect(z);
             setZPosition();
@@ -2167,7 +2167,7 @@ void daYoshi_c::setZPositionDirect(float z) {
 
 void daYoshi_c::offZPosSetNone() {
     if (mPlayerRideOn != BASE_ID_NULL) {
-        daPlBase_c *player = getPlayerRideOn();
+        dAcPy_c *player = getPlayerRideOn();
         if (player != nullptr) {
             player->offZPosSetNone();
         }
@@ -2239,7 +2239,7 @@ bool daYoshi_c::isNoDamage() {
         return true;
     }
 
-    daPlBase_c *player = getPlayerRideOn();
+    dAcPy_c *player = getPlayerRideOn();
     if (player != nullptr && (player->mDamageInvulnTimer | player->mPowerupChangeInvulnTimer) != 0) {
         return true;
     }
@@ -2278,7 +2278,7 @@ bool daYoshi_c::setDamage2(dActor_c *hitActor, DamageType_e type) {
     }
 
     if (mPlayerRideOn != BASE_ID_NULL) {
-        daPlBase_c *player = getPlayerRideOn();
+        dAcPy_c *player = getPlayerRideOn();
         if (player != nullptr) {
             setDamageSpitOut(false);
             switch (type) {
@@ -2320,7 +2320,7 @@ void daYoshi_c::setBcData() {
     mFootBcData = data->mFoot;
     mHeadBcData = data->mHead;
     mWallBcData = data->mWall;
-    daPlBase_c *player = getPlayerRideOn();
+    dAcPy_c *player = getPlayerRideOn();
     if (player == nullptr) {
         mFootBcData.mFlags = 0x801;
         mHeadBcData.mFlags = 0x801;
@@ -2410,7 +2410,7 @@ void daYoshi_c::postBgCross() {
 float daYoshi_c::getSandSinkRate() {
     float rate = 1.0f;
     if (mPlayerRideOn != BASE_ID_NULL) {
-        daPlBase_c *player = getPlayerRideOn();
+        dAcPy_c *player = getPlayerRideOn();
         if (player != nullptr) {
             rate = player->getSandSinkRate();
         }
@@ -2496,4 +2496,337 @@ void daYoshi_c::setCcData() {
         }
         mCenterOffs.set(0.0f, 8.0f, 0.0f);
     }
+}
+
+bool daYoshi_c::ccCheckAttack(dCc_c *self, dCc_c *other) {
+    daYoshi_c *yoshi = (daYoshi_c *) self->getOwner();
+    dAcPy_c *player = (dAcPy_c *) other->getOwner();
+
+    if (yoshi->mPlayerRideOn == player->getID()) {
+        return false;
+    }
+
+    dAcPy_c *owningPlayer = daPyMng_c::getPlayer(yoshi->getPlrNo());
+    if (owningPlayer != nullptr) {
+        switch (other->mCcData.mAttack) {
+            case CC_ATTACK_HIP_ATTACK:
+            case CC_ATTACK_SPIN_FALL:
+                if (owningPlayer->setDamage(player, DAMAGE_4)) {
+                    if (other->mCcData.mKind == CC_KIND_PLAYER) {
+                        dQuake_c::getInstance()->shockMotor(player->getPlrNo(), dQuake_c::TYPE_4, 0, false);
+                        if (yoshi->fn_8014eb70(player, 0)) {
+                            player->mDirection = yoshi->mDirection;
+                            yoshi->setJump(sc_JumpSpeed, yoshi->mSpeedF, true, 2, 0);
+                        }
+                    } else if (other->mCcData.mAttack == CC_ATTACK_HIP_ATTACK) {
+                        player->setVsPlHipAttackEffect();
+                    }
+                }
+                return true;
+            case CC_ATTACK_YOSHI_BULLET:
+            case CC_ATTACK_YOSHI_FIRE:
+            case CC_ATTACK_ICE_2:
+                if (owningPlayer->getPlrNo() != player->getPlrNo()) {
+                    owningPlayer->setFireBallDamage(other->mCcData.mAttack);
+                }
+                return true;
+            default:
+                break;
+        }
+    }
+    return false;
+
+}
+
+bool daYoshi_c::ccCheckStamp(dCc_c *self, dCc_c *other) {
+    daYoshi_c *yoshi = (daYoshi_c *) self->getOwner();
+    dAcPy_c *player = (dAcPy_c *) other->getOwner();
+
+    if (
+        yoshi->mSpeed.y <= 0.0f &&
+        !yoshi->isStatus(STATUS_JUMP_DAI_COOLDOWN) &&
+        !yoshi->isDemoType(DEMO_PLAYER) &&
+        yoshi->isEnableStampPlayerJump(self, other)
+    ) {
+        if (player->isStatus(STATUS_JUMP) && player->mSpeed.y > 0.0f) {
+            yoshi->setStampPlayerJump(true, self->mCollOffsetY[CC_KIND_PLAYER]);
+            player->setStampReduction();
+            return true;
+        }
+
+        if (yoshi->setPlayerJumpDai(player)) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+void daYoshi_c::ccCallBack(dCc_c *self, dCc_c *other) {
+    dAcPy_c *player = (dAcPy_c *) other->getOwner();
+    daYoshi_c *yoshi = (daYoshi_c *) self->getOwner();
+
+    if (
+        yoshi->mPlayerRideOn == BASE_ID_NULL ||
+        other->mCcData.mKind == CC_KIND_YOSHI && player->mPc.m_28 == 0 ||
+        (
+            (other->mCcData.mKind == CC_KIND_PLAYER || other->mCcData.mKind == CC_KIND_YOSHI) &&
+            (yoshi == player->mpNoHitPlayer || player == yoshi->mpNoHitPlayer)
+        )
+    ) {
+        return;
+    }
+
+    if (ccCheckAttack(self, other)) {
+        return;
+    }
+
+    if (other->mCcData.mKind == CC_KIND_PLAYER && player->mKind == STAGE_ACTOR_PLAYER) {
+        if (yoshi->checkRideActor(player)) {
+            return;
+        }
+        if (ccCheckStamp(self, other)) {
+            return;
+        }
+        static const float sCcRevRate[] = { 0.0f, 0.2f, 0.4f };
+        yoshi->setCcPlayerRev(self, other, sCcRevRate[player->getTallType(-1)], 0);
+    }
+
+    if (
+        other->mCcData.mKind == CC_KIND_YOSHI &&
+        !yoshi->checkRideActor(player) &&
+        !ccCheckStamp(self, other)
+    ) {
+        yoshi->setCcPlayerRev(self, other, 0.5f, 2);
+    }
+}
+
+void daYoshi_c::atCcCallBack(dCc_c *self, dCc_c *other) {
+    daYoshi_c *yoshi = (daYoshi_c *) self->getOwner();
+
+    if (yoshi->isDemo()) {
+        return;
+    }
+
+    if (self->mCcData.mAttack == CC_ATTACK_YOSHI_EAT && yoshi->checkHitTongueReserve(other)) {
+        other->mInfo |= CC_NO_HIT;
+    } else if (self->mCcData.mAttack == CC_ATTACK_YOSHI_MOUTH && yoshi->checkHitMouth(other->getOwner())) {
+        other->mInfo |= CC_NO_HIT;
+    }
+}
+
+void daYoshi_c::setReductionScale() {
+    dAcPy_c *player = getPlayerRideOn();
+    if (player != nullptr) {
+        player->setReductionScale();
+    }
+}
+
+void daYoshi_c::initStampReduction() {
+    dAcPy_c *player = getPlayerRideOn();
+    if (player != nullptr) {
+        player->initStampReduction();
+    }
+}
+
+void daYoshi_c::calcJumpDaiReductionScale(int i1, int i2) {
+    dAcPy_c *player = getPlayerRideOn();
+    if (player != nullptr) {
+        player->calcJumpDaiReductionScale(i1, i2);
+    }
+}
+
+void daYoshi_c::setReductionBoyon() {
+    dAcPy_c *player = getPlayerRideOn();
+    if (player != nullptr) {
+        player->setReductionBoyon();
+    }
+}
+
+bool daYoshi_c::getTongueTipMtx(mMtx_c *mtx) {
+    dYoshiMdl_c *mdl = (dYoshiMdl_c *) mModelMng.mpMdl;
+    mMtx_c tongueTipMtx = mdl->getTongueTipMtx();
+    *mtx = tongueTipMtx;
+    return true;
+}
+
+bool daYoshi_c::getMouthMtx(mMtx_c *mtx) {
+    mModelMng.mpMdl->getJointMtx(mtx, 16);
+    return true;
+}
+
+int daYoshi_c::isStar() const {
+    dAcPy_c *player = getPlayerRideOn();
+    if (player != nullptr) {
+        return player->isStar();
+    }
+    return 0;
+}
+
+void daYoshi_c::setStar(StarSet_e starSet, int timer) {
+    dAcPy_c *player = getPlayerRideOn();
+    if (player != nullptr) {
+        player->setStarBase(starSet, timer);
+    }
+    if (starSet == STAR_SET_0) {
+        dActor_c *actor = (dActor_c *) fManager_c::searchBaseByID(m_4c);
+        if (actor != nullptr && actor->mKind == STAGE_ACTOR_PLAYER) {
+            dAcPy_c *player = (dAcPy_c *) actor;
+            setVirusStar(player);
+        }
+    }
+}
+
+void daYoshi_c::endStar() {
+    dAcPy_c *player = getPlayerRideOn();
+    if (player != nullptr) {
+        player->endStar();
+    }
+}
+
+void daYoshi_c::setVirusStar(daPlBase_c *fromPlayer) {
+    dAcPy_c *player = getPlayerRideOn();
+    if (player != nullptr) {
+        player->setVirusStar(fromPlayer);
+    }
+}
+
+void daYoshi_c::clearStarCount() {
+    dAcPy_c *player = getPlayerRideOn();
+    if (player != nullptr) {
+        player->clearStarCount();
+    }
+}
+
+s8 daYoshi_c::getStarCount() const {
+    dAcPy_c *player = getPlayerRideOn();
+    if (player != nullptr) {
+        return player->getStarCount();
+    }
+    return 0;
+}
+
+s8 daYoshi_c::calcStarCount(int count) {
+    dAcPy_c *player = getPlayerRideOn();
+    if (player != nullptr) {
+        return player->calcStarCount(count);
+    }
+    return 0;
+}
+
+bool daYoshi_c::isChange() {
+    if (mPlayerRideOn != BASE_ID_NULL) {
+        dAcPy_c *player = getPlayerRideOn();
+        if (player != nullptr) {
+            return player->isChange();
+        }
+    }
+    return false;
+}
+
+void daYoshi_c::setLandSE() {
+    startFootSoundPlayer(SE_PLY_LAND_YOSHI);
+}
+
+void daYoshi_c::set1UpKinokoEffect() {
+    dAcPy_c *player = getPlayerRideOn();
+    if (player != nullptr) {
+        player->set1UpKinokoEffect();
+    }
+}
+
+void daYoshi_c::setFlagGetEffect() {
+    dAcPy_c *player = getPlayerRideOn();
+    if (player != nullptr) {
+        player->setFlagGetEffect();
+    }
+}
+
+void daYoshi_c::setTongueHitEffect(mVec3_c &pos) {
+    if (m_2e8 == 0) {
+        m_2e8 = 1;
+        mAng3_c ang(0, 0, 0);
+        if (mDirection == DIR_LR_L) {
+            ang.y = DEG_TO_ANGLE(-180.0f);
+        }
+        mEf::createEffect("Wm_mr_ystonguehit", 0, &pos, &ang, nullptr);
+        mSndObj.startSound(SE_PLY_YOSHI_TONGUE_HIT, 0);
+    }
+}
+
+void daYoshi_c::startPlayerVoice(int a, int b) {
+    dAcPy_c *player = getPlayerRideOn();
+    if (player != nullptr) {
+        player->startPlayerVoice(a, b);
+    }
+}
+
+
+void daYoshi_c::holdPlayerVoice(int a, int b) {
+    dAcPy_c *player = getPlayerRideOn();
+    if (player != nullptr) {
+        // [Bug: This should be player->holdPlayerVoice, this way it recursively calls itself until the game crashes.]
+        holdPlayerVoice(a, b);
+    }
+}
+
+void daYoshi_c::setCreateAction(int action) {
+    daPlBase_c::setCreateAction(action);
+}
+
+bool daYoshi_c::setTimeOverDemo() {
+    if (
+        isStatus(STATUS_53) ||
+        isStatus(STATUS_GOAL_POLE_NOT_GOAL_NO_MOVE) ||
+        isStatus(STATUS_OUT_OF_PLAY) ||
+        isStatus(STATUS_STUNNED) ||
+        isStatus(STATUS_B3)
+    ) {
+        return false;
+    }
+
+    if (mPlayerRideOn != BASE_ID_NULL) {
+        dAcPy_c *player = getPlayerRideOn();
+        if (player != nullptr) {
+            return player->setTimeOverDemo();
+        }
+    }
+
+    return false;
+}
+
+void daYoshi_c::setFallDownDemo() {
+    if (isDispOutCheckOn() && mPlayerRideOn != BASE_ID_NULL) {
+        dAcPy_c *player = getPlayerRideOn();
+        if (player != nullptr) {
+            player->setFallDownDemo();
+        }
+    }
+}
+
+bool daYoshi_c::setBalloonInDispOut(int a) {
+    if (!isDispOutCheckOn()) {
+        return false;
+    }
+
+    if (isStatus(STATUS_8D)) {
+        return false;
+    }
+
+    if (mPlayerRideOn != BASE_ID_NULL) {
+        dActor_c *actor = (dActor_c *) fManager_c::searchBaseByID(m_4c);
+        if (actor != nullptr && actor->mKind == STAGE_ACTOR_PLAYER) {
+            dAcPy_c *player = (dAcPy_c *) actor;
+            player->setBalloonInDispOutByYoshi(a);
+        }
+
+        dAcPy_c *player = getPlayerRideOn();
+        if (player != nullptr && player->mKind == STAGE_ACTOR_PLAYER) {
+            if (player->setBalloonInDispOutByYoshi(a)) {
+                changeState(StateID_DamageRun);
+                return true;
+            }
+        }
+    }
+    return false;
 }

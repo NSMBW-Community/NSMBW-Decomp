@@ -78,7 +78,7 @@ enum PLAYER_TYPE_e {
 
 /// @brief Various flags applied to the player on occasion.
 enum PLAYER_CREATE_ITEM_e {
-    CREATE_ITEM_NONE        = BIT_FLAG(-1),
+    CREATE_ITEM_NONE        = 0,
     CREATE_ITEM_STAR_POWER  = BIT_FLAG(0), ///< Gives the player Star Power.
     CREATE_ITEM_YOSHI       = BIT_FLAG(1), ///< Spawns a Yoshi along with the player.
     CREATE_ITEM_BUBBLE      = BIT_FLAG(2), ///< Spawns the player inside a bubble.

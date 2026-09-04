@@ -57,7 +57,7 @@ public:
 
     /// @brief The directions the actor can collide with.
     enum BG_COLL_FLAG_e {
-        COLL_NONE = BIT_FLAG(-1), ///< The actor did not collide with any surface.
+        COLL_NONE = 0, ///< The actor did not collide with any surface.
         COLL_WALL_L = BIT_FLAG(0), ///< The actor collided with a wall on its left.
         COLL_WALL_R = BIT_FLAG(1), ///< The actor collided with a wall on its right.
         COLL_FOOT = BIT_FLAG(2), ///< The actor collided with the ground.
@@ -72,7 +72,7 @@ public:
 
     /// @brief Flags used to control out of screen checks.
     enum SCREEN_OUT_e {
-        SKIP_NONE = BIT_FLAG(-1), ///< No checks are skipped.
+        SKIP_NONE = 0, ///< No checks are skipped.
         SKIP_ACTOR_DELETE = BIT_FLAG(1), ///< The actor is not deleted if out of screen.
         SKIP_SCREEN_CHECK = BIT_FLAG(2), ///< The actor position is not checked against the screen boundaries.
         SKIP_RIDE_CHECK = BIT_FLAG(3), ///< The actor's ride status is not checked.
