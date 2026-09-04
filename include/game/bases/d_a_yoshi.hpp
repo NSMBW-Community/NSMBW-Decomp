@@ -49,7 +49,18 @@ public:
     virtual int create() override;
     virtual int doDelete() override;
     virtual int preExecute() override;
+    virtual int draw() override;
+    virtual s8 &getPlrNo() override;
 
+    virtual void executeMain() override;
+    virtual void executeLastPlayer() override;
+    virtual void executeLastAll() override;
+    virtual const sBcPointData *getHeadBgPointData() override;
+    virtual const sBcPointData *getWallBgPointData() override;
+    virtual const sBcPointData *getFootBgPointData() override;
+    virtual float getStandHeadBgPointY() override;
+    virtual void postBgCross() override;
+    virtual float getSandSinkRate() override;
     virtual void changeState(const sStateIDIf_c &stateID, void *arg) override;
 
     STATE_VIRTUAL_FUNC_DECLARE(daYoshi_c, Walk);
@@ -77,9 +88,20 @@ public:
     virtual void setFallAction() override;
     void releaseFunsuiAction() override;
     virtual float getCloudOffsetY() override;
-    bool setHipAttackOnEnemy(mVec3_c *attachPos) override;
+    virtual bool isNoDamage() override;
+    virtual bool setDamage(dActor_c *, DamageType_e) override;
+    virtual bool setForcedDamage(dActor_c *, DamageType_e) override;
+    virtual bool setJump(float jumpSpeed, float speedF, bool allowSteer, int keyMode, int jumpMode) override;
+    virtual bool _setJump(float jumpSpeed, float speedF, bool allowSteer, int keyMode, int jumpMode) override;
+    virtual bool setHipAttackOnEnemy(mVec3_c *attachPos) override;
+    virtual void clearJumpActionInfo(int) override;
+    virtual void setZPosition() override;
+    virtual void setZPosition(float) override;
+    virtual void setZPositionDirect(float) override;
+    virtual void offZPosSetNone() override;
     virtual short getMukiAngle(u8 direction) override;
     virtual int turnAngle() override;
+    virtual bool setDamage2(dActor_c *, daPlBase_c::DamageType_e) override;
 
     // New main states
     STATE_FUNC_DECLARE(daYoshi_c, AloneWait);
@@ -118,9 +140,18 @@ public:
     bool fn_8014f030(dAcPy_c *player); ///< @unofficial
     bool setDamageSpitOut(bool);
     void finalizeEatCommon();
-    void setEatTongueOffCall(dActor_c *actor);
     bool calcOpenMouth();
     void eatDrinkBigCommonAction();
+    bool releaseEatActor();
+    void clearHitTongueReserve();
+    bool checkHitTongueReserve(dCc_c *cc);
+    void setHitTongueReserve();
+    bool checkHitMouth(dActor_c *actor);
+    void createYoshiEggCommon();
+    bool createYoshiEgg();
+    void addFruitCount();
+    void selectAction();
+    const sBcYoshiPointData *getBgPointData();
 
     bool setEatAction();
     void setEatAction_StartTurnWait();
@@ -139,15 +170,20 @@ public:
     bool isEnableCreateEgg();
     void setCcAtYoshiMouthReq();
     void setCcAtYoshiEatReq();
-    bool setEatTongueCall(dActor_c *actor);
+    void setEatTongueCall(dActor_c *actor);
+    void setEatTongueOffCall(dActor_c *actor);
+    void setEatMouthCall(dActor_c *actor);
     bool setEatSpitOutCall(dActor_c *actor);
-    bool setEatMouthCall(dActor_c *actor);
     bool setEatGlupDownCall(dActor_c *actor);
 
     void setEatOutSE();
-    void releaseEatActor();
     void setEatActorMouthIn();
     void checkYoshiEggCommon();
+    void setTongueHitEffect(mVec3_c &efPos);
+    void setCcData();
+    void setBcData();
+    void setCcAtYoshiEat();
+    void setCcAtYoshiMouth();
 
     bool getTongueTipMtx(mMtx_c *mtx);
     void getMouthMtx(mMtx_c *mtx);
@@ -185,18 +221,21 @@ public:
     int m_68;
     u8 mYoshiDirection;
     s8 mNum;
-    u8 mPad1[0x4];
+    int m_70;
     int mSomeTimer;
     int m_78;
     int m_7c;
     float m_80;
-    u8 mPad2[0xc];
+    dCc_c *m_84;
+    float m_88;
+    int m_8c;
     int mFruitCount;
-    u8 mPad3[0x4];
+    int m_94;
     mEf::levelEffect_c mLevelEffect1;
     mEf::levelEffect_c mLevelEffect2;
     int m_2e8;
-    u8 mPad4[0x4];
+    u8 mPad[0x4];
 
+    ACTOR_PARAM_CONFIG(Color, 0, 4);
     ACTOR_PARAM_CONFIG(BeginType, 16, 8);
 };

@@ -484,7 +484,9 @@ public:
         STATUS_78,
         STATUS_79,
         STATUS_7A,
-        STATUS_STOP_EXECUTE = 0x7d, ///< Stop executing this player indefinitely.
+        STATUS_7B,
+        STATUS_7C,
+        STATUS_STOP_EXECUTE, ///< Stop executing this player indefinitely.
         STATUS_7E,
         STATUS_7F,
         STATUS_80,
@@ -556,7 +558,8 @@ public:
         STATUS_C4,
         STATUS_C5,
         STATUS_C6,
-        STATUS_C8 = 0xc8,
+        STATUS_C7,
+        STATUS_C8,
         STATUS_C9,
         STATUS_CA,
         STATUS_CB
