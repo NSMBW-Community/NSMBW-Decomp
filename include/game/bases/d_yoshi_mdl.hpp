@@ -7,6 +7,7 @@ public:
     enum YoshiColor_e {};
 
     void setTongueCcCheck(float x);
+    mMtx_c getTongueTipMtx();
 
     YoshiColor_e getColor() { return mColor; }
 

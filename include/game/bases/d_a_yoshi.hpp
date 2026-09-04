@@ -61,6 +61,15 @@ public:
     virtual float getStandHeadBgPointY() override;
     virtual void postBgCross() override;
     virtual float getSandSinkRate() override;
+    virtual void setReductionScale() override;
+    virtual void initStampReduction() override;
+    virtual void calcJumpDaiReductionScale(int i1, int i2) override;
+    virtual void setReductionBoyon() override;
+    virtual bool setBalloonInDispOut(int) override;
+    virtual bool isChange() override;
+    virtual void setCreateAction(int) override;
+    virtual bool setTimeOverDemo() override;
+    virtual void setFallDownDemo() override;
     virtual void changeState(const sStateIDIf_c &stateID, void *arg) override;
 
     STATE_VIRTUAL_FUNC_DECLARE(daYoshi_c, Walk);
@@ -88,6 +97,13 @@ public:
     virtual void setFallAction() override;
     void releaseFunsuiAction() override;
     virtual float getCloudOffsetY() override;
+    virtual int isStar() const override;
+    virtual void setStar(StarSet_e, int) override;
+    virtual void endStar() override;
+    virtual void setVirusStar(daPlBase_c *) override;
+    virtual void clearStarCount() override;
+    virtual s8 getStarCount() const override;
+    virtual s8 calcStarCount(int) override;
     virtual bool isNoDamage() override;
     virtual bool setDamage(dActor_c *, DamageType_e) override;
     virtual bool setForcedDamage(dActor_c *, DamageType_e) override;
@@ -95,10 +111,15 @@ public:
     virtual bool _setJump(float jumpSpeed, float speedF, bool allowSteer, int keyMode, int jumpMode) override;
     virtual bool setHipAttackOnEnemy(mVec3_c *attachPos) override;
     virtual void clearJumpActionInfo(int) override;
+    virtual void setLandSE() override;
+    virtual void set1UpKinokoEffect() override;
+    virtual void setFlagGetEffect() override;
     virtual void setZPosition() override;
     virtual void setZPosition(float) override;
     virtual void setZPositionDirect(float) override;
     virtual void offZPosSetNone() override;
+    virtual void startPlayerVoice(int, int) override;
+    virtual void holdPlayerVoice(int, int) override;
     virtual short getMukiAngle(u8 direction) override;
     virtual int turnAngle() override;
     virtual bool setDamage2(dActor_c *, daPlBase_c::DamageType_e) override;
@@ -152,6 +173,9 @@ public:
     void addFruitCount();
     void selectAction();
     const sBcYoshiPointData *getBgPointData();
+    bool getTongueTipMtx(mMtx_c *mtx);
+    bool getMouthMtx(mMtx_c *mtx);
+    void setTongueHitEffect(mVec3_c &pos);
 
     bool setEatAction();
     void setEatAction_StartTurnWait();
@@ -179,14 +203,10 @@ public:
     void setEatOutSE();
     void setEatActorMouthIn();
     void checkYoshiEggCommon();
-    void setTongueHitEffect(mVec3_c &efPos);
     void setCcData();
     void setBcData();
     void setCcAtYoshiEat();
     void setCcAtYoshiMouth();
-
-    bool getTongueTipMtx(mMtx_c *mtx);
-    void getMouthMtx(mMtx_c *mtx);
 
     void changeState(const sStateIDIf_c &stateID) {
         changeState(stateID, 0);
@@ -204,8 +224,10 @@ public:
     dYoshiMdl_c *getModel() { return (dYoshiMdl_c *) daPlBase_c::getModel(); }
     int getFruitCount() const { return mFruitCount; }
 
-    static void ccCallback(dCc_c *self, dCc_c *other);
-    static void atCcCallback(dCc_c *self, dCc_c *other);
+    static bool ccCheckAttack(dCc_c *self, dCc_c *other);
+    static bool ccCheckStamp(dCc_c *self, dCc_c *other);
+    static void ccCallBack(dCc_c *self, dCc_c *other);
+    static void atCcCallBack(dCc_c *self, dCc_c *other);
 
     dPyMdlMng_c mModelMng;
     sFStateMgr_c<daYoshi_c, sStateMethodUsr_FI_c> mEatStateMgr;

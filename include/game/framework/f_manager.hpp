@@ -6,7 +6,7 @@
 #include <game/framework/f_tree_nd.hpp>
 #include <game/framework/f_profile.hpp>
 
-#define GET_PROC_FLAG(proc) BIT_FLAG((proc)-1)
+#define GET_PROC_FLAG(proc) (proc < 1 ? 0 : BIT_FLAG((proc) - 1))
 
 class fBase_c;
 

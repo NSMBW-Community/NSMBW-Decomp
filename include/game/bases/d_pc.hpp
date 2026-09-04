@@ -39,9 +39,17 @@ public:
     dPole_ctr_c *mpCtr;
     dPole_ctr_c *mpCtr2;
     mVec2_c m_14;
-    u8 mPad2[0xe];
-    u8 m_2a;
-    u8 mPad3[0x2];
+    u8 mPad2[0xc];
+    union {
+        int m_28;
+        struct {
+            u8 _m_28;
+            u8 m_29;
+            u8 m_2a;
+            u8 m_2b;
+        };
+    };
+    u8 mPad3[0x1];
     u8 m_2d;
     mVec3_c m_30;
 };
