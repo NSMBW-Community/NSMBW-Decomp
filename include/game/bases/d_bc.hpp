@@ -47,6 +47,14 @@ public:
     sBcPointData mVine;
 };
 
+/// @unofficial
+class sBcYoshiPointData {
+public:
+    sBcPointData mFoot;
+    sBcPointData mHead;
+    sBcPointData mWall;
+};
+
 class dBc_c {
 public:
     enum Flag_e {

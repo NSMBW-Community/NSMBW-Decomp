@@ -6,6 +6,8 @@ class dYoshiMdl_c : public dPyMdlBase_c {
 public:
     enum YoshiColor_e {};
 
+    void setTongueCcCheck(float x);
+
     YoshiColor_e getColor() { return mColor; }
 
     u8 mPad1[0x40];

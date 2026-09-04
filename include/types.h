@@ -51,7 +51,7 @@ typedef int BOOL;
 #define ARRAY_SIZE(a) (sizeof(a) / sizeof(a[0]))
 #define ARRAY_MAX_STRLEN(a) (ARRAY_SIZE(a) - 1)
 #define ARRAY_LAST(a) (a[ARRAY_SIZE(a) - 1])
-#define BIT_FLAG(bit) ((bit) < 0 ? 0 : 1 << (bit))
+#define BIT_FLAG(bit) (1 << (bit))
 #define ROUND_UP(x, align) (((x) + (align) - 1) & (-(align)))
 #define ROUND_UP_PTR(x, align)  ((void*)((((u32)(x)) + (align) - 1) & (~((align) - 1))))
 #define MAX(a, b) ((a) > (b) ? (a) : (b))
