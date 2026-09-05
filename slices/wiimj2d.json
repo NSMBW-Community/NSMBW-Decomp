@@ -411,7 +411,6 @@
             }
         },
         {
-
             "source": "dol/bases/d_multi_manager.cpp",
             "memoryRanges": {
                 ".text": "0xc8170-0xc8580",
@@ -422,7 +421,6 @@
             }
         },
         {
-
             "source": "dol/bases/d_next.cpp",
             "memoryRanges": {
                 ".text": "0xc9560-0xc9c40",
@@ -589,6 +587,19 @@
                 ".data": "0x24940-0x24ac8",
                 ".sdata": "0x1bc0-0x1bf0",
                 ".sbss2": "0x20-0x28"
+            }
+        },
+        {
+            "source": "dol/bases/d_a_farBG.cpp",
+            "nonMatching": true,
+            "memoryRanges": {
+                ".text": "0x10f450-0x113e30",
+                ".sdata2": "0x23e0-0x2460",
+                ".sbss": "0x738-0x748",
+                ".bss": "0x23db0-0x23ec0",
+                ".data": "0x25758-0x259c0",
+                ".rodata": "0x6ed8-0x6f28",
+                ".sdata": "0x1c78-0x1ca0"
             }
         },
         {

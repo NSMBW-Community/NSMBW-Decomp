@@ -153,6 +153,14 @@ public:
         return ref().translate;
     }
 
+    const math::VEC3& GetVolumeMin() const {
+        return ref().volume_min;
+    }
+
+    const math::VEC3& GetVolumeMax() const {
+        return ref().volume_max;
+    }
+
     ResNode GetParentNode() {
         return ofs_to_obj<ResNode>(ref().toParentNode);
     }

@@ -4,6 +4,22 @@
 #include <game/bases/d_fader.hpp>
 #include <game/mLib/m_vec.hpp>
 #include <constants/game_constants.h>
+#include <lib/egg/gfxe/eggLookAtCamera.h>
+
+class dCamera_c : public dBase_c {
+public:
+    EGG::Screen mScreen;
+    EGG::LookAtCamera mCamera0;
+    EGG::OrthoData mProject1;
+    EGG::LookAtCamera mCamera1;
+    EGG::OrthoData mProject2;
+    EGG::LookAtCamera mCamera2;
+    u32 mCameraID;
+    mVec3_c mCameraPos;
+    mVec3_c mTargetPos;
+    mVec3_c mCamUp;
+    mVec3_c mCenterPos;
+};
 
 class dScStage_c : public dScene_c {
 public:
@@ -45,6 +61,7 @@ public:
 
     static dScStage_c *getInstance() { return m_instance; }
     static NOINLINE Exit_e getExitMode() { return m_exitMode; }
+    static dCamera_c *getCamera(int);
 
     static float getLoopPosX(float x);
     static u32 m_exeFrame;

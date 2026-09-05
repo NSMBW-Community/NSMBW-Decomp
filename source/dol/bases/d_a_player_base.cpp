@@ -5435,7 +5435,7 @@ float daPlBase_c::getWaterCheckPosY() {
 void daPlBase_c::checkWater() {
     mWaterType = dBc_c::WATER_CHECK_NONE;
     mPrevWaterHeight = mWaterHeight;
-    mWaterHeight = dBg_c::m_bg_p->m_8fe00;
+    mWaterHeight = dBg_c::m_bg_p->mZoneBottom;
     u8 waterCheck = dBc_c::checkWater(mPos.x, mPos.y, mLayer, &mWaterHeight);
     if (waterCheck != dBc_c::WATER_CHECK_NONE && mPos.y <= mWaterHeight) {
         onNowBgCross(BGC_WATER_TOUCH);
@@ -5715,7 +5715,7 @@ void daPlBase_c::underOverCheck() {
         }
     }
     if (cond == 1) {
-        if (selfTop < bgTop && selfTop < dBg_c::m_bg_p->m_8fe00) {
+        if (selfTop < bgTop && selfTop < dBg_c::m_bg_p->mZoneBottom) {
             setFallDownDemo();
         }
     } else if (selfTop < bgTop) {

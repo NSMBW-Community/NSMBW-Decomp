@@ -12,7 +12,7 @@ public:
 
     virtual void reset();
     virtual void createEffect(const char *, int);
-    virtual void createEffect(const char *, ulong, const mVec3_c *, const mAng3_c *, const mVec3_c *);
+    virtual bool createEffect(const char *, ulong, const mVec3_c *, const mAng3_c *, const mVec3_c *);
     virtual void createEffect(const char *, ulong, const mMtx_c *);
     virtual void vfa8();
     virtual void vfac();
@@ -31,7 +31,7 @@ public:
     virtual void kill();
     virtual void update();
     virtual void createEffect(const char *, int);
-    virtual void createEffect(const char *, ulong, const mVec3_c *, const mAng3_c *, const mVec3_c *);
+    virtual bool createEffect(const char *, ulong, const mVec3_c *, const mAng3_c *, const mVec3_c *);
     virtual void createEffect(const char *, ulong, const mMtx_c *);
     virtual void vfa8();
     virtual void vfac();
@@ -53,7 +53,7 @@ public:
 
     virtual void reset();
     virtual void createEffect(const char *, int);
-    virtual void createEffect(const char *, ulong, const mVec3_c *, const mAng3_c *, const mVec3_c *);
+    virtual bool createEffect(const char *, ulong, const mVec3_c *, const mAng3_c *, const mVec3_c *);
     virtual void createEffect(const char *, ulong, const mMtx_c *);
 
     float mEmissionRateMaybe;

@@ -17,11 +17,17 @@ class dBg_c {
     };
 
 public:
-    u8 mPad1[0x8fe70];
-    float m_8fe00;
+    u8 mPad1[0x8fe64];
+    float mZoneLeft;
+    float mZoneRight;
+    float mZoneTop;
+    float mZoneBottom;
     u8 mPad2[0x2c];
     float mLoopOffset;
-    u8 mPad3[0x20];
+    u8 mPad3[0x4];
+    float mPrevScreenLeft;
+    float mPrevScreenTop;
+    u8 mPad32[0x14];
     float mLiquidHeight;
     u8 mPad4[0x144];
     float mDispScale;
@@ -42,6 +48,9 @@ public:
 
     float getDispScale() { return mDispScale; }
     float getPrevDispScale() { return mPrevDispScale; }
+
+    float getZoneHeight() const { return mZoneTop - mZoneBottom; }
+    float getZoneWidth() const { return mZoneRight - mZoneLeft; }
 
     static dBg_c *m_bg_p;
 };
