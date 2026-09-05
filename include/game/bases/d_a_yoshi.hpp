@@ -51,13 +51,14 @@ public:
     virtual int preExecute() override;
     virtual int draw() override;
     virtual s8 &getPlrNo() override;
+    virtual bool isSpinLiftUpEnable() override;
 
     virtual void executeMain() override;
     virtual void executeLastPlayer() override;
     virtual void executeLastAll() override;
-    virtual const sBcPointData *getHeadBgPointData() override;
-    virtual const sBcPointData *getWallBgPointData() override;
-    virtual const sBcPointData *getFootBgPointData() override;
+    virtual const sBcPointData *getHeadBgPointData() override { return &getBgPointData()->mHead; }
+    virtual const sBcPointData *getWallBgPointData() override { return &getBgPointData()->mWall; }
+    virtual const sBcPointData *getFootBgPointData() override { return &getBgPointData()->mFoot; }
     virtual float getStandHeadBgPointY() override;
     virtual void postBgCross() override;
     virtual float getSandSinkRate() override;
@@ -67,9 +68,16 @@ public:
     virtual void setReductionBoyon() override;
     virtual bool setBalloonInDispOut(int) override;
     virtual bool isChange() override;
+    virtual void changeNextScene(int) override;
+    virtual bool isEnableDokanInStatus() override;
+    virtual bool setHideNotGoalPlayer() override;
+    virtual int setDemoGoal(mVec3_c &landPos, float goalCastleX, u8 goalType) override;
     virtual void setCreateAction(int) override;
     virtual bool setTimeOverDemo() override;
     virtual void setFallDownDemo() override;
+    virtual bool updateDemoKimePose(ClearType_e clearType) override;
+    virtual void initDemoGoalBase() override;
+    virtual void executeDemoGoal_Run() override;
     virtual void changeState(const sStateIDIf_c &stateID, void *arg) override;
 
     STATE_VIRTUAL_FUNC_DECLARE(daYoshi_c, Walk);
@@ -97,6 +105,7 @@ public:
     virtual void setFallAction() override;
     void releaseFunsuiAction() override;
     virtual float getCloudOffsetY() override;
+    virtual const mVec3_c *getHeadTopPosP() override { return &getModel()->mHeadPos; }
     virtual int isStar() const override;
     virtual void setStar(StarSet_e, int) override;
     virtual void endStar() override;

@@ -1137,7 +1137,7 @@ public:
     float mViewLimitPadding;
 
     KimePoseMode_e mKimePoseMode;
-    s8 mDemoState; /// Value is a ControlDemoState_e.
+    s8 mDemoState; /// Value is a ControlDemoSubstate_e.
 
     int mDokanEnterNextGotoID; ///< The ID of the next-goto of the pipe being entered.
     /// Position of the door or pipe the player is entering.
