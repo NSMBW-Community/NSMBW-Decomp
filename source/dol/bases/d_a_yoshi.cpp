@@ -3,6 +3,7 @@
 #include <game/bases/d_audio.hpp>
 #include <game/bases/d_enemy_manager.hpp>
 #include <game/bases/d_bg.hpp>
+#include <game/bases/d_mario_mdl.hpp>
 #include <constants/sound_list.h>
 
 ACTOR_PROFILE(YOSHI, daYoshi_c, 2);
@@ -28,23 +29,23 @@ namespace {
         &daYoshi_c::atCcCallBack
     };
 
-    const sBcPointData scBcFoot = {
-        SENSOR_IS_POINT,
-        -0x4000,
+    const sBcSensorLine scBcFoot = {
+        SENSOR_IS_LINE,
+        -0x5000,
         0x4000,
         0
     };
 
-    const sBcPointData scBcHead = {
-        SENSOR_IS_POINT,
-        -0x1000,
+    const sBcSensorLine scBcHead = {
+        SENSOR_IS_LINE,
+        -0x2000,
         0x1000,
         0x10000
     };
 
-    const sBcPointData scBcWall = {
-        SENSOR_IS_POINT,
-        -0x4000,
+    const sBcSensorLine scBcWall = {
+        SENSOR_IS_LINE,
+        0x4000,
         0xB000,
         0x8000
     };
@@ -2828,5 +2829,150 @@ bool daYoshi_c::setBalloonInDispOut(int a) {
             }
         }
     }
+    return false;
+}
+
+void daYoshi_c::changeNextScene(int scene) {
+    daPlBase_c::changeNextScene(scene);
+    dActor_c *actor = (dActor_c *) fManager_c::searchBaseByID(m_4c);
+    if (actor != nullptr && actor->mKind == STAGE_ACTOR_PLAYER) {
+        dAcPy_c *player = (dAcPy_c *) actor;
+        player->changeNextScene(1);
+    }
+}
+
+bool daYoshi_c::isEnableDokanInStatus() {
+    if (!daPlBase_c::isEnableDokanInStatus()) {
+        return false;
+    }
+
+    if (isStatus(STATUS_AF) || isStatus(STATUS_B3)) {
+        return false;
+    }
+
+    return true;
+}
+
+int daYoshi_c::setDemoGoal(mVec3_c &landPos, float goalCastleX, u8 goalType) {
+    dActor_c *actor;
+    int plrNo;
+
+    daPlBase_c::setDemoGoal(landPos, goalCastleX, goalType);
+    plrNo = -1;
+    actor = (dActor_c *) fManager_c::searchBaseByID(m_4c);
+    if (setDamageSpitOut(true) && actor->mKind == STAGE_ACTOR_PLAYER) {
+        dAcPy_c *player = (dAcPy_c *) actor;
+        player->setDemoGoal(landPos, goalCastleX, goalType);
+        plrNo = player->getPlrNo();
+    }
+    changeEatState(StateID_EatNone);
+    changeState(StateID_None);
+    return plrNo;
+}
+
+bool daYoshi_c::setHideNotGoalPlayer() {
+    if (daPlBase_c::setHideNotGoalPlayer()) {
+        dAcPy_c *player = getPlayerRideOn();
+        if (player != nullptr) {
+            player->onStatus(STATUS_GOAL_POLE_NOT_GOAL_NO_MOVE);
+        }
+        return true;
+    }
+    return false;
+}
+
+void daYoshi_c::initDemoGoalBase() {
+    daPlBase_c::initDemoGoalBase();
+}
+
+
+void daYoshi_c::executeDemoGoal_Run() {
+    switch (mDemoState) {
+        case 0:
+            if (mPlayerRideOn != BASE_ID_NULL) {
+                dAcPy_c *player = getPlayerRideOn();
+                if (player != nullptr) {
+                    player->setOffYoshiInGoal(this);
+                    mAngle.y = 0;
+                    mModelMng.setAnm(PLAYER_ANIM_WAIT, 10.0f, 0.0f);
+                    mDemoState = 1;
+                    mDirection = DIR_LR_R;
+                    mDemoSubstateTimer = 70;
+                }
+            }
+            break;
+        case 1:
+            if (mDemoSubstateTimer < 20) {
+                mAngle.y.chase(getMukiAngle(mDirection), 0x400);
+            }
+            if (mDemoSubstateTimer == 0) {
+                mModelMng.setAnm(PLAYER_ANIM_GORL_WAIT);
+                mDemoState = 2;
+            }
+            break;
+        case 2:
+            mAngle.y.chase(getMukiAngle(mDirection), 0x400);
+            break;
+    }
+}
+
+bool daYoshi_c::updateDemoKimePose(ClearType_e clearType) {
+    dPyMdlMng_c *playerMdlMng = nullptr;
+    dAcPy_c *player = getPlayerRideOn();
+    if (player != nullptr) {
+        playerMdlMng = player->mpMdlMng;
+    }
+    switch (mKimePoseMode) {
+        case KIME_POSE_NONE: {
+            // mKimePoseMode = KIME_POSE_WITH_HAT;
+            mModelMng.setAnm(PLAYER_ANIM_WAIT, 0.0f, 0.0f);
+            int animID = PLAYER_ANIM_GOAL_PUTON_CAP;
+            if (playerMdlMng != nullptr) {
+                if (playerMdlMng->mpMdl->m_151 == 0 || playerMdlMng->mpMdl->m_151 == 1) {
+                    if (player->mPowerup == POWERUP_PROPELLER_SHROOM) {
+                        mKimePoseMode = KIME_POSE_PENGUIN;
+                        animID = PLAYER_ANIM_PL_RGOAL_PUTON_CAP;
+                    } else if (player->mPowerup == POWERUP_PENGUIN_SUIT) {
+                        mKimePoseMode = KIME_POSE_PENGUIN;
+                        animID = PLAYER_ANIM_P_RGOAL_PUTON_CAP;
+                    } else {
+                        mKimePoseMode = KIME_POSE_WITH_HAT;
+                        animID = PLAYER_ANIM_GOAL_PUTON_CAP;
+                    }
+                } else {
+                    mKimePoseMode = KIME_POSE_NO_HAT;
+                    animID = PLAYER_ANIM_GOAL_PUTON_CAPF;
+                }
+            }
+            mModelMng.setAnm(animID, 0.0f, 0.0f);
+            daPlBase_c::startKimePoseVoice(clearType);
+            // fallthrough
+        }
+        case KIME_POSE_WITH_HAT:
+            if (playerMdlMng != nullptr) {
+                dMarioMdl_c *marioMdl = (dMarioMdl_c *) playerMdlMng->mpMdl;
+                if (marioMdl->mAnm.checkFrame(50.0f)) {
+                    marioMdl->setHeadID(dMarioMdl_c::TYPE_1);
+                }
+                dMarioMdl_c *marioMdl2 = (dMarioMdl_c *) playerMdlMng->mpMdl;
+                if (marioMdl2->mAnm.checkFrame(130.0f)) {
+                    marioMdl2->setHeadID(dMarioMdl_c::TYPE_0);
+                }
+            }
+            // fallthrough
+        case KIME_POSE_PENGUIN:
+        case KIME_POSE_NO_HAT:
+            if (mModelMng.isAnmStop()) {
+                offStatus(STATUS_6C);
+                return true;
+            }
+            break;
+        default:
+            break;
+    }
+    return false;
+}
+
+bool daYoshi_c::isSpinLiftUpEnable() {
     return false;
 }

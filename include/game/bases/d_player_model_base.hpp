@@ -78,7 +78,8 @@ public:
     dPyMdlBase_c *mpSpinLiftParentMdl;
     m3d::anmChr_c mAnm;
     m3d::anmChr_c mAnm2;
-    u8 mPad3[0x34];
+    u8 mPad3[0x28];
+    mVec3_c mHeadPos;
     mVec3_c mHatPosMaybe;
     u8 mPad4[0x30];
     mMtx_c mMtx;
