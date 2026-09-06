@@ -27,7 +27,7 @@ public:
         float mUnk54[NODE_COUNT];
         int mTimer2[NODE_COUNT];
         int mTimer1[NODE_COUNT];
-        u32 mUnk78[NODE_COUNT];
+        int mTimer3[NODE_COUNT];
     };
 
     daWmSandPillar_c(); ///< @copydoc dWmObjActor_c::dWmObjActor_c
@@ -62,7 +62,7 @@ public:
 
     sFStateMgr_c<daWmSandPillar_c, sStateMethodUsr_FI_c> mStateMgr; ///< The state manager.
 
-    u32 mUnk4EC;
+    int mUnk4EC;
     int mTimer1;
     float mUnk4F4;
     float mUnk4F8;

@@ -192,14 +192,164 @@ void daWmSandPillar_c::executeState_BottomWaitForever() {}
 
 void daWmSandPillar_c::finalizeState_BottomWaitForever() {}
 
-// NOT MATCHING
 void daWmSandPillar_c::initializeState_MoveReady() {
-    int nodeIdx = ACTOR_PARAM(Node);
-    mTimer2 = GLOBAL_DATA.mTimer2[nodeIdx];
-    mUnk4F4 = -GLOBAL_DATA.mUnk4F4[nodeIdx];
-    mScale.y = GLOBAL_DATA.mScaleY[nodeIdx];
-    mUnk500 = GLOBAL_DATA.mUnk500[nodeIdx];
-    mUnk4F8 = -GLOBAL_DATA.mUnk4F8[nodeIdx];
+    mTimer2 = GLOBAL_DATA.mTimer2[ACTOR_PARAM(Node)];
+    mUnk4F4 = -GLOBAL_DATA.mUnk4F4[ACTOR_PARAM(Node)];
+    mScale.y = GLOBAL_DATA.mScaleY[ACTOR_PARAM(Node)];
+    mUnk500 = GLOBAL_DATA.mUnk500[ACTOR_PARAM(Node)];
+    mUnk4F8 = -GLOBAL_DATA.mUnk4F8[ACTOR_PARAM(Node)];
     mUnk4EC = 1;
     mChrAnim.setRate(0.0f);
+}
+
+// NOT MATCHING
+void daWmSandPillar_c::executeState_MoveReady() {
+    int nodeIdx = ACTOR_PARAM(Node);
+    float a = GLOBAL_DATA.mUnk48[nodeIdx];
+    float b = GLOBAL_DATA.mUnk54[nodeIdx];
+    if (mUnk4EC == 1) {
+        float yScale = mScale.y;
+        float c = mUnk4F4;
+        FUN_808e55e0();
+        mScale.y += mUnk4F4;
+        if (mUnk4F4 == 0.0f) {
+            if (c > 0.0f) {
+                mUnk4F8 = -GLOBAL_DATA.mUnk4F8[ACTOR_PARAM(Node)];
+
+            } else if (c < 0.0f) {
+                mUnk4F8 = GLOBAL_DATA.mUnk4F8[ACTOR_PARAM(Node)];
+            }
+        }
+
+        if (yScale > b || mScale.y < b) {
+            if (yScale > a && mScale.y <= a) {
+                mUnk4F8 = 0.0f;
+            }
+        } else {
+            mUnk4F8 = 0.0f;
+            mTimer2--;
+        }
+
+        if (mTimer2 <= 0) {
+            mStateMgr.changeState(StateID_MoveUp);
+        }
+    }
+}
+
+void daWmSandPillar_c::finalizeState_MoveReady() {}
+
+// NOT MATCHING
+void daWmSandPillar_c::initializeState_MoveUp() {
+    float a = GLOBAL_DATA.mUnk4F8[ACTOR_PARAM(Node)];
+    float b = GLOBAL_DATA.mUnk500[ACTOR_PARAM(Node)];
+
+    mUnk4F8 = a;
+    mUnk500 = b;
+    if (mUnk504 != 0) {
+        mUnk500 = -b;
+        mUnk4F8 = a;
+    }
+
+    mChrAnim.setRate(0.0f);
+}
+
+// NOT MATCHING
+void daWmSandPillar_c::executeState_MoveUp() {
+    int nodeIdx = ACTOR_PARAM(Node);
+    float a = GLOBAL_DATA.mUnk3C[nodeIdx];
+    float b = GLOBAL_DATA.mUnk54[nodeIdx];
+
+    FUN_808e55e0();
+    float c = mUnk4F4;
+    mScale.y += mUnk4F4;
+
+    if (mUnk504 != 0) {
+        if (b >= a) {
+            if (mScale.y > a) {
+                mScale.y = a;
+                mStateMgr.changeState(StateID_TopWait);
+            }
+        }
+        else if (mScale.y < a) {
+            mScale.y = a;
+            mStateMgr.changeState(StateID_TopWait);
+        }
+    }
+    else if (c <= 0.0f && mScale.y <= a) {
+        mScale.y = a;
+        mStateMgr.changeState(StateID_TopWaitForever);
+    }
+}
+
+void daWmSandPillar_c::finalizeState_MoveUp() {}
+
+void daWmSandPillar_c::initializeState_TopWait() {
+    mChrAnim.setRate(1.0f);
+    mTimer1 = GLOBAL_DATA.mTimer3[ACTOR_PARAM(Node)];
+}
+
+void daWmSandPillar_c::executeState_TopWait() {
+    mTimer1--;
+    if (mTimer1 <= 0) {
+        mStateMgr.changeState(StateID_MoveDown);
+    }
+}
+
+void daWmSandPillar_c::finalizeState_TopWait() {}
+
+void daWmSandPillar_c::initializeState_TopWaitForever() {
+    mChrAnim.setRate(1.0f);
+    mUnk4F4 = 0.0f;
+    mTimer1 = GLOBAL_DATA.mTimer3[ACTOR_PARAM(Node)];
+}
+
+void daWmSandPillar_c::executeState_TopWaitForever() {}
+
+void daWmSandPillar_c::finalizeState_TopWaitForever() {}
+
+void daWmSandPillar_c::initializeState_MoveDown() {
+    mChrAnim.setRate(0.0f);
+    mUnk4F4 = 0.0f;
+    mUnk4F8 = -GLOBAL_DATA.mUnk4F8[ACTOR_PARAM(Node)];
+}
+
+void daWmSandPillar_c::executeState_MoveDown() {
+    float yScale = GLOBAL_DATA.mScaleY[ACTOR_PARAM(Node)];
+    FUN_808e55e0();
+    mScale.y += mUnk4F4;
+    if (mScale.y <= yScale) {
+        mScale.y = yScale;
+        mStateMgr.changeState(StateID_BottomWait);
+    }
+}
+
+void daWmSandPillar_c::finalizeState_MoveDown() {}
+
+void daWmSandPillar_c::initializeState_TopWaitFromTheStart() {
+    nw4r::g3d::ResAnmChr resAnmChr = mResFile.GetResAnmChr("cobSandpillar");
+    mChrAnim.setAnm(mModel, resAnmChr, m3d::FORWARD_LOOP);
+    mChrAnim.setRate(1.0f);
+    mModel.setAnm(mChrAnim, 1.0f);
+    mScale.y = GLOBAL_DATA.mUnk3C[ACTOR_PARAM(Node)];
+}
+
+void daWmSandPillar_c::executeState_TopWaitFromTheStart() {
+    mStateMgr.changeState(StateID_TopWaitForever);
+}
+
+void daWmSandPillar_c::finalizeState_TopWaitFromTheStart() {}
+
+void daWmSandPillar_c::processCutsceneCommand(int cutsceneCommandId, bool isFirstFrame) {
+    if (cutsceneCommandId != dCsSeqMng_c::CUTSCENE_CMD_NONE && !isStaff()) {
+        mIsCutEnd = true;
+    }
+}
+
+void daWmSandPillar_c::createEffect() {
+    mVec3_c efPos;
+    ulong nodeId = m3d::getNodeID(mModel.getResMdl(), "ef_cobSandpillar");
+    mModel.getNodeWorldMtxMultVecZero(nodeId, efPos);
+
+    mEffect1.createEffect("Wm_cs_sandpillar01", 0, &efPos, nullptr, nullptr);
+    mEffect2.createEffect("Wm_cs_sandpillar02", 0, &efPos, nullptr, nullptr);
 }
