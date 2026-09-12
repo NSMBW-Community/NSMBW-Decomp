@@ -16,6 +16,7 @@ extern "C" {
 #include <revolution/OS/OSAudioSystem.h>
 #include <revolution/OS/OSCache.h>
 #include <revolution/OS/OSContext.h>
+#include <revolution/OS/OSCrc.h>
 #include <revolution/OS/OSError.h>
 #include <revolution/OS/OSExec.h>
 #include <revolution/OS/OSFastCast.h>

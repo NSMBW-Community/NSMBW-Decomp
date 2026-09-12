@@ -684,6 +684,12 @@
             }
         },
         {
+            "source": "dol/sLib/s_crc.cpp",
+            "memoryRanges": {
+                ".text": "0x158af0-0x158b00"
+            }
+        },
+        {
             "source": "dol/sLib/s_lib.cpp",
             "memoryRanges": {
                 ".text": "0x158b00-0x158fc0",
