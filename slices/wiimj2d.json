@@ -301,6 +301,13 @@
             }
         },
         {
+            "source": "dol/bases/d_curtain_mng.cpp",
+            "memoryRanges": {
+                ".text": "0x88540-0x885f0",
+                ".sdata2": "0xfb8-0xfc0"
+            }
+        },
+        {
             "source": "dol/bases/d_cyuukan.cpp",
             "memoryRanges": {
                 ".text": "0x885f0-0x88990",
