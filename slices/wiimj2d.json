@@ -50,6 +50,7 @@
         "unlink__24DynamicModuleControlBaseFv"
     ],
     "keepWeak": [
+        "OSReport",
         "changeState__99sStateStateMgr_c<18dActorMultiState_c,12sFStateMgr_c,20sStateMethodUsr_FI_c,20sStateMethodUsr_FI_c>FRC12sStateIDIf_c",
         "__dt__85sFStateStateMgr_c<18dActorMultiState_c,20sStateMethodUsr_FI_c,20sStateMethodUsr_FI_c>Fv",
         "__dt__99sStateStateMgr_c<18dActorMultiState_c,12sFStateMgr_c,20sStateMethodUsr_FI_c,20sStateMethodUsr_FI_c>Fv",
@@ -679,6 +680,7 @@
             "source": "dol/sLib/s_lib.cpp",
             "memoryRanges": {
                 ".text": "0x158b00-0x158fc0",
+                ".sdata": "0x1d80-0x1d88",
                 ".sdata2": "0x2b78-0x2b80"
             }
         },
@@ -686,6 +688,12 @@
             "source": "dol/sLib/s_Phase.cpp",
             "memoryRanges": {
                 ".text": "0x158fc0-0x159090"
+            }
+        },
+        {
+            "source": "dol/sLib/s_printf.cpp",
+            "memoryRanges": {
+                ".text": "0x159090-0x159180"
             }
         },
         {

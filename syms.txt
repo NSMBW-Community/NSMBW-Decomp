@@ -854,6 +854,7 @@ __shl2i=0x802DD4DC
 __register_fragment=0x802DD640
 __unregister_fragment=0x802DD68C
 abs=0x802DE804
+vprintf=0x802E1850
 snprintf=0x802E19D8
 sprintf=0x802E1ACC
 strcpy=0x802E1C28

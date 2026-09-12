@@ -1,4 +1,7 @@
 #include <game/sLib/s_lib.hpp>
+#include <MSL/cstdio>
+
+vprintfFunc sLib::p_VPrintfFuncPtr = vprintf;
 
 float sLib::addCalc(float *value, float target, float smoothing, float maxStep, float minStep) {
     if (*value != target) {

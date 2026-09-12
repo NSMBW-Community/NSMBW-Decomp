@@ -1,6 +1,9 @@
 #pragma once
 #include <types.h>
 
+/// @brief The signature of the function used to print formatted output.
+typedef int (*vprintfFunc)(const char *format, va_list *args);
+
 /**
  * @brief A collection of motion and interpolation utilities.
  * @details Provides utilities for timer management, proportional smoothing and fixed step movement
@@ -101,5 +104,7 @@ BOOL chaseAngle(s16 *value, s16 target, s16 step);
  * @return @p TRUE if the value reached the target, @p FALSE otherwise.
  */
 BOOL chaseAngleByRotDir(s16 *value, s16 target, s16 step);
+
+extern vprintfFunc p_VPrintfFuncPtr; ///< Pointer to std::printf. @unofficial
 
 } // namespace sLib
