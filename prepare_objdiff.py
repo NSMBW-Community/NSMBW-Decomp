@@ -88,7 +88,10 @@ def get_dtk(tag: str) -> str:
             st = os.stat(bin_path)
             os.chmod(bin_path, st.st_mode | stat.S_IEXEC)
 
-    return bin_path
+    # Windows' CreateProcess fails to resolve a relative executable path when
+    # an ancestor directory name contains certain non-ASCII characters (e.g.
+    # an em dash); an absolute path avoids that resolution step entirely.
+    return os.path.abspath(bin_path)
 
 # Whether a section contains code or data
 SECTION_TYPES = {
