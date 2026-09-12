@@ -713,6 +713,13 @@
             }
         },
         {
+            "source": "dol/cLib/c_counter.cpp",
+            "memoryRanges": {
+                ".text": "0x159800-0x159810",
+                ".sbss": "0x7a8-0x7b0"
+            }
+        },
+        {
             "source": "dol/cLib/c_dylink.cpp",
             "memoryRanges": {
                 ".text": "0x159810-0x15a490",
