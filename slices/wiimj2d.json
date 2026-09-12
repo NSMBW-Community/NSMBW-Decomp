@@ -992,6 +992,13 @@
             }
         },
         {
+            "source": "dol/mLib/m_color.cpp",
+            "memoryRanges": {
+                ".text": "0x164430-0x164550",
+                ".sdata2": "0x2c60-0x2c70"
+            }
+        },
+        {
             "source": "dol/mLib/m_color_fader.cpp",
             "memoryRanges": {
                 ".text": "0x164550-0x164910",
