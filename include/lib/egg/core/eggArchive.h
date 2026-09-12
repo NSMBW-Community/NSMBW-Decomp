@@ -2,6 +2,8 @@
 #include <revolution/ARC.h>
 
 namespace EGG {
+    class Heap;
+
     class Archive {
     public:
         struct FileInfo {
@@ -11,6 +13,8 @@ namespace EGG {
         };
 
         typedef void (*searchCallback)(void *, void *, const ARCDirEntry *, const char *);
+
+        static Archive *mount(void *arcStart, EGG::Heap *heap, int alignment);
 
         void unmount();
         int countFile();
