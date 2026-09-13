@@ -1,6 +1,7 @@
 #include <types.h>
 #include <math.h>
 #include <nw4r/math.h>
+#include <game/cLib/c_lib.hpp>
 #include <game/cLib/c_random.hpp>
 /// @file
 
@@ -96,10 +97,6 @@ inline float getCircleUnit() {
     return 65536 / (2 * M_PI);
 }
 
-inline bool isZero(float val) {
-    return (std::fabs(val) < FLT_EPSILON);
-}
-
 s16 rad2s(float rad) {
     // Clamp the value between -65535 and 65535
     int mod = (float)fmod(rad, 2 * M_PI) * getCircleUnit();
@@ -125,11 +122,11 @@ namespace cM {
 inline u32 atan2i(float sin,float cos) {
 
     // 0° or 180°
-    if (isZero(sin)) {
+    if (cLib::isZero(sin)) {
         return (cos >= 0.0f) ? 0 : 0x8000;
 
     // 90° or 270°
-    } else if (isZero(cos)) {
+    } else if (cLib::isZero(cos)) {
         return (sin >= 0.0f) ? 0x4000 : 0xC000;
 
     } else if (sin >= 0.0f) {

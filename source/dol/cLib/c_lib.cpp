@@ -1,11 +1,7 @@
 #include <game/cLib/c_lib.hpp>
 #include <lib/egg/math/eggMath.h>
 #include <lib/revolution/MTX/vec.h>
-#include <math.h>
-
-inline bool isZero(float val) {
-    return (std::fabs(val) < FLT_EPSILON);
-}
+#include <string.h>
 
 inline float calcDistance(const mVec3_c &a, const mVec3_c &b) {
     float dx = a.x - b.x;
@@ -16,42 +12,46 @@ inline float calcDistance(const mVec3_c &a, const mVec3_c &b) {
 
 namespace cLib {
 
-float addCalcPos(mVec3_c *pos, const mVec3_c &target, float ratio, float maxSpeed, float minSpeed) {
-    if (*pos != target) {
-        mVec3_c diff;
-        diff = *pos - target;
-        float mag = PSVECMag(diff);
-        if (mag < minSpeed) {
-            *pos = target;
+void memSet(void *dst, int val, ulong size) {
+    memset(dst, val, size);
+}
+
+float addCalcPos(mVec3_c *currPos, const mVec3_c &targetPos, float ratio, float maxStep, float minStep) {
+    if (*currPos != targetPos) {
+        mVec3_c stepVector;
+        stepVector = *currPos - targetPos;
+        float distance = PSVECMag(stepVector);
+        if (distance < minStep) {
+            *currPos = targetPos;
         } else {
-            diff *= ratio;
-            float stepMag = mag * ratio;
-            if (!isZero(stepMag)) {
-                if (stepMag > maxSpeed) {
-                    diff *= maxSpeed / stepMag;
-                } else if (stepMag < minSpeed) {
-                    diff *= minSpeed / stepMag;
+            stepVector *= ratio;
+            float step = distance * ratio;
+            if (!isZero(step)) {
+                if (step > maxStep) {
+                    stepVector *= maxStep / step;
+                } else if (step < minStep) {
+                    stepVector *= minStep / step;
                 }
-                *pos -= diff;
+                *currPos -= stepVector;
             } else {
-                *pos = target;
+                *currPos = targetPos;
             }
         }
     }
 
-    return calcDistance(*pos, target);
+    return calcDistance(*currPos, targetPos);
 }
 
-bool chasePos(mVec3_c *pos, const mVec3_c &target, float speed) {
-    if (speed) {
-        mVec3_c diff = *pos - target;
-        float mag = PSVECMag(diff);
-        if (isZero(mag) || mag <= speed) {
-            *pos = target;
+bool chasePos(mVec3_c *currentPos, const mVec3_c &targetPos, float step) {
+    if (step) {
+        mVec3_c offset = *currentPos - targetPos;
+        float distance = PSVECMag(offset);
+        if (isZero(distance) || distance <= step) {
+            *currentPos = targetPos;
             return true;
         }
-        *pos -= (speed / mag) * diff;
-    } else if (*pos == target) {
+        *currentPos -= (step / distance) * offset;
+    } else if (*currentPos == targetPos) {
         return true;
     }
     return false;
@@ -63,7 +63,7 @@ s16 targetAngleY(const mVec3_c &vec1, const mVec3_c &vec2) {
 
 s16 targetAngleX(const mVec3_c &vec1, const mVec3_c &vec2) {
     mVec3_c diff = vec2 - vec1;
-    return cM::atan2s(diff.y, EGG::Mathf::sqrt(diff.x * diff.x + diff.z * diff.z));
+    return cM::atan2s(diff.y, diff.xzLen());
 }
 
 } // namespace cLib
