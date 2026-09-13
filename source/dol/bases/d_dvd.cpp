@@ -10,6 +10,8 @@ void create(long id, EGG::Heap *heap1, EGG::Heap *heap2) {
     mDvd::setAutoStreamDecomp(true);
 }
 
+// A constructor initializer list forces field initialization in declaration order (mSize first),
+// which does not match the target's store order below. Assign in the body instead.
 loader_c::loader_c() {
     mpCommand = nullptr;
     mSize = -1;

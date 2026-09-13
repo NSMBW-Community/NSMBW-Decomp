@@ -5,6 +5,7 @@
 #include <game/mLib/m_dvd.hpp>
 
 /// @brief The game's DVD loading layer, built on top of @ref mDvd .
+/// @ingroup bases
 namespace dDvd {
 
 /// @brief Loads a single file from the disc and keeps ownership of the resulting buffer.
