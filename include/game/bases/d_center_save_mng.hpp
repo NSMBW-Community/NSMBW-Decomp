@@ -2,12 +2,13 @@
 #include <game/cLib/c_line.hpp>
 #include <game/mLib/m_vec.hpp>
 
-/// @brief Manages a list of center save entries (position + parameter → value).
+/// @brief Manages a list of center save entries (position + parameter -> value).
 /// @unofficial
+/// @ingroup bases
 class dCenterSaveMng_c {
 public:
-    dCenterSaveMng_c();
-    ~dCenterSaveMng_c();
+    dCenterSaveMng_c(); ///< Registers this instance as the singleton.
+    ~dCenterSaveMng_c(); ///< Deletes all entries and clears the singleton instance.
 
     /// @brief Queries a center save entry by position and parameter.
     /// @param pos The position to check.
