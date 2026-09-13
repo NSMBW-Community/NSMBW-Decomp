@@ -282,6 +282,14 @@
             }
         },
         {
+            "source": "dol/bases/d_center_save_mng.cpp",
+            "memoryRanges": {
+                ".text": "0x87500-0x87750",
+                ".ctors": "0xc4-0xc8",
+                ".sbss": "0x2b0-0x2c0"
+            }
+        },
+        {
             "source": "dol/bases/d_coin.cpp",
             "memoryRanges": {
                 ".text": "0x87750-0x87870",
