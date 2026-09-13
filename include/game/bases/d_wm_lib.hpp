@@ -50,6 +50,8 @@ namespace dWmLib {
 
     int GetCourseTypeFromCourseNo(int courseNo);
     int GetCourseNoFromPointName(const char *pointName);
+    TypePoint_e GetPointTypeFromPointName(const char *pointName);
+    void MakeRouteName(char *out, const char *pointA, const char *pointB);
     bool isKoopaShipAnchor();
     u8 getStartPointKinokoHouseKindNum();
     bool isStartPointKinokoHouseStar();

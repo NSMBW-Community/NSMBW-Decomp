@@ -21,6 +21,8 @@
 /// @brief Loader for world map point / route data.
 /// @ingroup bases
 class dCsvData_c {
+    friend class dWmConnect_c;
+
 public:
     /// @unofficial
     enum PointFlag_e {

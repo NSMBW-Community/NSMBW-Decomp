@@ -539,6 +539,18 @@
             }
         },
         {
+            "source": "dol/bases/d_wm_connect.cpp",
+            "memoryRanges": {
+                ".text": "0xec480-0xecdf0",
+                ".ctors": "0x16c-0x170",
+                ".data": "0x1d938-0x1d960",
+                ".bss": "0x22640-0x22650",
+                ".sdata": "0x1288-0x1298",
+                ".sbss": "0x570-0x578",
+                ".sdata2": "0x1ec8-0x1ee0"
+            }
+        },
+        {
             "source": "dol/bases/d_wm_csvdata.cpp",
             "memoryRanges": {
                 ".text": "0xecdf0-0xef960",

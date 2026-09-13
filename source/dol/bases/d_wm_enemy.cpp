@@ -67,7 +67,7 @@ void dWmEnemy_c::initializeBase(const char **names, int count, bool cyclic) {
     }
     mPath.init(names, count, connect, cyclic, enData.mWalkDirection);
     mPath.SetStartPoint(getStartPoint());
-    dWmConnect_c::Point_s *point = connect->GetPointFromIndex(mPath.mpCurrentPoint->mPointIndex);
+    dWmConnect_c::dPnt_c *point = connect->GetPointFromIndex(mPath.mpCurrentPoint->mPointIndex);
     mPos = point->pos + getPointOffset(mPath.mpCurrentPoint->mIndex);
     bool enWalk = false;
     if (dWmEnemy::isEnemyWalk() && dWmLib::getEnemyRevivalCount(dScWMap_c::m_WorldNo, ACTOR_PARAM(enemyNo)) == 0) {
@@ -300,7 +300,7 @@ bool dWmEnemy_c::doWalk() {
 mVec3_c dWmEnemy_c::getNextPointInfo() {
     daWmMap_c *wmMap = daWmMap_c::m_instance;
     dWmConnect_c *connect = &wmMap->mWmConnect[wmMap->currIdx];
-    dWmConnect_c::Point_s *point = connect->GetPointFromIndex(mPath.GetNextPointIdx());
+    dWmConnect_c::dPnt_c *point = connect->GetPointFromIndex(mPath.GetNextPointIdx());
     int idx = mPath.GetNextPointInfo(false)->mIndex;
     return point->pos + getPointOffset(idx);
 }
@@ -308,7 +308,7 @@ mVec3_c dWmEnemy_c::getNextPointInfo() {
 mVec3_c dWmEnemy_c::getCurrentPointInfo() {
     daWmMap_c *wmMap = daWmMap_c::m_instance;
     dWmConnect_c *connect = &wmMap->mWmConnect[wmMap->currIdx];
-    dWmConnect_c::Point_s *point = connect->GetPointFromIndex(mPath.mpCurrentPoint->mPointIndex);
+    dWmConnect_c::dPnt_c *point = connect->GetPointFromIndex(mPath.mpCurrentPoint->mPointIndex);
     return point->pos + getPointOffset(mPath.mpCurrentPoint->mIndex);
 }
 
