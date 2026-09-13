@@ -316,6 +316,14 @@
             }
         },
         {
+            "source": "dol/bases/d_dvd.cpp",
+            "memoryRanges": {
+                ".text": "0x88990-0x88ce0",
+                ".data": "0x12aa0-0x12ab0",
+                ".sbss": "0x2e8-0x2f0"
+            }
+        },
+        {
             "source": "dol/bases/d_dylink.cpp",
             "memoryRanges": {
                 ".text": "0x88ce0-0x891a0",
