@@ -40,6 +40,9 @@ public:
     float getLeftLimit();
     float getRightLimit();
 
+    bool CoinGetBitCheck(u16 x, u16 y, int layer);
+    void CoinGetBitSet(u16 x, u16 y, int layer);
+
     float getDispScale() { return mDispScale; }
     float getPrevDispScale() { return mPrevDispScale; }
 
