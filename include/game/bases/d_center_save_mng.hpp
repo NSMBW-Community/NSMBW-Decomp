@@ -31,10 +31,11 @@ private:
 
         Link_c *mpSelf;
         mVec3_c mPos;
-        short mValue;
+        short mRotation;
         u8 mID;
     };
 
+public:
     static dCenterSaveMng_c *m_instance;
     static cLineMg_c ms_linkManager;
 };

@@ -28,7 +28,10 @@
         }
     },
     "keepWeak": [
-        "setAnim__11daWmPeach_cFifff"
+        "setAnim__11daWmPeach_cFifff",
+        "coinSE__14daObjCenter2_cFv",
+        "getAngle__14daObjCenter2_cFv",
+        "decideCoinSound__14daObjCenter2_cFv"
     ],
     "slices": [
         {
@@ -67,6 +70,16 @@
                 ".text": "0x4b0d0-0x4b730",
                 ".rodata": "0x1f98-0x1fe8",
                 ".data": "0x13190-0x132b0"
+            }
+        },
+        {
+            "source": "d_basesNP/bases/d_a_obj_center2.cpp",
+            "memoryRanges": {
+                ".text": "0x106f00-0x107c50",
+                ".ctors": "0x2b8-0x2bc",
+                ".rodata": "0x6120-0x6140",
+                ".data": "0x33cf0-0x33ee8",
+                ".bss": "0xcad0-0xcb90"
             }
         },
         {

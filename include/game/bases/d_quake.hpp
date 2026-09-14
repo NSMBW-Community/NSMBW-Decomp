@@ -24,6 +24,7 @@ public:
     };
 
     void shockMotor(s8, TYPE_SHOCK_e, int, bool);
+    void startShockAll(TYPE_SHOCK_e, int, int, bool);
 
     float mSpeed;
     float mResult;

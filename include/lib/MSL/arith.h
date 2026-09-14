@@ -6,6 +6,7 @@ extern "C" {
 #endif
 
 int abs(int);
+long labs(long);
 
 #ifdef __cplusplus
 }
