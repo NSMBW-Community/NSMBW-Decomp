@@ -37,7 +37,7 @@ bool dCenterSaveMng_c::center_check(const mVec3_c *pos, u8 id, short *outValue) 
         curr = (Link_c *) curr->getNext();
 
         if (pos->x == link->getX() && pos->y == link->getY() && id == link->mID) {
-            *outValue = link->mValue;
+            *outValue = link->mRotation;
             found = true;
             break;
         }
@@ -57,7 +57,7 @@ void dCenterSaveMng_c::center_entry(const mVec3_c *pos, u8 id, short value) {
         curr = (Link_c *) curr->getNext();
 
         if (pos->x == link->getX() && pos->y == link->getY() && id == link->mID) {
-            link->mValue = value;
+            link->mRotation = value;
             found = true;
             break;
         }
@@ -68,7 +68,7 @@ void dCenterSaveMng_c::center_entry(const mVec3_c *pos, u8 id, short value) {
         if (newEntry != nullptr) {
             newEntry->mPos = *pos;
             newEntry->mID = id;
-            newEntry->mValue = value;
+            newEntry->mRotation = value;
         }
     }
 }
