@@ -273,13 +273,13 @@ void daYoshi_c::initializeState_BlockOut() {
         mSubstate = BLOCK_OUT_ACTION_0;
         mAccelY = -0.5f;
         mMaxFallSpeed = sc_MaxFallSpeed;
-        mModelMng.setAnm(PLAYER_ANIM_SWIM_WAIT, 10.0f, 0.0f);
+        mModelMng.setAnmOnlyRate(PLAYER_ANIM_SWIM_WAIT, 10.0f, 0.0f);
     } else {
         mSpeed.y = 0.0f;
-        mSubstate = BLOCK_OUT_ACTION_1;
         mAccelY = 0.0f;
+        mSubstate = BLOCK_OUT_ACTION_1;
         mMaxFallSpeed = sc_MaxFallSpeed;
-        mModelMng.setAnm(PLAYER_ANIM_SET, 0.0f, 0.0f);
+        mModelMng.setAnmOnlyRate(PLAYER_ANIM_SET, 0.0f, 0.0f);
     }
     startSound(SE_VOC_YS_YOSHI, false);
     mAngle.y = 0;
@@ -807,7 +807,9 @@ void daYoshi_c::executeState_Fall() {
     moveSpeedSet();
     powerSet();
     updateJumpAction();
-    setDelayHelpJump();
+    if (setDelayHelpJump()) {
+        return;
+    }
 }
 
 void daYoshi_c::initializeState_Land() {
@@ -1057,13 +1059,9 @@ void daYoshi_c::setTurnMoveSpeed() {
 }
 
 void daYoshi_c::initializeState_Turn() {
-    u8 dir = 0;
     mSubstate = 0;
-    mModelMng.setAnm(PLAYER_ANIM_TURN, 0.0f, 0.0f);
-    if (mSpeedF < 0.0f) {
-        dir = 1;
-    }
-    mAngle.y = getMukiAngle(dir);
+    mModelMng.setAnmOnlyRate(PLAYER_ANIM_TURN, 0.0f, 0.0f);
+    mAngle.y = getMukiAngle(mSpeedF < 0.0f ? DIR_LR_L : DIR_LR_R);
     mDirection ^= 1;
     mAccelY = getGravityData()[0];
     mMaxFallSpeed = sc_MaxFallSpeed;
@@ -2924,11 +2922,11 @@ bool daYoshi_c::updateDemoKimePose(ClearType_e clearType) {
     }
     switch (mKimePoseMode) {
         case KIME_POSE_NONE: {
-            // mKimePoseMode = KIME_POSE_WITH_HAT;
+            mKimePoseMode = KIME_POSE_WITH_HAT;
             mModelMng.setAnm(PLAYER_ANIM_WAIT, 0.0f, 0.0f);
             int animID = PLAYER_ANIM_GOAL_PUTON_CAP;
             if (playerMdlMng != nullptr) {
-                if (playerMdlMng->mpMdl->m_151 == 0 || playerMdlMng->mpMdl->m_151 == 1) {
+                if (playerMdlMng->mpMdl->m_151 == 0 || playerMdlMng->mpMdl->m_151 == playerMdlMng->mpMdl->get151CheckVal1()) {
                     if (player->mPowerup == POWERUP_PROPELLER_SHROOM) {
                         mKimePoseMode = KIME_POSE_PENGUIN;
                         animID = PLAYER_ANIM_PL_RGOAL_PUTON_CAP;
@@ -2954,9 +2952,8 @@ bool daYoshi_c::updateDemoKimePose(ClearType_e clearType) {
                 if (marioMdl->mAnm.checkFrame(50.0f)) {
                     marioMdl->setHeadID(dMarioMdl_c::TYPE_1);
                 }
-                dMarioMdl_c *marioMdl2 = (dMarioMdl_c *) playerMdlMng->mpMdl;
-                if (marioMdl2->mAnm.checkFrame(130.0f)) {
-                    marioMdl2->setHeadID(dMarioMdl_c::TYPE_0);
+                if (playerMdlMng->getAnm1().checkFrame(130.0f)) {
+                    marioMdl->setHeadID(dMarioMdl_c::TYPE_0);
                 }
             }
             // fallthrough

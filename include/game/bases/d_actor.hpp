@@ -1,6 +1,7 @@
 #pragma once
 
 #include <game/bases/d_base_actor.hpp>
+#include <game/bases/d_bg_ctr.hpp>
 #include <game/sLib/s_RangeData.hpp>
 #include <game/mLib/m_3d.hpp>
 #include <game/bases/d_cc.hpp>
