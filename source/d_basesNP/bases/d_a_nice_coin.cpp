@@ -1,10 +1,10 @@
 #include <game/bases/d_a_nice_coin.hpp>
-#include <game/bases/d_a_nice_coin_regular.hpp>
 #include <game/bases/d_bg.hpp>
 #include <game/bases/d_multi_manager.hpp>
 
-ACTOR_PROFILE(AC_NICE_COIN, daNiceCoin_c, 0);
+typedef daNiceCoin_c daNiceCoinRegular_c;
 
+ACTOR_PROFILE(AC_NICE_COIN, daNiceCoin_c, 0);
 ACTOR_PROFILE(AC_NICE_COIN_REGULAR, daNiceCoinRegular_c, 0);
 
 STATE_DEFINE(daNiceCoin_c, Search);
@@ -17,20 +17,19 @@ int daNiceCoin_c::create() {
     }
 
     if (dBg_c::m_bg_p->CoinGetBitCheck(mPos.x, -mPos.y, m_mbgchoice_keep)) {
+        // Already activated, don't spawn the actor.
         return FAILED;
     }
 
-    u32 param = mParam;
+    mCollectionID = ACTOR_PARAM(CollectionID);
+    mReqCoinNum = ACTOR_PARAM(CoinNum);
+    mReqBlueCoinNum = ACTOR_PARAM(BlueCoinNum);
+
     mCollectType = TYPE_NORMAL;
-
-    mCollectionID = ACTOR_PARAM_LOCAL(param, CollectionID);
-    mMaxCoinNum = ACTOR_PARAM_LOCAL(param, CoinNum);
-    mMaxBlueCoinNum = ACTOR_PARAM_LOCAL(param, BlueCoinNum);
-
-    if ((mMaxCoinNum != 0) && (mMaxBlueCoinNum != 0)) {
+    if (mReqCoinNum != 0 && mReqBlueCoinNum != 0) {
         mCollectType = TYPE_BOTH;
     }
-    if ((mMaxCoinNum == 0) && (mMaxBlueCoinNum != 0)) {
+    if (mReqCoinNum == 0 && mReqBlueCoinNum != 0) {
         mCollectType = TYPE_BLUE;
     }
 
@@ -54,13 +53,12 @@ int daNiceCoin_c::doDelete() {
 void daNiceCoin_c::initializeState_Search() {}
 void daNiceCoin_c::finalizeState_Search() {}
 void daNiceCoin_c::executeState_Search() {
-    int type = mCollectType;
     bool notCompleted = false;
 
-    if (((type == TYPE_NORMAL) || (type == TYPE_BOTH)) && (mCollectedCoinNum < mMaxCoinNum)) {
+    if ((mCollectType == TYPE_NORMAL || mCollectType == TYPE_BOTH) && mCollectedCoinNum < mReqCoinNum) {
         notCompleted = true;
     }
-    if (((!notCompleted) && (type - 1U <= 1)) && (mCollectedBlueCoinNum < mMaxBlueCoinNum)) {
+    if (!notCompleted && (mCollectType == TYPE_BLUE || mCollectType == TYPE_BOTH) && mCollectedBlueCoinNum < mReqBlueCoinNum) {
         notCompleted = true;
     }
 
@@ -74,5 +72,3 @@ void daNiceCoin_c::executeState_Search() {
 void daNiceCoin_c::initializeState_EndWait() {}
 void daNiceCoin_c::finalizeState_EndWait() {}
 void daNiceCoin_c::executeState_EndWait() {}
-
-daNiceCoin_c::~daNiceCoin_c() {}

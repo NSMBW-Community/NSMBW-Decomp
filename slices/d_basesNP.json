@@ -71,7 +71,6 @@
         },
         {
             "source": "d_basesNP/bases/d_a_nice_coin.cpp",
-            "nonMatching": true,
             "memoryRanges": {
                 ".text": "0x104d70-0x105450",
                 ".ctors": "0x2b0-0x2b4",

@@ -23,7 +23,7 @@ public:
     };
 
     daNiceCoin_c() {} ///< @copydoc dActor_c::dActor_c
-    virtual ~daNiceCoin_c(); ///< @copydoc dActor_c::~dActor_c
+    virtual ~daNiceCoin_c() {} ///< @copydoc dActor_c::~dActor_c
 
     virtual int create();
     virtual int doDelete();
@@ -34,11 +34,11 @@ public:
     STATE_FUNC_DECLARE(daNiceCoin_c, EndWait); ///< Empty state after the coins were collected.
 
     int mCollectionID; ///< The ID used to check for collected coins.
-    int mCollectType; ///< The type of coins being tracked. @see COLLECT_TYPE_e
-    int mNiceType; ///< The type of this actor. @see NICE_TYPE_e
+    COLLECT_TYPE_e mCollectType; ///< The type of coins being tracked.
+    NICE_TYPE_e mNiceType; ///< The type of this actor.
 
-    int mMaxCoinNum; ///< The number of coins that need to be collected.
-    int mMaxBlueCoinNum; ///< The number of blue coins that need to be collected.
+    int mReqCoinNum; ///< The number of coins that need to be collected.
+    int mReqBlueCoinNum; ///< The number of blue coins that need to be collected.
 
     int mCollectedCoinNum; ///< The number of coins collected so far.
     int mCollectedBlueCoinNum; ///< The number of blue coins collected so far.
