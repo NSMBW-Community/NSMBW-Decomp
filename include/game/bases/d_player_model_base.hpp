@@ -71,6 +71,7 @@ public:
         m_200 = ang.z;
     }
 
+    u32 get151CheckVal1() { return 1; }
     u32 get151CheckVal() { return 2; }
 
     u8 mPad1[0x1c];
