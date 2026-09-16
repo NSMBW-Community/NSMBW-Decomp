@@ -177,11 +177,9 @@ int daYoshi_c::turnAngle() {
     static const float scChaseStep[] = { 0xc00, 0 };
 
     if (isStatus(STATUS_B0)) {
-        short target = getMukiAngle(mYoshiDirection);
-        return mAngle.y.chase(target, scChaseStep[0]);
+        return sLib::chase(&mAngle.y.mAngle, getMukiAngle(mYoshiDirection), scChaseStep[0]);
     } else {
-        short target = getMukiAngle(mDirection);
-        return mAngle.y.chase(target, scChaseStep[0]);
+        return sLib::chase(&mAngle.y.mAngle, getMukiAngle(mDirection), scChaseStep[0]);
     }
 }
 
@@ -200,7 +198,7 @@ void daYoshi_c::initializeState_AloneWait() {
         mdl->m_294 = 0;
     }
     mAccelY = getGravityData()[0];
-    mMaxFallSpeed = -4.0f;
+    mMaxFallSpeed = sc_MaxFallSpeed;
     mAccelF = 0.0f;
     m_54 = mSpeed.y;
 }
@@ -211,7 +209,7 @@ void daYoshi_c::finalizeState_AloneWait() {
 
 void daYoshi_c::executeState_AloneWait() {
     mAccelY = getGravityData()[0];
-    mMaxFallSpeed = -4.0f;
+    mMaxFallSpeed = sc_MaxFallSpeed;
     mAccelF = 0.0f;
     m_54 = mSpeed.y;
     turnAngle();
@@ -346,8 +344,8 @@ void daYoshi_c::executeState_DamageRun() {
         mSpeedF *= 0.5f;
     }
     if (
-        mDirection == DIR_LR_L && ((mNowBgCross1 >> 5 & 1) | (mNowBgCross1 >> 19 & 1)) ||
-        mDirection == DIR_LR_R && ((mNowBgCross1 >> 6 & 1) | (mNowBgCross1 >> 20 & 1))
+        mDirection == DIR_LR_L && ((isNowBgCross(BGC_WALL_TOUCH_L_2) >> 5) | (isNowBgCross(BGC_SIDE_LIMIT_L) >> 19)) ||
+        mDirection == DIR_LR_R && ((isNowBgCross(BGC_WALL_TOUCH_R_2) >> 6) | (isNowBgCross(BGC_SIDE_LIMIT_R) >> 20))
     ) {
         mDirection ^= 1;
     }
@@ -504,6 +502,10 @@ void daYoshi_c::walkAction_Move() {
     daPlBase_c::walkAction_Move();
 }
 
+#define CLAMP(val, min, max) ((val < min) ? min : (val > max) ? max : val)
+#define MAX2(a, b) ((b) < (a) ? (a) : (b))
+#define MIN2(a, b) ((b) > (a) ? (a) : (b))
+
 void daYoshi_c::setWalkActionAnm(AnmBlend_e blend) {
     float b = 0.0f;
     float absSpeed = std::fabs(mSpeedF);
@@ -514,10 +516,8 @@ void daYoshi_c::setWalkActionAnm(AnmBlend_e blend) {
         if (blend == BLEND_DEFAULT) {
             b = 5.0f;
         }
-        float rate = 2.0f;
-        rate = (absSpeed * 2.5f < 2.0f) ? rate : 5.0f;
-        rate = (absSpeed > 5.0f) ? 5.0f : rate;
-        mModelMng.setAnm(PLAYER_ANIM_WALK, b, rate, 0.0f);
+        float rate = CLAMP(absSpeed * 2.5f, 2.0f, 5.0f);
+        mModelMng.setAnm(PLAYER_ANIM_RUN, rate, b, 0.0f);
         return;
     }
 
@@ -525,21 +525,20 @@ void daYoshi_c::setWalkActionAnm(AnmBlend_e blend) {
     float speed;
     if (absSpeed <= getSpeedData()->mLowSpeed) {
         anmID = PLAYER_ANIM_RUN;
-        speed = (absSpeed * 2.5f < 2.0f) ? 2.0f : absSpeed * 2.5f;
+        speed = MAX2(2.0f, absSpeed * 2.5f);
     } else if (absSpeed < getSpeedData()->mHighSpeed) {
         anmID = PLAYER_ANIM_B_DASH;
-        speed = (absSpeed * 1.5f < 0.5f) ? absSpeed * 1.5f : 0.5f;
+        speed = MAX2(0.5f, absSpeed * 1.5f);
     } else {
         anmID = PLAYER_ANIM_B_DASH2;
-        speed = (absSpeed * 1.5f < 0.5f) ? absSpeed * 1.5f : 0.5f;
+        speed = MAX2(0.5f, absSpeed * 1.5f);
     }
     if (isSaka() && mBc.getSakaUpDown(mDirection) == 1 && mSpeedF * sc_DirSpeed[mDirection] >= 0.0f) {
-        speed = (speed * 2.0f > 4.0f) ? 4.0f : speed * 2.0f;
+        speed = MIN2(4.0f, speed * 2.0f);
     }
     if (isNowBgCross(BGC_ON_ICE)) {
         if (absSpeed < getSpeedData()->mMediumSpeed) {
-            speed = 4.0f;
-            speed = (speed * 8.0f > 4.0f) ? 4.0f : speed * 8.0f;
+            speed = MIN2(4.0f, speed * 8.0f);
         }
         if (!mKey.buttonWalk(nullptr)) {
             calcAccOnIceLift();
@@ -551,9 +550,9 @@ void daYoshi_c::setWalkActionAnm(AnmBlend_e blend) {
     onStatus(STATUS_62);
     if (isNowBgCross((BgCross1_e) (BGC_ON_SINK_SAND | BGC_IN_SINK_SAND))) {
         if (isNowBgCross(BGC_IN_SINK_SAND)) {
-            speed *= 0.7f;
-        } else {
             speed *= 0.5f;
+        } else {
+            speed *= 0.7f;
         }
     }
     if (blend == BLEND_DEFAULT) {
@@ -580,7 +579,7 @@ void daYoshi_c::setWaitActionAnm(AnmBlend_e blend) {
     if (blend == BLEND_DEFAULT) {
         mModelMng.setAnm(PLAYER_ANIM_WAIT, 10.0f, 0.0f);
     } else {
-        mModelMng.setAnm(PLAYER_ANIM_WAIT, 10.0f);
+        mModelMng.setAnm(PLAYER_ANIM_WAIT);
     }
 }
 
@@ -605,9 +604,9 @@ void daYoshi_c::setJumpSpeed() {
     float jumpSpeed;
     if (isNowBgCross((BgCross1_e) (BGC_ON_SINK_SAND | BGC_IN_SINK_SAND))) {
         if (isNowBgCross(BGC_IN_SINK_SAND)) {
-            jumpSpeed = sc_JumpSpeedNuma1;
-        } else {
             jumpSpeed = sc_JumpSpeedNuma2;
+        } else {
+            jumpSpeed = sc_JumpSpeedNuma1;
         }
     } else {
         jumpSpeed = sc_JumpSpeed + baseSpeed;
@@ -629,7 +628,7 @@ void daYoshi_c::setJumpAnm() {
 }
 
 void daYoshi_c::setFunbariJumpEffect() {
-    startSound(SE_PLY_YOSHI_FJUMP, false);
+    holdSound(SE_PLY_YOSHI_FJUMP, false);
     mVec3_c pos;
     mModelMng.mpMdl->getJointPos(&pos, 15);
     mAng3_c ang(0, 0, 0);
@@ -918,7 +917,7 @@ void daYoshi_c::initializeState_Crouch() {
             if (!isNowBgCross(BGC_WATER_SHALLOW)) {
                 mModelMng.setAnm(PLAYER_ANIM_STOOP_START);
             } else {
-                mModelMng.setAnm(PLAYER_ANIM_STOOP_START, 3.0f, 0.0f, dPyMdlBase_c::scWaterCrouchAnmSpeed);
+                mModelMng.setAnm(PLAYER_ANIM_STOOP_START, dPyMdlBase_c::scWaterCrouchAnmSpeed, 3.0f, 0.0f);
             }
             break;
         case CROUCH_ARG_FROM_OTHER:
@@ -959,7 +958,7 @@ void daYoshi_c::executeState_Crouch() {
 }
 
 bool daYoshi_c::setCancelCrouch() {
-    daPlBase_c::setCancelCrouch();
+    return daPlBase_c::setCancelCrouch();
 }
 
 void daYoshi_c::setCrouchSmokeEffect() {
@@ -1020,7 +1019,7 @@ void daYoshi_c::setTurnSmokeEffect() {
     mVec3_c pos;
     mModelMng.mpMdl->getJointPos(&pos, 7);
     setBrakeSmokeEffect(pos);
-    setTurnSmokeEffect();
+    daPlBase_c::setTurnSmokeEffect();
 }
 
 void daYoshi_c::setTurnMoveSpeed() {
@@ -1203,7 +1202,7 @@ void daYoshi_c::executeState_Cloud() {
         case CLOUD_ANM_STATE_CROUCH:
             if (!mKey.buttonCrouch()) {
                 offStatus(STATUS_51);
-                mModelMng.mpMdl->setRate(1.0f);
+                mModelMng.mpMdl->setRate(-1.0f);
                 mSubstate = CLOUD_ANM_STATE_END_CROUCH;
             }
             break;
@@ -1418,9 +1417,9 @@ void daYoshi_c::initializeState_Eat() {
     int absAngle1 = mAngle.y.abs();
     int absAngle2 = abs(getMukiAngle(mYoshiDirection));
     if (absAngle2 <= absAngle1) {
-        setEatAction_StartTurnWait();
-    } else {
         setEatAction_Start();
+    } else {
+        setEatAction_StartTurnWait();
     }
     m_5c = 10;
     m_2e8 = 0;
@@ -1654,7 +1653,7 @@ void daYoshi_c::eatDrinkBigCommonAction() {
         mdl->m_294 = 0;
     } else if (isEnableCreateEgg()) {
         if (mModelMng.getAnm2().isStop()) {
-            checkYoshiEggCommon();
+            createYoshiEggCommon();
         }
     } else if (mModelMng.getAnm2().getFrame() >= 45.0f) {
         changeEatState(StateID_EatNone);
@@ -1865,9 +1864,9 @@ void daYoshi_c::setHitTongueReserve() {
     } else {
         setEatAction_Fail();
         if (x < mPos.x) {
-            x = m_84->getLeftPos();
-        } else {
             x = m_84->getRightPos();
+        } else {
+            x = m_84->getLeftPos();
         }
         mVec3_c efPos(x, mCc.getCenterPosY(), mPos.z);
         setTongueHitEffect(efPos);
@@ -2303,9 +2302,9 @@ bool daYoshi_c::setDamage2(dActor_c *hitActor, DamageType_e type) {
 
 const sBcYoshiPointData *daYoshi_c::getBgPointData() {
     if (mModelMng.getFlags() & 1) {
-        return &scBgPointData_Normal;
-    } else {
         return &scBgPointData_Squat;
+    } else {
+        return &scBgPointData_Normal;
     }
 }
 
@@ -2407,7 +2406,7 @@ void daYoshi_c::postBgCross() {
 }
 
 float daYoshi_c::getSandSinkRate() {
-    float rate = 1.0f;
+    float rate = 0.5f;
     if (mPlayerRideOn != BASE_ID_NULL) {
         dAcPy_c *player = getPlayerRideOn();
         if (player != nullptr) {
@@ -2432,7 +2431,23 @@ void daYoshi_c::setCcAtYoshiEat() {
     mVec3_c pos2;
     mModelMng.mpMdl->getJointPos(&pos1, 23);
     mModelMng.mpMdl->getJointPos(&pos2, 17);
-    // [TODO]
+
+    mVec3_c vec = (pos1 + pos2) / 2.0f - mPos;
+
+    mAttCc1.mCcData.mBase.mOffset.set(vec.x, vec.y);
+
+    vec.x = std::fabs(pos1.x - pos2.x) / 2.0f;
+    if (vec.x != 0.0f) {
+        vec.y = std::fabs(pos1.y - pos2.y) / 2.0f;
+        if (vec.y != 0.0f) {
+            if (vec.y < 8.0f) {
+                vec.y = 8.0f;
+            }
+            mAttCc1.mCcData.mBase.mSize.set(vec.x + 4.0f, vec.y);
+            mAttCc1.mCcData.mVsKind |= 0x42;
+            mAttCc1.mCcData.mAttack = CC_ATTACK_YOSHI_EAT;
+        }
+    }
 }
 
 void daYoshi_c::setCcAtYoshiMouthReq() {

@@ -211,7 +211,6 @@ public:
 
     void setEatOutSE();
     void setEatActorMouthIn();
-    void checkYoshiEggCommon();
     void setCcData();
     void setBcData();
     void setCcAtYoshiEat();
