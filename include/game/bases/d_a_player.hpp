@@ -823,7 +823,7 @@ public:
     u32 mAllBalloonFadeTimer;
     mMtx_c mRideJrClownMtx;
     int mSpinCooldown; ///< Timer to disable another spin action while active.
-    u8 m_12f4;
+    u8 mFireDirection;
     float m_12f8;
     fBaseID_e m_12fc;
     float m_1300;
@@ -841,9 +841,9 @@ public:
     int m_1580;
     int m_1584;
     dPyMdlMng_c mPyMdlMng;
-    float m_1594;
-    float m_1598;
-    float m_159c;
+    float mModelOffsetX;
+    float mModelOffsetY;
+    float mModelOffsetY2;
     fBaseID_e mCarryActorID;
     int mFastRunFrames; ///< How many frames the player has been running at over 1 unit/frame.
     int m_15a8;

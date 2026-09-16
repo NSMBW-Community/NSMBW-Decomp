@@ -184,7 +184,7 @@ int daYoshi_c::turnAngle() {
 }
 
 void daYoshi_c::initializeState_AloneWait() {
-    onStatus(STATUS_CB);
+    onStatus(STATUS_YOSHI_ALONE_WAIT);
     if (isNowBgCross(BGC_FOOT)) {
         mModelMng.setAnm(PLAYER_ANIM_WAIT, 0.0f);
         mSubstate = ALONE_WAIT_ACTION_0;
@@ -204,7 +204,7 @@ void daYoshi_c::initializeState_AloneWait() {
 }
 
 void daYoshi_c::finalizeState_AloneWait() {
-    offStatus(STATUS_CB);
+    offStatus(STATUS_YOSHI_ALONE_WAIT);
 }
 
 void daYoshi_c::executeState_AloneWait() {
@@ -340,7 +340,7 @@ void daYoshi_c::executeState_DamageRun() {
     setDamageRunEffect();
     onStatus(STATUS_84);
     mSpeedF = sc_DirSpeed[mDirection] * 2.0f;
-    if (isNowBgCross(BgCross1_e(BGC_IN_SINK_SAND | BGC_ON_SINK_SAND))) {
+    if (isOnSinkSand()) {
         mSpeedF *= 0.5f;
     }
     if (
@@ -437,13 +437,13 @@ void daYoshi_c::initializeState_Walk() {
     } else {
         walkActionInit_Wait(blend);
     }
-    onStatus(STATUS_A0);
+    onStatus(STATUS_WIND_AFFECTED);
     onStatus(STATUS_B2);
 }
 
 void daYoshi_c::finalizeState_Walk() {
     daPlBase_c::finalizeState_Walk();
-    offStatus(STATUS_A0);
+    offStatus(STATUS_WIND_AFFECTED);
     offStatus(STATUS_B2);
     mWalkAnmState = 0;
 }
@@ -850,7 +850,7 @@ void daYoshi_c::executeState_Land() {
 void daYoshi_c::initializeState_SitJump() {
     m_58 = 0;
     onStatus(STATUS_CAN_SPIN);
-    onStatus(STATUS_9E);
+    onStatus(STATUS_CAN_SHOOT_FIREBALL);
     onStatus(STATUS_SIT_JUMP);
     onStatus(STATUS_JUMP);
     onStatus(STATUS_B2);
@@ -871,7 +871,7 @@ void daYoshi_c::finalizeState_SitJump() {
     mAngle.x = 0;
     mAngle.y = getMukiAngle(mDirection);
     offStatus(STATUS_JUMP);
-    offStatus(STATUS_9E);
+    offStatus(STATUS_CAN_SHOOT_FIREBALL);
     offStatus(STATUS_CAN_SPIN);
     offStatus(STATUS_88);
     offStatus(STATUS_SIT_JUMP);
@@ -935,7 +935,7 @@ void daYoshi_c::initializeState_Crouch() {
 void daYoshi_c::finalizeState_Crouch() {
     offStatus(STATUS_AA);
     offStatus(STATUS_51);
-    offStatus(STATUS_A0);
+    offStatus(STATUS_WIND_AFFECTED);
     offStatus(STATUS_B2);
 }
 
@@ -971,9 +971,9 @@ void daYoshi_c::setCrouchSmokeEffect() {
 }
 
 void daYoshi_c::CrouchAction_Ground() {
-    offStatus(STATUS_A0);
+    offStatus(STATUS_WIND_AFFECTED);
 
-    if (isNowBgCross((BgCross1_e) (BGC_IN_SINK_SAND | BGC_ON_SINK_SAND)) && setCancelCrouch()) {
+    if (isOnSinkSand() && setCancelCrouch()) {
         return;
     }
 
@@ -1138,12 +1138,12 @@ bool daYoshi_c::setHipAttackOnEnemy(mVec3_c *attachPos) {
 
 void daYoshi_c::initializeState_HipAttack() {
     daPlBase_c::initializeState_HipAttack();
-    onStatus(STATUS_91);
+    onStatus(STATUS_CAN_RIDE_OFF);
 }
 
 void daYoshi_c::finalizeState_HipAttack() {
     daPlBase_c::finalizeState_HipAttack();
-    offStatus(STATUS_91);
+    offStatus(STATUS_CAN_RIDE_OFF);
 }
 
 void daYoshi_c::executeState_HipAttack() {
@@ -1216,12 +1216,12 @@ void daYoshi_c::executeState_Cloud() {
 
 void daYoshi_c::initializeState_Funsui() {
     daPlBase_c::initializeState_Funsui();
-    onStatus(STATUS_91);
+    onStatus(STATUS_CAN_RIDE_OFF);
 }
 
 void daYoshi_c::finalizeState_Funsui() {
     daPlBase_c::finalizeState_Funsui();
-    offStatus(STATUS_91);
+    offStatus(STATUS_CAN_RIDE_OFF);
 }
 
 void daYoshi_c::executeState_Funsui() {
@@ -1241,7 +1241,7 @@ dAcPy_c *daYoshi_c::getPlayerRideOn() const {
 
 bool daYoshi_c::checkRideOffAble() {
     if (
-        isStatus(STATUS_91) ||
+        isStatus(STATUS_CAN_RIDE_OFF) ||
         isNowBgCross(BGC_IN_SINK_SAND) ||
         isEnableCreateEgg()
     ) {
@@ -1716,7 +1716,7 @@ void daYoshi_c::executeState_Eat() {
 }
 
 void daYoshi_c::initializeState_EatMouth() {
-    onStatus(STATUS_B4);
+    onStatus(STATUS_YOSHI_EAT_MOUTH);
     mNum = mPlayerNo;
     mYoshiDirection = mDirection;
     m_5c = 0;
@@ -1734,7 +1734,7 @@ void daYoshi_c::initializeState_EatMouth() {
 }
 
 void daYoshi_c::finalizeState_EatMouth() {
-    offStatus(STATUS_B4);
+    offStatus(STATUS_YOSHI_EAT_MOUTH);
     mModelMng.mpMdl->m_17c &= ~BIT_FLAG(3);
     mModelMng.mpMdl->releaseBodyAnm(0.0f);
     finalizeEatCommon();

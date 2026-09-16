@@ -373,7 +373,7 @@ public:
         STATUS_OUT_OF_PLAY, ///< The player is in a bubble or has died.
         STATUS_ALL_DOWN_FADE, ///< All players have died and the screen is transitioning.
         STATUS_STUNNED, ///< Stunned by electric shock or ice.
-        STATUS_07, ///< [Ice related]
+        STATUS_FROZEN, ///< The player is frozen in an ice block.
         STATUS_QUAKE, ///< The player was stunned by an earthquake.
         STATUS_JUMP = 0x0a, ///< The player is jumping.
         STATUS_CAN_PENGUIN_SLIDE, ///< If the player can start sliding as a penguin.
@@ -411,8 +411,8 @@ public:
         STATUS_TWIRL, ///< The player is twirling in midair.
         STATUS_WAS_TWIRL, ///< The player was twirling in midair the previous frame.
         STATUS_SLIP_ACTIVE = 0x30, ///< The player is sliding.
-        STATUS_31,
-        STATUS_32,
+        STATUS_IS_ROLL_SLIP, ///< The player is rolling through the air after being thrown by a player or spat out by Yoshi.
+        STATUS_IS_ROLL_SLIP_DUP, ///< Same as STATUS_IS_ROLL_SLIP. [Only set/cleared, never checked].
         STATUS_VINE, ///< The player is clinging to a vine / mesh net / rock wall.
         STATUS_HANG, ///< The player is hanging from a ceiling rope.
         STATUS_POLE, ///< The player is climbing a pole.
@@ -505,24 +505,24 @@ public:
         STATUS_8D, ///< [Cannon shot related]
         STATUS_8E, ///< [Cannon shot related]
         STATUS_CAN_LAND, ///< The player can land on Yoshi or another player.
-        STATUS_91 = 0x91,
-        STATUS_92,
-        STATUS_93,
+        STATUS_CAN_RIDE_OFF = 0x91, ///< The player can dismount Yoshi.
+        STATUS_CAN_SPIN_LIFT, ///< The player can lift up another player.
+        STATUS_CANNOT_BE_SPIN_LIFTED, ///< The player cannot be lifted up by another player.
         STATUS_94,
         STATUS_95,
         STATUS_96,
         STATUS_97,
-        STATUS_98,
+        STATUS_NO_GRAVITY_AFFECT, ///< The player is not affected by gravity.
         STATUS_99,
-        STATUS_9B = 0x9b,
-        STATUS_9C,
-        STATUS_9D,
-        STATUS_9E,
+        STATUS_CAN_CLIMB_VINE = 0x9b, ///< The player can climb mesh nets / rock walls.
+        STATUS_CAN_HANG, ///< The player can hang from ceiling ropes.
+        STATUS_CAN_CLIMB_POLE, ///< The player can climb poles.
+        STATUS_CAN_SHOOT_FIREBALL, ///< The player can shoot a fireball.
         STATUS_CAN_SPIN, ///< The player can shake the controller to do a spin jump or a propeller spin.
-        STATUS_A0,
-        STATUS_A1,
-        STATUS_A2,
-        STATUS_A3,
+        STATUS_WIND_AFFECTED, ///< The player is affected by wind.
+        STATUS_CAN_KANI_JUMP, ///< The player can jump on a cliff.
+        STATUS_CAN_KANI_WALK, ///< The player can walk on a cliff.
+        STATUS_CAN_TARZAN_ROPE, ///< The player can grab onto swinging ropes / vines.
         STATUS_A4,
         STATUS_A5, ///< [Jump moving up?]
         STATUS_FIREBALL_PREPARE_SHOOT, ///< The player is about to shoot a fireball.
@@ -539,7 +539,7 @@ public:
         STATUS_B1, /// [Yoshi only?]
         STATUS_B2, /// [Yoshi only?]
         STATUS_B3, /// [Yoshi only?]
-        STATUS_B4, /// [Yoshi only?]
+        STATUS_YOSHI_EAT_MOUTH, ///< Yoshi is eating something.
         STATUS_ABOUT_TO_BE_DELETED,
         STATUS_ITEM_KINOPIO_DISPLAY_OUT,
         STATUS_B7,
@@ -559,10 +559,10 @@ public:
         STATUS_C5,
         STATUS_C6,
         STATUS_C7,
-        STATUS_C8,
-        STATUS_C9,
-        STATUS_CA,
-        STATUS_CB
+        STATUS_PLAYER_EAT, ///< The player is being swallowed by Yoshi.
+        STATUS_ON_TONGUE, ///< The player is on Yoshi's tongue.
+        STATUS_PLAYER_EAT_DUP, ///< Same as STATUS_PLAYER_EAT.
+        STATUS_YOSHI_ALONE_WAIT ///< Yoshi is not being ridden.
     };
 
     class jmpInf_c {
