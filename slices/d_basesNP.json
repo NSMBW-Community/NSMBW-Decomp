@@ -70,6 +70,15 @@
             }
         },
         {
+            "source": "d_basesNP/bases/d_a_nice_coin.cpp",
+            "memoryRanges": {
+                ".text": "0x104d70-0x105450",
+                ".ctors": "0x2b0-0x2b4",
+                ".data": "0x33778-0x33930",
+                ".bss": "0xc9d0-0xca50"
+            }
+        },
+        {
             "source": "d_basesNP/bases/d_a_obj_fruit_tree.cpp",
             "memoryRanges": {
                 ".text": "0x108360-0x108970",
