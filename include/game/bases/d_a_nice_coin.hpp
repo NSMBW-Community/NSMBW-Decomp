@@ -22,8 +22,8 @@ public:
         TYPE_NICE_COIN_REGULAR, ///< AC_NICE_COIN_REGULAR
     };
 
-    daNiceCoin_c() {} ///< @copydoc dActor_c::dActor_c
-    virtual ~daNiceCoin_c() {} ///< @copydoc dActor_c::~dActor_c
+    daNiceCoin_c() {} ///< @copydoc dActorState_c::dActorState_c
+    virtual ~daNiceCoin_c() {} ///< @copydoc dActorState_c::~dActorState_c
 
     virtual int create();
     virtual int doDelete();
