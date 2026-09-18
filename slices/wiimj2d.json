@@ -766,6 +766,13 @@
             }
         },
         {
+            "source": "dol/cLib/c_lib.cpp",
+            "memoryRanges": {
+                ".text": "0x15a490-0x15a8d0",
+                ".sdata2": "0x2b80-0x2b88"
+            }
+        },
+        {
             "source": "dol/cLib/c_line.cpp",
             "memoryRanges": {
                 ".text": "0x15a8d0-0x15aa20"
