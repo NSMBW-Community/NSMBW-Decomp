@@ -19,9 +19,9 @@ ACTOR_PROFILE(WM_SANDPILLAR, daWmSandPillar_c, 0);
 
 template <>
 const daWmSandPillar_c::GlobalData_t sGlobalData_c<daWmSandPillar_c>::mData = {
-    { 0.0099999998f, 0.0099999998f, 0.0099999998f },
+    { 0.01f, 0.01f, 0.01f },
     { 0.001f, 0.003f, 0.003f },
-    { 0.029999999f, 0.05f, 0.05f },
+    { 0.03f, 0.05f, 0.05f },
     { -320.0f, -200.0f, -200.0f },
     { 0.5f, 0.2f, 0.2f },
     { 2.0f, 1.4f, 1.6f },
@@ -116,17 +116,12 @@ void daWmSandPillar_c::FUN_808e55e0() {
     }
 }
 
-// NOT MATCHING
 void daWmSandPillar_c::initializeState_Ready() {
     int nodeIdx = ACTOR_PARAM(Node);
-    switch (nodeIdx) {
-        case 1:
-        case 2:
-            mUnk504 = 1;
-            break;
-        default:
-            mUnk504 = 0;
-            break;
+    if (!(nodeIdx != NODE_1 && nodeIdx != NODE_2)) {
+        mUnk504 = 1;
+    } else {
+        mUnk504 = 0;
     }
 }
 
@@ -202,7 +197,6 @@ void daWmSandPillar_c::initializeState_MoveReady() {
     mChrAnim.setRate(0.0f);
 }
 
-// NOT MATCHING
 void daWmSandPillar_c::executeState_MoveReady() {
     int nodeIdx = ACTOR_PARAM(Node);
     float a = GLOBAL_DATA.mUnk48[nodeIdx];
@@ -221,13 +215,11 @@ void daWmSandPillar_c::executeState_MoveReady() {
             }
         }
 
-        if (yScale > b || mScale.y < b) {
-            if (yScale > a && mScale.y <= a) {
-                mUnk4F8 = 0.0f;
-            }
-        } else {
+        if (yScale < b && mScale.y >= b) {
             mUnk4F8 = 0.0f;
             mTimer2--;
+        } else if (yScale > a && mScale.y <= a) {
+            mUnk4F8 = 0.0f;
         }
 
         if (mTimer2 <= 0) {
@@ -238,16 +230,12 @@ void daWmSandPillar_c::executeState_MoveReady() {
 
 void daWmSandPillar_c::finalizeState_MoveReady() {}
 
-// NOT MATCHING
 void daWmSandPillar_c::initializeState_MoveUp() {
-    float a = GLOBAL_DATA.mUnk4F8[ACTOR_PARAM(Node)];
-    float b = GLOBAL_DATA.mUnk500[ACTOR_PARAM(Node)];
-
-    mUnk4F8 = a;
-    mUnk500 = b;
+    mUnk4F8 = GLOBAL_DATA.mUnk4F8[ACTOR_PARAM(Node)];
+    mUnk500 = GLOBAL_DATA.mUnk500[ACTOR_PARAM(Node)];
     if (mUnk504 != 0) {
-        mUnk500 = -b;
-        mUnk4F8 = a;
+        mUnk500 = GLOBAL_DATA.mUnk500[ACTOR_PARAM(Node)];
+        mUnk4F8 = -GLOBAL_DATA.mUnk4F8[ACTOR_PARAM(Node)];
     }
 
     mChrAnim.setRate(0.0f);
@@ -260,24 +248,25 @@ void daWmSandPillar_c::executeState_MoveUp() {
     float b = GLOBAL_DATA.mUnk54[nodeIdx];
 
     FUN_808e55e0();
-    float c = mUnk4F4;
     mScale.y += mUnk4F4;
 
     if (mUnk504 != 0) {
-        if (b >= a) {
-            if (mScale.y > a) {
+        if (mUnk4F4 <= 0.0f && mScale.y <= a) {
+            mScale.y = a;
+            mStateMgr.changeState(StateID_TopWaitForever);
+        }
+    } else {
+        if (a >= b) {
+            if (mScale.y >= a) {
+                mScale.y = a;
+                mStateMgr.changeState(StateID_TopWait);
+            }
+        } else {
+            if (mScale.y <= a) {
                 mScale.y = a;
                 mStateMgr.changeState(StateID_TopWait);
             }
         }
-        else if (mScale.y < a) {
-            mScale.y = a;
-            mStateMgr.changeState(StateID_TopWait);
-        }
-    }
-    else if (c <= 0.0f && mScale.y <= a) {
-        mScale.y = a;
-        mStateMgr.changeState(StateID_TopWaitForever);
     }
 }
 
