@@ -20,6 +20,8 @@ public:
     dWmObjActor_c() : mResNodeIdx(-1) {} ///< Constructs a new object.
     ~dWmObjActor_c() {} ///< Destroys the object.
 
+    virtual int doDelete() { return SUCCEEDED; }
+
     virtual int GetActorType() { return ACTOR_MAP_OBJECT; }
 
     virtual void vf74() {} ///< @unofficial

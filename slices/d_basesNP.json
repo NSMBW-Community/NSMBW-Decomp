@@ -149,7 +149,6 @@
         },
         {
             "source": "d_basesNP/bases/d_a_wm_sand_pillar.cpp",
-            "nonMatching": true,
             "memoryRanges": {
                 ".text": "0x177690-0x179380",
                 ".ctors": "0x428-0x42c",

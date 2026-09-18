@@ -13,7 +13,12 @@
 /// @statetable
 class daWmSandPillar_c : public dWmObjActor_c {
 public:
-    static const int NODE_COUNT = 3;
+    enum NodeType_e {
+        NODE_0,
+        NODE_1,
+        NODE_2,
+        NODE_COUNT
+    };
 
     /// @brief The global configuration for the actor.
     struct GlobalData_t {
@@ -36,7 +41,6 @@ public:
     virtual int create();
     virtual int execute();
     virtual int draw();
-    virtual int doDelete();
 
     virtual void finalUpdate();
 
