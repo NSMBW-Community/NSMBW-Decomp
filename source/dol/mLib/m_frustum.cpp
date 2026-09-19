@@ -93,7 +93,8 @@ void mFrustum_c::set(f32 top, f32 bottom, f32 left, f32 right, f32 near, f32 far
 bool mFrustum_c::intersectSphere(const mSphere_c *sphere) const {
     mVec3_c sphereCenterPos;
 
-    sphereCenterPos.z = mCamMtx._20 * sphere->mCenter.x + mCamMtx._21 * sphere->mCenter.y +
+    sphereCenterPos.z = mCamMtx._20 * sphere->mCenter.x +
+                        mCamMtx._21 * sphere->mCenter.y +
                         mCamMtx._22 * sphere->mCenter.z + mCamMtx._23;
 
     if (sphereCenterPos.z - sphere->mRadius > mNearZ) {
@@ -103,7 +104,8 @@ bool mFrustum_c::intersectSphere(const mSphere_c *sphere) const {
         return false;
     }
 
-    sphereCenterPos.x = mCamMtx._00 * sphere->mCenter.x + mCamMtx._01 * sphere->mCenter.y +
+    sphereCenterPos.x = mCamMtx._00 * sphere->mCenter.x +
+                        mCamMtx._01 * sphere->mCenter.y +
                         mCamMtx._02 * sphere->mCenter.z + mCamMtx._03;
 
     if (sphereCenterPos.x * mPlaneL.n.x + sphereCenterPos.z * mPlaneL.n.z > sphere->mRadius) {
@@ -113,7 +115,8 @@ bool mFrustum_c::intersectSphere(const mSphere_c *sphere) const {
         return false;
     }
 
-    sphereCenterPos.y = mCamMtx._10 * sphere->mCenter.x + mCamMtx._11 * sphere->mCenter.y +
+    sphereCenterPos.y = mCamMtx._10 * sphere->mCenter.x +
+                        mCamMtx._11 * sphere->mCenter.y +
                         mCamMtx._12 * sphere->mCenter.z + mCamMtx._13;
 
     if (sphereCenterPos.y * mPlaneT.n.y + sphereCenterPos.z * mPlaneT.n.z > sphere->mRadius) {
@@ -131,13 +134,13 @@ bool mFrustum_c::intersectAABB(const mAABB_c *box) const {
         return false;
     }
 
-    mVec3_c v;
     for (int i = 0; i < PLANE_MAX; i++) {
-        v.x = mPlanes[i].n.x >= 0.0f ? box->min.x : box->max.x;
-        v.y = mPlanes[i].n.y >= 0.0f ? box->min.y : box->max.y;
-        v.z = mPlanes[i].n.z >= 0.0f ? box->min.z : box->max.z;
+        mVec3_c point;
+        point.x = mPlanes[i].n.x >= 0.0f ? box->min.x : box->max.x;
+        point.y = mPlanes[i].n.y >= 0.0f ? box->min.y : box->max.y;
+        point.z = mPlanes[i].n.z >= 0.0f ? box->min.z : box->max.z;
 
-        if (mPlanes[i].Test(v) > 0.0f) {
+        if (mPlanes[i].Test(point) > 0.0f) {
             return false;
         }
     }

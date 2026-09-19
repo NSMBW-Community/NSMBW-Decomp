@@ -96,6 +96,7 @@ public:
 
     IntersectionResult IntersectAABB_Ex(const AABB* pBox) const;
 
+protected:
     MTX34 mCamMtx;            // at 0x0
     PLANE mPlaneL;            // at 0x30
     PLANE mPlaneR;            // at 0x40
