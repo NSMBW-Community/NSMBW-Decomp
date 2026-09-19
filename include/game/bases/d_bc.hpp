@@ -1,6 +1,5 @@
 #pragma once
 
-#include <game/bases/d_bg_ctr.hpp>
 #include <game/bases/d_rc.hpp>
 
 enum SensorFlags {
@@ -46,6 +45,16 @@ public:
     sBcPointData mWall;
     sBcPointData mVine;
 };
+
+/// @unofficial
+class sBcYoshiPointData {
+public:
+    sBcPointData mFoot;
+    sBcPointData mHead;
+    sBcPointData mWall;
+};
+
+class dBg_ctr_c;
 
 class dBc_c {
 public:

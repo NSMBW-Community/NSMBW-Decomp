@@ -45,6 +45,7 @@ public:
 
     float getDispScale() { return mDispScale; }
     float getPrevDispScale() { return mPrevDispScale; }
+    float get_8fe00() { return m_8fe00; }
 
     static dBg_c *m_bg_p;
 };

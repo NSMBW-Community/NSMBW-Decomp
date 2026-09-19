@@ -46,5 +46,6 @@ public:
 
     static dQuake_c* getInstance() { return m_instance; }
 
+private:
     static dQuake_c *m_instance;
 };

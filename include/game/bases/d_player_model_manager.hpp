@@ -32,7 +32,8 @@ public:
 
 class dYoshiModel_HIO_c {
 public:
-    float mData[4];
+    float mCloudOffset;
+    float mData[3];
 };
 
 class dPyMdlBase_HIO_c {
@@ -240,7 +241,9 @@ enum AnmID_e {
 
 class dPyMdlMng_c {
 public:
-    enum ModelType_e {};
+    enum ModelType_e {
+        MODEL_TYPE_YOSHI = 5
+    };
     enum SceneType_e {
         SCENE_TYPE_0
     };
@@ -263,6 +266,10 @@ public:
         mpMdl->setAnm(anmID, rate, blendDuration, f);
     }
 
+    void setBodyAnm(int anmID, float rate, float blendDuration, float f) {
+        mpMdl->setBodyAnm(anmID, rate, blendDuration, f);
+    }
+
     void setAnm(int anmID, float blendDuration, float f) {
         float rate = getHIO(anmID).mRate;
         setAnm(anmID, rate, blendDuration, f);
@@ -274,6 +281,10 @@ public:
 
     void setAnm(int anmID, float f = 0.0f) {
         setAnm(anmID, m_hio.mPyAnm.mAnm[(u8) anmID], f);
+    }
+
+    void setBodyAnm(int anmID) {
+        setBodyAnm(anmID, m_hio.mPyAnm.mAnm[(u8) anmID].mRate, 0.0f, 0.0f);
     }
 
     void setAnmOnlyRate(int anmID, const dPyAnm_HIO_c &hio, float a, float b) {
@@ -290,6 +301,18 @@ public:
 
     int getAnm() const {
         return mpMdl->mCurrAnmID;
+    }
+
+    int getPrevAnm() const {
+        return mpMdl->mPrevAnmID;
+    }
+
+    m3d::anmChr_c &getAnm1() const {
+        return mpMdl->mAnm;
+    }
+
+    m3d::anmChr_c &getAnm2() const {
+        return mpMdl->mAnm2;
     }
 
     float getLastFrame() const {

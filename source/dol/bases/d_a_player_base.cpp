@@ -221,7 +221,7 @@ void daPlBase_c::changeState(const sStateIDIf_c &stateID, void *arg) {
     mSubstateTimer = 0;
     mSubstateValue = 0;
     offStatus(STATUS_97);
-    offStatus(STATUS_98);
+    offStatus(STATUS_NO_GRAVITY_AFFECT);
     mStateArg = arg;
     mStateMgr.changeState(stateID);
 }
@@ -364,7 +364,7 @@ void daPlBase_c::calcAccOnIceLift() {
 }
 
 void daPlBase_c::initializeState_Jump() {
-    onStatus(STATUS_A0);
+    onStatus(STATUS_WIND_AFFECTED);
     onStatus(STATUS_A5);
     offStatus(STATUS_88);
     if (mJumpDaiFallTimer != 0) {
@@ -380,7 +380,7 @@ void daPlBase_c::finalizeState_Jump() {
     offStatus(STATUS_88);
     offStatus(STATUS_A5);
     offStatus(STATUS_AB);
-    offStatus(STATUS_A0);
+    offStatus(STATUS_WIND_AFFECTED);
     offStatus(STATUS_JUMP_DAI_COOLDOWN);
     mJumpDaiFallTimer = 0;
     mKey.offStatus(dAcPyKey_c::STATUS_FORCE_JUMP);
@@ -423,7 +423,7 @@ void daPlBase_c::setFallAction() {
 }
 
 void daPlBase_c::initializeState_Fall() {
-    onStatus(STATUS_A0);
+    onStatus(STATUS_WIND_AFFECTED);
     if (mJumpDaiFallTimer != 0) {
         onStatus(STATUS_JUMP_DAI_COOLDOWN);
     }
@@ -439,7 +439,7 @@ void daPlBase_c::initializeState_Fall() {
     }
 }
 void daPlBase_c::finalizeState_Fall() {
-    offStatus(STATUS_A0);
+    offStatus(STATUS_WIND_AFFECTED);
     offStatus(STATUS_88);
     offStatus(STATUS_JUMP_DAI_COOLDOWN);
     mJumpDaiFallTimer = 0;
@@ -665,9 +665,9 @@ void daPlBase_c::slipActionMove(int param) {
     } else {
         if (mSubstateTimer != 0) {
             mAccelY = 0.0f;
-            onStatus(STATUS_98);
+            onStatus(STATUS_NO_GRAVITY_AFFECT);
         } else {
-            offStatus(STATUS_98);
+            offStatus(STATUS_NO_GRAVITY_AFFECT);
         }
     }
 }
@@ -884,7 +884,7 @@ void daPlBase_c::HipAction_AttackFall() {
         }
         daPyMng_c::setHipAttackQuake(quakeType, mPlayerNo);
         onStatus(STATUS_HIP_ATTACK_LAND);
-        offStatus(STATUS_91);
+        offStatus(STATUS_CAN_RIDE_OFF);
         if (isNowBgCross(BGC_CLIFF)) {
             changeState(StateID_Kani, KANI_ARG_JUMP_HANG);
         } else if (isSlipSaka()) {
@@ -1229,7 +1229,7 @@ void daPlBase_c::initializeState_Funsui() {
     mpMdlMng->setAnm(PLAYER_ANIM_BLOW_UP);
     if (mPlayerNo >= 0) {
         startPlayerVoice(VOICE_INTO_SANDPILLAR, 0);
-        dQuake_c::m_instance->shockMotor(mPlayerNo, dQuake_c::TYPE_7, 0, false);
+        dQuake_c::getInstance()->shockMotor(mPlayerNo, dQuake_c::TYPE_7, 0, false);
         mSubstateTimer = 8;
     }
 }
@@ -1244,7 +1244,7 @@ void daPlBase_c::executeState_Funsui() {
         dEf::createPlayerEffect(mPlayerNo, &mSmokeEffect, "Wm_mr_sprisesmoke", 0, &mPos, nullptr, nullptr);
         if (mSubstateTimer == 0) {
             mSubstateTimer = 8;
-            dQuake_c::m_instance->shockMotor(mPlayerNo, dQuake_c::TYPE_8, 0, false);
+            dQuake_c::getInstance()->shockMotor(mPlayerNo, dQuake_c::TYPE_8, 0, false);
         }
     }
     turnAngle();
@@ -1717,7 +1717,7 @@ void daPlBase_c::slipPowerSet(int mode) {
         icePowerChange(mode);
     } else {
         if (mode == 1) {
-            if (isStatus(STATUS_31)) {
+            if (isStatus(STATUS_IS_ROLL_SLIP)) {
                 mAccelF = 0.05f;
             } else {
                 mAccelF = 0.09f;
@@ -1899,7 +1899,7 @@ void daPlBase_c::maxFallSpeedSet() {
 }
 
 void daPlBase_c::gravitySet() {
-    if (isStatus(STATUS_98)) {
+    if (isStatus(STATUS_NO_GRAVITY_AFFECT)) {
         return;
     }
     if (isNowBgCross(BGC_FOOT)) {
@@ -1979,7 +1979,7 @@ void daPlBase_c::calcWindSpeed() {
         mWindSpeed = 0.0f;
         return;
     }
-    if (isStatus(STATUS_A0) && !isOnSinkSand()) {
+    if (isStatus(STATUS_WIND_AFFECTED) && !isOnSinkSand()) {
         float windSpeed = fn_8004c700(windActor->m_00);
         float halfWindSpeed = windSpeed * 0.5f;
         windSpeed = std::fabs(windSpeed) * 3.0f;
@@ -2022,7 +2022,6 @@ void daPlBase_c::calcWindSpeed() {
         }
     } else {
         mWindSpeed = 0.0f;
-        return;
     }
 }
 
@@ -2850,8 +2849,9 @@ float daPlBase_c::getWaterDokanCenterOffset(float param1) {
     /// @unofficial
     static const float l_maxOffsets[] = { 12.0f, 15.0f, 13.0f, 13.0f };
     float max = 16.0f;
-    if (mKind == 1) {
-        max = l_maxOffsets[mPlayerType];
+    if (mKind == STAGE_ACTOR_PLAYER) {
+        dAcPy_c *selfPlayer = (dAcPy_c *) this;
+        max = l_maxOffsets[selfPlayer->mPlayerType];
     }
     float pos = getCenterY() - mPos.y;
     if (pos > max) {
@@ -2977,7 +2977,7 @@ void daPlBase_c::initDemoInDokanUD(u8 dir) {
         float tmp;
         if (mKind == STAGE_ACTOR_YOSHI) {
             tmp = 30.0f;
-            daPlBase_c *pl = ((daYoshi_c *) this)->getPlayerRideOn();
+            dAcPy_c *pl = ((daYoshi_c *) this)->getPlayerRideOn();
             if (pl != nullptr) {
                 int t = pl->mPlayerType;
                 switch (pl->mPowerup) {
@@ -4851,7 +4851,7 @@ void daPlBase_c::setStampPlayerJump(bool b, float yOffset) {
             jumpSpeed = daPlBase_c::sc_JumpSpeed - 0.35f;
         }
         if (b) {
-            dQuake_c::m_instance->shockMotor(mPlayerNo, dQuake_c::TYPE_7, 0, false);
+            dQuake_c::getInstance()->shockMotor(mPlayerNo, dQuake_c::TYPE_7, 0, false);
             if (mKey.buttonJump()) {
                 jumpSpeed = daPlBase_c::sc_JumpSpeed + 0.5f;
             }
@@ -4876,7 +4876,7 @@ void daPlBase_c::initStampReduction() {
     }
     mSquishCooldownTimer = 10;
     startPlayerVoice(VOICE_STOMPED, 0);
-    dQuake_c::m_instance->shockMotor(mPlayerNo, dQuake_c::TYPE_7, 0, false);
+    dQuake_c::getInstance()->shockMotor(mPlayerNo, dQuake_c::TYPE_7, 0, false);
 }
 
 void daPlBase_c::calcJumpDaiReductionScale(int i1, int i2) {
@@ -5854,7 +5854,7 @@ bool daPlBase_c::setPressBgDamage(int i1, int i2) {
     } else {
         if (setDamage2(nullptr, DAMAGE_DEFAULT)) {
             mBc.clearBgcSaveAll();
-            dQuake_c::m_instance->shockMotor(mPlayerNo, dQuake_c::TYPE_4, 0, false);
+            dQuake_c::getInstance()->shockMotor(mPlayerNo, dQuake_c::TYPE_4, 0, false);
             return true;
         }
     }
@@ -6551,7 +6551,7 @@ s8 daPlBase_c::calcComboCount(int max) {
 }
 
 void daPlBase_c::startQuakeShock(dQuake_c::TYPE_SHOCK_e arg) {
-    dQuake_c::m_instance->shockMotor(mPlayerNo, arg, 0, false);
+    dQuake_c::getInstance()->shockMotor(mPlayerNo, arg, 0, false);
 }
 
 void daPlBase_c::startPatternRumble(const char *pattern) {

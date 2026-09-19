@@ -32,12 +32,6 @@ public:
     };
 
     /// @unofficial
-    enum LandSubstate_e {
-        LAND_ACTION_0,
-        LAND_ACTION_1
-    };
-
-    /// @unofficial
     enum SpinJumpSubstate_e {
         SPIN_JUMP_ACTION_0,
         SPIN_JUMP_ACTION_1
@@ -706,6 +700,8 @@ public:
 
     mVec3_c getCarryPos();
 
+    PLAYER_TYPE_e getPlayerType() const { return mPlayerType; }
+
     mMtx_c getCarryMtx() {
         mMtx_c mtx;
         mtx.trans(getCarryPos());
@@ -725,6 +721,7 @@ public:
         return sc_DirSpeed[mDirection];
     }
 
+    PLAYER_TYPE_e mPlayerType;
     int mIsRescueKinopio;
     PLAYER_POWERUP_e mPowerupCopy;
     PLAYER_POWERUP_e mPowerupCopy2;
@@ -826,7 +823,7 @@ public:
     u32 mAllBalloonFadeTimer;
     mMtx_c mRideJrClownMtx;
     int mSpinCooldown; ///< Timer to disable another spin action while active.
-    u8 m_12f4;
+    u8 mFireDirection;
     float m_12f8;
     fBaseID_e m_12fc;
     float m_1300;
@@ -844,9 +841,9 @@ public:
     int m_1580;
     int m_1584;
     dPyMdlMng_c mPyMdlMng;
-    float m_1594;
-    float m_1598;
-    float m_159c;
+    float mModelOffsetX;
+    float mModelOffsetY;
+    float mModelOffsetY2;
     fBaseID_e mCarryActorID;
     int mFastRunFrames; ///< How many frames the player has been running at over 1 unit/frame.
     int m_15a8;
@@ -863,7 +860,6 @@ public:
     dPropelParts_c mPropelParts;
     dPlayerOrchestra_c mPlayerOrchestra;
 
-    ACTOR_PARAM_CONFIG(PlayerNo, 0, 4);
     ACTOR_PARAM_CONFIG(CreateAction, 16, 8);
     ACTOR_PARAM_CONFIG(Direction, 24, 1);
 

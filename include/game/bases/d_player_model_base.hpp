@@ -4,7 +4,7 @@
 #include <game/mLib/m_vec.hpp>
 #include <game/mLib/m_mtx.hpp>
 
-class dAcPy_c;
+class daPlBase_c;
 
 class dPyMdlBase_c {
 public:
@@ -47,7 +47,7 @@ public:
     virtual void setFrame(float);
     virtual void setBodyFrame();
     virtual void setRate(float);
-    virtual void setBodyRate();
+    virtual void setBodyRate(float);
     virtual void setPropelRollSpeed(s16) const;
     virtual s16 getPropelRollSpeed();
     virtual void setPropelRollAngle(s16);
@@ -60,6 +60,7 @@ public:
     void getJointPos(mVec3_c *, int);
     void setJumpAnmRand(RndType_e type);
     void copyLinkAnm(float f);
+    bool isBodyAnmOn();
 
     float getFrameMax() { return mAnm.mFrameMax; }
     mMtx_c &getMtx() { return mMtx; }
@@ -70,23 +71,27 @@ public:
         m_200 = ang.z;
     }
 
+    u32 get151CheckVal1() { return 1; }
     u32 get151CheckVal() { return 2; }
 
     u8 mPad1[0x1c];
-    dAcPy_c *mpOwner;
+    daPlBase_c *mpOwner;
     dPyMdlBase_c *mpSpinLiftParentMdl;
     m3d::anmChr_c mAnm;
-    u8 mPad3[0x6c];
+    m3d::anmChr_c mAnm2;
+    u8 mPad3[0x28];
+    mVec3_c mHeadPos;
     mVec3_c mHatPosMaybe;
     u8 mPad4[0x30];
     mMtx_c mMtx;
     u8 mPad5[0xc];
     mVec3_c mScale;
-    u8 mPad6[0x1];
+    u8 mPlayerNo;
     u8 m_151;
     u8 m_152;
     int mCurrAnmID;
-    u8 mPad7[8];
+    int mPrevAnmID;
+    u8 mPad7[4];
     u32 mFlags;
     u8 mPad8[0x18];
     u32 m_17c;

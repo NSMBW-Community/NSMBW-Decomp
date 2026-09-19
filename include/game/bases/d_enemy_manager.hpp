@@ -9,6 +9,8 @@ public:
     void incQuakeComboCount(int);
     void createRevivalBallon(mVec3_c &, int, int);
     void demo_ivy_create(mVec3_c *);
+    void createYoshiEgg(mVec3_c &, ulong, ulong, s8);
+    void SanboEatCreateYoshiEgg(mVec3_c &, ulong, ulong, s8, int);
 
     u8 mPad1[0x138];
     int m_138;
