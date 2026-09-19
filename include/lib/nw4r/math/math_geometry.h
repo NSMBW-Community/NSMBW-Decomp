@@ -65,7 +65,7 @@ struct AABB {
  *
  ******************************************************************************/
 class FRUSTUM {
-private:
+public:
     enum Point {
         POINT_NEAR_TL,
         POINT_NEAR_TR,
@@ -91,13 +91,11 @@ private:
         PLANE_MAX
     };
 
-public:
     void Set(f32 fovy, f32 aspect, f32 n, f32 f, const MTX34& rCamMtx);
     void Set(f32 t, f32 b, f32 l, f32 r, f32 n, f32 f, const MTX34& rCamMtx);
 
     IntersectionResult IntersectAABB_Ex(const AABB* pBox) const;
 
-private:
     MTX34 mCamMtx;            // at 0x0
     PLANE mPlaneL;            // at 0x30
     PLANE mPlaneR;            // at 0x40
