@@ -1028,6 +1028,13 @@
             }
         },
         {
+            "source": "dol/mLib/m_frustum.cpp",
+            "memoryRanges": {
+                ".text": "0x1677c0-0x167e70",
+                ".sdata2": "0x2c90-0x2ca0"
+            }
+        },
+        {
             "source": "dol/mLib/m_heap.cpp",
             "memoryRanges": {
                 ".text": "0x167e70-0x168560",
