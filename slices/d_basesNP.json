@@ -31,7 +31,7 @@
         "setAnim__11daWmPeach_cFifff",
         "coinSE__14daObjCenter2_cFv",
         "getAngle__14daObjCenter2_cFv",
-        "decideCoinSound__14daObjCenter2_cFv"
+        "tryPlayCoinSE__14daObjCenter2_cFv"
     ],
     "slices": [
         {

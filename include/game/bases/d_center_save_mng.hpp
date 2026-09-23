@@ -2,40 +2,54 @@
 #include <game/cLib/c_line.hpp>
 #include <game/mLib/m_vec.hpp>
 
+/// @brief A manager for saving and restoring rotation state of daObjCenter2_c actors.
+/// @ingroup bases
 class dCenterSaveMng_c {
-public:
-    dCenterSaveMng_c();
-    ~dCenterSaveMng_c();
-
-    bool center_check(const mVec3_c* pos, u8 id, short* outValue);
-
-    void center_entry(const mVec3_c* pos, u8 id, short value);
-
-    static void allDoDelete();
-
 private:
+    /// @brief An entry in the rotation state manager.
     /// @unofficial
-    class Link_c : public cLineNd_c {
+    class Entry_c : public cLineNd_c {
     public:
-        Link_c() {
+        Entry_c() {
             mpSelf = this;
             ms_linkManager.addLastLineNode(this);
         }
 
-        ~Link_c() {
+        ~Entry_c() {
             ms_linkManager.removeLineNode(this);
         }
 
         float getX() const { return mPos.x; }
         float getY() const { return mPos.y; }
 
-        Link_c *mpSelf;
-        mVec3_c mPos;
-        short mRotation;
-        u8 mID;
+        Entry_c *mpSelf; ///< A pointer to this entry. [Not sure why this is needed, always points to itself.]
+        mVec3_c mPos; ///< The position of the related rotation controller.
+        short mRotation; ///< The saved target rotation of the related rotation controller.
+        u8 mRotationID; ///< The rotation ID of the related rotation controller.
     };
 
 public:
-    static dCenterSaveMng_c *m_instance;
-    static cLineMg_c ms_linkManager;
+    dCenterSaveMng_c(); ///< Constructs a new manager.
+    ~dCenterSaveMng_c(); ///< Destroys the manager.
+
+    /// @brief Tries to restore the rotation from a given position and ID.
+    /// @param pos The position to check.
+    /// @param id The ID to check.
+    /// @param outRotation The output rotation value if a match is found.
+    /// @return Whether a rotation was found and restored.
+    bool center_check(const mVec3_c* pos, u8 id, short *outRotation);
+
+    /// @brief Saves the rotation state for a given position and ID.
+    /// @param pos The position to save.
+    /// @param id The ID to save.
+    /// @param rotation The rotation value to save.
+    void center_entry(const mVec3_c* pos, u8 id, short rotation);
+
+private:
+    /// @brief Clear all saved rotation states.
+    static void allDoDelete();
+
+public:
+    static dCenterSaveMng_c *m_instance; ///< The singleton instance of the manager.
+    static cLineMg_c ms_linkManager; ///< The linked list manager for the saved rotation states.
 };

@@ -13,31 +13,31 @@ dCenterSaveMng_c::~dCenterSaveMng_c() {
 }
 
 void dCenterSaveMng_c::allDoDelete() {
-    Link_c *link;
+    Entry_c *link;
 
-    Link_c *curr = (Link_c *) ms_linkManager.getFirst();
+    Entry_c *curr = (Entry_c *) ms_linkManager.getFirst();
 
     while (curr != nullptr) {
         link = curr->mpSelf;
-        curr = (Link_c *) curr->getNext();
+        curr = (Entry_c *) curr->getNext();
 
         delete link;
     }
 }
 
-bool dCenterSaveMng_c::center_check(const mVec3_c *pos, u8 id, short *outValue) {
-    Link_c *link;
+bool dCenterSaveMng_c::center_check(const mVec3_c *pos, u8 id, short *outRotation) {
+    Entry_c *link;
 
-    Link_c *curr = (Link_c *) ms_linkManager.getFirst();
+    Entry_c *curr = (Entry_c *) ms_linkManager.getFirst();
     bool found = false;
-    *outValue = 0;
+    *outRotation = 0;
 
     while (curr != nullptr) {
         link = curr->mpSelf;
-        curr = (Link_c *) curr->getNext();
+        curr = (Entry_c *) curr->getNext();
 
-        if (pos->x == link->getX() && pos->y == link->getY() && id == link->mID) {
-            *outValue = link->mRotation;
+        if (pos->x == link->getX() && pos->y == link->getY() && id == link->mRotationID) {
+            *outRotation = link->mRotation;
             found = true;
             break;
         }
@@ -46,29 +46,29 @@ bool dCenterSaveMng_c::center_check(const mVec3_c *pos, u8 id, short *outValue) 
     return found;
 }
 
-void dCenterSaveMng_c::center_entry(const mVec3_c *pos, u8 id, short value) {
-    Link_c *link;
+void dCenterSaveMng_c::center_entry(const mVec3_c *pos, u8 id, short rotation) {
+    Entry_c *link;
 
-    Link_c *curr = (Link_c *) ms_linkManager.getFirst();
+    Entry_c *curr = (Entry_c *) ms_linkManager.getFirst();
     bool found = false;
 
     while (curr != nullptr) {
         link = curr->mpSelf;
-        curr = (Link_c *) curr->getNext();
+        curr = (Entry_c *) curr->getNext();
 
-        if (pos->x == link->getX() && pos->y == link->getY() && id == link->mID) {
-            link->mRotation = value;
+        if (pos->x == link->getX() && pos->y == link->getY() && id == link->mRotationID) {
+            link->mRotation = rotation;
             found = true;
             break;
         }
     }
 
     if (!found) {
-        Link_c *newEntry = new Link_c();
+        Entry_c *newEntry = new Entry_c();
         if (newEntry != nullptr) {
             newEntry->mPos = *pos;
-            newEntry->mID = id;
-            newEntry->mRotation = value;
+            newEntry->mRotationID = id;
+            newEntry->mRotation = rotation;
         }
     }
 }
