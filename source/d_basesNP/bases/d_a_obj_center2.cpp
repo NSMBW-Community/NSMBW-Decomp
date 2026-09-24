@@ -28,15 +28,16 @@ int daObjCenter2_c::create() {
         mHomeRotation = l_EnMuki[mRotDir] * (ACTOR_PARAM(InitialRotation) * 0x1000) + 0xc000;
     }
 
-    u32 rotSpeedMode = ACTOR_PARAM(RotationSpeed);
-    if (rotSpeedMode >= 7) {
-        rotSpeedMode = 0;
-    }
-
     static const s16 l_RotSpeed[] = {
         0x40, 0x80, 0xc0, 0x100, 0x20, 0x200, 0x400
     };
+
+    u32 rotSpeedMode = ACTOR_PARAM(RotationSpeed);
+    if (rotSpeedMode >= ARRAY_SIZE(l_RotSpeed)) {
+        rotSpeedMode = 0;
+    }
     mRotationSpeed = l_RotSpeed[rotSpeedMode];
+
     mRotationMode = ACTOR_PARAM(RotationMode);
     mAngle.z = mHomeRotation;
     mZoomControl = ACTOR_PARAM(ZoomControl);
