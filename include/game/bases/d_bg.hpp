@@ -33,6 +33,13 @@ public:
     dBg_autoScroll_c mAutoscrolls[2];
     u8 mPad7[0x1a];
     u8 m_9008e;
+    u8 mPad8[0x4];
+    mVec3_c mZoomPos;
+    float mZoomWeight;
+    u8 mZoomRelated;
+    u8 m_900a5;
+
+    void setZoomPos(mVec3_c pos) { mZoomPos = pos; }
 
     float getLiquidHeight() const { return mLiquidHeight; }
 
