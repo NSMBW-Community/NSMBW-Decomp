@@ -14,20 +14,17 @@ dCenterSaveMng_c::~dCenterSaveMng_c() {
 
 void dCenterSaveMng_c::allDoDelete() {
     Entry_c *link;
-
     Entry_c *curr = (Entry_c *) ms_linkManager.getFirst();
 
     while (curr != nullptr) {
         link = curr->mpSelf;
         curr = (Entry_c *) curr->getNext();
-
         delete link;
     }
 }
 
 bool dCenterSaveMng_c::center_check(const mVec3_c *pos, u8 id, short *outRotation) {
     Entry_c *link;
-
     Entry_c *curr = (Entry_c *) ms_linkManager.getFirst();
     bool found = false;
     *outRotation = 0;
@@ -48,7 +45,6 @@ bool dCenterSaveMng_c::center_check(const mVec3_c *pos, u8 id, short *outRotatio
 
 void dCenterSaveMng_c::center_entry(const mVec3_c *pos, u8 id, short rotation) {
     Entry_c *link;
-
     Entry_c *curr = (Entry_c *) ms_linkManager.getFirst();
     bool found = false;
 

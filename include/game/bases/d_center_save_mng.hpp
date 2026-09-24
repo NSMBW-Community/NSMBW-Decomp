@@ -46,8 +46,7 @@ public:
     void center_entry(const mVec3_c* pos, u8 id, short rotation);
 
 private:
-    /// @brief Clear all saved rotation states.
-    static void allDoDelete();
+    static void allDoDelete(); ///< Clears all saved rotation states.
 
 public:
     static dCenterSaveMng_c *m_instance; ///< The singleton instance of the manager.

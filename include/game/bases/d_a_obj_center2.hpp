@@ -16,7 +16,7 @@ public:
     };
 
     daObjCenter2_c() {} ///< @copydoc dActorState_c::dActorState_c
-    ~daObjCenter2_c() {} //@copydoc dActorState_c::~dActorState_c
+    ~daObjCenter2_c() {} ///< @copydoc dActorState_c::~dActorState_c
 
     virtual int create() override;
     virtual int execute() override;
@@ -27,13 +27,13 @@ public:
 
     void coinSE(); ///< Plays a coin sound effect if the actor is configured to do so.
     short getAngle(); ///< Returns the home rotation angle of this rotation controller.
-    void tryPlayCoinSE(); ///< Plays a coin sound effect if it has not been played yet this rotation.
+    void tryPlayCoinSE(); ///< Plays a coin sound effect if it has not been played yet for the current rotation.
 
     int mAngDelta; ///< The incremental change in rotation per frame.
     u8 mPad[4]; ///< @unused
     short mRotationSpeed; ///< The angular speed of the rotation.
     short mHomeRotation; ///< The starting rotation.
-    short mTargetRotation; ///< The current rotation the controller is targetting.
+    short mTargetRotation; ///< The current rotation the controller is targeting.
     bool mCoinSoundReady; ///< Whether the coin sound is ready to be played.
     bool mCoinSoundPlayed; ///< Whether the coin sound has been played.
     u8 mRotationMode; ///< The rotation mode. See RotationMode_e.
