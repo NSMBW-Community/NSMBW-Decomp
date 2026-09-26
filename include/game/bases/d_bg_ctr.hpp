@@ -1,7 +1,7 @@
 #pragma once
+#include <game/mLib/m_vec.hpp>
 
-#include <game/bases/d_actor.hpp>
-
+class dActor_c;
 class dBc_c;
 
 class dBg_ctr_c {

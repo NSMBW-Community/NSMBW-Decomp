@@ -6,9 +6,9 @@
 #include <game/bases/d_a_player_base.hpp>
 #include <game/bases/d_audio.hpp>
 
-const sBcSensorPoint l_noko_head = { SENSOR_IS_POINT, 0, 0xc000 };
-const sBcSensorLine l_noko_foot = { SENSOR_IS_LINE, -0x4000, 0x4000, 0x0 };
-const sBcSensorLine l_noko_wall = { SENSOR_IS_LINE, 0x6000, 0x9000, 0x6000 };
+const sBcOne l_noko_head = { SENSOR_IS_ONE, 0, 0xc000 };
+const sBcMany l_noko_foot = { SENSOR_IS_MANY, -0x4000, 0x4000, 0x0 };
+const sBcMany l_noko_wall = { SENSOR_IS_MANY, 0x6000, 0x9000, 0x6000 };
 const sCcDatNewF l_noko_cc = {
     0.0f, 8.0f,
     9.0f, 8.0f,
