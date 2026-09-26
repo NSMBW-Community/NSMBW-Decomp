@@ -80,13 +80,13 @@ public:
 
     ACTOR_PARAM_CONFIG(DieOnBlockHit, 4, 1);
 
-    static const sBcSensorPoint smc_toge_head;
-    static const sBcSensorLine smc_toge_foot;
-    static const sBcSensorLine smc_toge_wall;
-    static const sBcSensorLine smc_sakasa_toge_foot;
-    static const sBcSensorPoint smc_pipo_head;
-    static const sBcSensorLine smc_pipo_foot;
-    static const sBcSensorLine smc_pipo_wall;
+    static const sBcOne smc_toge_head;
+    static const sBcMany smc_toge_foot;
+    static const sBcMany smc_toge_wall;
+    static const sBcMany smc_sakasa_toge_foot;
+    static const sBcOne smc_pipo_head;
+    static const sBcMany smc_pipo_foot;
+    static const sBcMany smc_pipo_wall;
     static const sCcDatNewF smc_toge_cc;
     static const float smc_WALK_SPEED_DAT[2];
     static const s16 smc_ROTATE_SPEED_DAT[2];

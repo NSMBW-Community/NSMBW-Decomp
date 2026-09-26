@@ -164,9 +164,9 @@ private:
     float m_548;
     float m_54c;
     float m_550;
-    sBcPointData mSensorFoot;
-    sBcPointData mSensorHead;
-    sBcPointData mSensorWall;
+    sBcMany mSensorFoot;
+    sBcMany mSensorHead;
+    sBcMany mSensorWall;
     mVec3_c mPosDiff;
     mVec3_c mInitialPos;
     mVec3_c m_59c;

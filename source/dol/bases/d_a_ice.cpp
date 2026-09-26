@@ -613,17 +613,17 @@ void daIce_c::setBc() {
         return;
     }
 
-    mSensorFoot.mFlags = SENSOR_IS_LINE;
+    mSensorFoot.mFlags = SENSOR_IS_MANY;
     mSensorFoot.mInfMargin = -(int) ((mCcSize.x * 0.5f - 3.0f) * 0x1000);
     mSensorFoot.mSupMargin = ((mCcSize.x * 0.5f - 3.0f) * 0x1000);
     mSensorFoot.mOffset = 0;
 
-    mSensorHead.mFlags = SENSOR_IS_LINE;
+    mSensorHead.mFlags = SENSOR_IS_MANY;
     mSensorHead.mInfMargin = -(int) ((mCcSize.x * 0.5f - 3.0f) * 0x1000);
     mSensorHead.mSupMargin = ((mCcSize.x * 0.5f - 3.0f) * 0x1000);
     mSensorHead.mOffset = mCcSize.y * 0x1000;
 
-    mSensorWall.mFlags = SENSOR_IS_LINE;
+    mSensorWall.mFlags = SENSOR_IS_MANY;
     mSensorWall.mInfMargin = 0x4000;
     mSensorWall.mSupMargin = (mCcSize.y - 4.0f) * 0x1000;
     mSensorWall.mOffset = (mCcSize.x * 0.5f - 0.5f) * 0x1000;
@@ -640,17 +640,17 @@ void daIce_c::setCarryBc() {
 
     daPyMng_c::getPlayer(mPlayerNo);
 
-    mSensorFoot.mFlags = SENSOR_IS_LINE;
+    mSensorFoot.mFlags = SENSOR_IS_MANY;
     mSensorFoot.mInfMargin = -(int) ((mCcSize.x * 0.5f - 8.0f) * 0x1000);
     mSensorFoot.mSupMargin = ((mCcSize.x * 0.5f - 8.0f) * 0x1000);
     mSensorFoot.mOffset = 0;
 
-    mSensorHead.mFlags = SENSOR_IS_LINE;
+    mSensorHead.mFlags = SENSOR_IS_MANY;
     mSensorHead.mInfMargin = -0x2000;
     mSensorHead.mSupMargin = 0x2000;
     mSensorHead.mOffset = (mCcSize.y + 1.0f) * 0x1000;
 
-    mSensorWall.mFlags = SENSOR_IS_LINE;
+    mSensorWall.mFlags = SENSOR_IS_MANY;
     mSensorWall.mInfMargin = 0x6000;
     mSensorWall.mSupMargin = (mCcSize.y - 6.0f) * 0x1000;
     if (mCcSize.x < 26.0f) {

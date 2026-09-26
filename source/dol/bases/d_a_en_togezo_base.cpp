@@ -4,15 +4,15 @@
 #include <game/mLib/m_allocator_dummy_heap.hpp>
 #include <constants/sound_list.h>
 
-const sBcSensorPoint daEnTogezoBase_c::smc_toge_head = { SENSOR_IS_POINT, 0, 0xc000 };
-const sBcSensorLine daEnTogezoBase_c::smc_toge_foot = { SENSOR_IS_LINE, -0x4000, 0x4000, 0x0 };
-const sBcSensorLine daEnTogezoBase_c::smc_toge_wall = { SENSOR_IS_LINE, 0x7000, 0x5000, 0x8000 };
+const sBcOne daEnTogezoBase_c::smc_toge_head = { SENSOR_IS_ONE, 0, 0xc000 };
+const sBcMany daEnTogezoBase_c::smc_toge_foot = { SENSOR_IS_MANY, -0x4000, 0x4000, 0x0 };
+const sBcMany daEnTogezoBase_c::smc_toge_wall = { SENSOR_IS_MANY, 0x7000, 0x5000, 0x8000 };
 
-const sBcSensorLine daEnTogezoBase_c::smc_sakasa_toge_foot = { SENSOR_IS_LINE, -0x3000, 0x2000, 0x0 };
+const sBcMany daEnTogezoBase_c::smc_sakasa_toge_foot = { SENSOR_IS_MANY, -0x3000, 0x2000, 0x0 };
 
-const sBcSensorPoint daEnTogezoBase_c::smc_pipo_head = { SENSOR_IS_POINT, 0, 0x6000 };
-const sBcSensorLine daEnTogezoBase_c::smc_pipo_foot = { SENSOR_IS_LINE, -0x3000, 0x3000, -0x6000 };
-const sBcSensorLine daEnTogezoBase_c::smc_pipo_wall = { SENSOR_IS_LINE, 0x2000, -0x2000, 0x6000 };
+const sBcOne daEnTogezoBase_c::smc_pipo_head = { SENSOR_IS_ONE, 0, 0x6000 };
+const sBcMany daEnTogezoBase_c::smc_pipo_foot = { SENSOR_IS_MANY, -0x3000, 0x3000, -0x6000 };
+const sBcMany daEnTogezoBase_c::smc_pipo_wall = { SENSOR_IS_MANY, 0x2000, -0x2000, 0x6000 };
 const sCcDatNewF daEnTogezoBase_c::smc_toge_cc = {
     0.0f, 6.0f,
     8.0f, 6.0f,

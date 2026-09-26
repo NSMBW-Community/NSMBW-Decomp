@@ -3079,8 +3079,8 @@ void dAcPy_c::executeState_LiftUp() {
             }
             return;
         } else if (checkJumpTrigger()) {
-            sBcPointData d1 = mWallBcData;
-            sBcPointData d2 = mHeadBcData;
+            sBcMany d1 = mWallBcData;
+            sBcMany d2 = mHeadBcData;
             fn_80143060(d1, d2, true);
             if (!fn_80143220(d1, d2)) {
                 return;
@@ -4026,7 +4026,7 @@ void dAcPy_c::calcPenguinSwimGroundRev() {
     rotMtx.concat(mMtx_c::createTrans(0.0f, 0.0f, 20.0f));
     mVec3_c resVec;
     rotMtx.multVecZero(resVec);
-    const sBcPointData *bgPointData = getWallBgPointData();
+    const sBcMany *bgPointData = getWallBgPointData();
     if (bgPointData != nullptr) {
         float bgOffs[2];
         bgOffs[0] = bgPointData->mInfMargin / 4096.0f;
@@ -4148,9 +4148,9 @@ bool dAcPy_c::setKaniHangToVineAction() {
 
 bool dAcPy_c::setVineToKaniHangAction() {
     if (mKey.buttonUp()) {
-        sBcPointData r = mVineBcData;
+        sBcMany r = mVineBcData;
         r.mInfMargin = getHangBcOffsetY() * 4096.0f;
-        if (!(mBc.checkVineCollision(&r) & 3)) {
+        if (!(mBc.checkVine(&r) & 3)) {
             float y = mPos.y + getHangBcOffsetY();
             float x = mPos.x;
             short groundY = (((short) y) & 0xfff0) - 16;
@@ -10044,10 +10044,10 @@ void dAcPy_c::setBcData(int setInstant) {
         onStatus(STATUS_B8);
     }
     const sBcPlayerPointData *data = getBgPointData();
-    sBcPointData footData = data->mFoot;
-    sBcPointData headData = data->mHead;
-    sBcPointData wallData = data->mWall;
-    sBcPointData vineData = data->mVine;
+    sBcMany footData = data->mFoot;
+    sBcMany headData = data->mHead;
+    sBcMany wallData = data->mWall;
+    sBcMany vineData = data->mVine;
     if (!isMameAction() && !isStatus(STATUS_4E) && !isStatus(STATUS_ENEMY_STAGE_CLEAR)) {
         footData.mFlags |= 0x200000;
     }
@@ -10189,7 +10189,7 @@ void dAcPy_c::setBcData(int setInstant) {
     }
 }
 
-void dAcPy_c::fn_80143060(sBcPointData &data1, sBcPointData &data2, bool mode) {
+void dAcPy_c::fn_80143060(sBcMany &data1, sBcMany &data2, bool mode) {
     dAcPy_c *carryPlayer = getCarryPlayer();
     if (carryPlayer == nullptr) {
         return;
@@ -10237,7 +10237,7 @@ void dAcPy_c::fn_80143060(sBcPointData &data1, sBcPointData &data2, bool mode) {
     }
 }
 
-bool dAcPy_c::fn_80143220(sBcPointData &data1, sBcPointData &data2) {
+bool dAcPy_c::fn_80143220(sBcMany &data1, sBcMany &data2) {
     dAcPy_c *carryPlayer = getCarryPlayer();
     if (carryPlayer == nullptr) {
         return false;
@@ -10265,7 +10265,7 @@ bool dAcPy_c::fn_80143220(sBcPointData &data1, sBcPointData &data2) {
     return false;
 }
 
-void dAcPy_c::reviseBcDataCarryPlayer(sBcPointData &data1, sBcPointData &data2) {
+void dAcPy_c::reviseBcDataCarryPlayer(sBcMany &data1, sBcMany &data2) {
     dAcPy_c *ridePlayer = getRidePlayer();
     if (ridePlayer != nullptr && !ridePlayer->isMameAction()) {
         data2.mFlags = 0x9c0001;
@@ -10286,7 +10286,7 @@ void dAcPy_c::reviseBcDataCarryPlayer(sBcPointData &data1, sBcPointData &data2) 
     }
 }
 
-void dAcPy_c::reviseBcDataCarryHardBlock(sBcPointData &data1, sBcPointData &data2) {
+void dAcPy_c::reviseBcDataCarryHardBlock(sBcMany &data1, sBcMany &data2) {
     if (getCarryHardBlock()) {
         const sBcPlayerPointData *data = getBgPointData_Powerup(mPowerup, 0);
         if (data1.mOffset < data->mWall.mOffset) {
@@ -10460,10 +10460,10 @@ void dAcPy_c::executeMain() {
 }
 
 void dAcPy_c::checkBgCrossSub() {
-    if (mBc.checkPoleCollision(&mVineBcData)) {
+    if (mBc.checkPole(&mVineBcData)) {
         onNowBgCross(BGC_CAN_CLIMB);
     }
-    u32 resFlags = mBc.checkVineCollision(&mVineBcData);
+    u32 resFlags = mBc.checkVine(&mVineBcData);
     if (resFlags & 0x0F) {
         onNowBgCross(BGC_VINE_TOUCH_FULL);
         if (resFlags & 0b1100) {
@@ -10481,12 +10481,12 @@ void dAcPy_c::checkBgCrossSub() {
         onNowBgCross(BGC_VINE_TOUCH_R);
         return;
     }
-    sBcPointData vineData = mVineBcData;
+    sBcMany vineData = mVineBcData;
     int v = mWallBcData.mOffset * 0.7f;
     if (vineData.mOffset < v) {
         vineData.mOffset = v;
     }
-    u32 resFlags2 = mBc.checkVineCollision(&vineData);
+    u32 resFlags2 = mBc.checkVine(&vineData);
     if (resFlags2 & 1 || resFlags2 & 2) {
         onNowBgCross(BGC_VINE_TOUCH);
     }

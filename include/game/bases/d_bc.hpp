@@ -4,14 +4,14 @@
 #include <game/bases/d_rc.hpp>
 
 enum SensorFlags {
-    SENSOR_IS_POINT = 0,
-    SENSOR_IS_LINE = 1
+    SENSOR_IS_ONE = 0,
+    SENSOR_IS_MANY = 1
 };
 
 class sBcSensorIf_c {};
 
 /// @unofficial
-struct sBcSensorPoint {
+struct sBcOne {
     operator const sBcSensorIf_c *() const { return (const sBcSensorIf_c *) this; }
 
     u32 mFlags;
@@ -19,16 +19,7 @@ struct sBcSensorPoint {
 };
 
 /// @unofficial
-struct sBcSensorLine {
-    operator const sBcSensorIf_c *() const { return (const sBcSensorIf_c *) this; }
-
-    u32 mFlags;
-    int mLineA, mLineB;
-    int mDistanceFromCenter;
-};
-
-/// @unofficial
-class sBcPointData {
+class sBcMany {
 public:
     operator const sBcSensorIf_c *() const { return (sBcSensorIf_c *) &mFlags; }
 
@@ -41,10 +32,10 @@ public:
 /// @unofficial
 class sBcPlayerPointData {
 public:
-    sBcPointData mFoot;
-    sBcPointData mHead;
-    sBcPointData mWall;
-    sBcPointData mVine;
+    sBcMany mFoot;
+    sBcMany mHead;
+    sBcMany mWall;
+    sBcMany mVine;
 };
 
 class dBc_c {
@@ -120,8 +111,8 @@ public:
     u16 getWallAttr(int);
     u16 getFootAttr();
 
-    u32 checkPoleCollision(sBcPointData *); ///< @unofficial
-    u32 checkVineCollision(sBcPointData *); ///< @unofficial
+    u32 checkPole(sBcMany *);
+    u32 checkVine(sBcMany *);
 
     bool hasSensorFoot() { return mpSensorFoot != nullptr; }
     bool hasSensorHead() { return mpSensorHead != nullptr; }

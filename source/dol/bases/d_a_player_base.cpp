@@ -484,7 +484,7 @@ bool daPlBase_c::checkStandUpRoofOnLift() {
 }
 
 bool daPlBase_c::checkStandUpRoof() {
-    const sBcPointData *headBgP = getHeadBgPointData();
+    const sBcMany *headBgP = getHeadBgPointData();
     if (headBgP == nullptr) {
         return false;
     }
@@ -5020,7 +5020,7 @@ void daPlBase_c::checkBgCross() {
         if (mLastPos.x > mPos.x) {
             dir = -1.0f;
         }
-        const sBcPointData *wallData = getWallBgPointData();
+        const sBcMany *wallData = getWallBgPointData();
         int wallSize = wallData->mInfMargin + wallData->mSupMargin;
         float offset = ((float) wallSize / 4096.0f) / 2.0f;
         mVec3_c p1(
@@ -5466,7 +5466,7 @@ void daPlBase_c::checkWater() {
             if (getWaterCheckPosY() <= mWaterHeight) {
                 onNowBgCross(BGC_WATER_SHALLOW);
             }
-            const sBcPointData *p = getHeadBgPointData();
+            const sBcMany *p = getHeadBgPointData();
             float f = p->mOffset;
             if (mPos.y + f / 4096.0f <= mWaterHeight) {
                 onNowBgCross(BGC_WATER_SUBMERGED);
@@ -5969,11 +5969,11 @@ void daPlBase_c::setExtraPushForce(float f) {
 }
 
 bool daPlBase_c::checkInsideCrossBg(float f) {
-    const sBcPointData *wallBg = getWallBgPointData();
+    const sBcMany *wallBg = getWallBgPointData();
     if (wallBg == nullptr) {
         return false;
     }
-    const sBcPointData *footBg = getFootBgPointData();
+    const sBcMany *footBg = getFootBgPointData();
     if (footBg == nullptr) {
         return false;
     }

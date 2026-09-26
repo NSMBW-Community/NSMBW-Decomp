@@ -26,9 +26,9 @@ const daIceBall_c::GlobalData_t sGlobalData_c<daIceBall_c>::mData = {
     120.0f
 };
 
-const sBcSensorPoint l_iceball_foot = { SENSOR_IS_POINT, 0, -0x3000 };
-const sBcSensorPoint l_iceball_head = { SENSOR_IS_POINT, 0, 0x3000 };
-const sBcSensorPoint l_iceball_wall = { SENSOR_IS_POINT, 0x3000, 0 };
+const sBcOne l_iceball_foot = { SENSOR_IS_ONE, 0, -0x3000 };
+const sBcOne l_iceball_head = { SENSOR_IS_ONE, 0, 0x3000 };
+const sBcOne l_iceball_wall = { SENSOR_IS_ONE, 0x3000, 0 };
 
 const sCcDatNewF l_fball_cc_data = {
     0.0f, 0.0f,
