@@ -478,11 +478,11 @@ bool dActor_c::carryFukidashiCheck(int fukidashiAction, mVec2_c fukidashiTrigger
     mVec3_c minTriggerPos(centerPos.x - fukidashiTriggerSize.x, centerPos.y - fukidashiTriggerSize.y, mPos.z);
     mVec3_c maxTriggerPos(centerPos.x + fukidashiTriggerSize.x, centerPos.y + fukidashiTriggerSize.y, mPos.z);
 
-    if (mCarryFukidashiPlayerNo <= 3 && dInfo_c::m_instance->mFukidashiActionPerformed[mCarryFukidashiPlayerNo][fukidashiAction]) {
+    if (mCarryFukidashiPlayerNo >= 0 && mCarryFukidashiPlayerNo < PLAYER_COUNT && dInfo_c::m_instance->mFukidashiActionPerformed[mCarryFukidashiPlayerNo][fukidashiAction]) {
         mCarryFukidashiPlayerNo = -1;
     }
 
-    if (mCarryFukidashiPlayerNo <= 3) {
+    if (mCarryFukidashiPlayerNo >= 0 && mCarryFukidashiPlayerNo < PLAYER_COUNT) {
         // Already displaying a fukidashi
         dAcPy_c *player = daPyMng_c::getPlayer(mCarryFukidashiPlayerNo);
         if (player != nullptr) {

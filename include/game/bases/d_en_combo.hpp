@@ -17,6 +17,9 @@ public:
     int getQuakeScore(int) const;
     int getDamageScore() const;
 
+    int getFumiScore(dActor_c *actor) { return getComboScore(calcPlFumiCnt(actor)); }
+    int getStarScore(dActor_c *actor) { return getComboScore(calcPlStarCnt(actor)); }
+
     static int calcPlStarCnt(dActor_c *actor);
     static int calcPlComboCnt(dActor_c *actor);
     static int calcPlFumiCnt(dActor_c *actor);

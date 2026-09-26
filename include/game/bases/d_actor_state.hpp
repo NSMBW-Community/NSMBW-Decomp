@@ -14,6 +14,10 @@ public:
 
     sFStateMgr_c<dActorState_c, sStateMethodUsr_FI_c> mStateMgr; ///< The state manager.
 
+    void changeState(const sStateIDIf_c &newState) {
+        mStateMgr.changeState(newState);
+    }
+
     /// @cond
     void dummy() {
         mStateMgr.initializeState();

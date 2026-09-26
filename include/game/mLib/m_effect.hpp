@@ -11,9 +11,9 @@ public:
     effect_c() {}
 
     virtual void reset();
-    virtual void createEffect(const char *, int);
-    virtual void createEffect(const char *, ulong, const mVec3_c *, const mAng3_c *, const mVec3_c *);
-    virtual void createEffect(const char *, ulong, const mMtx_c *);
+    virtual bool createEffect(const char *, int);
+    virtual bool createEffect(const char *, ulong, const mVec3_c *, const mAng3_c *, const mVec3_c *);
+    virtual bool createEffect(const char *, ulong, const mMtx_c *);
     virtual void vfa8();
     virtual void vfac();
     virtual bool follow(const mVec3_c *, const mAng3_c *, const mVec3_c *);
@@ -30,9 +30,9 @@ public:
     virtual void fade();
     virtual void kill();
     virtual void update();
-    virtual void createEffect(const char *, int);
-    virtual void createEffect(const char *, ulong, const mVec3_c *, const mAng3_c *, const mVec3_c *);
-    virtual void createEffect(const char *, ulong, const mMtx_c *);
+    virtual bool createEffect(const char *, int);
+    virtual bool createEffect(const char *, ulong, const mVec3_c *, const mAng3_c *, const mVec3_c *);
+    virtual bool createEffect(const char *, ulong, const mMtx_c *);
     virtual void vfa8();
     virtual void vfac();
     virtual bool follow(const mVec3_c *, const mAng3_c *, const mVec3_c *);
@@ -52,14 +52,14 @@ public:
     ~levelOneEffect_c() {}
 
     virtual void reset();
-    virtual void createEffect(const char *, int);
-    virtual void createEffect(const char *, ulong, const mVec3_c *, const mAng3_c *, const mVec3_c *);
-    virtual void createEffect(const char *, ulong, const mMtx_c *);
+    virtual bool createEffect(const char *, int);
+    virtual bool createEffect(const char *, ulong, const mVec3_c *, const mAng3_c *, const mVec3_c *);
+    virtual bool createEffect(const char *, ulong, const mMtx_c *);
 
     float mEmissionRateMaybe;
     nw4r::ef::EmitterInheritSetting mSetting;
 };
 
-void createEffect(const char *, unsigned long, const mVec3_c *, const mAng3_c *, const mVec3_c *);
+bool createEffect(const char *, unsigned long, const mVec3_c *, const mAng3_c *, const mVec3_c *);
 
 }; // namespace mEf

@@ -138,6 +138,7 @@ public:
     u16 getHeadAttr();
     short getHeadSakaMoveAngle(u8 direction);
     void clearBgcSaveAll();
+    dBc_c *getLinkW(dBg_ctr_c *bgCtr);
 
     bool getSakaUpDown(u8 direction);
     short getSakaAngleBySpeed(float);
@@ -173,10 +174,10 @@ public:
     dBg_ctr_c *mpCtrFoot;
     dBg_ctr_c *mpCtrWall;
     dBg_ctr_c *mpCtrWalls[2];
-    dBc_c *mPrevTrigBelowSensor;
-    dBc_c *mPrevTrigAboveSensor;
-    dBc_c *mPrevTrigAdjSensor;
-    dBc_c *mPrevTrigAdjSensorForDirection[2];
+    dBc_c *mTriggeredHeadSensor;
+    dBc_c *mTriggeredFootSensor;
+    dBc_c *mTriggeredWallSensor;
+    dBc_c *mTriggeredWallSensorsLR[2];
     dBg_ctr_c *mLinkW[2];
     u32 mFlags;
     u32 mPrevFlags;
@@ -206,9 +207,9 @@ public:
     static int checkWaterDepth(float, float, u8, u8, float *);
     static WATER_TYPE_e checkWater(float, float, u8, float *);
 
-    static u32 checkBg(float, float, u8, u8, unsigned long);
-    static u32 checkWireNet(float x, float y, unsigned char layer);
-    static u32 checkGround(const mVec3_c *, float *, u8, u8, s8);
+    static bool checkBg(float, float, u8, u8, unsigned long);
+    static bool checkWireNet(float x, float y, unsigned char layer);
+    static bool checkGround(const mVec3_c *, float *, u8, u8, s8);
     static u32 checkGround(const mVec3_c *, float *, int *, u8, u8, s8);
     static bool checkGroundAngle(const mVec3_c *, float *, s16 *, u8, u8, s8, int *, int);
     static u32 checkGroundHalf(const mVec3_c *, float *, u8, u8);
