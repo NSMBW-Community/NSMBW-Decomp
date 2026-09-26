@@ -20,6 +20,8 @@ public:
     void setBattleCoin(int plrNo, int value);  ///< Rewards a battle coin to a player.
     void setCollectionCoin(); ///< Loads the star coin collection information.
 
+    static dMultiMng_c *getInstance() { return mspInstance; }
+
     int m_04; ///< @unused
     int mRest[PLAYER_COUNT]; ///< The number of remaining lives for each player.
     int mScore[PLAYER_COUNT]; ///< The score of each player.

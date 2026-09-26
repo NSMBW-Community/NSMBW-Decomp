@@ -53,7 +53,7 @@ public:
         return mVec3_c(x, y, z);
     }
 
-    static mMtx_c createTrans(const mVec3_c &v) { return createTrans(v.x, v.y, v.z); }
+    static mMtx_c createTrans(const mVec3_c &v) { mMtx_c mtx; PSMTXTrans(mtx, v.x, v.y, v.z); return mtx; }
     static mMtx_c createTrans(float x, float y, float z) { mMtx_c mtx; PSMTXTrans(mtx, x, y, z); return mtx; }
     static mMtx_c createScale(const mVec3_c &v) { mMtx_c mtx; PSMTXScale(mtx, v.x, v.y, v.z); return mtx; }
     static mMtx_c createScale(float x, float y, float z) { mMtx_c mtx; PSMTXScale(mtx, x, y, z); return mtx; }

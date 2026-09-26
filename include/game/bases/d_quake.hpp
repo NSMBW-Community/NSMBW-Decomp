@@ -23,6 +23,7 @@ public:
         FLAG_2 = BIT_FLAG(2)
     };
 
+    void startShock(s8, TYPE_SHOCK_e, int, int, bool);
     void shockMotor(s8, TYPE_SHOCK_e, int, bool);
     void startShockAll(TYPE_SHOCK_e, int, int, bool);
 

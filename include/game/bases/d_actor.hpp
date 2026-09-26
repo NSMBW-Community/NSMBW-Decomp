@@ -10,6 +10,9 @@
 class dAcPy_c;
 class dPropelParts_c;
 
+extern const u8 l_Ami_Line[]; ///< The sub-layer for each side of chainlink fences.
+extern const float l_Ami_Zpos[]; ///< The additional Z offset for each side of chainlink fences.
+
 /// @brief The minimum required implementation for a stage actor.
 /// @ingroup bases
 class dActor_c : public dBaseActor_c {
@@ -329,7 +332,7 @@ public:
     static dActor_c *construct(ProfileName profName, dBase_c *parent, unsigned long param, const mVec3_c *position, const mAng3_c *rotation, u8 layer);
 
     u8 m_00; ///< Seems to be a player bit flag. @unused
-    u32 mCarryFukidashiPlayerNo; ///< The player for whom an action prompt related to the actor is being displayed. @p -1 if no players meet this criteria.
+    int mCarryFukidashiPlayerNo; ///< The player for whom an action prompt related to the actor is being displayed. @p -1 if no players meet this criteria.
     u32 mCarryingFlags; ///< The actor's carry actions. See CARRY_ACTION_e.
     u8 mThrowDirection; ///< The actor's direction when thrown or dropped after carrying.
     int mComboMultiplier; ///< The current combo multiplier obtained by the actor by colliding with other actors.
@@ -398,6 +401,9 @@ public:
 
     u8 getKindMask() { return 1 << mKind; }
 
+    u8 getLayer() const { return mLayer; }
+    u8 getAmiLine() const { return l_Ami_Line[mAmiLayer]; }
+
     static const float smc_CULL_XLIMIT; ///< The default @ref mMaxBound "max bound" X offset.
     static const float smc_CULL_YLIMIT; ///< The default @ref mMaxBound "max bound" Y offset.
     static const float smc_CULL_AREA_XLIMIT; ///< The default @ref mMaxBound "max bound" X size.
@@ -424,6 +430,3 @@ public:
     /// @brief Temporary storage for the next created sprite actor's layer. See #mLayer.
     static u8 m_mbgchoice_keep;
 };
-
-extern const u8 l_Ami_Line[]; ///< The sub-layer for each side of chainlink fences.
-extern const float l_Ami_Zpos[]; ///< The additional Z offset for each side of chainlink fences.

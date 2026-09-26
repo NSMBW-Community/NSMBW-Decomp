@@ -1,22 +1,7 @@
 #pragma once
 
 #include <game/bases/d_actor.hpp>
-
-class dIceEfScale_c {
-public:
-    dIceEfScale_c() {
-        mData[0] = 0.0f;
-        mData[1] = 0.0f;
-        mData[2] = 0.0f;
-        mData[3] = 0.0f;
-        mData[4] = 0.0f;
-        mData[5] = 0.0f;
-        mData[6] = 0.0f;
-        mData[7] = 0.0f;
-    }
-
-    float mData[8];
-};
+#include <game/bases/d_ice_effect_scale.hpp>
 
 class dIceInfo {
 public:
@@ -55,11 +40,15 @@ public:
     bool checkInstantBreak(int);
     bool createIce(dIceInfo *info, int count);
 
-    u8 mPad1[0xc];
+    void setDestroyMode(DESTROY_MODE_e mode) { mDestroyMode = mode; }
+
+    u8 mPad1[0x4];
+    int m_04;
+    u8 mPad2[0x4];
     int mActive;
-    u8 mPad2[0x8];
+    u8 mPad3[0x8];
     DESTROY_MODE_e mDestroyMode;
-    u8 mPad3[0x14];
+    u8 mPad4[0x14];
     int mPlrNo;
-    u8 mPad4[0x38];
+    u8 mPad5[0x38];
 };

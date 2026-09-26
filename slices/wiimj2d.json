@@ -650,6 +650,19 @@
             }
         },
         {
+            "source": "dol/bases/d_a_ice.cpp",
+            "nonMatching": true,
+            "memoryRanges": {
+                ".text": "0x114ec0-0x11cc70",
+                ".ctors": "0x1e0-0x1e4",
+                ".rodata": "0x6fa0-0x7020",
+                ".data": "0x25be8-0x26408",
+                ".bss": "0x23f20-0x24428",
+                ".sdata": "0x1ca0-0x1cd8",
+                ".sdata2": "0x2498-0x25f0"
+            }
+        },
+        {
             "source": "dol/bases/d_a_iceball.cpp",
             "memoryRanges": {
                 ".text": "0x11cc70-0x11e5c0",
