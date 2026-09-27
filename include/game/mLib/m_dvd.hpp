@@ -3,6 +3,17 @@
 #include <lib/egg/core/eggHeap.h>
 #include <lib/egg/core/eggArchive.h>
 
+/// @brief Low-level DVD/archive loading layer, wrapped by @ref dDvd for game use.
+/// @ingroup mlib
+namespace mDvd {
+void create(long, EGG::Heap *, EGG::Heap *, EGG::Heap *); ///< Initializes the DVD subsystem.
+EGG::Heap *getArchiveHeap(); ///< Returns the default heap used for archive loads.
+void setAutoStreamDecomp(bool); ///< Enables or disables automatic stream decompression.
+} // namespace mDvd
+
+/// [TODO: unidentified function, no known symbol name yet]
+extern "C" void fn_8016B1E0(); ///< @unofficial
+
 class mDvd_command_c {
 public:
     virtual ~mDvd_command_c();
@@ -44,4 +55,5 @@ public:
 
     u8 mPad[0x4];
     void *mpData;
+    u32 mSize; ///< @unofficial
 };
