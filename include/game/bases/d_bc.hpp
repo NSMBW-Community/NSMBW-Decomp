@@ -3,14 +3,15 @@
 #include <game/bases/d_bg_ctr.hpp>
 #include <game/bases/d_rc.hpp>
 
+/// @unofficial
 enum SensorFlags {
     SENSOR_IS_ONE = 0,
     SENSOR_IS_MANY = 1
 };
 
+/// @unofficial
 class sBcSensorIf_c {};
 
-/// @unofficial
 struct sBcOne {
     operator const sBcSensorIf_c *() const { return (const sBcSensorIf_c *) this; }
 
@@ -18,7 +19,6 @@ struct sBcOne {
     int mX, mY;
 };
 
-/// @unofficial
 class sBcMany {
 public:
     operator const sBcSensorIf_c *() const { return (sBcSensorIf_c *) &mFlags; }
