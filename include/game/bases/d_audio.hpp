@@ -231,18 +231,36 @@ public:
     nw4r::math::VEC2 mPos;
 };
 
+template<int T>
+class NMSndObjectCmn : public NMSndObjectBase {
+public:
+    class SoundHandlePrm;
+
+    NMSndObjectCmn() {}
+
+    virtual void calc(const nw4r::math::VEC2 &pos);
+    virtual SoundHandlePrm *startSound(unsigned long p1, unsigned long p2);
+    virtual SoundHandlePrm *holdSound(unsigned long p1, unsigned long p2);
+    virtual SoundHandlePrm *prepareSound(unsigned long p1, unsigned long p2);
+    virtual SoundHandlePrm *startSound(unsigned long p1, short p2, unsigned long p3);
+    virtual SoundHandlePrm *holdSound(unsigned long p1, int id, short p2, unsigned long p3);
+    virtual SoundHandlePrm *startSound(unsigned long p1, const nw4r::math::VEC2 &p2, unsigned long p3);
+    virtual SoundHandlePrm *holdSound(unsigned long p1, int id, const nw4r::math::VEC2 &p2, unsigned long p3);
+
+};
+
 class SndObjctPly : public NMSndObject<4> {
 public:
     void calculate(const nw4r::math::VEC2 &pos) {
         NMSndObject<4>::calc(pos);
     }
 
-    virtual SoundHandlePrm *startSound(ulong p1, ulong p2);
-    virtual SoundHandlePrm *holdSound(ulong p1, ulong p2);
-    virtual SoundHandlePrm *startSound(ulong p1, short p2, ulong p3);
-    virtual SoundHandlePrm *holdSound(ulong p1, short p2, ulong p3);
-    virtual SoundHandlePrm *startSound(ulong p1, const nw4r::math::VEC2 &p2, ulong p3);
-    virtual SoundHandlePrm *holdSound(ulong p1, const nw4r::math::VEC2 &p2, ulong p3);
+    SoundHandlePrm *startSound(ulong p1, ulong p2) override;
+    SoundHandlePrm *holdSound(ulong p1, ulong p2) override;
+    SoundHandlePrm *startSound(ulong p1, short p2, ulong p3) override;
+    SoundHandlePrm *holdSound(ulong p1, short p2, ulong p3) override;
+    SoundHandlePrm *startSound(ulong p1, const nw4r::math::VEC2 &p2, ulong p3) override;
+    SoundHandlePrm *holdSound(ulong p1, const nw4r::math::VEC2 &p2, ulong p3) override;
 
     void stopPlyJumpSound();
     void startFootSound(ulong, float, ulong);
@@ -252,32 +270,32 @@ public:
 
 class SndObjctEmy : public NMSndObject<4> {
 public:
-    virtual SoundHandlePrm *startSound(ulong p1, ulong p2);
-    virtual SoundHandlePrm *holdSound(ulong p1, ulong p2);
-    virtual SoundHandlePrm *startSound(ulong p1, short p2, ulong p3);
-    virtual SoundHandlePrm *holdSound(ulong p1, short p2, ulong p3);
-    virtual SoundHandlePrm *startSound(ulong p1, const nw4r::math::VEC2 &p2, ulong p3);
-    virtual SoundHandlePrm *holdSound(ulong p1, const nw4r::math::VEC2 &p2, ulong p3);
+    SoundHandlePrm *startSound(ulong p1, ulong p2) override;
+    SoundHandlePrm *holdSound(ulong p1, ulong p2) override;
+    SoundHandlePrm *startSound(ulong p1, short p2, ulong p3) override;
+    SoundHandlePrm *holdSound(ulong p1, short p3, ulong p4) override;
+    SoundHandlePrm *startSound(ulong p1, const nw4r::math::VEC2 &p2, ulong p3) override;
+    SoundHandlePrm *holdSound(ulong p1, const nw4r::math::VEC2 &p3, ulong p4) override;
 };
 
-class SndObjctCmnEmy : public NMSndObject<4> {
+class SndObjctCmnEmy : public NMSndObjectCmn<4> {
 public:
-    virtual SoundHandlePrm *startSound(ulong p1, ulong p2);
-    virtual SoundHandlePrm *holdSound(ulong p1, ulong p2);
-    virtual SoundHandlePrm *startSound(ulong p1, short p2, ulong p3);
-    virtual SoundHandlePrm *holdSound(ulong p1, short p2, ulong p3);
-    virtual SoundHandlePrm *startSound(ulong p1, const nw4r::math::VEC2 &p2, ulong p3);
-    virtual SoundHandlePrm *holdSound(ulong p1, const nw4r::math::VEC2 &p2, ulong p3);
+    SoundHandlePrm *startSound(ulong p1, ulong p2) override;
+    SoundHandlePrm *holdSound(ulong p1, ulong p2) override;
+    SoundHandlePrm *startSound(ulong p1, short p2, ulong p3) override;
+    SoundHandlePrm *holdSound(ulong p1, int p2, short p3, ulong p4) override;
+    SoundHandlePrm *startSound(ulong p1, const nw4r::math::VEC2 &p2, ulong p3) override;
+    SoundHandlePrm *holdSound(ulong p1, int p2, const nw4r::math::VEC2 &p3, ulong p4) override;
 };
 
-class SndObjctCmnMap : public NMSndObject<4> {
+class SndObjctCmnMap : public NMSndObjectCmn<4> {
 public:
-    virtual SoundHandlePrm *startSound(ulong p1, ulong p2);
-    virtual SoundHandlePrm *holdSound(ulong p1, ulong p2);
-    virtual SoundHandlePrm *startSound(ulong p1, short p2, ulong p3);
-    virtual SoundHandlePrm *holdSound(ulong p1, short p2, ulong p3);
-    virtual SoundHandlePrm *startSound(ulong p1, const nw4r::math::VEC2 &p2, ulong p3);
-    virtual SoundHandlePrm *holdSound(ulong p1, const nw4r::math::VEC2 &p2, ulong p3);
+    SoundHandlePrm *startSound(ulong p1, ulong p2) override;
+    SoundHandlePrm *holdSound(ulong p1, ulong p2) override;
+    SoundHandlePrm *startSound(ulong p1, short p2, ulong p3) override;
+    SoundHandlePrm *holdSound(ulong p1, int p2, short p3, ulong p4) override;
+    SoundHandlePrm *startSound(ulong p1, const nw4r::math::VEC2 &p2, ulong p3) override;
+    SoundHandlePrm *holdSound(ulong p1, int p2, const nw4r::math::VEC2 &p3, ulong p4) override;
 };
 
 namespace dAudio {
@@ -366,6 +384,12 @@ namespace dAudio {
         void startSound(unsigned long soundID, const mVec3_c &pos, int remPlayer) {
             SndObjctCmnMap::startSound(soundID, dAudio::cvtSndObjctPos(pos), remPlayer);
         }
+        void holdSound(unsigned long soundID, int id, const nw4r::math::VEC2 &pos, int remPlayer) {
+            SndObjctCmnMap::holdSound(soundID, id, pos, remPlayer);
+        }
+        void holdSound(unsigned long soundID, int id, const mVec3_c &pos, int remPlayer) {
+            SndObjctCmnMap::holdSound(soundID, id, dAudio::cvtSndObjctPos(pos), remPlayer);
+        }
     };
 
     extern SndObjctCmnEmy_c *g_pSndObjEmy;
@@ -374,39 +398,40 @@ namespace dAudio {
     /// @unofficial
     class SoundEffectID_t {
     public:
-        SoundEffectID_t(u32 soundID) : id(soundID) {}
+        SoundEffectID_t(u32 soundID) : mID(soundID) {}
 
         operator u32() const {
-            return id;
-        }
-
-        template<class T>
-        void playObjSound(T *obj, const mVec2_c &pos, int playerNo) const {
-            obj->startSound(id, dAudio::cvtSndObjctPos(pos), playerNo);
-        }
-
-        template<class T>
-        void playObjSound(T *obj, const mVec3_c &pos, int playerNo) const {
-            obj->startSound(id, dAudio::cvtSndObjctPos(pos), playerNo);
-        }
-
-        void playEmySound(const mVec2_c &pos, int playerNo) const {
-            playObjSound(dAudio::g_pSndObjEmy, pos, playerNo);
-        }
-
-        void playEmySound(const mVec3_c &pos, int playerNo) const {
-            playObjSound(dAudio::g_pSndObjEmy, pos, playerNo);
-        }
-
-        void playMapSound(const mVec2_c &pos, int playerNo) const {
-            playObjSound(dAudio::g_pSndObjMap, pos, playerNo);
-        }
-
-        void playMapSound(const mVec3_c &pos, int playerNo) const {
-            playObjSound(dAudio::g_pSndObjMap, pos, playerNo);
+            return mID;
         }
 
     private:
-        u32 id;
+        template<class T, class TVec>
+        void playObjSound(T *obj, const TVec &pos, int playerNo) const {
+            obj->startSound(mID, dAudio::cvtSndObjctPos(pos), playerNo);
+        }
+
+        template<class T, class TVec>
+        void holdObjSound(T *obj, int id, const TVec &pos, int playerNo) const {
+            obj->holdSound(mID, id, dAudio::cvtSndObjctPos(pos), playerNo);
+        }
+
+    public:
+        template<class TVec>
+        void playEmySound(const TVec &pos, int playerNo) const {
+            playObjSound(dAudio::g_pSndObjEmy, pos, playerNo);
+        }
+
+        template<class TVec>
+        void playMapSound(const TVec &pos, int playerNo) const {
+            playObjSound(dAudio::g_pSndObjMap, pos, playerNo);
+        }
+
+        template<class TVec>
+        void holdMapSound(int id, const TVec &pos, int playerNo) const {
+            holdObjSound(dAudio::g_pSndObjMap, id, pos, playerNo);
+        }
+
+    private:
+        u32 mID;
     };
 };

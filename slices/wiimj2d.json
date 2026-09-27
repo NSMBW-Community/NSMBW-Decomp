@@ -651,7 +651,6 @@
         },
         {
             "source": "dol/bases/d_a_ice.cpp",
-            "nonMatching": true,
             "memoryRanges": {
                 ".text": "0x114ec0-0x11cc70",
                 ".ctors": "0x1e0-0x1e4",

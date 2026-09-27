@@ -136,6 +136,7 @@ public:
     int getSakaType();
 
     u32 getFlags() const { return mFlags; }
+    float get_4c() const { return m_4c; }
 
     u32 isWallR() { return mFlags & FLAG_WALL_R; }
     u32 isWallL()  { return mFlags & FLAG_WALL_L; }

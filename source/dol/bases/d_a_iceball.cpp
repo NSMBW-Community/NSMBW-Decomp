@@ -232,7 +232,7 @@ void daIceBall_c::ccCallback_Iceball(dCc_c *self, dCc_c *other) {
     } else if (other->mCcData.mAttack == CC_ATTACK_KOOPA_FIRE) {
         if ((otherActor->mProfName == fProf::KOOPA_FIRE) && ((int)(otherActor->mParam & 0xF) == 1)) {
             dAudio::SndObjctCmnMap_c *map = dAudio::g_pSndObjMap;
-            dAudio::SoundEffectID_t(SE_OBJ_PNGN_ICEBALL_DISAPP).playObjSound(map, thisIceball->mPos, 0);
+            dAudio::SoundEffectID_t(SE_OBJ_PNGN_ICEBALL_DISAPP).playMapSound(thisIceball->mPos, 0);
         }
 
         thisIceball->setDeleteEffect();

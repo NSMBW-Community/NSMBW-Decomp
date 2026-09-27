@@ -54,6 +54,7 @@ public:
     void finalUpdate() override;
     void block_hit_init() override;
     bool isSpinLiftUpEnable() override { return canCarry(); }
+    void setSpinLiftUpActor(dActor_c *carryingActor) override { setCarry(carryingActor); }
     bool vf68(dBg_ctr_c *collider) override;
 
     virtual bool someCarryCheck(); ///< @unofficial
@@ -142,6 +143,7 @@ public:
     STATE_FUNC_DECLARE(daIce_c, Drop);
     STATE_FUNC_DECLARE(daIce_c, Melt_Normal);
 
+    float getSmth() { return m_5f4 - mCcSize.y * 0.5f; }
     bool isDestroy() { return m_60c != 0 || mpIceMng != nullptr && mpIceMng->mDestroyMode != dIceMng_c::DESTROY_NONE; }
 
     static void callBackFoot(dActor_c *self, dActor_c *other);
@@ -185,9 +187,12 @@ private:
     short mShakeAngle3;
     u8 mPad2[0x4];
     int m_5ec;
-    u8 mPad3[0x10];
+    short m_5f0;
+    float m_5f4;
+    int m_5f8;
+    float m_5fc;
     int m_600;
-    u8 mPad4[0x4];
+    int m_604;
     u32 m_608;
     int m_60c;
     float m_610;
