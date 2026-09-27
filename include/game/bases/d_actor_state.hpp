@@ -22,12 +22,15 @@ public:
     void dummy() {
         mStateMgr.initializeState();
         mStateMgr.finalizeState();
-        mStateMgr.getOldStateID();
     }
     /// @endcond
 
     bool isState(const sStateIDIf_c &state) const {
         return *mStateMgr.getStateID() == state;
+    }
+
+    const sStateIDIf_c &getOldStateID() const {
+        return *mStateMgr.getOldStateID();
     }
 };
 

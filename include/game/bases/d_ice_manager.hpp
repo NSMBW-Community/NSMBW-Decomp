@@ -39,16 +39,22 @@ public:
     void removeIce();
     bool checkInstantBreak(int);
     bool createIce(dIceInfo *info, int count);
+    void setNonMeltTime();
+    void stopMeltShake();
 
     void setDestroyMode(DESTROY_MODE_e mode) { mDestroyMode = mode; }
+    void set_14(int value) { m_14 = value; }
+    void set_2c(int value) { m_2c = value; }
 
     u8 mPad1[0x4];
     int m_04;
-    u8 mPad2[0x4];
+    int m_08;
     int mActive;
-    u8 mPad3[0x8];
+    u8 mPad3[0x4];
+    int m_14;
     DESTROY_MODE_e mDestroyMode;
-    u8 mPad4[0x14];
+    u8 mPad4[0x10];
+    int m_2c;
     int mPlrNo;
     u8 mPad5[0x38];
 };

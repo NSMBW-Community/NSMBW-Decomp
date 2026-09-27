@@ -237,6 +237,7 @@ public:
      */
     static void reset();
 
+    bool isLinked() const { return mIsLinked; }
     float getCollPosX() const { return mCollPos.x; }
     float getCollPosY() const { return mCollPos.y; }
 
