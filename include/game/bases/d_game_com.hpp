@@ -61,33 +61,30 @@ namespace dGameCom {
     ////////////////////
 
     /// @brief Displays the given action prompt to the given player.
-    /// @unofficial
     /// @param playerId The player to display the action prompt to.
     /// @param fukidashiAction The action prompt to display.
-    void showFukidashi(int playerId, int fukidashiAction);
+    void CreateFuKiDaShi(int playerId, int fukidashiAction);
 
     /// @brief Temporarily hides the given action prompt for the given player.
-    /// @unofficial
     /// @param playerId The player to hide the action prompt for.
     /// @param fukidashiAction The action prompt type to be hidden.
     /// @param param3 Unknown.
-    void hideFukidashiTemporarily(int playerId, int fukidashiAction, int param3);
+    void OnlyExitFuKiDaShi(int playerId, int fukidashiAction, int param3);
 
     /// @brief Hides the given action prompt for the given player for the rest of the current level.
-    /// @unofficial
     /// @param playerId The player to hide the action prompt for.
     /// @param fukidashiAction The action prompt type to be hidden.
     /// @param param3 Unknown.
-    void hideFukidashiForLevel(int playerId, int fukidashiAction, int param3);
+    void ExitFuKiDaShi(int playerId, int fukidashiAction, int param3);
 
     /// @brief Hides the given action prompt for the given player for the rest of the current session.
     /// @details The action prompt remains hidden until the player returns to the main menu.
     /// @unofficial
     /// @param playerId The player to hide the action prompt for.
     /// @param fukidashiAction The action prompt type to be hidden.
-    void hideFukidashiForSession(int playerId, int fukidashiAction);
+    void onFuKiDaShiFlag(int playerId, int fukidashiAction);
 
-    void FUN_800b37b0(int playerId, int fukidashiAction); ///< @unofficial
+    void offFuKiDaShiFlag(int playerId, int fukidashiAction);
 
     ////////////////
     // Other APIs //

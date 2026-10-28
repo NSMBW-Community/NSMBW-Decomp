@@ -259,7 +259,7 @@ void daWmDokanRoute_c::onCourseUnlock() {
             break;
 
         case STATE_ANIM_START:
-            dWmSeManager_c::m_pInstance->playSound(dWmSeManager_c::WM_SE_OBJ_CS_DOKAN, mPos, 1);
+            dWmSeManager_c::m_pInstance->sound(dWmSeManager_c::WM_SE_OBJ_CS_DOKAN, mPos, 1);
             mChrAnim[cobDokanRoute].setRate(GLOBAL_DATA.mNodeConfigs[nodeNum].mAnmRate);
             mStateTimer = GLOBAL_DATA.mNodeConfigs[nodeNum].mAnimDuration - GLOBAL_DATA.mNodeConfigs[nodeNum].mInitialDelay;
             mState = STATE_ANIM_PLAY;

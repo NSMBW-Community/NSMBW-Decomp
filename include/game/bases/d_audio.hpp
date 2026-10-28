@@ -20,7 +20,7 @@ public:
 
     NMSndObjectBase(OBJ_TYPE, nw4r::snd::SoundArchivePlayer &);
     virtual ~NMSndObjectBase();
-    virtual u8 vf1C(ulong, int);
+    virtual u8 getSamePrioSndCount(ulong, int);
 
     bool sendRemote(nw4r::snd::SoundHandle *p, unsigned long p1, unsigned long p2);
 
@@ -58,12 +58,12 @@ public:
             }
             u32 flag = SndAudioMgr::sInstance->get3DCtrlFlag(mParams[idx].GetId());
             if (~flag & 1) {
-                mParams[idx].SetVolume(m_64, 0);
+                mParams[idx].SetVolume(m_64.m_00, 0);
             } else if (
                 SndSceneMgr::sInstance->m_14 == 3 ||
                 (SndSceneMgr::sInstance->m_14 == 2 && SndSceneMgr::sInstance->m_10 == 3)
             ) {
-                mParams[idx].SetVolume(m_64, 0);
+                mParams[idx].SetVolume(m_64.m_00, 0);
             }
             if (~flag & 8) {
                 nw4r::snd::SoundArchive::SoundInfo info;
@@ -83,7 +83,7 @@ public:
     void calc() {
         for (int i = 0; i < T; i++) {
             if (GetPlayingSoundCount(i) > 0) {
-                mpSnd2dCalc->fn_8019ee20(m_64, mPos, 0);
+                mpSnd2dCalc->calcAmbParam(&m_64, mPos, 0);
                 processParams();
                 break;
             }
@@ -223,7 +223,7 @@ public:
         return nullptr;
     }
 
-    float m_64;
+    Snd2DCalc::Snd2DAmbParam m_64;
     int m_68;
     float m_6c;
     float m_70;
@@ -233,6 +233,82 @@ public:
 
 class SndObjctPly : public NMSndObject<4> {
 public:
+    /// @brief Player voice sound IDs
+    /// @ingroup constants
+    enum ESnd_C_Voice {
+        VOICE_PLAYER_JOIN,
+        VOICE_PJ_JUMP,
+        VOICE_PJ_SPIN_JUMP,
+        VOICE_PLAYER_DECIDE,
+        VOICE_CS_FALL_INTO_MAP,
+        VOICE_CS_COURSE_IN,
+        VOICE_CS_COURSE_IN_MULTI,
+        VOICE_CS_COURSE_IN_HARD,
+        VOICE_CS_COURSE_MISS,
+        VOICE_CS_JUMP,
+        VOICE_CS_DECIDE_JOIN,
+        VOICE_CS_ENCOUNT,
+        VOICE_CS_SHOVED,
+        VOICE_CS_CHASE_SHIP,
+        VOICE_CS_NOTICE_JR,
+        VOICE_GAME_OVER,
+        VOICE_CONTINUE,
+        VOICE_CONTINUE_COURSE,
+        VOICE_MOTIAGE,
+        VOICE_NAGERU,
+        VOICE_MOTIAGE_PLAYER,
+        VOICE_JUMP_2ND,
+        VOICE_JUMP_3RD,
+        VOICE_YOSHI_JUMP,
+        VOICE_JR_A_BATTLE_APP,
+        VOICE_WALL_KICK,
+        VOICE_PRPL_JUMP,
+        VOICE_PNGN_SLIDE,
+        VOICE_ROPE_CATCH,
+        VOICE_ROPE_RELEASE,
+        VOICE_ROPE_FALL,
+        VOICE_GOAL_POLE_CATCH,
+        VOICE_CLIFF_DIVE,
+        VOICE_CLIFF_UP,
+        VOICE_CLIFF_DOWN,
+        VOICE_CANNON_SHOT_S,
+        VOICE_CANNON_SHOT,
+        VOICE_BALLOON_HELP,
+        VOICE_BALLOON_HELP_2,
+        VOICE_HUKKATSU,
+        VOICE_DAMAGE_LAST,
+        VOICE_DAMAGE_LAST_2,
+        VOICE_TIMEUP,
+        VOICE_TIMEUP_MULTI,
+        VOICE_SCROLL_OUT,
+        VOICE_DAMAGE_FIRE,
+        VOICE_DAMAGE_FREEZE,
+        VOICE_DAMAGE_POISON,
+        VOICE_DAMAGE_ELEC,
+        VOICE_DAMAGE_EATEN,
+        VOICE_INTO_SANDPILLAR,
+        VOICE_QUAKE,
+        VOICE_STOMPED,
+        VOICE_HIP_ATTACKED,
+        VOICE_TYUKAN,
+        VOICE_GET_STAR,
+        VOICE_ITEM_COMPLETE,
+        VOICE_CLEAR_NORMAL,
+        VOICE_CLEAR_ANOTHER,
+        VOICE_CLEAR_MULTI,
+        VOICE_CLEAR_HELPED,
+        VOICE_CLEAR_BOSS,
+        VOICE_CLEAR_LAST_BOSS,
+        VOICE_SAVE_PRINCESS,
+        VOICE_CS_COMPLETE_DEMO,
+        VOICE_GET_PRIZE,
+        VOICE_FLOOR_FALL,
+        VOICE_NOTICE,
+        VOICE_MISS_PRINCESS,
+        VOICE_ACTIVE_TV,
+        VOICE_ACTIVE_RC
+    };
+
     void calculate(const nw4r::math::VEC2 &pos) {
         NMSndObject<4>::calc(pos);
     }
@@ -246,8 +322,8 @@ public:
 
     void stopPlyJumpSound();
     void startFootSound(ulong, float, ulong);
-    void fn_8019AAB0(ulong, int);
-    void fn_8019ABB0(ulong, int);
+    void startVoice(ESnd_C_Voice, ulong);
+    void holdVoice(ESnd_C_Voice, ulong);
 };
 
 class SndObjctEmy : public NMSndObject<4> {
@@ -287,11 +363,11 @@ namespace dAudio {
     void createSndObjctCmn();
     void deleteSndObjctCmn();
     void setNextScene(ProfileName prof, unsigned long bgmIndex);
-    void pauseOffGameWithReset(); ///< @unofficial
+    void pauseOffGameWithReset();
     void boot();
     void loadSceneSnd();
     bool isLoadedSceneSnd();
-    void FUN_8006a6a0(bool); ///< @unofficial
+    void changeScene(SndSceneMgr::ESnd_Scene scene);
     void setMainBgmNo(int);
     void setBgmMode(int);
     void updateBgmInfo();

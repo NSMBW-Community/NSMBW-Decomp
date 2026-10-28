@@ -152,6 +152,17 @@ public:
         QUAKE_MODE_0
     };
 
+    enum DemoDokanType_e {
+        DEMO_DOKAN_TYPE_0,
+        DEMO_DOKAN_TYPE_1,
+        DEMO_DOKAN_TYPE_2
+    };
+
+    enum LiftUpOpt_e {
+        LIFT_UP_OPT_0,
+        LIFT_UP_OPT_1
+    };
+
     struct GlobalData_t {
         float f1, f2, mSandSinkRate, f4, f5, f6, f7, f8;
         mVec3_c mPos[3];
@@ -269,8 +280,8 @@ public:
     virtual bool isNoDamage();
     virtual bool setDamage(dActor_c *, DamageType_e);
     virtual bool setForcedDamage(dActor_c *, DamageType_e);
-    virtual bool setJump(float jumpSpeed, float speedF, bool allowSteer, int keyMode, int jumpMode);
-    virtual bool _setJump(float jumpSpeed, float speedF, bool allowSteer, int keyMode, int jumpMode);
+    virtual bool setNormalJump(float jumpSpeed, float speedF, bool allowSteer, setJumpButton_e keyMode, setJumpSE_e jumpSE);
+    virtual bool setForcedJump(float jumpSpeed, float speedF, bool allowSteer, setJumpButton_e keyMode, setJumpSE_e jumpSE);
 
     virtual bool setHipAttackOnEnemy(mVec3_c *hitPos);
 
@@ -340,13 +351,13 @@ public:
     void calcJumpCount();
     float getJumpSpeed();
     void setJumpSpeed();
-    void fn_80127740(int jumpType, AnmBlend_e blendMode); ///< Jump animation set, some enum as first param @unofficial
-    void fn_80145fd0(int jumpType); ///< Jump voice, some enum as param @unofficial
+    void jumpSelect(setJumpSE_e jumpType, int blendMode); ///< Jump animation set, some enum as first param
+    void setJumpSE(setJumpSE_e jumpType); ///< Jump voice, some enum as param
     bool checkCarryThrow();
     void jumpExeTakeOff();
     void jumpExecAir();
-    void fn_801282d0(AnmBlend_e blendMode); ///< @unofficial
-    bool spinLiftUp(dActor_c *, bool); ///< @unofficial
+    void changeWalkFromJumpAction(AnmBlend_e blendMode);
+    bool checkCarry(dActor_c *, LiftUpOpt_e);
     void setJumpCommonBase();
     dAcPy_c *getCarryPlayer();
     bool isIceSlipAnmPlay();
@@ -554,7 +565,7 @@ public:
     void setShakeIce(float);
     mVec3_c getIceDrawPos();
 
-    void fn_801395a0(); ///< @unofficial
+    void setBeakIceJump();
     void fn_801416c0(PLAYER_POWERUP_e); ///< @unofficial
 
     bool setRideOffYoshiJump(daPlBase_c *yoshi);
@@ -585,7 +596,7 @@ public:
     bool setFireBallAction();
     bool checkFireJump();
 
-    bool fn_80146e40(float, float, bool); ///< @unofficial
+    bool setSpinJump(float, float, setJumpButton_e keyMode);
     int getSpinActionMode();
 
     bool setPropelAction();
@@ -635,7 +646,7 @@ public:
     void exeDemoOutDoor_WaitClose();
     void exeDemoOutDoor_WaitEnter();
 
-    bool initDemoDokanCannon(mVec3_c &pos, int cannonMode); ///< @unofficial
+    bool setDemoDokanCannon(mVec3_c &pos, DemoDokanType_e cannonMode);
     void endDemoDokanCannon(mVec3_c &pos);
     bool isDokanCannonIn();
     bool setCannonJump(float speedY, float speedF, int jumpType);
@@ -643,7 +654,7 @@ public:
     void setOffYoshiInGoal(daPlBase_c *yoshi);
 
     bool isDrawingCarryFukidashi();
-    void getCcBounds(sRangeDataF *bounds); ///< @unofficial
+    void getSpinLiftUpCcDat(sCcSizeF *bounds);
     bool cancelCarry(dActor_c *carriedActor);
 
     void setFireBallDamage(u8 type);
@@ -736,7 +747,7 @@ public:
     s8 mChangeType;
     s8 mChangeTimer;
     s8 m_67;
-    int m_68;
+    DemoDokanType_e mDokanMode;
     float mAmiRelated2;
     int mDoorSize;
     int m_74;

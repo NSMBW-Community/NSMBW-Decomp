@@ -4,14 +4,11 @@
 
 class dWmEffectManager_c {
 public:
-    /// @unofficial
-    enum EffectID_e {
+    enum CourseSelectEffectID_e {
         WM_EFFECT_ENEMY_DEATH = 0xe
     };
 
-    /// @unofficial
-    int playEffect(int, const mVec3_c *, const mAng3_c *, const mVec3_c *);
-    /// @unofficial
+    int createEffect(CourseSelectEffectID_e, const mVec3_c &, const mAng3_c *, const mVec3_c *);
     void endEffect(int);
 
     static dWmEffectManager_c *m_pInstance;

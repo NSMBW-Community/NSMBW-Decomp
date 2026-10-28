@@ -4,5 +4,10 @@
 
 class Snd2DCalc {
 public:
-    void fn_8019ee20(float &, nw4r::math::VEC2 &, unsigned long); ///< @unofficial
+    struct Snd2DAmbParam {
+        Snd2DAmbParam(float v) : m_00(v) {}
+        float m_00;
+    };
+
+    void calcAmbParam(Snd2DAmbParam *, const nw4r::math::VEC2 &, unsigned long);
 };

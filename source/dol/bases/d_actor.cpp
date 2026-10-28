@@ -488,8 +488,8 @@ bool dActor_c::carryFukidashiCheck(int fukidashiAction, mVec2_c fukidashiTrigger
         if (player != nullptr) {
             bool canDrawFukidashi = player->isDrawingCarryFukidashi();
 
-            sRangeDataF playerBoundBox;
-            player->getCcBounds(&playerBoundBox);
+            sCcSizeF playerBoundBox;
+            player->getSpinLiftUpCcDat(&playerBoundBox);
             mVec3_c playerPos(
                 dScStage_c::getLoopPosX(playerBoundBox.mOffset.x + player->mPos.x),
                 playerBoundBox.mOffset.y + player->mPos.y,
@@ -500,12 +500,12 @@ bool dActor_c::carryFukidashiCheck(int fukidashiAction, mVec2_c fukidashiTrigger
             mVec3_c maxPlayerPos(playerPos.x + playerBoundBox.mSize.x + 2.0f, playerPos.y + playerBoundBox.mSize.y, playerPos.z);
 
             if (!dfukidashiManager_c::m_instance->mInfos[mCarryFukidashiPlayerNo].mVisible) {
-                dGameCom::showFukidashi(mCarryFukidashiPlayerNo, fukidashiAction);
+                dGameCom::CreateFuKiDaShi(mCarryFukidashiPlayerNo, fukidashiAction);
             }
 
             bool overlap = dGameCom::checkRectangleOverlap(&minTriggerPos, &maxTriggerPos, &minPlayerPos, &maxPlayerPos, 0.0f);
             if ((!canDrawFukidashi) || (!overlap)) {
-                dGameCom::hideFukidashiTemporarily(mCarryFukidashiPlayerNo, fukidashiAction, 0);
+                dGameCom::OnlyExitFuKiDaShi(mCarryFukidashiPlayerNo, fukidashiAction, 0);
                 mCarryFukidashiPlayerNo = -1;
             }
         }
@@ -515,8 +515,8 @@ bool dActor_c::carryFukidashiCheck(int fukidashiAction, mVec2_c fukidashiTrigger
         if (player != nullptr) {
             bool canDrawFukidashi = player->isDrawingCarryFukidashi();
 
-            sRangeDataF playerBoundBox;
-            player->getCcBounds(&playerBoundBox);
+            sCcSizeF playerBoundBox;
+            player->getSpinLiftUpCcDat(&playerBoundBox);
             mVec3_c playerPos(
                 dScStage_c::getLoopPosX(playerBoundBox.mOffset.x + player->mPos.x),
                 playerBoundBox.mOffset.y + player->mPos.y,
@@ -539,10 +539,10 @@ bool dActor_c::carryFukidashiCheck(int fukidashiAction, mVec2_c fukidashiTrigger
 void dActor_c::carryFukidashiCancel(int fukidashiAction, int playerId) {
     for (int i = 0; i < 4; i++) {
         if (i == playerId) {
-            dGameCom::hideFukidashiForLevel(i, fukidashiAction, 0);
-            dGameCom::hideFukidashiForSession(i, fukidashiAction);
+            dGameCom::ExitFuKiDaShi(i, fukidashiAction, 0);
+            dGameCom::onFuKiDaShiFlag(i, fukidashiAction);
         } else {
-            dGameCom::hideFukidashiTemporarily(i, fukidashiAction, 0);
+            dGameCom::OnlyExitFuKiDaShi(i, fukidashiAction, 0);
         }
     }
     mCarryFukidashiPlayerNo = -1;

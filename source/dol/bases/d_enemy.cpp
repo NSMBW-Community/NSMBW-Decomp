@@ -419,7 +419,7 @@ bool dEn_c::CeilCheck(float y, dCc_c *cc) {
 
 bool dEn_c::carry_check(dActor_c *actor) {
     dAcPy_c *pl = (dAcPy_c *) actor;
-    if (pl->spinLiftUp(this, true)) {
+    if (pl->checkCarry(this, dAcPy_c::LIFT_UP_OPT_1)) {
         mPlayerNo = actor->getPlrNo();
         return true;
     }
@@ -514,7 +514,7 @@ void dEn_c::SpinFumiScoreSet(dActor_c *actor) {
 }
 
 void dEn_c::PlayerFumiJump(dActor_c *actor, float jumpSpeed) {
-    ((daPlBase_c *) actor)->setJump(jumpSpeed, actor->mSpeedF, true, 0, 2);
+    ((daPlBase_c *) actor)->setNormalJump(jumpSpeed, actor->mSpeedF, true, daPlBase_c::JUMP_BUTTON_NONE, daPlBase_c::JUMP_SE_2);
     dEnemyMng_c::m_instance->m_138 = 1;
 }
 
@@ -936,7 +936,7 @@ void dEn_c::slipBound(dActor_c *actor) {
     daPlBase_c *pl = (daPlBase_c *) actor;
 
     u8 idx = !(pl->mPos.x >= mPos.x);
-    pl->setJump(3.0f, cs_jump_xspeed[idx], true, 0, 0);
+    pl->setNormalJump(3.0f, cs_jump_xspeed[idx], true, daPlBase_c::JUMP_BUTTON_NONE, daPlBase_c::JUMP_SE_0);
 
     int plrNo = pl->getPlrNo();
     mNoHitPlayer.mTimer[plrNo] = 3;

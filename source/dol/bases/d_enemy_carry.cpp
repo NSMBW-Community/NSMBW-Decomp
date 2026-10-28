@@ -4,17 +4,17 @@
 STATE_VIRTUAL_DEFINE(dEnemyCarry_c, Carry);
 STATE_VIRTUAL_DEFINE(dEnemyCarry_c, Throw);
 
-const float dEnemyCarry_c::smc_DIR_MODE0[2] = {2.5f, -2.5f};
-const float dEnemyCarry_c::smc_DIR_MODE1[2] = {3.0f, -3.0f};
+const float dEnemyCarry_c::l_base_slid_spdX[2] = {2.5f, -2.5f};
+const float dEnemyCarry_c::l_base_slid2_spdX[2] = {3.0f, -3.0f};
 
 dEnemyCarry_c::dEnemyCarry_c() {}
 
 void dEnemyCarry_c::setThrowSpeed(dActor_c *actor) {
     float endSpeed;
     if (mThrowSpeed == 0) {
-        endSpeed = smc_DIR_MODE0[mDirection];
+        endSpeed = l_base_slid_spdX[mDirection];
     } else {
-        endSpeed = smc_DIR_MODE1[mDirection];
+        endSpeed = l_base_slid2_spdX[mDirection];
     }
     if (mDirection == (actor->mSpeed.x < 0.0f)) {
         endSpeed += actor->mSpeed.x * 0.5f;

@@ -3,10 +3,22 @@
 
 class SndSceneMgr {
 public:
+    enum ESnd_GameState {
+        GAME_STATE_0,
+        GAME_STATE_1
+    };
+
+    enum ESnd_GameFx {};
+
+    enum ESnd_Scene {
+        SCENE_0,
+        SCENE_1
+    };
+
     void moveMissFin();
-    void FUN_8019d5b0(u8); ///< @unofficial
-    void fn_8019be60(int); ///< @unofficial
-    void fn_8019bd90(int); ///< @unofficial
+    void setFxMode(ESnd_GameFx fx);
+    void onGameStateBit(ESnd_GameState state);
+    void offGameStateBit(ESnd_GameState state);
 
     u8 mPad1[0x10];
     int m_10;

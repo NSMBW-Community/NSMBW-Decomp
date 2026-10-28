@@ -60,7 +60,7 @@ void dNext_c::setOwnNextData(u8 fileIdx, u8 nextGoto) {
     }
 }
 
-bool dNext_c::isNextDifferent(u8 fileIdx, u8 nextGoto) {
+bool dNext_c::isDifferNextDataSet(u8 fileIdx, u8 nextGoto) {
     if (mNextDataSet) {
         dCdFile_c *file = dCd_c::m_instance->getFileP(fileIdx);
         sNextGotoData *data = file->getNextGotoP(nextGoto);
@@ -181,7 +181,7 @@ void dNext_c::changeScene() {
     dAudio::setMainBgmNo(bgm);
     u8 mode = file->getAreaBgmMode(data->mArea);
     dAudio::setBgmMode(mode & 0x0F);
-    SndSceneMgr::sInstance->FUN_8019d5b0(mode >> 4);
+    SndSceneMgr::sInstance->setFxMode((SndSceneMgr::ESnd_GameFx) (mode >> 4));
 
     u32 param = ACTOR_PARAM_GEN(dScStage_c, File, mNextGotoData.mDestFile);
     param |= ACTOR_PARAM_GEN(dScStage_c, NextGotoID, mNextGotoData.mDestID);

@@ -1,22 +1,15 @@
 #pragma once
 
+#include <game/bases/d_wm_bgm_sync.hpp>
 #include <game/bases/d_wm_demo_actor.hpp>
 #include <game/bases/d_wm_en_path.hpp>
-#include <game/bases/d_wm_bgm_sync.hpp>
+#include <game/bases/d_wm_lib.hpp>
+#include <game/bases/d_wm_se_manager.hpp>
 
 /// @ingroup bases
 /// @paramtable
 class dWmEnemy_c : public dWmDemoActor_c {
 public:
-    /// @unofficial
-    struct JumpData_s {
-        int m_00;
-        float mJumpSpeed;
-        short mFrames;
-        float mStartScale;
-        float mEndScale;
-    };
-
     dWmEnemy_c() {}
     ~dWmEnemy_c();
 
@@ -50,7 +43,7 @@ public:
     virtual int vfc4(int pointNo) { return pointNo; } ///< @unofficial
     virtual void calc();
     virtual void calculateEffect();
-    virtual int getEnemyWalkSeID();
+    virtual dWmSeManager_c::CourseSelectSeID_e getEnemyWalkSeID();
     virtual bool IsPlayerComing() { return IsPlayerComingCore(); }
     virtual bool IsRandomWalk();
     virtual bool IsRandomMove() { return true; }
@@ -75,7 +68,7 @@ public:
     void deleteEffect();
     bool csCommand(int id, bool b); ///< @unofficial
     bool isMainCast();
-    void demoJump(const mVec3_c &pos, JumpData_s &jumpData, float scale); ///< @unofficial
+    void initDemoLoseBase(const mVec3_c &pos, const dWmLib::JumpDemo_Param_t *jumpData, float scale);
     bool isThroughPoint(int);
     bool isDead();
     void ModelCalc(m3d::mdl_c *mdl, float yOffset, float shadowYOffset, float shadowScale);

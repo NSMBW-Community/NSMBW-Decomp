@@ -22,8 +22,7 @@
 /// @ingroup bases
 class dCsvData_c {
 public:
-    /// @unofficial
-    enum PointFlag_e {
+    enum Flag1_e {
         POINT_URA = BIT_FLAG(0),
         POINT_STOP = BIT_FLAG(1),
         POINT_LINK1 = BIT_FLAG(2),
@@ -57,8 +56,7 @@ public:
         POINT_SCROLL_A = BIT_FLAG(31)
     };
 
-    /// @unofficial
-    enum EnemyFlag_e {
+    enum Flag2_e {
         ENEMY_KURIBO1 = BIT_FLAG(1),
         ENEMY_KURIBO2 = BIT_FLAG(2),
         ENEMY_PUKU1 = BIT_FLAG(3),
@@ -166,8 +164,8 @@ public:
     int GetOpenPointNum(bool regularExit, int idx) const; ///< Returns the number of points that are opened from a regular or secret exit from this point.
     const char *GetOpenRouteName(bool regularExit, int idx, int openRouteIdx) const; ///< Returns the name of a route that is opened from a regular or secret exit from this point.
     int GetOpenRouteNum(bool regularExit, int idx) const; ///< Returns the number of routes that are opened from a regular or secret exit from this point.
-    u32 GetPointFlags(int idx, PointFlag_e flags) const; ///< Returns the flags ANDed with @p flags. @unofficial
-    u32 GetEnemyPointFlags(int idx, EnemyFlag_e flags) const; ///< Returns the enemy flags ANDed with @p flags. @unofficial
+    u32 CheckPointFlag(int idx, Flag1_e flags); ///< Returns the flags ANDed with @p flags.
+    u32 CheckPointFlag2(int idx, Flag2_e flags); ///< Returns the enemy flags ANDed with @p flags.
     u32 GetPointParam(int idx); ///< Returns the parameter value for this point.
 
     const char *GetRouteName(int idx); ///< Returns the name of a route at the specified index.

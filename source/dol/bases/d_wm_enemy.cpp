@@ -1,6 +1,5 @@
 #include <game/bases/d_wm_enemy.hpp>
 #include <game/bases/d_wm_lib.hpp>
-#include <game/bases/d_wm_se_manager.hpp>
 #include <game/bases/d_wm_effect_manager.hpp>
 #include <game/bases/d_a_wm_map.hpp>
 #include <game/bases/d_a_wm_player.hpp>
@@ -251,7 +250,7 @@ bool dWmEnemy_c::doWalk() {
         } else {
             if (mSeID < 0) {
                 dWmSeManager_c *seManager = dWmSeManager_c::m_pInstance;
-                mSeID = seManager->playSound(getEnemyWalkSeID(), 0, mPos, ACTOR_PARAM(enemyNo) + 1, 1);
+                mSeID = seManager->sound(getEnemyWalkSeID(), 0, mPos, ACTOR_PARAM(enemyNo) + 1, 1);
             }
             setWalkAnm(getWalkAnmRate());
             calcSpeed();
@@ -421,10 +420,10 @@ bool dWmEnemy_c::procDemoAnger() {
 
 void dWmEnemy_c::initDemoLose() {}
 
-void dWmEnemy_c::demoJump(const mVec3_c &pos, JumpData_s &jumpData, float scale) {
+void dWmEnemy_c::initDemoLoseBase(const mVec3_c &pos, const dWmLib::JumpDemo_Param_t *jumpData, float scale) {
     _initDemoJumpBase(pos, 0,
-        jumpData.mFrames, jumpData.mJumpSpeed,
-        jumpData.mStartScale * scale, jumpData.mEndScale * scale,
+        jumpData->mFrames, jumpData->mJumpSpeed,
+        jumpData->mStartScale * scale, jumpData->mEndScale * scale,
         mVec3_c::Ey
     );
 }
@@ -444,8 +443,8 @@ bool dWmEnemy_c::procDemoLoseBase(short angle) {
     bool res = false;
     rotDirectionX(angle, false);
     if (_procDemoJumpBase()) {
-        dWmEffectManager_c::m_pInstance->playEffect(dWmEffectManager_c::WM_EFFECT_ENEMY_DEATH, &mPos, nullptr, nullptr);
-        dWmSeManager_c::m_pInstance->playSound(dWmSeManager_c::WM_SE_EMY_CS_ENEMY_BYE, mPos, 1);
+        dWmEffectManager_c::m_pInstance->createEffect(dWmEffectManager_c::WM_EFFECT_ENEMY_DEATH, mPos, nullptr, nullptr);
+        dWmSeManager_c::m_pInstance->sound(dWmSeManager_c::WM_SE_EMY_CS_ENEMY_BYE, mPos, 1);
         mPos.y -= 10000.0f;
         res = true;
         procDemoLoseEnd();
@@ -513,7 +512,7 @@ void dWmEnemy_c::deleteEffect() {
     mEfID = -1;
 }
 
-int dWmEnemy_c::getEnemyWalkSeID() {
+dWmSeManager_c::CourseSelectSeID_e dWmEnemy_c::getEnemyWalkSeID() {
     switch (dScWMap_c::m_WorldNo) {
         case WORLD_1:
             return dWmSeManager_c::WM_SE_EMY_CS_MOVE_W1_KURIBO;

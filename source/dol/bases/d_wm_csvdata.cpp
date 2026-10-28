@@ -737,11 +737,11 @@ int dCsvData_c::GetOpenRouteNum(bool regularExit, int idx) const {
     }
 }
 
-u32 dCsvData_c::GetPointFlags(int idx, PointFlag_e flags) const {
+u32 dCsvData_c::CheckPointFlag(int idx, Flag1_e flags) {
     return mPoints[idx].mFlags & flags;
 }
 
-u32 dCsvData_c::GetEnemyPointFlags(int idx, EnemyFlag_e flags) const {
+u32 dCsvData_c::CheckPointFlag2(int idx, Flag2_e flags) {
     return mPoints[idx].mFlagsEnemy & flags;
 }
 

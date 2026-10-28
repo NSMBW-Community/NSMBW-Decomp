@@ -36,7 +36,7 @@ public:
     /// @param nextGoto The ID of the entrance to compare to.
     /// @return Whether the currently saved entrance is different from the given one.
     /// @unofficial
-    bool isNextDifferent(u8 fileIdx, u8 nextGoto);
+    bool isDifferNextDataSet(u8 fileIdx, u8 nextGoto);
 
     /// @brief Search for a next entrance at the given coordinates in the given file.
     /// @param fileIdx The file to search in.

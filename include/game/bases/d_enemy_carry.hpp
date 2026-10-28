@@ -23,6 +23,6 @@ protected:
     bool mWasDropped; ///< Whether the enemy was dropped or thrown. If dropped, it will not collide with other entities.
     u8 mThrowSpeed; ///< 0 => X speed = 2.5, 1 => X speed = 3.0
 
-    static const float smc_DIR_MODE0[]; ///< @unofficial
-    static const float smc_DIR_MODE1[]; ///< @unofficial
+    static const float l_base_slid_spdX[];
+    static const float l_base_slid2_spdX[];
 };

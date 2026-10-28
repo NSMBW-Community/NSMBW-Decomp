@@ -10,10 +10,10 @@
 
 dWmDemoActor_c::dWmDemoActor_c() {}
 
-dWmDemoActor_c *dWmDemoActor_c::GetChildDemoActor(dBaseActor_c *prev, dWmDemoActor_c *&next) {
+dWmDemoActor_c *dWmDemoActor_c::searchDemoActorAll(dWmActor_c *prev, dWmDemoActor_c **next) {
     dBaseActor_c *actor = (dBaseActor_c *) fManager_c::searchBaseByGroupType(fBase_c::ACTOR, prev);
     if (actor == nullptr) {
-        next = nullptr;
+        *next = nullptr;
         return nullptr;
     }
     switch (actor->GetActorType()) {
@@ -21,10 +21,10 @@ dWmDemoActor_c *dWmDemoActor_c::GetChildDemoActor(dBaseActor_c *prev, dWmDemoAct
         case dBaseActor_c::ACTOR_MAP_OBJECT:
         case dBaseActor_c::ACTOR_MAP_ENEMY:
         case dBaseActor_c::ACTOR_MAP_PLAYER:
-            next = (dWmDemoActor_c *) actor;
+            *next = (dWmDemoActor_c *) actor;
             break;
         default:
-            next = nullptr;
+            *next = nullptr;
             break;
     }
     return (dWmDemoActor_c *)actor;
@@ -274,7 +274,7 @@ float dWmDemoActor_c::GetBgPosY(const mVec3_c &startPos, const mVec3_c &targetPo
     return yPos;
 }
 
-void dWmDemoActor_c::CsSPosSimple(int directionType, float yTarget) {
+void dWmDemoActor_c::CrrPosSimple(int directionType, float yTarget) {
     switch (directionType) {
         case dWmLib::DIR3D_FRONT:
         case dWmLib::DIR3D_BACK:
@@ -308,7 +308,7 @@ void dWmDemoActor_c::adjustHeightBase(const mVec3_c &startPos, const mVec3_c &ta
     if (directionType < 0) {
         directionType = dWmLib::getPointDir(startPos, targetPos);
     }
-    CsSPosSimple(directionType, GetBgPosY(startPos, targetPos, directionType));
+    CrrPosSimple(directionType, GetBgPosY(startPos, targetPos, directionType));
 }
 
 bool dWmDemoActor_c::isCutsceneCommandPlaying(const int *cmdList, int cmdCount) {

@@ -1,11 +1,11 @@
 #pragma once
 
+#include <game/mLib/m_3d.hpp>
 #include <game/mLib/m_vec.hpp>
 
 class dWmSeManager_c {
 public:
-    /// @unofficial
-    enum EffectID_e {
+    enum CourseSelectSeID_e {
         WM_SE_OBJ_CS_DOKAN = 45,
         WM_SE_OBJ_CS_DOOR_OPEN_PEACH = 49,
         WM_SE_OBJ_CS_DOOR_CLOSE_PEACH = 50,
@@ -22,9 +22,8 @@ public:
         WM_SE_INVALID = 121
     };
 
-    /// @unofficial
-    int playSound(int id, int, const mVec3_c &pos, int, int);
-    int playSound(int id, const mVec3_c &pos, int);
+    int sound(CourseSelectSeID_e id, const mVec3_c &pos, ulong);
+    int sound(CourseSelectSeID_e id, int, const mVec3_c &pos, int, ulong); /// @unofficial
     void endSound(int id);
 
     static dWmSeManager_c *m_pInstance;

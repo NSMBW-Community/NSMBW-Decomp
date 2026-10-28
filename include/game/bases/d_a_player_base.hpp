@@ -5,6 +5,7 @@
 #include <game/bases/d_a_player_hio.hpp>
 #include <game/bases/d_ac_py_key.hpp>
 #include <game/bases/d_cc.hpp>
+#include <game/bases/d_player_anim_label.hpp>
 #include <game/bases/d_player_model_manager.hpp>
 #include <game/bases/d_quake.hpp>
 #include <game/mLib/m_3d.hpp>
@@ -73,6 +74,30 @@ public:
         BG_PRESS_R,
         BG_PRESS_L,
         BG_PRESS_COUNT
+    };
+
+    enum FadeType_e {
+        FADE_TYPE_0,
+        FADE_TYPE_1,
+        FADE_TYPE_2,
+        FADE_TYPE_3
+    };
+
+    enum setJumpButton_e {
+        JUMP_BUTTON_NONE,
+        JUMP_BUTTON_FORCE_PRESSED,
+        JUMP_BUTTON_FORCE_NOT_PRESSED
+    };
+
+    enum setJumpSE_e {
+        JUMP_SE_0,
+        JUMP_SE_1,
+        JUMP_SE_2
+    };
+
+    enum SoundOffCheck_e {
+        SOUND_OFF_CHECK_YES,
+        SOUND_OFF_CHECK_NO
     };
 
     /// @unofficial
@@ -181,17 +206,6 @@ public:
         KANI_ARG_WALK_FORCE, ///< Standing on the cliff, disallow immediately hanging from it by holding down.
         KANI_ARG_HANG_UP_VINE, ///< Climbing onto the cliff from a vine.
         KANI_ARG_HANG_HAND ///< Catching the cliff from below, hang from it.
-    };
-
-    /// @brief Arguments for transitioning to the @ref StateID_AnimePlay "animation" state.
-    /// @unofficial
-    enum AnimePlayArg_e {
-        DEMO_ANIME_NORMAL,
-        DEMO_ANIME_BOSS_SET_UP,
-        DEMO_ANIME_BOSS_GLAD,
-        DEMO_ANIME_BOSS_ATTENTION,
-        DEMO_ANIME_BOSS_KEY_GET,
-        DEMO_ANIME_BOSS_GLAD_2
     };
 
     /// @brief Arguments for transitioning to the @ref StateID_DemoWait "demo wait" state.
@@ -543,11 +557,11 @@ public:
 
     class jmpInf_c {
     public:
-        jmpInf_c(float speed, int jumpMode, AnmBlend_e blendMode) : mSpeed(speed), mJumpMode(jumpMode), mBlendMode(blendMode) {}
+        jmpInf_c(float speed, setJumpSE_e jumpMode, AnmBlend_e blendMode) : mSpeed(speed), mJumpMode(jumpMode), mBlendMode(blendMode) {}
         virtual ~jmpInf_c() {};
 
         float mSpeed;
-        int mJumpMode;
+        setJumpSE_e mJumpMode;
         AnmBlend_e mBlendMode;
     };
 
@@ -709,18 +723,16 @@ public:
 
     /**
      * @brief Starts a jump action with the given parameters.
-     * @unofficial
      * @details Does not start a jump if the player is in a climbing state.
      * @param jumpSpeed The vertical speed of the jump.
      * @param speedF The @ref mSpeedF "forward speed".
      * @param allowSteer Whether the player can steer in midair.
-     * @param keyMode The input settings for the jump. (0: none, 1: force jump pressed, 2: force jump not pressed)
-     * @param jumpMode The type of jump to perform. [TODO: document the jump modes]
+     * @param keyMode The input settings for the jump.
+     * @param jumpSE The jump sound effect.
      */
-    virtual bool setJump(float jumpSpeed, float speedF, bool allowSteer, int keyMode, int jumpMode);
+    virtual bool setNormalJump(float jumpSpeed, float speedF, bool allowSteer, setJumpButton_e keyMode, setJumpSE_e jumpSE);
     /// @brief Starts a jump action unconditionally. See setJump().
-    /// @unofficial
-    virtual bool _setJump(float jumpSpeed, float speedF, bool allowSteer, int keyMode, int jumpMode);
+    virtual bool setForcedJump(float jumpSpeed, float speedF, bool allowSteer, setJumpButton_e keyMode, setJumpSE_e jumpSE);
     virtual bool setWaitJump(float jumpSpeed);
 
     virtual bool setHipAttackOnEnemy(mVec3_c *);
@@ -738,8 +750,8 @@ public:
     virtual void setZPositionDirect(float);
     virtual void offZPosSetNone();
 
-    virtual void startPlayerVoice(int, int); ///< @unofficial
-    virtual void holdPlayerVoice(int, int); ///< @unofficial
+    virtual void startVoicePlayer(SndObjctPly::ESnd_C_Voice voice, SoundOffCheck_e soundOffCheck);
+    virtual void holdVoicePlayer(SndObjctPly::ESnd_C_Voice voice, SoundOffCheck_e soundOffCheck);
 
     virtual void startQuakeShock(dQuake_c::TYPE_SHOCK_e);
     virtual void startPatternRumble(const char *pattern);
@@ -806,7 +818,7 @@ public:
     bool setDelayHelpJump();
     bool setCrouchJump();
     bool checkJumpTrigger();
-    bool startJump(AnmBlend_e blendMode, int jumpType); ///< @unofficial
+    bool checkJump(int blendMode, setJumpSE_e jumpType);
 
     void setStampReduction();
     void setStampPlayerJump(bool b, float yOffset);
@@ -883,7 +895,7 @@ public:
     bool isControlDemoAnm(int);
     void setControlDemoAnm(int);
     bool isControlDemoWalk();
-    void setControlDemoCutscene(AnimePlayArg_e animID); ///< @unofficial
+    void setControlDemoBossAnm(dPyAnmLabel::DemoAnm_e animID);
     void setControlDemoKinopioWalk();
     void setControlDemoKinopioSwim();
     void setControlDemoEndingDance();
@@ -906,7 +918,7 @@ public:
     BOOL demo_dokan_move_y(float, float);
     void setObjDokanIn(dBg_ctr_c *, mVec3_c &, int);
     void setExitRailDokan();
-    void setDemoOutNextGotoBlock(int nextGotoID, int delay, int fadeType); ///< @unofficial
+    void changeSceneNextGotoBlock(int nextGotoID, int delay, FadeType_e fadeType);
 
     void stopGoalOther();
     void playGoalOther();
@@ -951,11 +963,11 @@ public:
     void startFootSoundPlayer(unsigned long);
     void setFootSound();
     void setSlipSE();
-    bool suppressSound(int suppressionMode); ///< @unofficial
-    void startSound(ulong soundID, bool); ///< @unofficial
-    void startSound(ulong soundID, short, bool); ///< @unofficial
-    void holdSound(ulong soundID, bool); ///< @unofficial
-    void holdSound(ulong soundID, short, bool); ///< @unofficial
+    bool isSoundOff(SoundOffCheck_e soundOffCheck);
+    void startSoundPlayer(ulong soundID, SoundOffCheck_e soundOffCheck);
+    void startSoundPlayer(ulong soundID, short, SoundOffCheck_e soundOffCheck);
+    void holdSoundPlayer(ulong soundID, SoundOffCheck_e soundOffCheck);
+    void holdSoundPlayer(ulong soundID, short, SoundOffCheck_e soundOffCheck);
 
     void initCollision(sCcDatNewF *dat1, sCcDatNewF *dat2);
     void entryCollision();
@@ -996,7 +1008,7 @@ public:
     bool isEnablePressUD();
     bool isEnablePressLR();
     void checkDisplayOutDead();
-    void calcDispSideLimit(); ///< @unofficial
+    void setInitSideeLemitMode();
     void setBgPressReq(dActor_c *, BgPress_e);
 
     bool isDispOutCheckOn();
@@ -1167,7 +1179,7 @@ public:
     /// due to colliding with a ceiling.
     int mJumpDaiFallTimer;
 
-    AnimePlayArg_e mDemoAnime;
+    dPyAnmLabel::DemoAnm_e mDemoAnime;
 
     int mIsBeingDeleted;
 

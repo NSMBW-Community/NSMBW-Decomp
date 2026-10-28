@@ -48,12 +48,12 @@ public:
     void DrawShadow(bool param1);
 
     float GetBgPosY(const mVec3_c &startPos, const mVec3_c &targetPos, int directionType);
-    void CsSPosSimple(int directionType, float yTarget);
+    void CrrPosSimple(int directionType, float yTarget);
     void clearSpeedAll();
     void adjustHeightBase(const mVec3_c &startPos, const mVec3_c &targetPos, int directionType);
     bool isCutsceneCommandPlaying(const int *cmdList, int cmdCount); ///< @unofficial
 
-    static dWmDemoActor_c *GetChildDemoActor(dBaseActor_c *prev, dWmDemoActor_c *&next); ///< @unofficial
+    static dWmDemoActor_c *searchDemoActorAll(dWmActor_c *prev, dWmDemoActor_c **next);
 
 protected:
     bool m_00;

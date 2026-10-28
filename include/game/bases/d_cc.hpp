@@ -77,15 +77,14 @@ enum CC_ATTACK_e {
 
 class dCc_c;
 
-/// @unofficial
-struct sCcDatNew {
+struct sCcSizeF {
     mVec2_POD_c mOffset; ///< The offset of the collider.
 
     ///< @brief The size of the collider.
     ///< Note: This is the distance from the center to the edge, so half the actual size.
     mVec2_POD_c mSize;
 
-    void set(const sCcDatNew &other) {
+    void set(const sCcSizeF &other) {
         mOffset = other.mOffset;
         mSize = other.mSize;
     }
@@ -93,10 +92,9 @@ struct sCcDatNew {
 
 /**
 * @brief A structure that contains information about a collider.
-* @unofficial
 */
 struct sCcDatNewF {
-    sCcDatNew mBase; ///< Base collider data.
+    sCcSizeF mBase; ///< Base collider data.
 
     u8 mKind; ///< The type of this collider. See CC_KIND_e.
     u8 mAttack; ///< The attack type of this collider. See CC_ATTACK_e.

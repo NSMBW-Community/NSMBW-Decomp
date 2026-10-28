@@ -179,7 +179,7 @@ sPhase_c::METHOD_RESULT_e myReadArc_Sound(void *) {
     }
     s_dvdcb->destroy();
     s_dvdcb = nullptr;
-    dAudio::FUN_8006a6a0(true);
+    dAudio::changeScene(SndSceneMgr::SCENE_1);
     dAudio::loadSceneSnd();
     return sPhase_c::OK;
 }
@@ -277,8 +277,7 @@ sPhase_c::METHOD_RESULT_e myReadArc_MakeControllerInformation(void *selfPtr) {
     return sPhase_c::OK;
 }
 
-/// @unofficial
-sPhase_c::METHOD_RESULT_e myCreate_ControllerInformationReady(void *selfPtr) {
+sPhase_c::METHOD_RESULT_e myReadArc_ReadControllerInformationLayout(void *selfPtr) {
     dScBoot_c *self = (dScBoot_c *) selfPtr;
     if (!self->mpControllerInformation->mIsCreated) {
         return sPhase_c::WAIT;
@@ -307,7 +306,7 @@ sPhase_c::phaseMethod myBackGround_PhaseMethod[] = {
     myReadArc_ExtensionMng,
     myReadArc_PhaseHbm_0,
     myReadArc_MakeControllerInformation,
-    myCreate_ControllerInformationReady,
+    myReadArc_ReadControllerInformationLayout,
     myReadArc_BootSound,
     myReadArc_Sound,
     myReadArc_resSndWait,

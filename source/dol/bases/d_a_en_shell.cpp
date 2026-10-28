@@ -354,7 +354,7 @@ void daEnShell_c::FumiJumpSet(dActor_c *actor) {
     if (mIsMugenCombo && std::fabs(speedF) < 1.0f) {
         speedF = 0.0f;
     }
-    ((daPlBase_c *) actor)->setJump(jumpSpeed, speedF, 1, 0, 2);
+    ((daPlBase_c *) actor)->setNormalJump(jumpSpeed, speedF, 1, daPlBase_c::JUMP_BUTTON_NONE, daPlBase_c::JUMP_SE_2);
     dEnemyMng_c::m_instance->m_138 = 1;
 }
 
@@ -551,7 +551,7 @@ bool daEnShell_c::hitCallback_YoshiHipAttk(dCc_c *self, dCc_c *other) {
     if (isFumiInvalid()) {
         float speedF = 0.0f;
         float jumpSpeed = 4.5f;
-        yoshi->setJump(jumpSpeed, speedF, 1, 0, 2);
+        yoshi->setNormalJump(jumpSpeed, speedF, 1, daPlBase_c::JUMP_BUTTON_NONE, daPlBase_c::JUMP_SE_2);
         yoshifumistepSE(yoshi);
         mNoHitPlayer.mTimer[yoshi->getPlrNo()] = 5;
     } else {

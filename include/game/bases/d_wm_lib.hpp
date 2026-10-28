@@ -5,6 +5,15 @@
 #include <game/bases/d_wm_csvdata.hpp>
 
 namespace dWmLib {
+    struct JumpDemo_Param_t {
+        int m_00;
+        float mJumpSpeed;
+        short mFrames;
+        float mStartScale;
+        float mEndScale;
+    };
+
+    /// @unofficial
     enum Direction3D_e {
         DIR3D_UP,
         DIR3D_DOWN,

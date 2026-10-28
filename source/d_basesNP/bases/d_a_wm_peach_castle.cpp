@@ -119,7 +119,7 @@ void daWmPeachCastle_c::processCutsceneCommand(int cutsceneCommandId, bool isFir
                 initDoorOpenAnim();
                 mChrAnim[cobPeachCastleOpen].setFrame(0.0f);
                 mChrAnim[cobPeachCastleOpen].setRate(2.4f);
-                dWmSeManager_c::m_pInstance->playSound(dWmSeManager_c::WM_SE_OBJ_CS_DOOR_OPEN_PEACH, mPos, 1);
+                dWmSeManager_c::m_pInstance->sound(dWmSeManager_c::WM_SE_OBJ_CS_DOOR_OPEN_PEACH, mPos, 1);
                 break;
 
             case dCsSeqMng_c::CUTSCENE_CMD_78:
@@ -129,7 +129,7 @@ void daWmPeachCastle_c::processCutsceneCommand(int cutsceneCommandId, bool isFir
                 initDoorCloseAnim();
                 mChrAnim[cobPeachCastleClose].setFrame(0.0f);
                 mChrAnim[cobPeachCastleClose].setRate(1.0f);
-                dWmSeManager_c::m_pInstance->playSound(dWmSeManager_c::WM_SE_OBJ_CS_DOOR_CLOSE_PEACH, mPos, 1);
+                dWmSeManager_c::m_pInstance->sound(dWmSeManager_c::WM_SE_OBJ_CS_DOOR_CLOSE_PEACH, mPos, 1);
                 break;
 
             default:
