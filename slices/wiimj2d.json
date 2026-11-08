@@ -181,6 +181,16 @@
             }
         },
         {
+            "source": "dol/bases/d_a_en_door.cpp",
+            "memoryRanges": {
+                ".text": "0x243C0-0x256C0",
+                ".ctors": "0x40-0x44",
+                ".data": "0x52A8-0x56E0",
+                ".bss": "0x1940-0x1A80",
+                ".sdata2": "0x348-0x368"
+            }
+        },
+        {
             "source": "dol/bases/d_a_en_shell.cpp",
             "memoryRanges": {
                 ".text": "0x31720-0x36270",
