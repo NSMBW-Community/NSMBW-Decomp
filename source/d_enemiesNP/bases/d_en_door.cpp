@@ -56,7 +56,7 @@ void dEnDoor_c::setWaitAnm() {
 
 // To get automatically copied virtual functions in the right order. @unused
 void UNUSED_dEnDoor_c() {
-    dEnDoor_c *door;
+    dEnDoor_c *door = nullptr;
     door->setCloseMoveSE();
     door->initialize();
 }
@@ -70,5 +70,5 @@ void dEnDoor_c::setOpenSE() {
 }
 
 bool dEnDoor_c::isClosed() {
-    return *mStateMgr.getStateID() == StateID_Wait;
+    return isState(StateID_Wait);
 }

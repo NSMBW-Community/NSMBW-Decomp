@@ -75,5 +75,5 @@ bool dEnObakeDoor_c::isDummyOpen() {
 }
 
 bool dEnObakeDoor_c::isClosed() {
-    return *mStateMgr.getStateID() == StateID_Wait;
+    return isState(StateID_Wait);
 }

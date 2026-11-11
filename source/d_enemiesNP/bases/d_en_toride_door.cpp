@@ -62,7 +62,7 @@ void dEnTorideDoor_c::setWaitAnm() {
 }
 
 void dEnTorideDoor_c::setCloseMoveSE() {
-    dAudio::SndObjctCmnMap_c* sndObjMap = dAudio::g_pSndObjMap;
+    dAudio::SndObjctCmnMap_c *sndObjMap = dAudio::g_pSndObjMap;
     sndObjMap->holdSound(SE_OBJ_BDOOR_MOVE, mUniqueID, mPos, 0);
 }
 
@@ -75,5 +75,5 @@ void dEnTorideDoor_c::setOpenSE() {
 }
 
 bool dEnTorideDoor_c::isClosed() {
-    return *mStateMgr.getStateID() == StateID_Wait;
+    return isState(StateID_Wait);
 }

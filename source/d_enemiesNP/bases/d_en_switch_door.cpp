@@ -5,9 +5,9 @@ ACTOR_PROFILE(EN_SWITCHDOOR, dEnSwitchDoor_c, 2);
 
 void dEnSwitchDoor_c::initialize() {
     if (dActor_c::m_flag_keep[1] != 0 && !(dSwitchFlagMng_c::m_instance->mFlag & *(u16 *) dActor_c::m_flag_keep)) {
-        m_5dc = 0;
+        mIsEventActivated = FALSE;
     } else {
-        m_5dc = 1;
+        mIsEventActivated = TRUE;
         mCc.entry();
     }
 
@@ -16,13 +16,14 @@ void dEnSwitchDoor_c::initialize() {
 
 void dEnSwitchDoor_c::waitProc() {
     if (mEventMask & dSwitchFlagMng_c::m_instance->mFlag) {
-        if (m_5dc != 0)
+        if (mIsEventActivated) {
             return;
+        }
         
-        m_5dc = 1;
+        mIsEventActivated = TRUE;
         mCc.entry();
-    } else if (m_5dc != 0) {
-        m_5dc = 0;
+    } else if (mIsEventActivated) {
+        mIsEventActivated = FALSE;
         mCc.release();
     }
 }
@@ -32,5 +33,5 @@ int dEnSwitchDoor_c::preDraw() {
         return NOT_READY;
     };
 
-    return m_5dc ? SUCCEEDED : NOT_READY;
+    return mIsEventActivated ? SUCCEEDED : NOT_READY;
 }
