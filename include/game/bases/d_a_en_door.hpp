@@ -11,10 +11,10 @@ public:
 
     /// @unofficial
     enum DoorStatus_e {
-        DOOR_SUBSTATE_WAIT,
-        DOOR_SUBSTATE_OPEN_OUT,
-        DOOR_SUBSTATE_OPEN_IN,
-        DOOR_SUBSTATE_CLOSED
+        DOOR_STATUS_WAIT, ///< Set when entering the Wait state. Indicates that the door is ready to be opened.
+        DOOR_STATUS_OPEN_OUT, ///< Set by the player. Makes the door enter the Open state. Indicates that the door is getting opened for players to enter it.
+        DOOR_STATUS_OPEN_IN, ///< Set by the player. Makes the door enter the Open state. Indicates that the door is getting opened for players to exit it.
+        DOOR_STATUS_CLOSED ///< Set by the player. Makes the door enter the Close state if it finished its opening animation.
     };
 
     virtual ~daEnDoor_c() override {}
@@ -24,27 +24,27 @@ public:
     virtual int draw() override;
     virtual bool ActorDrawCullCheck() override { return false; }
 
-    virtual bool isClosed() { return isState(StateID_Wait); }
-    virtual bool isDummyOpen() { return false; }
-    virtual void createMdl() {}
-    virtual void initAnm() {}
-    virtual void initCcData() {}
-    virtual void initialize() { mCc.entry(); }
-    virtual void waitProc() {}
-    virtual void setOpenAnm() {}
-    virtual void setOpenSE() {}
-    virtual void setCloseAnm() {}
-    virtual void setCloseSE() {}
-    virtual void setCloseMoveSE() {}
-    virtual void setWaitAnm() {}
+    virtual bool isClosed() { return isState(StateID_Wait); } ///< Checks whether the door is closed by verifying if it's in the Wait state.
+    virtual bool isDummyOpen() { return false; } ///< Returns true if the door must act like Fake Ghost House Doors (spawn a GFX and a coin before disappearing).
+    virtual void createMdl() {} ///< Creates the model and animation for the door.
+    virtual void initAnm() {} ///< Initializes the animation for the door.
+    virtual void initCcData() {} ///< Initializes collision data for the door.
+    virtual void initialize() { mCc.entry(); } ///< Called by create(), used to initialize other elements by subclasses
+    virtual void waitProc() {} ///< Executed every frame during the Wait state.
+    virtual void setOpenAnm() {} ///< Sets the animation's update rate and play mode in a way such that the door opening animation plays.
+    virtual void setOpenSE() {} ///< Plays the door opening SFX.
+    virtual void setCloseAnm() {} ///< Sets the animation's update rate and play mode in a way such that the door closing animation plays.
+    virtual void setCloseSE() {} ///< Plays the door closed SFX.
+    virtual void setCloseMoveSE() {} ///< Plays the door closing SFX.
+    virtual void setWaitAnm() {} ///< Sets the animation's update rate and frame in a way such that the door stays closed.
 
-    void rotation_move(dActor_c *actor);
-    dActor_c *rotation_move();
-    void setParentInfo(dActor_c *parent);
-    dActor_c *setParentInfo(u32 rotationID);
-    void allocate();
-    void calcMdl();
-    bool checkOpenOk();
+    void rotation_move(dActor_c *parent); ///< Moves along the passed actor's Z angle, which should always be this actor's parent daObjCenter_c or daObjCenter2_c.
+    dActor_c *rotation_move(); ///< Searches for the actor corresponding to mParentUniqueID and passes it to rotation_move(dActor_c *) before returning its pointer.
+    void setParentInfo(dActor_c *parent); ///< Sets mParentUniqueID and computes mDistanceWithParent.
+    dActor_c *setParentInfo(u32 rotationID); ///< Calls searchParent with the passed rotation ID, and if found, calls setParentInfo(dActor_c *) with the corresponding actor.
+    void allocate(); ///< Wraps createMdl between mAllocator.createFrmHeap and mAllocator.adjustFrmHeap.
+    void calcMdl(); ///< Updates mMatrix and mModel.
+    bool checkOpenOk(); ///< Checks if the door is opening for players to enter it.
 
     STATE_FUNC_DECLARE(daEnDoor_c, Search);
     STATE_FUNC_DECLARE(daEnDoor_c, Open);
@@ -62,13 +62,13 @@ public:
 	m3d::mdl_c mModel; ///< The door model.
 	m3d::anmChr_c mAnim; ///< The door model animation.
     fBaseID_e mParentUniqueID; ///< The unique ID of the parent actor if linked (daObjCenter_c or daObjCenter2_c).
-    mVec3_c mDistanceWithParent; ///< The distance between the parent's position and the door when it spawned.
+    mVec3_c mDistanceToParent; ///< The distance between the parent controller's position and the door when it spawned.
     DoorStatus_e mDoorStatus; ///< The current status of the door. Used by dAcPy_c.
     BOOL mIsOpen; ///< Whether the door finished opening or not.
     BOOL mMayOpen; ///< Whether the door may open when changing its status or not.
-    mAng mOrientation; ///< Orientation of the door. Determined by mParam.
-    u8 mHasParent; ///< Whether the door has a parent actor. Determined by mParam.
-    u8 mRotationID; ///< Rotation ID that links the door and its parent. Determined by mParam. @see daObjCenter_c::mRotationID, daObjCenter2_c::mRotationID
+    mAng mOrientation; ///< The orientation of the door.
+    u8 mHasParent; ///< Whether the door is controlled by a parent actor.
+    u8 mRotationID; ///< The rotation ID that links the door to the corresponding controller. @see daObjCenter_c::mRotationID, daObjCenter2_c::mRotationID
 
     ACTOR_PARAM_CONFIG(Orientation, 12, 2); ///< @copydoc mOrientation
     ACTOR_PARAM_CONFIG(HasParent, 8, 1); ///< @copydoc mHasParent

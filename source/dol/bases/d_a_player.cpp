@@ -8309,8 +8309,8 @@ void dAcPy_c::executeState_DemoInDoor() {
         case 0:
             if (mFader_c::mFader->isStatus(mFaderBase_c::HIDDEN)) {
                 door->mMayOpen = true;
-                if (door->mDoorStatus == daEnDoor_c::DOOR_SUBSTATE_WAIT) {
-                    door->mDoorStatus = daEnDoor_c::DOOR_SUBSTATE_OPEN_IN;
+                if (door->mDoorStatus == daEnDoor_c::DOOR_STATUS_WAIT) {
+                    door->mDoorStatus = daEnDoor_c::DOOR_STATUS_OPEN_IN;
                 }
                 mDemoSubstate++;
             }
@@ -8334,10 +8334,10 @@ void dAcPy_c::executeState_DemoInDoor() {
                     if (mRelatedActorID != BASE_ID_NULL) {
                         daEnDoor_c *tmpDoor = (daEnDoor_c *) fManager_c::searchBaseByID(mRelatedActorID);
                         if (tmpDoor != nullptr && (
-                            tmpDoor->mDoorStatus == daEnDoor_c::DOOR_SUBSTATE_OPEN_OUT ||
-                            tmpDoor->mDoorStatus == daEnDoor_c::DOOR_SUBSTATE_OPEN_IN
+                            tmpDoor->mDoorStatus == daEnDoor_c::DOOR_STATUS_OPEN_OUT ||
+                            tmpDoor->mDoorStatus == daEnDoor_c::DOOR_STATUS_OPEN_IN
                         )) {
-                            tmpDoor->mDoorStatus = daEnDoor_c::DOOR_SUBSTATE_CLOSED;
+                            tmpDoor->mDoorStatus = daEnDoor_c::DOOR_STATUS_CLOSED;
                         }
                     }
                 } else {
@@ -8528,8 +8528,8 @@ void dAcPy_c::initializeState_DemoOutDoor() {
     mVec3_c pos(mWarpPos.x, mWarpPos.y, 0.0f);
     if (mRelatedActorID != 0) {
         daEnDoor_c *door = (daEnDoor_c *) fManager_c::searchBaseByID(mRelatedActorID);
-        if (door != nullptr && door->mDoorStatus == daEnDoor_c::DOOR_SUBSTATE_WAIT) {
-            door->mDoorStatus = daEnDoor_c::DOOR_SUBSTATE_OPEN_OUT;
+        if (door != nullptr && door->mDoorStatus == daEnDoor_c::DOOR_STATUS_WAIT) {
+            door->mDoorStatus = daEnDoor_c::DOOR_STATUS_OPEN_OUT;
         }
     }
 }
@@ -8618,10 +8618,10 @@ void dAcPy_c::exeDemoOutDoor_MoveInter() {
             daEnDoor_c *door = (daEnDoor_c *) fManager_c::searchBaseByID(mRelatedActorID);
             if (door != nullptr) {
                 if (
-                    door->mDoorStatus == daEnDoor_c::DOOR_SUBSTATE_OPEN_OUT ||
-                    door->mDoorStatus == daEnDoor_c::DOOR_SUBSTATE_OPEN_IN
+                    door->mDoorStatus == daEnDoor_c::DOOR_STATUS_OPEN_OUT ||
+                    door->mDoorStatus == daEnDoor_c::DOOR_STATUS_OPEN_IN
                 ) {
-                    door->mDoorStatus = daEnDoor_c::DOOR_SUBSTATE_CLOSED;
+                    door->mDoorStatus = daEnDoor_c::DOOR_STATUS_CLOSED;
                 }
                 mDemoSubstate = DEMO_OUT_DOOR_WAIT_CLOSE;
             }
