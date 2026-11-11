@@ -20,21 +20,21 @@ public:
     virtual int doDelete() override;
     virtual int execute() override;
     virtual int draw() override;
-    virtual bool ActorDrawCullCheck() override;
+    virtual bool ActorDrawCullCheck() override { return false; }
 
-    virtual bool isClosed();
-    virtual bool isDummyOpen();
-    virtual void createMdl();
-    virtual void initAnm();
-    virtual void initCcData();
-    virtual void initialize();
-    virtual void waitProc();
-    virtual void setOpenAnm();
-    virtual void setOpenSE();
-    virtual void setCloseAnm();
-    virtual void setCloseSE();
-    virtual void setCloseMoveSE();
-    virtual void setWaitAnm();
+    virtual bool isClosed() { return isState(StateID_Wait); }
+    virtual bool isDummyOpen() { return false; }
+    virtual void createMdl() {}
+    virtual void initAnm() {}
+    virtual void initCcData() {}
+    virtual void initialize() { mCc.entry(); }
+    virtual void waitProc() {}
+    virtual void setOpenAnm() {}
+    virtual void setOpenSE() {}
+    virtual void setCloseAnm() {}
+    virtual void setCloseSE() {}
+    virtual void setCloseMoveSE() {}
+    virtual void setWaitAnm() {}
 
     void rotation_move(dActor_c *actor);
     dActor_c *rotation_move();

@@ -126,21 +126,11 @@ int daEnDoor_c::create() {
     return SUCCEEDED;
 }
 
-void daEnDoor_c::initCcData() {}
-
-void daEnDoor_c::initAnm() {}
-
-void daEnDoor_c::initialize() {
-    mCc.entry();
-}
-
 void daEnDoor_c::allocate() {
     mAllocator.createFrmHeap(-1, mHeap::g_gameHeaps[mHeap::GAME_HEAP_DEFAULT], nullptr, 0x20);
     createMdl();
     mAllocator.adjustFrmHeap();
 }
-
-void daEnDoor_c::createMdl() {}
 
 int daEnDoor_c::execute() {
     if (mHasParent) {
@@ -194,7 +184,7 @@ void daEnDoor_c::ccCallback(dCc_c *self, dCc_c *other) {
         return;
     }
 
-    daEnDoor_c * selfOwner = (daEnDoor_c *) self->mpOwner;
+    daEnDoor_c *selfOwner = (daEnDoor_c *) self->mpOwner;
     if (selfOwner->isDummyOpen()) {
         if (otherOwner->isDoorDemoEnable()) {
             if (selfOwner->isClosed()) {
@@ -207,14 +197,6 @@ void daEnDoor_c::ccCallback(dCc_c *self, dCc_c *other) {
         selfOwner->mMayOpen = true;
         self->mInfo |= CC_NO_HIT;
     }
-}
-
-bool daEnDoor_c::isDummyOpen() {
-    return false;
-}
-
-bool daEnDoor_c::isClosed() {
-    return isState(StateID_Wait);
 }
 
 bool daEnDoor_c::checkOpenOk() {
@@ -241,10 +223,6 @@ void daEnDoor_c::initializeState_Open() {
     setOpenAnm();
     setOpenSE();
 }
-
-void daEnDoor_c::setOpenAnm() {}
-
-void daEnDoor_c::setOpenSE() {}
 
 void daEnDoor_c::finalizeState_Open() {
     mIsOpen = false;
@@ -285,8 +263,6 @@ void daEnDoor_c::initializeState_Close() {
     setCloseAnm();
 }
 
-void daEnDoor_c::setCloseAnm() {}
-
 void daEnDoor_c::finalizeState_Close() {}
 
 void daEnDoor_c::executeState_Close() {
@@ -303,17 +279,11 @@ void daEnDoor_c::executeState_Close() {
     changeState(StateID_Wait);
 }
 
-void daEnDoor_c::setCloseMoveSE() {}
-
-void daEnDoor_c::setCloseSE() {}
-
 void daEnDoor_c::initializeState_Wait() {
     mDoorStatus = DOOR_SUBSTATE_WAIT;
     mMayOpen = false;
     setWaitAnm();
 }
-
-void daEnDoor_c::setWaitAnm() {}
 
 void daEnDoor_c::finalizeState_Wait() {}
 
@@ -328,10 +298,4 @@ void daEnDoor_c::executeState_Wait() {
     if (mDoorStatus == DOOR_SUBSTATE_OPEN_OUT || mDoorStatus == DOOR_SUBSTATE_OPEN_IN) {
         changeState(StateID_Open);
     }
-}
-
-void daEnDoor_c::waitProc() {}
-
-bool daEnDoor_c::ActorDrawCullCheck() {
-    return false;
 }
