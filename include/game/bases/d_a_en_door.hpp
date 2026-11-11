@@ -24,24 +24,24 @@ public:
     virtual int draw() override;
     virtual bool ActorDrawCullCheck() override { return false; }
 
-    virtual bool isClosed() { return isState(StateID_Wait); } ///< Checks whether the door is closed by verifying if it's in the Wait state.
-    virtual bool isDummyOpen() { return false; } ///< Returns true if the door must act like Fake Ghost House Doors (spawn a GFX and a coin before disappearing).
+    virtual bool isClosed() { return isState(StateID_Wait); } ///< Checks whether the door is closed.
+    virtual bool isDummyOpen() { return false; } ///< Returns true if the door must act like Fake Ghost House Doors.
     virtual void createMdl() {} ///< Creates the model and animation for the door.
     virtual void initAnm() {} ///< Initializes the animation for the door.
     virtual void initCcData() {} ///< Initializes collision data for the door.
-    virtual void initialize() { mCc.entry(); } ///< Called by create(), used to initialize other elements by subclasses
+    virtual void initialize() { mCc.entry(); } ///< Initializes other elements, called by create().
     virtual void waitProc() {} ///< Executed every frame during the Wait state.
-    virtual void setOpenAnm() {} ///< Sets the animation's update rate and play mode in a way such that the door opening animation plays.
+    virtual void setOpenAnm() {} ///< Changes animation properties so the door opening animation plays.
     virtual void setOpenSE() {} ///< Plays the door opening SFX.
-    virtual void setCloseAnm() {} ///< Sets the animation's update rate and play mode in a way such that the door closing animation plays.
+    virtual void setCloseAnm() {} ///<  Changes animation properties so the door closing animation plays.
     virtual void setCloseSE() {} ///< Plays the door closed SFX.
     virtual void setCloseMoveSE() {} ///< Plays the door closing SFX.
-    virtual void setWaitAnm() {} ///< Sets the animation's update rate and frame in a way such that the door stays closed.
+    virtual void setWaitAnm() {} ///<  Changes animation properties so the door stays closed.
 
-    void rotation_move(dActor_c *parent); ///< Moves along the passed actor's Z angle, which should always be this actor's parent daObjCenter_c or daObjCenter2_c.
-    dActor_c *rotation_move(); ///< Searches for the actor corresponding to mParentUniqueID and passes it to rotation_move(dActor_c *) before returning its pointer.
+    void rotation_move(dActor_c *parent); ///< Moves along the passed parent's Z angle.
+    dActor_c *rotation_move(); ///< Moves along the parent's Z angle.
     void setParentInfo(dActor_c *parent); ///< Sets mParentUniqueID and computes mDistanceWithParent.
-    dActor_c *setParentInfo(u32 rotationID); ///< Calls searchParent with the passed rotation ID, and if found, calls setParentInfo(dActor_c *) with the corresponding actor.
+    dActor_c *setParentInfo(u32 rotationID); ///< Searches for a parent, then sets mParentUniqueID and computes mDistanceWithParent accordingly.
     void allocate(); ///< Wraps createMdl between mAllocator.createFrmHeap and mAllocator.adjustFrmHeap.
     void calcMdl(); ///< Updates mMatrix and mModel.
     bool checkOpenOk(); ///< Checks if the door is opening for players to enter it.
