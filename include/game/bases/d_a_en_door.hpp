@@ -7,6 +7,8 @@
 
 class daEnDoor_c : public dEn_c {
 public:
+    daEnDoor_c() : mIsOpen(false) {}
+
     /// @unofficial
     enum DoorStatus_e {
         DOOR_SUBSTATE_WAIT,

@@ -48,6 +48,15 @@
             }
         },
         {
+            "source": "d_enemiesNP/bases/d_en_castle_door.cpp",
+            "memoryRanges": {
+                ".text": "0x31890-0x31DF0",
+                ".rodata": "0x1710-0x1740",
+                ".data": "0xA088-0xA380"
+            },
+            "nonMatching": true
+        },
+        {
             "source": "d_enemiesNP/bases/d_a_en_noko.cpp",
             "memoryRanges": {
                 ".text": "0xcf710-0xd2930",
