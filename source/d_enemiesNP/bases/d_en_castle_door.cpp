@@ -59,6 +59,14 @@ void dEnCastleDoor_c::setWaitAnm() {
     mAnim.setFrame(0.0f);
 }
 
+// To get automatically copied virtual functions in the right order. @unused
+void UNUSED_dEnCastleDoor_c() {
+    dEnCastleDoor_c *door;
+    door->waitProc();
+    door->ActorDrawCullCheck();
+    door->isDummyOpen();
+}
+
 void dEnCastleDoor_c::setCloseMoveSE() {
     dAudio::SndObjctCmnMap_c* sndObjMap = dAudio::g_pSndObjMap;
     sndObjMap->holdSound(SE_OBJ_BDOOR_MOVE, mUniqueID, mPos, 0);
