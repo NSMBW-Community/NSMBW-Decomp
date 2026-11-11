@@ -22,7 +22,7 @@ daObjCenter_c *daEnDoor_c::searchParent_centerA(u32 rotationID) {
         }
     }
 
-    return 0;
+    return nullptr;
 }
 
 daObjCenter2_c *daEnDoor_c::searchParent_centerB(u32 rotationID) {
@@ -34,12 +34,11 @@ daObjCenter2_c *daEnDoor_c::searchParent_centerB(u32 rotationID) {
         }
     }
 
-    return 0;
+    return nullptr;
 }
 
 dActor_c *daEnDoor_c::searchParent(u32 rotationID) {
     dActor_c *result = searchParent_centerA(rotationID);
-
     if (result != nullptr) {
         return result;
     }
@@ -49,13 +48,13 @@ dActor_c *daEnDoor_c::searchParent(u32 rotationID) {
 
 void daEnDoor_c::setParentInfo(dActor_c *parent) {
     mParentUniqueID = parent->mUniqueID;
-    mDistanceWithParent = mPos - parent->mPos;
+    mDistanceToParent = mPos - parent->mPos;
 }
 
-void daEnDoor_c::rotation_move(dActor_c *actor) {
-    mVec3_c pos = actor->mPos;
+void daEnDoor_c::rotation_move(dActor_c *parent) {
+    mVec3_c parentPos = parent->mPos;
 
-    s16 parentAngle = actor->mAngle.z;
+    s16 parentAngle = parent->mAngle.z;
     parentAngle += 0x4000;
     mAngle.z = parentAngle + mOrientation;
 
@@ -63,16 +62,15 @@ void daEnDoor_c::rotation_move(dActor_c *actor) {
     float parentAngleCos = nw4r::math::CosIdx(parentAngle);
     float parentAngleSin = nw4r::math::SinIdx(parentAngle);
 
-    float distWithParentX = mDistanceWithParent.x;
-    float distWithParentY = mDistanceWithParent.y;
+    float distWithParentX = mDistanceToParent.x;
+    float distWithParentY = mDistanceToParent.y;
 
-    mPos.x = pos.x + ((distWithParentX * parentAngleCos) - (distWithParentY * parentAngleSin));
-    mPos.y = pos.y + ((distWithParentX * parentAngleSin) + (distWithParentY * parentAngleCos));
+    mPos.x = parentPos.x + ((distWithParentX * parentAngleCos) - (distWithParentY * parentAngleSin));
+    mPos.y = parentPos.y + ((distWithParentX * parentAngleSin) + (distWithParentY * parentAngleCos));
 }
 
 dActor_c *daEnDoor_c::rotation_move() {
     dActor_c *result = (dActor_c *) fManager_c::searchBaseByID(mParentUniqueID);
-
     if (result != nullptr) {
         rotation_move(result);
     }
@@ -81,15 +79,15 @@ dActor_c *daEnDoor_c::rotation_move() {
 }
 
 dActor_c *daEnDoor_c::setParentInfo(u32 rotationID) {
-    dActor_c *result = searchParent(rotationID);
-    if (result != nullptr) {
-        setParentInfo(result);
-        rotation_move(result);
+    dActor_c *parent = searchParent(rotationID);
+    if (parent != nullptr) {
+        setParentInfo(parent);
+        rotation_move(parent);
 
         changeState(StateID_Wait);
     }
 
-    return result;
+    return parent;
 }
 
 int daEnDoor_c::create() {
@@ -136,7 +134,7 @@ int daEnDoor_c::execute() {
     if (mHasParent) {
         if (mParentUniqueID != BASE_ID_NULL) {
             if (!rotation_move()) {
-                deleteActor(0);
+                deleteActor(FALSE);
                 return SUCCEEDED;
             }
         }
@@ -179,22 +177,22 @@ void daEnDoor_c::calcMdl() {
 }
 
 void daEnDoor_c::ccCallback(dCc_c *self, dCc_c *other) {
-    dAcPy_c *otherOwner = (dAcPy_c *) other->mpOwner;
-    if (otherOwner->mKind != STAGE_ACTOR_PLAYER) {
+    dAcPy_c *otherActor = (dAcPy_c *) other->mpOwner;
+    if (otherActor->mKind != STAGE_ACTOR_PLAYER) {
         return;
     }
 
-    daEnDoor_c *selfOwner = (daEnDoor_c *) self->mpOwner;
-    if (selfOwner->isDummyOpen()) {
-        if (otherOwner->isDoorDemoEnable()) {
-            if (selfOwner->isClosed()) {
-                selfOwner->changeState(StateID_Dummy);
+    daEnDoor_c *door = (daEnDoor_c *) self->mpOwner;
+    if (door->isDummyOpen()) {
+        if (otherActor->isDoorDemoEnable()) {
+            if (door->isClosed()) {
+                door->changeState(StateID_Dummy);
             }
 
             self->mInfo |= CC_NO_HIT;
         }
-    } else if (selfOwner->checkOpenOk() && otherOwner->setDoorDemo(selfOwner)) {
-        selfOwner->mMayOpen = true;
+    } else if (door->checkOpenOk() && otherActor->setDoorDemo(door)) {
+        door->mMayOpen = true;
         self->mInfo |= CC_NO_HIT;
     }
 }
@@ -204,7 +202,7 @@ bool daEnDoor_c::checkOpenOk() {
         return true;
     }
 
-    if (isState(StateID_Open) && mDoorStatus == daEnDoor_c::DOOR_SUBSTATE_OPEN_OUT) {
+    if (isState(StateID_Open) && mDoorStatus == daEnDoor_c::DOOR_STATUS_OPEN_OUT) {
         return true;
     }
 
@@ -236,7 +234,7 @@ void daEnDoor_c::executeState_Open() {
     }
 
     mIsOpen = true;
-    if (mDoorStatus != daEnDoor_c::DOOR_SUBSTATE_CLOSED) {
+    if (mDoorStatus != daEnDoor_c::DOOR_STATUS_CLOSED) {
         return;
     }
 
@@ -246,17 +244,17 @@ void daEnDoor_c::executeState_Open() {
 void daEnDoor_c::initializeState_Dummy() {
     dAudio::g_pSndObjMap->startSound(SE_OBJ_DDOOR_OPEN, mPos, 0);
 
-    mVec3_c pos = getCenterPos();
-    pos.z = 2800.0f;
+    mVec3_c effPos = getCenterPos();
+    effPos.z = 2800.0f;
 
-    mEf::createEffect("Wm_en_obakedoor", 0, &pos, nullptr, nullptr);
+    mEf::createEffect("Wm_en_obakedoor", 0, &effPos, nullptr, nullptr);
     dActorMng_c::m_instance->createUpCoin(getCenterPos(), 0, 1, 0);
 }
 
 void daEnDoor_c::finalizeState_Dummy() {}
 
 void daEnDoor_c::executeState_Dummy() {
-    deleteActor(1);
+    deleteActor(TRUE);
 }
 
 void daEnDoor_c::initializeState_Close() {
@@ -267,7 +265,6 @@ void daEnDoor_c::finalizeState_Close() {}
 
 void daEnDoor_c::executeState_Close() {
     mModel.play();
-
     setCloseMoveSE();
 
     if (!mAnim.isStop()) {
@@ -275,12 +272,11 @@ void daEnDoor_c::executeState_Close() {
     }
 
     setCloseSE();
-
     changeState(StateID_Wait);
 }
 
 void daEnDoor_c::initializeState_Wait() {
-    mDoorStatus = DOOR_SUBSTATE_WAIT;
+    mDoorStatus = DOOR_STATUS_WAIT;
     mMayOpen = false;
     setWaitAnm();
 }
@@ -295,7 +291,7 @@ void daEnDoor_c::executeState_Wait() {
         return;
     }
 
-    if (mDoorStatus == DOOR_SUBSTATE_OPEN_OUT || mDoorStatus == DOOR_SUBSTATE_OPEN_IN) {
+    if (mDoorStatus == DOOR_STATUS_OPEN_OUT || mDoorStatus == DOOR_STATUS_OPEN_IN) {
         changeState(StateID_Open);
     }
 }
