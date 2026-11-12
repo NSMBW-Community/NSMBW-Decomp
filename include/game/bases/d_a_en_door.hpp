@@ -7,6 +7,7 @@
 
 /// @brief The base class for door actors.
 /// @statetable
+/// @paramtable
 /// @ingroup bases
 class daEnDoor_c : public dEn_c {
 public:
