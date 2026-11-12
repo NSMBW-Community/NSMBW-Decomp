@@ -7,7 +7,7 @@
 /// @unofficial
 class dEnSwitchDoor_c : public dEnDoor_c {
 public:
-    dEnSwitchDoor_c() : mIsEventActivated(0) {}
+    dEnSwitchDoor_c() : mIsEventActivated(FALSE) {}
 
     virtual int preDraw() override;
 

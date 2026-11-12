@@ -11,6 +11,8 @@
 /// @ingroup bases
 class daEnDoor_c : public dEn_c {
 public:
+    daEnDoor_c() : mIsOpen(false) {}
+    
     /// @brief The possible door states.
     /// @unofficial
     enum DoorStatus_e {

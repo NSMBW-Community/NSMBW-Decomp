@@ -71,7 +71,7 @@ void dEnObakeDoor_c::setOpenSE() {
 }
 
 bool dEnObakeDoor_c::isDummyOpen() { 
-    return (mParam >> 16) & 1;
+    return ACTOR_PARAM(IsDummy);
 }
 
 bool dEnObakeDoor_c::isClosed() {

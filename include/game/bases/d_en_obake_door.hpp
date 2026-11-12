@@ -18,4 +18,6 @@ public:
     virtual void setCloseAnm() override;
     virtual void setCloseSE() override;
     virtual void setWaitAnm() override;
+
+    ACTOR_PARAM_CONFIG(IsDummy, 16, 1); ///< @copydoc isDummyOpen
 };
