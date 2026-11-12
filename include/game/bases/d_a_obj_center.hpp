@@ -22,5 +22,5 @@ public:
     u8 m_39B;
     u8 mRotationID; ///< The rotation ID to be set on the affected objects.
 
-    ACTOR_PARAM_CONFIG(RotID, 0, 8); ///< @copydoc mRotationID
+    ACTOR_PARAM_CONFIG(RotationID, 0, 8); ///< @copydoc mRotationID
 };

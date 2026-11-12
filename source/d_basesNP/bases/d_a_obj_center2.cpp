@@ -22,9 +22,9 @@ void daObjCenter2_c::coinSE() {
 int daObjCenter2_c::create() {
     mExecStopMask = 0;
     mRotDir = ACTOR_PARAM(IsCCW);
-    mRotationID = ACTOR_PARAM(RotID);
+    mRotationID = ACTOR_PARAM(RotationID);
 
-    if (!dCenterSaveMng_c::m_instance->center_check(&mPos, ACTOR_PARAM(RotID), &mHomeRotation)) {
+    if (!dCenterSaveMng_c::m_instance->center_check(&mPos, ACTOR_PARAM(RotationID), &mHomeRotation)) {
         mHomeRotation = l_EnMuki[mRotDir] * (ACTOR_PARAM(InitialRotation) * 0x1000) + 0xc000;
     }
 
