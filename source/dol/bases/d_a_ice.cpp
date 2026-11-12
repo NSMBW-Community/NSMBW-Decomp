@@ -66,12 +66,12 @@ int daIce_c::create() {
 
     mScale.set(1.0f, 1.0f, 1.0f);
     mInitialPos = mPos;
-    m_614 = (IceType_e) ACTOR_PARAM(Param18);
+    mInitType = (InitType_e) ACTOR_PARAM(InitType);
     if (!ACTOR_PARAM(Param8)) {
-        m_608 |= 1;
+        mFlags |= 1;
     }
     if (!ACTOR_PARAM(ParamC)) {
-        m_608 |= 2;
+        mFlags |= 2;
     }
     mSpeedMax.y = -6.0f;
     mAnm.setPlayMode(m3d::FORWARD_LOOP, 0);
@@ -80,26 +80,26 @@ int daIce_c::create() {
     mPosDiff = parent->mPos - mPos;
     mpIceMng = &parent->mIceMng;
     calcMdl();
-    m_600 = 2;
-    m_5ec = 0;
-    m_610 = mPos.x;
-    switch (m_614) {
-        case ICE_TYPE_1:
-        case ICE_TYPE_6:
+    mCollEntryTimer = 2;
+    mIsWater = 0;
+    prevX = mPos.x;
+    switch (mInitType) {
+        case INIT_FREEZE_1:
+        case INIT_FREEZE_2:
             changeState(StateID_Freeze);
             break;
-        case ICE_TYPE_7:
+        case INIT_COVER:
             changeState(StateID_Cover);
             break;
-        case ICE_TYPE_2:
+        case INIT_AIR:
             changeState(StateID_Air);
             break;
-        case ICE_TYPE_3:
+        case INIT_FALL:
             changeState(StateID_Fall);
             break;
-        case ICE_TYPE_4:
-        case ICE_TYPE_5:
-            m_5ec = 1;
+        case INIT_WATER:
+        case INIT_WATER_TOGE:
+            mIsWater = 1;
             switch (dBc_c::checkWater(mPos.x, mPos.y, mLayer, nullptr)) {
                 case 3:
                 case 4:
@@ -112,14 +112,14 @@ int daIce_c::create() {
                     break;
             }
             break;
-        case ICE_TYPE_8:
+        case INIT_HOP:
             changeState(StateID_Hop);
             break;
         default:
             changeState(StateID_Land);
             break;
     }
-    m_5a8 = mPos;
+    mPrevPos = mPos;
     return SUCCEEDED;
 }
 
@@ -161,20 +161,20 @@ int daIce_c::preExecute() {
         return NOT_READY;
     }
 
-    if (m_600 > 0) {
-        if (--m_600 == 0) {
-            mCc.mCcData.mBase.mSize.set(mCcSize.x * 0.5f, mCcSize.y * 0.5f);
+    if (mCollEntryTimer > 0) {
+        if (--mCollEntryTimer == 0) {
+            mCc.mCcData.mBase.mSize.set(mSize.x * 0.5f, mSize.y * 0.5f);
             mCc.mCcData.mVsDamage |= BIT_FLAG(CC_ATTACK_SPIN_LIFT_UP);
             mCc.mCcData.mAttack = CC_ATTACK_NONE;
             mBgCtr.entry();
         }
     }
-    if (m_60c == 0 && isQuakeDamage() && dQuake_c::m_instance->mFlags & 6) {
+    if (!mBreakRequested && isQuakeDamage() && dQuake_c::m_instance->mFlags & 6) {
         quakeDamage();
         return NOT_READY;
     }
 
-    m_610 = mPos.x;
+    prevX = mPos.x;
     return SUCCEEDED;
 }
 
@@ -186,13 +186,13 @@ int daIce_c::execute() {
         enlargeBgc();
         mBgCtr.calc();
         if (canCarry()) {
-            mVec2_c size(mCcSize.x * 0.5f + 2.0f, mCcSize.y * 0.5f + 2.0f);
+            mVec2_c size(mSize.x * 0.5f + 2.0f, mSize.y * 0.5f + 2.0f);
             carryFukidashiCheck(17, size);
         } else if (mCarryFukidashiPlayerNo >= 0) {
             carryFukidashiCancel(17, -1);
         }
     }
-    m_5a8 = mPos;
+    mPrevPos = mPos;
     mBgCollFlags = 0;
     return SUCCEEDED;
 }
@@ -220,15 +220,15 @@ int daIce_c::doDelete() {
 }
 
 void daIce_c::calcMdl() {
-    mVec3_c pos = m_59c;
+    mVec3_c pos = mModelPos;
     mAng3_c ang = mAngle;
     changePosAngle(&pos, &ang, 1);
     mMatrix.trans(pos.x, pos.y, pos.z);
     mMatrix.YrotM(ang.y);
     mMatrix.XrotM(ang.x);
-    mMatrix.concat(mMtx_c::createTrans(0.0f, mCcSize.y * 0.5f, 0.0f));
+    mMatrix.concat(mMtx_c::createTrans(0.0f, mSize.y * 0.5f, 0.0f));
     mMatrix.ZrotM(ang.z);
-    mMatrix.concat(mMtx_c::createTrans(0.0f, mCcSize.y * -0.5f, 0.0f));
+    mMatrix.concat(mMtx_c::createTrans(0.0f, mSize.y * -0.5f, 0.0f));
     mMdl.setLocalMtx(&mMatrix);
     mMdl.setScale(mScale);
     mMdl.calc(false);
@@ -262,12 +262,12 @@ void daIce_c::setInfo(mVec3_c size, dIceEfScale_c scale) {
 
 void daIce_c::initSize(const mVec3_c &size) {
     mScale = size;
-    mVec3_c ccSize;
-    ccSize.x = l_mdl_defsize[ACTOR_PARAM(IceType)].x * size.x;
-    ccSize.y = l_mdl_defsize[ACTOR_PARAM(IceType)].y * size.y;
-    ccSize.z = l_mdl_defsize[ACTOR_PARAM(IceType)].z * size.z;
-    mCcSize = ccSize;
-    mCenterOffs.set(0.0f, mCcSize.y * 0.5f, 0.0f);
+    mVec3_c blockSize;
+    blockSize.x = l_mdl_defsize[ACTOR_PARAM(IceType)].x * size.x;
+    blockSize.y = l_mdl_defsize[ACTOR_PARAM(IceType)].y * size.y;
+    blockSize.z = l_mdl_defsize[ACTOR_PARAM(IceType)].z * size.z;
+    mSize = blockSize;
+    mCenterOffs.set(0.0f, mSize.y * 0.5f, 0.0f);
 }
 
 void daIce_c::initPos() {
@@ -287,15 +287,15 @@ void daIce_c::initPos() {
 }
 
 void daIce_c::initWeight() {
-    float area = mCcSize.x * mCcSize.y;
+    float area = mSize.x * mSize.y;
     if (area < 600.0f) {
-        mWeightType = 0;
+        mWeightType = ICE_WEIGHT_LIGHTEST;
     } else if (area < 1536.0f) {
-        mWeightType = 1;
+        mWeightType = ICE_WEIGHT_LIGHT;
     } else if (area < 3072.0f) {
-        mWeightType = 2;
+        mWeightType = ICE_WEIGHT_HEAVY;
     } else {
-        mWeightType = 3;
+        mWeightType = ICE_WEIGHT_HEAVIEST;
     }
 }
 
@@ -304,7 +304,7 @@ void daIce_c::initCollision() {
     mLayer = parent->mLayer;
     setBc();
     if (isState(StateID_Land)) {
-        mSensorWall.mFlags |= BIT_FLAG(30);
+        mBcPointWall.mFlags |= BIT_FLAG(30);
     }
 
     float sides[] = { 1.0f, -1.0f };
@@ -314,32 +314,32 @@ void daIce_c::initCollision() {
     }
 
     mCc.set(this, (sCcDatNewF *) &l_ice_cc);
-    mCc.mCcData.mBase.mOffset.set(0.0f, mCcSize.y * 0.5f);
-    mCc.mCcData.mBase.mSize.set(mCcSize.x * 0.5f, mCcSize.y * 0.5f - 1.0f);
+    mCc.mCcData.mBase.mOffset.set(0.0f, mSize.y * 0.5f);
+    mCc.mCcData.mBase.mSize.set(mSize.x * 0.5f, mSize.y * 0.5f - 1.0f);
     mCc.mpFriendActor = parent;
-    if (m_600 > 0) {
+    if (mCollEntryTimer > 0) {
         mCc.mCcData.mAttack = CC_ATTACK_SHELL;
     }
 
-    float w = mCcSize.x * 0.5f;
-    float h = mCcSize.y * 0.5f;
+    float w = mSize.x * 0.5f;
+    float h = mSize.y * 0.5f;
     mBgCtr.set(this, 0.0f, 0.0f, 0.0f, 0.0f, callBackFoot, callBackHead, callBackWall, 1, 0, nullptr);
     mBgCtr.mpCheckRevFoot = checkRevFoot;
     mBgCtr.mpCheckRevHead = checkRevHead;
     mBgCtr.mpCheckRevWall = checkRevWall;
-    m_544 = 0.0f;
-    m_548 = 0.0f;
-    m_54c = w / 8.0f;
-    if (m_5ec == 0) {
-        m_550 = mCcSize.y / 8.0f;
+    mCurrBgcSize.x = 0.0f;
+    mCurrBgcSize.y = 0.0f;
+    mBgcSizeIncrease.x = w / 8.0f;
+    if (mIsWater == 0) {
+        mBgcSizeIncrease.y = mSize.y / 8.0f;
     } else {
-        m_550 = h / 8.0f;
+        mBgcSizeIncrease.y = h / 8.0f;
     }
     mBgCtr.mLayer = mLayer;
     mBgCtr.mFlags = 0;
     mBgCtr.mFlags2 = 1;
     mBgCtr.setAngleY3((short *) &smc_OBJBG_DUMMY_ANGLE);
-    if (m_608 & 1) {
+    if (mFlags & 1) {
         mBgCtr.mFlags |= 0xd68;
     } else {
         mBgCtr.mFlags |= 0xc08;
@@ -374,9 +374,9 @@ bool daIce_c::checkInstantBreak(int a) {
 }
 
 bool daIce_c::checkPlayerIn() {
-    float boundLeft = mPos.x - mCcSize.x * 0.5f;
-    float boundRight = mPos.x + mCcSize.x * 0.5f;
-    float boundTop = mPos.y + mCcSize.y;
+    float boundLeft = mPos.x - mSize.x * 0.5f;
+    float boundRight = mPos.x + mSize.x * 0.5f;
+    float boundTop = mPos.y + mSize.y;
     float boundBottom = mPos.y;
 
     dCc_c *plCc;
@@ -401,11 +401,11 @@ bool daIce_c::checkPlayerIn() {
 bool daIce_c::checkBgIn() {
     u8 layer = getLayer();
     u8 amiLine = getAmiLine();
-    float yTop = mPos.y + mCcSize.y - 4.0f;
+    float yTop = mPos.y + mSize.y - 4.0f;
     float yBottom = mPos.y + 4.0f;
     for (; yTop > yBottom; yTop -= 16.0f) {
-        float xLeft = mPos.x - (mCcSize.x * 0.5f - 4.0f);
-        float xRight = mPos.x + (mCcSize.x * 0.5f - 4.0f);
+        float xLeft = mPos.x - (mSize.x * 0.5f - 4.0f);
+        float xRight = mPos.x + (mSize.x * 0.5f - 4.0f);
         while (xLeft < xRight) {
             if (dBc_c::checkBg(xLeft, yTop, layer, amiLine, 0x819)) {
                 return true;
@@ -416,8 +416,8 @@ bool daIce_c::checkBgIn() {
             return true;
         }
     }
-    float xLeft = mPos.x - (mCcSize.x * 0.5f - 4.0f);
-    float xRight = mPos.x + (mCcSize.x * 0.5f - 4.0f);
+    float xLeft = mPos.x - (mSize.x * 0.5f - 4.0f);
+    float xRight = mPos.x + (mSize.x * 0.5f - 4.0f);
     for (; xLeft < xRight; xLeft += 16.0f) {
         if (dBc_c::checkBg(xLeft, yBottom, layer, amiLine, 0x819)) {
             return true;
@@ -434,8 +434,8 @@ bool daIce_c::calcLandLine(float &height) {
     float yBottom;
     float xLeft;
 
-    xLeft = mPos.x - (mCcSize.x * 0.5f - 4.0f);
-    xRight = mPos.x + (mCcSize.x * 0.5f - 4.0f);
+    xLeft = mPos.x - (mSize.x * 0.5f - 4.0f);
+    xRight = mPos.x + (mSize.x * 0.5f - 4.0f);
     yBottom = mPos.y + 10.0f;
 
     for (; xLeft < xRight; xLeft += 8.0f) {
@@ -474,7 +474,7 @@ bool daIce_c::calcLandLine(float &height) {
 }
 
 void daIce_c::finalUpdate() {
-    if (m_60c != 0) {
+    if (mBreakRequested) {
         return;
     }
 
@@ -482,17 +482,17 @@ void daIce_c::finalUpdate() {
     if (isState(StateID_Carry)) {
         pos = calcCarryPos();
         mPos = pos;
-    } else if (isState(StateID_Land) && mPos.x != m_5a8.x) {
-        u8 dir = mPos.x - m_5a8.x < 0.0f ? 1 : 0;
+    } else if (isState(StateID_Land) && mPos.x != mPrevPos.x) {
+        u8 dir = mPos.x - mPrevPos.x < 0.0f ? 1 : 0;
         float side[] = { 1.0f, -1.0f };
         if (mBc.checkWallEnm(&side[dir])) {
             pos = mPos;
-            mPos.x = m_5a8.x;
+            mPos.x = mPrevPos.x;
             mLastPos = mPos;
         }
     }
-    m_59c = pos;
-    if (!(mExecStop & 0xF) && m_5dc != 0) {
+    mModelPos = pos;
+    if (!(mExecStop & 0xF) && mBeginShake) {
         shake();
     }
     if (!isState(StateID_Cover) && !isState(StateID_Melt_Normal)) {
@@ -609,32 +609,32 @@ void daIce_c::starbreakReq(int dir, dActor_c *initiator) {
 }
 
 void daIce_c::setBc() {
-    if (ACTOR_PARAM(Param10) == 1) {
+    if (ACTOR_PARAM(Param10) == COLLISION_NONE) {
         mBc.set(this, nullptr, nullptr, nullptr);
         mBc.mpRc = nullptr;
         return;
     }
 
-    mSensorFoot.mFlags = SENSOR_IS_MANY;
-    mSensorFoot.mInfMargin = -(int) ((mCcSize.x * 0.5f - 3.0f) * 0x1000);
-    mSensorFoot.mSupMargin = ((mCcSize.x * 0.5f - 3.0f) * 0x1000);
-    mSensorFoot.mOffset = 0;
+    mBcPointFoot.mFlags = SENSOR_IS_MANY;
+    mBcPointFoot.mInfMargin = -(int) ((mSize.x * 0.5f - 3.0f) * 0x1000);
+    mBcPointFoot.mSupMargin = ((mSize.x * 0.5f - 3.0f) * 0x1000);
+    mBcPointFoot.mOffset = 0;
 
-    mSensorHead.mFlags = SENSOR_IS_MANY;
-    mSensorHead.mInfMargin = -(int) ((mCcSize.x * 0.5f - 3.0f) * 0x1000);
-    mSensorHead.mSupMargin = ((mCcSize.x * 0.5f - 3.0f) * 0x1000);
-    mSensorHead.mOffset = mCcSize.y * 0x1000;
+    mBcPointHead.mFlags = SENSOR_IS_MANY;
+    mBcPointHead.mInfMargin = -(int) ((mSize.x * 0.5f - 3.0f) * 0x1000);
+    mBcPointHead.mSupMargin = ((mSize.x * 0.5f - 3.0f) * 0x1000);
+    mBcPointHead.mOffset = mSize.y * 0x1000;
 
-    mSensorWall.mFlags = SENSOR_IS_MANY;
-    mSensorWall.mInfMargin = 0x4000;
-    mSensorWall.mSupMargin = (mCcSize.y - 4.0f) * 0x1000;
-    mSensorWall.mOffset = (mCcSize.x * 0.5f - 0.5f) * 0x1000;
+    mBcPointWall.mFlags = SENSOR_IS_MANY;
+    mBcPointWall.mInfMargin = 0x4000;
+    mBcPointWall.mSupMargin = (mSize.y - 4.0f) * 0x1000;
+    mBcPointWall.mOffset = (mSize.x * 0.5f - 0.5f) * 0x1000;
 
-    mBc.set(this, mSensorFoot, mSensorHead, mSensorWall);
+    mBc.set(this, mBcPointFoot, mBcPointHead, mBcPointWall);
 }
 
 void daIce_c::setCarryBc() {
-    if (ACTOR_PARAM(Param10) == 1) {
+    if (ACTOR_PARAM(Param10) == COLLISION_NONE) {
         mBc.set(this, nullptr, nullptr, nullptr);
         mBc.mpRc = nullptr;
         return;
@@ -642,26 +642,26 @@ void daIce_c::setCarryBc() {
 
     daPyMng_c::getPlayer(mPlayerNo);
 
-    mSensorFoot.mFlags = SENSOR_IS_MANY;
-    mSensorFoot.mInfMargin = -(int) ((mCcSize.x * 0.5f - 8.0f) * 0x1000);
-    mSensorFoot.mSupMargin = ((mCcSize.x * 0.5f - 8.0f) * 0x1000);
-    mSensorFoot.mOffset = 0;
+    mBcPointFoot.mFlags = SENSOR_IS_MANY;
+    mBcPointFoot.mInfMargin = -(int) ((mSize.x * 0.5f - 8.0f) * 0x1000);
+    mBcPointFoot.mSupMargin = ((mSize.x * 0.5f - 8.0f) * 0x1000);
+    mBcPointFoot.mOffset = 0;
 
-    mSensorHead.mFlags = SENSOR_IS_MANY;
-    mSensorHead.mInfMargin = -0x2000;
-    mSensorHead.mSupMargin = 0x2000;
-    mSensorHead.mOffset = (mCcSize.y + 1.0f) * 0x1000;
+    mBcPointHead.mFlags = SENSOR_IS_MANY;
+    mBcPointHead.mInfMargin = -0x2000;
+    mBcPointHead.mSupMargin = 0x2000;
+    mBcPointHead.mOffset = (mSize.y + 1.0f) * 0x1000;
 
-    mSensorWall.mFlags = SENSOR_IS_MANY;
-    mSensorWall.mInfMargin = 0x6000;
-    mSensorWall.mSupMargin = (mCcSize.y - 6.0f) * 0x1000;
-    if (mCcSize.x < 26.0f) {
-        mSensorWall.mOffset = 0x2000;
+    mBcPointWall.mFlags = SENSOR_IS_MANY;
+    mBcPointWall.mInfMargin = 0x6000;
+    mBcPointWall.mSupMargin = (mSize.y - 6.0f) * 0x1000;
+    if (mSize.x < 26.0f) {
+        mBcPointWall.mOffset = 0x2000;
     } else {
-        mSensorWall.mOffset = mCcSize.x * 0.5f * 0x1000;
+        mBcPointWall.mOffset = mSize.x * 0.5f * 0x1000;
     }
 
-    mBc.set(this, mSensorFoot, mSensorHead, mSensorWall);
+    mBc.set(this, mBcPointFoot, mBcPointHead, mBcPointWall);
 }
 
 void daIce_c::enlargeBgc() {
@@ -669,53 +669,53 @@ void daIce_c::enlargeBgc() {
        &daIce_c::enlargeBgcLand, &daIce_c::enlargeBgcWater
     };
 
-    (this->*cs_enlarge_f[m_5ec])();
+    (this->*cs_enlarge_f[mIsWater])();
 }
 
 void daIce_c::enlargeBgcLand() {
-    float width = mCcSize.x * 0.5f;
-    m_544 += m_54c;
-    if (m_544 >= width - 1.0f) {
-        m_544 = width - 1.0f;
+    float width = mSize.x * 0.5f;
+    mCurrBgcSize.x += mBgcSizeIncrease.x;
+    if (mCurrBgcSize.x >= width - 1.0f) {
+        mCurrBgcSize.x = width - 1.0f;
     }
 
-    m_548 += m_550;
-    if (m_548 >= mCcSize.y - 1.0f) {
-        m_548 = mCcSize.y - 1.0f;
+    mCurrBgcSize.y += mBgcSizeIncrease.y;
+    if (mCurrBgcSize.y >= mSize.y - 1.0f) {
+        mCurrBgcSize.y = mSize.y - 1.0f;
     }
 
-    mBgCtr.setOfsX1(-m_544);
-    mBgCtr.setOfsY1(m_548);
-    mBgCtr.setOfsX2(m_544);
+    mBgCtr.setOfsX1(-mCurrBgcSize.x);
+    mBgCtr.setOfsY1(mCurrBgcSize.y);
+    mBgCtr.setOfsX2(mCurrBgcSize.x);
     mBgCtr.setOfsY2(0.0f);
 }
 
 void daIce_c::enlargeBgcWater() {
-    float width = mCcSize.x * 0.5f;
-    m_544 += m_54c;
-    if (m_544 >= width - 1.0f) {
-        m_544 = width - 1.0f;
+    float width = mSize.x * 0.5f;
+    mCurrBgcSize.x += mBgcSizeIncrease.x;
+    if (mCurrBgcSize.x >= width - 1.0f) {
+        mCurrBgcSize.x = width - 1.0f;
     }
 
-    float height = mCcSize.y * 0.5f;
-    m_548 += m_550;
-    if (m_548 >= height - 1.0f) {
-        m_548 = height - 1.0f;
+    float height = mSize.y * 0.5f;
+    mCurrBgcSize.y += mBgcSizeIncrease.y;
+    if (mCurrBgcSize.y >= height - 1.0f) {
+        mCurrBgcSize.y = height - 1.0f;
     }
 
-    mBgCtr.setOfsX1(-m_544);
-    mBgCtr.setOfsY1(height + m_548);
-    mBgCtr.setOfsX2(m_544);
-    mBgCtr.setOfsY2(height - m_548);
+    mBgCtr.setOfsX1(-mCurrBgcSize.x);
+    mBgCtr.setOfsY1(height + mCurrBgcSize.y);
+    mBgCtr.setOfsX2(mCurrBgcSize.x);
+    mBgCtr.setOfsY2(height - mCurrBgcSize.y);
 }
 
 void daIce_c::enemyAttach() {
     dActor_c *parent = (dActor_c *) getConnectParent();
-    parent->mPos = m_59c + mPosDiff;
+    parent->mPos = mModelPos + mPosDiff;
 }
 
 void daIce_c::shake() {
-    if (m_614 == 5) {
+    if (mInitType == INIT_WATER_TOGE) {
         watertogeShake();
     } else {
         normalShake();
@@ -725,7 +725,7 @@ void daIce_c::shake() {
 void daIce_c::normalShake() {
     // 2 frames left, 2 frames right
     float shakeDir = (dScStage_c::m_exeFrame & 2) ? 1.0f : -1.0f;
-    m_59c.x += shakeDir;
+    mModelPos.x += shakeDir;
 }
 
 void daIce_c::watertogeShake() {
@@ -735,7 +735,7 @@ void daIce_c::watertogeShake() {
     }
     mShakeAngle2 += mShakeAngle1;
     float sin = mAng(mShakeAngle2).sin();
-    m_59c.x += sin;
+    mModelPos.x += sin;
     mAngle.z = mShakeAngle3 * sin;
 }
 
@@ -762,8 +762,8 @@ void daIce_c::calcFloatSpeed() {
     mSpeed.x = -(mSpeedF * 4.0f) * mAngle.z.sin();
     mSpeed.y = mSpeedF * mAngle.z.cos();
     mSpeed.z = 0.0f;
-    sLib::chase(&m_5d8, 0.0f, 0.05f);
-    mSpeed.x += m_5d8;
+    sLib::chase(&mExtraFloatSpeedX, 0.0f, 0.05f);
+    mSpeed.x += mExtraFloatSpeedX;
 }
 
 bool daIce_c::checkPushSink(dActor_c *actor) {
@@ -773,25 +773,25 @@ bool daIce_c::checkPushSink(dActor_c *actor) {
         dAcPy_c *pl = (dAcPy_c *) actor;
         if (pl->isMameAction()) {
             if (pl->isStatus(daPlBase_c::STATUS_HIP_ATTACK_FALL)) {
-                m_5c0 = 1;
+                mFloatType = 1;
                 res = true;
             }
         } else {
             if (pl->isStatus(daPlBase_c::STATUS_HIP_ATTACK_FALL) || pl->isStatus(daPlBase_c::STATUS_SPIN_HIP_ATTACK_FALL)) {
-                m_5c0 = 1;
+                mFloatType = 1;
                 res = true;
             } else if (pl->mSpeed.y < -3.0f) {
-                m_5c0 = 0;
+                mFloatType = 0;
                 res = true;
             }
         }
     } else if (actor->mKind == STAGE_ACTOR_YOSHI) {
         daYoshi_c *yoshi = (daYoshi_c *) actor;
         if (yoshi->isStatus(daPlBase_c::STATUS_HIP_ATTACK_FALL)) {
-            m_5c0 = 1;
+            mFloatType = 1;
             res = true;
         } else if (yoshi->mSpeed.y < -3.0f) {
-            m_5c0 = 0;
+            mFloatType = 0;
             res = true;
         }
     }
@@ -838,7 +838,7 @@ bool daIce_c::checkSideBreak(dActor_c *actor, int direction) {
 }
 
 void daIce_c::breakEffect() {
-    if (dBc_c::checkWater(mPos.x, mPos.y + mCcSize.y * 0.7f, mLayer, nullptr) == dBc_c::WATER_CHECK_WATER) {
+    if (dBc_c::checkWater(mPos.x, mPos.y + mSize.y * 0.7f, mLayer, nullptr) == dBc_c::WATER_CHECK_WATER) {
         mIceEfMaker.m_00 &= ~BIT_FLAG(1);
         mIceEfMaker.createEffect(dIceEfMaker_c::ICE_EF_WATER_BREAK);
     } else {
@@ -849,7 +849,7 @@ void daIce_c::breakEffect() {
 }
 
 void daIce_c::meltEffect() {
-    if (dBc_c::checkWater(mPos.x, mPos.y + mCcSize.y * 0.7f, mLayer, nullptr) == dBc_c::WATER_CHECK_WATER) {
+    if (dBc_c::checkWater(mPos.x, mPos.y + mSize.y * 0.7f, mLayer, nullptr) == dBc_c::WATER_CHECK_WATER) {
         mIceEfMaker.m_00 &= ~BIT_FLAG(1);
         mIceEfMaker.createEffect(dIceEfMaker_c::ICE_EF_WATER_BREAK);
     } else {
@@ -888,7 +888,7 @@ void daIce_c::callBackFoot(dActor_c *self, dActor_c *other) {
         return;
     }
 
-    if (!(ice->m_608 & 1)) {
+    if (!(ice->mFlags & 1)) {
         if (
             ice->isState(StateID_Float) ||
             ice->isState(StateID_FloatWait) ||
@@ -1017,7 +1017,7 @@ void daIce_c::ccCallBack(dCc_c *self, dCc_c *other) {
         return;
     }
 
-    if (!(ice->m_608 & BIT_FLAG(0))) {
+    if (!(ice->mFlags & BIT_FLAG(0))) {
         return;
     }
 
@@ -1100,7 +1100,7 @@ void daIce_c::breakReq(int dir, int playerNo) {
     carryFukidashiCancel(17, -1);
     mBgCtr.release();
     parent->mPlayerNo = playerNo;
-    m_60c = 1;
+    mBreakRequested = true;
 }
 
 void daIce_c::floatbreakReq() {
@@ -1108,15 +1108,15 @@ void daIce_c::floatbreakReq() {
 
     parent->mPlayerNo = getManager()->mPlrNo;
     getManager()->setDestroyMode(dIceMng_c::DESTROY_VANISH);
-    m_60c = 1;
+    mBreakRequested = true;
 }
 
 bool daIce_c::checkNetIn() {
-    float width = mCcSize.x * 0.5f - 6.0f;
-    if (dBc_c::checkWireNet(mPos.x - width, mPos.y + mCcSize.y - 6.0f, mLayer)) {
+    float width = mSize.x * 0.5f - 6.0f;
+    if (dBc_c::checkWireNet(mPos.x - width, mPos.y + mSize.y - 6.0f, mLayer)) {
         return true;
     }
-    if (dBc_c::checkWireNet(mPos.x + width, mPos.y + mCcSize.y - 6.0f, mLayer)) {
+    if (dBc_c::checkWireNet(mPos.x + width, mPos.y + mSize.y - 6.0f, mLayer)) {
         return true;
     }
     if (dBc_c::checkWireNet(mPos.x - width, mPos.y + 6.0f, mLayer)) {
@@ -1269,7 +1269,7 @@ mVec3_c daIce_c::calcCarryPos() {
 }
 
 BOOL daIce_c::canCarry() const {
-    if (!(m_608 & 2)) {
+    if (!(mFlags & 2)) {
         return false;
     }
 
@@ -1327,7 +1327,7 @@ void daIce_c::initializeState_Freeze() {
 }
 
 void daIce_c::finalizeState_Freeze() {
-    m_59c = mInitialPos;
+    mModelPos = mInitialPos;
     enemyAttach();
 }
 
@@ -1346,21 +1346,21 @@ void daIce_c::initializeState_Hop() {
     mSpeed.z = 0.0f;
     mAccelY = -0.1875f;
 
-    m_604 = 3;
-    m_608 &= ~BIT_FLAG(1);
+    mFallTimer = 3;
+    mFlags &= ~BIT_FLAG(1);
 
-    mSensorFoot.mFlags |= 0x44;
-    mSensorHead.mFlags |= 0x44;
-    mSensorWall.mFlags |= 0x44;
+    mBcPointFoot.mFlags |= 0x44;
+    mBcPointHead.mFlags |= 0x44;
+    mBcPointWall.mFlags |= 0x44;
 
     mPos.z = 1000.0f;
     m_23b = 1;
 }
 
 void daIce_c::finalizeState_Hop() {
-    mSensorFoot.mFlags &= ~0x44;
-    mSensorHead.mFlags &= ~0x44;
-    mSensorWall.mFlags &= ~0x44;
+    mBcPointFoot.mFlags &= ~0x44;
+    mBcPointHead.mFlags &= ~0x44;
+    mBcPointWall.mFlags &= ~0x44;
 }
 
 void daIce_c::executeState_Hop() {
@@ -1377,7 +1377,7 @@ void daIce_c::executeState_Hop() {
                 getManager()->set_2c(0);
                 mSpeed.x = 0.0f;
                 mCc.entry();
-                m_608 |= BIT_FLAG(1);
+                mFlags |= BIT_FLAG(1);
                 dAudio::g_pSndObjMap->startSound(SE_OBJ_PNGN_ICE_LAND, mPos, 0);
             }
             mSpeed.y = 0.0f;
@@ -1391,21 +1391,21 @@ void daIce_c::executeState_Hop() {
 
 void daIce_c::initializeState_Land() {
     mSpeed.set(0.0f, 0.0f, 0.0f);
-    mSensorWall.mFlags |= BIT_FLAG(30);
-    mSensorHead.mFlags |= BIT_FLAG(31);
+    mBcPointWall.mFlags |= BIT_FLAG(30);
+    mBcPointHead.mFlags |= BIT_FLAG(31);
     mBgCtr.mFlags |= BIT_FLAG(11);
 }
 
 void daIce_c::finalizeState_Land() {
-    mSensorWall.mFlags &= ~BIT_FLAG(30);
-    mSensorHead.mFlags &= ~BIT_FLAG(31);
+    mBcPointWall.mFlags &= ~BIT_FLAG(30);
+    mBcPointHead.mFlags &= ~BIT_FLAG(31);
 }
 
 void daIce_c::executeState_Land() {
     float height = 0.0f;
     dBc_c::WATER_TYPE_e waterRes = dBc_c::checkWater(mPos.x, mPos.y, mLayer, &height);
     if (waterRes == dBc_c::WATER_CHECK_WATER) {
-        if (height >= mPos.y + mCcSize.y + 8.0f) {
+        if (height >= mPos.y + mSize.y + 8.0f) {
             getManager()->set_2c(1);
             getManager()->setNonMeltTime();
             changeState(StateID_Float);
@@ -1436,7 +1436,7 @@ void daIce_c::executeState_Land() {
         mSpeed.y = 0.0f;
     }
     if (!(mBc.mFlags & dBc_c::FLAG_15)) {
-        mSensorHead.mFlags |= BIT_FLAG(31);
+        mBcPointHead.mFlags |= BIT_FLAG(31);
     }
 
     mBc.checkHead(isFootEnm);
@@ -1490,10 +1490,10 @@ void daIce_c::initializeState_Sink() {
 void daIce_c::finalizeState_Sink() {}
 
 void daIce_c::executeState_Sink() {
-    float prev = m_5f4;
-    dBc_c::checkWater(mPos.x, mPos.y, mLayer, &m_5f4);
+    float prev = mWaterHeight;
+    dBc_c::checkWater(mPos.x, mPos.y, mLayer, &mWaterHeight);
 
-    if (m_5f4 - prev < 0.0f) {
+    if (mWaterHeight - prev < 0.0f) {
         if (mPos.y >= getSmth()) {
             mPos.y = getSmth();
             changeState(StateID_FloatWait);
@@ -1508,12 +1508,12 @@ void daIce_c::executeState_Sink() {
     getManager(); // [Unused return value]
 
     if (std::fabs(mSpeed.y) < mFloatAccel) {
-        if (m_614 == ICE_TYPE_5) {
+        if (mInitType == INIT_WATER_TOGE) {
             changeState(StateID_TogeFloat);
         } else {
             changeState(StateID_Float);
         }
-    } else if (ACTOR_PARAM(Param10) != 2) {
+    } else if (ACTOR_PARAM(Param10) != COLLISION_WATER) {
         float yPos = mPos.y;
         if (mBc.checkFoot()) {
             if  (mBc.mFlags & dBc_c::FLAG_21) {
@@ -1563,14 +1563,14 @@ void daIce_c::executeState_Float() {
                 mFloatTargetSpeed = l_float_speed[mWeightType];
                 m_23b = 1;
             } else if (res != 0) {
-                m_5c0 = 2;
+                mFloatType = 2;
                 changeState(StateID_PushSink);
                 return;
             }
             break;
     }
 
-    dBc_c::checkWater(mPos.x, mPos.y, mLayer, &m_5f4);
+    dBc_c::checkWater(mPos.x, mPos.y, mLayer, &mWaterHeight);
 
     if (mPos.y >= getSmth()) {
         changeState(StateID_FloatWait);
@@ -1615,20 +1615,20 @@ void daIce_c::executeState_SmallFloat() {
                 mFloatTargetSpeed = 0.5f;
                 m_23b = 1;
             } else if (res != 0) {
-                m_5c0 = 2;
+                mFloatType = 2;
                 changeState(StateID_PushSink);
                 return;
             }
             break;
     }
 
-    float prev = m_5f4;
-    dBc_c::checkWater(mPos.x, mPos.y, mLayer, &m_5f4);
+    float prev = mWaterHeight;
+    dBc_c::checkWater(mPos.x, mPos.y, mLayer, &mWaterHeight);
 
     if (mPos.y >= getSmth()) {
         changeState(StateID_FloatWait);
     } else {
-        if (m_5f4 > prev) {
+        if (mWaterHeight > prev) {
             changeState(StateID_Float);
         } else if (mBc.checkHead(0)) {
             floatbreakReq();
@@ -1637,47 +1637,47 @@ void daIce_c::executeState_SmallFloat() {
 }
 
 void daIce_c::initializeState_FloatWait() {
-    dBc_c::checkWater(mPos.x, mPos.y, mLayer, &m_5f4);
+    dBc_c::checkWater(mPos.x, mPos.y, mLayer, &mWaterHeight);
     mSpeed.x = 0.0f;
-    m_5f0 = 0;
-    m_5f8 = 0;
-    mSensorHead.mFlags |= BIT_FLAG(7);
+    mCurrFloatUpDown = 0;
+    mFloatState = 0;
+    mBcPointHead.mFlags |= BIT_FLAG(7);
 }
 
 void daIce_c::finalizeState_FloatWait() {
-    mSensorHead.mFlags &= ~BIT_FLAG(7);
+    mBcPointHead.mFlags &= ~BIT_FLAG(7);
 }
 
 void daIce_c::executeState_FloatWait() {
     mAngle.z.chaseAngle(0, 0x10);
 
-    float prev = m_5f4;
-    dBc_c::checkWater(mPos.x, mPos.y, mLayer, &m_5f4);
+    float prev = mWaterHeight;
+    dBc_c::checkWater(mPos.x, mPos.y, mLayer, &mWaterHeight);
 
-    float diff = m_5f4 - prev;
+    float diff = mWaterHeight - prev;
     if (diff > 0.0f) {
-        m_5f8 = 2;
+        mFloatState = 2;
     } else if (diff < 0.0f) {
-        m_5f8 = 3;
+        mFloatState = 3;
     } else {
-        m_5f8 = 1;
+        mFloatState = 1;
     }
 
-    float h = m_5f4 - mCcSize.y * 0.5f;
-    switch (m_5f8) {
+    float h = mWaterHeight - mSize.y * 0.5f;
+    switch (mFloatState) {
         case 2:
         case 3:
             sLib::addCalc(&mPos.y, h, 0.1f, 1.0f, 0.05f);
             if (diff < 0.0f) {
-                float tmp = m_5f4 - mCcSize.y * 0.3f;
+                float tmp = mWaterHeight - mSize.y * 0.3f;
                 if (mPos.y > tmp) {
                     mPos.y = tmp;
                 }
             }
             break;
         case 1:
-            m_5f0 += 0x280;
-            mPos.y = h + nw4r::math::SinIdx(m_5f0) * 5.0f;
+            mCurrFloatUpDown += 0x280;
+            mPos.y = h + nw4r::math::SinIdx(mCurrFloatUpDown) * 5.0f;
             break;
         default:
             break;
@@ -1687,7 +1687,7 @@ void daIce_c::executeState_FloatWait() {
     } else {
         int res = 0;
         if (checkPlAttach_Head(&res) && res != 0) {
-            m_5c0 = 2;
+            mFloatType = 2;
             changeState(StateID_PushSink);
         }
     }
@@ -1696,23 +1696,23 @@ void daIce_c::executeState_FloatWait() {
 void daIce_c::initializeState_PushSink() {
     const static float cs_float_speed[] = { -0.85f, -4.5f, -1.0f };
 
-    mSpeed.set(0.0f, cs_float_speed[m_5c0], 0.0f);
+    mSpeed.set(0.0f, cs_float_speed[mFloatType], 0.0f);
     mAngle.z = 0;
 }
 
 void daIce_c::finalizeState_PushSink() {}
 
 void daIce_c::executeState_PushSink() {
-    float prev = m_5f4;
-    dBc_c::checkWater(mPos.x, mPos.y, mLayer, &m_5f4);
-    if (m_5f4 - prev < 0.0f && mPos.y >= getSmth()) {
+    float prev = mWaterHeight;
+    dBc_c::checkWater(mPos.x, mPos.y, mLayer, &mWaterHeight);
+    if (mWaterHeight - prev < 0.0f && mPos.y >= getSmth()) {
         mPos.y = getSmth();
         changeState(StateID_FloatWait);
         mStateMgr.refreshState();
     } else {
         if (mSpeed.y < 0.0f) {
             float newVal;
-            if (m_5c0 == 2) {
+            if (mFloatType == 2) {
                 newVal = sLib::addCalc(&mSpeed.y, 0.0f, 0.04f, 0.3f, 0.0f);
             } else {
                 newVal = sLib::addCalc(&mSpeed.y, 0.0f, 0.07f, 0.5f, 0.0f);
@@ -1723,12 +1723,12 @@ void daIce_c::executeState_PushSink() {
         }
         posMove();
         if (mSpeed.y >= 0.0f) {
-            if (m_5c0 == 0 || m_5c0 == 2) {
+            if (mFloatType == 0 || mFloatType == 2) {
                 changeState(StateID_SmallFloat);
             } else {
                 changeState(StateID_Float);
             }
-        } else if (ACTOR_PARAM(Param10) != 2) {
+        } else if (ACTOR_PARAM(Param10) != COLLISION_WATER) {
             float prevY = mPos.y;
             if (mBc.checkFoot()) {
                 if (mBc.mFlags & dBc_c::FLAG_21) {
@@ -1786,13 +1786,13 @@ void daIce_c::executeState_TogeFloat() {
             break;
         }
     }
-    dBc_c::checkWater(mPos.x, mPos.y, mLayer, &m_5f4);
+    dBc_c::checkWater(mPos.x, mPos.y, mLayer, &mWaterHeight);
     if (mPos.y >= getSmth()) {
         mPos.y = getSmth();
     }
     if (mBc.checkHead(0)) {
         floatbreakReq();
-    } else if (m_5dc != 0) {
+    } else if (mBeginShake) {
         changeState(StateID_ShakeFloat);
     }
 }
@@ -1835,7 +1835,7 @@ void daIce_c::executeState_ShakeFloat() {
             }
             break;
     }
-    dBc_c::checkWater(mPos.x, mPos.y, mLayer, &m_5f4);
+    dBc_c::checkWater(mPos.x, mPos.y, mLayer, &mWaterHeight);
     if (mPos.y >= getSmth()) {
         mPos.y = getSmth();
     }
@@ -1845,24 +1845,24 @@ void daIce_c::executeState_ShakeFloat() {
 }
 
 void daIce_c::initializeState_Air() {
-    m_604 = 120;
+    mFallTimer = 120;
     mSpeed.set(0.0f, 0.0f, 0.0f);
     mCc.entry();
-    mSensorFoot.mFlags |= BIT_FLAG(31);
+    mBcPointFoot.mFlags |= BIT_FLAG(31);
 }
 
 void daIce_c::finalizeState_Air() {
-    mSensorFoot.mFlags &= ~BIT_FLAG(31);
-    m_5dc = 0;
+    mBcPointFoot.mFlags &= ~BIT_FLAG(31);
+    mBeginShake = false;
 }
 
 void daIce_c::executeState_Air() {
-    m_604--;
-    if (m_604 == 0) {
+    mFallTimer--;
+    if (mFallTimer == 0) {
         mSpeed.set(0.0f, 0.0f, 0.0f);
         changeState(StateID_Fall);
-    } else if (m_604 == 40) {
-        m_5dc = 1;
+    } else if (mFallTimer == 40) {
+        mBeginShake = true;
     }
     int plr = -1;
     if (checkPlHasami(&plr)) {
@@ -1881,7 +1881,7 @@ void daIce_c::executeState_Air() {
 void daIce_c::initializeState_Fall() {
     getManager(); // [Unused return value]
 
-    m_5fc = mPos.y;
+    mStartFallY = mPos.y;
     if (getOldStateID() == StateID_Air) {
         mAccelY = -1.0f;
     } else {
@@ -1890,7 +1890,7 @@ void daIce_c::initializeState_Fall() {
 }
 
 void daIce_c::finalizeState_Fall() {
-    mSensorWall.mFlags &= ~BIT_FLAG(30);
+    mBcPointWall.mFlags &= ~BIT_FLAG(30);
     getManager()->set_2c(0);
 }
 
@@ -1905,14 +1905,14 @@ void daIce_c::executeState_Fall() {
     mBc.checkWallEnm(&dirs[dir]);
     mBc.checkWallEnm(&dirs[dir ^ 1]);
     if (mBc.checkFootEnm()) {
-        float diff = std::fabs(mPos.y - m_5fc);
+        float fallHeight = std::fabs(mPos.y - mStartFallY);
         dEn_c *parent = (dEn_c *) getConnectParent();
-        if (parent->mFlags & BIT_FLAG(17) || diff >= 24.0f) {
+        if (parent->mFlags & BIT_FLAG(17) || fallHeight >= 24.0f) {
             int dir = dGameCom::rndInt(2);
             dActorMng_c::m_instance->createUpCoin(getCenterPos(), dir, 1, 0);
             breakReq(dir ^ 1, -1);
         } else {
-            if (diff >= 12.0f) {
+            if (fallHeight >= 12.0f) {
                 dAudio::g_pSndObjMap->startSound(SE_OBJ_PNGN_ICE_LAND, mPos, 0);
             }
             mSpeed.y = 0.0f;
@@ -1920,7 +1920,7 @@ void daIce_c::executeState_Fall() {
         }
     } else {
         float height = 0;
-        dBc_c::WATER_TYPE_e waterRes = dBc_c::checkWater(mPos.x, mPos.y + mCcSize.y * 0.2f, mLayer, &height);
+        dBc_c::WATER_TYPE_e waterRes = dBc_c::checkWater(mPos.x, mPos.y + mSize.y * 0.2f, mLayer, &height);
         if (waterRes == dBc_c::WATER_CHECK_WATER) {
             mSpeed.x = 0.0f;
             mVec3_c efPos(mPos.x, height, 6500.0f);
@@ -1944,14 +1944,14 @@ void daIce_c::initializeState_Dive() {
     iceMng->m_04 = iceMng->m_08;
     iceMng->stopMeltShake();
 
-    m_5dc = 0;
-    m_608 &= ~(BIT_FLAG(0) | BIT_FLAG(1));
+    mBeginShake = false;
+    mFlags &= ~(BIT_FLAG(0) | BIT_FLAG(1));
     mBgCtr.mFlags = 0x408;
     mAccelF = 0.06f;
     mSpeedMax.x = 0.0f;
     mSpeed.y *= 0.8f;
     mAngle.z = 0;
-    m_604 = 30;
+    mFallTimer = 30;
 }
 
 void daIce_c::finalizeState_Dive() {
@@ -1967,7 +1967,7 @@ void daIce_c::executeState_Dive() {
     }
     calcSpeedX();
     posMove();
-    m_604--;
+    mFallTimer--;
     if (mSpeed.y >= 0.0f && std::fabs(mSpeed.x) < mAccelF) {
         mCc.mCcData.mAttack = CC_ATTACK_NONE;
         mCc.mCcData.mCallback = ccCallBack_Water;
@@ -1989,15 +1989,15 @@ void daIce_c::initializeState_YoganDive() {
     iceMng->set_2c(1);
     iceMng->m_04 = iceMng->m_08;
     iceMng->stopMeltShake();
-    m_5dc = 0;
+    mBeginShake = false;
     mBgCtr.mFlags = 8;
-    m_608 &= ~(BIT_FLAG(0) | BIT_FLAG(1));
+    mFlags &= ~(BIT_FLAG(0) | BIT_FLAG(1));
     mAccelF = 0.35f;
     mSpeedMax.x = 0.0f;
     mSpeed.y *= 0.25f;
     mPos.z = -2500.0f;
     mAngle.z = 0;
-    m_604 = 30;
+    mFallTimer = 30;
 }
 
 void daIce_c::finalizeState_YoganDive() {}
@@ -2010,7 +2010,7 @@ void daIce_c::executeState_YoganDive() {
     posMove();
     float height = 0.0f;
     dBc_c::WATER_TYPE_e waterRes = dBc_c::checkWater(mPos.x, mPos.y, mLayer, &height);
-    if (waterRes == dBc_c::WATER_CHECK_NONE && mPos.y + mCcSize.y < height) {
+    if (waterRes == dBc_c::WATER_CHECK_NONE && mPos.y + mSize.y < height) {
         dActor_c *parent = (dActor_c *) getConnectParent();
         if (parent != nullptr) {
             parent->deleteRequest();
@@ -2027,13 +2027,13 @@ void daIce_c::initializeState_Carry() {
     iceMng->set_2c(1);
     iceMng->m_04 = iceMng->m_08;
     iceMng->stopMeltShake();
-    m_5dc = 0;
+    mBeginShake = false;
     setCarryBc();
     mCc.mCcData.mAttack = CC_ATTACK_SHELL;
     mCc.mCcData.mVsKind &= ~BIT_FLAG(CC_KIND_ITEM);
-    mCc.mCcData.mBase.mSize.set(mCcSize.x * 0.5f + 1.0f, mCcSize.y * 0.5f + 1.0f);
+    mCc.mCcData.mBase.mSize.set(mSize.x * 0.5f + 1.0f, mSize.y * 0.5f + 1.0f);
     mBgCtr.mFlags2 = 2;
-    mSensorHead.mFlags |= BIT_FLAG(20) | BIT_FLAG(23);
+    mBcPointHead.mFlags |= BIT_FLAG(20) | BIT_FLAG(23);
     mBc.mOwningPlrNo = mCarriedByPlrNo;
 }
 
@@ -2127,7 +2127,7 @@ void daIce_c::executeState_Drop() {
     getConnectParent(); // [Unused return value]
     dIceMng_c *iceMng = getManager();
     float height = 0.0f;
-    dBc_c::WATER_TYPE_e waterRes = dBc_c::checkWater(mPos.x, mPos.y + mCcSize.y * 0.2f, mLayer, &height);
+    dBc_c::WATER_TYPE_e waterRes = dBc_c::checkWater(mPos.x, mPos.y + mSize.y * 0.2f, mLayer, &height);
     if (waterRes == dBc_c::WATER_CHECK_WATER) {
         mCc.mCcData.mAttack = CC_ATTACK_NONE;
         mCc.mCcData.mCallback = ccCallBack_Water;
@@ -2180,9 +2180,9 @@ void daIce_c::initializeState_Throw() {
     mCc.mCcData.mVsKind |= BIT_FLAG(CC_KIND_BALLOON) | BIT_FLAG(CC_KIND_ITEM) | BIT_FLAG(CC_KIND_KILLER);
     mCc.mCcData.mVsDamage |= BIT_FLAG(CC_ATTACK_SHELL);
     mCc.mCcData.mVsDamage &= ~BIT_FLAG(CC_ATTACK_SPIN_LIFT_UP);
-    mSensorHead.mFlags |= BIT_FLAG(18) | BIT_FLAG(19) | BIT_FLAG(20) | BIT_FLAG(23);
-    mSensorFoot.mFlags |= BIT_FLAG(18) | BIT_FLAG(19);
-    mSensorWall.mFlags |= BIT_FLAG(18) | BIT_FLAG(19) | BIT_FLAG(20) | BIT_FLAG(23);
+    mBcPointHead.mFlags |= BIT_FLAG(18) | BIT_FLAG(19) | BIT_FLAG(20) | BIT_FLAG(23);
+    mBcPointFoot.mFlags |= BIT_FLAG(18) | BIT_FLAG(19);
+    mBcPointWall.mFlags |= BIT_FLAG(18) | BIT_FLAG(19) | BIT_FLAG(20) | BIT_FLAG(23);
     if (mPos.z > 2000.0f) {
         mPos.z = 2000.0f;
     }
@@ -2190,9 +2190,9 @@ void daIce_c::initializeState_Throw() {
 }
 
 void daIce_c::finalizeState_Throw() {
-    mSensorHead.mFlags &= ~(BIT_FLAG(18) | BIT_FLAG(19) | BIT_FLAG(20) | BIT_FLAG(23));
-    mSensorFoot.mFlags &= ~(BIT_FLAG(18) | BIT_FLAG(19));
-    mSensorWall.mFlags &= ~(BIT_FLAG(18) | BIT_FLAG(19) | BIT_FLAG(20) | BIT_FLAG(23));
+    mBcPointHead.mFlags &= ~(BIT_FLAG(18) | BIT_FLAG(19) | BIT_FLAG(20) | BIT_FLAG(23));
+    mBcPointFoot.mFlags &= ~(BIT_FLAG(18) | BIT_FLAG(19));
+    mBcPointWall.mFlags &= ~(BIT_FLAG(18) | BIT_FLAG(19) | BIT_FLAG(20) | BIT_FLAG(23));
     mBc.mOwningPlrNo = -1;
     mBgCtr.mpCarryActor = nullptr;
 }
@@ -2205,7 +2205,7 @@ void daIce_c::executeState_Throw() {
     getManager(); // [Unused return value]
 
     float height = 0.0f;
-    dBc_c::WATER_TYPE_e waterRes = dBc_c::checkWater(mPos.x, mPos.y + mCcSize.y * 0.2f, mLayer, &height);
+    dBc_c::WATER_TYPE_e waterRes = dBc_c::checkWater(mPos.x, mPos.y + mSize.y * 0.2f, mLayer, &height);
     if (waterRes == dBc_c::WATER_CHECK_WATER) {
         mVec3_c efPos(mPos.x, height, 6500.0f);
         waterSplashEffect(efPos, 1.0f);

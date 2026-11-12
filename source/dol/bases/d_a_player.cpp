@@ -7250,7 +7250,12 @@ void dAcPy_c::createFireBall(int i) {
     } else if (mPowerup == POWERUP_PENGUIN_SUIT || mPowerup == POWERUP_ICE_FLOWER) {
         startSound(SE_PLY_THROW_ICEBALL, false);
         pos = loopPos;
-        u32 param = (i << 16) | (mAmiLayer << 12) | (mLayer << 8) | (m_12f4 << 4) | mPlayerNo;
+        u32 param =
+            ACTOR_PARAM_GEN(daIceBall_c, LimitMode, i) |
+            ACTOR_PARAM_GEN(daIceBall_c, AmiLine, mAmiLayer) |
+            ACTOR_PARAM_GEN(daIceBall_c, Layer, mLayer) |
+            ACTOR_PARAM_GEN(daIceBall_c, Direction, m_12f4) |
+            ACTOR_PARAM_GEN(daIceBall_c, PlayerNo, mPlayerNo);
         dActor_c::construct(fProf::ICEBALL, param, &pos, nullptr, 0);
     }
 }
