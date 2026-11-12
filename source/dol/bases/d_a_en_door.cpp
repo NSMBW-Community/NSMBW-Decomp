@@ -113,7 +113,7 @@ int daEnDoor_c::create() {
     mHasParent = isRotationControlled != 0;
 
     if (isRotationControlled) {
-        mRotationID = ACTOR_PARAM(RotID);
+        mRotationID = ACTOR_PARAM(RotationID);
         if (!setParentInfo(mRotationID)) {
             changeState(StateID_Search);
         }

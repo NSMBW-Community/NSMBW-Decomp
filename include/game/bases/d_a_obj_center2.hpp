@@ -41,7 +41,7 @@ public:
     u8 mRotationID; ///< The rotation ID to be set on the affected objects.
     u8 mZoomControl; ///< Whether the zoom level is controlled by the rotation controller. [Unknown what 1 and 2 mean].
 
-    ACTOR_PARAM_CONFIG(RotID, 0, 8); ///< @copydoc mRotationID
+    ACTOR_PARAM_CONFIG(RotationID, 0, 8); ///< @copydoc mRotationID
     ACTOR_PARAM_CONFIG(RotateShock, 8, 1); ///< Shakes the screen when the rotation is complete.
     ACTOR_PARAM_CONFIG(RotateCoinSE, 9, 1); ///< Enables playing a coin sound effect at the end of a rotation.
     ACTOR_PARAM_CONFIG(ZoomControl, 10, 2); ///< @copydoc mZoomControl

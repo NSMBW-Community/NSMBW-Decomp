@@ -77,5 +77,5 @@ public:
 
     ACTOR_PARAM_CONFIG(Orientation, 12, 2); ///< @copydoc mOrientation
     ACTOR_PARAM_CONFIG(HasParent, 8, 1); ///< @copydoc mHasParent
-    ACTOR_PARAM_CONFIG(RotID, 0, 8); ///< @copydoc mRotationID
+    ACTOR_PARAM_CONFIG(RotationID, 0, 8); ///< @copydoc mRotationID
 };
