@@ -2,6 +2,8 @@
 
 #include <game/bases/d_en_door.hpp>
 
+/// @brief A ghost house door.
+/// @ingroup bases
 /// @unofficial
 class dEnObakeDoor_c : public daEnDoor_c {
 public:

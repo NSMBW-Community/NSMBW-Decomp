@@ -5,6 +5,9 @@
 #include <game/bases/d_a_obj_center.hpp>
 #include <game/bases/d_a_obj_center2.hpp>
 
+/// @brief The base class for door actors.
+/// @statetable
+/// @ingroup bases
 class daEnDoor_c : public dEn_c {
 public:
     /// @brief The possible door states.

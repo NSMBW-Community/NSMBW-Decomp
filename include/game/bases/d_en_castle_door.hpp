@@ -2,6 +2,8 @@
 
 #include <game/bases/d_a_en_door.hpp>
 
+/// @brief A red door used in castles.
+/// @ingroup bases
 /// @unofficial
 class dEnCastleDoor_c : public daEnDoor_c {
 public:

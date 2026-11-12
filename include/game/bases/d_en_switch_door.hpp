@@ -2,6 +2,8 @@
 
 #include <game/bases/d_en_door.hpp>
 
+/// @brief An event-activated d-pad door.
+/// @ingroup bases
 /// @unofficial
 class dEnSwitchDoor_c : public dEnDoor_c {
 public:
