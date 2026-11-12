@@ -4,31 +4,22 @@
 #include <game/bases/d_heap_allocator.hpp>
 #include <game/bases/d_ice_effect_maker.hpp>
 #include <game/bases/d_ice_manager.hpp>
-
-class dIceParam_c {
-public:
-    static const mVec3_c smc_ICE_DEFSIZE_SQUARE;
-    static const mVec3_c smc_ICE_DEFSIZE_TATE;
-    static const mVec3_c smc_ICE_DEFSIZE_YOKO;
-    static const mVec3_c smc_ICE_DEFSIZE_BIG_SQUARE;
-    static const mVec3_c smc_ICE_DEFSIZE_BIG_TATE;
-    static const mVec3_c smc_ICE_DEFSIZE_BIG_YOKO;
-};
+#include <game/bases/d_ice_param.hpp>
 
 /// @brief Ice blocks for enemies.
 class daIce_c : public dActorState_c {
 public:
     /// @unofficial
-    enum IceType_e {
-        ICE_TYPE_0,
-        ICE_TYPE_1,
-        ICE_TYPE_2,
-        ICE_TYPE_3,
-        ICE_TYPE_4,
-        ICE_TYPE_5,
-        ICE_TYPE_6,
-        ICE_TYPE_7,
-        ICE_TYPE_8
+    enum InitType_e {
+        INIT_LAND,
+        INIT_FREEZE_1,
+        INIT_AIR,
+        INIT_FALL,
+        INIT_WATER,
+        INIT_WATER_TOGE,
+        INIT_FREEZE_2,
+        INIT_COVER,
+        INIT_HOP
     };
 
     /// @unofficial
@@ -40,9 +31,16 @@ public:
         ICE_WEIGHT_COUNT
     };
 
+    /// @unofficial
+    enum CollisionMode_e {
+        COLLISION_NORMAL,
+        COLLISION_NONE,
+        COLLISION_WATER
+    };
+
     typedef void (daIce_c::*EnlargeFunc)();
 
-    daIce_c() : m_5dc(0), m_608(0), m_60c(0), mIceEfMaker(this) {} ///< @copydoc dActorState_c::dActorState_c
+    daIce_c() : mBeginShake(0), mFlags(0), mBreakRequested(0), mIceEfMaker(this) {} ///< @copydoc dActorState_c::dActorState_c
     ~daIce_c() {} ///< @copydoc dActorState_c::~dActorState_c
 
     int create() override;
@@ -83,9 +81,9 @@ public:
 
     void setBc();
     void setCarryBc();
-    void enlargeBgc();
-    void enlargeBgcLand();
-    void enlargeBgcWater();
+    void enlargeBgc(); ///< Enlarges the dynamic collider until it reaches the full size.
+    void enlargeBgcLand(); ///< Enlarges the dynamic collider when not in water.
+    void enlargeBgcWater(); ///< Enlarges the dynamic collider when in water.
 
     void enemyAttach();
     void shake();
@@ -143,8 +141,8 @@ public:
     STATE_FUNC_DECLARE(daIce_c, Drop);
     STATE_FUNC_DECLARE(daIce_c, Melt_Normal);
 
-    float getSmth() { return m_5f4 - mCcSize.y * 0.5f; }
-    bool isDestroy() { return m_60c != 0 || mpIceMng != nullptr && mpIceMng->mDestroyMode != dIceMng_c::DESTROY_NONE; }
+    float getSmth() { return mWaterHeight - mSize.y * 0.5f; }
+    bool isDestroy() { return mBreakRequested != 0 || mpIceMng != nullptr && mpIceMng->mDestroyMode != dIceMng_c::DESTROY_NONE; }
 
     static void callBackFoot(dActor_c *self, dActor_c *other);
     static void callBackHead(dActor_c *self, dActor_c *other);
@@ -156,57 +154,55 @@ public:
     static void ccCallBack_Water(dCc_c *self, dCc_c *other);
 
 private:
-    dHeapAllocator_c mAllocator;
-    nw4r::g3d::ResFile mResFileMdl;
-    m3d::mdl_c mMdl;
-    nw4r::g3d::ResAnmTexSrt mResFileAnm;
-    m3d::anmTexSrt_c mAnm;
-    dBg_ctr_c mBgCtr;
-    float m_544;
-    float m_548;
-    float m_54c;
-    float m_550;
-    sBcMany mSensorFoot;
-    sBcMany mSensorHead;
-    sBcMany mSensorWall;
-    mVec3_c mPosDiff;
+    dHeapAllocator_c mAllocator; ///< The allocator.
+    nw4r::g3d::ResFile mResFileMdl; ///< The resource file.
+    m3d::mdl_c mMdl; ///< The model.
+    nw4r::g3d::ResAnmTexSrt mResFileAnm; ///< The texture animation resource file.
+    m3d::anmTexSrt_c mAnm; ///< The texture animation.
+    dBg_ctr_c mBgCtr; ///< The dynamic collider.
+    mVec2_c mCurrBgcSize; ///< The current dynamic collider size, grows over time.
+    mVec2_c mBgcSizeIncrease; ///< The amount to increate #mCurrBgcSize per frame until the full size is reached.
+    sBcMany mBcPointFoot;
+    sBcMany mBcPointHead;
+    sBcMany mBcPointWall;
+    mVec3_c mPosDiff; ///< The offset to the parent actor.
     mVec3_c mInitialPos;
-    mVec3_c m_59c;
-    mVec3_c m_5a8;
-    mVec3_c mCcSize;
-    int m_5c0;
+    mVec3_c mModelPos;
+    mVec3_c mPrevPos;
+    mVec3_c mSize;
+    int mFloatType;
     int mCarriedByPlrNo;
     float mFloatTargetSpeed;
     float mFloatAccel;
     short mFloatAngle;
     u8 mPad1[0x4];
-    float m_5d8;
-    int m_5dc;
+    float mExtraFloatSpeedX; ///< Added to the X speed while floating. [Seems to never get set].
+    BOOL mBeginShake;
     short mShakeAngle1;
     short mShakeAngle2;
     short mShakeAngle3;
     u8 mPad2[0x4];
-    int m_5ec;
-    short m_5f0;
-    float m_5f4;
-    int m_5f8;
-    float m_5fc;
-    int m_600;
-    int m_604;
-    u32 m_608;
-    int m_60c;
-    float m_610;
-    IceType_e m_614;
-    int mWeightType;
+    int mIsWater;
+    short mCurrFloatUpDown; ///< Counter for bobbing up and down on the water surface.
+    float mWaterHeight;
+    int mFloatState;
+    float mStartFallY;
+    int mCollEntryTimer;
+    int mFallTimer;
+    u32 mFlags;
+    BOOL mBreakRequested;
+    float prevX; ///< The X position before running execute().
+    InitType_e mInitType;
+    IceWeight_e mWeightType;
     dIceMng_c *mpIceMng;
     dIceEfMaker_c mIceEfMaker;
 
     ACTOR_PARAM_CONFIG(IceType, 0, 4);
-    ACTOR_PARAM_CONFIG(Param8, 8, 1);
-    ACTOR_PARAM_CONFIG(ParamC, 12, 1);
+    ACTOR_PARAM_CONFIG(Param8, 8, 1); // Sets mFlags bit 0
+    ACTOR_PARAM_CONFIG(ParamC, 12, 1); // Sets mFlags bit 1
     ACTOR_PARAM_CONFIG(Param10, 16, 2);
     ACTOR_PARAM_CONFIG(Param14, 20, 1);
-    ACTOR_PARAM_CONFIG(Param18, 24, 4);
+    ACTOR_PARAM_CONFIG(InitType, 24, 4);
 
     static const short smc_OBJBG_DUMMY_ANGLE = 0;
 };

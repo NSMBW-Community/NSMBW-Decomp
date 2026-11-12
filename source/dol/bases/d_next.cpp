@@ -183,8 +183,8 @@ void dNext_c::changeScene() {
     dAudio::setBgmMode(mode & 0x0F);
     SndSceneMgr::sInstance->FUN_8019d5b0(mode >> 4);
 
-    u32 param = ACTOR_PARAM_GEN(dScStage_c, File, mNextGotoData.mDestFile);
-    param |= ACTOR_PARAM_GEN(dScStage_c, NextGotoID, mNextGotoData.mDestID);
+    u32 param = ACTOR_PARAM_GEN_MASKED(dScStage_c, File, mNextGotoData.mDestFile);
+    param |= ACTOR_PARAM_GEN_MASKED(dScStage_c, NextGotoID, mNextGotoData.mDestID);
 
     mSceneChangeDone = true;
     dScStage_c::m_exitMode = dScStage_c::EXIT_3;
