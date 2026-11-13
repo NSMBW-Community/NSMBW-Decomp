@@ -28,8 +28,8 @@ const daWmSandPillar_c::GlobalData_t sGlobalData_c<daWmSandPillar_c>::mData = {
     { 0.4f, 0.1f, 0.1f },
     { 1.1f, 1.8f, 1.8f },
     { 3, 1, 1 },
-    { 100, 10, 40 },
-    { 100, 100, 100 }
+    { 100, 10, 40 },  // mBottomWaitTime
+    { 100, 100, 100 } // mTopWaitTime
 };
 
 daWmSandPillar_c::daWmSandPillar_c() : mStateMgr(*this, StateID_Ready) {}
@@ -43,7 +43,7 @@ int daWmSandPillar_c::create() {
 
     float yPos = GLOBAL_DATA.mPosY[ACTOR_PARAM(Node)];
     mPos.y = yPos;
-    mUnk254 = mPos;
+    mInitialPos = mPos;
 
     return SUCCEEDED;
 }
@@ -119,14 +119,14 @@ void daWmSandPillar_c::FUN_808e55e0() {
 void daWmSandPillar_c::initializeState_Ready() {
     int nodeIdx = ACTOR_PARAM(Node);
     if (!(nodeIdx != NODE_1 && nodeIdx != NODE_2)) {
-        mUnk504 = 1;
+        mHasCourseCond = TRUE;
     } else {
-        mUnk504 = 0;
+        mHasCourseCond = FALSE;
     }
 }
 
 void daWmSandPillar_c::executeState_Ready() {
-    if (mUnk504 != 0) {
+    if (mHasCourseCond) {
         int world = daWmMap_c::GetCurrentWorld();
         int course = dWmLib::GetCourseNoFromPointName("W205");
         if (dWmLib::IsCourseClear(world, course)) {
@@ -147,7 +147,7 @@ void daWmSandPillar_c::finalizeState_Ready() {}
 
 void daWmSandPillar_c::initializeState_BottomWait() {
     int nodeIdx = ACTOR_PARAM(Node);
-    mTimer1 = GLOBAL_DATA.mTimer1[nodeIdx];
+    mWaitTimer = GLOBAL_DATA.mBottomWaitTime[nodeIdx];
     mScale.y = GLOBAL_DATA.mScaleY[nodeIdx];
 
     nw4r::g3d::ResAnmChr resAnmChr = mResFile.GetResAnmChr("cobSandpillar");
@@ -163,8 +163,8 @@ void daWmSandPillar_c::executeState_BottomWait() {
         return;
     }
 
-    mTimer1--;
-    if (mTimer1 <= 0) {
+    mWaitTimer--;
+    if (mWaitTimer <= 0) {
         mStateMgr.changeState(StateID_MoveReady);
     }
 }
@@ -233,7 +233,7 @@ void daWmSandPillar_c::finalizeState_MoveReady() {}
 void daWmSandPillar_c::initializeState_MoveUp() {
     mUnk4F8 = GLOBAL_DATA.mUnk4F8[ACTOR_PARAM(Node)];
     mUnk500 = GLOBAL_DATA.mUnk500[ACTOR_PARAM(Node)];
-    if (mUnk504 != 0) {
+    if (mHasCourseCond) {
         mUnk500 = GLOBAL_DATA.mUnk500[ACTOR_PARAM(Node)];
         mUnk4F8 = -GLOBAL_DATA.mUnk4F8[ACTOR_PARAM(Node)];
     }
@@ -241,7 +241,6 @@ void daWmSandPillar_c::initializeState_MoveUp() {
     mChrAnim.setRate(0.0f);
 }
 
-// NOT MATCHING
 void daWmSandPillar_c::executeState_MoveUp() {
     int nodeIdx = ACTOR_PARAM(Node);
     float a = GLOBAL_DATA.mUnk3C[nodeIdx];
@@ -250,7 +249,7 @@ void daWmSandPillar_c::executeState_MoveUp() {
     FUN_808e55e0();
     mScale.y += mUnk4F4;
 
-    if (mUnk504 != 0) {
+    if (mHasCourseCond) {
         if (mUnk4F4 <= 0.0f && mScale.y <= a) {
             mScale.y = a;
             mStateMgr.changeState(StateID_TopWaitForever);
@@ -274,12 +273,12 @@ void daWmSandPillar_c::finalizeState_MoveUp() {}
 
 void daWmSandPillar_c::initializeState_TopWait() {
     mChrAnim.setRate(1.0f);
-    mTimer1 = GLOBAL_DATA.mTimer3[ACTOR_PARAM(Node)];
+    mWaitTimer = GLOBAL_DATA.mTopWaitTime[ACTOR_PARAM(Node)];
 }
 
 void daWmSandPillar_c::executeState_TopWait() {
-    mTimer1--;
-    if (mTimer1 <= 0) {
+    mWaitTimer--;
+    if (mWaitTimer <= 0) {
         mStateMgr.changeState(StateID_MoveDown);
     }
 }
@@ -289,7 +288,7 @@ void daWmSandPillar_c::finalizeState_TopWait() {}
 void daWmSandPillar_c::initializeState_TopWaitForever() {
     mChrAnim.setRate(1.0f);
     mUnk4F4 = 0.0f;
-    mTimer1 = GLOBAL_DATA.mTimer3[ACTOR_PARAM(Node)];
+    mWaitTimer = GLOBAL_DATA.mTopWaitTime[ACTOR_PARAM(Node)];
 }
 
 void daWmSandPillar_c::executeState_TopWaitForever() {}

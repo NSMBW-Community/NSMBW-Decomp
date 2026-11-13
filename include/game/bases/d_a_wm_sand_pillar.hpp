@@ -31,8 +31,8 @@ public:
         float mUnk48[NODE_COUNT];
         float mUnk54[NODE_COUNT];
         int mTimer2[NODE_COUNT];
-        int mTimer1[NODE_COUNT];
-        int mTimer3[NODE_COUNT];
+        int mBottomWaitTime[NODE_COUNT]; ///< The wait time at the bottom, in frames.
+        int mTopWaitTime[NODE_COUNT]; ///< The wait time at the top, in frames.
     };
 
     daWmSandPillar_c(); ///< @copydoc dWmObjActor_c::dWmObjActor_c
@@ -60,19 +60,19 @@ public:
     nw4r::g3d::ResAnmTexSrt mResAnmTexSrt; ///< The texture animation resource.
     m3d::anmTexSrt_c mSrtAnim; ///< The texture animation.
 
-    mVec3_c mUnk254;
+    mVec3_c mInitialPos; ///< The actor's initial position.
     dEf::dLevelEffect_c mEffect1;
     dEf::dLevelEffect_c mEffect2;
 
     sFStateMgr_c<daWmSandPillar_c, sStateMethodUsr_FI_c> mStateMgr; ///< The state manager.
 
     int mUnk4EC;
-    int mTimer1;
+    int mWaitTimer; ///< The countdown timer for the Wait states.
     float mUnk4F4;
     float mUnk4F8;
     int mTimer2;
     float mUnk500;
-    u32 mUnk504;
+    BOOL mHasCourseCond; ///< Whether the actor is linked to a specific course.
 
     STATE_FUNC_DECLARE(daWmSandPillar_c, Ready);
     STATE_FUNC_DECLARE(daWmSandPillar_c, BottomWait);
