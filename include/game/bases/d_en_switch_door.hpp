@@ -14,5 +14,5 @@ public:
     virtual void initialize() override;
     virtual void waitProc() override;
 
-    BOOL mIsEventActivated;
+    BOOL mIsEventActivated; ///< Whether the event ID associated to the door has been activated.
 };
