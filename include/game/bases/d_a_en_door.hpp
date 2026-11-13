@@ -5,8 +5,14 @@
 #include <game/bases/d_a_obj_center.hpp>
 #include <game/bases/d_a_obj_center2.hpp>
 
+/// @brief The base class for door actors.
+/// @statetable
+/// @paramtable
+/// @ingroup bases
 class daEnDoor_c : public dEn_c {
 public:
+    daEnDoor_c() : mIsOpen(false) {}
+    
     /// @brief The possible door states.
     /// @unofficial
     enum DoorStatus_e {

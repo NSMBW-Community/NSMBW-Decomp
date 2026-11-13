@@ -48,6 +48,22 @@
             }
         },
         {
+            "source": "d_enemiesNP/bases/d_en_castle_door.cpp",
+            "memoryRanges": {
+                ".text": "0x31890-0x31DF0",
+                ".rodata": "0x1710-0x1740",
+                ".data": "0xA088-0xA380"
+            }
+        },
+        {
+            "source": "d_enemiesNP/bases/d_en_door.cpp",
+            "memoryRanges": {
+                ".text": "0x52890-0x52D00",
+                ".rodata": "0x24D0-0x2500",
+                ".data": "0x123F0-0x126F8"
+            }
+        },
+        {
             "source": "d_enemiesNP/bases/d_a_en_noko.cpp",
             "memoryRanges": {
                 ".text": "0xcf710-0xd2930",
@@ -58,6 +74,14 @@
             }
         },
         {
+            "source": "d_enemiesNP/bases/d_en_obake_door.cpp",
+            "memoryRanges": {
+                ".text": "0xD2930-0xD2DB0",
+                ".rodata": "0x60F0-0x6120",
+                ".data": "0x289D0-0x28CE8"
+            }
+        },
+        {
             "source": "d_enemiesNP/bases/d_a_en_snake_block.cpp",
             "memoryRanges": {
                 ".text": "0x103a50-0x106960",
@@ -65,6 +89,22 @@
                 ".rodata": "0x72a0-0x7310",
                 ".data": "0x33680-0x33b90",
                 ".bss": "0x9f30-0xa178"
+            }
+        },
+        {
+            "source": "d_enemiesNP/bases/d_en_switch_door.cpp",
+            "memoryRanges": {
+                ".text": "0x10A320-0x10A5B0",
+                ".rodata": "0x7550-0x7558",
+                ".data": "0x347E0-0x34AA0"
+            }
+        },
+        {
+            "source": "d_enemiesNP/bases/d_en_toride_door.cpp",
+            "memoryRanges": {
+                ".text": "0x115240-0x115770",
+                ".rodata": "0x7A08-0x7A38",
+                ".data": "0x36AB0-0x36DA8"
             }
         }
     ]
