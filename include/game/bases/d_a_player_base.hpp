@@ -37,7 +37,7 @@ public:
         DAMAGE_E,
         DAMAGE_FREEZE,
         DAMAGE_10,
-        DAMAGE_11,
+        DAMAGE_HEAD_BONK,
         DAMAGE_POISON_FOG
     };
 

@@ -47,8 +47,8 @@ public:
     void set_2c(int value) { m_2c = value; }
 
     u8 mPad1[0x4];
-    int m_04;
-    int m_08;
+    int mThawTimer;
+    int mThawDuration;
     int mActive;
     u8 mPad3[0x4];
     int m_14;

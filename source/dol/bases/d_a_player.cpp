@@ -11439,7 +11439,7 @@ bool dAcPy_c::setDamage2(dActor_c *actor, daPlBase_c::DamageType_e damageType) {
         case DAMAGE_CLIMB:
         case DAMAGE_6:
             return setFlyDamageAction(damageType, actor);
-        case DAMAGE_11:
+        case DAMAGE_HEAD_BONK:
             setReductionScale();
             break;
         case DAMAGE_10:
