@@ -112,6 +112,9 @@ public:
     float getCenterY() const { return mPos.y + mCenterOffs.y; }
     float getCenterZ() const { return mPos.z + mCenterOffs.z; }
 
+    // [For daIce_c::initializeState_Throw]
+    float threeQuarterSpeedX() const { return mSpeed.x * 0.75f; }
+
     float getSpeedF() const { return mSpeedF; }
     float getAccelF() const { return mAccelF; }
     float absSpeedF() { return std::fabs(mSpeedF); }

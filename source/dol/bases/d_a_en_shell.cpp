@@ -1026,10 +1026,10 @@ void daEnShell_c::executeState_Carry() {
 }
 
 void daEnShell_c::initializeState_Slide() {
-    mSensorFootSlide.mFlags = 1;
-    mSensorFootSlide.mLineA = -0x3000;
-    mSensorFootSlide.mLineB = 0x2000;
-    mSensorFootSlide.mDistanceFromCenter = 0;
+    mSensorFootSlide.mFlags = SENSOR_IS_MANY;
+    mSensorFootSlide.mInfMargin = -0x3000;
+    mSensorFootSlide.mSupMargin = 0x2000;
+    mSensorFootSlide.mOffset = 0;
 
     if (mPlayerNo >= 0 && mPlayerNo < PLAYER_COUNT) {
         dAcPy_c *player = daPyMng_c::getPlayer(mPlayerNo);

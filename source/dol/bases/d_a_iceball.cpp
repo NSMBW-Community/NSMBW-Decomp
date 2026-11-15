@@ -26,9 +26,9 @@ const daIceBall_c::GlobalData_t sGlobalData_c<daIceBall_c>::mData = {
     120.0f
 };
 
-const sBcSensorPoint l_iceball_foot = { SENSOR_IS_POINT, 0, -0x3000 };
-const sBcSensorPoint l_iceball_head = { SENSOR_IS_POINT, 0, 0x3000 };
-const sBcSensorPoint l_iceball_wall = { SENSOR_IS_POINT, 0x3000, 0 };
+const sBcOne l_iceball_foot = { SENSOR_IS_ONE, 0, -0x3000 };
+const sBcOne l_iceball_head = { SENSOR_IS_ONE, 0, 0x3000 };
+const sBcOne l_iceball_wall = { SENSOR_IS_ONE, 0x3000, 0 };
 
 const sCcDatNewF l_fball_cc_data = {
     0.0f, 0.0f,
@@ -232,7 +232,7 @@ void daIceBall_c::ccCallback_Iceball(dCc_c *self, dCc_c *other) {
     } else if (other->mCcData.mAttack == CC_ATTACK_KOOPA_FIRE) {
         if ((otherActor->mProfName == fProf::KOOPA_FIRE) && ((int)(otherActor->mParam & 0xF) == 1)) {
             dAudio::SndObjctCmnMap_c *map = dAudio::g_pSndObjMap;
-            dAudio::SoundEffectID_t(SE_OBJ_PNGN_ICEBALL_DISAPP).playObjSound(map, thisIceball->mPos, 0);
+            dAudio::SoundEffectID_t(SE_OBJ_PNGN_ICEBALL_DISAPP).playMapSound(thisIceball->mPos, 0);
         }
 
         thisIceball->setDeleteEffect();

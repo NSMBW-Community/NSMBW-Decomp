@@ -23,6 +23,7 @@ enum CC_STATUS_FLAG_e {
     */
     CC_STATUS_NO_PASS_INFO = BIT_FLAG(2),
     CC_STATUS_8 = BIT_FLAG(8),
+    CC_STATUS_9 = BIT_FLAG(9),
 };
 
 ///< @unofficial
@@ -237,6 +238,7 @@ public:
      */
     static void reset();
 
+    bool isLinked() const { return mIsLinked; }
     float getCollPosX() const { return mCollPos.x; }
     float getCollPosY() const { return mCollPos.y; }
 

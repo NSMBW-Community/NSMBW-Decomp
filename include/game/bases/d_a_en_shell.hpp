@@ -108,10 +108,10 @@ public:
     nw4r::g3d::ResAnmTexPat mResAnmTexPat;
     m3d::anmTexPat_c mAnimTex;
     sCcDatNewF mCcData;
-    sBcSensorPoint mSensorHead;
-    sBcSensorLine mSensorFootNormal;
-    sBcSensorLine mSensorWall;
-    sBcSensorLine mSensorFootSlide;
+    sBcOne mSensorHead;
+    sBcMany mSensorFootNormal;
+    sBcMany mSensorWall;
+    sBcMany mSensorFootSlide;
     mEf::levelEffect_c mEffect;
     int mYoshiKickable; ///< Whether the shell can be kicked in any state by Yoshi.
     ShellMode_e mShellMode;

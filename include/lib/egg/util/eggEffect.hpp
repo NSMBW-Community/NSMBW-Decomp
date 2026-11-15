@@ -11,7 +11,7 @@ public:
 
     Effect();
     virtual ~Effect();
-    virtual void create();
+    virtual bool create();
     virtual void fade();
     virtual void followFade();
     virtual void kill();

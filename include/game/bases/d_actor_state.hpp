@@ -14,16 +14,23 @@ public:
 
     sFStateMgr_c<dActorState_c, sStateMethodUsr_FI_c> mStateMgr; ///< The state manager.
 
+    void changeState(const sStateIDIf_c &newState) {
+        mStateMgr.changeState(newState);
+    }
+
     /// @cond
     void dummy() {
         mStateMgr.initializeState();
         mStateMgr.finalizeState();
-        mStateMgr.getOldStateID();
     }
     /// @endcond
 
     bool isState(const sStateIDIf_c &state) const {
         return *mStateMgr.getStateID() == state;
+    }
+
+    const sStateIDIf_c &getOldStateID() const {
+        return *mStateMgr.getOldStateID();
     }
 };
 
