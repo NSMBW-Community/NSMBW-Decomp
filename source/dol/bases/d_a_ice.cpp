@@ -14,7 +14,7 @@
 
 ACTOR_PROFILE(ICE_ACTOR, daIce_c, BIT_FLAG(11));
 
-mVec3_c l_mdl_defsize[6] = {
+mVec3_c l_mdl_defsize[daIce_c::ICE_TYPE_COUNT] = {
     dIceParam_c::smc_ICE_DEFSIZE_SQUARE,
     dIceParam_c::smc_ICE_DEFSIZE_TATE,
     dIceParam_c::smc_ICE_DEFSIZE_YOKO,
@@ -73,16 +73,20 @@ int daIce_c::create() {
     if (!ACTOR_PARAM(NoCarry)) {
         mFlags |= FLAG_CARRYABLE;
     }
+
     mSpeedMax.y = -6.0f;
     mAnm.setPlayMode(m3d::FORWARD_LOOP, 0);
     mMdl.setAnm(mAnm, 1.0f);
+
     dEn_c *parent = (dEn_c *) getConnectParent();
     mPosDiff = parent->mPos - mPos;
     mpIceMng = &parent->mIceMng;
+
     calcMdl();
     mCollEntryTimer = 2;
     mIsWater = FALSE;
     mPrevPosX = mPos.x;
+
     switch (mInitType) {
         case INIT_FREEZE:
         case INIT_WATER_STUCK:
@@ -128,7 +132,7 @@ void daIce_c::createMdl() {
     mAllocator.createFrmHeap(-1, mHeap::g_gameHeaps[mHeap::GAME_HEAP_DEFAULT], nullptr, 0x20);
 
     mResFileMdl = dResMng_c::m_instance->getRes("ice", "g3d/ice.brres");
-    const static char *cs_ice_mdl_name[] = {
+    const static char *cs_ice_mdl_name[daIce_c::ICE_TYPE_COUNT] = {
         "ice_A1", "ice_B1", "ice_C1",
         "ice_A2", "ice_B2", "ice_C2"
     };
@@ -138,7 +142,7 @@ void daIce_c::createMdl() {
     setSoftLight_MapObj(mMdl);
     mMdl.setPriorityDraw(127, 128);
 
-    const static char *cs_ice_anm_name[] = {
+    const static char *cs_ice_anm_name[daIce_c::ICE_TYPE_COUNT] = {
         "ice_A1", "ice_B1", "ice_C1",
         "ice_A2", "ice_B2", "ice_C2"
     };
@@ -186,8 +190,8 @@ int daIce_c::execute() {
         enlargeBgc();
         mBgCtr.calc();
         if (canCarry()) {
-            mVec2_c size(mSize.x * 0.5f + 2.0f, mSize.y * 0.5f + 2.0f);
-            carryFukidashiCheck(17, size);
+            mVec2_c triggerSize(mSize.x * 0.5f + 2.0f, mSize.y * 0.5f + 2.0f);
+            carryFukidashiCheck(17, triggerSize);
         } else if (mCarryFukidashiPlayerNo >= 0) {
             carryFukidashiCancel(17, -1);
         }
@@ -204,9 +208,9 @@ int daIce_c::draw() {
 
 void daIce_c::deleteReady() {
     for (int i = 0; i < PLAYER_COUNT; i++) {
-        dAcPy_c *pl = daPyMng_c::getPlayer(i);
-        if (pl != nullptr && fManager_c::searchBaseByID(pl->mCarryActorID) == this) {
-            pl->cancelCarry(this);
+       dAcPy_c *player = daPyMng_c::getPlayer(i);
+        if (player != nullptr && fManager_c::searchBaseByID(player->mCarryActorID) == this) {
+            player->cancelCarry(this);
         }
     }
     if (mCarryFukidashiPlayerNo >= 0) {
@@ -340,7 +344,7 @@ void daIce_c::initCollision() {
     mBgCtr.mLayer = mLayer;
     mBgCtr.mFlags = 0;
     mBgCtr.mFlags2 = 1;
-    mBgCtr.setAngleY3((short *) &smc_OBJBG_DUMMY_ANGLE);
+    mBgCtr.setAngleY3((s16 *) &smc_OBJBG_DUMMY_ANGLE);
     if (mFlags & FLAG_BREAKABLE) {
         mBgCtr.mFlags |= 0xd68;
     } else {
@@ -381,16 +385,16 @@ bool daIce_c::checkPlayerIn() {
     float boundTop = mPos.y + mSize.y;
     float boundBottom = mPos.y;
 
-    dCc_c *plCc;
-    dAcPy_c *pl;
+    dCc_c *playerColl;
+    dAcPy_c *player;
     for (int i = 0; i < PLAYER_COUNT; i++) {
-        pl = daPyMng_c::getCtrlPlayer(i);
-        if (pl != nullptr && daPyMng_c::checkPlayer(i)) {
-            plCc = &pl->mCc;
-            float plLeft = plCc->getLeftPos();
-            float plRight = plCc->getRightPos();
-            float plTop = plCc->getLeftPos(); // [???]
-            float plBottom = plCc->getRightPos(); // [???]
+        player = daPyMng_c::getCtrlPlayer(i);
+        if (player != nullptr && daPyMng_c::checkPlayer(i)) {
+            playerColl = &player->mCc;
+            float plLeft = playerColl->getLeftPos();
+            float plRight = playerColl->getRightPos();
+            float plTop = playerColl->getLeftPos(); // [???]
+            float plBottom = playerColl->getRightPos(); // [???]
             if (plLeft > boundRight || plRight < boundLeft || plBottom > boundTop || plTop < boundBottom) {
                 continue;
             }
@@ -468,12 +472,12 @@ bool daIce_c::calcLandLine(float &height) {
         }
     }
 
-    bool res = false;
+    bool result = false;
     if (maxHeight > mPos.y - 1.0f) {
         height = maxHeight;
-        res = true;
+        result = true;
     }
-    return res;
+    return result;
 }
 
 void daIce_c::finalUpdate() {
@@ -495,7 +499,12 @@ void daIce_c::finalUpdate() {
         }
     }
     mModelPos = pos;
-    if (!(mExecStop & 0xF) && mShake) {
+    u8 mask =
+        BIT_FLAG(dActor_c::STAGE_ACTOR_GENERIC) |
+        BIT_FLAG(dActor_c::STAGE_ACTOR_PLAYER) |
+        BIT_FLAG(dActor_c::STAGE_ACTOR_YOSHI) |
+        BIT_FLAG(dActor_c::STAGE_ACTOR_ENEMY);
+    if (!(mExecStop & mask) && mShake) {
         shake();
     }
     if (!isState(StateID_Cover) && !isState(StateID_Melt_Normal)) {
@@ -534,12 +543,12 @@ void daIce_c::quakeDamage() {
     if (!ACTOR_PARAM(NoQuakeScore)) {
         dEnemyMng_c::m_instance->breakdownSE(dEnemyMng_c::m_instance->m_154, mPos);
         dEnemyMng_c::m_instance->incQuakeComboCount(0);
-        int count = dEnemyMng_c::m_instance->m_154;
-        if (count >= 0) {
-            if (count >= 8) {
+        int comboCount = dEnemyMng_c::m_instance->m_154;
+        if (comboCount >= 0) {
+            if (comboCount >= 8) {
                 dMultiMng_c::mspInstance->setClapSE();
             }
-            dScoreMng_c::getInstance()->UnKnownScoreSet(this, count, 0.0f, 24.0f);
+            dScoreMng_c::getInstance()->UnKnownScoreSet(this, comboCount, 0.0f, 24.0f);
         }
     }
     breakReq(dGameCom::rndInt(2), -1);
@@ -770,42 +779,41 @@ void daIce_c::calcFloatSpeed() {
 }
 
 bool daIce_c::checkPushSink(dActor_c *actor) {
-    bool res = false;
+    bool result = false;
 
     if (actor->mKind == STAGE_ACTOR_PLAYER) {
-        dAcPy_c *pl = (dAcPy_c *) actor;
-        if (pl->isMameAction()) {
-            if (pl->isStatus(daPlBase_c::STATUS_HIP_ATTACK_FALL)) {
+        dAcPy_c *player = (dAcPy_c *) actor;
+        if (player->isMameAction()) {
+            if (player->isStatus(daPlBase_c::STATUS_HIP_ATTACK_FALL)) {
                 mPushSinkType = PUSH_SINK_HIP_ATTACK;
-                res = true;
+                result = true;
             }
         } else {
-            if (pl->isStatus(daPlBase_c::STATUS_HIP_ATTACK_FALL) || pl->isStatus(daPlBase_c::STATUS_SPIN_HIP_ATTACK_FALL)) {
+            if (player->isStatus(daPlBase_c::STATUS_HIP_ATTACK_FALL) || player->isStatus(daPlBase_c::STATUS_SPIN_HIP_ATTACK_FALL)) {
                 mPushSinkType = PUSH_SINK_HIP_ATTACK;
-                res = true;
-            } else if (pl->mSpeed.y < -3.0f) {
+                result = true;
+            } else if (player->mSpeed.y < -3.0f) {
                 mPushSinkType = PUSH_SINK_LAND;
-                res = true;
+                result = true;
             }
         }
     } else if (actor->mKind == STAGE_ACTOR_YOSHI) {
         daYoshi_c *yoshi = (daYoshi_c *) actor;
         if (yoshi->isStatus(daPlBase_c::STATUS_HIP_ATTACK_FALL)) {
             mPushSinkType = PUSH_SINK_HIP_ATTACK;
-            res = true;
+            result = true;
         } else if (yoshi->mSpeed.y < -3.0f) {
             mPushSinkType = PUSH_SINK_LAND;
-            res = true;
+            result = true;
         }
     }
 
-    return res;
+    return result;
 }
 
 dIceMng_c *daIce_c::getManager() {
     return mpIceMng;
 }
-
 
 bool daIce_c::checkUnderBreak(dActor_c *actor) {
     if (isState(StateID_Fall) || isState(StateID_Air)) {
@@ -864,7 +872,6 @@ void daIce_c::meltEffect() {
 
 void daIce_c::callBackHead(dActor_c *self, dActor_c *other) {
     daIce_c *ice = (daIce_c *) self;
-
     if (ice->isDestroy()) {
         return;
     }
@@ -886,7 +893,6 @@ void daIce_c::callBackHead(dActor_c *self, dActor_c *other) {
 
 void daIce_c::callBackFoot(dActor_c *self, dActor_c *other) {
     daIce_c *ice = (daIce_c *) self;
-
     if (ice->isDestroy()) {
         return;
     }
@@ -920,7 +926,6 @@ void daIce_c::callBackFoot(dActor_c *self, dActor_c *other) {
 void daIce_c::callBackWall(dActor_c *self, dActor_c *other, u8 dir) {
     daPlBase_c *pl = (daPlBase_c *) other;
     daIce_c *ice = (daIce_c *) self;
-
     if (ice->isDestroy()) {
         return;
     }
@@ -1002,7 +1007,7 @@ void daIce_c::ccCallBack(dCc_c *self, dCc_c *other) {
         return;
     }
 
-    if (other->mCcData.mAttack == CC_ATTACK_ICE_BREAK || other->mCcData.mStatus & BIT_FLAG(9)) {
+    if (other->mCcData.mAttack == CC_ATTACK_ICE_BREAK || other->mCcData.mStatus & CC_STATUS_9) {
         ice->breakReq(dir ^ 1, -1);
         self->mInfo |= CC_NO_HIT;
         return;
@@ -1072,8 +1077,8 @@ void daIce_c::ccCallBack_Water(dCc_c *self, dCc_c *other) {
     int dir = !(ice->mPos.x <= actor->mPos.x);
 
     if (actor->mProfName == fProf::ICE_ACTOR) {
-        daIce_c *ice2 = (daIce_c *) actor;
-        if (ice->getManager() == ice2->getManager()) {
+        daIce_c *otherIce = (daIce_c *) actor;
+        if (ice->getManager() == otherIce->getManager()) {
             return;
         }
     }
@@ -1147,90 +1152,90 @@ bool daIce_c::checkPlHasami(int *plrNo) {
         return true;
     } else if (checkPlAttach_Head(&res) && res != 0) {
         return true;
-    } else if (checkPlAttach_Wall(DIR_LR_R, &res) && res == 2) {
+    } else if (checkPlAttach_Wall(DIR_LR_R, &res) && res == WALL_ATTACH_STUCK) {
         return true;
-    } else if (checkPlAttach_Wall(DIR_LR_L, &res) && res == 2) {
+    } else if (checkPlAttach_Wall(DIR_LR_L, &res) && res == WALL_ATTACH_STUCK) {
         return true;
     }
 
     return false;
 }
 
-bool daIce_c::checkPlAttach_Head(int *ptr) {
-    if (ptr != nullptr) {
-        *ptr = 0;
+bool daIce_c::checkPlAttach_Head(BOOL *playerTouchingCeiling) {
+    if (playerTouchingCeiling != nullptr) {
+        *playerTouchingCeiling = FALSE;
     }
 
-    bool res = false;
+    bool result = false;
     for (dBc_c *curr = mBgCtr.mpTriggeredHead; curr != nullptr; curr = curr->mTriggeredHeadSensor) {
         if (curr->mpOwner != nullptr && !(curr->mpOwner->mKind != STAGE_ACTOR_PLAYER && curr->mpOwner->mKind != STAGE_ACTOR_YOSHI)) {
             daPlBase_c *pl = (daPlBase_c *) curr->mpOwner;
-            if (ptr != nullptr && pl->isNowBgCross(daPlBase_c::BGC_HEAD)) {
-                *ptr = 1;
+            if (playerTouchingCeiling != nullptr && pl->isNowBgCross(daPlBase_c::BGC_HEAD)) {
+                *playerTouchingCeiling = TRUE;
             }
-            res = true;
+            result = true;
         }
     }
-    return res;
+    return result;
 }
 
-bool daIce_c::checkPlAttach_Foot(int *ptr, int *plrNo) {
-    if (ptr != nullptr) {
-        *ptr = 0;
+bool daIce_c::checkPlAttach_Foot(BOOL *playerTouchingFloor, int *plrNo) {
+    if (playerTouchingFloor != nullptr) {
+        *playerTouchingFloor = FALSE;
     }
     if (plrNo != nullptr) {
         *plrNo = -1;
     }
 
-    bool res = false;
+    bool result = false;
     for (dBc_c *curr = mBgCtr.mpTriggeredFoot; curr != nullptr; curr = curr->mTriggeredFootSensor) {
         if (curr->mpOwner != nullptr && !(curr->mpOwner->mKind != STAGE_ACTOR_PLAYER && curr->mpOwner->mKind != STAGE_ACTOR_YOSHI)) {
             daPlBase_c *pl = (daPlBase_c *) curr->mpOwner;
-            if (ptr != nullptr && pl->isNowBgCross(daPlBase_c::BGC_FOOT)) {
-                *ptr = 1;
+            if (playerTouchingFloor != nullptr && pl->isNowBgCross(daPlBase_c::BGC_FOOT)) {
+                *playerTouchingFloor = TRUE;
             }
             if (plrNo != nullptr) {
                 *plrNo = pl->getPlrNo();
             }
-            res = true;
+            result = true;
         }
     }
-    return res;
+    return result;
 }
 
-bool daIce_c::checkPlAttach_Wall(int dir, int *ptr) {
-    if (ptr != nullptr) {
-        *ptr = 0;
+bool daIce_c::checkPlAttach_Wall(int dir, int *checkResult) {
+    if (checkResult != nullptr) {
+        *checkResult = WALL_ATTACH_NONE;
     }
 
-    bool res = false;
+    bool result = false;
     for (dBc_c *curr = mBgCtr.mpTriggeredWall; curr != nullptr; curr = curr->getLinkW(&mBgCtr)) {
         if (curr->mpOwner != nullptr && !(curr->mpOwner->mKind != STAGE_ACTOR_PLAYER && curr->mpOwner->mKind != STAGE_ACTOR_YOSHI)) {
             daPlBase_c *pl = (daPlBase_c *) curr->mpOwner;
             if (dir == DIR_LR_R) {
                 if (pl->mPos.x >= mPos.x) {
-                    if (ptr != nullptr && (pl->isNowBgCross(daPlBase_c::BGC_WALL_TOUCH_R_2) || pl->isNowBgCross(daPlBase_c::BGC_SIDE_LIMIT_R))) {
-                        *ptr = 1;
+                    if (checkResult != nullptr && (pl->isNowBgCross(daPlBase_c::BGC_WALL_TOUCH_R_2) || pl->isNowBgCross(daPlBase_c::BGC_SIDE_LIMIT_R))) {
+                        *checkResult = WALL_ATTACH_TOUCH;
                         if (checkPlHasami_Wall(pl, dir)) {
-                            *ptr = 2;
+                            *checkResult = WALL_ATTACH_STUCK;
                         }
                     }
-                    res = true;
+                    result = true;
                 }
             } else {
                 if (pl->mPos.x <= mPos.x) {
-                    if (ptr != nullptr && (pl->isNowBgCross(daPlBase_c::BGC_WALL_TOUCH_L_2) || pl->isNowBgCross(daPlBase_c::BGC_SIDE_LIMIT_L))) {
-                        *ptr = 1;
+                    if (checkResult != nullptr && (pl->isNowBgCross(daPlBase_c::BGC_WALL_TOUCH_L_2) || pl->isNowBgCross(daPlBase_c::BGC_SIDE_LIMIT_L))) {
+                        *checkResult = WALL_ATTACH_TOUCH;
                         if (checkPlHasami_Wall(pl, dir)) {
-                            *ptr = 2;
+                            *checkResult = WALL_ATTACH_STUCK;
                         }
                     }
-                    res = true;
+                    result = true;
                 }
             }
         }
     }
-    return res;
+    return result;
 }
 
 bool daIce_c::checkPlHasami_Wall(dActor_c *actor, int dir) {
@@ -1238,17 +1243,17 @@ bool daIce_c::checkPlHasami_Wall(dActor_c *actor, int dir) {
 
     daPlBase_c *pl = (daPlBase_c *) actor;
 
-    bool res = false;
+    bool result = false;
     float margin = -2.0f;
     if (mPosDelta.x * sc_dir[dir] > 0.0f) {
         margin = 0.0f;
-        res = true;
+        result = true;
     } else if (pl->m_d80[(u8) dir] * sc_dir[dir] < 0.0f) {
         margin = -1.0f;
-        res = true;
+        result = true;
     }
 
-    if (res && pl->checkInsideCrossBg(margin)) {
+    if (result && pl->checkInsideCrossBg(margin)) {
         return true;
     } else {
         return false;
@@ -1257,18 +1262,18 @@ bool daIce_c::checkPlHasami_Wall(dActor_c *actor, int dir) {
 
 mVec3_c daIce_c::calcCarryPos() {
     float zero = 0.0f;
-    dAcPy_c *pl = daPyMng_c::getPlayer(mCarriedByPlrNo);
+    dAcPy_c *player = daPyMng_c::getPlayer(mCarriedByPlrNo);
 
-    if (pl->isStatus(daPlBase_c::STATUS_OUT_OF_PLAY)) {
+    if (player->isStatus(daPlBase_c::STATUS_OUT_OF_PLAY)) {
         return mPos;
     }
 
-    mMtx_c mtx = mMtx_c::createTrans(pl->getCarryPos());
-    mtx.concat(pl->getModel()->getMtx());
-    mtx.concat(mMtx_c::createTrans(zero, zero, zero));
-    mVec3_c res;
-    mtx.multVecZero(res);
-    return res;
+    mMtx_c carryMtx = mMtx_c::createTrans(player->getCarryPos());
+    carryMtx.concat(player->getModel()->getMtx());
+    carryMtx.concat(mMtx_c::createTrans(zero, zero, zero));
+    mVec3_c carryPos;
+    carryMtx.multVecZero(carryPos);
+    return carryPos;
 }
 
 BOOL daIce_c::canCarry() const {
@@ -1473,7 +1478,6 @@ void daIce_c::finalizeState_Cover() {}
 
 void daIce_c::executeState_Cover() {
     dActor_c *parent = (dActor_c *) getConnectParent();
-
     mPos = parent->mPos - mPosDiff;
 
     int plr = -1;
@@ -1493,10 +1497,10 @@ void daIce_c::initializeState_Sink() {
 void daIce_c::finalizeState_Sink() {}
 
 void daIce_c::executeState_Sink() {
-    float prev = mWaterHeight;
+    float prevWaterHeight = mWaterHeight;
     dBc_c::checkWater(mPos.x, mPos.y, mLayer, &mWaterHeight);
 
-    if (mWaterHeight - prev < 0.0f) {
+    if (mWaterHeight - prevWaterHeight < 0.0f) {
         if (mPos.y >= getFloatPosY()) {
             mPos.y = getFloatPosY();
             changeState(StateID_FloatWait);
@@ -1522,8 +1526,8 @@ void daIce_c::executeState_Sink() {
             if (mBc.mFlags & dBc_c::FLAG_21) {
                 mPos.y = yPos;
             } else {
-                int res = 0;
-                if (checkPlAttach_Head(&res) && res != 0) {
+                BOOL playerTouchingCeiling = FALSE;
+                if (checkPlAttach_Head(&playerTouchingCeiling) && playerTouchingCeiling) {
                     floatbreakReq();
                 }
             }
@@ -1560,12 +1564,12 @@ void daIce_c::executeState_Float() {
             }
             break;
         case 2:
-            int res = 0;
-            if (!checkPlAttach_Head(&res)) {
+            BOOL playerTouchingCeiling = FALSE;
+            if (!checkPlAttach_Head(&playerTouchingCeiling)) {
                 mFloatAccel = 0.0f;
                 mFloatTargetSpeed = l_float_speed[mWeightType];
                 m_23b = 1;
-            } else if (res != 0) {
+            } else if (playerTouchingCeiling != FALSE) {
                 mPushSinkType = PUSH_SINK_PRESS;
                 changeState(StateID_PushSink);
                 return;
@@ -1612,12 +1616,12 @@ void daIce_c::executeState_SmallFloat() {
             }
             break;
         case 2:
-            int res = 0;
-            if (!checkPlAttach_Head(&res)) {
+            BOOL playerTouchingCeiling = FALSE;
+            if (!checkPlAttach_Head(&playerTouchingCeiling)) {
                 mFloatAccel = 0.0f;
                 mFloatTargetSpeed = 0.5f;
                 m_23b = 1;
-            } else if (res != 0) {
+            } else if (playerTouchingCeiling != FALSE) {
                 mPushSinkType = PUSH_SINK_PRESS;
                 changeState(StateID_PushSink);
                 return;
@@ -1625,13 +1629,13 @@ void daIce_c::executeState_SmallFloat() {
             break;
     }
 
-    float prev = mWaterHeight;
+    float prevWaterHeight = mWaterHeight;
     dBc_c::checkWater(mPos.x, mPos.y, mLayer, &mWaterHeight);
 
     if (mPos.y >= getFloatPosY()) {
         changeState(StateID_FloatWait);
     } else {
-        if (mWaterHeight > prev) {
+        if (mWaterHeight > prevWaterHeight) {
             changeState(StateID_Float);
         } else if (mBc.checkHead(0)) {
             floatbreakReq();
@@ -1654,13 +1658,13 @@ void daIce_c::finalizeState_FloatWait() {
 void daIce_c::executeState_FloatWait() {
     mAngle.z.chaseAngle(0, 0x10);
 
-    float prev = mWaterHeight;
+    float prevWaterHeight = mWaterHeight;
     dBc_c::checkWater(mPos.x, mPos.y, mLayer, &mWaterHeight);
 
-    float diff = mWaterHeight - prev;
-    if (diff > 0.0f) {
+    float waterHeightDiff = mWaterHeight - prevWaterHeight;
+    if (waterHeightDiff > 0.0f) {
         mFloatState = FLOAT_STATE_RISING;
-    } else if (diff < 0.0f) {
+    } else if (waterHeightDiff < 0.0f) {
         mFloatState = FLOAT_STATE_LOWERING;
     } else {
         mFloatState = FLOAT_STATE_STILL;
@@ -1671,10 +1675,10 @@ void daIce_c::executeState_FloatWait() {
         case FLOAT_STATE_RISING:
         case FLOAT_STATE_LOWERING:
             sLib::addCalc(&mPos.y, floatTarget, 0.1f, 1.0f, 0.05f);
-            if (diff < 0.0f) {
-                float tmp = mWaterHeight - mSize.y * 0.3f;
-                if (mPos.y > tmp) {
-                    mPos.y = tmp;
+            if (waterHeightDiff < 0.0f) {
+                float maxPosY = mWaterHeight - mSize.y * 0.3f;
+                if (mPos.y > maxPosY) {
+                    mPos.y = maxPosY;
                 }
             }
             break;
@@ -1688,8 +1692,8 @@ void daIce_c::executeState_FloatWait() {
     if (mBc.checkHead(0)) {
         floatbreakReq();
     } else {
-        int res = 0;
-        if (checkPlAttach_Head(&res) && res != 0) {
+        BOOL playerTouchingCeiling = FALSE;
+        if (checkPlAttach_Head(&playerTouchingCeiling) && playerTouchingCeiling != FALSE) {
             mPushSinkType = PUSH_SINK_PRESS;
             changeState(StateID_PushSink);
         }
@@ -1710,9 +1714,9 @@ void daIce_c::initializeState_PushSink() {
 void daIce_c::finalizeState_PushSink() {}
 
 void daIce_c::executeState_PushSink() {
-    float prev = mWaterHeight;
+    float prevWaterHeight = mWaterHeight;
     dBc_c::checkWater(mPos.x, mPos.y, mLayer, &mWaterHeight);
-    if (mWaterHeight - prev < 0.0f && mPos.y >= getFloatPosY()) {
+    if (mWaterHeight - prevWaterHeight < 0.0f && mPos.y >= getFloatPosY()) {
         mPos.y = getFloatPosY();
         changeState(StateID_FloatWait);
         mStateMgr.refreshState();
@@ -1741,8 +1745,8 @@ void daIce_c::executeState_PushSink() {
                 if (mBc.mFlags & dBc_c::FLAG_21) {
                     mPos.y = prevY;
                 } else {
-                    int res = 0;
-                    if (checkPlAttach_Head(&res) && res != 0) {
+                    BOOL playerTouchingCeiling = FALSE;
+                    if (checkPlAttach_Head(&playerTouchingCeiling) && playerTouchingCeiling != FALSE) {
                         floatbreakReq();
                     }
                 }
@@ -1781,12 +1785,12 @@ void daIce_c::executeState_TogeFloat() {
             }
             break;
         case 2: {
-            int res = 0;
-            if (!checkPlAttach_Head(&res)) {
+            BOOL playerTouchingCeiling = FALSE;
+            if (!checkPlAttach_Head(&playerTouchingCeiling)) {
                 mFloatAccel = 0.0f;
                 mFloatTargetSpeed = l_toge_float_speed[mWeightType];
                 m_23b = 1;
-            } else if (res != 0) {
+            } else if (playerTouchingCeiling != FALSE) {
                 mSpeedF = -0.1f;
                 mFloatAccel = 0.0f;
             }
@@ -1831,12 +1835,12 @@ void daIce_c::executeState_ShakeFloat() {
             }
             break;
         case 2:
-            int res = 0;
-            if (!checkPlAttach_Head(&res)) {
+            BOOL playerTouchingCeiling = FALSE;
+            if (!checkPlAttach_Head(&playerTouchingCeiling)) {
                 mFloatAccel = 0.0f;
                 mFloatTargetSpeed = l_float_speed[mWeightType];
                 m_23b = 1;
-            } else if (res != 0) {
+            } else if (playerTouchingCeiling != FALSE) {
                 mSpeedF = -0.1f;
                 mFloatAccel = 0.0f;
             }
@@ -2052,7 +2056,7 @@ void daIce_c::finalizeState_Carry() {
 }
 
 void daIce_c::executeState_Carry() {
-    dAcPy_c *pl = daPyMng_c::getPlayer(mCarriedByPlrNo);
+    dAcPy_c *player = daPyMng_c::getPlayer(mCarriedByPlrNo);
     u8 amiLine = 3;
     if (checkNetIn()) {
         if (mPos.z >= 0.0f) {
@@ -2072,11 +2076,11 @@ void daIce_c::executeState_Carry() {
         return;
     }
 
-    mVec3_c delta = pl->mPosDelta;
+    mVec3_c delta = player->mPosDelta;
     u8 dir = !(delta.x >= 0.0f);
     getConnectParent(); // [Unused return value]
     getManager(); // [Unused return value]
-    if (pl->isStatus(daPlBase_c::STATUS_46) || delta.y > 0.0f) {
+    if (player->isStatus(daPlBase_c::STATUS_46) || delta.y > 0.0f) {
         mSpeed.y = 3.0f;
         bool headRes = mBc.checkHead(0);
         mSpeed.y = 0.0f;
@@ -2085,13 +2089,13 @@ void daIce_c::executeState_Carry() {
             breakReq(dir, mCarriedByPlrNo);
             return;
         }
-        int res = 0;
-        if (checkPlAttach_Head(&res) && res != 0) {
+        BOOL playerTouchingCeiling = FALSE;
+        if (checkPlAttach_Head(&playerTouchingCeiling) && playerTouchingCeiling != FALSE) {
             breakReq(dir, mCarriedByPlrNo);
             return;
         }
     }
-    if (!pl->isStatus(daPlBase_c::STATUS_46)) {
+    if (!player->isStatus(daPlBase_c::STATUS_46)) {
         if (mBc.checkWall(&delta.x)) {
             mDirection = dir ^ 1;
             mPlayerNo = mCarriedByPlrNo;

@@ -11,6 +11,18 @@
 /// @paramtable
 class daIce_c : public dActorState_c {
 public:
+    /// @brief The possible pre-defined ice block types.
+    /// @unofficial
+    enum IceType_e {
+        ICE_TYPE_SQUARE, ///< A square block.
+        ICE_TYPE_TATE, ///< A vertical block.
+        ICE_TYPE_YOKO, ///< A horizontal block.
+        ICE_TYPE_BIG_SQUARE, ///< A large square block.
+        ICE_TYPE_BIG_TATE, ///< A large vertical block.
+        ICE_TYPE_BIG_YOKO, ///< A large horizontal block.
+        ICE_TYPE_COUNT
+    };
+
     /// @brief How the ice block behaves when it's created.
     /// @unofficial
     enum InitType_e {
@@ -52,7 +64,7 @@ public:
 
     /// @brief How the ice block is pushed under the water surface.
     /// @unofficial
-    enum PUSH_SINK_TYPE_e {
+    enum PushSinkType_e {
         PUSH_SINK_LAND, ///< A player landed on the block.
         PUSH_SINK_HIP_ATTACK, ///< A player ground-pounded the block.
         PUSH_SINK_PRESS, ///< A player standing on the block is pressed against a ceiling.
@@ -61,11 +73,19 @@ public:
 
     /// @brief The state of the water surface while the block floats on top of it. See StateID_FloatWait.
     /// @unofficial
-    enum FLOAT_STATE_e {
+    enum FloatState_e {
         FLOAT_STATE_INIT, ///< The water level has not been checked yet.
         FLOAT_STATE_STILL, ///< The water level is constant, the block bobs up and down.
         FLOAT_STATE_RISING, ///< The water level is rising.
         FLOAT_STATE_LOWERING ///< The water level is lowering.
+    };
+
+    /// @brief The result of checkPlAttach_Wall().
+    /// @unofficial
+    enum WallAttachCheckResult_e {
+        WALL_ATTACH_NONE, ///< The player is not touching a wall.
+        WALL_ATTACH_TOUCH, ///< The player is also touching a wall on the other side of the ice block.
+        WALL_ATTACH_STUCK, ///< The player is stuck between the ice block and a wall.
     };
 
     typedef void (daIce_c::*EnlargeFunc)();
@@ -165,29 +185,27 @@ public:
     mVec3_c calcCarryPos(); ///< Calculates the position of the block in the carrying player's hands.
     BOOL canCarry() const; ///< Checks whether the ice block can currently be picked up.
 
-    /// @brief Returns whether a player is stuck between the ice block and the background collision
+    /// @brief Returns whether a player is stuck between the ice block and the background collision.
     /// @param plrNo Receives the player number, or -1 if no player is stuck.
     bool checkPlHasami(int *plrNo);
 
     /// @brief Returns whether a player is standing on the ice block.
-    /// @param res If not nullptr, receives 1 if the player is also touching the ceiling, else 0.
-    bool checkPlAttach_Head(int *res);
+    /// @param playerTouchingCeiling If not @p nullptr, receives @p TRUE if the player is also touching the ceiling, else @p FALSE.
+    bool checkPlAttach_Head(BOOL *playerTouchingCeiling);
 
     /// @brief Returns whether a player's head is touching the ice block.
-    /// @param res If not nullptr, receives 1 if the player is also touching the floor, else 0.
-    bool checkPlAttach_Foot(int *res, int *plrNo);
+    /// @param playerTouchingFloor If not @p nullptr, receives @p TRUE if the player is also touching the floor, else @p FALSE.
+    bool checkPlAttach_Foot(BOOL *playerTouchingFloor, int *plrNo);
 
     /**
      * @brief Returns whether a player is touching the given side of the ice block.
      * @param dir The side of the ice block to check.
-     * @param res If not nullptr, receives:
-     * - 1 if the player is also touching a wall on the opposite side,
-     * - 2 if the player is stuck between the ice block and a wall on the same side,
-     * - 0 otherwise.
+     * @param checkResult If not nullptr, receives a value of type #WallAttachCheckResult_e.
      */
-    bool checkPlAttach_Wall(int dir, int *res);
+    bool checkPlAttach_Wall(int dir, int *checkResult);
 
     /// @brief Checks whether the given player is stuck between the ice block and a wall.
+    /// @param dir The side of the ice block to check.
     bool checkPlHasami_Wall(dActor_c *actor, int dir);
 
     fBaseID_e getParentID(); ///< Gets the ID of the parent enemy.
@@ -244,7 +262,7 @@ private:
     mVec3_c mPrevPos; ///< The position on the previous frame.
     mVec3_c mSize; ///< The size of the ice block.
 
-    PUSH_SINK_TYPE_e mPushSinkType; ///< How the block got pushed under the water surface.
+    PushSinkType_e mPushSinkType; ///< How the block got pushed under the water surface.
 
     int mCarriedByPlrNo; ///< The player number of the player carrying the ice block.
 
@@ -252,7 +270,7 @@ private:
     float mFloatAccel; ///< The acceleration towards #mFloatTargetSpeed.
     short mFloatAngle; ///< The current angle while floating up.
     u8 mPad1[0x4];
-    float mExtraFloatSpeedX; ///< Added to the X speed while floating. [Seems to never get set].
+    float mExtraFloatSpeedX; ///< Added to the X speed while floating. @unused
 
     BOOL mShake; ///< Whether the ice block should shake.
     short mShakeRotSpeed; ///< The angular speed of #mShakeRotAngle.
@@ -264,7 +282,7 @@ private:
     BOOL mIsWater; ///< Whether the block was created in water.
     short mCurrFloatUpDown; ///< Counter for bobbing up and down on the water surface.
     float mWaterHeight; ///< The height of the water surface.
-    FLOAT_STATE_e mFloatState; ///< The state of the water surface, used in StateID_FloatWait.
+    FloatState_e mFloatState; ///< The state of the water surface, used in StateID_FloatWait.
 
     float mStartFallY; ///< The Y position where the block started falling, used to check whether the block falls far enough to break.
     int mCollEntryTimer; ///< Countdown until the collision is fully activated.
@@ -279,12 +297,12 @@ private:
     dIceMng_c *mpIceMng; ///< The ice manager.
     dIceEfMaker_c mIceEfMaker; ///< The ice effect maker.
 
-    ACTOR_PARAM_CONFIG(IceType, 0, 4); ///< The shape of the ice block. @see ICE_TYPE_e
+    ACTOR_PARAM_CONFIG(IceType, 0, 4); ///< The shape of the ice block. See IceType_e.
     ACTOR_PARAM_CONFIG(Unbreakable, 8, 1); ///< If not set, sets #FLAG_BREAKABLE.
     ACTOR_PARAM_CONFIG(NoCarry, 12, 1); ///< If not set, sets #FLAG_CARRYABLE.
-    ACTOR_PARAM_CONFIG(CollisionMode, 16, 2); ///< The tile collision mode. @see CollisionMode_e
+    ACTOR_PARAM_CONFIG(CollisionMode, 16, 2); ///< The tile collision mode. See CollisionMode_e.
     ACTOR_PARAM_CONFIG(NoQuakeScore, 20, 1); ///< Whether to not award a score when broken by an earthquake.
-    ACTOR_PARAM_CONFIG(InitType, 24, 4); ///< The initial behavior. @see InitType_e
+    ACTOR_PARAM_CONFIG(InitType, 24, 4); ///< The initial behavior. See InitType_e.
 
     static const short smc_OBJBG_DUMMY_ANGLE = 0;
 };
