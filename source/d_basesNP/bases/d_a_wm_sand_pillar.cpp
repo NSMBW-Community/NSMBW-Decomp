@@ -19,17 +19,17 @@ ACTOR_PROFILE(WM_SANDPILLAR, daWmSandPillar_c, 0);
 
 template <>
 const daWmSandPillar_c::GlobalData_t sGlobalData_c<daWmSandPillar_c>::mData = {
-    { 0.01f, 0.01f, 0.01f },
-    { 0.001f, 0.003f, 0.003f },
-    { 0.03f, 0.05f, 0.05f },
-    { -320.0f, -200.0f, -200.0f },
-    { 0.5f, 0.2f, 0.2f },
-    { 2.0f, 1.4f, 1.6f },
-    { 0.4f, 0.1f, 0.1f },
-    { 1.1f, 1.8f, 1.8f },
-    { 3, 1, 1 },
-    { 100, 10, 40 },  // mBottomWaitTime
-    { 100, 100, 100 } // mTopWaitTime
+    .mStepInitialScale = { 0.01f, 0.01f, 0.01f },
+    .mStepAccel = { 0.001f, 0.003f, 0.003f },
+    .mStepMaxScale = { 0.03f, 0.05f, 0.05f },
+    .mPosY = { -320.0f, -200.0f, -200.0f },
+    .mBottomHeight = { 0.5f, 0.2f, 0.2f },
+    .mTopHeight = { 2.0f, 1.4f, 1.6f },
+    .mPulseBottomHeight = { 0.4f, 0.1f, 0.1f },
+    .mPulseTopHeight = { 1.1f, 1.8f, 1.8f },
+    .mPulseCount = { 3, 1, 1 },
+    .mBottomWaitTime = { 100, 10, 40 },
+    .mTopWaitTime = { 100, 100, 100 }
 };
 
 daWmSandPillar_c::daWmSandPillar_c() : mStateMgr(*this, StateID_Ready) {}
@@ -41,8 +41,7 @@ int daWmSandPillar_c::create() {
     mClipSphere.set(mPos, 350.0f);
     calcModel();
 
-    float yPos = GLOBAL_DATA.mPosY[ACTOR_PARAM(Node)];
-    mPos.y = yPos;
+    mPos.y = GLOBAL_DATA.mPosY[getNodeIdx()];
     mInitialPos = mPos;
 
     return SUCCEEDED;
@@ -50,10 +49,9 @@ int daWmSandPillar_c::create() {
 
 int daWmSandPillar_c::execute() {
     dCsSeqMng_c *csSeqMng = dCsSeqMng_c::ms_instance;
-    mPos.y = GLOBAL_DATA.mPosY[ACTOR_PARAM(Node)];
+    mPos.y = GLOBAL_DATA.mPosY[getNodeIdx()];
 
     mStateMgr.executeState();
-
     if (csSeqMng->FUN_80915600()) {
         processCutsceneCommand(csSeqMng->GetCutName(), csSeqMng->m_164);
     }
@@ -102,22 +100,26 @@ void daWmSandPillar_c::createModel() {
     mAllocator.adjustFrmHeap();
 }
 
-void daWmSandPillar_c::FUN_808e55e0() {
-    if (mUnk4F4 < mUnk4F8) {
-        mUnk4F4 += mUnk500;
-        if (mUnk4F4 > mUnk4F8) {
-            mUnk4F4 = mUnk4F8;
+void daWmSandPillar_c::calcScaleStep() {
+    if (mScaleStep < mTargetScaleStep) {
+        mScaleStep += mStepAccel;
+        if (mScaleStep > mTargetScaleStep) {
+            mScaleStep = mTargetScaleStep;
         }
-    } else if (mUnk4F4 > mUnk4F8) {
-        mUnk4F4 -= mUnk500;
-        if (mUnk4F4 < mUnk4F8) {
-            mUnk4F4 = mUnk4F8;
+    } else if (mScaleStep > mTargetScaleStep) {
+        mScaleStep -= mStepAccel;
+        if (mScaleStep < mTargetScaleStep) {
+            mScaleStep = mTargetScaleStep;
         }
     }
 }
 
+// -------------
+// StateID_Ready
+// -------------
+
 void daWmSandPillar_c::initializeState_Ready() {
-    int nodeIdx = ACTOR_PARAM(Node);
+    int nodeIdx = getNodeIdx();
     if (!(nodeIdx != NODE_1 && nodeIdx != NODE_2)) {
         mHasCourseCond = TRUE;
     } else {
@@ -145,21 +147,25 @@ void daWmSandPillar_c::executeState_Ready() {
 
 void daWmSandPillar_c::finalizeState_Ready() {}
 
+// ------------------
+// StateID_BottomWait
+// ------------------
+
 void daWmSandPillar_c::initializeState_BottomWait() {
-    int nodeIdx = ACTOR_PARAM(Node);
+    int nodeIdx = getNodeIdx();
     mWaitTimer = GLOBAL_DATA.mBottomWaitTime[nodeIdx];
-    mScale.y = GLOBAL_DATA.mScaleY[nodeIdx];
+    mScale.y = GLOBAL_DATA.mBottomHeight[nodeIdx];
 
     nw4r::g3d::ResAnmChr resAnmChr = mResFile.GetResAnmChr("cobSandpillar");
     mChrAnim.setAnm(mModel, resAnmChr, m3d::FORWARD_LOOP);
     mChrAnim.setRate(1.0f);
     mModel.setAnm(mChrAnim, 1.0f);
 
-    mUnk4EC = 0;
+    mIsPulsing = false;
 }
 
 void daWmSandPillar_c::executeState_BottomWait() {
-    if (mUnk4EC != 0) {
+    if (mIsPulsing) {
         return;
     }
 
@@ -171,58 +177,70 @@ void daWmSandPillar_c::executeState_BottomWait() {
 
 void daWmSandPillar_c::finalizeState_BottomWait() {}
 
+// -------------------------
+// StateID_BottomWaitForever
+// -------------------------
+
 void daWmSandPillar_c::initializeState_BottomWaitForever() {
-    int nodeIdx = ACTOR_PARAM(Node);
-    mScale.y = GLOBAL_DATA.mScaleY[nodeIdx];
+    int nodeIdx = getNodeIdx();
+    mScale.y = GLOBAL_DATA.mBottomHeight[nodeIdx];
 
     nw4r::g3d::ResAnmChr resAnmChr = mResFile.GetResAnmChr("cobSandpillar");
     mChrAnim.setAnm(mModel, resAnmChr, m3d::FORWARD_LOOP);
     mChrAnim.setRate(1.0f);
     mModel.setAnm(mChrAnim, 1.0f);
 
-    mUnk4EC = 0;
+    mIsPulsing = false;
 }
 
 void daWmSandPillar_c::executeState_BottomWaitForever() {}
 
 void daWmSandPillar_c::finalizeState_BottomWaitForever() {}
 
+// -----------------
+// StateID_MoveReady
+// -----------------
+
 void daWmSandPillar_c::initializeState_MoveReady() {
-    mTimer2 = GLOBAL_DATA.mTimer2[ACTOR_PARAM(Node)];
-    mUnk4F4 = -GLOBAL_DATA.mUnk4F4[ACTOR_PARAM(Node)];
-    mScale.y = GLOBAL_DATA.mScaleY[ACTOR_PARAM(Node)];
-    mUnk500 = GLOBAL_DATA.mUnk500[ACTOR_PARAM(Node)];
-    mUnk4F8 = -GLOBAL_DATA.mUnk4F8[ACTOR_PARAM(Node)];
-    mUnk4EC = 1;
+    mRemainingPulses = GLOBAL_DATA.mPulseCount[getNodeIdx()];
+    mScaleStep = -GLOBAL_DATA.mStepInitialScale[getNodeIdx()];
+    mScale.y = GLOBAL_DATA.mBottomHeight[getNodeIdx()];
+    mStepAccel = GLOBAL_DATA.mStepAccel[getNodeIdx()];
+    mTargetScaleStep = -GLOBAL_DATA.mStepMaxScale[getNodeIdx()];
+    mIsPulsing = true;
     mChrAnim.setRate(0.0f);
 }
 
 void daWmSandPillar_c::executeState_MoveReady() {
-    int nodeIdx = ACTOR_PARAM(Node);
-    float a = GLOBAL_DATA.mUnk48[nodeIdx];
-    float b = GLOBAL_DATA.mUnk54[nodeIdx];
-    if (mUnk4EC == 1) {
-        float yScale = mScale.y;
-        float c = mUnk4F4;
-        FUN_808e55e0();
-        mScale.y += mUnk4F4;
-        if (mUnk4F4 == 0.0f) {
-            if (c > 0.0f) {
-                mUnk4F8 = -GLOBAL_DATA.mUnk4F8[ACTOR_PARAM(Node)];
+    int nodeIdx = getNodeIdx();
+    float pulseBottomHeight = GLOBAL_DATA.mPulseBottomHeight[nodeIdx];
+    float pulseTopHeight = GLOBAL_DATA.mPulseTopHeight[nodeIdx];
 
-            } else if (c < 0.0f) {
-                mUnk4F8 = GLOBAL_DATA.mUnk4F8[ACTOR_PARAM(Node)];
+    if (mIsPulsing == true) {
+        float prevScaleY = mScale.y;
+        float prevStep = mScaleStep;
+        calcScaleStep();
+        mScale.y += mScaleStep;
+
+        // Once the scale step is zero, reverse direction for the next pulse
+        if (mScaleStep == 0.0f) {
+            if (prevStep > 0.0f) {
+                mTargetScaleStep = -GLOBAL_DATA.mStepMaxScale[getNodeIdx()];
+            } else if (prevStep < 0.0f) {
+                mTargetScaleStep = GLOBAL_DATA.mStepMaxScale[getNodeIdx()];
             }
         }
 
-        if (yScale < b && mScale.y >= b) {
-            mUnk4F8 = 0.0f;
-            mTimer2--;
-        } else if (yScale > a && mScale.y <= a) {
-            mUnk4F8 = 0.0f;
+        if (prevScaleY < pulseTopHeight && mScale.y >= pulseTopHeight) {
+            // Reached top pulse height, brake and count one completed pulse
+            mTargetScaleStep = 0.0f;
+            mRemainingPulses--;
+        } else if (prevScaleY > pulseBottomHeight && mScale.y <= pulseBottomHeight) {
+            // Reached bottom pulse height: brake before rising again
+            mTargetScaleStep = 0.0f;
         }
 
-        if (mTimer2 <= 0) {
+        if (mRemainingPulses <= 0) {
             mStateMgr.changeState(StateID_MoveUp);
         }
     }
@@ -230,39 +248,43 @@ void daWmSandPillar_c::executeState_MoveReady() {
 
 void daWmSandPillar_c::finalizeState_MoveReady() {}
 
+// --------------
+// StateID_MoveUp
+// --------------
+
 void daWmSandPillar_c::initializeState_MoveUp() {
-    mUnk4F8 = GLOBAL_DATA.mUnk4F8[ACTOR_PARAM(Node)];
-    mUnk500 = GLOBAL_DATA.mUnk500[ACTOR_PARAM(Node)];
+    mTargetScaleStep = GLOBAL_DATA.mStepMaxScale[getNodeIdx()];
+    mStepAccel = GLOBAL_DATA.mStepAccel[getNodeIdx()];
     if (mHasCourseCond) {
-        mUnk500 = GLOBAL_DATA.mUnk500[ACTOR_PARAM(Node)];
-        mUnk4F8 = -GLOBAL_DATA.mUnk4F8[ACTOR_PARAM(Node)];
+        mStepAccel = GLOBAL_DATA.mStepAccel[getNodeIdx()];
+        mTargetScaleStep = -GLOBAL_DATA.mStepMaxScale[getNodeIdx()];
     }
 
     mChrAnim.setRate(0.0f);
 }
 
 void daWmSandPillar_c::executeState_MoveUp() {
-    int nodeIdx = ACTOR_PARAM(Node);
-    float a = GLOBAL_DATA.mUnk3C[nodeIdx];
-    float b = GLOBAL_DATA.mUnk54[nodeIdx];
+    int nodeIdx = getNodeIdx();
+    float topHeight = GLOBAL_DATA.mTopHeight[nodeIdx];
+    float pulseTopHeight = GLOBAL_DATA.mPulseTopHeight[nodeIdx];
 
-    FUN_808e55e0();
-    mScale.y += mUnk4F4;
+    calcScaleStep();
+    mScale.y += mScaleStep;
 
     if (mHasCourseCond) {
-        if (mUnk4F4 <= 0.0f && mScale.y <= a) {
-            mScale.y = a;
+        if (mScaleStep <= 0.0f && mScale.y <= topHeight) {
+            mScale.y = topHeight;
             mStateMgr.changeState(StateID_TopWaitForever);
         }
     } else {
-        if (a >= b) {
-            if (mScale.y >= a) {
-                mScale.y = a;
+        if (topHeight >= pulseTopHeight) {
+            if (mScale.y >= topHeight) {
+                mScale.y = topHeight;
                 mStateMgr.changeState(StateID_TopWait);
             }
         } else {
-            if (mScale.y <= a) {
-                mScale.y = a;
+            if (mScale.y <= topHeight) {
+                mScale.y = topHeight;
                 mStateMgr.changeState(StateID_TopWait);
             }
         }
@@ -271,9 +293,13 @@ void daWmSandPillar_c::executeState_MoveUp() {
 
 void daWmSandPillar_c::finalizeState_MoveUp() {}
 
+// ---------------
+// StateID_TopWait
+// ---------------
+
 void daWmSandPillar_c::initializeState_TopWait() {
     mChrAnim.setRate(1.0f);
-    mWaitTimer = GLOBAL_DATA.mTopWaitTime[ACTOR_PARAM(Node)];
+    mWaitTimer = GLOBAL_DATA.mTopWaitTime[getNodeIdx()];
 }
 
 void daWmSandPillar_c::executeState_TopWait() {
@@ -285,40 +311,52 @@ void daWmSandPillar_c::executeState_TopWait() {
 
 void daWmSandPillar_c::finalizeState_TopWait() {}
 
+// ----------------------
+// StateID_TopWaitForever
+// ----------------------
+
 void daWmSandPillar_c::initializeState_TopWaitForever() {
     mChrAnim.setRate(1.0f);
-    mUnk4F4 = 0.0f;
-    mWaitTimer = GLOBAL_DATA.mTopWaitTime[ACTOR_PARAM(Node)];
+    mScaleStep = 0.0f;
+    mWaitTimer = GLOBAL_DATA.mTopWaitTime[getNodeIdx()];
 }
 
 void daWmSandPillar_c::executeState_TopWaitForever() {}
 
 void daWmSandPillar_c::finalizeState_TopWaitForever() {}
 
+// ----------------
+// StateID_MoveDown
+// ----------------
+
 void daWmSandPillar_c::initializeState_MoveDown() {
     mChrAnim.setRate(0.0f);
-    mUnk4F4 = 0.0f;
-    mUnk4F8 = -GLOBAL_DATA.mUnk4F8[ACTOR_PARAM(Node)];
+    mScaleStep = 0.0f;
+    mTargetScaleStep = -GLOBAL_DATA.mStepMaxScale[getNodeIdx()];
 }
 
 void daWmSandPillar_c::executeState_MoveDown() {
-    float yScale = GLOBAL_DATA.mScaleY[ACTOR_PARAM(Node)];
-    FUN_808e55e0();
-    mScale.y += mUnk4F4;
-    if (mScale.y <= yScale) {
-        mScale.y = yScale;
+    float bottomHeight = GLOBAL_DATA.mBottomHeight[getNodeIdx()];
+    calcScaleStep();
+    mScale.y += mScaleStep;
+    if (mScale.y <= bottomHeight) {
+        mScale.y = bottomHeight;
         mStateMgr.changeState(StateID_BottomWait);
     }
 }
 
 void daWmSandPillar_c::finalizeState_MoveDown() {}
 
+// ---------------------------
+// StateID_TopWaitFromTheStart
+// ---------------------------
+
 void daWmSandPillar_c::initializeState_TopWaitFromTheStart() {
     nw4r::g3d::ResAnmChr resAnmChr = mResFile.GetResAnmChr("cobSandpillar");
     mChrAnim.setAnm(mModel, resAnmChr, m3d::FORWARD_LOOP);
     mChrAnim.setRate(1.0f);
     mModel.setAnm(mChrAnim, 1.0f);
-    mScale.y = GLOBAL_DATA.mUnk3C[ACTOR_PARAM(Node)];
+    mScale.y = GLOBAL_DATA.mTopHeight[getNodeIdx()];
 }
 
 void daWmSandPillar_c::executeState_TopWaitFromTheStart() {
