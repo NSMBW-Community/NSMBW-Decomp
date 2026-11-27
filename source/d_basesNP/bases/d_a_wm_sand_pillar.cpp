@@ -119,8 +119,7 @@ void daWmSandPillar_c::calcScaleStep() {
 // -------------
 
 void daWmSandPillar_c::initializeState_Ready() {
-    int nodeIdx = getNodeIdx();
-    if (!(nodeIdx != NODE_1 && nodeIdx != NODE_2)) {
+    if (getNodeIdx() == NODE_1 || getNodeIdx() == NODE_2) {
         mHasCourseCond = TRUE;
     } else {
         mHasCourseCond = FALSE;
@@ -152,9 +151,8 @@ void daWmSandPillar_c::finalizeState_Ready() {}
 // ------------------
 
 void daWmSandPillar_c::initializeState_BottomWait() {
-    int nodeIdx = getNodeIdx();
-    mWaitTimer = GLOBAL_DATA.mBottomWaitTime[nodeIdx];
-    mScale.y = GLOBAL_DATA.mBottomHeight[nodeIdx];
+    mWaitTimer = GLOBAL_DATA.mBottomWaitTime[getNodeIdx()];
+    mScale.y = GLOBAL_DATA.mBottomHeight[getNodeIdx()];
 
     nw4r::g3d::ResAnmChr resAnmChr = mResFile.GetResAnmChr("cobSandpillar");
     mChrAnim.setAnm(mModel, resAnmChr, m3d::FORWARD_LOOP);
@@ -182,8 +180,7 @@ void daWmSandPillar_c::finalizeState_BottomWait() {}
 // -------------------------
 
 void daWmSandPillar_c::initializeState_BottomWaitForever() {
-    int nodeIdx = getNodeIdx();
-    mScale.y = GLOBAL_DATA.mBottomHeight[nodeIdx];
+    mScale.y = GLOBAL_DATA.mBottomHeight[getNodeIdx()];
 
     nw4r::g3d::ResAnmChr resAnmChr = mResFile.GetResAnmChr("cobSandpillar");
     mChrAnim.setAnm(mModel, resAnmChr, m3d::FORWARD_LOOP);
@@ -212,9 +209,8 @@ void daWmSandPillar_c::initializeState_MoveReady() {
 }
 
 void daWmSandPillar_c::executeState_MoveReady() {
-    int nodeIdx = getNodeIdx();
-    float pulseBottomHeight = GLOBAL_DATA.mPulseBottomHeight[nodeIdx];
-    float pulseTopHeight = GLOBAL_DATA.mPulseTopHeight[nodeIdx];
+    float pulseBottomHeight = GLOBAL_DATA.mPulseBottomHeight[getNodeIdx()];
+    float pulseTopHeight = GLOBAL_DATA.mPulseTopHeight[getNodeIdx()];
 
     if (mIsPulsing == true) {
         float prevScaleY = mScale.y;
@@ -264,9 +260,8 @@ void daWmSandPillar_c::initializeState_MoveUp() {
 }
 
 void daWmSandPillar_c::executeState_MoveUp() {
-    int nodeIdx = getNodeIdx();
-    float topHeight = GLOBAL_DATA.mTopHeight[nodeIdx];
-    float pulseTopHeight = GLOBAL_DATA.mPulseTopHeight[nodeIdx];
+    float topHeight = GLOBAL_DATA.mTopHeight[getNodeIdx()];
+    float pulseTopHeight = GLOBAL_DATA.mPulseTopHeight[getNodeIdx()];
 
     calcScaleStep();
     mScale.y += mScaleStep;
