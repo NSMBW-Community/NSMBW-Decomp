@@ -10,6 +10,7 @@ class daWmMap_c : public dWmDemoActor_c {
 public:
     int GetNodeCount(int); ///< @unofficial
     void GetNodePos(long nodeIdx, mVec3_c &pos);
+    static u8 GetCurrentWorld(); ///< @unofficial
 
     dHeapAllocator_c mAllocator;
     dWmMapModel_c mModels[4];
